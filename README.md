@@ -20,4 +20,4 @@ A stream data framework.
 
 * Documentation shall be in docstring format and shall follow the [NumPy/SciPy guidelines](https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt)
 
-    An example of from the sphinx documentation: http://www.sphinx-doc.org/en/stable/ext/example_numpy.html
+    An example from the sphinx documentation: http://www.sphinx-doc.org/en/stable/ext/example_numpy.html
