@@ -1,17 +1,14 @@
+__author__ = 'Guilherme Matsumoto'
+
 from abc import ABCMeta, abstractmethod
 
 
-class BaseClassifier(metaclass=ABCMeta):
+class BaseOptionHandler(metaclass=ABCMeta):
     """Base Classifier class
-        create a flag to verify if it's the first run
     """
     def __init__(self):
         """ Initialization.
         """
-        pass
-
-    @abstractmethod
-    def prefit(self):
         pass
 
     @abstractmethod
