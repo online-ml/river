@@ -72,9 +72,9 @@ def demo_random_tree_gen(argv):
     i = 0
     start = timer()
     # while(wfg.hasMoreInstances()):
-    for i in range(2):
+    for i in range(581000):
         o = rtg.nextInstance()
-        o.toString()
+        #o.toString()
     end = timer()
     print("Generation time: " + str(end - start))
 
@@ -82,6 +82,6 @@ def demo_random_tree_gen(argv):
 
 if __name__ == '__main__':
     #demo_file_stream()
-    demo_waveform_gen(sys.argv[1:])
-    #demo_random_tree_gen(sys.argv[1:])
+    #demo_waveform_gen(sys.argv[1:])
+    demo_random_tree_gen(sys.argv[1:])
 

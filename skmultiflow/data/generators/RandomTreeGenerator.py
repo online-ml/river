@@ -29,6 +29,13 @@ class RandomTreeGenerator(BaseInstanceStream):
         -d: The maximum depth of the tree concept (Default: 5)
         -l: The first level of the tree above MaxTreeDepth that can have leaves (Default: 3)
         -f: The fraction of leaves per level from FirstLeafLevel onwards (Default: 0.15)
+        
+        Instance Data Format
+        --------------------------------------------
+        The data coming from this generator follows a strict form:
+         ___________________________________________________________
+        |   Numeric Attributes  |   Nominal Attributes  |   Class   |
+         -----------------------------------------------------------
     '''
     def __init__(self, optList = None):
         super().__init__()
@@ -48,6 +55,7 @@ class RandomTreeGenerator(BaseInstanceStream):
         self.instanceRandom = None
         self.classHeader = None
         self.attributesHeader = None
+        self.instanceRandom = None
         self.configure(optList)
         pass
 
@@ -94,21 +102,19 @@ class RandomTreeGenerator(BaseInstanceStream):
         treeRand = np.random
         treeRand.seed(self.randomTreeSeed)
         nominalAttCandidates = array('i')
-        for i in range(self.numValuesPerNominalAtt):
-            nominalAttCandidates.append(i)
+
         minNumericVals = array('d')
         maxNumericVals = array('d')
         for i in range(self.numNumericalAttributes):
             minNumericVals.append(0.0)
             maxNumericVals.append(1.0)
 
+        for i in range(self.numNominalAttributes + self.numNominalAttributes):
+            nominalAttCandidates.append(i)
+
         self.treeRoot = self.generateRandomTreeNode(0, nominalAttCandidates, minNumericVals, maxNumericVals, treeRand)
 
-    #########
-    ##  Won't work because we use one hot codification for nominal attributes
-    ##
-    ##  One option is to
-    #########
+
     def generateRandomTreeNode(self, currentDepth, nominalAttCandidates, minNumericVals, maxNumericVals, rand):
         if ((currentDepth >= self.maxTreeDepth) | ((currentDepth >= self.minLeafDepth) & (self.fractionOfLeavesPerLevel >= (1.0 - rand.rand())))):
             leaf = Node()
@@ -116,18 +122,10 @@ class RandomTreeGenerator(BaseInstanceStream):
             return leaf
 
         node = Node()
-        chosenAtt = rand.randint(0, len(nominalAttCandidates) + self.numNumericalAttributes)
-        if(chosenAtt < len(nominalAttCandidates)):
-            node.splitAttIndex = nominalAttCandidates[chosenAtt]
-            newNominalCandidates = array('d', nominalAttCandidates)
-            newNominalCandidates.remove(node.splitAttIndex)
-
-            for i in range(len(nominalAttCandidates)):
-                node.children.append(self.generateRandomTreeNode(currentDepth+1, newNominalCandidates, minNumericVals, maxNumericVals, rand))
-
-        else:
-            numericIndex = chosenAtt - len(nominalAttCandidates)
-            node.splitAttIndex = self.numNominalAttributes + numericIndex
+        chosenAtt = rand.randint(0, len(nominalAttCandidates))
+        if (chosenAtt < self.numNumericalAttributes):
+            numericIndex = chosenAtt
+            node.splitAttIndex = numericIndex
             minVal = minNumericVals[numericIndex]
             maxVal = maxNumericVals[numericIndex]
             node.splitAttValue = ((maxVal - minVal) * rand.rand() + minVal)
@@ -140,16 +138,37 @@ class RandomTreeGenerator(BaseInstanceStream):
             newMinVals = minNumericVals[:]
             newMinVals[numericIndex] = node.splitAttValue
             node.children.append(self.generateRandomTreeNode(currentDepth+1, nominalAttCandidates, newMinVals, maxNumericVals, rand))
+        else:
+            node.splitAttIndex = nominalAttCandidates[chosenAtt]
+            newNominalCandidates = array('d', nominalAttCandidates)
+            newNominalCandidates.remove(node.splitAttIndex)
+
+            for i in range(self.numValuesPerNominalAtt):
+                node.children.append(self.generateRandomTreeNode(currentDepth+1, newNominalCandidates, minNumericVals, maxNumericVals, rand))
 
         return node
 
     def classifyInstance(self, node, attVals):
         if len(node.children) == 0:
             return node.classLabel
-        if node.splitAttIndex < self.numNominalAttributes:
-            return self.classifyInstance(node.children[attVals[node.splitAttIndex]], attVals)
-        aux = 0 if attVals[node.splitAttIndex] < node.splitAttValue else 1
-        return self.classifyInstance(node.children[aux], attVals)
+        if node.splitAttIndex < self.numNumericalAttributes:
+            aux = 0 if attVals[node.splitAttIndex] < node.splitAttValue else 1
+            return self.classifyInstance(node.children[aux], attVals)
+        else:
+            return self.classifyInstance(node.children[self.getIntegerNominalAttributeRepresentation(node.splitAttIndex, attVals)], attVals)
+
+    def getIntegerNominalAttributeRepresentation(self, nominalIndex = None, attVals = None):
+        '''
+            The nominalIndex uses as reference the number of nominal attributes plus the number of nominal attributes.
+             In this way, to find which 'hot one' variable from a nominal attribute is active, we do some basic math.
+             This function returns the index of the active variable in a nominal attribute 'hot one' representation.
+        '''
+        minIndex = self.numNumericalAttributes + (nominalIndex - self.numNumericalAttributes)*self.numValuesPerNominalAtt
+        for i in range(self.numValuesPerNominalAtt):
+            if attVals[int(minIndex)] == 1:
+                return i
+            minIndex += 1
+        return None
 
     def estimatedRemainingInstances(self):
         return -1
