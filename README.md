@@ -14,6 +14,10 @@ A stream data framework.
 * Jesse READ
 * Jacob MONTIEL
 
+### Contributors
+
+* Guilherme KURIKE MATSUMOTO
+
 
 ### Code style and documentation
 * Python Code shall comply with [PEP 8](https://www.python.org/dev/peps/pep-0008/)
