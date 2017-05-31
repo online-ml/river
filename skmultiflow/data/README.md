@@ -21,6 +21,11 @@ Data sets and generators
 * Using the same instance structure as before - time to give 581k instances of 5 numAtt, 5 nomAtt and 1 label: 45 s
 * -> 12911 inst/s -> 0.00007745 s/inst
 
+* 24/05/2017 - lame10 - Testing all three generators
+* CSV - 100k instances time: 23.54 s - config time: 6.78 s
+* Waveform - 100k instances time 44.46 s
+* Random Tree - 100k instances time 8.39 s
+
 ### Format conventions
 * An instance does not contain de data header, but the streamer does, so that the classifier or the evaluator can easily
     have access to that variable.

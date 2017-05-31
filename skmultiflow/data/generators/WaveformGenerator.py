@@ -68,10 +68,10 @@ class WaveformGenerator(BaseInstanceStream):
         pass
 
     def estimatedRemainingInstances(self):
-        return self.instanceLength - self.instanceIndex
+        return -1
 
     def hasMoreInstances(self):
-        return True if (self.estimatedRemainingInstances() > 0) else False
+        return True
 
     def nextInstance(self):
         self.instanceIndex += 1
@@ -123,6 +123,9 @@ class WaveformGenerator(BaseInstanceStream):
     def getNumValuesPerNominalAttribute(self):
         return self.numValuesPerNominalAtt
 
+    def getNumAttributes(self):
+        return self.numNumericalAttributes + self.numNominalAttributes*self.numValuesPerNominalAtt
+
     def getNumClasses(self):
         return self.numClasses
 
@@ -132,7 +135,11 @@ class WaveformGenerator(BaseInstanceStream):
     def getClassesHeader(self):
         return self.classesHeader
 
+    def getLastInstance(self):
+        return self.currentInstance
 
+    def getNumLabels(self):
+        pass
 
 def demo():
     wfg = WaveformGenerator()

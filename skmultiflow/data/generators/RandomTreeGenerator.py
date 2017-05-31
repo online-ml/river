@@ -56,6 +56,7 @@ class RandomTreeGenerator(BaseInstanceStream):
         self.classHeader = None
         self.attributesHeader = None
         self.instanceRandom = None
+        self.currentInstance = None
         self.configure(optList)
         pass
 
@@ -89,7 +90,7 @@ class RandomTreeGenerator(BaseInstanceStream):
             for j in range(self.numValuesPerNominalAtt):
                 self.attributesHeader.append("NomAtt" + str(i) + "_Val" + str(j))
 
-        print(self.attributesHeader)
+        #print(self.attributesHeader)
 
         pass
 
@@ -190,8 +191,8 @@ class RandomTreeGenerator(BaseInstanceStream):
                     att.append(0.0)
 
         att.append(self.classifyInstance(self.treeRoot, att))
-        inst = Instance(self.numNominalAttributes*self.numValuesPerNominalAtt + self.numNumericalAttributes, self.numClasses, -1, att)
-        return inst
+        self.currentInstance = Instance(self.numNominalAttributes*self.numValuesPerNominalAtt + self.numNumericalAttributes, self.numClasses, -1, att)
+        return self.currentInstance
 
     def isRestartable(self):
         return True
@@ -218,6 +219,9 @@ class RandomTreeGenerator(BaseInstanceStream):
     def getNumValuesPerNominalAttribute(self):
         return self.numValuesPerNominalAtt
 
+    def getNumAttributes(self):
+        return self.numNumericalAttributes + self.numNominalAttributes*self.numValuesPerNominalAtt
+
     def getNumClasses(self):
         return self.numClasses
 
@@ -226,6 +230,12 @@ class RandomTreeGenerator(BaseInstanceStream):
 
     def getClassesHeader(self):
         return self.classHeader
+
+    def getLastInstance(self):
+        return self.currentInstance
+
+    def getNumLabels(self):
+        pass
 
 class Node:
     def __init__(self, classLabel = None, splitAttIndex = None, splitAttValue = None):

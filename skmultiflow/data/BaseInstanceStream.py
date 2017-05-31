@@ -48,7 +48,15 @@ class BaseInstanceStream(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def getNumAttributes(self):
+        pass
+
+    @abstractmethod
     def getNumClasses(self):
+        pass
+
+    @abstractmethod
+    def getNumLabels(self):
         pass
 
     @abstractmethod
@@ -57,4 +65,8 @@ class BaseInstanceStream(metaclass=ABCMeta):
 
     @abstractmethod
     def getClassesHeader(self):
+        pass
+
+    @abstractmethod
+    def getLastInstance(self):
         pass

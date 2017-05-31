@@ -11,11 +11,11 @@ class BaseClassifier(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def prefit(self):
-        pass
+    def first_fit(self, X, y, classes = None):
+        self.fit(X, y, classes)
 
     @abstractmethod
-    def fit(self, X, y, classes):
+    def fit(self, X, y, classes = None):
         """Fit model.
 
         Parameters
@@ -78,4 +78,8 @@ class BaseClassifier(metaclass=ABCMeta):
         array, shape (n_samples, n_classes)
             Returns the probability of the sample for each class in the model.
         """
+        pass
+
+    @abstractmethod
+    def score(self, X, y):
         pass

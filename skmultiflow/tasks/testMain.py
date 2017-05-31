@@ -4,12 +4,13 @@ from skmultiflow.data.CsvFileStream import CsvFileStream
 from skmultiflow.options.FileOption import FileOption
 from skmultiflow.data.generators.WaveformGenerator import WaveformGenerator
 from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
+from skmultiflow.tasks.EvaluatePrequential import EvaluatePrequential
 from timeit import default_timer as timer
 import sys, getopt
 
 def demo_file_stream():
     start = timer()
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
+    opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     t = CsvFileStream(opt, 54)
     t.prepareForUse()
     end = timer()
@@ -21,11 +22,11 @@ def demo_file_stream():
         n = t.nextInstance()
         #n.toString()
     end = timer()
-    print("Next Instance time: " + str(end-start))
+    print("CSV - Next Instance time: " + str(end-start))
     return None
 
 def demo_waveform_gen(argv):
-    print(argv)
+    #print(argv)
     try:
         opts, args = getopt.getopt(argv, "i:n")
     except getopt.GetoptError:
@@ -43,15 +44,15 @@ def demo_waveform_gen(argv):
     i = 0
     start = timer()
     #while(wfg.hasMoreInstances()):
-    for i in range(20):
+    for i in range(100000):
         o = wfg.nextInstance()
-        o.toString()
+        #o.toString()
     end = timer()
-    print("Generation time: " + str(end-start))
+    print("Waveform - Generation time: " + str(end-start))
     return None
 
 def demo_random_tree_gen(argv):
-    print(argv)
+    #print(argv)
     try:
         opts, args = getopt.getopt(argv, "r:i:c:o:u:v:d:l:f:")
     except getopt.GetoptError:
@@ -72,13 +73,17 @@ def demo_random_tree_gen(argv):
     i = 0
     start = timer()
     # while(wfg.hasMoreInstances()):
-    for i in range(581000):
+    for i in range(100000):
         o = rtg.nextInstance()
         #o.toString()
     end = timer()
-    print("Generation time: " + str(end - start))
+    print("Random Tree - Generation time: " + str(end - start))
 
     return None
+
+def demo_preq(argv):
+    t = EvaluatePrequential(argv)
+    pass
 
 if __name__ == '__main__':
     #demo_file_stream()

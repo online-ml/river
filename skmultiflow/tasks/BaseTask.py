@@ -1,13 +1,12 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.tasks.BaseTask import BaseTask
+from abc import abstractmethod, ABCMeta
 
-class MeasureStreamGeneration(BaseTask):
+class BaseTask(metaclass=ABCMeta):
 
     def __init__(self):
-        super().__init__()
         pass
 
+    @abstractmethod
     def doTask(self, stream = None, classifier = None):
         pass
-

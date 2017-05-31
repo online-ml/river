@@ -123,3 +123,9 @@ class CsvFileStream(BaseInstanceStream.BaseInstanceStream):
 
     def getClassesHeader(self):
         return self.classesHeader
+
+    def getLastInstance(self):
+        return self.currentInstance
+
+    def getNumLabels(self):
+        return self.numLabels
