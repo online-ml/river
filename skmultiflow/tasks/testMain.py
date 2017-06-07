@@ -6,20 +6,26 @@ from skmultiflow.data.generators.WaveformGenerator import WaveformGenerator
 from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
 from skmultiflow.tasks.EvaluatePrequential import EvaluatePrequential
 from timeit import default_timer as timer
-import sys, getopt
+import sys, getopt, logging
 
 def demo_file_stream():
+    logging.basicConfig(format='%(message)s', level=logging.INFO)
     start = timer()
     opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
-    t = CsvFileStream(opt, 54)
+    t = CsvFileStream(opt, 7)
     t.prepareForUse()
     end = timer()
     print("Configuration time: " + str(end-start))
 
     start = timer()
-    for i in range(100000):
+    for i in range(1):
     #while (t.hasMoreInstances()):
-        n = t.nextInstance()
+        X, y = t.nextInstance(4)
+        logging.info('this is X:')
+        logging.info(X)
+        logging.info('this is y:')
+        logging.info(y)
+        #print(str(y[0]))
         #n.toString()
     end = timer()
     print("CSV - Next Instance time: " + str(end-start))
@@ -38,15 +44,17 @@ def demo_waveform_gen(argv):
         optList.append([opt, arg])
 
 
-    wfg = WaveformGenerator(optList)
+    wfg = WaveformGenerator()
     wfg.prepareForUse()
 
     i = 0
     start = timer()
     #while(wfg.hasMoreInstances()):
-    for i in range(100000):
-        o = wfg.nextInstance()
-        #o.toString()
+    for i in range(10):
+        X, y = wfg.nextInstance(2)
+        print(str(i))
+        print(X)
+        print(y)
     end = timer()
     print("Waveform - Generation time: " + str(end-start))
     return None
@@ -73,8 +81,10 @@ def demo_random_tree_gen(argv):
     i = 0
     start = timer()
     # while(wfg.hasMoreInstances()):
-    for i in range(100000):
-        o = rtg.nextInstance()
+    for i in range(20):
+        X, y = rtg.nextInstance()
+        #print(X)
+        print(y)
         #o.toString()
     end = timer()
     print("Random Tree - Generation time: " + str(end - start))
@@ -86,7 +96,7 @@ def demo_preq(argv):
     pass
 
 if __name__ == '__main__':
-    #demo_file_stream()
+    demo_file_stream()
     #demo_waveform_gen(sys.argv[1:])
-    demo_random_tree_gen(sys.argv[1:])
+    #demo_random_tree_gen(sys.argv[1:])
 

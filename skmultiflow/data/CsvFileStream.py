@@ -8,47 +8,55 @@ class CsvFileStream(BaseInstanceStream.BaseInstanceStream):
     '''
         CSV File Stream
         -------------------------------------------
-        Generates a stream based on the data from an ARFF file
+        Generates a stream based on the data from a file
         
         Parser parameters
         ---------------------------------------------
         -f: CSV file to load
     '''
-    def __init__(self, fileOpt, numAtt = 0):
+    def __init__(self, fileOpt, numClasses = 2):
         super().__init__()
         # default values
-        self.arffFileName = None
+        if fileOpt.fileType is "CSV":
+            self.read_function = pd.read_csv
+        else:
+            raise ValueError('Unsupported format: ', fileOpt.fileType)
+        self.fileName = None
         self.instanceIndex = 0
-        self.instances = None
         self.instanceLength = 0
-        self.currentInstance = None
-        self.numAttributes = numAtt
+        self.X = None
+        self.y = None
+        self.currentInstanceX = None
+        self.currentInstanceY = None
+        self.numClasses = numClasses
         self.numClasses = 0
         self.numNumericalAttributes = 0
         self.numNominalAttributes = 0
         self.numValuesPerNominalAtt = 0
         self.attributesHeader = None
         self.classesHeader = None
-        self.configure(fileOpt, 0, numAtt)
+        self.configure(fileOpt, numClasses, 0)
 
-    def configure(self, fileOpt, index = -1, numAtt = 0):
+    def configure(self, fileOpt, numClasses, index = -1):
         '''
         __init__(self, fileName, index)
         
         Parameters
         ----------------------------------------
         fileName : string
-                   Name of the ARFF file
+                   Name of the file
         index : int
                 Class index parameter
         '''
-        self.arffFileName = fileOpt.getFileName()
+        self.fileName = fileOpt.getFileName()
         self.instanceIndex = index
         self.instances = None
         self.instanceLength = 0
-        self.currentInstance = None
-        self.numAttributes = numAtt
-        self.numClasses = 0
+        self.currentInstanceX = None
+        self.currentInstanceY = None
+        self.numClasses = numClasses
+        self.X = None
+        self.y = None
 
 
 
@@ -65,12 +73,15 @@ class CsvFileStream(BaseInstanceStream.BaseInstanceStream):
         '''
 
         try:
-            self.instances = pd.read_csv(self.arffFileName)
-            self.instanceLength = len(self.instances.index)
-            self.numClasses = len(self.instances.columns) - self.numAttributes
-            labels = self.instances.columns.values.tolist()
+            instanceAux = self.read_function(self.fileName)
+            self.instanceLength = len(instanceAux.index)
+            self.numAttributes = len(instanceAux.columns) - 1
+            labels = instanceAux.columns.values.tolist()
+            self.X = instanceAux.iloc[:, 0:(len(labels)-1)]
+            self.y = instanceAux.iloc[:, (len(labels)-1):]
             self.attributesHeader = labels[0:(len(labels)-1)]
             self.classesHeader = labels[(len(labels)-1):]
+            self.instanceIndex = 0
         except IOError:
             print("CSV file reading failed. Please verify the file format.")
         pass
@@ -78,12 +89,14 @@ class CsvFileStream(BaseInstanceStream.BaseInstanceStream):
     def isRestartable(self):
         return True
 
-    def nextInstance(self):
+    def nextInstance(self, batchSize = 1):
+
         self.instanceIndex += 1
-        self.currentInstance = Instance(self.numAttributes,
-                                        self.numClasses, -1,
-                                        self.instances[self.instanceIndex-1:self.instanceIndex].values[0])
-        return self.currentInstance
+        #self.currentInstanceX = self.X[self.instanceIndex-1:self.instanceIndex+batchSize-1].values[0]
+        #self.currentInstanceY = self.y[self.instanceIndex-1:self.instanceIndex+batchSize-1].values[0]
+        self.currentInstanceX = self.X.iloc[self.instanceIndex-1:self.instanceIndex+batchSize-1, : ].values
+        self.currentInstanceY = self.y.iloc[self.instanceIndex-1:self.instanceIndex+batchSize-1, : ].values.flatten()
+        return (self.currentInstanceX, self.currentInstanceY)
 
     def hasMoreInstances(self):
         return ((self.instanceLength - self.instanceIndex) > 0)
@@ -92,7 +105,8 @@ class CsvFileStream(BaseInstanceStream.BaseInstanceStream):
         return (self.instanceLength - self.instanceIndex)
 
     def printDF(self):
-        print(self.instances)
+        print(self.X)
+        print(self.Y)
 
     def getInstancesLength(self):
         return self.instanceLength
@@ -125,7 +139,4 @@ class CsvFileStream(BaseInstanceStream.BaseInstanceStream):
         return self.classesHeader
 
     def getLastInstance(self):
-        return self.currentInstance
-
-    def getNumLabels(self):
-        return self.numLabels
+        return (self.currentInstanceX, self.currentInstanceY)

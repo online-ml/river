@@ -56,7 +56,8 @@ class RandomTreeGenerator(BaseInstanceStream):
         self.classHeader = None
         self.attributesHeader = None
         self.instanceRandom = None
-        self.currentInstance = None
+        self.currentInstanceX = None
+        self.currentInstanceY = None
         self.configure(optList)
         pass
 
@@ -110,7 +111,7 @@ class RandomTreeGenerator(BaseInstanceStream):
             minNumericVals.append(0.0)
             maxNumericVals.append(1.0)
 
-        for i in range(self.numNominalAttributes + self.numNominalAttributes):
+        for i in range(self.numNumericalAttributes + self.numNominalAttributes):
             nominalAttCandidates.append(i)
 
         self.treeRoot = self.generateRandomTreeNode(0, nominalAttCandidates, minNumericVals, maxNumericVals, treeRand)
@@ -160,7 +161,7 @@ class RandomTreeGenerator(BaseInstanceStream):
 
     def getIntegerNominalAttributeRepresentation(self, nominalIndex = None, attVals = None):
         '''
-            The nominalIndex uses as reference the number of nominal attributes plus the number of nominal attributes.
+            The nominalIndex uses as reference the number of nominal attributes plus the number of numerical attributes.
              In this way, to find which 'hot one' variable from a nominal attribute is active, we do some basic math.
              This function returns the index of the active variable in a nominal attribute 'hot one' representation.
         '''
@@ -177,22 +178,28 @@ class RandomTreeGenerator(BaseInstanceStream):
     def hasMoreInstances(self):
         return True
 
-    def nextInstance(self):
-        att = array('d')
-        for i in range(self.numNumericalAttributes):
-            att.append(self.instanceRandom.rand())
+    def nextInstance(self, batchSize = 1):
+        #att = array('d')
+        data = np.zeros([batchSize, self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt) + 1])
+        for j in range (batchSize):
+            for i in range(self.numNumericalAttributes):
+                data[j,i] = self.instanceRandom.rand()
 
-        for i in range(self.numNominalAttributes):
-            aux = self.instanceRandom.randint(0, self.numValuesPerNominalAtt)
-            for j in range(self.numValuesPerNominalAtt):
-                if aux == j:
-                    att.append(1.0)
-                else:
-                    att.append(0.0)
+            for i in range(self.numNumericalAttributes, self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt), self.numValuesPerNominalAtt):
+                aux = self.instanceRandom.randint(0, self.numValuesPerNominalAtt)
+                for k in range(self.numValuesPerNominalAtt):
+                    if aux == k:
+                        data[j, k+i] = 1.0
+                    else:
+                        data[j, k+i] = 0.0
 
-        att.append(self.classifyInstance(self.treeRoot, att))
-        self.currentInstance = Instance(self.numNominalAttributes*self.numValuesPerNominalAtt + self.numNumericalAttributes, self.numClasses, -1, att)
-        return self.currentInstance
+            data[j, self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt)] = self.classifyInstance(self.treeRoot, data[j])
+            #att.append(self.classifyInstance(self.treeRoot, att))
+            self.currentInstanceX = data[:self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt)]
+            self.currentInstanceY = data[self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt):]
+            #self.currentInstance = Instance(self.numNominalAttributes*self.numValuesPerNominalAtt + self.numNumericalAttributes, self.numClasses, -1, att)
+            numAttributes = self.numNumericalAttributes + (self.numNominalAttributes*self.numValuesPerNominalAtt)
+        return (data[:, :numAttributes], data[:, numAttributes:])
 
     def isRestartable(self):
         return True
@@ -232,7 +239,7 @@ class RandomTreeGenerator(BaseInstanceStream):
         return self.classHeader
 
     def getLastInstance(self):
-        return self.currentInstance
+        return (self.currentInstanceX, self.currentInstanceY)
 
     def getNumLabels(self):
         pass

@@ -16,7 +16,7 @@ class BaseInstanceStream(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def nextInstance(self):
+    def nextInstance(self, batchSize = 1):
         pass
 
     @abstractmethod
@@ -53,10 +53,6 @@ class BaseInstanceStream(metaclass=ABCMeta):
 
     @abstractmethod
     def getNumClasses(self):
-        pass
-
-    @abstractmethod
-    def getNumLabels(self):
         pass
 
     @abstractmethod

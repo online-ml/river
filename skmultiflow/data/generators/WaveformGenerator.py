@@ -38,6 +38,8 @@ class WaveformGenerator(BaseInstanceStream):
         self.numValuesPerNominalAtt = 0
         self.attributesHeader = None
         self.classesHeader = None
+        self.currentInstanceX = None
+        self.currentInstanceY = None
         self.configure(optList)
         pass
 
@@ -58,10 +60,6 @@ class WaveformGenerator(BaseInstanceStream):
         for i in range(self.numAttributes):
             self.attributesHeader.append("att" + str(i))
 
-        #for i in range(self.numClasses):
-        self.classesHeader = InstanceHeader(self.classesHeader)
-        #print(self.attributesHeader)
-        #print(self.classesHeader)
 
     def prepareForUse(self):
         self.restart()
@@ -73,29 +71,44 @@ class WaveformGenerator(BaseInstanceStream):
     def hasMoreInstances(self):
         return True
 
-    def nextInstance(self):
-        self.instanceIndex += 1
-        waveform = np.random.randint(0, self.NUM_CLASSES)
-        choiceA = 1 if (waveform == 2) else 0
-        choiceB = 1 if (waveform == 0) else 2
-        multiplierA = np.random.rand()
-        multiplierB = 1.0 - multiplierA
+    def nextInstance(self, batchSize = 1):
         if self.hasNoise():
-            data = np.zeros([self.TOTAL_ATTRIBUTES_INCLUDING_NOISE+1])
+            data = np.zeros([batchSize, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE + 1])
         else:
-            data = np.zeros([self.NUM_BASE_ATTRIBUTES+1])
-        for i in range(self.NUM_BASE_ATTRIBUTES):
-            data.put(i, multiplierA*self.H_FUNCTION[choiceA][i]
-                        + multiplierB*self.H_FUNCTION[choiceB][i]
-                        + np.random.normal())
-        if self.hasNoise():
-            for i in range(self.NUM_BASE_ATTRIBUTES,self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                data.put(i, np.random.normal())
-
-        data.put(data.size - 1, waveform)
-        self.currentInstance = Instance(self.numAttributes, self.numClasses, -1, data)
-        self.currentInstance.setClassValue(waveform)
-        return self.currentInstance
+            data = np.zeros([batchSize, self.NUM_BASE_ATTRIBUTES + 1])
+        for j in range (batchSize):
+            self.instanceIndex += 1
+            waveform = np.random.randint(0, self.NUM_CLASSES)
+            choiceA = 1 if (waveform == 2) else 0
+            choiceB = 1 if (waveform == 0) else 2
+            multiplierA = np.random.rand()
+            multiplierB = 1.0 - multiplierA
+            #print(data)
+            #print(str(j))
+            for i in range(self.NUM_BASE_ATTRIBUTES):
+                #data.put(i, multiplierA*self.H_FUNCTION[choiceA][i]
+                            #+ multiplierB*self.H_FUNCTION[choiceB][i]
+                            #+ np.random.normal())
+                data[j,i] = multiplierA*self.H_FUNCTION[choiceA][i] \
+                            + multiplierB*self.H_FUNCTION[choiceB][i] \
+                            + np.random.normal()
+            #print(data)
+            if self.hasNoise():
+                for i in range(self.NUM_BASE_ATTRIBUTES,self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
+                    #data.put(i, np.random.normal())
+                    data[j,i] = np.random.normal()
+            #print(data)
+            #data.put(data.size - 1, waveform)
+            data[j, data[j].size-1] = waveform
+            #self.currentInstanceX = data[:self.numAttributes]
+            #self.currentInstanceY = data[self.numAttributes:]
+            self.currentInstanceX = data[j, :self.numAttributes]
+            self.currentInstanceY = data[j, self.numAttributes:]
+            #print(self.currentInstanceX)
+            #print(self.currentInstanceY)
+            #print(data)
+        #return (self.currentInstanceX, self.currentInstanceY)
+        return (data[:, :self.numAttributes], data[:, self.numAttributes:])
 
     def isRestartable(self):
         return True
@@ -136,7 +149,7 @@ class WaveformGenerator(BaseInstanceStream):
         return self.classesHeader
 
     def getLastInstance(self):
-        return self.currentInstance
+        return (self.currentInstanceX, self.currentInstanceY)
 
     def getNumLabels(self):
         pass

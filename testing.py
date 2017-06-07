@@ -1,6 +1,7 @@
 __author__ = 'Guilherme Matsumoto'
 
 import skmultiflow.tasks.testMain as t
+import skmultiflow.demos.streamPlusClassifier as spc
 import sys, getopt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,8 +12,8 @@ import random
 
 def demo(argv):
     t.demo_file_stream()
-    t.demo_waveform_gen(argv)
-    t.demo_random_tree_gen(argv)
+    #t.demo_waveform_gen(argv)
+    #t.demo_random_tree_gen(argv)
     return None
 
 def testPreq(argv):
@@ -68,10 +69,15 @@ def data_gen():
     while True:
         yield np.random.rand(10)
 
+def demoSCP():
+    spc.demo()
+    pass
+
 if __name__ == '__main__':
     #plt.interactive(False)
     #print(sys.argv)
     #demo(sys.argv[1:])
     #testPreq(sys.argv)
-    testPlot()
+    #testPlot()
     #testIncrementalPlot()
+    demoSCP()

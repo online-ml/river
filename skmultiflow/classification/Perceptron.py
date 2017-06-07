@@ -1,13 +1,13 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.classification.base import BaseClassifier
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model.perceptron import Perceptron
 
-class NaiveBayes(BaseClassifier):
+class PerceptronMask(BaseClassifier):
 
     def __init__(self):
         super().__init__()
-        self.classifier = MultinomialNB()
+        self.classifier = Perceptron(n_iter=50)
         pass
 
     def first_fit(self, X, y, classes = None):

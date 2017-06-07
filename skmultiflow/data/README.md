@@ -23,8 +23,13 @@ Data sets and generators
 
 * 24/05/2017 - lame10 - Testing all three generators
 * CSV - 100k instances time: 23.54 s - config time: 6.78 s
-* Waveform - 100k instances time 44.46 s
-* Random Tree - 100k instances time 8.39 s
+* Waveform - 100k instances time: 44.46 s
+* Random Tree - 100k instances time: 8.39 s
+
+* 31/05/2017 - Changing instances to simple matrices
+* CSV 100k instances time: 35.75 - config time: 6.39 s
+* Waveform - 100k instances time: 43.98 s
+* Random Tree - 100k instances time: 13.85 s
 
 ### Format conventions
 * An instance does not contain de data header, but the streamer does, so that the classifier or the evaluator can easily

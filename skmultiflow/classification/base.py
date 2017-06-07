@@ -31,7 +31,7 @@ class BaseClassifier(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, warmstart = False):
         """Partial (incremental) fit.
         For online methods.
 
