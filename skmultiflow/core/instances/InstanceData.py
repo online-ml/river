@@ -20,13 +20,13 @@ class InstanceData:
         #print(str(len(self.attributes)) + " " + str(len(self.labels)))
         pass
 
-    def getAttributeAt(self, attIndex = -1):
+    def get_attribute_at(self, attIndex = -1):
         return self.attributes[attIndex] if ((attIndex > -1) & (attIndex < len(self.attributes))) else None
 
 
-    def getClass(self):
+    def get_class(self):
         return self.classes[0]
 
-    def setClassValue(self, classVal = -1):
+    def set_class_value(self, classVal = -1):
         self.classes[0] = classVal
         pass

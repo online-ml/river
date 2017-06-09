@@ -15,54 +15,56 @@ class FileStream(BaseInstanceStream.BaseInstanceStream):
         ---------------------------------------------
         -f: CSV file to load
     '''
-    def __init__(self, fileOpt, numClasses = 2):
+    def __init__(self, file_opt, num_classes = 2):
         super().__init__()
         # default values
-        if fileOpt.fileType is "CSV":
+        if file_opt.file_type is "CSV":
             self.read_function = pd.read_csv
         else:
-            raise ValueError('Unsupported format: ', fileOpt.fileType)
-        self.fileName = None
-        self.instanceIndex = 0
-        self.instanceLength = 0
+            raise ValueError('Unsupported format: ', file_opt.file_type)
+        self.file_name = None
+        self.instance_index = 0
+        self.instance_length = 0
         self.X = None
         self.y = None
-        self.currentInstanceX = None
-        self.currentInstanceY = None
-        self.numClasses = numClasses
-        self.numClasses = 0
-        self.numNumericalAttributes = 0
-        self.numNominalAttributes = 0
-        self.numValuesPerNominalAtt = 0
-        self.attributesHeader = None
-        self.classesHeader = None
-        self.configure(fileOpt, numClasses, 0)
+        self.current_instance_x = None
+        self.current_instance_y = None
+        self.num_classes = num_classes
+        self.num_numerical_attributes = 0
+        self.num_nominal_attributes = 0
+        self.num_values_per_nominal_att = 0
+        self.attributes_header = None
+        self.classes_header = None
+        self.instances = None
+        self.num_attributes = 0
 
-    def configure(self, fileOpt, numClasses, index = -1):
+        self.configure(file_opt, num_classes, 0)
+
+    def configure(self, file_opt, num_classes, index = -1):
         '''
-        __init__(self, fileName, index)
+        __init__(self, file_name, index)
         
         Parameters
         ----------------------------------------
-        fileName : string
+        file_name : string
                    Name of the file
         index : int
                 Class index parameter
         '''
-        self.fileName = fileOpt.getFileName()
-        self.instanceIndex = index
+        self.file_name = file_opt.get_file_name()
+        self.instance_index = index
         self.instances = None
-        self.instanceLength = 0
-        self.currentInstanceX = None
-        self.currentInstanceY = None
-        self.numClasses = numClasses
+        self.instance_length = 0
+        self.current_instance_x = None
+        self.current_instance_y = None
+        self.num_classes = num_classes
         self.X = None
         self.y = None
 
 
 
 
-    def prepareForUse(self):
+    def prepare_for_use(self):
         self.restart()
 
 
@@ -74,77 +76,74 @@ class FileStream(BaseInstanceStream.BaseInstanceStream):
         '''
 
         try:
-            instanceAux = self.read_function(self.fileName)
-            self.instanceLength = len(instanceAux.index)
-            self.numAttributes = len(instanceAux.columns) - 1
-            labels = instanceAux.columns.values.tolist()
-            self.X = instanceAux.iloc[:, 0:(len(labels)-1)]
-            self.y = instanceAux.iloc[:, (len(labels)-1):]
-            self.attributesHeader = labels[0:(len(labels)-1)]
-            self.classesHeader = labels[(len(labels)-1):]
-            self.instanceIndex = 0
+            instance_aux = self.read_function(self.file_name)
+            self.instance_length = len(instance_aux.index)
+            self.num_attributes = len(instance_aux.columns) - 1
+            labels = instance_aux.columns.values.tolist()
+            self.X = instance_aux.iloc[:, 0:(len(labels)-1)]
+            self.y = instance_aux.iloc[:, (len(labels)-1):]
+            self.attributes_header = labels[0:(len(labels) - 1)]
+            self.classes_header = labels[(len(labels) - 1):]
+            self.instance_index = 0
         except IOError:
             print("CSV file reading failed. Please verify the file format.")
         pass
 
-    def isRestartable(self):
+    def is_restartable(self):
         return True
 
-    def nextInstance(self, batchSize = 1):
+    def next_instance(self, batch_size = 1):
 
-        self.instanceIndex += 1
-        #self.currentInstanceX = self.X[self.instanceIndex-1:self.instanceIndex+batchSize-1].values[0]
-        #self.currentInstanceY = self.y[self.instanceIndex-1:self.instanceIndex+batchSize-1].values[0]
-        self.currentInstanceX = self.X.iloc[self.instanceIndex-1:self.instanceIndex+batchSize-1, : ].values
-        self.currentInstanceY = self.y.iloc[self.instanceIndex-1:self.instanceIndex+batchSize-1, : ].values.flatten()
-        return (self.currentInstanceX, self.currentInstanceY)
+        self.instance_index += 1
+        #self.current_instance_x = self.X[self.instance_index-1:self.instance_index+batchSize-1].values[0]
+        #self.current_instance_y = self.y[self.instance_index-1:self.instance_index+batchSize-1].values[0]
+        self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values
+        self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values.flatten()
+        return (self.current_instance_x, self.current_instance_y)
 
-    def hasMoreInstances(self):
-        return ((self.instanceLength - self.instanceIndex) > 0)
+    def has_more_instances(self):
+        return ((self.instance_length - self.instance_index) > 0)
 
-    def estimatedRemainingInstances(self):
-        return (self.instanceLength - self.instanceIndex)
+    def estimated_remaining_instances(self):
+        return (self.instance_length - self.instance_index)
 
-    def printDF(self):
+    def print_df(self):
         print(self.X)
-        print(self.Y)
+        print(self.y)
 
-    def getInstancesLength(self):
-        return self.instanceLength
+    def get_instances_length(self):
+        return self.instance_length
 
-    def getNumAttributes(self):
-        return self.numAttributes
+    def get_num_attributes(self):
+        return self.num_attributes
 
-    def nextInstanceMiniBatch(self):
+    def has_more_mini_batch(self):
         pass
 
-    def hasMoreMiniBatch(self):
-        pass
+    def get_num_nominal_attributes(self):
+        return self.num_nominal_attributes
 
-    def getNumNominalAttributes(self):
-        return self.numNominalAttributes
+    def get_num_numerical_attributes(self):
+        return self.num_numerical_attributes
 
-    def getNumNumericalAttributes(self):
-        return self.numNumericalAttributes
+    def get_num_values_per_nominal_attribute(self):
+        return self.num_values_per_nominal_att
 
-    def getNumValuesPerNominalAttribute(self):
-        return self.numValuesPerNominalAtt
+    def get_num_classes(self):
+        return self.num_classes
 
-    def getNumClasses(self):
-        return self.numClasses
+    def get_attributes_header(self):
+        return self.attributes_header
 
-    def getAttributesHeader(self):
-        return self.attributesHeader
+    def get_classes_header(self):
+        return self.classes_header
 
-    def getClassesHeader(self):
-        return self.classesHeader
+    def get_last_instance(self):
+        return (self.current_instance_x, self.current_instance_y)
 
-    def getLastInstance(self):
-        return (self.currentInstanceX, self.currentInstanceY)
+    def get_plot_name(self):
+        return "File Stream - " + str(self.num_classes) + " class labels"
 
-    def getPlotName(self):
-        return "File Stream - " + str(self.numClasses) + " class labels"
-
-    def getClasses(self):
+    def get_classes(self):
         c = np.unique(self.y)
         return c

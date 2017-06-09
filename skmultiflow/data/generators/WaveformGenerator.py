@@ -27,149 +27,150 @@ class WaveformGenerator(BaseInstanceStream):
                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],
                            [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])
 
-    def __init__(self, optList = None):
+    def __init__(self, opt_list = None):
         super().__init__()
         # default values
-        self.randomSeed = 1
-        self.addNoise = False
-        self.numNumericalAttributes = self.NUM_BASE_ATTRIBUTES
-        self.numClasses = self.NUM_CLASSES
-        self.numNominalAttributes = 0
-        self.numValuesPerNominalAtt = 0
-        self.attributesHeader = None
-        self.classesHeader = None
-        self.currentInstanceX = None
-        self.currentInstanceY = None
-        self.configure(optList)
+        self.random_seed = 1
+        self.add_noise = False
+        self.num_numerical_attributes = self.NUM_BASE_ATTRIBUTES
+        self.num_classes = self.NUM_CLASSES
+        self.num_nominal_attributes = 0
+        self.num_values_per_nominal_att = 0
+        self.attributes_header = None
+        self.classes_header = None
+        self.current_instance_x = None
+        self.current_instance_y = None
+        self.instance_length = 0
+        self.num_attributes = 0
+        self.instance_index = 0
+
+        self.configure(opt_list)
         pass
 
-    def configure(self, optList):
-        if optList is not None:
-            for i in range(len(optList)):
-                opt, arg = optList[i]
+    def configure(self, opt_list):
+        if opt_list is not None:
+            for i in range(len(opt_list)):
+                opt, arg = opt_list[i]
                 if opt in ("-i"):
-                    self.randomSeed = int(arg)
+                    self.random_seed = int(arg)
                 elif opt in ("-n"):
-                    self.addNoise = True
+                    self.add_noise = True
 
-        self.instanceLength = 100000
-        self.numAttributes = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.addNoise else self.NUM_BASE_ATTRIBUTES
-        self.numClasses = self.NUM_CLASSES
-        self.attributesHeader = []
-        self.classesHeader = ["class"]
-        for i in range(self.numAttributes):
-            self.attributesHeader.append("att" + str(i))
+        self.instance_length = 100000
+        self.num_attributes = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.add_noise else self.NUM_BASE_ATTRIBUTES
+        self.num_classes = self.NUM_CLASSES
+        self.attributes_header = []
+        self.classes_header = ["class"]
+        for i in range(self.num_attributes):
+            self.attributes_header.append("att" + str(i))
 
 
-    def prepareForUse(self):
+    def prepare_for_use(self):
         self.restart()
         pass
 
-    def estimatedRemainingInstances(self):
+    def estimated_remaining_instances(self):
         return -1
 
-    def hasMoreInstances(self):
+    def has_more_instances(self):
         return True
 
-    def nextInstance(self, batchSize = 1):
-        if self.hasNoise():
-            data = np.zeros([batchSize, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE + 1])
+    def next_instance(self, batch_size = 1):
+        if self.has_noise():
+            data = np.zeros([batch_size, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE + 1])
         else:
-            data = np.zeros([batchSize, self.NUM_BASE_ATTRIBUTES + 1])
-        for j in range (batchSize):
-            self.instanceIndex += 1
+            data = np.zeros([batch_size, self.NUM_BASE_ATTRIBUTES + 1])
+        for j in range (batch_size):
+            self.instance_index += 1
             waveform = np.random.randint(0, self.NUM_CLASSES)
-            choiceA = 1 if (waveform == 2) else 0
-            choiceB = 1 if (waveform == 0) else 2
-            multiplierA = np.random.rand()
-            multiplierB = 1.0 - multiplierA
+            choice_a = 1 if (waveform == 2) else 0
+            choice_b = 1 if (waveform == 0) else 2
+            multiplier_a = np.random.rand()
+            multiplier_b = 1.0 - multiplier_a
             #print(data)
             #print(str(j))
             for i in range(self.NUM_BASE_ATTRIBUTES):
-                #data.put(i, multiplierA*self.H_FUNCTION[choiceA][i]
-                            #+ multiplierB*self.H_FUNCTION[choiceB][i]
+                #data.put(i, multiplier_a*self.H_FUNCTION[choice_a][i]
+                            #+ multiplier_b*self.H_FUNCTION[choice_b][i]
                             #+ np.random.normal())
-                data[j,i] = multiplierA*self.H_FUNCTION[choiceA][i] \
-                            + multiplierB*self.H_FUNCTION[choiceB][i] \
+                data[j,i] = multiplier_a*self.H_FUNCTION[choice_a][i] \
+                            + multiplier_b*self.H_FUNCTION[choice_b][i] \
                             + np.random.normal()
             #print(data)
-            if self.hasNoise():
+            if self.has_noise():
                 for i in range(self.NUM_BASE_ATTRIBUTES,self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
                     #data.put(i, np.random.normal())
                     data[j,i] = np.random.normal()
             #print(data)
             #data.put(data.size - 1, waveform)
             data[j, data[j].size-1] = waveform
-            #self.currentInstanceX = data[:self.numAttributes]
-            #self.currentInstanceY = data[self.numAttributes:]
-            self.currentInstanceX = data[j, :self.numAttributes]
-            self.currentInstanceY = data[j, self.numAttributes:]
-            #print(self.currentInstanceX)
-            #print(self.currentInstanceY)
+            #self.current_instance_x = data[:self.num_attributes]
+            #self.current_instance_y = data[self.num_attributes:]
+            self.current_instance_x = data[j, :self.num_attributes]
+            self.current_instance_y = data[j, self.num_attributes:]
+            #print(self.current_instance_x)
+            #print(self.current_instance_y)
             #print(data)
-        #return (self.currentInstanceX, self.currentInstanceY)
-        return (data[:, :self.numAttributes], data[:, self.numAttributes:])
+        #return (self.current_instance_x, self.current_instance_y)
+        return (data[:, :self.num_attributes], data[:, self.num_attributes:])
 
-    def isRestartable(self):
+    def is_restartable(self):
         return True
 
     def restart(self):
-        np.random.seed(self.randomSeed)
-        self.instanceIndex = 0
+        np.random.seed(self.random_seed)
+        self.instance_index = 0
         pass
 
-    def hasMoreMiniBatch(self):
+    def has_more_mini_batch(self):
         return True
 
-    def hasNoise(self):
-        return self.addNoise
+    def has_noise(self):
+        return self.add_noise
 
-    def getNumNominalAttributes(self):
-        return self.numNominalAttributes
+    def get_num_nominal_attributes(self):
+        return self.num_nominal_attributes
 
-    def getNumNumericalAttributes(self):
-        return self.numNumericalAttributes
+    def get_num_numerical_attributes(self):
+        return self.num_numerical_attributes
 
-    def getNumValuesPerNominalAttribute(self):
-        return self.numValuesPerNominalAtt
+    def get_num_values_per_nominal_attribute(self):
+        return self.num_values_per_nominal_att
 
-    def getNumAttributes(self):
-        return self.numNumericalAttributes + self.numNominalAttributes*self.numValuesPerNominalAtt
+    def get_num_attributes(self):
+        return self.num_numerical_attributes + self.num_nominal_attributes * self.num_values_per_nominal_att
 
-    def getNumClasses(self):
-        return self.numClasses
+    def get_num_classes(self):
+        return self.num_classes
 
-    def getAttributesHeader(self):
-        return self.attributesHeader
+    def get_attributes_header(self):
+        return self.attributes_header
 
-    def getClassesHeader(self):
-        return self.classesHeader
+    def get_classes_header(self):
+        return self.classes_header
 
-    def getLastInstance(self):
-        return (self.currentInstanceX, self.currentInstanceY)
+    def get_last_instance(self):
+        return (self.current_instance_x, self.current_instance_y)
 
-    def getNumLabels(self):
-        pass
+    def get_plot_name(self):
+        return "Waveform Generator - " + str(self.num_classes) + " class labels"
 
-    def getPlotName(self):
-        return "Waveform Generator - " + str(self.numClasses) + " class labels"
-
-    def getClasses(self):
+    def get_classes(self):
         c = []
-        for i in range(self.numClasses):
+        for i in range(self.num_classes):
             c.append(i)
         return c
 
 def demo():
     wfg = WaveformGenerator()
-    wfg.prepareForUse()
+    wfg.prepare_for_use()
 
     i = 0
     start = timer()
-    #while(wfg.hasMoreInstances()):
+    #while(wfg.has_more_instances()):
     #for i in range(20000):
-        #o = wfg.nextInstance()
-        #o.toString()
+        #o = wfg.next_instance()
+        #o.to_string()
     oi = np.zeros([4])
     oi.put(0, 3)
     oi.put(2, 1.3)

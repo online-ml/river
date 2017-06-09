@@ -38,7 +38,7 @@ def demo(argv):
     parser.add_argument("-s", dest='stream', type=str, help='Stream to train', default='RandomTree')
     parser.add_argument("-e", dest='performance', type=str, help='Classification performance evaluation method')
     parser.add_argument("-i", dest='maxInt', type=int, help='Maximum number of instances')
-    parser.add_argument("-t", dest='maxTime', type=int, help='Max number of seconds')
+    parser.add_argument("-t", dest='max_time', type=int, help='Max number of seconds')
     parser.add_argument("-f", dest='n_wait', type=int, help='How many instances between samples of the learning performance')
     parser.add_argument("-b", dest='maxSize', type=int, help='Maximum size of model')
     parser.add_argument("-O", dest='out', type=str, help='Output file')

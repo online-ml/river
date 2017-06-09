@@ -2,20 +2,20 @@ from skmultiflow.data.FileStream import FileStream
 from skmultiflow.data.generators.WaveformGenerator import WaveformGenerator
 from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
 
-def CreateStreamFromArgumentDict(argumentList):
-    if argumentList[0] == 'CsvFileStream':
-        if len(argumentList) > 1:
-            return FileStream(argumentList[1:])
+def CreateStreamFromArgumentDict(argument_list):
+    if argument_list[0] == 'CsvFileStream':
+        if len(argument_list) > 1:
+            return FileStream(argument_list[1:])
         else:
             return FileStream()
-    elif argumentList[0] == 'WaveformGenerator':
-        if len(argumentList) > 1:
-            return WaveformGenerator(argumentList[1:])
+    elif argument_list[0] == 'WaveformGenerator':
+        if len(argument_list) > 1:
+            return WaveformGenerator(argument_list[1:])
         else:
             return WaveformGenerator()
-    elif argumentList[0] == 'RandomTreeGenerator':
-        if len(argumentList) > 1:
-            return RandomTreeGenerator(argumentList[1:])
+    elif argument_list[0] == 'RandomTreeGenerator':
+        if len(argument_list) > 1:
+            return RandomTreeGenerator(argument_list[1:])
         else:
             return RandomTreeGenerator()
     return None

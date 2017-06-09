@@ -8,5 +8,5 @@ class BaseTask(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def doTask(self, stream = None, classifier = None):
+    def do_task(self, stream = None, classifier = None):
         pass

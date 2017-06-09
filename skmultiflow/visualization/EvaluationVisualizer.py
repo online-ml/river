@@ -12,9 +12,9 @@ class EvaluationVisualizer(BaseListener):
         self.temp = []
         self.configure(n_wait, dataset_name)
 
-    def onNewTrainStep(self, performancePoint, trainStep):
-        if (trainStep % self.n_wait == 0):
-            self.draw(performancePoint, trainStep)
+    def on_new_train_step(self, performance_point, train_step):
+        if (train_step % self.n_wait == 0):
+            self.draw(performance_point, train_step)
         pass
 
     def configure(self, n_wait, dataset_name):
@@ -22,7 +22,7 @@ class EvaluationVisualizer(BaseListener):
         self.partial_performance = []
         self.global_performance = []
         self.n_wait = n_wait
-        self.datasetName = dataset_name
+        self.dataset_name = dataset_name
         warnings.filterwarnings("ignore", ".*GUI is implemented.*")
         plt.title(dataset_name)
         plt.ion()
@@ -32,25 +32,25 @@ class EvaluationVisualizer(BaseListener):
         plt.ylabel('Performance ratio')
         plt.xlabel('Samples analyzed')
         #self.fig = plt.figure(figsize=(16, 8))
-        self.linePartialPerformance, = plt.plot(self.X, self.partial_performance, label='Partial performance (last 200 samples)')
-        self.lineGlobalPerformance, = plt.plot(self.X, self.global_performance, label='Global performance')
-        plt.legend(handles=[self.lineGlobalPerformance, self.linePartialPerformance])
+        self.line_partial_performance, = plt.plot(self.X, self.partial_performance, label='Partial performance (last 200 samples)')
+        self.line_global_performance, = plt.plot(self.X, self.global_performance, label='Global performance')
+        plt.legend(handles=[self.line_global_performance, self.line_partial_performance])
         plt.ylim([0,1])
         pass
 
-    def draw(self, newPerformancePoint, trainStep):
-        self.X.append(trainStep)
-        self.partial_performance.append(newPerformancePoint)
+    def draw(self, new_performance_point, train_step):
+        self.X.append(train_step)
+        self.partial_performance.append(new_performance_point)
         self.global_performance.append(np.mean(self.partial_performance))
-        self.linePartialPerformance.set_data(self.X, self.partial_performance)
-        self.lineGlobalPerformance.set_data(self.X, self.global_performance)
+        self.line_partial_performance.set_data(self.X, self.partial_performance)
+        self.line_global_performance.set_data(self.X, self.global_performance)
         for i in range(len(self.temp)):
             self.temp[i].remove()
         self.temp = []
-        self.temp.append(plt.annotate('Partial: ' + str(round(newPerformancePoint, 3)), xy=(trainStep, newPerformancePoint),
+        self.temp.append(plt.annotate('Partial: ' + str(round(new_performance_point, 3)), xy=(train_step, new_performance_point),
                                       xytext=(8, 0), textcoords = 'offset points'))
         self.temp.append(plt.annotate('Global: ' + str(round(self.global_performance[len(self.global_performance)-1], 3)),
-                                      xy=(trainStep, self.global_performance[len(self.global_performance)-1]),
+                                      xy=(train_step, self.global_performance[len(self.global_performance) - 1]),
                                       xytext=(8, 0), textcoords = 'offset points'))
         plt.xlim([np.min(self.X), 1.2*np.max(self.X)])
         #plt.xlim([np.min(self.X), 520000])

@@ -13,20 +13,20 @@ def demo_file_stream():
     start = timer()
     opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     t = FileStream(opt, 7)
-    t.prepareForUse()
+    t.prepare_for_use()
     end = timer()
     print("Configuration time: " + str(end-start))
 
     start = timer()
     for i in range(1):
-    #while (t.hasMoreInstances()):
-        X, y = t.nextInstance(4)
+    #while (t.has_more_instances()):
+        X, y = t.next_instance(4)
         logging.info('this is X:')
         logging.info(X)
         logging.info('this is y:')
         logging.info(y)
         #print(str(y[0]))
-        #n.toString()
+        #n.to_string()
     end = timer()
     print("CSV - Next Instance time: " + str(end-start))
     return None
@@ -45,13 +45,13 @@ def demo_waveform_gen(argv):
 
 
     wfg = WaveformGenerator()
-    wfg.prepareForUse()
+    wfg.prepare_for_use()
 
     i = 0
     start = timer()
-    #while(wfg.hasMoreInstances()):
+    #while(wfg.has_more_instances()):
     for i in range(10):
-        X, y = wfg.nextInstance(2)
+        X, y = wfg.next_instance(2)
         print(str(i))
         print(X)
         print(y)
@@ -76,16 +76,16 @@ def demo_random_tree_gen(argv):
         optList.append([opt, arg])
 
     rtg = RandomTreeGenerator(optList)
-    rtg.prepareForUse()
+    rtg.prepare_for_use()
 
     i = 0
     start = timer()
-    # while(wfg.hasMoreInstances()):
+    # while(wfg.has_more_instances()):
     for i in range(20):
-        X, y = rtg.nextInstance()
+        X, y = rtg.next_instance()
         #print(X)
         print(y)
-        #o.toString()
+        #o.to_string()
     end = timer()
     print("Random Tree - Generation time: " + str(end - start))
 

@@ -6,139 +6,142 @@ import numpy as np
 
 
 class RandomRBFGenerator(BaseInstanceStream):
-    def __init__(self, modelSeed = 21, instanceSeed = 5, numClasses = 2, numAtt = 10, numCentroids = 50):
+    def __init__(self, model_seed = 21, instance_seed = 5, num_classes = 2, num_att = 10, num_centroids = 50):
         super().__init__()
 
         #default values
-        self.numNumericalAttributes = 10
-        self.numNominalAttributes = 0
-        self.numValuesPerNominalAtt = 0
-        self.currentInstanceX = None
-        self.currentInstanceY = None
-        self.modelSeed = 21
-        self.instanceSeed = 5
-        self.numClasses = 2
-        self.numCentroids = 50
+        self.num_numerical_attributes = 10
+        self.num_nominal_attributes = 0
+        self.num_values_per_nominal_att = 0
+        self.current_instance_x = None
+        self.current_instance_y = None
+        self.model_seed = 21
+        self.instance_seed = 5
+        self.num_classes = 2
+        self.num_centroids = 50
         self.centroids = None
-        self.centroidWeights = None
+        self.centroid_weights = None
+        self.instance_random = None
+        self.attributes_header = None
+        self.class_header = None
 
-        self.configure(modelSeed, instanceSeed, numClasses, numAtt, numCentroids)
+        self.configure(model_seed, instance_seed, num_classes, num_att, num_centroids)
         pass
 
-    def configure(self, modelSeed, instanceSeed, numClasses, numAtt, numCentroids):
-        self.modelSeed = modelSeed
-        self.instanceSeed = instanceSeed
-        self.numClasses = numClasses
-        self.numNumericalAttributes = numAtt
-        self.numCentroids = numCentroids
-        self.instanceRandom = np.random
-        self.instanceRandom.seed(self.instanceSeed)
+    def configure(self, model_seed, instance_seed, num_classes, num_att, num_centroids):
+        self.model_seed = model_seed
+        self.instance_seed = instance_seed
+        self.num_classes = num_classes
+        self.num_numerical_attributes = num_att
+        self.num_centroids = num_centroids
+        self.instance_random = np.random
+        self.instance_random.seed(self.instance_seed)
 
-        self.classHeader = ["class"]
-        self.attributesHeader = []
-        for i in range(self.numNumericalAttributes):
-            self.attributesHeader.append("NumAtt" + str(i))
+        self.class_header = ["class"]
+        self.attributes_header = []
+        for i in range(self.num_numerical_attributes):
+            self.attributes_header.append("NumAtt" + str(i))
         pass
 
-    def estimatedRemainingInstances(self):
+    def estimated_remaining_instances(self):
         return -1
 
-    def hasMoreInstances(self):
+    def has_more_instances(self):
         return True
 
-    def nextInstance(self, batchSize = 1):
-        data = np.zeros([batchSize, self.numNumericalAttributes + 1])
-        numAtts = self.numNumericalAttributes
-        for j in range(batchSize):
-            centroidAux = self.centroids[prp.randomIndexBasedOnWeights(self.centroidWeights, self.instanceRandom)]
-            attVals = []
+    def next_instance(self, batch_size = 1):
+        data = np.zeros([batch_size, self.num_numerical_attributes + 1])
+        num_atts = self.num_numerical_attributes
+        for j in range(batch_size):
+            centroid_aux = self.centroids[prp.random_index_based_on_weights(self.centroid_weights, self.instance_random)]
+            att_vals = []
             magnitude = 0.0
-            for i in range(numAtts):
-                attVals.append((self.instanceRandom.rand()*2.0)-1.0)
-                magnitude += attVals[i]*attVals[i]
+            for i in range(num_atts):
+                att_vals.append((self.instance_random.rand() * 2.0) - 1.0)
+                magnitude += att_vals[i]*att_vals[i]
             magnitude = np.sqrt(magnitude)
-            desiredMag = self.instanceRandom.normal()*centroidAux.stdDev
-            scale = desiredMag/magnitude
-            for i in range(numAtts):
-                data[j, i] = centroidAux.centre[i] + attVals[i]*scale
-            data[j, numAtts] = centroidAux.classLabel
-        return (data[:, :numAtts], data[:, numAtts:])
+            desired_mag = self.instance_random.normal() * centroid_aux.std_dev
+            scale = desired_mag/magnitude
+            for i in range(num_atts):
+                data[j, i] = centroid_aux.centre[i] + att_vals[i]*scale
+            data[j, num_atts] = centroid_aux.class_label
+        return (data[:, :num_atts], data[:, num_atts:])
 
-    def prepareForUse(self):
+    def prepare_for_use(self):
         self.restart()
 
-    def isRestartable(self):
+    def is_restartable(self):
         return True
 
     def restart(self):
-        self.generateCentroids()
-        self.instanceRandom.seed(self.instanceSeed)
+        self.generate_centroids()
+        self.instance_random.seed(self.instance_seed)
         pass
 
-    def hasMoreMiniBatch(self):
+    def has_more_mini_batch(self):
         return True
 
-    def getNumNominalAttributes(self):
-        return self.numNominalAttributes
+    def get_num_nominal_attributes(self):
+        return self.num_nominal_attributes
 
-    def getNumNumericalAttributes(self):
-        return self.numNumericalAttributes
+    def get_num_numerical_attributes(self):
+        return self.num_numerical_attributes
 
-    def getNumValuesPerNominalAttribute(self):
-        return self.numValuesPerNominalAtt
+    def get_num_values_per_nominal_attribute(self):
+        return self.num_values_per_nominal_att
 
-    def getNumAttributes(self):
-        return self.numNumericalAttributes + (self.numNominalAttributes*self.numValuesPerNominalAtt)
+    def get_num_attributes(self):
+        return self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)
 
-    def getNumClasses(self):
-        return self.numClasses
+    def get_num_classes(self):
+        return self.num_classes
 
-    def getAttributesHeader(self):
-        return self.attributesHeader
+    def get_attributes_header(self):
+        return self.attributes_header
 
-    def getClassesHeader(self):
-        return self.classHeader
+    def get_classes_header(self):
+        return self.class_header
 
-    def getLastInstance(self):
-        return (self.currentInstanceX, self.currentInstanceY)
+    def get_last_instance(self):
+        return (self.current_instance_x, self.current_instance_y)
 
-    def getPlotName(self):
-        return "Random RBF Generator - " + str(self.numClasses) + " class labels"
+    def get_plot_name(self):
+        return "Random RBF Generator - " + str(self.num_classes) + " class labels"
 
-    def getClasses(self):
+    def get_classes(self):
         c = []
-        for i in range(self.numClasses):
+        for i in range(self.num_classes):
             c.append(i)
         return c
 
-    def generateCentroids(self):
-        modelRandom = np.random
-        modelRandom.seed(self.modelSeed)
+    def generate_centroids(self):
+        model_random = np.random
+        model_random.seed(self.model_seed)
         self.centroids = []
-        self.centroidWeights = []
-        for i in range (self.numCentroids):
+        self.centroid_weights = []
+        for i in range (self.num_centroids):
             self.centroids.append(Centroid())
-            randCentre = []
-            for j in range(self.numNumericalAttributes):
-                randCentre.append(modelRandom.rand())
-            self.centroids[i].centre = randCentre
-            self.centroids[i].classLabel = modelRandom.randint(self.numClasses)
-            self.centroids[i].stdDev = modelRandom.rand()
-            self.centroidWeights.append(modelRandom.rand())
+            rand_centre = []
+            for j in range(self.num_numerical_attributes):
+                rand_centre.append(model_random.rand())
+            self.centroids[i].centre = rand_centre
+            self.centroids[i].class_label = model_random.randint(self.num_classes)
+            self.centroids[i].std_dev = model_random.rand()
+            self.centroid_weights.append(model_random.rand())
             pass
 
 class Centroid:
     def __init__(self):
         self.centre = None
-        self.classLabel = None
-        self.stdDev = None
+        self.class_label = None
+        self.std_dev = None
 
 
 if __name__ == "__main__":
     rrbfg = RandomRBFGenerator()
-    rrbfg.prepareForUse()
+    rrbfg.prepare_for_use()
     for i in range(4):
-        X, y = rrbfg.nextInstance(4)
+        X, y = rrbfg.next_instance(4)
         print(X)
         print(y)
 

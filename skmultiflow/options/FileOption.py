@@ -8,36 +8,36 @@ class FileOption(BaseOption):
         --------------------------------------
         Maintain options concerning file management.
     '''
-    def __init__(self, optionType = None, optionName = None, optionValue = None, fileExtension = None, isOut = False):
+    def __init__(self, option_type = None, option_name = None, option_value = None, file_extension = None, is_out = False):
         super().__init__()
-        self.optionName = optionName
-        self.optionValue = optionValue
-        self.optionType = optionType
-        self.fileType = fileExtension
-        self.isOutput = isOut
-        self.fileName = self.optionValue
+        self.option_name = option_name
+        self.option_value = option_value
+        self.option_type = option_type
+        self.file_type = file_extension
+        self.is_output = is_out
+        self.file_name = self.option_value
 
-    def getName(self):
-        return self.optionName
+    def get_name(self):
+        return self.option_name
 
-    def getFileName(self):
-        return self.fileName
+    def get_file_name(self):
+        return self.file_name
 
-    def getValue(self):
-        return self.optionValue
+    def get_value(self):
+        return self.option_value
 
-    def getOptionType(self):
-        return self.optionType
+    def get_option_type(self):
+        return self.option_type
 
-    def getCLIChar(self):
-        return self.optionValue
+    def get_cli_char(self):
+        return self.option_value
 
-    def isOutput(self):
-        return self.isOutput
+    def is_output(self):
+        return self.is_output
 
-    def setValueViaCLIString(self, CLIstring = None):
-        self.optionValue = CLIstring
+    def set_value_via_cli_string(self, cli_string = None):
+        self.option_value = cli_string
 
-    def getCLIOptionFromDictionary(self):
+    def get_cli_option_from_dictionary(self):
         return {"file_name" : "-n",
-                "file_type" : "-t"}[self.optionType]
+                "file_type" : "-t"}[self.option_type]

@@ -10,5 +10,5 @@ class InstanceHeader:
         self.header = header
         pass
 
-    def getHeaderLabelAt(self, headerIndex = -1):
+    def get_header_label_at(self, headerIndex = -1):
         return self.header[headerIndex] if (headerIndex > -1) else None

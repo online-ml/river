@@ -9,5 +9,5 @@ class BaseListener(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def onNewTrainStep(self, performancePoint, trainStep):
+    def on_new_train_step(self, performance_point, train_step):
         pass

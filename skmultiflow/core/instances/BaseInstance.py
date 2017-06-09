@@ -17,7 +17,7 @@ class BaseInstance(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def setWeight(self):
+    def set_weight(self):
         pass
 
     @abstractmethod
@@ -25,27 +25,27 @@ class BaseInstance(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def indexOf(self, attribute = None):
+    def index_of(self, attribute = None):
         pass
 
     @abstractmethod
-    def deleteAttribute(self, attIndex = -1):
+    def delete_attribute(self, attIndex = -1):
         pass
 
     @abstractmethod
-    def insertAttribute(self, attIndex = -1):
+    def insert_attribute(self, attIndex = -1):
         pass
 
     @abstractmethod
-    def numAttribute(self):
+    def num_attribute(self):
         pass
 
     @abstractmethod
-    def addSparseValues(self, indexList = None, attValue = None, numberAttributes = -1):
+    def add_sparse_values(self, indexList = None, attValue = None, numberAttributes = -1):
         pass
 
     @abstractmethod
-    def getValue(self, attIndex = -1):
+    def get_value(self, attIndex = -1):
         '''
             Each attribute type is assumed to be already known. 
         '''
@@ -53,11 +53,11 @@ class BaseInstance(metaclass=ABCMeta):
 
 
     @abstractmethod
-    def setMissing(self, attribute = None):
+    def set_missing(self, attribute = None):
         pass
 
     @abstractmethod
-    def setValue(self, attIndex = -1, newAttributeValue = None):
+    def set_value(self, attIndex = -1, newAttributeValue = None):
         '''
             It is expected that the correct attribute type will be passes.
             Flags need to be raised in case an incorrect attribute type is passed as parameter. 
@@ -65,14 +65,14 @@ class BaseInstance(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def isMissing(self, attRef = None):
+    def is_missing(self, attRef = None):
         '''
             Either int or attribute parameter. 
         '''
         pass
 
     @abstractmethod
-    def isMissingSparse(self, attRef = None):
+    def is_missing_sparse(self, attRef = None):
         '''
             Used for sparse representation. Either int or attribute parameter. 
         '''
@@ -83,6 +83,6 @@ class BaseInstance(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def valueSparse(selg, attIndex = -1):
+    def value_sparse(selg, attIndex = -1):
         pass
 

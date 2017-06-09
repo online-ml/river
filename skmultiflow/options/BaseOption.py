@@ -12,25 +12,25 @@ class BaseOption(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def getName(self):
+    def get_name(self):
         pass
 
     @abstractmethod
-    def getValue(self):
+    def get_value(self):
         pass
 
     @abstractmethod
-    def getCLIChar(self):
+    def get_cli_char(self):
         pass
 
     @abstractmethod
-    def getOptionType(self):
+    def get_option_type(self):
         pass
 
     @abstractmethod
-    def setValueViaCLIString(self, CLIstring = None):
+    def set_value_via_cli_string(self, cli_string = None):
         pass
 
     @abstractmethod
-    def getCLIOptionFromDictionary(self):
+    def get_cli_option_from_dictionary(self):
         pass

@@ -15,36 +15,36 @@ class FileToStream(BaseInstanceStream.BaseInstanceStream):
         ---------------------------------------------
         -f: file
     '''
-    def __init__(self, fileOpt, numClasses = 2):
+    def __init__(self, file_opt, num_classes = 2):
         super().__init__()
         '''
-        __init__(self, fileName, index)
+        __init__(self, file_name, index)
         
         Parameters
         ----------------------------------------
-        fileName : string
+        file_name : string
                    Name of the file
         index : int
                 Class index parameter
         '''
-        self.fileName = fileOpt.getFileName()
-        if fileOpt.fileType is "CSV":
+        self.file_name = file_opt.get_file_name()
+        if file_opt.file_type is "CSV":
             self.read_function = pd.read_csv
         else:
-            raise ValueError('Unsupported format: ', fileOpt.fileType)
-        self.instanceIndex = 0
+            raise ValueError('Unsupported format: ', file_opt.file_type)
+        self.instance_index = 0
         self.instances = None
-        self.numInstances = 0
-        self.currentInstance = None
-        self.numAttributes = numAtt
-        self.numClasses = 0
-        self.numNumericalAttributes = 0
-        self.numNominalAttributes = 0
-        self.numValuesPerNominalAtt = 0
-        self.attributesHeader = None
-        self.classesHeader = None
+        self.num_instances = 0
+        self.current_instance = None
+        self.num_attributes = 0
+        self.num_classes = num_classes
+        self.num_numerical_attributes = 0
+        self.num_nominal_attributes = 0
+        self.num_values_per_nominal_att = 0
+        self.attributes_header = None
+        self.classes_header = None
 
-    def prepareForUse(self):
+    def prepare_for_use(self):
         self.restart()
 
     def restart(self):
@@ -55,73 +55,70 @@ class FileToStream(BaseInstanceStream.BaseInstanceStream):
         '''
         if not self.instances:
             try:
-                self.instances = self.read_function(self.fileName)
-                self.numInstances = self.instances.shape[0]
-                self.numClasses = self.instances.shape[1] - self.numAttributes
+                self.instances = self.read_function(self.file_name)
+                self.num_instances = self.instances.shape[0]
+                self.num_attributes = self.instances.shape[1] - self.num_classes
                 labels = self.instances.columns.values.tolist()
-                self.attributesHeader = labels[0:(len(labels)-self.numClasses)]
-                self.classesHeader = labels[(len(labels)-self.numClasses):]
+                self.attributes_header = labels[0:(len(labels) - self.num_classes)]
+                self.classes_header = labels[(len(labels) - self.num_classes):]
             except IOError:
                 print("File reading failed.")
         else:
-            self.instanceIndex = 0
+            self.instance_index = 0
         pass
 
-    def isRestartable(self):
+    def is_restartable(self):
         return True
 
-    def nextInstance(self, batchSize = 1):
-        self.currentInstance = Instance(self.numAttributes,
-                                        self.numClasses, -1,
-                                        self.instances.iloc[self.instanceIndex:self.instanceIndex+1].values[0])
-        self.instanceIndex += 1
-        return self.currentInstance
+    def next_instance(self, batch_size = 1):
+        self.current_instance = Instance(self.num_attributes,
+                                         self.num_classes, -1,
+                                        self.instances.iloc[self.instance_index:self.instance_index + 1].values[0])
+        self.instance_index += 1
+        return self.current_instance
 
-    def hasMoreInstances(self):
-        return ((self.numInstances - self.instanceIndex) > 0)
+    def has_more_instances(self):
+        return ((self.num_instances - self.instance_index) > 0)
 
-    def estimatedRemainingInstances(self):
-        return (self.numInstances - self.instanceIndex)
+    def estimated_remaining_instances(self):
+        return (self.num_instances - self.instance_index)
 
-    def printDF(self):
+    def print_df(self):
         print(self.instances)
 
-    def getInstancesLength(self):
-        return self.numInstances
+    def get_instances_length(self):
+        return self.num_instances
 
-    def getNumAttributes(self):
-        return self.numAttributes
+    def get_num_attributes(self):
+        return self.num_attributes
 
-    def nextInstanceMiniBatch(self):
+    def has_more_mini_batch(self):
         pass
 
-    def hasMoreMiniBatch(self):
-        pass
+    def get_num_nominal_attributes(self):
+        return self.num_nominal_attributes
 
-    def getNumNominalAttributes(self):
-        return self.numNominalAttributes
+    def get_num_numerical_attributes(self):
+        return self.num_numerical_attributes
 
-    def getNumNumericalAttributes(self):
-        return self.numNumericalAttributes
+    def get_num_values_per_nominal_attribute(self):
+        return self.num_values_per_nominal_att
 
-    def getNumValuesPerNominalAttribute(self):
-        return self.numValuesPerNominalAtt
+    def get_num_classes(self):
+        return self.num_classes
 
-    def getNumClasses(self):
-        return self.numClasses
+    def get_attributes_header(self):
+        return self.attributes_header
 
-    def getAttributesHeader(self):
-        return self.attributesHeader
+    def get_classes_header(self):
+        return self.classes_header
 
-    def getClassesHeader(self):
-        return self.classesHeader
+    def get_plot_name(self):
+        return "File Stream - " + str(self.num_classes) + " class labels"
 
-    def getPlotName(self):
-        return "File Stream - " + str(self.numClasses) + " class labels"
-
-    def getClasses(self):
-        c = np.unique(self.instances[:, self.numAttributes:])
+    def get_classes(self):
+        c = np.unique(self.instances[:, self.num_attributes:])
         c = []
-        for i in range(self.numClasses):
+        for i in range(self.num_classes):
             c.append(i)
         return c

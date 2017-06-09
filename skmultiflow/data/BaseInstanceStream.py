@@ -8,19 +8,19 @@ class BaseInstanceStream(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def estimatedRemainingInstances(self):
+    def estimated_remaining_instances(self):
         pass
 
     @abstractmethod
-    def hasMoreInstances(self):
+    def has_more_instances(self):
         pass
 
     @abstractmethod
-    def nextInstance(self, batchSize = 1):
+    def next_instance(self, batch_size = 1):
         pass
 
     @abstractmethod
-    def isRestartable(self):
+    def is_restartable(self):
         pass
 
     @abstractmethod
@@ -28,49 +28,49 @@ class BaseInstanceStream(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def hasMoreMiniBatch(self):
+    def has_more_mini_batch(self):
         pass
 
     @abstractmethod
-    def getNumNominalAttributes(self):
+    def get_num_nominal_attributes(self):
         pass
 
     @abstractmethod
-    def getNumNumericalAttributes(self):
+    def get_num_numerical_attributes(self):
         pass
 
     @abstractmethod
-    def getNumValuesPerNominalAttribute(self):
+    def get_num_values_per_nominal_attribute(self):
         pass
 
     @abstractmethod
-    def getNumAttributes(self):
+    def get_num_attributes(self):
         pass
 
     @abstractmethod
-    def getNumClasses(self):
+    def get_num_classes(self):
         pass
 
     @abstractmethod
-    def getAttributesHeader(self):
+    def get_attributes_header(self):
         pass
 
     @abstractmethod
-    def getClassesHeader(self):
+    def get_classes_header(self):
         pass
 
     @abstractmethod
-    def getLastInstance(self):
+    def get_last_instance(self):
         pass
 
     @abstractmethod
-    def prepareForUse(self):
+    def prepare_for_use(self):
         pass
 
     @abstractmethod
-    def getPlotName(self):
+    def get_plot_name(self):
         pass
 
     @abstractmethod
-    def getClasses(self):
+    def get_classes(self):
         pass

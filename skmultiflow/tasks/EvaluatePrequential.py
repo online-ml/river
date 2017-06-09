@@ -26,12 +26,12 @@ class EvaluatePrequential(BaseTask):
         self.display_metric = 200
         self.data_stream = None
         self.classifier = None
-        self.maxInstances = 100000
-        self.maxTime = 1000
-        self.modelSizeLimit = -1
-        self.outputFile = None
-        self.numInstances = 0
-        self.globalAccuracy = 0
+        self.max_instances = 100000
+        self.max_time = 1000
+        self.model_size_limit = -1
+        self.output_file = None
+        self.num_instances = 0
+        self.global_accuracy = 0
         self.plot = None
         self.configure(argv)
         pass
@@ -49,7 +49,7 @@ class EvaluatePrequential(BaseTask):
         parser.add_argument("-s", dest='stream', type=str, help='Stream to train', default='RandomTree')
         parser.add_argument("-e", dest='performance', type=str, help='Classification performance evaluation method')
         parser.add_argument("-i", dest='maxInt', type=int, help='Maximum number of instances')
-        parser.add_argument("-t", dest='maxTime', type=int, help='Max number of seconds')
+        parser.add_argument("-t", dest='max_time', type=int, help='Max number of seconds')
         parser.add_argument("-f", dest='n_wait', type=int,
                             help='How many instances between samples of the learning performance')
         parser.add_argument("-b", dest='maxSize', type=int, help='Maximum size of model')
@@ -72,30 +72,30 @@ class EvaluatePrequential(BaseTask):
         return args
 
 
-    def doTask(self, stream = None, classifier = None):
-        self.createPlot()
+    def do_task(self, stream = None, classifier = None):
+        self.create_plot()
         self.train_and_test(stream, classifier)
         pass
 
     def train_and_test(self, stream = None, classifier = None):
         init_time = timer()
         end_time = timer()
-        partialNumInstances = 0
-        partialCorrectPredictions = 0
+        partial_num_instances = 0
+        partial_correct_predictions = 0
         inst = None
-        while((self.numInstances < self.maxInstances) & ((end_time - init_time) < self.maxTime)):
-            inst = stream.nextInstance()
-            if classifier.predict(inst[:stream.getNumAttributes()]) == inst[stream.getNumAttributes:]:
-                partialCorrectPredictions += 1
-            classifier.partial_fit(inst[:stream.getNumAttributes()], inst[stream.getNumAttributes():])
+        while((self.num_instances < self.max_instances) & ((end_time - init_time) < self.max_time)):
+            inst = stream.next_instance()
+            if classifier.predict(inst[:stream.get_num_attributes()]) == inst[stream.get_num_attributes:]:
+                partial_correct_predictions += 1
+            classifier.partial_fit(inst[:stream.get_num_attributes()], inst[stream.get_num_attributes():])
 
-            partialNumInstances += 1
-            self.numInstances += 1
-            if ((partialNumInstances >= self.n_wait) | (self.numInstances == self.maxInstances - 1)):
-                self.updatePlot()
-                self.updateResults(partialCorrectPredictions, partialNumInstances)
-                partialNumInstances = 0
-                partialCorrectPredictions = 0
+            partial_num_instances += 1
+            self.num_instances += 1
+            if ((partial_num_instances >= self.n_wait) | (self.num_instances == self.max_instances - 1)):
+                self.update_plot()
+                self.update_results(partial_correct_predictions, partial_num_instances)
+                partial_num_instances = 0
+                partial_correct_predictions = 0
 
 
         end_time = timer()
@@ -103,15 +103,15 @@ class EvaluatePrequential(BaseTask):
 
         pass
 
-    def updatePlot(self, accuracy, numInstances):
+    def update_plot(self, accuracy, num_instances):
 
         pass
 
-    def updateResults(self, partialAccuracy, partialNumInstances):
-        self.globalAccuracy = ((self.numInstances - partialNumInstances)/self.numInstances)*self.globalAccuracy + (partialNumInstances/self.numInstances)*partialAccuracy
+    def update_results(self, partial_accuracy, partial_num_instances):
+        self.global_accuracy = ((self.num_instances - partial_num_instances) / self.num_instances) * self.global_accuracy + (partial_num_instances / self.num_instances) * partial_accuracy
         pass
 
-    def createPlot(self):
+    def create_plot(self):
         plt.show()
         axes = plt.gca()
         axes.set_xlim(0, 100)

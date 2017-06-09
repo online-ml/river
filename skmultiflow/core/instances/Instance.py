@@ -4,7 +4,7 @@ from skmultiflow.core.instances.InstanceData import InstanceData
 from skmultiflow.core.instances.InstanceHeader import InstanceHeader
 
 class Instance:
-    #def __init__(self, numAtt = None, numClasses = 1, w = -1, attHeader = None, attributes = None):
+    #def __init__(self, numAtt = None, num_classes = 1, w = -1, attHeader = None, attributes = None):
     def __init__(self, numAtt=None, numClasses=1, w=-1, attributes = None):
         ''' 
             By default we have 1 class
@@ -12,50 +12,50 @@ class Instance:
             attributes and classes are stores as numpy array     
         '''
         #if numAtt is None:
-        #    self.numAttributes = len(attHeader) - numClasses
+        #    self.num_attributes = len(attHeader) - num_classes
         #else:
-        self.numAttributes = numAtt
+        self.num_attributes = numAtt
 
-        self.numClasses = numClasses
+        self.num_classes = numClasses
         self.weight = w
-        #print(attributes[0:self.numAttributes])
-        #print(attributes[self.numAttributes:])
-        self.instanceData = InstanceData(attributes[0:self.numAttributes],
-                                         attributes[self.numAttributes:])
+        #print(attributes[0:self.num_attributes])
+        #print(attributes[self.num_attributes:])
+        self.instance_data = InstanceData(attributes[0:self.num_attributes],
+                                         attributes[self.num_attributes:])
         #self.instanceHeader = InstanceHeader(attHeader)
 
-    def getAttribute(self, attIndex = -1):
+    def get_attribute(self, attIndex = -1):
         if (attIndex > -1):
-            return self.instanceData.getAttributeAt[attIndex]
+            return self.instance_data.get_attribute_at[attIndex]
         else:
             return None
 
-    def setClassValue(self, classVal = -1):
-        self.instanceData.setClassValue(classVal)
+    def set_class_value(self, classVal = -1):
+        self.instance_data.set_class_value(classVal)
 
-    def getLabelSet(self):
+    def get_label_set(self):
         return True
 
-    def getNumAttributes(self):
-        return self.numAttributes
+    def get_num_attributes(self):
+        return self.num_attributes
 
-    def getNumClasses(self):
-        return self.numClasses
+    def get_num_classes(self):
+        return self.num_classes
 
-    def getWeight(self):
+    def get_weight(self):
         return self.weight
 
-    def toString(self):
-        #print(str(self.numAttributes-1))
+    def to_string(self):
+        #print(str(self.num_attributes-1))
         #string = "Attributes:\n"
-        #for i in range(self.numAttributes):
-        #    string += str(self.instanceHeader.getHeaderLabelAt(i)) + ": " + str(self.instanceData.getAttributeAt(i)) + "\n"
+        #for i in range(self.num_attributes):
+        #    string += str(self.instanceHeader.get_header_label_at(i)) + ": " + str(self.instanceData.get_attribute_at(i)) + "\n"
 
         #string += "\nClass:\n"
-        #for i in range(self.numClasses):
-        #string += str(self.instanceHeader.getHeaderLabelAt(self.numAttributes)) + ": " + str(self.instanceData.getClass()) + "\n"
+        #for i in range(self.num_classes):
+        #string += str(self.instanceHeader.get_header_label_at(self.num_attributes)) + ": " + str(self.instanceData.get_class()) + "\n"
 
         print("Attributes: ")
-        print(self.instanceData.attributes)
+        print(self.instance_data.attributes)
         print("Class: ")
-        print(self.instanceData.classes)
+        print(self.instance_data.classes)

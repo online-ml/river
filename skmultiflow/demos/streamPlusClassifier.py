@@ -21,66 +21,66 @@ def demo():
     stream = FileStream(opt, 7)
     #stream = WaveformGenerator()
     #stream = RandomTreeGenerator(optList)
-    #stream = SEAGenerator(classificationFunction=1, instanceSeed=67, balanceClasses=False, noisePercentage=0.82)
+    #stream = SEAGenerator(classificationFunction=1, instance_seed=67, balanceClasses=False, noisePercentage=0.82)
     #stream = RandomRBFGenerator()
     #stream = RandomRBFGeneratorDrift()
-    stream.prepareForUse()
-    print(stream.getClasses())
+    stream.prepare_for_use()
+    print(stream.get_classes())
 
     logging.basicConfig(format='%(message)s', level=logging.INFO)
-    msg = 'Generating ' + str(stream.getNumClasses()) + ' classes'
+    msg = 'Generating ' + str(stream.get_num_classes()) + ' classes'
     logging.info(msg)
 
     #visualizer = EvaluationVisualizer(n_wait=200, dataset_name='Cover Type - 7 class labels')
-    visualizer = EvaluationVisualizer(n_wait=200, dataset_name=stream.getPlotName())
+    visualizer = EvaluationVisualizer(n_wait=200, dataset_name=stream.get_plot_name())
 
     #classifier = NaiveBayes()
     classifier = PerceptronMask()
 
     #the commented classes is for the NaiveBayes classifier
-    classes = stream.getClasses()
+    classes = stream.get_classes()
 
     pretrain = True
-    instCount = 0
-    correctPredict = 0
-    partialCount = 0
-    partialCorrectPredict = 0
+    inst_count = 0
+    correct_predict = 0
+    partial_count = 0
+    partial_correct_predict = 0
 
     x_length = 50000
     n_wait = 200
 
     if pretrain:
         logging.info('Learning model on 1000 instances')
-        X, y = stream.nextInstance(1000)
+        X, y = stream.next_instance(1000)
         classifier.partial_fit(X, y, classes, pretrain)
         logging.info('Evaluating...')
 
     for i in range(1, x_length+1):
         if (i % n_wait) == 0:
-            #msg = 'Partial performance (over 200 samples): ' + str(partialCorrectPredict / partialCount)
+            #msg = 'Partial performance (over 200 samples): ' + str(partial_correct_predict / partial_count)
             #logging.info(msg)
-            # plt.scatter(i, partialCorrectPredict / partialCount)
+            # plt.scatter(i, partial_correct_predict / partial_count)
             # plt.draw()
-            visualizer.onNewTrainStep(partialCorrectPredict / partialCount, i)
-            partialCorrectPredict = 0
-            partialCount = 0
+            visualizer.on_new_train_step(partial_correct_predict / partial_count, i)
+            partial_correct_predict = 0
+            partial_count = 0
         if (i % (x_length/20)) == 0:
             msg = str(((i) // (x_length/20))*5) + '%'
             logging.info(msg)
-        X, y = stream.nextInstance()
+        X, y = stream.next_instance()
         # X = X.reshape(1, -1)
-        instCount += 1
-        partialCount += 1
+        inst_count += 1
+        partial_count += 1
         predict = classifier.predict(X)
         # print("prediction: " + str(predict[0]) + " | real: " + str(y[0]))
         if predict[0] == y[0]:
-            correctPredict += 1
-            partialCorrectPredict += 1
+            correct_predict += 1
+            partial_correct_predict += 1
         classifier.partial_fit(X, y, classes, pretrain)
 
-    msg = 'Global accuracy: ' + str(correctPredict/instCount)
+    msg = 'Global accuracy: ' + str(correct_predict/inst_count)
     logging.info(msg)
-    msg = 'Total instances: ' + str(instCount)
+    msg = 'Total instances: ' + str(inst_count)
     logging.info(msg)
 
     #keep the graph open

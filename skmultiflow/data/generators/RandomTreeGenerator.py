@@ -37,234 +37,229 @@ class RandomTreeGenerator(BaseInstanceStream):
         |   Numeric Attributes  |   Nominal Attributes  |   Class   |
          -----------------------------------------------------------
     '''
-    def __init__(self, optList = None):
+    def __init__(self, opt_list = None):
         super().__init__()
 
         # default values
-        self.randomTreeSeed = 23
-        self.randomInstanceSeed = 12
-        self.numClasses = 2
-        self.numNumericalAttributes = 5
-        self.numNominalAttributes = 5
-        self.numValuesPerNominalAtt = 5
-        self.maxTreeDepth = 5
-        self.minLeafDepth = 3
-        self.fractionOfLeavesPerLevel = 0.15
-        self.instanceIndex = 0
-        self.treeRoot = None
-        self.instanceRandom = None
-        self.classHeader = None
-        self.attributesHeader = None
-        self.instanceRandom = None
-        self.currentInstanceX = None
-        self.currentInstanceY = None
-        self.configure(optList)
+        self.random_tree_seed = 23
+        self.random_instance_seed = 12
+        self.num_classes = 2
+        self.num_numerical_attributes = 5
+        self.num_nominal_attributes = 5
+        self.num_values_per_nominal_att = 5
+        self.max_tree_depth = 5
+        self.min_leaf_depth = 3
+        self.fraction_of_leaves_per_level = 0.15
+        self.instance_index = 0
+        self.tree_root = None
+        self.instance_random = None
+        self.class_header = None
+        self.attributes_header = None
+        self.instance_random = None
+        self.current_instance_x = None
+        self.current_instance_y = None
+        self.configure(opt_list)
         pass
 
-    def configure(self, optList):
-        if optList is not None:
-            for i in range(len(optList)):
-                opt, arg = optList[i]
+    def configure(self, opt_list):
+        if opt_list is not None:
+            for i in range(len(opt_list)):
+                opt, arg = opt_list[i]
                 if opt in ("-r"):
-                    self.randomTreeSeed = int(arg)
+                    self.random_tree_seed = int(arg)
                 elif opt in ("-i"):
-                    self.randomInstanceSeed = int(arg)
+                    self.random_instance_seed = int(arg)
                 elif opt in ("-c"):
-                    self.numClasses = int(arg)
+                    self.num_classes = int(arg)
                 elif opt in ("-o"):
-                    self.numNominalAttributes = int(arg)
+                    self.num_nominal_attributes = int(arg)
                 elif opt in ("-u"):
-                    self.numNumericalAttributes = int(arg)
+                    self.num_numerical_attributes = int(arg)
                 elif opt in ("-v"):
-                    self.numValuesPerNominalAtt = int(arg)
+                    self.num_values_per_nominal_att = int(arg)
                 elif opt in ("-d"):
-                    self.maxTreeDepth = int(arg)
+                    self.max_tree_depth = int(arg)
                 elif opt in ("-l"):
-                    self.minLeafDepth = int(arg)
+                    self.min_leaf_depth = int(arg)
                 elif opt in ("-f"):
-                    self.fractionOfLeavesPerLevel = float(arg)
-        self.classHeader = InstanceHeader(["class"])
-        self.attributesHeader = []
-        for i in range(self.numNumericalAttributes):
-            self.attributesHeader.append("NumAtt" + str(i))
-        for i in range(self.numNominalAttributes):
-            for j in range(self.numValuesPerNominalAtt):
-                self.attributesHeader.append("NomAtt" + str(i) + "_Val" + str(j))
+                    self.fraction_of_leaves_per_level = float(arg)
+        self.class_header = InstanceHeader(["class"])
+        self.attributes_header = []
+        for i in range(self.num_numerical_attributes):
+            self.attributes_header.append("NumAtt" + str(i))
+        for i in range(self.num_nominal_attributes):
+            for j in range(self.num_values_per_nominal_att):
+                self.attributes_header.append("NomAtt" + str(i) + "_Val" + str(j))
 
-        #print(self.attributesHeader)
+        #print(self.attributes_header)
 
         pass
 
-    def prepareForUse(self):
-        self.instanceRandom = np.random
-        self.instanceRandom.seed(self.randomInstanceSeed)
+    def prepare_for_use(self):
+        self.instance_random = np.random
+        self.instance_random.seed(self.random_instance_seed)
         self.restart()
 
-    def generateRandomTree(self):
-        treeRand = np.random
-        treeRand.seed(self.randomTreeSeed)
-        nominalAttCandidates = array('i')
+    def generate_random_tree(self):
+        tree_rand = np.random
+        tree_rand.seed(self.random_tree_seed)
+        nominal_att_candidates = array('i')
 
-        minNumericVals = array('d')
-        maxNumericVals = array('d')
-        for i in range(self.numNumericalAttributes):
-            minNumericVals.append(0.0)
-            maxNumericVals.append(1.0)
+        min_numeric_vals = array('d')
+        max_numeric_vals = array('d')
+        for i in range(self.num_numerical_attributes):
+            min_numeric_vals.append(0.0)
+            max_numeric_vals.append(1.0)
 
-        for i in range(self.numNumericalAttributes + self.numNominalAttributes):
-            nominalAttCandidates.append(i)
+        for i in range(self.num_numerical_attributes + self.num_nominal_attributes):
+            nominal_att_candidates.append(i)
 
-        self.treeRoot = self.generateRandomTreeNode(0, nominalAttCandidates, minNumericVals, maxNumericVals, treeRand)
+        self.tree_root = self.generate_random_tree_node(0, nominal_att_candidates, min_numeric_vals, max_numeric_vals, tree_rand)
 
 
-    def generateRandomTreeNode(self, currentDepth, nominalAttCandidates, minNumericVals, maxNumericVals, rand):
-        if ((currentDepth >= self.maxTreeDepth) | ((currentDepth >= self.minLeafDepth) & (self.fractionOfLeavesPerLevel >= (1.0 - rand.rand())))):
+    def generate_random_tree_node(self, current_depth, nominal_att_candidates, min_numeric_vals, max_numeric_vals, rand):
+        if ((current_depth >= self.max_tree_depth) | ((current_depth >= self.min_leaf_depth) & (self.fraction_of_leaves_per_level >= (1.0 - rand.rand())))):
             leaf = Node()
-            leaf.classLabel = rand.randint(0, self.numClasses)
+            leaf.class_label = rand.randint(0, self.num_classes)
             return leaf
 
         node = Node()
-        chosenAtt = rand.randint(0, len(nominalAttCandidates))
-        if (chosenAtt < self.numNumericalAttributes):
-            numericIndex = chosenAtt
-            node.splitAttIndex = numericIndex
-            minVal = minNumericVals[numericIndex]
-            maxVal = maxNumericVals[numericIndex]
-            node.splitAttValue = ((maxVal - minVal) * rand.rand() + minVal)
+        chosen_att = rand.randint(0, len(nominal_att_candidates))
+        if (chosen_att < self.num_numerical_attributes):
+            numeric_index = chosen_att
+            node.split_att_index = numeric_index
+            min_val = min_numeric_vals[numeric_index]
+            max_val = max_numeric_vals[numeric_index]
+            node.split_att_value = ((max_val - min_val) * rand.rand() + min_val)
             node.children = []
 
-            newMaxVals = maxNumericVals[:]
-            newMaxVals[numericIndex] = node.splitAttValue
-            node.children.append(self.generateRandomTreeNode(currentDepth+1, nominalAttCandidates, minNumericVals, newMaxVals, rand))
+            new_max_vals = max_numeric_vals[:]
+            new_max_vals[numeric_index] = node.split_att_value
+            node.children.append(self.generate_random_tree_node(current_depth + 1, nominal_att_candidates, min_numeric_vals, new_max_vals, rand))
 
-            newMinVals = minNumericVals[:]
-            newMinVals[numericIndex] = node.splitAttValue
-            node.children.append(self.generateRandomTreeNode(currentDepth+1, nominalAttCandidates, newMinVals, maxNumericVals, rand))
+            new_min_vals = min_numeric_vals[:]
+            new_min_vals[numeric_index] = node.split_att_value
+            node.children.append(self.generate_random_tree_node(current_depth + 1, nominal_att_candidates, new_min_vals, max_numeric_vals, rand))
         else:
-            node.splitAttIndex = nominalAttCandidates[chosenAtt]
-            newNominalCandidates = array('d', nominalAttCandidates)
-            newNominalCandidates.remove(node.splitAttIndex)
+            node.split_att_index = nominal_att_candidates[chosen_att]
+            new_nominal_candidates = array('d', nominal_att_candidates)
+            new_nominal_candidates.remove(node.split_att_index)
 
-            for i in range(self.numValuesPerNominalAtt):
-                node.children.append(self.generateRandomTreeNode(currentDepth+1, newNominalCandidates, minNumericVals, maxNumericVals, rand))
+            for i in range(self.num_values_per_nominal_att):
+                node.children.append(self.generate_random_tree_node(current_depth + 1, new_nominal_candidates, min_numeric_vals, max_numeric_vals, rand))
 
         return node
 
-    def classifyInstance(self, node, attVals):
+    def classify_instance(self, node, att_vals):
         if len(node.children) == 0:
-            return node.classLabel
-        if node.splitAttIndex < self.numNumericalAttributes:
-            aux = 0 if attVals[node.splitAttIndex] < node.splitAttValue else 1
-            return self.classifyInstance(node.children[aux], attVals)
+            return node.class_label
+        if node.split_att_index < self.num_numerical_attributes:
+            aux = 0 if att_vals[node.split_att_index] < node.split_att_value else 1
+            return self.classify_instance(node.children[aux], att_vals)
         else:
-            return self.classifyInstance(node.children[self.getIntegerNominalAttributeRepresentation(node.splitAttIndex, attVals)], attVals)
+            return self.classify_instance(node.children[self.get_integer_nominal_attribute_representation(node.split_att_index, att_vals)], att_vals)
 
-    def getIntegerNominalAttributeRepresentation(self, nominalIndex = None, attVals = None):
+    def get_integer_nominal_attribute_representation(self, nominal_index = None, att_vals = None):
         '''
-            The nominalIndex uses as reference the number of nominal attributes plus the number of numerical attributes.
+            The nominal_index uses as reference the number of nominal attributes plus the number of numerical attributes.
              In this way, to find which 'hot one' variable from a nominal attribute is active, we do some basic math.
              This function returns the index of the active variable in a nominal attribute 'hot one' representation.
         '''
-        minIndex = self.numNumericalAttributes + (nominalIndex - self.numNumericalAttributes)*self.numValuesPerNominalAtt
-        for i in range(self.numValuesPerNominalAtt):
-            if attVals[int(minIndex)] == 1:
+        minIndex = self.num_numerical_attributes + (nominal_index - self.num_numerical_attributes) * self.num_values_per_nominal_att
+        for i in range(self.num_values_per_nominal_att):
+            if att_vals[int(minIndex)] == 1:
                 return i
             minIndex += 1
         return None
 
-    def estimatedRemainingInstances(self):
+    def estimated_remaining_instances(self):
         return -1
 
-    def hasMoreInstances(self):
+    def has_more_instances(self):
         return True
 
-    def nextInstance(self, batchSize = 1):
+    def next_instance(self, batch_size = 1):
         #att = array('d')
-        data = np.zeros([batchSize, self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt) + 1])
-        for j in range (batchSize):
-            for i in range(self.numNumericalAttributes):
-                data[j,i] = self.instanceRandom.rand()
+        num_attributes = -1
+        data = np.zeros([batch_size, self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att) + 1])
+        for j in range (batch_size):
+            for i in range(self.num_numerical_attributes):
+                data[j,i] = self.instance_random.rand()
 
-            for i in range(self.numNumericalAttributes, self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt), self.numValuesPerNominalAtt):
-                aux = self.instanceRandom.randint(0, self.numValuesPerNominalAtt)
-                for k in range(self.numValuesPerNominalAtt):
+            for i in range(self.num_numerical_attributes, self.num_numerical_attributes+(self.num_nominal_attributes*self.num_values_per_nominal_att), self.num_values_per_nominal_att):
+                aux = self.instance_random.randint(0, self.num_values_per_nominal_att)
+                for k in range(self.num_values_per_nominal_att):
                     if aux == k:
                         data[j, k+i] = 1.0
                     else:
                         data[j, k+i] = 0.0
 
-            data[j, self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt)] = self.classifyInstance(self.treeRoot, data[j])
-            #att.append(self.classifyInstance(self.treeRoot, att))
-            self.currentInstanceX = data[:self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt)]
-            self.currentInstanceY = data[self.numNumericalAttributes+(self.numNominalAttributes*self.numValuesPerNominalAtt):]
-            #self.currentInstance = Instance(self.numNominalAttributes*self.numValuesPerNominalAtt + self.numNumericalAttributes, self.numClasses, -1, att)
-            numAttributes = self.numNumericalAttributes + (self.numNominalAttributes*self.numValuesPerNominalAtt)
-        return (data[:, :numAttributes], data[:, numAttributes:])
+            data[j, self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)] = self.classify_instance(self.tree_root, data[j])
+            #att.append(self.classify_instance(self.treeRoot, att))
+            self.current_instance_x = data[:self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)]
+            self.current_instance_y = data[self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att):]
+            #self.current_instance = Instance(self.num_nominal_attributes*self.num_values_per_nominal_att + self.num_numerical_attributes, self.num_classes, -1, att)
+            num_attributes = self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)
+        return (data[:, :num_attributes], data[:, num_attributes:])
 
-    def isRestartable(self):
+    def is_restartable(self):
         return True
 
     def restart(self):
-        self.instanceIndex = 0
-        self.instanceRandom = np.random
-        self.instanceRandom.seed(self.randomInstanceSeed)
-        self.generateRandomTree()
+        self.instance_index = 0
+        self.instance_random = np.random
+        self.instance_random.seed(self.random_instance_seed)
+        self.generate_random_tree()
         pass
 
-    def nextInstanceMiniBatch(self):
+    def has_more_mini_batch(self):
         pass
 
-    def hasMoreMiniBatch(self):
-        pass
+    def get_num_nominal_attributes(self):
+        return self.num_nominal_attributes
 
-    def getNumNominalAttributes(self):
-        return self.numNominalAttributes
+    def get_num_numerical_attributes(self):
+        return self.num_numerical_attributes
 
-    def getNumNumericalAttributes(self):
-        return self.numNumericalAttributes
+    def get_num_values_per_nominal_attribute(self):
+        return self.num_values_per_nominal_att
 
-    def getNumValuesPerNominalAttribute(self):
-        return self.numValuesPerNominalAtt
+    def get_num_attributes(self):
+        return self.num_numerical_attributes + self.num_nominal_attributes * self.num_values_per_nominal_att
 
-    def getNumAttributes(self):
-        return self.numNumericalAttributes + self.numNominalAttributes*self.numValuesPerNominalAtt
+    def get_num_classes(self):
+        return self.num_classes
 
-    def getNumClasses(self):
-        return self.numClasses
+    def get_attributes_header(self):
+        return self.attributes_header
 
-    def getAttributesHeader(self):
-        return self.attributesHeader
+    def get_classes_header(self):
+        return self.class_header
 
-    def getClassesHeader(self):
-        return self.classHeader
+    def get_last_instance(self):
+        return (self.current_instance_x, self.current_instance_y)
 
-    def getLastInstance(self):
-        return (self.currentInstanceX, self.currentInstanceY)
+    def get_plot_name(self):
+        return "Random Tree Generator - " + str(self.num_classes) + " class labels"
 
-    def getNumLabels(self):
-        pass
-
-    def getPlotName(self):
-        return "Random Tree Generator - " + str(self.numClasses) + " class labels"
-
-    def getClasses(self):
+    def get_classes(self):
         c = []
-        for i in range(self.numClasses):
+        for i in range(self.num_classes):
             c.append(i)
         return c
 
 class Node:
-    def __init__(self, classLabel = None, splitAttIndex = None, splitAttValue = None):
-        self.classLabel = classLabel
-        self.splitAttIndex = splitAttIndex
-        self.splitAttValue = splitAttValue
+    def __init__(self, class_label = None, split_att_index = None, split_att_value = None):
+        self.class_label = class_label
+        self.split_att_index = split_att_index
+        self.split_att_value = split_att_value
         self.children = []
 
 if __name__ == "__main__":
     stream = RandomTreeGenerator()
-    stream.prepareForUse()
+    stream.prepare_for_use()
 
     for i in range(4):
-        X, y = stream.nextInstance(2)
+        X, y = stream.next_instance(2)
         print(X)
         print(y)
