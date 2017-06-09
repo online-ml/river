@@ -28,10 +28,6 @@ class BaseInstanceStream(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def nextInstanceMiniBatch(self):
-        pass
-
-    @abstractmethod
     def hasMoreMiniBatch(self):
         pass
 
@@ -65,4 +61,16 @@ class BaseInstanceStream(metaclass=ABCMeta):
 
     @abstractmethod
     def getLastInstance(self):
+        pass
+
+    @abstractmethod
+    def prepareForUse(self):
+        pass
+
+    @abstractmethod
+    def getPlotName(self):
+        pass
+
+    @abstractmethod
+    def getClasses(self):
         pass

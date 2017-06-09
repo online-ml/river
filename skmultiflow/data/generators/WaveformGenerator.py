@@ -118,11 +118,8 @@ class WaveformGenerator(BaseInstanceStream):
         self.instanceIndex = 0
         pass
 
-    def nextInstanceMiniBatch(self):
-        pass
-
     def hasMoreMiniBatch(self):
-        pass
+        return True
 
     def hasNoise(self):
         return self.addNoise
@@ -153,6 +150,15 @@ class WaveformGenerator(BaseInstanceStream):
 
     def getNumLabels(self):
         pass
+
+    def getPlotName(self):
+        return "Waveform Generator - " + str(self.numClasses) + " class labels"
+
+    def getClasses(self):
+        c = []
+        for i in range(self.numClasses):
+            c.append(i)
+        return c
 
 def demo():
     wfg = WaveformGenerator()

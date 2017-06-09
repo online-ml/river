@@ -3,8 +3,9 @@ __author__ = 'Guilherme Matsumoto'
 from skmultiflow.data import BaseInstanceStream
 from skmultiflow.core.instances.Instance import Instance
 import pandas as pd
+import numpy as np
 
-class CsvFileStream(BaseInstanceStream.BaseInstanceStream):
+class FileStream(BaseInstanceStream.BaseInstanceStream):
     '''
         CSV File Stream
         -------------------------------------------
@@ -140,3 +141,10 @@ class CsvFileStream(BaseInstanceStream.BaseInstanceStream):
 
     def getLastInstance(self):
         return (self.currentInstanceX, self.currentInstanceY)
+
+    def getPlotName(self):
+        return "File Stream - " + str(self.numClasses) + " class labels"
+
+    def getClasses(self):
+        c = np.unique(self.y)
+        return c

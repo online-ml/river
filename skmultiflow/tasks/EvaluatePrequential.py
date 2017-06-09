@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 # stream import
-from skmultiflow.data.CsvFileStream import CsvFileStream
+from skmultiflow.data.FileStream import FileStream
 from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
 from skmultiflow.data.generators.WaveformGenerator import WaveformGenerator
 

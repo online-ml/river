@@ -3,6 +3,7 @@ __author__ = 'Jacob Montiel'
 from skmultiflow.data import BaseInstanceStream
 from skmultiflow.core.instances.Instance import Instance
 import pandas as pd
+import numpy as np
 
 class FileToStream(BaseInstanceStream.BaseInstanceStream):
     '''
@@ -14,7 +15,7 @@ class FileToStream(BaseInstanceStream.BaseInstanceStream):
         ---------------------------------------------
         -f: file
     '''
-    def __init__(self, fileOpt, numAtt = 0):
+    def __init__(self, fileOpt, numClasses = 2):
         super().__init__()
         '''
         __init__(self, fileName, index)
@@ -69,7 +70,7 @@ class FileToStream(BaseInstanceStream.BaseInstanceStream):
     def isRestartable(self):
         return True
 
-    def nextInstance(self):
+    def nextInstance(self, batchSize = 1):
         self.currentInstance = Instance(self.numAttributes,
                                         self.numClasses, -1,
                                         self.instances.iloc[self.instanceIndex:self.instanceIndex+1].values[0])
@@ -114,3 +115,13 @@ class FileToStream(BaseInstanceStream.BaseInstanceStream):
 
     def getClassesHeader(self):
         return self.classesHeader
+
+    def getPlotName(self):
+        return "File Stream - " + str(self.numClasses) + " class labels"
+
+    def getClasses(self):
+        c = np.unique(self.instances[:, self.numAttributes:])
+        c = []
+        for i in range(self.numClasses):
+            c.append(i)
+        return c

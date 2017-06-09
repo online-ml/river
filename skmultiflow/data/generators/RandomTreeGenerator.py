@@ -244,9 +244,27 @@ class RandomTreeGenerator(BaseInstanceStream):
     def getNumLabels(self):
         pass
 
+    def getPlotName(self):
+        return "Random Tree Generator - " + str(self.numClasses) + " class labels"
+
+    def getClasses(self):
+        c = []
+        for i in range(self.numClasses):
+            c.append(i)
+        return c
+
 class Node:
     def __init__(self, classLabel = None, splitAttIndex = None, splitAttValue = None):
         self.classLabel = classLabel
         self.splitAttIndex = splitAttIndex
         self.splitAttValue = splitAttValue
         self.children = []
+
+if __name__ == "__main__":
+    stream = RandomTreeGenerator()
+    stream.prepareForUse()
+
+    for i in range(4):
+        X, y = stream.nextInstance(2)
+        print(X)
+        print(y)

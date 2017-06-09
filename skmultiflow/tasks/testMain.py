@@ -1,6 +1,6 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.data.CsvFileStream import CsvFileStream
+from skmultiflow.data.FileStream import FileStream
 from skmultiflow.options.FileOption import FileOption
 from skmultiflow.data.generators.WaveformGenerator import WaveformGenerator
 from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
@@ -12,7 +12,7 @@ def demo_file_stream():
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     start = timer()
     opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
-    t = CsvFileStream(opt, 7)
+    t = FileStream(opt, 7)
     t.prepareForUse()
     end = timer()
     print("Configuration time: " + str(end-start))

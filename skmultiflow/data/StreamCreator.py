@@ -1,13 +1,13 @@
-from skmultiflow.data.CsvFileStream import CsvFileStream
+from skmultiflow.data.FileStream import FileStream
 from skmultiflow.data.generators.WaveformGenerator import WaveformGenerator
 from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
 
 def CreateStreamFromArgumentDict(argumentList):
     if argumentList[0] == 'CsvFileStream':
         if len(argumentList) > 1:
-            return CsvFileStream(argumentList[1:])
+            return FileStream(argumentList[1:])
         else:
-            return CsvFileStream()
+            return FileStream()
     elif argumentList[0] == 'WaveformGenerator':
         if len(argumentList) > 1:
             return WaveformGenerator(argumentList[1:])
