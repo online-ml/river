@@ -4,6 +4,7 @@ from skmultiflow.core.instances.InstanceHeader import InstanceHeader
 from skmultiflow.core.instances.InstanceData import InstanceData
 from skmultiflow.data.BaseInstanceStream import BaseInstanceStream
 from skmultiflow.core.instances.Instance import Instance
+from skmultiflow.core.BaseObject import BaseObject
 import numpy as np
 from array import array
 '''
@@ -11,7 +12,7 @@ from array import array
 '''
 
 
-class RandomTreeGenerator(BaseInstanceStream):
+class RandomTreeGenerator(BaseInstanceStream, BaseObject):
     '''
         RandomTreeGenerator
         ---------------------------------------------
@@ -200,7 +201,7 @@ class RandomTreeGenerator(BaseInstanceStream):
             self.current_instance_y = data[self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att):]
             #self.current_instance = Instance(self.num_nominal_attributes*self.num_values_per_nominal_att + self.num_numerical_attributes, self.num_classes, -1, att)
             num_attributes = self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)
-        return (data[:, :num_attributes], data[:, num_attributes:])
+        return (data[:, :num_attributes], np.ravel(data[:, num_attributes:]))
 
     def is_restartable(self):
         return True
@@ -247,6 +248,7 @@ class RandomTreeGenerator(BaseInstanceStream):
         for i in range(self.num_classes):
             c.append(i)
         return c
+
 
 class Node:
     def __init__(self, class_label = None, split_att_index = None, split_att_value = None):

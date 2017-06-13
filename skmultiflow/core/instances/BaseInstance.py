@@ -1,8 +1,9 @@
 __author__ = 'Guilherme Matsumoto'
 
 from abc import ABCMeta, abstractmethod
+from skmultiflow.core.BaseObject import BaseObject
 
-class BaseInstance(metaclass=ABCMeta):
+class BaseInstance(BaseObject, metaclass=ABCMeta):
     '''
         Instance
         -------------------------------------------
@@ -10,6 +11,7 @@ class BaseInstance(metaclass=ABCMeta):
     '''
 
     def __init__(self):
+        super().__init__()
         pass
 
     @abstractmethod
@@ -86,3 +88,5 @@ class BaseInstance(metaclass=ABCMeta):
     def value_sparse(selg, attIndex = -1):
         pass
 
+    def get_class_type(self):
+        return 'instance'

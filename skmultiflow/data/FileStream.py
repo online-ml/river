@@ -1,11 +1,12 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.data import BaseInstanceStream
-from skmultiflow.core.instances.Instance import Instance
+from skmultiflow.options.FileOption import FileOption
+from skmultiflow.core.BaseObject import BaseObject
 import pandas as pd
 import numpy as np
 
-class FileStream(BaseInstanceStream.BaseInstanceStream):
+class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
     '''
         CSV File Stream
         -------------------------------------------
@@ -93,12 +94,15 @@ class FileStream(BaseInstanceStream.BaseInstanceStream):
         return True
 
     def next_instance(self, batch_size = 1):
-
         self.instance_index += 1
         #self.current_instance_x = self.X[self.instance_index-1:self.instance_index+batchSize-1].values[0]
         #self.current_instance_y = self.y[self.instance_index-1:self.instance_index+batchSize-1].values[0]
-        self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values
-        self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values.flatten()
+        try:
+            self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values
+            self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values.flatten()
+        except IndexError:
+            self.current_instance_x = None
+            self.current_instance_y = None
         return (self.current_instance_x, self.current_instance_y)
 
     def has_more_instances(self):
@@ -147,3 +151,5 @@ class FileStream(BaseInstanceStream.BaseInstanceStream):
     def get_classes(self):
         c = np.unique(self.y)
         return c
+
+

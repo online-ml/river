@@ -2,10 +2,11 @@ __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.data.BaseInstanceStream import BaseInstanceStream
 from skmultiflow.core.utils import PseudoRandomProcesses as prp
+from skmultiflow.core.BaseObject import BaseObject
 import numpy as np
 
 
-class RandomRBFGenerator(BaseInstanceStream):
+class RandomRBFGenerator(BaseInstanceStream, BaseObject):
     def __init__(self, model_seed = 21, instance_seed = 5, num_classes = 2, num_att = 10, num_centroids = 50):
         super().__init__()
 

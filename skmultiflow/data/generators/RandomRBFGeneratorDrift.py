@@ -1,10 +1,11 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.data.generators.RandomRBFGenerator import RandomRBFGenerator
+from skmultiflow.core.BaseObject import BaseObject
 import numpy as np
 
 
-class RandomRBFGeneratorDrift(RandomRBFGenerator):
+class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
     def __init__(self, model_seed=21, instance_seed=5, num_classes=2, num_att=10, num_centroids=50, change_speed=0.0, num_drift_centroids=50):
         super().__init__(model_seed, instance_seed, num_classes, num_att, num_centroids)
         #default values

@@ -2,8 +2,9 @@ __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.core.instances.InstanceData import InstanceData
 from skmultiflow.core.instances.InstanceHeader import InstanceHeader
+from skmultiflow.core.BaseObject import BaseObject
 
-class Instance:
+class Instance(BaseObject):
     #def __init__(self, numAtt = None, num_classes = 1, w = -1, attHeader = None, attributes = None):
     def __init__(self, numAtt=None, numClasses=1, w=-1, attributes = None):
         ''' 
@@ -14,6 +15,7 @@ class Instance:
         #if numAtt is None:
         #    self.num_attributes = len(attHeader) - num_classes
         #else:
+        super().__init__()
         self.num_attributes = numAtt
 
         self.num_classes = numClasses
@@ -59,3 +61,6 @@ class Instance:
         print(self.instance_data.attributes)
         print("Class: ")
         print(self.instance_data.classes)
+
+    def get_class_type(self):
+        return 'instance'

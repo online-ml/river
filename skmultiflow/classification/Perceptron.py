@@ -15,14 +15,11 @@ class PerceptronMask(BaseClassifier):
 
     def fit(self, X, y, classes = None):
         self.classifier.fit(X, y, classes)
-        pass
+        return self
 
-    def partial_fit(self, X, y, classes = None, warmstart = False):
-        if warmstart:
-            self.classifier.partial_fit(X, y, classes)
-        else:
-            self.classifier.partial_fit(X, y, classes)
-        pass
+    def partial_fit(self, X, y, classes = None):
+        self.classifier.partial_fit(X, y, classes)
+        return self
 
     def predict(self, X):
         return self.classifier.predict(X)

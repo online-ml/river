@@ -12,6 +12,7 @@ from skmultiflow.classification.Perceptron import PerceptronMask
 from skmultiflow.options.FileOption import FileOption
 from skmultiflow.visualization.EvaluationVisualizer import EvaluationVisualizer
 import logging
+from timeit import default_timer as timer
 
 
 def demo():
@@ -46,15 +47,15 @@ def demo():
     partial_count = 0
     partial_correct_predict = 0
 
-    x_length = 50000
+    x_length = 100000
     n_wait = 200
 
     if pretrain:
         logging.info('Learning model on 1000 instances')
         X, y = stream.next_instance(1000)
-        classifier.partial_fit(X, y, classes, pretrain)
+        classifier.partial_fit(X, y, classes)
         logging.info('Evaluating...')
-
+    init_time = timer()
     for i in range(1, x_length+1):
         if (i % n_wait) == 0:
             #msg = 'Partial performance (over 200 samples): ' + str(partial_correct_predict / partial_count)
@@ -76,9 +77,11 @@ def demo():
         if predict[0] == y[0]:
             correct_predict += 1
             partial_correct_predict += 1
-        classifier.partial_fit(X, y, classes, pretrain)
+        classifier.partial_fit(X, y, classes)
 
-    msg = 'Global accuracy: ' + str(correct_predict/inst_count)
+    msg = 'Evaluation time: ' + str(round(timer() - init_time), 3)
+    logging.info(msg)
+    msg = 'Global accuracy: ' + str(round(correct_predict/inst_count), 3)
     logging.info(msg)
     msg = 'Total instances: ' + str(inst_count)
     logging.info(msg)

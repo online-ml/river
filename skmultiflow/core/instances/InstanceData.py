@@ -1,15 +1,17 @@
 __author__ = 'Guilherme Matsumoto'
 
 from numpy import ndarray
+from skmultiflow.core.BaseObject import BaseObject
 
 
-class InstanceData:
+class InstanceData(BaseObject):
     '''
         Instance Data class
         -----------------------------
         Stores data from an instance, both the features and the classes
     '''
     def __init__(self, attributesList = None, labelsList = None):
+        super().__init__()
         #self.attributes = attributesList.values.tolist()
         #self.labels = labelsList.values.tolist()
         self.attributes = attributesList
@@ -30,3 +32,6 @@ class InstanceData:
     def set_class_value(self, classVal = -1):
         self.classes[0] = classVal
         pass
+
+    def get_class_type(self):
+        return 'instance'

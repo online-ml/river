@@ -60,3 +60,7 @@ class EvaluationVisualizer(BaseListener):
     def hold(self):
         plt.show(block=True)
         pass
+
+if __name__ == "__main__":
+    ev = EvaluationVisualizer()
+    print(ev.get_class_type())

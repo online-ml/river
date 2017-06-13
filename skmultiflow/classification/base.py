@@ -1,11 +1,12 @@
 from abc import ABCMeta, abstractmethod
+from skmultiflow.core.BaseObject import BaseObject
 
-
-class BaseClassifier(metaclass=ABCMeta):
+class BaseClassifier(BaseObject, metaclass=ABCMeta):
     """Base Classifier class
         create a flag to verify if it's the first run
     """
     def __init__(self):
+        super().__init__()
         """ Initialization.
         """
         pass
@@ -31,7 +32,7 @@ class BaseClassifier(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def partial_fit(self, X, y, classes=None, warmstart = False):
+    def partial_fit(self, X, y, classes=None):
         """Partial (incremental) fit.
         For online methods.
 
@@ -83,3 +84,6 @@ class BaseClassifier(metaclass=ABCMeta):
     @abstractmethod
     def score(self, X, y):
         pass
+
+    def get_class_type(self):
+        return 'estimator'

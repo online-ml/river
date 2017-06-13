@@ -3,12 +3,12 @@ __author__ = 'Guilherme Matsumoto'
 from skmultiflow.data.BaseInstanceStream import BaseInstanceStream
 from skmultiflow.core.instances.Instance import Instance
 from skmultiflow.core.instances.InstanceHeader import InstanceHeader
+from skmultiflow.core.BaseObject import BaseObject
 import numpy as np
-
-
 from timeit import default_timer as timer
 
-class WaveformGenerator(BaseInstanceStream):
+
+class WaveformGenerator(BaseInstanceStream, BaseObject):
     '''
         WaveformGenerator
         ------------------------------------------
@@ -161,10 +161,11 @@ class WaveformGenerator(BaseInstanceStream):
             c.append(i)
         return c
 
+
 def demo():
     wfg = WaveformGenerator()
     wfg.prepare_for_use()
-
+    print(wfg.get_class_type())
     i = 0
     start = timer()
     #while(wfg.has_more_instances()):

@@ -1,12 +1,14 @@
 __author__ = 'Guilherme Matsumoto'
 
 from abc import ABCMeta, abstractmethod
+from skmultiflow.core.BaseObject import BaseObject
 
 
-class BaseOption(metaclass=ABCMeta):
+class BaseOption(BaseObject, metaclass=ABCMeta):
     """Base Classifier class
     """
     def __init__(self):
+        super().__init__()
         """ Initialization.
         """
         pass
@@ -34,3 +36,6 @@ class BaseOption(metaclass=ABCMeta):
     @abstractmethod
     def get_cli_option_from_dictionary(self):
         pass
+
+    def get_class_type(self):
+        return 'option'

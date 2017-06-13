@@ -1,43 +1,68 @@
 __author__ = 'Guilherme Matsumoto'
 
-import skmultiflow.tasks.testMain as t
 import skmultiflow.demos.streamPlusClassifier as spc
-import sys, getopt
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import time
-import random
-from skmultiflow.core.pipeline.Pipeline import Pipeline
-from skmultiflow.classification.Perceptron import PerceptronMask
+import skmultiflow.demos.evalWithPipeline as ewp
+import skmultiflow.demos.evalStreamSpeed as ess
+import skmultiflow.demos.evalPrequential as evp
 
-
-def demo(argv):
-    t.demo_file_stream()
-    #t.demo_waveform_gen(argv)
-    #t.demo_random_tree_gen(argv)
-    return None
-
-def testPreq(argv):
-    t.demo_preq(argv)
-
-def data_gen():
-    while True:
-        yield np.random.rand(10)
 
 def demoSCP():
+    """ Demo for a stream plus a classifier - No evaluation module used
+    
+        Used mainly before the Pipeline and Prequential evaluation were created    
+        Stream: FileStream with covtype.csv
+        Classifier: Pipeline with Perceptron classifier
+        Evaluator: No evaluator
+        
+    :return: No return
+    """
     spc.demo()
-    pass
 
 def demo_pipeline():
-    pass
+    """ Demo for a Prequential Evaluator with a Pipeline as the main Classifier
+    
+        For this example, the Pipeline was initialized with only one classifier and no transforms.
+        Stream: FileStream with covtype.csv
+        Classifier: Pipeline with PassiveAgressiveClassifier classifier
+        Evaluator: PrequentialEvaluator
+    
+    :return: No return
+    """
+    ewp.demo()
 
+def demo_preq():
+    """ Demo for a Prequential evaluation
+        
+        Stream: FileStream with covtype.csv
+        Classifier: Perceptron classifier
+        Evaluator: PrequentialEvaluator
+    
+    :return: No returns 
+    """
+    evp.demo()
+
+def demo_stream_speed():
+    """ Demo for stream generation speed
+    
+        Stream: Various option - change in skmultiflow.demos.evalStreamSpeed
+        Evaluator: EvaluateStreamGenerationSpeed
+    
+    :return: 
+    """
+    ess.demo()
 
 if __name__ == '__main__':
-    #plt.interactive(False)
-    #print(sys.argv)
-    #demo(sys.argv[1:])
-    #testPreq(sys.argv)
-    #testPlot()
-    #testIncrementalPlot()
-    demoSCP()
+    # NEW tests
+
+    # Stream plus classifier - no evaluation
+    #demoSCP()
+
+    # Demo Prequential evaluation - go to skmultiflow.demos.evalPrequential to change demo parameters
+    #demo_preq()
+
+    # Demo Prequential eval with pipeline - go to skmultiflow.demos.evalWithPipeline to change demo parameters
+    #demo_pipeline()
+
+    # Demo eval stream speed - go to skmultiflow.demos.evalStreamSpeed to change demo parameters
+    demo_stream_speed()
+

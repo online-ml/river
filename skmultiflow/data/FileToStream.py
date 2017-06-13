@@ -2,10 +2,12 @@ __author__ = 'Jacob Montiel'
 
 from skmultiflow.data import BaseInstanceStream
 from skmultiflow.core.instances.Instance import Instance
+from skmultiflow.core.BaseObject import BaseObject
 import pandas as pd
 import numpy as np
 
-class FileToStream(BaseInstanceStream.BaseInstanceStream):
+# Deprecated, use FileStream
+class FileToStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
     '''
         Converts a data file into a data stream
         -------------------------------------------

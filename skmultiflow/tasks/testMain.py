@@ -1,12 +1,17 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.data.FileStream import FileStream
-from skmultiflow.options.FileOption import FileOption
-from skmultiflow.data.generators.WaveformGenerator import WaveformGenerator
-from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
-from skmultiflow.tasks.EvaluatePrequential import EvaluatePrequential
+import getopt
+import logging
+import sys
 from timeit import default_timer as timer
-import sys, getopt, logging
+
+from skmultiflow.data.FileStream import FileStream
+from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
+from skmultiflow.data.generators.WaveformGenerator import WaveformGenerator
+from skmultiflow.evaluation.EvaluatePrequential import EvaluatePrequential
+from skmultiflow.options.FileOption import FileOption
+from sklearn.linear_model.perceptron import Perceptron
+
 
 def demo_file_stream():
     logging.basicConfig(format='%(message)s', level=logging.INFO)
@@ -91,8 +96,13 @@ def demo_random_tree_gen(argv):
 
     return None
 
-def demo_preq(argv):
-    t = EvaluatePrequential(argv)
+def demo_preq():
+    opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
+    stream = FileStream(opt, 7)
+    stream.prepare_for_use()
+    classifier = Perceptron()
+    eval = EvaluatePrequential(show_plot=True, pretrain_size=1000)
+    eval.eval(stream=stream, classifier=classifier)
     pass
 
 if __name__ == '__main__':

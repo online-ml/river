@@ -1,10 +1,11 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.data.BaseInstanceStream import BaseInstanceStream
+from skmultiflow.core.BaseObject import BaseObject
 import numpy as np
 
 
-class SEAGenerator(BaseInstanceStream):
+class SEAGenerator(BaseInstanceStream, BaseObject):
     def __init__(self, classification_function = 0, instance_seed = 42, balance_classes = False, noise_percentage = 0.0):
         super().__init__()
 
@@ -145,6 +146,7 @@ class SEAGenerator(BaseInstanceStream):
         for i in range(self.num_classes):
             c.append(i)
         return c
+
 
 if __name__ == "__main__":
     sg = SEAGenerator(classification_function=3, noise_percentage=0.2)

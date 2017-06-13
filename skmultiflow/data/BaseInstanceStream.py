@@ -1,10 +1,12 @@
 __author__ = 'Guilherme Matsumoto'
 
 from abc import ABCMeta, abstractmethod
+from skmultiflow.core.BaseObject import BaseObject
 
-class BaseInstanceStream(metaclass=ABCMeta):
+class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
 
     def __init__(self):
+        super().__init__()
         pass
 
     @abstractmethod
@@ -74,3 +76,6 @@ class BaseInstanceStream(metaclass=ABCMeta):
     @abstractmethod
     def get_classes(self):
         pass
+
+    def get_class_type(self):
+        return 'stream'
