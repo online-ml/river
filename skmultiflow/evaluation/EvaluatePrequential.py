@@ -120,7 +120,8 @@ class EvaluatePrequential(BaseEvaluator):
         logging.info('Evaluation time: %s', str(round(end_time - init_time, 3)))
         logging.info('Global accuracy: %s', str(round(self.global_correct_predicts/self.global_sample_count, 3)))
         logging.info('Total instances: %s', str(self.global_sample_count))
-        self.visualizer.hold()
+        if self.show_plot:
+            self.visualizer.hold()
         return self.classifier
 
     def partial_fit(self, X, y):
