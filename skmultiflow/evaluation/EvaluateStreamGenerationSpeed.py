@@ -1,7 +1,7 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.core.BaseObject import BaseObject
-from skmultiflow.core.utils.Utils import dict_to_tuple_list
+from skmultiflow.core.utils.utils import dict_to_tuple_list
 from timeit import default_timer as timer
 import logging
 

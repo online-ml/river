@@ -58,11 +58,11 @@ if __name__ == '__main__':
     #demoSCP()
 
     # Demo Prequential evaluation - go to skmultiflow.demos.evalPrequential to change demo parameters
-    #demo_preq()
+    demo_preq()
 
     # Demo Prequential eval with pipeline - go to skmultiflow.demos.evalWithPipeline to change demo parameters
     #demo_pipeline()
 
     # Demo eval stream speed - go to skmultiflow.demos.evalStreamSpeed to change demo parameters
-    demo_stream_speed()
+    #demo_stream_speed()
 

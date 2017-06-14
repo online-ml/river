@@ -1,7 +1,7 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.data.BaseInstanceStream import BaseInstanceStream
-from skmultiflow.core.utils import PseudoRandomProcesses as prp
+from skmultiflow.core.utils import pseudo_random_processes as prp
 from skmultiflow.core.BaseObject import BaseObject
 import numpy as np
 

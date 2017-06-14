@@ -3,7 +3,7 @@ __author__ = 'Guilherme Matsumoto'
 from skmultiflow.evaluation.BaseEvaluator import BaseEvaluator
 from skmultiflow.classification.Perceptron import PerceptronMask
 from skmultiflow.visualization.EvaluationVisualizer import EvaluationVisualizer
-from skmultiflow.core.utils.Utils import dict_to_tuple_list
+from skmultiflow.core.utils.utils import dict_to_tuple_list
 import sys, argparse
 from timeit import default_timer as timer
 import numpy as np
@@ -14,7 +14,7 @@ import logging
 class EvaluatePrequential(BaseEvaluator):
 
     def __init__(self, n_wait=200, max_instances=100000, max_time=float("inf"), output_file=None,
-                 show_plot=False, batch_size=1, pretrain_size=200):
+                 show_plot=False, batch_size=1, pretrain_size=200, show_kappa = False):
         super().__init__()
         # default values
         self.n_wait = n_wait
@@ -32,6 +32,7 @@ class EvaluatePrequential(BaseEvaluator):
         self.batch_size = batch_size
         self.pretrain_size = pretrain_size
         self.show_plot = show_plot
+        self.show_kappa = show_kappa
         pass
 
     # Most likely this function won't be used. I'll build an external parser later
@@ -83,6 +84,11 @@ class EvaluatePrequential(BaseEvaluator):
         prediction = None
         logging.info('Generating %s classes.', str(self.stream.get_num_classes()))
 
+        rest = self.stream.estimated_remaining_instances() if (self.stream.estimated_remaining_instances() != -1 and
+                                                               self.stream.estimated_remaining_instances() <=
+                                                               self.max_instances) \
+            else self.max_instances
+
         if (self.pretrain_size > 1):
             msg = 'Pretraining on ' + str(self.pretrain_size) + ' samples.'
             logging.info('Pretraining on %s samples.', str(self.pretrain_size))
@@ -98,6 +104,7 @@ class EvaluatePrequential(BaseEvaluator):
             X, y = self.stream.next_instance(self.batch_size)
             if X is not None and y is not None:
                 prediction = self.classifier.predict(X)
+                self.visualizer.on_new_data(y, prediction)
                 self.global_sample_count += self.batch_size
                 self.partial_sample_count += self.batch_size
                 for i in range(len(prediction)):
@@ -105,10 +112,6 @@ class EvaluatePrequential(BaseEvaluator):
                     if ((prediction[i] == y[i]) and not (self.global_sample_count > self.max_instances)):
                         self.partial_correct_predicts += 1
                         self.global_correct_predicts += 1
-                    rest = self.stream.estimated_remaining_instances() if (self.stream.estimated_remaining_instances() != -1 and
-                                                                      self.stream.estimated_remaining_instances() <=
-                                                                      self.max_instances) \
-                        else self.max_instances
                     if ((nul_count + i + 1) % (rest/20)) == 0:
                         logging.info('%s%%', str(((nul_count+i+1) // (rest / 20)) * 5))
                 self.classifier.partial_fit(X, y)
@@ -120,6 +123,16 @@ class EvaluatePrequential(BaseEvaluator):
         logging.info('Evaluation time: %s', str(round(end_time - init_time, 3)))
         logging.info('Global accuracy: %s', str(round(self.global_correct_predicts/self.global_sample_count, 3)))
         logging.info('Total instances: %s', str(self.global_sample_count))
+        if self.show_kappa:
+            logging.info('Global kappa statistic %s', '0')
+
+            ####
+            ## TODO
+            ## fix the problem you created, the visualizer has to be dumb, he just receives statistics
+            ##
+            ##
+
+
         if self.show_plot:
             self.visualizer.hold()
         return self.classifier
@@ -160,7 +173,7 @@ class EvaluatePrequential(BaseEvaluator):
         self.global_accuracy = 0.0
 
     def start_plot(self, n_wait, dataset_name):
-        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name)
+        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, show_kappa=self.show_kappa)
         pass
 
     def set_params(self, dict):

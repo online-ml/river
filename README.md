@@ -7,6 +7,9 @@ A stream data framework.
 * python3
 * matplotlib
 * numpy
+* scipy
+* pandas
+* scikit-learn
 
 ### Project leaders
 

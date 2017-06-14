@@ -1,6 +1,6 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.core.utils.Utils import dict_to_list
+from skmultiflow.core.utils.utils import dict_to_list
 from skmultiflow.core.BaseObject import BaseObject
 from sklearn.utils import tosequence
 import logging

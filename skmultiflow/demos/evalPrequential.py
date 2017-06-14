@@ -10,6 +10,6 @@ def demo():
     stream = FileStream(opt, 7)
     stream.prepare_for_use()
     classifier = Perceptron()
-    eval = EvaluatePrequential(show_plot=True, pretrain_size=1000)
+    eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, show_kappa=True)
     eval.eval(stream=stream, classifier=classifier)
     pass
