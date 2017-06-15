@@ -42,7 +42,7 @@ pip-delete-this-directory.txt
 .idea/
 
 # Text files
-*.csv
+# *.csv
 !data/*.csv
 *.txt
 !data/*.txt
