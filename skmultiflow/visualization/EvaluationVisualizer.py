@@ -2,7 +2,6 @@ __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.visualization.BaseListener import BaseListener
 from skmultiflow.core.utils.data_structures import FastBuffer
-from sklearn.metrics import cohen_kappa_score
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
@@ -24,8 +23,9 @@ class EvaluationVisualizer(BaseListener):
         self.show_kappa = None
         self.line_global_performance = None
         self.line_partial_performance = None
-        self.line_kappa_statistic = None
-        self.queue = None
+        self.line_global_kappa = None
+        self.line_partial_kappa = None
+        self.num_plots = 0
 
         self.configure(n_wait, dataset_name, show_kappa)
 
@@ -53,70 +53,75 @@ class EvaluationVisualizer(BaseListener):
         self.dataset_name = dataset_name
         self.show_kappa = show_kappa
         warnings.filterwarnings("ignore", ".*GUI is implemented.*")
-        plt.title(dataset_name)
+        #plt.title(dataset_name)
         plt.ion()
-        plt.figure.__name__ = dataset_name
-        fig = plt.gcf()
-        fig.canvas.set_window_title('scikit-multiflow')
-        plt.ylabel('Performance ratio')
-        plt.xlabel('Samples analyzed')
-        #self.fig = plt.figure(figsize=(16, 8))
-        self.line_partial_performance, = plt.plot(self.X, self.partial_performance, label='Partial performance (last 200 samples)')
-        self.line_global_performance, = plt.plot(self.X, self.global_performance, label='Global performance')
-        '''
+        self.fig = plt.figure(figsize=(16, 8))
+        #plt.figure.__name__ = dataset_name
+        self.fig.suptitle(dataset_name)
+        #fig = plt.gcf()
+        self.num_plots = 1 + self.show_kappa
+        base = 11 + self.num_plots*100
+        self.fig.canvas.set_window_title('scikit-multiflow')
+
+        self.subplot_performance = self.fig.add_subplot(base)
+        if self.show_kappa:
+            self.subplot_kappa = self.fig.add_subplot(base+1)
+            self.subplot_kappa.set_ylabel('Kappa statistic')
+            self.subplot_kappa.set_xlabel('Samples analyzed')
+
+        self.subplot_performance.set_ylabel('Performance ratio')
+        self.subplot_performance.set_xlabel('Samples analyzed')
+
+        self.line_partial_performance, = self.subplot_performance.plot(self.X, self.partial_performance, label='Partial performance (last 200 samples)')
+        self.line_global_performance, = self.subplot_performance.plot(self.X, self.global_performance, label='Global performance')
+        self.subplot_performance.legend(handles=[self.line_global_performance, self.line_partial_performance])
+        self.subplot_performance.set_ylim([0,1])
+
         if self.show_kappa:
             self.partial_kappa = []
             self.global_kappa = []
-            self.queue = FastBuffer(n_wait)
-            self.line_partial_kappa, = plt.plot(self.X, self.partial_kappa, label='Partial Kappa (last 200 samples)')
-            self.line_global_kappa, = plt.plot(self.X, self.global_kappa, label='Global Kappa')
-            plt.legend(handles=[self.line_global_performance, self.line_partial_performance,
-                                self.line_global_kappa, self.line_partial_kappa])
-            plt.ylim([-1,1])
+            self.true_labels = FastBuffer(n_wait)
+            self.predictions = FastBuffer(n_wait)
+            self.line_partial_kappa, = self.subplot_kappa.plot(self.X, self.partial_kappa, label='Partial Kappa (last 200 samples)')
+            self.line_global_kappa, = self.subplot_kappa.plot(self.X, self.global_kappa, label='Global Kappa')
+            self.subplot_kappa.legend(handles=[self.line_global_kappa, self.line_partial_kappa])
+            self.subplot_kappa.set_ylim([-1,1])
             self.true_labels = FastBuffer(self.n_wait)
             self.predictions = FastBuffer(self.n_wait)
-        else:
-            plt.legend(handles=[self.line_global_performance, self.line_partial_performance])
-            plt.ylim([0,1])
-        '''
-        plt.legend(handles=[self.line_global_performance, self.line_partial_performance])
-        plt.ylim([0, 1])
-        pass
 
     def draw(self, new_performance_point, train_step):
         self.X.append(train_step)
-        self.partial_performance.append(new_performance_point)
-        self.global_performance.append(np.mean(self.partial_performance))
-        self.line_partial_performance.set_data(self.X, self.partial_performance)
-        self.line_global_performance.set_data(self.X, self.global_performance)
-        '''
-        if self.show_kappa:
-            kappa_stat = cohen_kappa_score(self.true_labels.get_queue(), self.predictions.get_queue())
-            self.partial_kappa.append(kappa_stat)
-            global_kappa_stat = np.mean(self.partial_kappa)
-            self.global_kappa.append(global_kappa_stat)
-            self.line_partial_performance.set_data(self.X, self.partial_kappa)
-            self.line_global_performance.set_data(self.X, self.global_kappa)
-        '''
+        for i in range(len(new_performance_point)):
+            if i == 0:
+                self.partial_performance.append(new_performance_point[i])
+                self.global_performance.append(np.mean(self.partial_performance))
+                self.line_partial_performance.set_data(self.X, self.partial_performance)
+                self.line_global_performance.set_data(self.X, self.global_performance)
+            if i == 1:
+                self.partial_kappa.append(new_performance_point[i])
+                self.global_kappa.append(np.mean(self.partial_kappa))
+                self.line_partial_kappa.set_data(self.X, self.partial_kappa)
+                self.line_global_kappa.set_data(self.X, self.global_kappa)
         for i in range(len(self.temp)):
             self.temp[i].remove()
         self.temp = []
-        self.temp.append(plt.annotate('Partial: ' + str(round(new_performance_point, 3)), xy=(train_step, new_performance_point),
+        self.temp.append(self.subplot_performance.annotate('Partial: ' + str(round(new_performance_point[0], 3)), xy=(train_step, new_performance_point[0]),
                                       xytext=(8, 0), textcoords = 'offset points'))
-        self.temp.append(plt.annotate('Global: ' + str(round(self.global_performance[len(self.global_performance)-1], 3)),
+        self.temp.append(self.subplot_performance.annotate('Global: ' + str(round(self.global_performance[len(self.global_performance)-1], 3)),
                                       xy=(train_step, self.global_performance[len(self.global_performance) - 1]),
                                       xytext=(8, 0), textcoords = 'offset points'))
-        '''
         if self.show_kappa:
-            self.temp.append(
-                plt.annotate('Partial kappa: ' + str(round(kappa_stat, 3)), xy=(train_step, kappa_stat),
-                             xytext=(8, 0), textcoords='offset points'))
-            self.temp.append(
-                plt.annotate('Global kappa: ' + str(round(global_kappa_stat, 3)),
-                             xy=(train_step, global_kappa_stat),
-                             xytext=(8, 0), textcoords='offset points'))
-        '''
-        plt.xlim([np.min(self.X), 1.2*np.max(self.X)])
+            self.temp.append(self.subplot_kappa.annotate('Partial: ' + str(round(new_performance_point[1], 3)), xy=(train_step, new_performance_point[1]),
+                                                         xytext=(8,0), textcoords='offset points'))
+            self.temp.append(self.subplot_kappa.annotate('Global: ' + str(round(self.global_kappa[len(self.global_kappa)-1], 3)),
+                                                         xy=(train_step, self.global_kappa[len(self.global_kappa)-1]),
+                                                         xytext=(8,0), textcoords='offset points'))
+
+        self.subplot_performance.set_xlim([np.min(self.X), 1.2*np.max(self.X)])
+        self.subplot_performance.set_ylim([0,1])
+        if self.show_kappa:
+            self.subplot_kappa.set_xlim([np.min(self.X), 1.2*np.max(self.X)])
+            self.subplot_kappa.set_ylim([-1,1])
         #plt.xlim([np.min(self.X), 520000])
         plt.draw()
         plt.pause(0.00001)

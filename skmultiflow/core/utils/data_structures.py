@@ -21,14 +21,17 @@ class FastBuffer(BaseObject):
         if object_list is not None:
             self.buffer = object_list
 
-    def add_element(self, element):
-        if self.current_size < self.max_size:
-            self.buffer.append(element)
-            self.current_size += 1
+    def add_element(self, element_list):
+        if (self.current_size+len(element_list)) <= self.max_size:
+            for i in range(len(element_list)):
+                self.buffer.append(element_list[i])
+            self.current_size += len(element_list)
             return None
         else:
-            aux = self.buffer.pop(0)
-            self.buffer.append(element)
+            aux = []
+            for i in range(len(element_list)):
+                aux.append(self.buffer.pop(0))
+                self.buffer.append(element_list[i])
             return aux
 
     def get_next_element(self):

@@ -2,17 +2,19 @@ __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.evaluation.BaseEvaluator import BaseEvaluator
 from skmultiflow.classification.Perceptron import PerceptronMask
+from sklearn.metrics import cohen_kappa_score
 from skmultiflow.visualization.EvaluationVisualizer import EvaluationVisualizer
 from skmultiflow.core.utils.utils import dict_to_tuple_list
+from skmultiflow.core.utils.data_structures import FastBuffer
 import sys, argparse
 from timeit import default_timer as timer
 import numpy as np
+import math
 import logging
-
+import warnings
 
 
 class EvaluatePrequential(BaseEvaluator):
-
     def __init__(self, n_wait=200, max_instances=100000, max_time=float("inf"), output_file=None,
                  show_plot=False, batch_size=1, pretrain_size=200, show_kappa = False):
         super().__init__()
@@ -20,50 +22,27 @@ class EvaluatePrequential(BaseEvaluator):
         self.n_wait = n_wait
         self.max_instances = max_instances
         self.max_time = max_time
+        self.batch_size = batch_size
+        self.pretrain_size = pretrain_size
+        self.show_plot = show_plot
+        self.show_kappa = show_kappa
         self.classifier = None
         self.stream = None
         self.output_file = output_file
         self.visualizer = None
+        # performance stats
         self.global_correct_predicts = 0
         self.partial_correct_predicts = 0
         self.global_sample_count = 0
         self.partial_sample_count = 0
         self.global_accuracy = 0
-        self.batch_size = batch_size
-        self.pretrain_size = pretrain_size
-        self.show_plot = show_plot
-        self.show_kappa = show_kappa
-        pass
+        # kappa stats
+        self.global_kappa = 0.0
+        self.kappa_count = 0
+        self.kappa_predicts = FastBuffer(200)
+        self.kappa_true_labels = FastBuffer(200)
 
-    # Most likely this function won't be used. I'll build an external parser later
-    def parse(self, argv):
-        parser = argparse.ArgumentParser(description='Testing argparse module')
-
-        parser.add_argument("-l", dest='classifier', type=str, help='Classifier to train', default='NaiveBayes')
-        parser.add_argument("-s", dest='stream', type=str, help='Stream to train', default='RandomTree')
-        parser.add_argument("-e", dest='performance', type=str, help='Classification performance evaluation method')
-        parser.add_argument("-i", dest='maxInt', type=int, help='Maximum number of instances')
-        parser.add_argument("-t", dest='max_time', type=int, help='Max number of seconds')
-        parser.add_argument("-f", dest='n_wait', type=int,
-                            help='How many instances between samples of the learning performance')
-        parser.add_argument("-b", dest='maxSize', type=int, help='Maximum size of model')
-        parser.add_argument("-O", dest='out', type=str, help='Output file')
-
-        args = parser.parse_args()
-
-        print(args)
-
-        if (args.classifier is not None):
-            split = args.classifier.split()
-            if len(split) > 1:
-                args.classifier = split
-
-        if args.stream is not None:
-            split = args.stream.split()
-            if len(split) > 1:
-                args.stream = split
-
-        return args
+        warnings.filterwarnings("ignore", ".*invalid value encountered in true_divide.*")
 
     def eval(self, stream, classifier):
         if self.show_plot:
@@ -78,7 +57,6 @@ class EvaluatePrequential(BaseEvaluator):
         init_time = timer()
         self.classifier = classifier
         self.stream = stream
-        end_time = timer()
         self._reset_partials()
         self._reset_globals()
         prediction = None
@@ -107,6 +85,8 @@ class EvaluatePrequential(BaseEvaluator):
                 self.visualizer.on_new_data(y, prediction)
                 self.global_sample_count += self.batch_size
                 self.partial_sample_count += self.batch_size
+                self.kappa_predicts.add_element(np.ravel(prediction))
+                self.kappa_true_labels.add_element(np.ravel(y))
                 for i in range(len(prediction)):
                     nul_count = self.global_sample_count - self.batch_size
                     if ((prediction[i] == y[i]) and not (self.global_sample_count > self.max_instances)):
@@ -117,14 +97,14 @@ class EvaluatePrequential(BaseEvaluator):
                 self.classifier.partial_fit(X, y)
 
                 if ((self.global_sample_count % self.n_wait) == 0 | (self.global_sample_count >= self.max_instances)):
+                    self.kappa_count += 1
                     self.update_metrics()
 
         end_time = timer()
         logging.info('Evaluation time: %s', str(round(end_time - init_time, 3)))
-        logging.info('Global accuracy: %s', str(round(self.global_correct_predicts/self.global_sample_count, 3)))
         logging.info('Total instances: %s', str(self.global_sample_count))
-        if self.show_kappa:
-            logging.info('Global kappa statistic %s', '0')
+        logging.info('Global accuracy: %s', str(round(self.global_correct_predicts/self.global_sample_count, 3)))
+        logging.info('Global kappa statistic %s', str(round(self.global_kappa, 3)))
 
             ####
             ## TODO
@@ -156,11 +136,33 @@ class EvaluatePrequential(BaseEvaluator):
         pass
 
     def update_metrics(self):
+        """ Updates the metrics of interest.
+        
+            It's possible that cohen_kappa_score will return a NaN value, which happens if the predictions
+            and the true labels are in perfect accordance, causing pe=1, which results in a division by 0.
+            If this is detected the plot will assume it to be 1.
+        
+        :return: No return.
+        """
         self.global_accuracy = ((self.global_sample_count - self.partial_sample_count) / self.global_sample_count) * \
                                self.global_accuracy + (self.partial_sample_count / self.global_sample_count) * \
                                                       (self.partial_correct_predicts/self.partial_sample_count)
+        partial_kappa = 0.0
+        partial_kappa = cohen_kappa_score(self.kappa_predicts.get_queue(), self.kappa_true_labels.get_queue())
+        #logging.info('%s', str(round(partial_kappa, 3)))
+        if not math.isnan(partial_kappa):
+            self.global_kappa = ((self.kappa_count-1)/self.kappa_count)*self.global_kappa + partial_kappa*(1/self.kappa_count)
+        else:
+            self.global_kappa = ((self.kappa_count-1)/self.kappa_count)*self.global_kappa + 1*(1/self.kappa_count)
         if self.show_plot:
-            self.update_plot(self.partial_correct_predicts/self.partial_sample_count, self.global_sample_count)
+            if self.show_kappa:
+                if not math.isnan(partial_kappa):
+                    self.update_plot([self.partial_correct_predicts / self.partial_sample_count, partial_kappa], self.global_sample_count)
+                else:
+                    self.update_plot([self.partial_correct_predicts / self.partial_sample_count, 1],
+                                     self.global_sample_count)
+            else:
+                self.update_plot([self.partial_correct_predicts/self.partial_sample_count], self.global_sample_count)
         self._reset_partials()
 
     def _reset_partials(self):
