@@ -16,7 +16,21 @@ import warnings
 
 class EvaluatePrequential(BaseEvaluator):
     def __init__(self, n_wait=200, max_instances=100000, max_time=float("inf"), output_file=None,
-                 show_plot=False, batch_size=1, pretrain_size=200, show_kappa = False):
+                 show_plot=False, batch_size=1, pretrain_size=200, show_kappa = False, show_scatter_points=False):
+        """
+            Parameter show_scatter_points should only be used for small datasets, and non-intensive evaluations, as it
+            will drastically slower the evaluation process.
+        
+        :param n_wait: 
+        :param max_instances: 
+        :param max_time: 
+        :param output_file: 
+        :param show_plot: 
+        :param batch_size: 
+        :param pretrain_size: 
+        :param show_kappa: 
+        :param show_scatter_points: boolean, if True the visualization module will display a scatter of True labels vs Predicts.
+        """
         super().__init__()
         # default values
         self.n_wait = n_wait
@@ -26,6 +40,7 @@ class EvaluatePrequential(BaseEvaluator):
         self.pretrain_size = pretrain_size
         self.show_plot = show_plot
         self.show_kappa = show_kappa
+        self.show_scatter_points = show_scatter_points
         self.classifier = None
         self.stream = None
         self.output_file = output_file
@@ -67,22 +82,23 @@ class EvaluatePrequential(BaseEvaluator):
                                                                self.max_instances) \
             else self.max_instances
 
-        if (self.pretrain_size > 1):
+        if (self.pretrain_size > 0):
             msg = 'Pretraining on ' + str(self.pretrain_size) + ' samples.'
             logging.info('Pretraining on %s samples.', str(self.pretrain_size))
             X, y = self.stream.next_instance(self.pretrain_size)
             #self.classifier.partial_fit(X, y, self.stream.get_classes(), True)
             self.classifier.partial_fit(X, y, self.stream.get_classes())
+            #self.classifier.fit(X, y)
         else:
             X, y = None, None
 
         logging.info('Evaluating...')
+        show_class = True
         while ((self.global_sample_count < self.max_instances) & (timer() - init_time < self.max_time)
                    & (self.stream.has_more_instances())):
             X, y = self.stream.next_instance(self.batch_size)
             if X is not None and y is not None:
                 prediction = self.classifier.predict(X)
-                self.visualizer.on_new_data(y, prediction)
                 self.global_sample_count += self.batch_size
                 self.partial_sample_count += self.batch_size
                 self.kappa_predicts.add_element(np.ravel(prediction))
@@ -94,6 +110,10 @@ class EvaluatePrequential(BaseEvaluator):
                         self.global_correct_predicts += 1
                     if ((nul_count + i + 1) % (rest/20)) == 0:
                         logging.info('%s%%', str(((nul_count+i+1) // (rest / 20)) * 5))
+                    if self.show_scatter_points:
+                        self.visualizer.on_new_scatter_data(self.global_sample_count - self.batch_size + i, y[i],
+                                                            prediction[i])
+
                 self.classifier.partial_fit(X, y)
 
                 if ((self.global_sample_count % self.n_wait) == 0 | (self.global_sample_count >= self.max_instances)):
@@ -106,15 +126,9 @@ class EvaluatePrequential(BaseEvaluator):
         logging.info('Global accuracy: %s', str(round(self.global_correct_predicts/self.global_sample_count, 3)))
         logging.info('Global kappa statistic %s', str(round(self.global_kappa, 3)))
 
-            ####
-            ## TODO
-            ## fix the problem you created, the visualizer has to be dumb, he just receives statistics
-            ##
-            ##
-
-
         if self.show_plot:
             self.visualizer.hold()
+
         return self.classifier
 
     def partial_fit(self, X, y):
@@ -175,7 +189,8 @@ class EvaluatePrequential(BaseEvaluator):
         self.global_accuracy = 0.0
 
     def start_plot(self, n_wait, dataset_name):
-        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, show_kappa=self.show_kappa)
+        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, show_kappa=self.show_kappa,
+                                               show_scatter_points=self.show_scatter_points)
         pass
 
     def set_params(self, dict):

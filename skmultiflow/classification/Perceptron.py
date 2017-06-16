@@ -10,9 +10,6 @@ class PerceptronMask(BaseClassifier):
         self.classifier = Perceptron(n_iter=50)
         pass
 
-    def first_fit(self, X, y, classes = None):
-        pass
-
     def fit(self, X, y, classes = None):
         self.classifier.fit(X, y, classes)
         return self

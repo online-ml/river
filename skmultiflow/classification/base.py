@@ -12,10 +12,6 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def first_fit(self, X, y, classes = None):
-        self.fit(X, y, classes)
-
-    @abstractmethod
     def fit(self, X, y, classes = None):
         """Fit model.
 

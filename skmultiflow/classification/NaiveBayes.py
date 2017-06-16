@@ -10,9 +10,6 @@ class NaiveBayes(BaseClassifier):
         self.classifier = MultinomialNB()
         pass
 
-    def first_fit(self, X, y, classes = None):
-        pass
-
     def fit(self, X, y, classes = None):
         self.classifier.fit(X, y, classes)
         return self

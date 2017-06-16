@@ -19,7 +19,7 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
     def __init__(self, file_opt, num_classes = 2):
         super().__init__()
         # default values
-        if file_opt.file_type is "CSV":
+        if file_opt.file_type in ['CSV', 'csv', 'Csv', 'cSv', 'csV', 'CSv', 'CsV', 'cSV']:
             self.read_function = pd.read_csv
         else:
             raise ValueError('Unsupported format: ', file_opt.file_type)
@@ -146,7 +146,10 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
         return (self.current_instance_x, self.current_instance_y)
 
     def get_plot_name(self):
-        return "File Stream - " + str(self.num_classes) + " class labels"
+        aux = self.file_name.split("/")
+        if aux[len(aux)-1] == '':
+            aux.pop(len(aux)-1)
+        return "File Stream: " + aux[len(aux)-1] + " - " + str(self.num_classes) + " class labels"
 
     def get_classes(self):
         c = np.unique(self.y)
