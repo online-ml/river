@@ -25,11 +25,11 @@ class MOL() :
             self.h[j].fit(X, Y[:,j])
         return self
 
-    def partial_fit(self, X, Y):
+    def partial_fit(self, X, Y, classes=None):
         N,self.L = Y.shape
 
         for j in range(self.L):
-            self.h[j].partial_fit(X, Y[:,j])
+            self.h[j].partial_fit(X, Y[:,j], classes)
 
         return self
 

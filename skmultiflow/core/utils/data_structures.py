@@ -29,9 +29,14 @@ class FastBuffer(BaseObject):
             return None
         else:
             aux = []
-            for i in range(len(element_list)):
-                aux.append(self.buffer.pop(0))
-                self.buffer.append(element_list[i])
+            #for i in range(len(element_list)):
+            if self.isfull():
+                aux.append(self.get_next_element())
+            else:
+                self.current_size += 1
+            self.buffer.append(element_list[0])
+            if len(element_list) > 1:
+                aux.append(self.add_element(element_list[1:]))
             return aux
 
     def get_next_element(self):
@@ -62,12 +67,8 @@ class FastBuffer(BaseObject):
         return self.buffer
 
 if __name__ == '__main__':
-    buffer = FastBuffer(10, None)
-    for i in range(10):
-        buffer.add_element(i)
-    buffer.print_queue()
-    buffer.add_element(15)
-    buffer.add_element(99)
-    buffer.print_queue()
-    print(str(buffer.get_next_element()))
-    buffer.print_queue()
+    text = '/asddfdsd/'
+    aux = text.split("/")
+    print(aux)
+
+

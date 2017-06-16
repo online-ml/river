@@ -8,9 +8,11 @@ import warnings
 
 
 class EvaluationVisualizer(BaseListener):
-    def __init__(self, n_wait = 200, dataset_name = 'Unnamed graph', show_kappa=False):
+    def __init__(self, n_wait = 200, dataset_name = 'Unnamed graph', show_kappa=False, show_scatter_points=False):
         super().__init__()
         #default values
+        self.X = None
+        self.scatter_x = None
         self.temp = []
         self.true_labels = None
         self.predictions = None
@@ -20,38 +22,44 @@ class EvaluationVisualizer(BaseListener):
         self.global_kappa = None
         self.n_wait = None
         self.dataset_name = None
-        self.show_kappa = None
+        self.scatter_true_labels = None
+        self.scatter_predicts = None
+        #lines
         self.line_global_performance = None
         self.line_partial_performance = None
         self.line_global_kappa = None
         self.line_partial_kappa = None
+        self.line_scatter_predicts = None
+        self.line_scatter_true_labels = None
+        #show configs
         self.num_plots = 0
+        self.show_kappa = None
+        self.show_scatter_points = None
+        #subplot default
+        self.subplot_kappa = None
+        self.subplot_performance = None
+        self.subplot_scatter_points = None
 
-        self.configure(n_wait, dataset_name, show_kappa)
+        self.configure(n_wait, dataset_name, show_kappa, show_scatter_points)
 
     def on_new_train_step(self, performance_point, train_step):
         if (train_step % self.n_wait == 0):
             self.draw(performance_point, train_step)
         pass
 
-    def on_new_data(self, true_labels, predictions):
-        #flattened_labels = np.ravel(true_labels)
-        #flattened_preds = np.ravel(predictions)
-        '''
-        for i in range(len(true_labels)):
-            self.true_labels.add_element(true_labels[i])
-            self.predictions.add_element(predictions[i])
-        '''
+    def on_new_scatter_data(self, X, y, prediction):
+        self.draw_scatter_points(X, y, prediction)
         pass
 
 
-    def configure(self, n_wait, dataset_name, show_kappa):
+    def configure(self, n_wait, dataset_name, show_kappa, show_scatter_points):
         self.X = []
         self.partial_performance = []
         self.global_performance = []
         self.n_wait = n_wait
         self.dataset_name = dataset_name
         self.show_kappa = show_kappa
+        self.show_scatter_points = show_scatter_points
         warnings.filterwarnings("ignore", ".*GUI is implemented.*")
         #plt.title(dataset_name)
         plt.ion()
@@ -59,15 +67,36 @@ class EvaluationVisualizer(BaseListener):
         #plt.figure.__name__ = dataset_name
         self.fig.suptitle(dataset_name)
         #fig = plt.gcf()
-        self.num_plots = 1 + self.show_kappa
+        self.num_plots = 1 + self.show_kappa + self.show_scatter_points
         base = 11 + self.num_plots*100
         self.fig.canvas.set_window_title('scikit-multiflow')
 
         self.subplot_performance = self.fig.add_subplot(base)
-        if self.show_kappa:
+        self.subplot_performance.set_title('Classifier\'s accuracy')
+        if self.show_kappa and not self.show_scatter_points:
             self.subplot_kappa = self.fig.add_subplot(base+1)
+            self.subplot_kappa.set_title('Classifier\'s Kappa')
             self.subplot_kappa.set_ylabel('Kappa statistic')
             self.subplot_kappa.set_xlabel('Samples analyzed')
+        elif self.show_scatter_points and not self.show_kappa:
+            self.subplot_scatter_points = self.fig.add_subplot(base + 1)
+            self.subplot_scatter_points.set_title('Predicts and true labels')
+            self.subplot_scatter_points.set_ylabel('Class labels')
+            self.subplot_scatter_points.set_xlabel('Sample analyzed')
+        elif self.show_kappa and self.show_scatter_points:
+            #kappa subplot config
+            self.subplot_kappa = self.fig.add_subplot(base + 1)
+            self.subplot_kappa.set_title('Classifier\'s Kappa')
+            self.subplot_kappa.set_ylabel('Kappa statistic')
+            self.subplot_kappa.set_xlabel('Samples analyzed')
+            #scatter subplot config
+            self.subplot_scatter_points = self.fig.add_subplot(base + 2)
+            self.subplot_scatter_points.set_title('Predicts and true labels')
+            self.subplot_scatter_points.set_ylabel('Class labels')
+            self.subplot_scatter_points.set_xlabel('Sample analyzed')
+            pass
+
+        self.fig.subplots_adjust(hspace=.5)
 
         self.subplot_performance.set_ylabel('Performance ratio')
         self.subplot_performance.set_xlabel('Samples analyzed')
@@ -88,6 +117,13 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_kappa.set_ylim([-1,1])
             self.true_labels = FastBuffer(self.n_wait)
             self.predictions = FastBuffer(self.n_wait)
+
+        if self.show_scatter_points:
+            self.scatter_predicts = []
+            self.scatter_true_labels = []
+            self.scatter_x = []
+
+        self.fig.tight_layout(pad=2.6, w_pad=0.5, h_pad=1.0)
 
     def draw(self, new_performance_point, train_step):
         self.X.append(train_step)
@@ -125,6 +161,21 @@ class EvaluationVisualizer(BaseListener):
         #plt.xlim([np.min(self.X), 520000])
         plt.draw()
         plt.pause(0.00001)
+
+    def draw_scatter_points(self, X, y, predict):
+        self.scatter_x.append(X)
+        self.scatter_true_labels.append(y)
+        self.scatter_predicts.append(predict)
+        classes = np.unique([self.scatter_predicts, self.scatter_true_labels])
+        if self.subplot_scatter_points is not None:
+            scat_true = self.subplot_scatter_points.scatter(self.scatter_x,self.scatter_true_labels, s=2, label='True labels')
+            scat_pred = self.subplot_scatter_points.scatter(self.scatter_x, self.scatter_predicts, s=2, label='Predicts')
+            self.subplot_scatter_points.set_xlim(np.min(self.scatter_x)-2, 1.05*np.max(self.scatter_x))
+            self.subplot_scatter_points.set_ylim(np.min(classes)-1, np.max(classes)+1)
+            self.subplot_scatter_points.legend(handles=[scat_true, scat_pred])
+            #plt.draw()
+            #plt.pause(0.0000000001)
+        pass
 
     def hold(self):
         plt.show(block=True)
