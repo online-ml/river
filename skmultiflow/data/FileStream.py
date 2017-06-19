@@ -86,6 +86,7 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
             self.attributes_header = labels[0:(len(labels) - 1)]
             self.classes_header = labels[(len(labels) - 1):]
             self.instance_index = 0
+            self.num_classes = len(np.unique(self.y))
         except IOError:
             print("CSV file reading failed. Please verify the file format.")
         pass

@@ -101,7 +101,7 @@ class EvaluationVisualizer(BaseListener):
         self.subplot_performance.set_ylabel('Performance ratio')
         self.subplot_performance.set_xlabel('Samples analyzed')
 
-        self.line_partial_performance, = self.subplot_performance.plot(self.X, self.partial_performance, label='Partial performance (last 200 samples)')
+        self.line_partial_performance, = self.subplot_performance.plot(self.X, self.partial_performance, label='Partial performance (last ' + str(self.n_wait) + ' samples)')
         self.line_global_performance, = self.subplot_performance.plot(self.X, self.global_performance, label='Global performance')
         self.subplot_performance.legend(handles=[self.line_global_performance, self.line_partial_performance])
         self.subplot_performance.set_ylim([0,1])
@@ -111,7 +111,7 @@ class EvaluationVisualizer(BaseListener):
             self.global_kappa = []
             self.true_labels = FastBuffer(n_wait)
             self.predictions = FastBuffer(n_wait)
-            self.line_partial_kappa, = self.subplot_kappa.plot(self.X, self.partial_kappa, label='Partial Kappa (last 200 samples)')
+            self.line_partial_kappa, = self.subplot_kappa.plot(self.X, self.partial_kappa, label='Partial Kappa (last ' + str(self.n_wait) + ' samples)')
             self.line_global_kappa, = self.subplot_kappa.plot(self.X, self.global_kappa, label='Global Kappa')
             self.subplot_kappa.legend(handles=[self.line_global_kappa, self.line_partial_kappa])
             self.subplot_kappa.set_ylim([-1,1])
@@ -153,10 +153,10 @@ class EvaluationVisualizer(BaseListener):
                                                          xy=(train_step, self.global_kappa[len(self.global_kappa)-1]),
                                                          xytext=(8,0), textcoords='offset points'))
 
-        self.subplot_performance.set_xlim([np.min(self.X), 1.2*np.max(self.X)])
+        self.subplot_performance.set_xlim([0, 1.2*np.max(self.X)])
         self.subplot_performance.set_ylim([0,1])
         if self.show_kappa:
-            self.subplot_kappa.set_xlim([np.min(self.X), 1.2*np.max(self.X)])
+            self.subplot_kappa.set_xlim([0, 1.2*np.max(self.X)])
             self.subplot_kappa.set_ylim([-1,1])
         #plt.xlim([np.min(self.X), 520000])
         plt.draw()
@@ -168,12 +168,12 @@ class EvaluationVisualizer(BaseListener):
         self.scatter_predicts.append(predict)
         classes = np.unique([self.scatter_predicts, self.scatter_true_labels])
         if self.subplot_scatter_points is not None:
-            scat_true = self.subplot_scatter_points.scatter(self.scatter_x,self.scatter_true_labels, s=2, label='True labels')
-            scat_pred = self.subplot_scatter_points.scatter(self.scatter_x, self.scatter_predicts, s=2, label='Predicts')
-            self.subplot_scatter_points.set_xlim(np.min(self.scatter_x)-2, 1.05*np.max(self.scatter_x))
+            scat_true = self.subplot_scatter_points.scatter(self.scatter_x,self.scatter_true_labels, s=2, label='True labels', c="g")
+            scat_pred = self.subplot_scatter_points.scatter(self.scatter_x, self.scatter_predicts, s=2, label='Predicts', c="r")
+            self.subplot_scatter_points.set_xlim(np.min(self.scatter_x), 1.2*np.max(self.scatter_x))
             self.subplot_scatter_points.set_ylim(np.min(classes)-1, np.max(classes)+1)
             self.subplot_scatter_points.legend(handles=[scat_true, scat_pred])
-            #plt.draw()
+            plt.draw()
             #plt.pause(0.0000000001)
         pass
 
