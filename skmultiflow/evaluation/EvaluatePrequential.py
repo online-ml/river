@@ -1,17 +1,16 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.evaluation.BaseEvaluator import BaseEvaluator
-from skmultiflow.classification.Perceptron import PerceptronMask
-from sklearn.metrics import cohen_kappa_score
-from skmultiflow.visualization.EvaluationVisualizer import EvaluationVisualizer
-from skmultiflow.core.utils.utils import dict_to_tuple_list
-from skmultiflow.core.utils.data_structures import FastBuffer
-import sys, argparse
-from timeit import default_timer as timer
 import numpy as np
 import math
 import logging
 import warnings
+from skmultiflow.evaluation.BaseEvaluator import BaseEvaluator
+from sklearn.metrics import cohen_kappa_score
+from skmultiflow.visualization.EvaluationVisualizer import EvaluationVisualizer
+from skmultiflow.core.utils.utils import dict_to_tuple_list
+from skmultiflow.core.utils.data_structures import FastBuffer
+from timeit import default_timer as timer
+
 
 
 class EvaluatePrequential(BaseEvaluator):
@@ -21,15 +20,15 @@ class EvaluatePrequential(BaseEvaluator):
             Parameter show_scatter_points should only be used for small datasets, and non-intensive evaluations, as it
             will drastically slower the evaluation process.
         
-        :param n_wait: 
-        :param max_instances: 
-        :param max_time: 
-        :param output_file: 
-        :param show_plot: 
-        :param batch_size: 
-        :param pretrain_size: 
-        :param show_kappa: 
-        :param show_scatter_points: boolean, if True the visualization module will display a scatter of True labels vs Predicts.
+        :param n_wait: int. Number of samples processed between metric updates, including plot points
+        :param max_instances: int. Maximum number of samples to be processed
+        :param max_time: int. Maximum amount of time, in seconds, that the evaluation can take
+        :param output_file: string. Output file name. If given this is where the evaluation log will be saved.
+        :param show_plot: boolean. If true a plot including the performance evolution will be shown.
+        :param batch_size: int. The size of each batch, which means, how many samples will be treated at a time.
+        :param pretrain_size: int. How many samples will be used to pre train de model. These won't be considered for metrics calculation.
+        :param show_kappa: boolean. If true the visualization module will display the Kappa statistic plot.
+        :param show_scatter_points: boolean. If True the visualization module will display a scatter of True labels vs Predicts.
         """
         super().__init__()
         # default values
@@ -70,6 +69,7 @@ class EvaluatePrequential(BaseEvaluator):
     def train_and_test(self, stream = None, classifier = None):
         logging.basicConfig(format='%(message)s', level=logging.INFO)
         init_time = timer()
+        end_time = timer()
         self.classifier = classifier
         self.stream = stream
         self._reset_partials()
@@ -83,45 +83,54 @@ class EvaluatePrequential(BaseEvaluator):
             else self.max_instances
 
         if (self.pretrain_size > 0):
-            msg = 'Pretraining on ' + str(self.pretrain_size) + ' samples.'
             logging.info('Pretraining on %s samples.', str(self.pretrain_size))
             X, y = self.stream.next_instance(self.pretrain_size)
-            #self.classifier.partial_fit(X, y, self.stream.get_classes(), True)
             self.classifier.partial_fit(X, y, self.stream.get_classes())
-            #self.classifier.fit(X, y)
         else:
             X, y = None, None
 
+        before_count = 0
         logging.info('Evaluating...')
-        show_class = True
-        while ((self.global_sample_count < self.max_instances) & (timer() - init_time < self.max_time)
+        while ((self.global_sample_count < self.max_instances) & (end_time - init_time < self.max_time)
                    & (self.stream.has_more_instances())):
-            X, y = self.stream.next_instance(self.batch_size)
-            if X is not None and y is not None:
-                prediction = self.classifier.predict(X)
-                self.global_sample_count += self.batch_size
-                self.partial_sample_count += self.batch_size
-                self.kappa_predicts.add_element(np.ravel(prediction))
-                self.kappa_true_labels.add_element(np.ravel(y))
-                for i in range(len(prediction)):
-                    nul_count = self.global_sample_count - self.batch_size
-                    if ((prediction[i] == y[i]) and not (self.global_sample_count > self.max_instances)):
-                        self.partial_correct_predicts += 1
-                        self.global_correct_predicts += 1
-                    if ((nul_count + i + 1) % (rest/20)) == 0:
-                        logging.info('%s%%', str(((nul_count+i+1) // (rest / 20)) * 5))
-                    if self.show_scatter_points:
-                        self.visualizer.on_new_scatter_data(self.global_sample_count - self.batch_size + i, y[i],
-                                                            prediction[i])
+            try:
+                X, y = self.stream.next_instance(self.batch_size)
+                if X is not None and y is not None:
+                    prediction = self.classifier.predict(X)
+                    self.global_sample_count += self.batch_size
+                    self.partial_sample_count += self.batch_size
+                    self.kappa_predicts.add_element(np.ravel(prediction))
+                    self.kappa_true_labels.add_element(np.ravel(y))
+                    for i in range(len(prediction)):
+                        nul_count = self.global_sample_count - self.batch_size
+                        if ((prediction[i] == y[i]) and not (self.global_sample_count > self.max_instances)):
+                            self.partial_correct_predicts += 1
+                            self.global_correct_predicts += 1
+                        if ((nul_count + i + 1) % (rest/20)) == 0:
+                            logging.info('%s%%', str(((nul_count+i+1) // (rest / 20)) * 5))
+                        if self.show_scatter_points:
+                            self.visualizer.on_new_scatter_data(self.global_sample_count - self.batch_size + i, y[i],
+                                                                prediction[i])
 
-                self.classifier.partial_fit(X, y)
+                    self.classifier.partial_fit(X, y)
 
-                if ((self.global_sample_count % self.n_wait) == 0 | (self.global_sample_count >= self.max_instances)):
+                    if ((self.global_sample_count % self.n_wait) == 0 | (self.global_sample_count >= self.max_instances) |
+                        (self.global_sample_count / self.n_wait > before_count + 1)):
+                        before_count += 1
+                        self.kappa_count += 1
+                        self.update_metrics()
+                end_time = timer()
+            except BaseException as exc:
+                if exc is KeyboardInterrupt:
                     self.kappa_count += 1
                     self.update_metrics()
+                break
 
-        end_time = timer()
-        logging.info('Evaluation time: %s', str(round(end_time - init_time, 3)))
+        if (end_time-init_time > self.max_time):
+            logging.info('\nTime limit reached. Evaluation stopped.')
+            logging.info('Evaluation time: %s s', str(self.max_time))
+        else:
+            logging.info('\nEvaluation time: %s s', str(round(end_time - init_time, 3)))
         logging.info('Total instances: %s', str(self.global_sample_count))
         logging.info('Global accuracy: %s', str(round(self.global_correct_predicts/self.global_sample_count, 3)))
         logging.info('Global kappa statistic %s', str(round(self.global_kappa, 3)))
@@ -210,3 +219,7 @@ class EvaluatePrequential(BaseEvaluator):
                 self.batch_size = value
             elif name == 'pretrain_size':
                 self.pretrain_size = value
+            elif name == 'show_kappa':
+                self.show_kappa = value
+            elif name == 'show_scatter_points':
+                self.show_scatter_points = value

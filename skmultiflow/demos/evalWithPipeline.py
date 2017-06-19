@@ -1,14 +1,11 @@
 __author__ = 'Guilherme Matsumoto'
 
-from sklearn.linear_model.perceptron import Perceptron
-from skmultiflow.data.FileStream import FileStream
-from skmultiflow.data.generators.RandomTreeGenerator import RandomTreeGenerator
-from skmultiflow.evaluation.EvaluatePrequential import EvaluatePrequential
-from skmultiflow.core.pipeline.Pipeline import Pipeline
-from skmultiflow.options.FileOption import FileOption
-from skmultiflow.classification.Perceptron import PerceptronMask
-from skmultiflow.classification.NaiveBayes import NaiveBayes
 from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+
+from skmultiflow.core.Pipeline import Pipeline
+from skmultiflow.data.FileStream import FileStream
+from skmultiflow.evaluation.EvaluatePrequential import EvaluatePrequential
+from skmultiflow.options.FileOption import FileOption
 
 
 def demo():
