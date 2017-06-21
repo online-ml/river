@@ -1,8 +1,11 @@
+__author__ = 'Jesse Read'
+
 from numpy import *
 import copy
 from sklearn import linear_model
+from skmultiflow.classification.base import BaseClassifier
 
-class MOL() :
+class MultiOutputLearner(BaseClassifier) :
     '''
         Multi-Output Learner
         --------------------
@@ -14,9 +17,10 @@ class MOL() :
     L = -1
 
     def __init__(self, h=linear_model.LogisticRegression()):
+        super().__init__()
         self.hop = h
 
-    def fit(self, X, Y):
+    def fit(self, X, Y, classes = None):
         N,L = Y.shape
         self.L = L
         self.h = [ copy.deepcopy(self.hop) for j in range(self.L)]
