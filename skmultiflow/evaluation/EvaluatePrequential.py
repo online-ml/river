@@ -10,14 +10,11 @@ from skmultiflow.visualization.EvaluationVisualizer import EvaluationVisualizer
 from skmultiflow.core.utils.utils import dict_to_tuple_list
 from skmultiflow.core.utils.data_structures import FastBuffer
 from timeit import default_timer as timer
-import csv
-
-
 
 
 class EvaluatePrequential(BaseEvaluator):
     def __init__(self, n_wait=200, max_instances=100000, max_time=float("inf"), output_file=None,
-                 show_performance=False, batch_size=1, pretrain_size=200, show_kappa = False, show_scatter_points=False):
+                 show_performance=False, batch_size=1, pretrain_size=200, show_kappa = False, track_global_kappa=False, show_scatter_points=False):
         """
             Parameter show_scatter_points should only be used for small datasets, and non-intensive evaluations, as it
             will drastically slower the evaluation process.
@@ -30,6 +27,7 @@ class EvaluatePrequential(BaseEvaluator):
         :param batch_size: int. The size of each batch, which means, how many samples will be treated at a time.
         :param pretrain_size: int. How many samples will be used to pre train de model. These won't be considered for metrics calculation.
         :param show_kappa: boolean. If true the visualization module will display the Kappa statistic plot.
+        :param track_global_kappa: If true will keep track of a global kappa statistic. Will consume more memory and will be plotted if show_kappa is True.
         :param show_scatter_points: boolean. If True the visualization module will display a scatter of True labels vs Predicts.
         """
         super().__init__()
@@ -42,6 +40,7 @@ class EvaluatePrequential(BaseEvaluator):
         self.show_performance = show_performance
         self.show_kappa = show_kappa
         self.show_scatter_points = show_scatter_points
+        self.track_global_kappa = track_global_kappa
         self.classifier = None
         self.stream = None
         self.output_file = output_file
@@ -54,6 +53,8 @@ class EvaluatePrequential(BaseEvaluator):
         self.global_accuracy = 0
         # kappa stats
         self.global_kappa = 0.0
+        self.all_labels = []
+        self.all_predicts = []
         self.kappa_count = 0
         self.kappa_predicts = FastBuffer(n_wait)
         self.kappa_true_labels = FastBuffer(n_wait)
@@ -95,7 +96,7 @@ class EvaluatePrequential(BaseEvaluator):
                     f.write("\n# " + self.classifier.get_info())
                 f.write("\n# " + self.get_info())
                 f.write("\n# SETUP END")
-                f.write("\nx_count,global_performance,partial_performance,sliding_window_kappa,true_label,prediction")
+                f.write("\nx_count,global_performance,partial_performance,global_kappa,sliding_window_kappa,true_label,prediction")
 
         if (self.pretrain_size > 0):
             logging.info('Pretraining on %s samples.', str(self.pretrain_size))
@@ -126,6 +127,8 @@ class EvaluatePrequential(BaseEvaluator):
                         if self.show_scatter_points:
                             self.visualizer.on_new_scatter_data(self.global_sample_count - self.batch_size + i, y[i],
                                                                 prediction[i])
+                        self.all_labels.extend(y)
+                        self.all_predicts.extend(prediction)
                     self.classifier.partial_fit(X, y)
 
                     if ((self.global_sample_count % self.n_wait) == 0 | (self.global_sample_count >= self.max_instances) |
@@ -178,6 +181,10 @@ class EvaluatePrequential(BaseEvaluator):
             else:
                 line += ',nan,nan'
             if self.show_kappa:
+                if self.track_global_kappa:
+                    line += ',' +str(round(self.global_kappa, 3))
+                else:
+                    line += ',nan'
                 line += ',' + str(round(partial_accuracy[i], 3))
             else:
                 line += ',nan,nan'
@@ -187,7 +194,7 @@ class EvaluatePrequential(BaseEvaluator):
                 line += ',nan,nan'
             with open(self.output_file, 'a') as f:
                 f.write('\n'+line)
-        self.visualizer.on_new_train_step(partial_accuracy, num_instances, y, prediction)
+        self.visualizer.on_new_train_step(partial_accuracy, num_instances, y, prediction, self.global_kappa)
         pass
 
     def update_metrics(self, y=None, prediction=None):
@@ -204,11 +211,9 @@ class EvaluatePrequential(BaseEvaluator):
                                                       (self.partial_correct_predicts/self.partial_sample_count)
         partial_kappa = 0.0
         partial_kappa = cohen_kappa_score(self.kappa_predicts.get_queue(), self.kappa_true_labels.get_queue())
+        self.global_kappa = cohen_kappa_score(self.all_labels, self.all_predicts)
         #logging.info('%s', str(round(partial_kappa, 3)))
-        if not math.isnan(partial_kappa):
-            self.global_kappa = ((self.kappa_count-1)/self.kappa_count)*self.global_kappa + partial_kappa*(1/self.kappa_count)
-        else:
-            self.global_kappa = ((self.kappa_count-1)/self.kappa_count)*self.global_kappa + 1*(1/self.kappa_count)
+        if math.isnan(partial_kappa):
             partial_kappa = 1.0
 
         partials = None
@@ -253,6 +258,7 @@ class EvaluatePrequential(BaseEvaluator):
     def start_plot(self, n_wait, dataset_name):
         self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name,
                                                show_performance=self.show_performance, show_kappa= self.show_kappa,
+                                               track_global_kappa=self.track_global_kappa,
                                                show_scatter_points=self.show_scatter_points)
         pass
 
