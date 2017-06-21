@@ -30,3 +30,6 @@ class NaiveBayes(BaseClassifier):
 
     def score(self, X, y):
         return self.classifier.score(X, y)
+
+    def get_info(self):
+        pass

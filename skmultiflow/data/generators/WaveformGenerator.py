@@ -112,7 +112,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
             #print(self.current_instance_y)
             #print(data)
         #return (self.current_instance_x, self.current_instance_y)
-        return (data[:, :self.num_attributes], data[:, self.num_attributes:])
+        return (data[:, :self.num_attributes], np.ravel(data[:, self.num_attributes:]))
 
     def is_restartable(self):
         return True
@@ -161,6 +161,8 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
             c.append(i)
         return c
 
+    def get_info(self):
+        pass
 
 def demo():
     wfg = WaveformGenerator()

@@ -19,3 +19,6 @@ class InstanceHeader(BaseObject):
 
     def get_class_type(self):
         return 'instance'
+
+    def get_info(self):
+        pass

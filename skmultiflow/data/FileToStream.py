@@ -124,3 +124,6 @@ class FileToStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
         for i in range(self.num_classes):
             c.append(i)
         return c
+
+    def get_info(self):
+        pass

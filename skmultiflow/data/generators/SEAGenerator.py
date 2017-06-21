@@ -147,6 +147,8 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
             c.append(i)
         return c
 
+    def get_info(self):
+        pass
 
 if __name__ == "__main__":
     sg = SEAGenerator(classification_function=3, noise_percentage=0.2)

@@ -57,6 +57,9 @@ class EvaluateStreamGenerationSpeed(BaseObject):
     def get_class_type(self):
         return 'estimator'
 
+    def get_info(self):
+        pass
+
 if __name__ == '__main__':
     msg = EvaluateStreamGenerationSpeed()
     print(msg.get_class_type())

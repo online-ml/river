@@ -156,4 +156,6 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
         c = np.unique(self.y)
         return c
 
-
+    def get_info(self):
+        return 'File Stream: file_name: ' + str(self.file_name) + \
+               '  -  num_classes: ' + str(self.num_classes)

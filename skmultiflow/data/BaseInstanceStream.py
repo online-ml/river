@@ -79,3 +79,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
 
     def get_class_type(self):
         return 'stream'
+
+    @abstractmethod
+    def get_info(self):
+        pass
