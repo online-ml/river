@@ -1,9 +1,10 @@
 __author__ = 'Guilherme Matsumoto'
 
 from abc import ABCMeta, abstractmethod
+from skmultiflow.core.BaseObject import BaseObject
 
 
-class BaseOptionHandler(metaclass=ABCMeta):
+class BaseOptionHandler(BaseObject, metaclass=ABCMeta):
     """Base Classifier class
     """
     def __init__(self):
@@ -75,4 +76,7 @@ class BaseOptionHandler(metaclass=ABCMeta):
         array, shape (n_samples, n_classes)
             Returns the probability of the sample for each class in the model.
         """
+        pass
+
+    def get_info(self):
         pass

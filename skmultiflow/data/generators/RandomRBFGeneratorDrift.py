@@ -60,6 +60,9 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
         self.generate_centroids()
         self.instance_random.seed(self.instance_seed)
 
+    def get_info(self):
+        pass
+
 if __name__ == '__main__':
     stream = RandomRBFGeneratorDrift(change_speed=0.02, num_drift_centroids=50)
     stream.prepare_for_use()

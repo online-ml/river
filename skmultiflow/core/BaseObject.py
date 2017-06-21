@@ -9,3 +9,7 @@ class BaseObject(metaclass=ABCMeta):
     @abstractmethod
     def get_class_type(self):
         pass
+
+    @abstractmethod
+    def get_info(self):
+        pass

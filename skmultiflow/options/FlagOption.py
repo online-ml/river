@@ -25,3 +25,6 @@ class FlagOption(BaseOption):
 
     def get_cli_option_from_dictionary(self):
         pass
+
+    def get_info(self):
+        pass

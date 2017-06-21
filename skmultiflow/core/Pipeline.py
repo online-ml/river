@@ -204,6 +204,22 @@ class Pipeline(BaseObject):
         """
         return dict(self.steps)
 
+    def get_info(self):
+        info = "Pipeline: "
+        names, estimators = zip(*self.steps)
+        classifier = estimators[-1]
+        transforms = estimators[:-1]
+        i = 0
+        for t in transforms:
+            if t.get_info() is not None:
+                info += t.get_info()
+                info += " #### "
+            i += 1
+
+        if classifier is not None:
+            info += classifier.get_info()
+        return info
+
     @property
     def _final_estimator(self):
         """ Easy to access classifier

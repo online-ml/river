@@ -66,6 +66,9 @@ class FastBuffer(BaseObject):
     def get_queue(self):
         return self.buffer
 
+    def get_info(self):
+        pass
+
 if __name__ == '__main__':
     text = '/asddfdsd/'
     aux = text.split("/")

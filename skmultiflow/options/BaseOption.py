@@ -39,3 +39,7 @@ class BaseOption(BaseObject, metaclass=ABCMeta):
 
     def get_class_type(self):
         return 'option'
+
+    @abstractmethod
+    def get_info(self):
+        pass

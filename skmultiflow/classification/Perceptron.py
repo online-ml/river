@@ -27,3 +27,15 @@ class PerceptronMask(BaseClassifier):
 
     def score(self, X, y):
         return self.classifier.score(X, y)
+
+    def get_info(self):
+        params = self.classifier.get_params()
+        penalty = params['penalty']
+        penalty = 'None' if penalty is None else penalty
+        fit_int = params['fit_intercept']
+        fit_int = 'True' if fit_int else 'False'
+        shuffle = params['shuffle']
+        shuffle = 'True' if shuffle else 'False'
+        return 'Perceptron: penalty: ' + penalty + '  -  alpha: ' + str(round(params['alpha'], 3)) + \
+               '  -  fit_intercept: ' + fit_int + '  -  n_iter: ' + str(params['n_iter']) + \
+               '  -  shuffle: ' + shuffle

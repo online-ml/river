@@ -249,6 +249,8 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
             c.append(i)
         return c
 
+    def get_info(self):
+        pass
 
 class Node:
     def __init__(self, class_label = None, split_att_index = None, split_att_value = None):

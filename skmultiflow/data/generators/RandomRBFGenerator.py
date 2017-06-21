@@ -131,6 +131,9 @@ class RandomRBFGenerator(BaseInstanceStream, BaseObject):
             self.centroid_weights.append(model_random.rand())
             pass
 
+    def get_info(self):
+        pass
+
 class Centroid:
     def __init__(self):
         self.centre = None

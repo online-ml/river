@@ -15,3 +15,6 @@ class BaseTask(BaseObject, metaclass=ABCMeta):
 
     def get_class_type(self):
         return 'task'
+
+    def get_info(self):
+        pass

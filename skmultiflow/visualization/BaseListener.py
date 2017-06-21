@@ -16,3 +16,7 @@ class BaseListener(BaseObject, metaclass=ABCMeta):
 
     def get_class_type(self):
         return 'listener'
+
+    @abstractmethod
+    def get_info(self):
+        pass

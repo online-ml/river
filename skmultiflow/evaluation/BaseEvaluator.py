@@ -30,3 +30,7 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
     @abstractmethod
     def update_metrics(self):
         pass
+
+    @abstractmethod
+    def get_info(self):
+        pass

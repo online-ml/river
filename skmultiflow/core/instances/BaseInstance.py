@@ -90,3 +90,7 @@ class BaseInstance(BaseObject, metaclass=ABCMeta):
 
     def get_class_type(self):
         return 'instance'
+
+    @abstractmethod
+    def get_info(self):
+        pass

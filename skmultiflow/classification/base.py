@@ -83,3 +83,7 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
 
     def get_class_type(self):
         return 'estimator'
+
+    @abstractmethod
+    def get_info(self):
+        pass

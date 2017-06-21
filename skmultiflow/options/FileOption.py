@@ -41,3 +41,6 @@ class FileOption(BaseOption):
     def get_cli_option_from_dictionary(self):
         return {"file_name" : "-n",
                 "file_type" : "-t"}[self.option_type]
+
+    def get_info(self):
+        pass
