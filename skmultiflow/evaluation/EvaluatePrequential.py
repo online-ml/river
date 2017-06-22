@@ -153,6 +153,8 @@ class EvaluatePrequential(BaseEvaluator):
             logging.info('\nEvaluation time: %s s', str(round(end_time - init_time, 3)))
         logging.info('Total instances: %s', str(self.global_sample_count))
         logging.info('Global accuracy: %s', str(round(self.global_correct_predicts/self.global_sample_count, 3)))
+        if self.track_global_kappa:
+            logging.info('Global kappa: %s', str(round(self.global_kappa, 3)))
 
         return self.classifier
 

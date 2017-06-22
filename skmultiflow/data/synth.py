@@ -27,3 +27,8 @@ def make_logical(n_tiles=1):
     X = array(pat2[:,L:E],dtype=float)
 
     return X, Y
+
+if __name__ == '__main__':
+    X, y = make_logical()
+    print(X[0])
+    print(y[0])
