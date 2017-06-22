@@ -16,7 +16,7 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
         ---------------------------------------------
         -f: CSV file to load
     '''
-    def __init__(self, file_opt, num_classes = 2):
+    def __init__(self, file_opt, num_classes=2, class_last=True, num_classification_tasks=1):
         super().__init__()
         # default values
         if file_opt.file_type in ['CSV', 'csv', 'Csv', 'cSv', 'csV', 'CSv', 'CsV', 'cSV']:
@@ -31,6 +31,8 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
         self.current_instance_x = None
         self.current_instance_y = None
         self.num_classes = num_classes
+        self.num_classification_tasks = num_classification_tasks
+        self.class_last = class_last
         self.num_numerical_attributes = 0
         self.num_nominal_attributes = 0
         self.num_values_per_nominal_att = 0
@@ -81,10 +83,16 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
             self.instance_length = len(instance_aux.index)
             self.num_attributes = len(instance_aux.columns) - 1
             labels = instance_aux.columns.values.tolist()
-            self.X = instance_aux.iloc[:, 0:(len(labels)-1)]
-            self.y = instance_aux.iloc[:, (len(labels)-1):]
-            self.attributes_header = labels[0:(len(labels) - 1)]
-            self.classes_header = labels[(len(labels) - 1):]
+            if self.class_last:
+                self.X = instance_aux.iloc[:, 0:(len(labels)-self.num_classification_tasks)]
+                self.y = instance_aux.iloc[:, (len(labels)-self.num_classification_tasks):]
+                self.attributes_header = labels[0:(len(labels) - self.num_classification_tasks)]
+                self.classes_header = labels[(len(labels) - self.num_classification_tasks):]
+            else:
+                self.y = instance_aux.iloc[:, 0:self.num_classification_tasks]
+                self.X = instance_aux.iloc[:, self.num_classification_tasks:]
+                self.classes_header = labels[0:self.num_classification_tasks]
+                self.attributes_header = labels[self.num_classification_tasks:]
             self.instance_index = 0
             self.num_classes = len(np.unique(self.y))
         except IOError:
@@ -99,8 +107,18 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
         #self.current_instance_x = self.X[self.instance_index-1:self.instance_index+batchSize-1].values[0]
         #self.current_instance_y = self.y[self.instance_index-1:self.instance_index+batchSize-1].values[0]
         try:
-            self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values
-            self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values.flatten()
+            if self.class_last:
+                self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values
+                self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values
+                if self.num_classification_tasks < 2:
+                    self.current_instance_y = self.current_instance_y.flatten()
+            else:
+                self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1,
+                                          :].values
+                self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1,
+                                          :].values
+                if self.num_classification_tasks < 2:
+                    self.current_instance_y = self.current_instance_y.flatten()
         except IndexError:
             self.current_instance_x = None
             self.current_instance_y = None
@@ -150,7 +168,9 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
         aux = self.file_name.split("/")
         if aux[len(aux)-1] == '':
             aux.pop(len(aux)-1)
-        return "File Stream: " + aux[len(aux)-1] + " - " + str(self.num_classes) + " class labels"
+        return "File Stream: " + aux[len(aux)-1] + " - " + str(self.num_classes) + " class labels" \
+            if self.num_classification_tasks == 1 else "File Stream: " + aux[len(aux)-1] + " - " + \
+                                                       str(self.num_classification_tasks) + " classification tasks"
 
     def get_classes(self):
         c = np.unique(self.y)
@@ -158,4 +178,5 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
 
     def get_info(self):
         return 'File Stream: file_name: ' + str(self.file_name) + \
-               '  -  num_classes: ' + str(self.num_classes)
+               '  -  num_classes: ' + str(self.num_classes) + \
+               '  -  num_classification_tasks: ' + str(self.num_classification_tasks)

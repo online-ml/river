@@ -4,6 +4,7 @@ import skmultiflow.demos.streamPlusClassifier as spc
 import skmultiflow.demos.evalWithPipeline as ewp
 import skmultiflow.demos.evalStreamSpeed as ess
 import skmultiflow.demos.evalPrequential as evp
+import skmultiflow.demos.evalMultiOutputLearner as emol
 
 
 def demoSCP():
@@ -51,6 +52,17 @@ def demo_stream_speed():
     """
     ess.demo()
 
+def demo_multi_output():
+    """ Demo for multi output learners
+        
+        Stream: from file Music.csv
+        Classifier: Various types, given by name to the MultiOutputLearner class
+        Evaluator: Don't now yet
+    
+    :return: 
+    """
+    emol.demo()
+
 if __name__ == '__main__':
     # NEW tests
 
@@ -58,11 +70,14 @@ if __name__ == '__main__':
     #demoSCP()
 
     # Demo Prequential evaluation - go to skmultiflow.demos.evalPrequential to change demo parameters
-    demo_preq()
+    #demo_preq()
 
     # Demo Prequential eval with pipeline - go to skmultiflow.demos.evalWithPipeline to change demo parameters
     #demo_pipeline()
 
     # Demo eval stream speed - go to skmultiflow.demos.evalStreamSpeed to change demo parameters
     #demo_stream_speed()
+
+    # Demo for multi output classification, trying with the Music.csv from Jesse Read's repository
+    demo_multi_output()
 

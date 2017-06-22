@@ -4,6 +4,7 @@ from numpy import *
 import copy
 from sklearn import linear_model
 from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.metrics import *
 
 class MultiOutputLearner(BaseClassifier) :
     '''
@@ -58,17 +59,29 @@ class MultiOutputLearner(BaseClassifier) :
             P[:,j] = self.h[j].predict_proba(X)[:,1]
         return P
 
+    def get_info(self):
+        pass
+
+    def get_class_type(self):
+        pass
+
+    def score(self, X, y):
+        pass
+
 def demo():
     import sys
     sys.path.append( '../data' )
-    from synth import make_logical
+    from skmultiflow.data.synth import make_logical
 
     X,Y = make_logical()
     N,L = Y.shape
 
-    h = MOL(linear_model.SGDClassifier(n_iter=100))
+    h = MultiOutputLearner(linear_model.SGDClassifier(n_iter=100))
     h.fit(X, Y)
 
+    p = h.predict(X)
+    ham = hamming_score(Y, p)
+    print(ham)
     # Test
     print(h.predict(X))
     print("vs")
