@@ -6,7 +6,7 @@ import logging
 
 
 def demo(output_file='testlog.csv'):
-    _test_prequential.demo(output_file)
+    _test_prequential.demo(output_file, 40000)
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     logging.info('Finished the Prequential evaluation...')
     logging.info('...')
