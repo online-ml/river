@@ -16,6 +16,7 @@ from timeit import default_timer as timer
 
 
 def demo():
+    # First demo, NOT TO BE USED
     opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     optList = [['-c', '2'], ['-o', '0'], ['-u', '5']]
 

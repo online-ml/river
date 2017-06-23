@@ -2,6 +2,29 @@ __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.core.BaseObject import BaseObject
 
+def clean_header(base_file, new_file=None, ignore_char='#'):
+    # Find the new_file name
+    if new_file is not None:
+        nf = new_file
+    else:
+        path = base_file.split(".")
+        base_path = path[0]
+        if len(path) > 1:
+            file_type = path[1]
+        else:
+            file_type = None
+        base_path += '_no_header'
+        nf = base_path + '.' + file_type if file_type is not None else base_path
+
+    # Clean the file
+    with open(base_file, 'r') as in_file:
+        with open(nf, 'w+') as out_file:
+            for line in in_file:
+                if (line[0] == ignore_char):
+                    pass
+                else:
+                    out_file.write(line)
+
 
 class RemoveHeader(BaseObject):
     def __init__(self, base_file, new_file = None, ignore_char = '#'):

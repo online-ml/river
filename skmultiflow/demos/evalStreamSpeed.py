@@ -10,8 +10,8 @@ from skmultiflow.evaluation.EvaluateStreamGenerationSpeed import EvaluateStreamG
 
 
 def demo():
-    # Test with FileStream
-    opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
+    # Setup the stream
+    opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     stream = FileStream(opt, 7)
     stream.prepare_for_use()
 
@@ -20,5 +20,11 @@ def demo():
     #stream = RandomTreeGenerator(opt_list)
     #stream.prepare_for_use()
 
+    # Setup the evaluator
     eval = EvaluateStreamGenerationSpeed(100000, float("inf"), None, 5)
+
+    # Evaluate
     eval.eval(stream)
+
+if __name__ == '__main__':
+    demo()
