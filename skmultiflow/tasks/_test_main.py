@@ -6,7 +6,7 @@ import sys
 from timeit import default_timer as timer
 
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.randomtree_generator import RandomTreeGenerator
+from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 from skmultiflow.options.file_option import FileOption

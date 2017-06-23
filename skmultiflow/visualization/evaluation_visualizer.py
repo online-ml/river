@@ -133,24 +133,7 @@ class EvaluationVisualizer(BaseListener):
 
     def draw(self, new_performance_point, train_step, global_kappa=None):
         self.X.append(train_step)
-        '''
-        for i in range(len(new_performance_point)):
-            if ((i == 0) & (self.show_performance)):
-                self.partial_performance.append(new_performance_point[i])
-                self.global_performance.append(np.mean(self.partial_performance))
-                self.line_partial_performance.set_data(self.X, self.partial_performance)
-                self.line_global_performance.set_data(self.X, self.global_performance)
-            else:
-                self.partial_kappa.append(new_performance_point[i])
-                self.global_kappa.append(np.mean(self.partial_kappa))
-                self.line_partial_kappa.set_data(self.X, self.partial_kappa)
-                self.line_global_kappa.set_data(self.X, self.global_kappa)
-            if (i == 1):
-                self.partial_kappa.append(new_performance_point[i])
-                self.global_kappa.append(np.mean(self.partial_kappa))
-                self.line_partial_kappa.set_data(self.X, self.partial_kappa)
-                self.line_global_kappa.set_data(self.X, self.global_kappa)
-        '''
+
         if self.show_performance and self.show_kappa:
             self.partial_performance.append(new_performance_point[0])
             self.global_performance.append(np.mean(self.partial_performance))
