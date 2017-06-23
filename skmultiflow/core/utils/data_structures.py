@@ -1,6 +1,6 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.core.BaseObject import BaseObject
+from skmultiflow.core.base_object import BaseObject
 
 
 class FastBuffer(BaseObject):

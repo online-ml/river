@@ -1,18 +1,19 @@
+__author__ = 'Guilherme Matsumoto'
+
 from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
 
-class BaseClassifier(BaseObject, metaclass=ABCMeta):
+
+class BaseOptionHandler(BaseObject, metaclass=ABCMeta):
     """Base Classifier class
-        create a flag to verify if it's the first run
     """
     def __init__(self):
-        super().__init__()
         """ Initialization.
         """
         pass
 
     @abstractmethod
-    def fit(self, X, y, classes = None):
+    def fit(self, X, y, classes):
         """Fit model.
 
         Parameters
@@ -77,13 +78,5 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
-    def score(self, X, y):
-        pass
-
-    def get_class_type(self):
-        return 'estimator'
-
-    @abstractmethod
     def get_info(self):
         pass
