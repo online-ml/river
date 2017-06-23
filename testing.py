@@ -4,7 +4,7 @@ import skmultiflow.demos.streamPlusClassifier as spc
 import skmultiflow.demos.evalWithPipeline as ewp
 import skmultiflow.demos.evalStreamSpeed as ess
 import skmultiflow.demos.evalPrequential as evp
-import skmultiflow.demos.evalMultiOutputLearner as emol
+import skmultiflow.demos._testMultiOutputLearner as emol
 
 
 def demoSCP():

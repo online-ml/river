@@ -1,5 +1,6 @@
 __author__ = 'Guilherme Matsumoto'
 
+import time
 from skmultiflow.visualization.BaseListener import BaseListener
 from skmultiflow.core.utils.data_structures import FastBuffer
 import numpy as np
@@ -131,7 +132,7 @@ class EvaluationVisualizer(BaseListener):
         if self.show_performance:
             self.line_partial_performance, = self.subplot_performance.plot(self.X, self.partial_performance, label='Partial performance (last ' + str(self.n_wait) + ' samples)')
             self.line_global_performance, = self.subplot_performance.plot(self.X, self.global_performance, label='Global performance')
-            self.subplot_performance.legend(handles=[self.line_global_performance, self.line_partial_performance])
+            self.subplot_performance.legend(handles=[self.line_partial_performance, self.line_global_performance])
             self.subplot_performance.set_ylim([0,1])
 
         if self.show_kappa:
@@ -239,7 +240,6 @@ class EvaluationVisualizer(BaseListener):
                                             xytext=(8, 0), textcoords='offset points'))
             self.subplot_kappa.set_xlim([0, 1.2 * np.max(self.X)])
             self.subplot_kappa.set_ylim([-1, 1])
-        #plt.xlim([np.min(self.X), 520000])
         plt.draw()
         plt.pause(0.00001)
 
@@ -259,7 +259,6 @@ class EvaluationVisualizer(BaseListener):
 
     def hold(self):
         plt.show(block=True)
-        pass
 
     def get_info(self):
         pass

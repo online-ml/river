@@ -4,12 +4,14 @@ import numpy as np
 import math
 import logging
 import warnings
+import time
 from skmultiflow.evaluation.BaseEvaluator import BaseEvaluator
 from sklearn.metrics import cohen_kappa_score
 from skmultiflow.visualization.EvaluationVisualizer import EvaluationVisualizer
 from skmultiflow.core.utils.utils import dict_to_tuple_list
 from skmultiflow.core.utils.data_structures import FastBuffer
 from timeit import default_timer as timer
+
 
 
 class EvaluatePrequential(BaseEvaluator):

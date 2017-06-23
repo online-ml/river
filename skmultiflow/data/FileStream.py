@@ -103,7 +103,7 @@ class FileStream(BaseInstanceStream.BaseInstanceStream, BaseObject):
         return True
 
     def next_instance(self, batch_size = 1):
-        self.instance_index += 1
+        self.instance_index += batch_size
         #self.current_instance_x = self.X[self.instance_index-1:self.instance_index+batchSize-1].values[0]
         #self.current_instance_y = self.y[self.instance_index-1:self.instance_index+batchSize-1].values[0]
         try:

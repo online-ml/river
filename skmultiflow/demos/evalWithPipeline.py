@@ -9,8 +9,8 @@ from skmultiflow.options.FileOption import FileOption
 
 
 def demo():
-    # Test with FileStream
-    opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
+    # Setup the stream
+    opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     stream = FileStream(opt, 7)
     stream.prepare_for_use()
 
@@ -19,10 +19,19 @@ def demo():
     #stream = RandomTreeGenerator(opt_list)
     #stream.prepare_for_use()
 
+    # Setup the classifier
     #classifier = PerceptronMask()
     #classifier = NaiveBayes()
     classifier = PassiveAggressiveClassifier()
 
+    # Setup the pipeline
     pipe = Pipeline([('perceptron', classifier)])
+
+    # Setup the evaluator
     eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=500000)
+
+    # Evaluate
     eval.eval(stream=stream, classifier=pipe)
+
+if __name__ == '__main__':
+    demo()
