@@ -1,6 +1,6 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.core.BaseObject import BaseObject
+from skmultiflow.core.base_object import BaseObject
 
 def clean_header(base_file, new_file=None, ignore_char='#'):
     # Find the new_file name
