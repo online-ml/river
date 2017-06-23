@@ -31,4 +31,4 @@ def demo(output_file=None):
     eval.eval(stream=stream, classifier=pipe)
 
 if __name__ == '__main__':
-    demo('logs/log1.csv')
+    demo('log1.csv')

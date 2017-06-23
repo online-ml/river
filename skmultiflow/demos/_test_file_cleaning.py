@@ -5,7 +5,7 @@ from skmultiflow.core.utils.file_scripts import clean_header
 import logging
 
 
-def demo(output_file='logs/testlog.csv'):
+def demo(output_file='testlog.csv'):
     _test_prequential.demo(output_file)
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     logging.info('Finished the Prequential evaluation...')
@@ -16,4 +16,4 @@ def demo(output_file='logs/testlog.csv'):
     pass
 
 if __name__ == '__main__':
-    demo('logs/log2.csv')
+    demo('log2.csv')
