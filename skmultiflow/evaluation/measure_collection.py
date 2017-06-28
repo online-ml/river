@@ -16,7 +16,8 @@ class ClassificationMeasurements(BaseObject):
         else:
             self.n_targets = 0
         self.confusion_matrix = ConfusionMatrix(self.n_targets, dtype)
-        self.last_class = None
+        self.last_true_label = None
+        self.last_prediction = None
         self.sample_count = 0
         self.targets = targets
 
@@ -29,11 +30,16 @@ class ClassificationMeasurements(BaseObject):
         pass
 
     def add_result(self, sample, prediction):
+        self.last_true_label = sample
+        self.last_prediction = prediction
         true_y = self._get_target_index(sample, True)
         pred = self._get_target_index(prediction, True)
         self.confusion_matrix.update(true_y, pred)
         self.sample_count += 1
         pass
+
+    def get_last(self):
+        return self.last_true_label, self.last_prediction
 
     def get_majority_class(self):
         """ Get the true majority class
@@ -94,7 +100,8 @@ class ClassificationMeasurements(BaseObject):
             sum_column = np.sum(column) / self.sample_count
 
             pc += sum_row * sum_column
-
+        if pc == 1:
+            return 1
         return (p0 - pc) / (1.0 - pc)
 
     @property
@@ -123,6 +130,8 @@ class WindowClassificationMeasurements(BaseObject):
         self.true_labels = FastBuffer(window_size)
         self.predictions = FastBuffer(window_size)
         self.temp = 0
+        self.last_prediction = None
+        self.last_true_label = None
         pass
 
     def reset(self, targets=None):
@@ -134,6 +143,8 @@ class WindowClassificationMeasurements(BaseObject):
         pass
 
     def add_result(self, sample, prediction):
+        self.last_true_label = sample
+        self.last_prediction = prediction
         true_y = self._get_target_index(sample, True)
         pred = self._get_target_index(prediction, True)
 
@@ -149,6 +160,9 @@ class WindowClassificationMeasurements(BaseObject):
 
         self.confusion_matrix.update(true_y, pred)
         pass
+
+    def get_last(self):
+        return self.last_true_label, self.last_prediction
 
     def get_majority_class(self):
         """ Get the true majority class
@@ -210,6 +224,8 @@ class WindowClassificationMeasurements(BaseObject):
 
             pc += sum_row * sum_column
 
+        if pc == 1:
+            return 1
         return (p0 - pc) / (1.0 - pc)
 
     @property
