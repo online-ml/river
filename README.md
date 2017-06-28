@@ -70,3 +70,11 @@ A stream data framework.
     to:
     backend     : another backend that works on your machine
 
+### TODO
+* (DONE) FileStream -> last_class instead of bool make it index based
+* (DONE) Target instead of class
+* Filters: joining, noise, remove, add
+* Plot for regression (signal vs predicted)
+* MSE and MAE
+* In the evaluation keep track of statistics instead of all the true labels and predictions
+    * Use BasicClassificationPerformanceEvaluator (it's in MOA) for this purpose. (WindowClassificationPerformanceEvaluator)

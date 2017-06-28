@@ -12,7 +12,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
     '''
         WaveformGenerator
         ------------------------------------------
-        Generates instances with 21 numeric attributes and 3 classes, based on a random differentiation of some base 
+        Generates instances with 21 numeric attributes and 3 targets, based on a random differentiation of some base 
         wave forms. Supports noise addition, but in this case the generator will have 40 attribute instances
          
         Parser parameters
@@ -140,7 +140,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
     def get_num_attributes(self):
         return self.num_numerical_attributes + self.num_nominal_attributes * self.num_values_per_nominal_att
 
-    def get_num_classes(self):
+    def get_num_targets(self):
         return self.num_classes
 
     def get_attributes_header(self):
@@ -168,6 +168,9 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
                '  -  num_nominal_attributes: ' + str(self.num_nominal_attributes) + \
                '  -  add_noise: ' + add_noise + \
                '  -  random_seed: ' + str(self.random_seed)
+
+    def get_num_targeting_tasks(self):
+        return 1
 
 def demo():
     wfg = WaveformGenerator()

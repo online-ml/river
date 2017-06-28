@@ -50,7 +50,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_num_classes(self):
+    def get_num_targets(self):
         pass
 
     @abstractmethod
@@ -82,4 +82,8 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def get_info(self):
+        pass
+
+    @abstractmethod
+    def get_num_targeting_tasks(self):
         pass

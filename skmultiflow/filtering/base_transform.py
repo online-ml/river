@@ -4,7 +4,7 @@ from skmultiflow.core.base_object import BaseObject
 from abc import ABCMeta, abstractmethod
 
 
-class BasePreprocessing(BaseObject, metaclass=ABCMeta):
+class BaseTransform(BaseObject, metaclass=ABCMeta):
     def __init__(self):
         super().__init__()
         pass

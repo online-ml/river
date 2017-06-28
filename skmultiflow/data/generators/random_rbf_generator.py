@@ -94,7 +94,7 @@ class RandomRBFGenerator(BaseInstanceStream, BaseObject):
     def get_num_attributes(self):
         return self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)
 
-    def get_num_classes(self):
+    def get_num_targets(self):
         return self.num_classes
 
     def get_attributes_header(self):
@@ -133,6 +133,9 @@ class RandomRBFGenerator(BaseInstanceStream, BaseObject):
 
     def get_info(self):
         pass
+
+    def get_num_targeting_tasks(self):
+        return 1
 
 class Centroid:
     def __init__(self):

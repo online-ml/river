@@ -22,9 +22,11 @@ class FastBuffer(BaseObject):
             self.buffer = object_list
 
     def add_element(self, element_list):
+        #print(element_list)
         if (self.current_size+len(element_list)) <= self.max_size:
             for i in range(len(element_list)):
                 self.buffer.append(element_list[i])
+                #print(element_list[i])
             self.current_size += len(element_list)
             return None
         else:
@@ -56,6 +58,9 @@ class FastBuffer(BaseObject):
 
     def isempty(self):
         return self.current_size == 0
+
+    def get_current_size(self):
+        return self.current_size
 
     def peek(self):
         try:

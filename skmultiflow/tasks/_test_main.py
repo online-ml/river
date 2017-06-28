@@ -70,7 +70,7 @@ def demo_random_tree_gen(argv):
         opts, args = getopt.getopt(argv, "r:i:c:o:u:v:d:l:f:")
     except getopt.GetoptError:
         print("usage: _test_main.py -r <Seed for random generation of tree> -i <Seed for random generation of instances>"
-              " -c <The number of classes to generate> -o <The number of nominal attributes to generate>"
+              " -c <The number of targets to generate> -o <The number of nominal attributes to generate>"
               " -u <The number of numerical attributes to generate> -v <The number of values to generate per nominal attribute>"
               " -d <The maximum depth of the tree concept> -l <The first level of the tree above MaxTreeDepth that can have leaves>"
               " -f <The fraction of leaves per level from FirstLeafLevel onwards>")

@@ -10,7 +10,7 @@ class Instance(BaseObject):
         ''' 
             By default we have 1 class
             The headers are stored as a python list
-            attributes and classes are stores as numpy array     
+            attributes and targets are stores as numpy array     
         '''
         #if numAtt is None:
         #    self.num_attributes = len(attHeader) - num_classes

@@ -63,6 +63,9 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
     def get_info(self):
         pass
 
+    def get_num_targeting_tasks(self):
+        return 1
+
 if __name__ == '__main__':
     stream = RandomRBFGeneratorDrift(change_speed=0.02, num_drift_centroids=50)
     stream.prepare_for_use()
