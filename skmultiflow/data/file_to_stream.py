@@ -106,7 +106,7 @@ class FileToStream(base_instance_stream.BaseInstanceStream, BaseObject):
     def get_num_values_per_nominal_attribute(self):
         return self.num_values_per_nominal_att
 
-    def get_num_classes(self):
+    def get_num_targets(self):
         return self.num_classes
 
     def get_attributes_header(self):

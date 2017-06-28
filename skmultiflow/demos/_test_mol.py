@@ -18,7 +18,7 @@ def demo():
 
     # Setup the file stream
     opt = FileOption("FILE", "OPT_NAME", "../datasets/music.csv", "CSV", False)
-    stream = FileStream(opt, 2, False, 6)
+    stream = FileStream(opt, 0, 6)
     stream.prepare_for_use()
 
     # Setup the classifier, by default it uses Logistic Regression

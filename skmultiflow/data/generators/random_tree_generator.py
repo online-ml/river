@@ -23,7 +23,7 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         ---------------------------------------------
         -r: Seed for random generation of tree (Default: 23)
         -i: Seed for random generation of instances (Default: 12)
-        -c: The number of classes to generate (Default: 2)
+        -c: The number of targets to generate (Default: 2)
         -o: The number of nominal attributes to generate (Default: 5)
         -u: The number of numerical attributes to generate (Default: 5)
         -v: The number of values to generate per nominal attribute (Default: 5)
@@ -228,7 +228,7 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
     def get_num_attributes(self):
         return self.num_numerical_attributes + self.num_nominal_attributes * self.num_values_per_nominal_att
 
-    def get_num_classes(self):
+    def get_num_targets(self):
         return self.num_classes
 
     def get_attributes_header(self):
@@ -251,6 +251,9 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
 
     def get_info(self):
         pass
+
+    def get_num_targeting_tasks(self):
+        return 1
 
 class Node:
     def __init__(self, class_label = None, split_att_index = None, split_att_value = None):

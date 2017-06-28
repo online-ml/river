@@ -30,7 +30,7 @@ def demo():
     print(stream.get_classes())
 
     logging.basicConfig(format='%(message)s', level=logging.INFO)
-    msg = 'Generating ' + str(stream.get_num_classes()) + ' classes'
+    msg = 'Generating ' + str(stream.get_num_targets()) + ' targets'
     logging.info(msg)
 
     #visualizer = EvaluationVisualizer(n_wait=200, dataset_name='Cover Type - 7 class labels')

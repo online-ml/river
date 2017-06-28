@@ -82,7 +82,7 @@ class EvaluatePrequential(BaseEvaluator):
         self._reset_partials()
         self._reset_globals()
         prediction = None
-        logging.info('Generating %s classes.', str(self.stream.get_num_classes()))
+        logging.info('Generating %s targets.', str(self.stream.get_num_targets()))
 
         rest = self.stream.estimated_remaining_instances() if (self.stream.estimated_remaining_instances() != -1 and
                                                                self.stream.estimated_remaining_instances() <=
@@ -183,19 +183,19 @@ class EvaluatePrequential(BaseEvaluator):
                 line += ',' + str(round(partial_accuracy[i],3))
                 i += 1
             else:
-                line += ',nan,nan'
+                line += ',' + str(np.nan) + ',' + str(np.nan)
             if self.show_kappa:
                 if self.track_global_kappa:
                     line += ',' +str(round(self.global_kappa, 3))
                 else:
-                    line += ',nan'
+                    line += ',' + str(np.nan)
                 line += ',' + str(round(partial_accuracy[i], 3))
             else:
-                line += ',nan,nan'
+                line += ',' + str(np.nan) + ',' + str(np.nan)
             if self.show_scatter_points:
                 line += ',' + str(y) + ',' + str(prediction)
             else:
-                line += ',nan,nan'
+                line += ',' + str(np.nan) + ',' + str(np.nan)
             with open(self.output_file, 'a') as f:
                 f.write('\n'+line)
         self.visualizer.on_new_train_step(partial_accuracy, num_instances, y, prediction, self.global_kappa)

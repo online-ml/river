@@ -8,7 +8,7 @@ class InstanceData(BaseObject):
     '''
         Instance Data class
         -----------------------------
-        Stores data from an instance, both the features and the classes
+        Stores data from an instance, both the features and the targets
     '''
     def __init__(self, attributesList = None, labelsList = None):
         super().__init__()
@@ -17,7 +17,7 @@ class InstanceData(BaseObject):
         self.attributes = attributesList
         self.classes = labelsList
         #print(self.attributes)
-        #print(self.classes)
+        #print(self.targets)
         #problem is fucking here
         #print(str(len(self.attributes)) + " " + str(len(self.labels)))
         pass

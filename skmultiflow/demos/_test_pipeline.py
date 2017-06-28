@@ -11,7 +11,7 @@ from skmultiflow.options.file_option import FileOption
 def demo():
     # Setup the stream
     opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
-    stream = FileStream(opt, 7)
+    stream = FileStream(opt, -1, 1)
     stream.prepare_for_use()
 
     # Test with RandomTreeGenerator

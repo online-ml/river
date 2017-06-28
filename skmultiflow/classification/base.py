@@ -21,9 +21,9 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
             Samples
         y: array
            True labels
-        classes: array, shape (n_classes,), optional
+        classes: array, shape (n_targets,), optional
                  Classes.
-                 Can be obtained via `np.unique(y)` but note that 'y' doesn't need to contain all labels in `classes`
+                 Can be obtained via `np.unique(y)` but note that 'y' doesn't need to contain all labels in `targets`
         """
         pass
 
@@ -38,9 +38,9 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
             Samples
         y: array
            True labels
-        classes: array, shape (n_classes,), optional
+        classes: array, shape (n_targets,), optional
                  Classes.
-                 Can be obtained via `np.unique(y)` but note that 'y' doesn't need to contain all labels in `classes`
+                 Can be obtained via `np.unique(y)` but note that 'y' doesn't need to contain all labels in `targets`
 
         """
         pass
@@ -72,7 +72,7 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
 
         Returns
         -------
-        array, shape (n_samples, n_classes)
+        array, shape (n_samples, n_targets)
             Returns the probability of the sample for each class in the model.
         """
         pass
