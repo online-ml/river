@@ -1,10 +1,13 @@
 __author__ = 'Jesse Read'
 
+import copy as cp
+
 from numpy import *
-import copy
 from sklearn import linear_model
+
 from skmultiflow.classification.base import BaseClassifier
-from skmultiflow.core.metrics import *
+from skmultiflow.evaluation.metrics.metrics import *
+
 
 class MultiOutputLearner(BaseClassifier) :
     '''
@@ -17,14 +20,19 @@ class MultiOutputLearner(BaseClassifier) :
     h = None
     L = -1
 
-    def __init__(self, h=linear_model.LogisticRegression()):
+    def __init__(self, h=linear_model.SGDClassifier(n_iter=100)):
         super().__init__()
         self.hop = h
+        self.h = None
+        self.L = None
+
+    def configure(self):
+        self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
     def fit(self, X, Y, classes = None):
         N,L = Y.shape
         self.L = L
-        self.h = [ copy.deepcopy(self.hop) for j in range(self.L)]
+        self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
         for j in range(self.L):
             self.h[j].fit(X, Y[:,j])
@@ -32,6 +40,9 @@ class MultiOutputLearner(BaseClassifier) :
 
     def partial_fit(self, X, Y, classes=None):
         N,self.L = Y.shape
+
+        if self.h is None:
+            self.configure()
 
         for j in range(self.L):
             self.h[j].partial_fit(X, Y[:,j], classes)
@@ -60,7 +71,7 @@ class MultiOutputLearner(BaseClassifier) :
         return P
 
     def get_info(self):
-        pass
+        return 'estimator'
 
     def get_class_type(self):
         pass

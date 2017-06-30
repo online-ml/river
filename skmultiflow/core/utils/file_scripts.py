@@ -25,6 +25,10 @@ def clean_header(base_file, new_file=None, ignore_char='#'):
                 else:
                     out_file.write(line)
 
+def arff_sparse_to_csv(arff_file, csv_output):
+    
+    pass
+
 
 class RemoveHeader(BaseObject):
     def __init__(self, base_file, new_file = None, ignore_char = '#'):

@@ -15,17 +15,35 @@ class EvaluationVisualizer(BaseListener):
         #default values
         self.X = None
         self.scatter_x = None
+
         self.temp = []
+
         self.true_labels = None
         self.predictions = None
+
         self.partial_performance = None
         self.global_performance = None
+
         self.global_kappa = None
         self.partial_kappa = None
+
         self.scatter_true_labels = None
         self.scatter_predicts = None
         self.scatter_true_labels_colors = None
         self.scatter_predicts_colors = None
+
+        self.global_hamming_score = None
+        self.partial_hamming_score = None
+
+        self.global_hamming_loss = None
+        self.partial_hamming_loss = None
+
+        self.global_exact_match = None
+        self.partial_exact_match = None
+
+        self.global_j_index = None
+        self.partial_j_index = None
+
 
         #configs
         self.n_wait = None
@@ -41,6 +59,18 @@ class EvaluationVisualizer(BaseListener):
         self.line_scatter_predicts = None
         self.line_scatter_true_labels = None
 
+        self.line_global_hamming_score = None
+        self.line_partial_hamming_score = None
+
+        self.line_global_hamming_loss = None
+        self.line_partial_hamming_loss = None
+
+        self.line_global_exact_match = None
+        self.line_partial_exact_match = None
+
+        self.line_global_j_index = None
+        self.line_partial_j_index = None
+
         #show configs
         self.num_plots = 0
 
@@ -48,10 +78,14 @@ class EvaluationVisualizer(BaseListener):
         self.subplot_kappa = None
         self.subplot_performance = None
         self.subplot_scatter_points = None
+        self.subplot_hamming_score = None
+        self.subplot_hamming_loss = None
+        self.subplot_exact_match = None
+        self.subplot_j_index = None
 
         if plots is not None:
             if len(plots) < 1:
-                raise ValueError('No plots were give.')
+                raise ValueError('No plots were given.')
             else:
                 self.configure(n_wait, dataset_name, plots)
         else:
@@ -139,6 +173,77 @@ class EvaluationVisualizer(BaseListener):
             self.scatter_true_labels_colors = []
             self.scatter_predicts_colors = []
 
+        if 'hamming_score' in self.plots:
+            self.global_hamming_score = []
+            self.partial_hamming_score = []
+
+            self.subplot_hamming_score = self.fig.add_subplot(base)
+            self.subplot_hamming_score.set_title('Classifier\'s hamming score')
+            self.subplot_hamming_score.set_ylabel('Hamming score')
+            self.subplot_hamming_score.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_partial_hamming_score, = self.subplot_hamming_score.plot(self.X, self.partial_hamming_score,                                                         label='Partial Hamming score (last ' + str(
+                                                                               self.n_wait) + ' samples)')
+            self.line_global_hamming_score, = self.subplot_hamming_score.plot(self.X, self.global_hamming_score,
+                                                                          label='Global Hamming score')
+            self.subplot_hamming_score.legend(handles=[self.line_partial_hamming_score, self.line_global_hamming_score])
+            self.subplot_hamming_score.set_ylim([0, 1])
+
+        if 'hamming_loss' in self.plots:
+            self.global_hamming_loss = []
+            self.partial_hamming_loss = []
+
+            self.subplot_hamming_loss = self.fig.add_subplot(base)
+            self.subplot_hamming_loss.set_title('Classifier\'s hamming loss')
+            self.subplot_hamming_loss.set_ylabel('Hamming loss')
+            self.subplot_hamming_loss.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_partial_hamming_loss, = self.subplot_hamming_loss.plot(self.X, self.partial_hamming_loss,
+                                                                           label='Partial Hamming loss (last ' + str(
+                                                                               self.n_wait) + ' samples)')
+            self.line_global_hamming_loss, = self.subplot_hamming_loss.plot(self.X, self.global_hamming_loss,
+                                                                          label='Global Hamming loss')
+            self.subplot_hamming_loss.legend(handles=[self.line_partial_hamming_loss, self.line_global_hamming_loss])
+            self.subplot_hamming_loss.set_ylim([0, 1])
+
+        if 'exact_match' in self.plots:
+            self.global_exact_match = []
+            self.partial_exact_match = []
+
+            self.subplot_exact_match = self.fig.add_subplot(base)
+            self.subplot_exact_match.set_title('Classifier\'s exact matches')
+            self.subplot_exact_match.set_ylabel('Exact matches')
+            self.subplot_exact_match.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_partial_exact_match, = self.subplot_exact_match.plot(self.X, self.partial_exact_match,
+                                                                           label='Partial exact matches (last ' + str(
+                                                                               self.n_wait) + ' samples)')
+            self.line_global_exact_match, = self.subplot_exact_match.plot(self.X, self.global_exact_match,
+                                                                          label='Global exact matches')
+            self.subplot_exact_match.legend(handles=[self.line_partial_exact_match, self.line_global_exact_match])
+            self.subplot_exact_match.set_ylim([0, 1])
+
+        if 'j_index' in self.plots:
+            self.global_j_index = []
+            self.partial_j_index = []
+
+            self.subplot_j_index = self.fig.add_subplot(base)
+            self.subplot_j_index.set_title('Classifier\'s J index')
+            self.subplot_j_index.set_ylabel('J index')
+            self.subplot_j_index.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_partial_j_index, = self.subplot_j_index.plot(self.X, self.partial_j_index,
+                                                                           label='Partial j index (last ' + str(
+                                                                               self.n_wait) + ' samples)')
+            self.line_global_j_index, = self.subplot_j_index.plot(self.X, self.global_j_index,
+                                                                          label='Global j index')
+            self.subplot_j_index.legend(handles=[self.line_partial_j_index, self.line_global_j_index])
+            self.subplot_j_index.set_ylim([0, 1])
+
         self.fig.subplots_adjust(hspace=.5)
 
         self.fig.tight_layout(pad=2.6, w_pad=0.5, h_pad=1.0)
@@ -208,6 +313,66 @@ class EvaluationVisualizer(BaseListener):
             #self.subplot_scatter_points.legend(handles=[scat_true, scat_pred])
             self.subplot_scatter_points.legend(recs, legend, loc=4)
 
+        if 'hamming_score' in self.plots:
+            self.global_hamming_score.append(dict['hamming_score'][0])
+            self.partial_hamming_score.append(dict['hamming_score'][1])
+            self.line_global_hamming_score.set_data(self.X, self.global_hamming_score)
+            self.line_partial_hamming_score.set_data(self.X, self.partial_hamming_score)
+
+            self.temp.append(self.subplot_hamming_score.annotate('Global: ' + str(round(dict['hamming_score'][0], 3)),
+                                                               xy=(train_step, dict['hamming_score'][0]), xytext=(8, 0),
+                                                               textcoords='offset points'))
+            self.temp.append(self.subplot_hamming_score.annotate('Partial: ' + str(round(dict['hamming_score'][1], 3)),
+                                                               xy=(train_step, dict['hamming_score'][1]),
+                                                               xytext=(8, 0), textcoords='offset points'))
+            self.subplot_hamming_score.set_ylim([0, 1])
+            self.subplot_hamming_score.set_xlim([0, 1.2 * np.max(self.X)])
+
+        if 'hamming_loss' in self.plots:
+            self.global_hamming_loss.append(dict['hamming_loss'][0])
+            self.partial_hamming_loss.append(dict['hamming_loss'][1])
+            self.line_global_hamming_loss.set_data(self.X, self.global_hamming_loss)
+            self.line_partial_hamming_loss.set_data(self.X, self.partial_hamming_loss)
+
+            self.temp.append(self.subplot_hamming_loss.annotate('Global: ' + str(round(dict['hamming_loss'][0], 3)),
+                                                               xy=(train_step, dict['hamming_loss'][0]), xytext=(8, 0),
+                                                               textcoords='offset points'))
+            self.temp.append(self.subplot_hamming_loss.annotate('Partial: ' + str(round(dict['hamming_loss'][1], 3)),
+                                                               xy=(train_step, dict['hamming_loss'][1]),
+                                                               xytext=(8, 0), textcoords='offset points'))
+            self.subplot_hamming_loss.set_ylim([0, 1])
+            self.subplot_hamming_loss.set_xlim([0, 1.2 * np.max(self.X)])
+
+        if 'exact_match' in self.plots:
+            self.global_exact_match.append(dict['exact_match'][0])
+            self.partial_exact_match.append(dict['exact_match'][1])
+            self.line_global_exact_match.set_data(self.X, self.global_exact_match)
+            self.line_partial_exact_match.set_data(self.X, self.partial_exact_match)
+
+            self.temp.append(self.subplot_exact_match.annotate('Global: ' + str(round(dict['exact_match'][0], 3)),
+                                                               xy=(train_step, dict['exact_match'][0]), xytext=(8, 0),
+                                                               textcoords='offset points'))
+            self.temp.append(self.subplot_exact_match.annotate('Partial: ' + str(round(dict['exact_match'][1], 3)),
+                                                               xy=(train_step, dict['exact_match'][1]),
+                                                               xytext=(8, 0), textcoords='offset points'))
+            self.subplot_exact_match.set_ylim([0, 1])
+            self.subplot_exact_match.set_xlim([0, 1.2 * np.max(self.X)])
+
+        if 'j_index' in self.plots:
+            self.global_j_index.append(dict['j_index'][0])
+            self.partial_j_index.append(dict['j_index'][1])
+            self.line_global_j_index.set_data(self.X, self.global_j_index)
+            self.line_partial_j_index.set_data(self.X, self.partial_j_index)
+
+            self.temp.append(self.subplot_j_index.annotate('Global: ' + str(round(dict['j_index'][0], 3)),
+                                                               xy=(train_step, dict['j_index'][0]), xytext=(8, 0),
+                                                               textcoords='offset points'))
+            self.temp.append(self.subplot_j_index.annotate('Partial: ' + str(round(dict['j_index'][1], 3)),
+                                                               xy=(train_step, dict['j_index'][1]),
+                                                               xytext=(8, 0), textcoords='offset points'))
+            self.subplot_j_index.set_ylim([0, 1])
+            self.subplot_j_index.set_xlim([0, 1.2 * np.max(self.X)])
+
         plt.draw()
         plt.pause(0.00001)
 
@@ -222,5 +387,5 @@ class EvaluationVisualizer(BaseListener):
         pass
 
 if __name__ == "__main__":
-    ev = EvaluationVisualizerNew()
+    ev = EvaluationVisualizer()
     print(ev.get_class_type())

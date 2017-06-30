@@ -1,15 +1,13 @@
 __author__ = 'Guilherme Matsumoto'
 
 import logging
-from sklearn.linear_model.stochastic_gradient import SGDClassifier
-from sklearn.linear_model.perceptron import Perceptron
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.options.file_option import FileOption
-from skmultiflow.classification.multi_output_learner import MultiOutputLearner
-from skmultiflow.core.metrics import *
-from skmultiflow.core.pipeline import Pipeline
-import numpy as np
 from timeit import default_timer as timer
+
+from skmultiflow.classification.multi_output_learner import MultiOutputLearner
+from skmultiflow.core.pipeline import Pipeline
+from skmultiflow.data.file_stream import FileStream
+from skmultiflow.evaluation.metrics.metrics import *
+from skmultiflow.options.file_option import FileOption
 
 
 def demo():
