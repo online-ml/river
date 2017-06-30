@@ -76,5 +76,7 @@ A stream data framework.
 * Filters: joining, noise, remove, add
 * Plot for regression (signal vs predicted)
 * MSE and MAE
-* In the evaluation keep track of statistics instead of all the true labels and predictions
-    * Use BasicClassificationPerformanceEvaluator (it's in MOA) for this purpose. (WindowClassificationPerformanceEvaluator)
+* (DONE) In the evaluation keep track of statistics instead of all the true labels and predictions
+    * (DONE) Use BasicClassificationPerformanceEvaluator (it's in MOA) for this purpose. (WindowClassificationPerformanceEvaluator)
+* (DONE) MultiOutputMeasurements matrix is not being filled with values... find out why
+* Work on the FastComplexBuffer, make everything work
