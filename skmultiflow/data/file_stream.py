@@ -128,9 +128,9 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         #self.current_instance_y = self.y[self.instance_index-1:self.instance_index+batchSize-1].values[0]
         try:
 
-            self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1,
+            self.current_instance_x = self.X.iloc[self.instance_index - batch_size:self.instance_index,
                                       :].values
-            self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1,
+            self.current_instance_y = self.y.iloc[self.instance_index - batch_size:self.instance_index,
                                       :].values
             if self.num_target_tasks < 2:
                 self.current_instance_y = self.current_instance_y.flatten()

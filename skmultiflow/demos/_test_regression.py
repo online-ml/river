@@ -8,26 +8,29 @@ from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream, FileOption
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+from skmultiflow.data.generators.regression_generator import RegressionGenerator
 
 
 def demo(output_file=None, instances=40000):
     # Setup the File Stream
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
-    stream = FileStream(opt, -1, 1)
+    #opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
+    #stream = FileStream(opt, -1, 1)
     #stream = WaveformGenerator()
-    stream.prepare_for_use()
+    #stream.prepare_for_use()
+    stream = RegressionGenerator(n_samples=40000)
     # Setup the classifier
-    classifier = SGDClassifier()
+    #classifier = SGDClassifier()
     #classifier = PassiveAggressiveClassifier()
-    #classifier = SGDRegressor()
+    classifier = SGDRegressor()
     #classifier = PerceptronMask()
 
     # Setup the pipeline
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(pretrain_size=10000, max_instances=instances, batch_size=1, n_wait=200, max_time=1000,
-                               output_file=output_file, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'kappa_m'])
+    eval = EvaluatePrequential(pretrain_size=100, max_instances=instances, batch_size=1, n_wait=50, max_time=1000,
+                               output_file=output_file, task_type='regression', show_plot=True,
+                               plot_options=['mean_absolute_error', 'mean_square_error'])
 
     # Evaluate
     eval.eval(stream=stream, classifier=pipe)

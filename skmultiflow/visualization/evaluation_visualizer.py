@@ -27,6 +27,12 @@ class EvaluationVisualizer(BaseListener):
         self.global_kappa = None
         self.partial_kappa = None
 
+        self.global_kappa_t = None
+        self.partial_kappa_t = None
+
+        self.global_kappa_m = None
+        self.partial_kappa_m = None
+
         self.scatter_true_labels = None
         self.scatter_predicts = None
         self.scatter_true_labels_colors = None
@@ -44,6 +50,15 @@ class EvaluationVisualizer(BaseListener):
         self.global_j_index = None
         self.partial_j_index = None
 
+        self.global_mse = None
+        self.partial_mse = None
+
+        self.global_mae = None
+        self.partial_mae = None
+
+        self.regression_true = None
+        self.regression_pred = None
+
 
         #configs
         self.n_wait = None
@@ -55,6 +70,12 @@ class EvaluationVisualizer(BaseListener):
 
         self.line_global_kappa = None
         self.line_partial_kappa = None
+
+        self.line_global_kappa_t = None
+        self.line_partial_kappa_t = None
+
+        self.line_global_kappa_m = None
+        self.line_partial_kappa_m = None
 
         self.line_scatter_predicts = None
         self.line_scatter_true_labels = None
@@ -71,17 +92,31 @@ class EvaluationVisualizer(BaseListener):
         self.line_global_j_index = None
         self.line_partial_j_index = None
 
+        self.line_global_mse = None
+        self.line_partial_mse = None
+
+        self.line_global_mae = None
+        self.line_partial_mae = None
+
+        self.line_regression_true = None
+        self.line_regression_pred = None
+
         #show configs
         self.num_plots = 0
 
         #subplot default
-        self.subplot_kappa = None
         self.subplot_performance = None
+        self.subplot_kappa = None
+        self.subplot_kappa_t = None
+        self.subplot_kappa_m = None
         self.subplot_scatter_points = None
         self.subplot_hamming_score = None
         self.subplot_hamming_loss = None
         self.subplot_exact_match = None
         self.subplot_j_index = None
+        self.subplot_mse = None
+        self.subplot_mae = None
+        self.subplot_true_vs_predicts = None
 
         if plots is not None:
             if len(plots) < 1:
@@ -150,8 +185,6 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_kappa.set_xlabel('Samples analyzed')
             base += 1
 
-            self.global_kappa = []
-            self.partial_kappa = []
             self.line_global_kappa, = self.subplot_kappa.plot(self.X, self.global_kappa, label='Global kappa')
             self.line_partial_kappa, = self.subplot_kappa.plot(self.X, self.partial_kappa,
                                                                label='Sliding window Kappa (last '
@@ -159,6 +192,39 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_kappa.legend(handles=[self.line_partial_kappa, self.line_global_kappa])
             self.subplot_kappa.set_ylim([-1, 1])
 
+        if 'kappa_t' in self.plots:
+            self.partial_kappa_t = []
+            self.global_kappa_t = []
+
+            self.subplot_kappa_t = self.fig.add_subplot(base)
+            self.subplot_kappa_t.set_title('Classifier\'s Kappa T')
+            self.subplot_kappa_t.set_ylabel('Kappa T statistic')
+            self.subplot_kappa_t.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_global_kappa_t, = self.subplot_kappa_t.plot(self.X, self.global_kappa_t, label='Global kappa T')
+            self.line_partial_kappa_t, = self.subplot_kappa_t.plot(self.X, self.partial_kappa_t,
+                                                                   label='Sliding window Kappa T (last '
+                                                                         + str(self.n_wait) + ' samples)')
+            self.subplot_kappa_t.legend(handles=[self.line_partial_kappa_t, self.line_global_kappa_t])
+            self.subplot_kappa_t.set_ylim([-1, 1])
+
+        if 'kappa_m' in self.plots:
+            self.partial_kappa_m = []
+            self.global_kappa_m = []
+
+            self.subplot_kappa_m = self.fig.add_subplot(base)
+            self.subplot_kappa_m.set_title('Classifier\'s Kappa M')
+            self.subplot_kappa_m.set_ylabel('Kappa M statistic')
+            self.subplot_kappa_m.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_global_kappa_m, = self.subplot_kappa_m.plot(self.X, self.global_kappa_m, label='Global kappa M')
+            self.line_partial_kappa_m, = self.subplot_kappa_m.plot(self.X, self.partial_kappa_m,
+                                                                   label='Sliding window kappa M (last '
+                                                                         + str(self.n_wait) + ' samples)')
+            self.subplot_kappa_m.legend(handles=[self.line_partial_kappa_m, self.line_global_kappa_m])
+            self.subplot_kappa_m.set_ylim([-1, 1])
 
         if 'scatter' in self.plots:
             self.scatter_predicts = []
@@ -244,6 +310,59 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_j_index.legend(handles=[self.line_partial_j_index, self.line_global_j_index])
             self.subplot_j_index.set_ylim([0, 1])
 
+        if 'mean_square_error' in self.plots:
+            self.global_mse = []
+            self.partial_mse = []
+
+            self.subplot_mse = self.fig.add_subplot(base)
+            self.subplot_mse.set_title('Classifier\'s MSE')
+            self.subplot_mse.set_ylabel('MSE')
+            self.subplot_mse.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_partial_mse, = self.subplot_mse.plot(self.X, self.partial_mse,
+                                                                   label='Partial MSE (last ' + str(
+                                                                       self.n_wait) + ' samples)')
+            self.line_global_mse, = self.subplot_mse.plot(self.X, self.global_mse,
+                                                                  label='Global MSE')
+            self.subplot_mse.legend(handles=[self.line_partial_mse, self.line_global_mse])
+            self.subplot_mse.set_ylim([0, 1])
+
+        if 'mean_absolute_error' in self.plots:
+            self.global_mae = []
+            self.partial_mae = []
+
+            self.subplot_mae = self.fig.add_subplot(base)
+            self.subplot_mae.set_title('Classifier\'s MAE')
+            self.subplot_mae.set_ylabel('MAE')
+            self.subplot_mae.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_partial_mae, = self.subplot_mae.plot(self.X, self.partial_mae,
+                                                           label='Partial MAE (last ' + str(
+                                                               self.n_wait) + ' samples)')
+            self.line_global_mae, = self.subplot_mae.plot(self.X, self.global_mae,
+                                                           label='Global MAE')
+            self.subplot_mae.legend(handles=[self.line_partial_mae, self.line_global_mae])
+            self.subplot_mae.set_ylim([0, 1])
+
+        if 'true_vs_predicts' in self.plots:
+            self.regression_true = []
+            self.regression_pred = []
+
+            self.subplot_true_vs_predicts = self.fig.add_subplot(base)
+            self.subplot_true_vs_predicts.set_title('Classifier\'s True Labels vs Predictions')
+            self.subplot_true_vs_predicts.set_ylabel('y')
+            self.subplot_true_vs_predicts.set_xlabel('Samples analyzed')
+            base += 1
+
+            self.line_regression_true, = self.subplot_true_vs_predicts.plot(self.X, self.regression_true,
+                                                                            label='True y')
+            self.line_regression_pred, = self.subplot_true_vs_predicts.plot(self.X, self.regression_pred,
+                                                                            label='Predicted y', linestyle='dotted')
+            self.subplot_true_vs_predicts.legend(handles=[self.line_regression_true, self.line_regression_pred])
+            self.subplot_true_vs_predicts.set_ylim([0,1])
+
         self.fig.subplots_adjust(hspace=.5)
 
         self.fig.tight_layout(pad=2.6, w_pad=0.5, h_pad=1.0)
@@ -285,6 +404,38 @@ class EvaluationVisualizer(BaseListener):
                                                          textcoords='offset points'))
             self.subplot_kappa.set_xlim([0, 1.2 * np.max(self.X)])
             self.subplot_kappa.set_ylim([-1, 1])
+
+
+        if 'kappa_t' in self.plots:
+            self.global_kappa_t.append(dict['kappa_t'][0])
+            self.partial_kappa_t.append(dict['kappa_t'][1])
+            self.line_global_kappa_t.set_data(self.X, self.global_kappa_t)
+            self.line_partial_kappa_t.set_data(self.X, self.partial_kappa_t)
+
+            self.temp.append(self.subplot_kappa_t.annotate('Global Kappa T: ' + str(round(dict['kappa_t'][0], 3)),
+                                                         xy=(train_step, dict['kappa_t'][0]), xytext=(8, 0),
+                                                         textcoords='offset points'))
+            self.temp.append(self.subplot_kappa_t.annotate('Sliding window Kappa T: ' + str(round(dict['kappa_t'][1], 3)),
+                                                         xy=(train_step, dict['kappa_t'][1]), xytext=(8, 0),
+                                                         textcoords='offset points'))
+            self.subplot_kappa_t.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_kappa_t.set_ylim([min([min(self.global_kappa_t), min(self.partial_kappa_t)]), 1.1])
+
+
+        if 'kappa_m' in self.plots:
+            self.global_kappa_m.append(dict['kappa_m'][0])
+            self.partial_kappa_m.append(dict['kappa_m'][1])
+            self.line_global_kappa_m.set_data(self.X, self.global_kappa_m)
+            self.line_partial_kappa_m.set_data(self.X, self.partial_kappa_m)
+
+            self.temp.append(self.subplot_kappa_m.annotate('Global kappa M: ' + str(round(dict['kappa_m'][0], 3)),
+                                                           xy=(train_step, dict['kappa_m'][0]), xytext=(8, 0),
+                                                           textcoords='offset points'))
+            self.temp.append(self.subplot_kappa_m.annotate('Sliding window Kappa M: ' + str(round(dict['kappa_m'][1], 3)),
+                                                           xy=(train_step, dict['kappa_m'][1]), xytext=(8, 0),
+                                                           textcoords='offset points'))
+            self.subplot_kappa_m.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_kappa_m.set_ylim([min([min(self.global_kappa_m), min(self.partial_kappa_m)]), 1.1])
 
 
         if 'scatter' in self.plots:
@@ -372,6 +523,48 @@ class EvaluationVisualizer(BaseListener):
                                                                xytext=(8, 0), textcoords='offset points'))
             self.subplot_j_index.set_ylim([0, 1])
             self.subplot_j_index.set_xlim([0, 1.2 * np.max(self.X)])
+
+        if 'mean_square_error' in self.plots:
+            self.global_mse.append(dict['mean_square_error'][0])
+            self.partial_mse.append(dict['mean_square_error'][1])
+            self.line_global_mse.set_data(self.X, self.global_mse)
+            self.line_partial_mse.set_data(self.X, self.partial_mse)
+
+            self.temp.append(self.subplot_mse.annotate('Global: ' + str(round(dict['mean_square_error'][0], 6)),
+                                                           xy=(train_step, dict['mean_square_error'][0]), xytext=(8, 0),
+                                                           textcoords='offset points'))
+            self.temp.append(self.subplot_mse.annotate('Partial: ' + str(round(dict['mean_square_error'][1], 6)),
+                                                           xy=(train_step, dict['mean_square_error'][1]),
+                                                           xytext=(8, 0), textcoords='offset points'))
+            self.subplot_mse.set_ylim([min([min(self.global_mse), min(self.partial_mse)]) - 1.2*min([min(self.global_mse), min(self.partial_mse)]),
+                                       max([max(self.global_mse), max(self.partial_mse)]) + 1.2*max([max(self.global_mse), max(self.partial_mse)])])
+            self.subplot_mse.set_xlim([0, 1.2 * np.max(self.X)])
+
+        if 'mean_absolute_error' in self.plots:
+            self.global_mae.append(dict['mean_absolute_error'][0])
+            self.partial_mae.append(dict['mean_absolute_error'][1])
+            self.line_global_mae.set_data(self.X, self.global_mae)
+            self.line_partial_mae.set_data(self.X, self.partial_mae)
+
+            self.temp.append(self.subplot_mae.annotate('Global: ' + str(round(dict['mean_absolute_error'][0], 6)),
+                                                       xy=(train_step, dict['mean_absolute_error'][0]), xytext=(8, 0),
+                                                       textcoords='offset points'))
+            self.temp.append(self.subplot_mae.annotate('Partial: ' + str(round(dict['mean_absolute_error'][1], 6)),
+                                                       xy=(train_step, dict['mean_absolute_error'][1]),
+                                                       xytext=(8, 0), textcoords='offset points'))
+            self.subplot_mae.set_ylim([min([min(self.global_mae), min(self.partial_mae)]) - 1.2*min([min(self.global_mae), min(self.partial_mae)]),
+                                       max([max(self.global_mae), max(self.partial_mae)]) + 1.2*max([max(self.global_mae), max(self.partial_mae)])])
+            self.subplot_mae.set_xlim([0, 1.2 * np.max(self.X)])
+
+        if 'true_vs_predicts' in self.plots:
+            self.regression_true.append(dict['true_vs_predicts'][0])
+            self.regression_pred.append(dict['true_vs_predicts'][1])
+            self.line_regression_true.set_data(self.X, self.regression_true)
+            self.line_regression_pred.set_data(self.X, self.regression_pred)
+
+            self.subplot_true_vs_predicts.set_ylim([min([min(self.regression_true), min(self.regression_pred)]) - 1.,
+                                       max([max(self.regression_true), max(self.regression_pred)]) + 1.])
+            self.subplot_true_vs_predicts.set_xlim([0, 1.2 * np.max(self.X)])
 
         plt.draw()
         plt.pause(0.00001)
