@@ -1,53 +1,53 @@
 __author__ = 'Guilherme Matsumoto'
 
-import numpy as np
-import math
-import logging
 import warnings
-import time
-from skmultiflow.evaluation.base_evaluator import BaseEvaluator
-from sklearn.metrics import cohen_kappa_score
-from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
-from skmultiflow.core.utils.utils import dict_to_tuple_list
-from skmultiflow.core.utils.data_structures import FastBuffer
-from skmultiflow.evaluation.measure_collection import WindowClassificationMeasurements, ClassificationMeasurements, MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
+import logging
 from timeit import default_timer as timer
+from skmultiflow.evaluation.base_evaluator import BaseEvaluator
+from skmultiflow.evaluation.measure_collection import ClassificationMeasurements, WindowClassificationMeasurements, RegressionMeasurements, WindowRegressionMeasurements, MultiOutputMeasurements, WindowMultiOutputMeasurements
+from skmultiflow.core.utils.utils import dict_to_tuple_list
+from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 
 
-class EvaluatePrequential(BaseEvaluator):
-    def __init__(self, n_wait=200, max_instances=100000, max_time=float("inf"), output_file=None,
-                 batch_size=1, pretrain_size=200, task_type='classification', show_plot=False, plot_options=None):
-        """
-            Parameter show_scatter_points should only be used for small datasets, and non-intensive evaluations, as it
-            will drastically slower the evaluation process.
-
-        :param n_wait: int. Number of samples processed between metric updates, including plot points
-        :param max_instances: int. Maximum number of samples to be processed
-        :param max_time: int. Maximum amount of time, in seconds, that the evaluation can take
-        :param output_file: string. Output file name. If given this is where the evaluation log will be saved.
-        :param show_plot: boolean. If true a plot including the performance evolution will be shown.
-        :param batch_size: int. The size of each batch, which means, how many samples will be treated at a time.
-        :param pretrain_size: int. How many samples will be used to pre train de model. These won't be considered for metrics calculation.
-        :param show_kappa: boolean. If true the visualization module will display the Kappa statistic plot.
-        :param track_global_kappa: If true will keep track of a global kappa statistic. Will consume more memory and will be plotted if show_kappa is True.
-        :param show_scatter_points: boolean. If True the visualization module will display a scatter of True labels vs Predicts.
-        """
+class EvaluateHoldout(BaseEvaluator):
+    def __init__(self, n_wait=10000, max_instances=100000, max_time=float("inf"), output_file=None,
+                 batch_size=1, pretrain_size=200, test_size=20000, task_type='classification', show_plot=False,
+                 plot_options=None, dynamic_test_set=False):
+        '''
+        
+        :param n_wait: 
+        :param max_instances: 
+        :param max_time: 
+        :param output_file: 
+        :param batch_size: 
+        :param pretrain_size: 
+        :param task_type: 
+        :param show_plot: 
+        :param plot_options: 
+        '''
         PLOT_TYPES = ['performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 'exact_match', 'j_index',
                       'mean_square_error', 'mean_absolute_error', 'true_vs_predicts', 'kappa_t', 'kappa_m']
         TASK_TYPES = ['classification', 'regression', 'multi_output']
+
         super().__init__()
-        # default values
         self.n_wait = n_wait
         self.max_instances = max_instances
         self.max_time = max_time
         self.batch_size = batch_size
         self.pretrain_size = pretrain_size
+        self.test_size = test_size
         self.classifier = None
         self.stream = None
         self.output_file = output_file
         self.visualizer = None
+        self.X_test = None
+        self.y_test = None
+        self.dynamic_test_set = dynamic_test_set
 
-        #plotting configs
+        if self.test_size < 0:
+            raise ValueError('test_size has to be greater than 0.')
+
+        # plotting configs
         self.task_type = task_type.lower()
         if self.task_type not in TASK_TYPES:
             raise ValueError('Task type not supported.')
@@ -66,18 +66,18 @@ class EvaluatePrequential(BaseEvaluator):
             if self.plot_options[i] not in PLOT_TYPES:
                 raise ValueError(str(self.plot_options[i]) + ': Plot type not supported.')
 
-        #metrics
+        # metrics
         self.global_classification_metrics = None
         self.partial_classification_metrics = None
         if self.task_type in ['classification']:
             self.global_classification_metrics = ClassificationMeasurements()
-            self.partial_classification_metrics = WindowClassificationMeasurements(window_size=self.n_wait)
+            self.partial_classification_metrics = WindowClassificationMeasurements(window_size=self.test_size)
         elif self.task_type in ['multi_output']:
             self.global_classification_metrics = MultiOutputMeasurements()
-            self.partial_classification_metrics = WindowMultiOutputMeasurements(window_size=self.n_wait)
+            self.partial_classification_metrics = WindowMultiOutputMeasurements(window_size=self.test_size)
         elif self.task_type in ['regression']:
             self.global_classification_metrics = RegressionMeasurements()
-            self.partial_classification_metrics = WindowRegressionMeasurements(window_size=self.n_wait)
+            self.partial_classification_metrics = WindowRegressionMeasurements(window_size=self.test_size)
 
         self.global_sample_count = 0
 
@@ -89,20 +89,22 @@ class EvaluatePrequential(BaseEvaluator):
         self._reset_globals()
         self.classifier = classifier
         self.stream = stream
-        self.classifier = self.train_and_test(stream, classifier)
+        self.classifier = self.periodic_holdout(stream, classifier)
         if self.show_plot:
             self.visualizer.hold()
         return self.classifier
 
-    def train_and_test(self, stream=None, classifier=None):
+    def periodic_holdout(self, stream=None, classifier=None):
         logging.basicConfig(format='%(message)s', level=logging.INFO)
         init_time = timer()
         end_time = timer()
-        self.classifier = classifier
-        self.stream = stream
+        if classifier is not None:
+            self.classifier = classifier
+        if stream is not None:
+            self.stream = stream
         self._reset_globals()
         prediction = None
-        logging.info('Prequential Evaluation')
+        logging.info('Holdout Evaluation')
         logging.info('Generating %s targets.', str(self.stream.get_num_targets()))
 
         rest = self.stream.estimated_remaining_instances() if (self.stream.estimated_remaining_instances() != -1 and
@@ -142,8 +144,8 @@ class EvaluatePrequential(BaseEvaluator):
                     header += ',global_mse,sliding_window_mse'
                 if 'mean_absolute_error' in self.plot_options:
                     header += ',global_mae,sliding_window_mae'
-                #if 'true_vs_predicts' in self.plot_options:
-                    #header += ',true_label,prediction'
+                    # if 'true_vs_predicts' in self.plot_options:
+                    # header += ',true_label,prediction'
                 f.write(header)
 
         first_run = True
@@ -155,6 +157,10 @@ class EvaluatePrequential(BaseEvaluator):
         else:
             X, y = None, None
 
+        if not self.dynamic_test_set:
+            logging.info('Separating %s static holdout samples.', str(self.test_size))
+            self.X_test, self.y_test = self.stream.next_instance(self.test_size)
+
         before_count = 0
         logging.info('Evaluating...')
         while ((self.global_sample_count < self.max_instances) & (end_time - init_time < self.max_time)
@@ -162,28 +168,39 @@ class EvaluatePrequential(BaseEvaluator):
             try:
                 X, y = self.stream.next_instance(self.batch_size)
                 if X is not None and y is not None:
-                    prediction = self.classifier.predict(X)
                     self.global_sample_count += self.batch_size
-                    for i in range(len(prediction)):
-                        self.global_classification_metrics.add_result(y[i], prediction[i])
-                        self.partial_classification_metrics.add_result(y[i], prediction[i])
-                        nul_count = self.global_sample_count - self.batch_size
-                        if ((nul_count + i + 1) % (rest / 20)) == 0:
-                            logging.info('%s%%', str(((nul_count + i + 1) // (rest / 20)) * 5))
-                            # if self.show_scatter_points:
-                            # self.visualizer.on_new_scatter_data(self.global_sample_count - self.batch_size + i, y[i],
-                            # prediction[i])
                     if first_run:
                         self.classifier.partial_fit(X, y, self.stream.get_classes())
                         first_run = False
                     else:
                         self.classifier.partial_fit(X, y)
 
+                    nul_count = self.global_sample_count - self.batch_size
+                    for i in range(self.batch_size):
+                        if ((nul_count + i + 1) % (rest / 20)) == 0:
+                            logging.info('%s%%', str(((nul_count + i + 1) // (rest / 20)) * 5))
+
+                    # Test on holdout set
                     if ((self.global_sample_count % self.n_wait) == 0 | (
-                        self.global_sample_count >= self.max_instances) |
+                                self.global_sample_count >= self.max_instances) |
                         (self.global_sample_count / self.n_wait > before_count + 1)):
-                        before_count += 1
-                        self.update_metrics()
+
+                        if self.dynamic_test_set:
+                            logging.info('Separating %s dynamic holdout samples.', str(self.test_size))
+                            self.X_test, self.y_test = self.stream.next_instance(self.test_size)
+
+                        if (self.X_test is not None) and (self.y_test is not None):
+                            logging.info('Testing model on %s samples.', str(self.test_size))
+
+                            for i in range(self.test_size):
+                                prediction = self.classifier.predict([self.X_test[i]])
+
+                            #for i in range(len(prediction)):
+                                self.global_classification_metrics.add_result(self.y_test[i], prediction)
+                                self.partial_classification_metrics.add_result(self.y_test[i], prediction)
+                            before_count += 1
+                            self.update_metrics()
+
                 end_time = timer()
             except BaseException as exc:
                 if exc is KeyboardInterrupt:
@@ -211,11 +228,14 @@ class EvaluatePrequential(BaseEvaluator):
         if 'scatter' in self.plot_options:
             pass
         if 'hamming_score' in self.plot_options:
-            logging.info('Global hamming score: %s', str(round(self.global_classification_metrics.get_hamming_score(), 3)))
+            logging.info('Global hamming score: %s',
+                         str(round(self.global_classification_metrics.get_hamming_score(), 3)))
         if 'hamming_loss' in self.plot_options:
-            logging.info('Global hamming loss: %s', str(round(self.global_classification_metrics.get_hamming_loss(), 3)))
+            logging.info('Global hamming loss: %s',
+                         str(round(self.global_classification_metrics.get_hamming_loss(), 3)))
         if 'exact_match' in self.plot_options:
-            logging.info('Global exact matches: %s', str(round(self.global_classification_metrics.get_exact_match(), 3)))
+            logging.info('Global exact matches: %s',
+                         str(round(self.global_classification_metrics.get_exact_match(), 3)))
         if 'j_index' in self.plot_options:
             logging.info('Global j index: %s', str(round(self.global_classification_metrics.get_j_index(), 3)))
         if 'mean_square_error' in self.plot_options:
@@ -279,8 +299,7 @@ class EvaluatePrequential(BaseEvaluator):
             with open(self.output_file, 'a') as f:
                 f.write('\n' + line)
 
-        if self.show_plot:
-            self.visualizer.on_new_train_step(current_x, new_points_dict)
+        self.visualizer.on_new_train_step(current_x, new_points_dict)
 
     def update_metrics(self):
         """ Updates the metrics of interest.
@@ -321,13 +340,8 @@ class EvaluatePrequential(BaseEvaluator):
             true, pred = self.global_classification_metrics.get_last()
             new_points_dict['true_vs_predicts'] = [true, pred]
             #print(str(true) + ' ' + str(pred))
-        self.update_plot(self.global_sample_count, new_points_dict)
-
-    def _reset_globals(self):
-        self.global_sample_count = 0
-
-    def start_plot(self, n_wait, dataset_name):
-        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, plots=self.plot_options)
+        if self.show_plot:
+            self.update_plot(self.global_sample_count, new_points_dict)
 
     def set_params(self, dict):
         params_list = dict_to_tuple_list(dict)
@@ -351,12 +365,11 @@ class EvaluatePrequential(BaseEvaluator):
             elif name == 'show_scatter_points':
                 self.show_scatter_points = value
 
+    def start_plot(self, n_wait, dataset_name):
+        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, plots=self.plot_options)
+
+    def _reset_globals(self):
+        self.global_sample_count = 0
+
     def get_info(self):
-        plot = 'True' if self.show_plot else 'False'
-        return 'Prequential Evaluator: n_wait: ' + str(self.n_wait) + \
-               '  -  max_instances: ' + str(self.max_instances) + \
-               '  -  max_time: ' + str(self.max_time) + \
-               '  -  batch_size: ' + str(self.batch_size) + \
-               '  -  pretrain_size: ' + str(self.pretrain_size) + \
-               '  -  show_plot: ' + plot + \
-               '  -  plot_options: ' + str(self.plot_options)
+        return 'Not implemented.'

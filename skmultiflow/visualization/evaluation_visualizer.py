@@ -185,10 +185,10 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_kappa.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_global_kappa, = self.subplot_kappa.plot(self.X, self.global_kappa, label='Global kappa')
             self.line_partial_kappa, = self.subplot_kappa.plot(self.X, self.partial_kappa,
                                                                label='Sliding window Kappa (last '
                                                                      + str(self.n_wait) + ' samples)')
+            self.line_global_kappa, = self.subplot_kappa.plot(self.X, self.global_kappa, label='Global kappa')
             self.subplot_kappa.legend(handles=[self.line_partial_kappa, self.line_global_kappa])
             self.subplot_kappa.set_ylim([-1, 1])
 
@@ -202,10 +202,10 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_kappa_t.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_global_kappa_t, = self.subplot_kappa_t.plot(self.X, self.global_kappa_t, label='Global kappa T')
             self.line_partial_kappa_t, = self.subplot_kappa_t.plot(self.X, self.partial_kappa_t,
                                                                    label='Sliding window Kappa T (last '
                                                                          + str(self.n_wait) + ' samples)')
+            self.line_global_kappa_t, = self.subplot_kappa_t.plot(self.X, self.global_kappa_t, label='Global kappa T')
             self.subplot_kappa_t.legend(handles=[self.line_partial_kappa_t, self.line_global_kappa_t])
             self.subplot_kappa_t.set_ylim([-1, 1])
 
@@ -219,10 +219,10 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_kappa_m.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_global_kappa_m, = self.subplot_kappa_m.plot(self.X, self.global_kappa_m, label='Global kappa M')
             self.line_partial_kappa_m, = self.subplot_kappa_m.plot(self.X, self.partial_kappa_m,
                                                                    label='Sliding window kappa M (last '
                                                                          + str(self.n_wait) + ' samples)')
+            self.line_global_kappa_m, = self.subplot_kappa_m.plot(self.X, self.global_kappa_m, label='Global kappa M')
             self.subplot_kappa_m.legend(handles=[self.line_partial_kappa_m, self.line_global_kappa_m])
             self.subplot_kappa_m.set_ylim([-1, 1])
 
@@ -419,7 +419,7 @@ class EvaluationVisualizer(BaseListener):
                                                          xy=(train_step, dict['kappa_t'][1]), xytext=(8, 0),
                                                          textcoords='offset points'))
             self.subplot_kappa_t.set_xlim([0, 1.2 * np.max(self.X)])
-            self.subplot_kappa_t.set_ylim([min([min(self.global_kappa_t), min(self.partial_kappa_t)]), 1.1])
+            self.subplot_kappa_t.set_ylim([min([min(self.global_kappa_t), min(self.partial_kappa_t), -1.]), 1.])
 
 
         if 'kappa_m' in self.plots:
@@ -435,7 +435,7 @@ class EvaluationVisualizer(BaseListener):
                                                            xy=(train_step, dict['kappa_m'][1]), xytext=(8, 0),
                                                            textcoords='offset points'))
             self.subplot_kappa_m.set_xlim([0, 1.2 * np.max(self.X)])
-            self.subplot_kappa_m.set_ylim([min([min(self.global_kappa_m), min(self.partial_kappa_m)]), 1.1])
+            self.subplot_kappa_m.set_ylim([min([min(self.global_kappa_m), min(self.partial_kappa_m), -1.]), 1.])
 
 
         if 'scatter' in self.plots:
@@ -567,7 +567,7 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_true_vs_predicts.set_xlim([0, 1.2 * np.max(self.X)])
 
         plt.draw()
-        plt.pause(0.00001)
+        plt.pause(0.0001)
 
 
     def draw_scatter_points(self, X, y, predict):
