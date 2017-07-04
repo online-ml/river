@@ -74,12 +74,12 @@ A stream data framework.
 * (DONE) FileStream -> last_class instead of bool make it index based
 * (DONE) Target instead of class
 * Filters: joining, noise, remove, add
-* Plot for regression (signal vs predicted)
-* MSE and MAE
+* (DONE) Plot for regression (signal vs predicted)
+* (DONE) MSE and MAE
 * (DONE) In the evaluation keep track of statistics instead of all the true labels and predictions
     * (DONE) Use BasicClassificationPerformanceEvaluator (it's in MOA) for this purpose. (WindowClassificationPerformanceEvaluator)
 * (DONE) MultiOutputMeasurements matrix is not being filled with values... find out why
 * (DONE) Work on the FastComplexBuffer, make everything work
 
-* MSE and MAE plotting may have some problems, because it's always really close to 0.
-* Need to check if true_vs_predict plot works
+* (DONE) MSE and MAE plotting may have some problems, because it's always really close to 0.
+* (DONE, but maybe it's not the best way to plot this. Verify with Jesse) Need to check if true_vs_predict plot works
