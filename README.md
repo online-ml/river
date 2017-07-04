@@ -79,4 +79,7 @@ A stream data framework.
 * (DONE) In the evaluation keep track of statistics instead of all the true labels and predictions
     * (DONE) Use BasicClassificationPerformanceEvaluator (it's in MOA) for this purpose. (WindowClassificationPerformanceEvaluator)
 * (DONE) MultiOutputMeasurements matrix is not being filled with values... find out why
-* Work on the FastComplexBuffer, make everything work
+* (DONE) Work on the FastComplexBuffer, make everything work
+
+* MSE and MAE plotting may have some problems, because it's always really close to 0.
+* Need to check if true_vs_predict plot works
