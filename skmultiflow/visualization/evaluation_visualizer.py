@@ -315,7 +315,7 @@ class EvaluationVisualizer(BaseListener):
             self.partial_mse = []
 
             self.subplot_mse = self.fig.add_subplot(base)
-            self.subplot_mse.set_title('Classifier\'s MSE')
+            self.subplot_mse.set_title('Regressor\'s MSE')
             self.subplot_mse.set_ylabel('MSE')
             self.subplot_mse.set_xlabel('Samples analyzed')
             base += 1
@@ -333,7 +333,7 @@ class EvaluationVisualizer(BaseListener):
             self.partial_mae = []
 
             self.subplot_mae = self.fig.add_subplot(base)
-            self.subplot_mae.set_title('Classifier\'s MAE')
+            self.subplot_mae.set_title('Regressor\'s MAE')
             self.subplot_mae.set_ylabel('MAE')
             self.subplot_mae.set_xlabel('Samples analyzed')
             base += 1
@@ -351,7 +351,7 @@ class EvaluationVisualizer(BaseListener):
             self.regression_pred = []
 
             self.subplot_true_vs_predicts = self.fig.add_subplot(base)
-            self.subplot_true_vs_predicts.set_title('Classifier\'s True Labels vs Predictions')
+            self.subplot_true_vs_predicts.set_title('Regressor\'s True Labels vs Predictions')
             self.subplot_true_vs_predicts.set_ylabel('y')
             self.subplot_true_vs_predicts.set_xlabel('Samples analyzed')
             base += 1
@@ -560,7 +560,9 @@ class EvaluationVisualizer(BaseListener):
             self.regression_true.append(dict['true_vs_predicts'][0])
             self.regression_pred.append(dict['true_vs_predicts'][1])
             self.line_regression_true.set_data(self.X, self.regression_true)
-            self.line_regression_pred.set_data(self.X, self.regression_pred)
+            #self.line_regression_pred.set_data(self.X, self.regression_pred)
+            scat_pred = self.subplot_true_vs_predicts.scatter(self.X, self.regression_pred, s=6,
+                                                            label='Predictions', c='orange')
 
             self.subplot_true_vs_predicts.set_ylim([min([min(self.regression_true), min(self.regression_pred)]) - 1.,
                                        max([max(self.regression_true), max(self.regression_pred)]) + 1.])
