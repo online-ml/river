@@ -30,7 +30,7 @@ def demo(output_file=None, instances=40000):
     # Setup the evaluator
     eval = EvaluatePrequential(pretrain_size=100, max_instances=instances, batch_size=1, n_wait=50, max_time=1000,
                                output_file=output_file, task_type='regression', show_plot=True,
-                               plot_options=['mean_absolute_error', 'mean_square_error'])
+                               plot_options=['mean_absolute_error', 'mean_square_error', 'true_vs_predicts'])
 
     # Evaluate
     eval.eval(stream=stream, classifier=pipe)

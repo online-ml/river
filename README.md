@@ -83,3 +83,6 @@ A stream data framework.
 
 * (DONE) MSE and MAE plotting may have some problems, because it's always really close to 0.
 * (DONE, but maybe it's not the best way to plot this. Verify with Jesse) Need to check if true_vs_predict plot works
+* Feature to compare multiple classifiers in the same plot
+
+* moa/classifiers/core/driftdetection
