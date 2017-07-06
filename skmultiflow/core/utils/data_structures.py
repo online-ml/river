@@ -73,7 +73,7 @@ class FastBuffer(BaseObject):
         return self.buffer
 
     def get_info(self):
-        pass
+        return 'Not implemented.'
 
 
 class FastComplexBuffer(BaseObject):
@@ -178,7 +178,7 @@ class FastComplexBuffer(BaseObject):
         return self.buffer
 
     def get_info(self):
-        pass
+        return 'Not implemented.'
 
 
 class ConfusionMatrix(BaseObject):
