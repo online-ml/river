@@ -1,7 +1,8 @@
 __author__ = 'Guilherme Matsumoto'
 
 import numpy as np
-from skmultiflow.classification.core.adwin import ADWIN, List, Item
+
+from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 
 
 def demo():

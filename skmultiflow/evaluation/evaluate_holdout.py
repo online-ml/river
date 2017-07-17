@@ -155,7 +155,10 @@ class EvaluateHoldout(BaseEvaluator):
             self.classifier.partial_fit(X, y, self.stream.get_classes())
             first_run = False
         else:
-            X, y = None, None
+            logging.info('Pretraining on 1 sample.')
+            X, y = self.stream.next_instance()
+            self.classifier.partial_fit(X, y, self.stream.get_classes())
+            first_run = False
 
         if not self.dynamic_test_set:
             logging.info('Separating %s static holdout samples.', str(self.test_size))

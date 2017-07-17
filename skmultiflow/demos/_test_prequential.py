@@ -26,8 +26,8 @@ def demo(output_file=None, instances=40000):
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(pretrain_size=10000, max_instances=instances, batch_size=1, n_wait=200, max_time=1000,
-                               output_file=output_file, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'kappa_m'])
+    eval = EvaluatePrequential(pretrain_size=1000, max_instances=instances, batch_size=1, n_wait=200, max_time=1000,
+                               output_file=output_file, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
     eval.eval(stream=stream, classifier=pipe)

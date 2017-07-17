@@ -194,7 +194,7 @@ class Pipeline(BaseObject):
 
         if classifier is not None and not hasattr(classifier, "partial_fit"):
             self.active = False
-            raise TypeError("Last step of pipeline should implement partial_fit.")
+            #raise TypeError("Last step of pipeline should implement partial_fit.")
 
 
     def named_steps(self):

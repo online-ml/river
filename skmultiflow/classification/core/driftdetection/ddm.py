@@ -1,7 +1,8 @@
 __author__ = 'Guilherme Matsumoto'
 
 import numpy as np
-from skmultiflow.classification.core.base_drift_detector import BaseDriftDetector
+
+from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 
 
 class DDM(BaseDriftDetector):
