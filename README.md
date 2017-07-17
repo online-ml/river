@@ -85,4 +85,14 @@ A stream data framework.
 * (DONE, but maybe it's not the best way to plot this. Verify with Jesse) Need to check if true_vs_predict plot works
 * Feature to compare multiple classifiers in the same plot
 
-* moa/classifiers/core/driftdetection
+* (DONE) moa/classifiers/core/driftdetection
+
+* (DONE) Find out why in knn lines 90-100 the new_ind (for new_indexes) the new indexes come in a list of list and not simply a list
+
+* I may be doing something wrong. When using adwin to manage window size, is there no window_max_size, because the algorithm is a little slow
+* Pipeline has a comment on validate_steps
+* Better accuracy on fixed size windows
+* In knn with adwin, what to feed adwin in the first k samples given to partial_fit
+
+* oza bagging, leverage bagging
+*

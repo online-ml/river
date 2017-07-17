@@ -1,7 +1,7 @@
 __author__ = 'Guilherme Matsumoto'
 
 import numpy as np
-from skmultiflow.classification.core.base_drift_detector import BaseDriftDetector
+from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 from skmultiflow.core.base_object import BaseObject
 
 
@@ -161,7 +161,7 @@ class ADWIN(BaseDriftDetector):
         bln_exit = False
         bln_bucket_deleted = False
         self.mint_time += 1
-
+        n0 = 0
         if (self.mint_time % self.mint_clock == 0) and (self._width > self.mint_min_window_longitude):
             bln_reduce_width = True
             while bln_reduce_width:
@@ -177,6 +177,7 @@ class ADWIN(BaseDriftDetector):
                 u2 = 0
                 cursor = self.list_row_bucket._last
                 i = self.last_bucket_row
+
                 while (not bln_exit) and (cursor is not None):
                     for k in range(cursor.bucket_size_row - 1):
                         n2 = self.bucket_size(i)

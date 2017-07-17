@@ -1,10 +1,14 @@
 __author__ = 'Guilherme Matsumoto'
 
+import sys
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
 
 
 class FastBuffer(BaseObject):
+    """ Keeps simple, unitary objects, in a limited size buffer.
+        
+    """
     def __init__(self, max_size, object_list=None):
         super().__init__()
         #default values
@@ -77,6 +81,9 @@ class FastBuffer(BaseObject):
 
 
 class FastComplexBuffer(BaseObject):
+    """ Keeps a limited size buffer with predictions for a n number of targets
+    
+    """
     def __init__(self, max_size, width):
         super().__init__()
         #default values
@@ -403,6 +410,84 @@ class MOLConfusionMatrix(BaseObject):
     def get_class_type(self):
         return 'collection'
 
+class InstanceWindow(BaseObject):
+    def __init__(self, num_attributes=0, num_target_tasks=1, categorical_list=None, max_size=1000, dtype=float):
+        super().__init__()
+        # default values
+        self.dtype = None
+        self.buffer = None
+        self.n_attributes = None
+        self.max_size = None
+        self.categorical_attributes = None
+        self.n_samples = None
+        self.n_target_tasks = None
+        self.configure(num_attributes=num_attributes, num_target_tasks=num_target_tasks, categorical_list=categorical_list, max_size=max_size, dtype=dtype)
+
+    def configure(self, num_attributes, num_target_tasks, categorical_list=None, max_size=1000, dtype=float):
+        self.n_attributes = num_attributes
+        self.categorical_attributes = categorical_list
+        self.max_size = max_size
+        self.dtype = dtype
+        self.n_target_tasks = num_target_tasks
+        self.buffer = np.zeros((0, num_attributes+num_target_tasks))
+        self.n_samples = 0
+
+    def add_element(self, X, y):
+        if (self.n_attributes != X.size):
+            if self.n_samples == 0:
+                self.n_attributes = X.size
+                self.n_target_tasks = y.size
+                self.buffer = np.zeros((0, self.n_attributes+self.n_target_tasks))
+            else:
+                raise ValueError("Number of attributes in X is different from the objects buffer dimension. "
+                                 "Call configure() to correctly set up the InstanceWindow")
+
+        if self.n_samples >= self.max_size:
+            self.n_samples -= 1
+            self.buffer = np.delete(self.buffer, 0, axis=0)
+
+        if self.buffer is None:
+            raise TypeError("None type not supported as the buffer, call configure() to correctly set up the InstanceWindow")
+
+        aux = np.concatenate((X, y), axis=1)
+        self.buffer = np.concatenate((self.buffer, aux), axis=0)
+        self.n_samples += 1
+
+    def delete_element(self):
+        self.n_samples -= 1
+        self.buffer = self.buffer[1:, :]
+        pass
+
+    def get_attributes_matrix(self):
+        return self.buffer[:, :self.n_attributes]
+
+    def get_targets_matrix(self):
+        return self.buffer[:, self.n_attributes:]
+
+    def at_index(self, index):
+        return self.get_attributes_matrix()[index], self.get_targets_matrix()[index]
+
+    @property
+    def _buffer(self):
+        return self.buffer
+
+    @property
+    def _num_target_tasks(self):
+        return self.n_target_tasks
+
+    @property
+    def _num_attributes(self):
+        return self.n_attributes
+
+    @property
+    def _num_samples(self):
+        return self.n_samples
+
+    def get_class_type(self):
+        return 'data_structure'
+
+    def get_info(self):
+        return 'Not implemented.'
 
 if __name__ == '__main__':
     text = '/asddfdsd/'

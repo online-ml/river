@@ -1,6 +1,6 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.classification.core.base_drift_detector import BaseDriftDetector
+from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 
 
 class PageHinkley(BaseDriftDetector):
