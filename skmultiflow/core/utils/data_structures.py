@@ -433,6 +433,12 @@ class InstanceWindow(BaseObject):
         self.n_samples = 0
 
     def add_element(self, X, y):
+        """ Adds one element to the sample window
+        
+        :param X: matrix features for one sample. shape (1,1)
+        :param y: matrix labels for one sample. shape (1,1)
+        :return: None
+        """
         if (self.n_attributes != X.size):
             if self.n_samples == 0:
                 self.n_attributes = X.size

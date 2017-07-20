@@ -78,6 +78,10 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def reset(self):
+        pass
+
+    @abstractmethod
     def score(self, X, y):
         pass
 

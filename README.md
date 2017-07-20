@@ -95,4 +95,10 @@ A stream data framework.
 * In knn with adwin, what to feed adwin in the first k samples given to partial_fit
 
 * oza bagging, leverage bagging
-*
+* (DONE) finish working on knn wiht adwin
+
+* (DONE) Not all learners in OzaBagging receive pre train because of the k variable drawn from a poisson distribution
+
+* (DONE) What is wrong with the code matrix in leverage_bagging
+* (DONE) Leverage bagging test not running correctly    -> (DONE) problem in knn.predict_proba
+                                                        -> (DONE) Run simulation, something is wrong in window.add_element from knn

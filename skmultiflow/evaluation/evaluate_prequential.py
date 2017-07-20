@@ -167,15 +167,16 @@ class EvaluatePrequential(BaseEvaluator):
                 if X is not None and y is not None:
                     prediction = self.classifier.predict(X)
                     self.global_sample_count += self.batch_size
-                    for i in range(len(prediction)):
-                        self.global_classification_metrics.add_result(y[i], prediction[i])
-                        self.partial_classification_metrics.add_result(y[i], prediction[i])
-                        nul_count = self.global_sample_count - self.batch_size
-                        if ((nul_count + i + 1) % (rest / 20)) == 0:
-                            logging.info('%s%%', str(((nul_count + i + 1) // (rest / 20)) * 5))
-                            # if self.show_scatter_points:
-                            # self.visualizer.on_new_scatter_data(self.global_sample_count - self.batch_size + i, y[i],
-                            # prediction[i])
+                    if prediction is not None:
+                        for i in range(len(prediction)):
+                            self.global_classification_metrics.add_result(y[i], prediction[i])
+                            self.partial_classification_metrics.add_result(y[i], prediction[i])
+                            nul_count = self.global_sample_count - self.batch_size
+                            if ((nul_count + i + 1) % (rest / 20)) == 0:
+                                logging.info('%s%%', str(((nul_count + i + 1) // (rest / 20)) * 5))
+                                # if self.show_scatter_points:
+                                # self.visualizer.on_new_scatter_data(self.global_sample_count - self.batch_size + i, y[i],
+                                # prediction[i])
                     if first_run:
                         self.classifier.partial_fit(X, y, self.stream.get_classes())
                         first_run = False
@@ -186,7 +187,8 @@ class EvaluatePrequential(BaseEvaluator):
                         self.global_sample_count >= self.max_instances) |
                         (self.global_sample_count / self.n_wait > before_count + 1)):
                         before_count += 1
-                        self.update_metrics()
+                        if prediction is not None:
+                            self.update_metrics()
                 end_time = timer()
             except BaseException as exc:
                 if exc is KeyboardInterrupt:
@@ -296,7 +298,6 @@ class EvaluatePrequential(BaseEvaluator):
         """
 
         new_points_dict = {}
-
         if 'performance' in self.plot_options:
             new_points_dict['performance'] = [self.global_classification_metrics.get_performance(), self.partial_classification_metrics.get_performance()]
         if 'kappa' in self.plot_options:

@@ -86,7 +86,7 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
             self.current_instance_x = data[j, :self.num_numerical_attributes]
             self.current_instance_y = data[j, self.num_numerical_attributes:]
 
-        return (data[:, :self.num_numerical_attributes], data[:, self.num_numerical_attributes:])
+        return (data[:, :self.num_numerical_attributes], data[:, self.num_numerical_attributes:].flatten())
 
     def prepare_for_use(self):
         self.restart()
