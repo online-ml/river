@@ -78,6 +78,8 @@ class ADWIN(BaseDriftDetector):
 
     @property
     def _estimation(self):
+        if self.WIDTH == 0:
+            return 0
         return self.TOTAL / self.WIDTH
 
     @property

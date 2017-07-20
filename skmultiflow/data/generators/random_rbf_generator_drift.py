@@ -30,7 +30,10 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
                         self.centroid_speed[i][j] = -self.centroid_speed[i][j]
             X, y = super().next_instance(1)
             data[k, :] = np.concatenate((X[0], y[0]))
-        return (data[:, :self.num_numerical_attributes], data[:, self.num_numerical_attributes:])
+        #print(data[:, :self.num_numerical_attributes])
+        #print(data[:, self.num_numerical_attributes:])
+
+        return (data[:, :self.num_numerical_attributes], data[:, self.num_numerical_attributes:].flatten())
 
     def generate_centroids(self):
         super().generate_centroids()

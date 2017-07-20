@@ -5,31 +5,37 @@ import numpy as np
 from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.core.utils.data_structures import InstanceWindow
+from skmultiflow.core.utils.utils import *
 
 
 class KNNAdwin(KNN):
+    """ K-Nearest Neighbours learner with ADWIN change detector
+
+            Not optimal for a mixture of categorical and numerical features.
+
+    """
     def __init__(self, k=5, max_window_size=sys.maxsize, leaf_size=30, categorical_list=[]):
         super().__init__(k=k, max_window_size=max_window_size, leaf_size=leaf_size, categorical_list=categorical_list)
         self.adwin = ADWIN()
         self.window = None
 
+    def reset(self):
+        self.adwin = ADWIN()
+        return super().reset()
+
+
     def partial_fit(self, X, y, classes=None):
-        r, c = 1, 1
-        if isinstance(X, type([])):
-            if isinstance(X[0], type([])):
-                r, c = len(X), len(X[0])
-            else:
-                c = len(X)
-        elif isinstance(X, type(np.array([0]))):
-            if hasattr(X, 'shape'):
-                r, c = X.shape
-            elif hasattr(X, 'size'):
-                r, c = 1, X.size
+        r, c = get_dimensions(X)
         if self.window is None:
             # self.window = InstanceWindow(max_size=2000)
             self.window = InstanceWindow(max_size=self.max_window_size)
         for i in range(r):
-            self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
+            #print(np.asarray([X[i]]))
+            #print(np.asarray([[y[i]]]))
+            if r > 1:
+                self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
+            else:
+                self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
 
             if self.window._num_samples >= self.k:
                 add = 1 if self.predict(X[0]) == y[i] else 0

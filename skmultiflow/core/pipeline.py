@@ -162,13 +162,7 @@ class Pipeline(BaseObject):
         names, estimators = zip(*self.steps)
         #evaluator = transforms = classifier = None
         transforms = classifier = None
-        #if has_classifier:
         classifier = estimators[-1]
-        #if has_evaluator:
-            #evaluator = estimators[-2]
-            #transforms = estimators[:-2]
-        #else:
-            #transforms = estimators[:-1]
         transforms = estimators[:-1]
 
         self.active = True
