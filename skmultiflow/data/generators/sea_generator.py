@@ -148,7 +148,7 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         return c
 
     def get_info(self):
-        pass
+        return ''
 
     def get_num_targeting_tasks(self):
         return 1

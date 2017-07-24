@@ -5,9 +5,12 @@ from skmultiflow.classification.base import BaseClassifier
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 #from skmultiflow.classification.lazy.neighbours.distances import euclidean_distance
 from skmultiflow.core.utils.data_structures import InstanceWindow
-from sklearn.neighbors import KDTree, DistanceMetric
+#from sklearn.neighbors import KDTree, DistanceMetric
+from skmultiflow.classification.lazy.neighbours.kdtree import KDTree
+import sklearn as sk
 from skmultiflow.core.utils.utils import *
 from skmultiflow.classification.lazy.neighbours.distances import custom_distance
+from timeit import default_timer as timer
 
 
 class KNN(BaseClassifier):
@@ -123,9 +126,9 @@ class KNN(BaseClassifier):
         new_dist, new_ind = self._predict_proba(X)
         for i in range(r):
             classes = [0 for i in range(len(self.classes))]
-            for index in new_ind[i]:
+            for index in new_ind:
                 classes[self.classes.index(self.window.get_targets_matrix()[index])] += 1
-            probs.append([x/self.k for x in classes])
+            probs.append([x/len(new_ind) for x in classes])
 
         '''
         for i in range(r):
@@ -138,11 +141,20 @@ class KNN(BaseClassifier):
 
             probs.append([x/self.k for x in classes])
         '''
+        # print(probs)
         return probs
 
     def _predict_proba(self, X):
-        tree = KDTree(self.window.get_attributes_matrix(),self.leaf_size,metric='euclidean')
+        results = []
+
+        start = timer()
+        tree_aux = sk.neighbors.KDTree(self.window.get_attributes_matrix(),self.leaf_size,metric='euclidean')
+        dist_aux, ind_aux = tree_aux.query(np.asarray(X), k=self.k)
+        end = timer()
+        tree = KDTree(self.window.get_attributes_matrix(), metric='modified_euclidean',
+                      categorical_list=self.categorical_list, return_distance=True)
         dist, ind = tree.query(np.asarray(X), k=self.k)
+        print("Create and query tree time: " + str(end-start))
         return dist, ind
 
     def score(self, X, y):
