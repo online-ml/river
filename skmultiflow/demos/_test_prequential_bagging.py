@@ -1,24 +1,20 @@
 __author__= 'Guilherme Matsumoto'
 
-
-from sklearn.linear_model.stochastic_gradient import SGDClassifier, SGDRegressor
-from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-from sklearn.linear_model.perceptron import Perceptron
-from skmultiflow.classification.perceptron import PerceptronMask
 from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
 from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.classification.meta.oza_bagging_adwin import OzaBaggingAdwin
 from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream, FileOption
-from skmultiflow.data.generators.waveform_generator import WaveformGenerator
+from skmultiflow.data.generators.sea_generator import SEAGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
 
 def demo(output_file=None, instances=40000):
     # Setup the File Stream
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_big.csv", "CSV", False)
-    stream = FileStream(opt, -1, 1)
+    # opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_big.csv", "CSV", False)
+    # stream = FileStream(opt, -1, 1)
+    stream = SEAGenerator(classification_function=2,instance_seed=755437,noise_percentage=0.0)
     stream.prepare_for_use()
 
     # Setup the classifier

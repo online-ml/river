@@ -89,12 +89,12 @@ A stream data framework.
 
 * (DONE) Find out why in knn lines 90-100 the new_ind (for new_indexes) the new indexes come in a list of list and not simply a list
 
-* I may be doing something wrong. When using adwin to manage window size, is there no window_max_size, because the algorithm is a little slow
-* Pipeline has a comment on validate_steps
-* Better accuracy on fixed size windows
-* In knn with adwin, what to feed adwin in the first k samples given to partial_fit
+* (DONE) I may be doing something wrong. When using adwin to manage window size, is there no window_max_size, because the algorithm is a little slow
+* (DONE) Pipeline has a comment on validate_steps
+* (DONE) Better accuracy on fixed size windows
+* (DONE) In knn with adwin, what to feed adwin in the first k samples given to partial_fit
 
-* oza bagging, leverage bagging
+* (DONE) oza bagging, leverage bagging
 * (DONE) finish working on knn wiht adwin
 
 * (DONE) Not all learners in OzaBagging receive pre train because of the k variable drawn from a poisson distribution
@@ -102,3 +102,7 @@ A stream data framework.
 * (DONE) What is wrong with the code matrix in leverage_bagging
 * (DONE) Leverage bagging test not running correctly    -> (DONE) problem in knn.predict_proba
                                                         -> (DONE) Run simulation, something is wrong in window.add_element from knn
+
+* Right now the nodes don't keep the samples, but maybe it will be necessary to keep them so that we can later calculate de distances
+* Just noticed that assign a variable to a slice of a list actually is just a reference, so the memory cost won't be so bad
+* Why in knn with k=8, the algorithm only finds the 7 nearest neighbors?????
