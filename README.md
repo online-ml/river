@@ -103,6 +103,8 @@ A stream data framework.
 * (DONE) Leverage bagging test not running correctly    -> (DONE) problem in knn.predict_proba
                                                         -> (DONE) Run simulation, something is wrong in window.add_element from knn
 
-* Right now the nodes don't keep the samples, but maybe it will be necessary to keep them so that we can later calculate de distances
-* Just noticed that assign a variable to a slice of a list actually is just a reference, so the memory cost won't be so bad
-* Why in knn with k=8, the algorithm only finds the 7 nearest neighbors?????
+* (DONE) Right now the nodes don't keep the samples, but maybe it will be necessary to keep them so that we can later calculate de distances
+* (DONE) Just noticed that assign a variable to a slice of a list actually is just a reference, so the memory cost won't be so bad
+* (DONE) Why in knn with k=8, the algorithm only finds the 7 nearest neighbors?????
+
+* KNN correctly works with the custom KDTree, which accepts custom metrics. Unfortunately it's still too slow to be used in streams.

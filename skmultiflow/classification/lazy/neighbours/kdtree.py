@@ -50,8 +50,8 @@ class KDTree(BaseObject):
 
         self.n_samples, self.n_features = self.X.shape
 
-        if categorical_list is not None:
-            self.n_features -= len(categorical_list)
+        #if categorical_list is not None:
+        #    self.n_features -= len(categorical_list)
 
         self.categorical_list = categorical_list
         self.return_distance = return_distance
@@ -111,8 +111,7 @@ class KDTree(BaseObject):
         :return: The k nearest neighbors of sample X
         """
         neighbors_distances = []
-        # print(X[0])
-        neighbors_distances = self.root.query_node(X[0], k, neighbors_distances)
+        neighbors_distances = self.root.query_node(X, k, neighbors_distances)
         indexes, distances = [], []
         for key, value in neighbors_distances:
             indexes.append(key)
@@ -263,6 +262,7 @@ class KDTreeNode(BaseObject):
         if not self:
             return neighbors_distance_list
 
+        X = X.flatten()
         if X[self.split_axis] < self.split_value:
             if self.left_subtree is not None:
                 neighbors_distance_list = self.left_subtree.query_node(X, k, neighbors_distance_list)
@@ -272,6 +272,9 @@ class KDTreeNode(BaseObject):
 
         # Verify self
         neighbors_distance_list = sorted(neighbors_distance_list, key=lambda n: n[1], reverse=True)
+        #print(X)
+        #print(self.data[self.node_index])
+        #print(self.kwargs)
         dist = self.distance_function(X, self.data[self.node_index], **self.kwargs)
         #print("verificou self")
         if len(neighbors_distance_list) > 0:

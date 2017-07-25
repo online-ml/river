@@ -46,6 +46,7 @@ class EvaluatePrequential(BaseEvaluator):
         self.stream = None
         self.output_file = output_file
         self.visualizer = None
+        self.n_classifiers = None
 
         #plotting configs
         self.task_type = task_type.lower()
@@ -84,6 +85,22 @@ class EvaluatePrequential(BaseEvaluator):
         warnings.filterwarnings("ignore", ".*invalid value encountered in true_divide.*")
 
     def eval(self, stream, classifier):
+        """ Evaluates a learner or set of learners by feeding them with the stream samples
+        
+        :param stream: A stream object.
+        :param classifier: A leaner or list of learners.
+        :return: The learner or set of learners, properly fitted after the end of the evaluation process
+        """
+
+        # First off we need to verify if this is a simple evaluation task or a comparison between learners task.
+        if isinstance(classifier, type([])):
+            self.n_classifiers = len(classifier)
+        else:
+            if hasattr(classifier, 'predict'):
+                self.n_classifiers = 1
+            else:
+                return None
+
         if self.show_plot:
             self.start_plot(self.n_wait, stream.get_plot_name())
         self._reset_globals()
