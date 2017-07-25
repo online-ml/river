@@ -79,7 +79,7 @@ class KNN(BaseClassifier):
             elif hasattr(X, 'size'):
                 r,  c = 1, X.size
         '''
-
+        #print(X)
         probs = self.predict_proba(X)
         preds = []
         for i in range(r):
@@ -124,6 +124,8 @@ class KNN(BaseClassifier):
         self.classes = list(set().union(self.classes, np.unique(self.window.get_targets_matrix())))
 
         new_dist, new_ind = self._predict_proba(X)
+        new_dist = new_dist[0]
+        new_ind = new_ind[0]
         for i in range(r):
             classes = [0 for i in range(len(self.classes))]
             for index in new_ind:
@@ -147,14 +149,14 @@ class KNN(BaseClassifier):
     def _predict_proba(self, X):
         results = []
 
-        start = timer()
-        tree_aux = sk.neighbors.KDTree(self.window.get_attributes_matrix(),self.leaf_size,metric='euclidean')
-        dist_aux, ind_aux = tree_aux.query(np.asarray(X), k=self.k)
-        end = timer()
-        tree = KDTree(self.window.get_attributes_matrix(), metric='modified_euclidean',
-                      categorical_list=self.categorical_list, return_distance=True)
+        #dist, ind = tree_aux.query(np.asarray(X), k=self.k)
+
+        #tree = KDTree(self.window.get_attributes_matrix(), metric='modified_euclidean',
+        #              categorical_list=self.categorical_list, return_distance=True)
+
+        tree = sk.neighbors.KDTree(self.window.get_attributes_matrix(), self.leaf_size, metric='euclidean')
+
         dist, ind = tree.query(np.asarray(X), k=self.k)
-        print("Create and query tree time: " + str(end-start))
         return dist, ind
 
     def score(self, X, y):

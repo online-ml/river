@@ -38,7 +38,7 @@ class KNNAdwin(KNN):
                 self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
 
             if self.window._num_samples >= self.k:
-                add = 1 if self.predict(X[0]) == y[i] else 0
+                add = 1 if self.predict(X[i]) == y[i] else 0
                 self.adwin.add_element(add)
             else:
                 self.adwin.add_element(0)

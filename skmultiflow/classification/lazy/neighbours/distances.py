@@ -54,10 +54,10 @@ def custom_distance(instance_one, instance_two, **kwargs):
             if i in categorical_list:
                 if instance_one[i] != instance_two[i]:
                     partial_dist.append(1)
-                    print(1)
+                    #print(1)
                 else:
                     partial_dist.append(0)
-                    print(0)
+                    #print(0)
             else:
                 partial_dist.append(math.pow(instance_one[i] - instance_two[i], 2)/(distance_array[i]*distance_array[i]))
         else:
