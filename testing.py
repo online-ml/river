@@ -5,6 +5,7 @@ import skmultiflow.demos._test_pipeline as ewp
 import skmultiflow.demos._test_stream_speed as ess
 import skmultiflow.demos._test_prequential as evp
 import skmultiflow.demos._test_mol as emol
+import skmultiflow.demos._test_comparison_prequential as comp
 
 
 def demoSCP():
@@ -63,6 +64,9 @@ def demo_multi_output():
     """
     emol.demo()
 
+def demo_compare():
+    comp.demo(20000)
+
 if __name__ == '__main__':
     # NEW tests
 
@@ -79,5 +83,8 @@ if __name__ == '__main__':
     #demo_stream_speed()
 
     # Demo for multi output classification, trying with the music.csv from Jesse Read's repository
-    demo_multi_output()
+    #demo_multi_output()
+
+    # Demo for learner comparison feature
+    demo_compare()
 

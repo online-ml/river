@@ -35,7 +35,7 @@ def demo():
     compare.fit(X, y)
 
     n_samples = 0
-    max_samples = 20000
+    max_samples = 5000
     my_corrects = 0
     compare_corrects = 0
 
