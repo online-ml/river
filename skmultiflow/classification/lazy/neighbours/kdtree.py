@@ -110,17 +110,39 @@ class KDTree(BaseObject):
         :param k: The number of nearest neighbors to query for
         :return: The k nearest neighbors of sample X
         """
-        neighbors_distances = []
-        neighbors_distances = self.root.query_node(X, k, neighbors_distances)
-        indexes, distances = [], []
-        for key, value in neighbors_distances:
-            indexes.append(key)
-            distances.append(value)
+        r, c = get_dimensions(X)
+        dist_all, ind_all = [], []
 
-        if self.return_distance:
-            return distances, indexes
+        if (r == 1) and ((not isinstance(X[0], type([]))) and (not isinstance(X[0], type(np.ndarray([0]))))):
+            neighbors_distances = []
+            neighbors_distances = self.root.query_node(X, k, neighbors_distances)
+            indexes, distances = [], []
+            for key, value in neighbors_distances:
+                indexes.append(key)
+                distances.append(value)
+            dist_all.append(distances)
+            ind_all.append(indexes)
+            if self.return_distance:
+                return dist_all, ind_all
+            else:
+                return ind_all
         else:
-            return indexes
+            for i in range(r):
+                neighbors_distances = []
+                neighbors_distances = self.root.query_node(X[i], k, neighbors_distances)
+                indexes, distances = [], []
+                for key, value in neighbors_distances:
+                    indexes.append(key)
+                    distances.append(value)
+                dist_all.append(distances)
+                ind_all.append(indexes)
+            if self.return_distance:
+                return dist_all, ind_all
+            else:
+                return ind_all
+
+
+
 
     def query_radius(self, X, r):
         pass

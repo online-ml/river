@@ -16,6 +16,7 @@ def demo():
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
+    opt = FileOption('FILE', 'OPT_NAME', '../datasets/sea_big.csv', 'csv', False)
     stream = FileStream(opt, -1, 1)
     #stream = RandomRBFGeneratorDrift(change_speed=41.00, num_centroids=50, model_seed=32523423, instance_seed=5435,
     #                                 num_classes=2, num_att=10, num_drift_centroids=50)
@@ -28,8 +29,8 @@ def demo():
                             36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
 
     #knn = KNN(k=8, max_window_size=2000, leaf_size=40)
-    knn = KNNAdwin(k=8, leaf_size=40, max_window_size=2000, categorical_list=[10, 14])
-    pipe = Pipeline([('one_hot_to_categorical', t), ('KNN', knn)])
+    knn = KNNAdwin(k=8, leaf_size=40, max_window_size=2000)
+    #pipe = Pipeline([('one_hot_to_categorical', t), ('KNN', knn)])
 
     compare = KNeighborsClassifier(n_neighbors=8, algorithm='kd_tree', leaf_size=40, metric='euclidean')
     #pipe2 = Pipeline([('one_hot_to_categorical', t2), ('KNN', compare)])
@@ -41,11 +42,11 @@ def demo():
         #pipe.partial_fit(X, y, classes=stream.get_classes())
         #pipe2.fit(X, y)
 
-        pipe.partial_fit(X, y, classes=stream.get_classes())
+        knn.partial_fit(X, y, classes=stream.get_classes())
         compare.fit(X, y)
         first = False
     n_samples = 0
-    max_samples = 5000
+    max_samples = 1000
     my_corrects = 0
     compare_corrects = 0
 
@@ -55,15 +56,15 @@ def demo():
             logging.info('%s%%', str((n_samples//(max_samples/20)*5)))
         X, y = stream.next_instance()
         #my_pred = pipe.predict(X)
-        my_pred = pipe.predict(X)
+        my_pred = knn.predict(X)
         if first:
             #pipe.partial_fit(X, y, classes=stream.get_classes())
             #pipe.partial_fit(X, y, classes=stream.get_classes())
-            pipe.partial_fit(X, y, classes=stream.get_classes())
+            knn.partial_fit(X, y, classes=stream.get_classes())
             first = False
         else:
             #pipe.partial_fit(X, y)
-            pipe.partial_fit(X, y)
+            knn.partial_fit(X, y)
         #compare_pred = pipe2.predict(X)
         compare_pred = compare.predict(X)
         if y[0] == my_pred[0]:
