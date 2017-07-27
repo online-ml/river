@@ -210,7 +210,7 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_kappa[i], = self.subplot_kappa.plot(self.X, self.partial_kappa[i],
                                                                    label='Classifier '+str(i)+' - Sliding window Kappa (last '
-                                                                         + str(self.n_wait) + ' samples)')
+                                                                         + str(self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_kappa[i], = self.subplot_kappa.plot(self.X, self.global_kappa[i], label='Classifier '+str(i)+' - Global kappa')
                 handle.append(self.line_partial_kappa[i])
                 handle.append(self.line_global_kappa[i])
@@ -260,7 +260,7 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_kappa_m[i], = self.subplot_kappa_m.plot(self.X, self.partial_kappa_m[i],
                                                                        label='Classifier '+str(i)+' - Sliding window kappa M (last '
-                                                                             + str(self.n_wait) + ' samples)')
+                                                                             + str(self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_kappa_m[i], = self.subplot_kappa_m.plot(self.X, self.global_kappa_m[i], label='Classifier '+str(i)+' - Global kappa M')
                 handle.append(self.line_partial_kappa_m[i])
                 handle.append(self.line_global_kappa_m[i])
@@ -298,7 +298,7 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_hamming_score[i], = self.subplot_hamming_score.plot(self.X, self.partial_hamming_score[i],
                                                                                       label='Classifier '+str(i)+' - Partial Hamming score (last ' + str(
-                                                                                   self.n_wait) + ' samples)')
+                                                                                   self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_hamming_score[i], = self.subplot_hamming_score.plot(self.X, self.global_hamming_score[i],
                                                                               label='Classifier '+str(i)+' - Global Hamming score')
                 handle.append(self.line_partial_hamming_score[i])
@@ -324,7 +324,7 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_hamming_loss[i], = self.subplot_hamming_loss.plot(self.X, self.partial_hamming_loss[i],
                                                                                label='Classifier '+str(i)+' - Partial Hamming loss (last ' + str(
-                                                                                   self.n_wait) + ' samples)')
+                                                                                   self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_hamming_loss[i], = self.subplot_hamming_loss.plot(self.X, self.global_hamming_loss[i],
                                                                               label='Classifier '+str(i)+' - Global Hamming loss')
                 handle.append(self.line_partial_hamming_loss[i])
@@ -350,7 +350,7 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_exact_match[i], = self.subplot_exact_match.plot(self.X, self.partial_exact_match[i],
                                                                                label='Classifier '+str(i)+' - Partial exact matches (last ' + str(
-                                                                                   self.n_wait) + ' samples)')
+                                                                                   self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_exact_match[i], = self.subplot_exact_match.plot(self.X, self.global_exact_match[i],
                                                                               label='Classifier '+str(i)+' - Global exact matches')
                 handle.append(self.line_partial_exact_match[i])
@@ -376,7 +376,7 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_j_index[i], = self.subplot_j_index.plot(self.X, self.partial_j_index[i],
                                                                                label='Classifier '+str(i)+' - Partial j index (last ' + str(
-                                                                                   self.n_wait) + ' samples)')
+                                                                                   self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_j_index[i], = self.subplot_j_index.plot(self.X, self.global_j_index[i],
                                                                               label='Classifier '+str(i)+' - Global j index')
                 handle.append(self.line_partial_j_index[i])
@@ -402,7 +402,7 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_mse[i], = self.subplot_mse.plot(self.X, self.partial_mse[i],
                                                                        label='Classifier '+str(i)+' - Partial MSE (last ' + str(
-                                                                           self.n_wait) + ' samples)')
+                                                                           self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_mse[i], = self.subplot_mse.plot(self.X, self.global_mse[i],
                                                                       label='Classifier '+str(i)+' - Global MSE')
                 handle.append(self.line_partial_mse[i])
@@ -428,7 +428,7 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_mae[i], = self.subplot_mae.plot(self.X, self.partial_mae[i],
                                                                label='Classifier '+str(i)+' - Partial MAE (last ' + str(
-                                                                   self.n_wait) + ' samples)')
+                                                                   self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_mae[i], = self.subplot_mae.plot(self.X, self.global_mae[i],
                                                                label='Classifier '+str(i)+' - Global MAE')
                 handle.append(self.line_partial_mae[i])

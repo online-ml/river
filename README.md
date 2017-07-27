@@ -108,3 +108,5 @@ A stream data framework.
 * (DONE) Why in knn with k=8, the algorithm only finds the 7 nearest neighbors?????
 
 * KNN correctly works with the custom KDTree, which accepts custom metrics. Unfortunately it's still too slow to be used in streams.
+
+* Holdout evaluator some error around line 220, probably linked to how predictions are returned by skmultiflow and sklearn

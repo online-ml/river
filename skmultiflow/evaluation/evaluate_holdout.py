@@ -43,6 +43,7 @@ class EvaluateHoldout(BaseEvaluator):
         self.X_test = None
         self.y_test = None
         self.dynamic_test_set = dynamic_test_set
+        self.n_classifiers = 0
 
         if self.test_size < 0:
             raise ValueError('test_size has to be greater than 0.')
@@ -53,14 +54,14 @@ class EvaluateHoldout(BaseEvaluator):
             raise ValueError('Task type not supported.')
         self.show_plot = show_plot
         self.plot_options = None
-        if self.show_plot is True and plot_options is None:
+        if plot_options is None:
             if self.task_type == 'classification':
                 self.plot_options = ['performance', 'kappa']
             elif self.task_type == 'regression':
                 self.plot_options = ['mean_square_error', 'true_vs_predict']
             elif self.task_type == 'multi_output':
                 self.plot_options = ['hamming_score', 'exact_match', 'j_index']
-        elif self.show_plot is True and plot_options is not None:
+        elif plot_options is not None:
             self.plot_options = [x.lower() for x in plot_options]
         for i in range(len(self.plot_options)):
             if self.plot_options[i] not in PLOT_TYPES:
@@ -69,25 +70,29 @@ class EvaluateHoldout(BaseEvaluator):
         # metrics
         self.global_classification_metrics = None
         self.partial_classification_metrics = None
-        if self.task_type in ['classification']:
-            self.global_classification_metrics = ClassificationMeasurements()
-            self.partial_classification_metrics = WindowClassificationMeasurements(window_size=self.test_size)
-        elif self.task_type in ['multi_output']:
-            self.global_classification_metrics = MultiOutputMeasurements()
-            self.partial_classification_metrics = WindowMultiOutputMeasurements(window_size=self.test_size)
-        elif self.task_type in ['regression']:
-            self.global_classification_metrics = RegressionMeasurements()
-            self.partial_classification_metrics = WindowRegressionMeasurements(window_size=self.test_size)
+        self.start_metrics()
 
         self.global_sample_count = 0
 
         warnings.filterwarnings("ignore", ".*invalid value encountered in true_divide.*")
+        warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
     def eval(self, stream, classifier):
+        # First off we need to verify if this is a simple evaluation task or a comparison between learners task.
+        if isinstance(classifier, type([])):
+            self.n_classifiers = len(classifier)
+        else:
+            if hasattr(classifier, 'predict'):
+                self.n_classifiers = 1
+            else:
+                return None
+
+        self.start_metrics()
+
         if self.show_plot:
             self.start_plot(self.n_wait, stream.get_plot_name())
         self._reset_globals()
-        self.classifier = classifier
+        self.classifier = classifier if self.n_classifiers > 1 else [classifier]
         self.stream = stream
         self.classifier = self.periodic_holdout(stream, classifier)
         if self.show_plot:
@@ -123,27 +128,38 @@ class EvaluateHoldout(BaseEvaluator):
                 f.write("\n# SETUP END")
                 header = '\nx_count'
                 if 'performance' in self.plot_options:
-                    header += ',global_performance,sliding_window_performance'
+                    for i in range(self.n_classifiers):
+                        header += ',global_performance_'+str(i)+',sliding_window_performance_'+str(i)
                 if 'kappa' in self.plot_options:
-                    header += ',global_kappa,sliding_window_kappa'
+                    for i in range(self.n_classifiers):
+                        header += ',global_kappa_'+str(i)+',sliding_window_kappa_'+str(i)
                 if 'kappa_t' in self.plot_options:
-                    header += ',global_kappa_t,sliding_window_kappa_t'
+                    for i in range(self.n_classifiers):
+                        header += ',global_kappa_t_'+str(i)+',sliding_window_kappa_t_'+str(i)
                 if 'kappa_m' in self.plot_options:
-                    header += ',global_kappa_m,sliding_window_kappa_m'
+                    for i in range(self.n_classifiers):
+                        header += ',global_kappa_m_'+str(i)+',sliding_window_kappa_m_'+str(i)
                 if 'scatter' in self.plot_options:
-                    header += ',true_label,prediction'
+                    for i in range(self.n_classifiers):
+                        header += ',true_label_'+str(i)+',prediction_'+str(i)
                 if 'hamming_score' in self.plot_options:
-                    header += ',global_hamming_score,sliding_window_hamming_score'
+                    for i in range(self.n_classifiers):
+                        header += ',global_hamming_score_'+str(i)+',sliding_window_hamming_score_'+str(i)
                 if 'hamming_loss' in self.plot_options:
-                    header += ',global_hamming_loss,sliding_window_hamming_loss'
+                    for i in range(self.n_classifiers):
+                        header += ',global_hamming_loss_'+str(i)+',sliding_window_hamming_loss_'+str(i)
                 if 'exact_match' in self.plot_options:
-                    header += ',global_exact_match,sliding_window_exact_match'
+                    for i in range(self.n_classifiers):
+                        header += ',global_exact_match_'+str(i)+',sliding_window_exact_match_'+str(i)
                 if 'j_index' in self.plot_options:
-                    header += ',global_j_index,sliding_window_j_index'
+                    for i in range(self.n_classifiers):
+                        header += ',global_j_index_'+str(i)+',sliding_window_j_index_'+str(i)
                 if 'mean_square_error' in self.plot_options:
-                    header += ',global_mse,sliding_window_mse'
+                    for i in range(self.n_classifiers):
+                        header += ',global_mse_'+str(i)+',sliding_window_mse_'+str(i)
                 if 'mean_absolute_error' in self.plot_options:
-                    header += ',global_mae,sliding_window_mae'
+                    for i in range(self.n_classifiers):
+                        header += ',global_mae_'+str(i)+',sliding_window_mae_'+str(i)
                     # if 'true_vs_predicts' in self.plot_options:
                     # header += ',true_label,prediction'
                 f.write(header)
@@ -152,12 +168,14 @@ class EvaluateHoldout(BaseEvaluator):
         if (self.pretrain_size > 0):
             logging.info('Pretraining on %s samples.', str(self.pretrain_size))
             X, y = self.stream.next_instance(self.pretrain_size)
-            self.classifier.partial_fit(X, y, self.stream.get_classes())
+            for i in range(self.n_classifiers):
+                self.classifier[i].partial_fit(X, y, self.stream.get_classes())
             first_run = False
         else:
             logging.info('Pretraining on 1 sample.')
             X, y = self.stream.next_instance()
-            self.classifier.partial_fit(X, y, self.stream.get_classes())
+            for i in range(self.n_classifiers):
+                self.classifier[i].partial_fit(X, y, self.stream.get_classes())
             first_run = False
 
         if not self.dynamic_test_set:
@@ -172,11 +190,14 @@ class EvaluateHoldout(BaseEvaluator):
                 X, y = self.stream.next_instance(self.batch_size)
                 if X is not None and y is not None:
                     self.global_sample_count += self.batch_size
+
                     if first_run:
-                        self.classifier.partial_fit(X, y, self.stream.get_classes())
+                        for i in range(self.n_classifiers):
+                            self.classifier[i].partial_fit(X, y, self.stream.get_classes())
                         first_run = False
                     else:
-                        self.classifier.partial_fit(X, y)
+                        for i in range(self.n_classifiers):
+                            self.classifier[i].partial_fit(X, y)
 
                     nul_count = self.global_sample_count - self.batch_size
                     for i in range(self.batch_size):
@@ -195,12 +216,16 @@ class EvaluateHoldout(BaseEvaluator):
                         if (self.X_test is not None) and (self.y_test is not None):
                             logging.info('Testing model on %s samples.', str(self.test_size))
 
-                            for i in range(self.test_size):
-                                prediction = self.classifier.predict([self.X_test[i]])
+                            prediction = [[] for n in range(self.n_classifiers)]
+                            for i in range(self.n_classifiers):
+                                prediction[i].extend(self.classifier[i].predict(self.X_test))
 
                             #for i in range(len(prediction)):
-                                self.global_classification_metrics.add_result(self.y_test[i], prediction)
-                                self.partial_classification_metrics.add_result(self.y_test[i], prediction)
+                            if prediction is not None:
+                                for j in range(self.n_classifiers):
+                                    for i in range(len(prediction[0])):
+                                        self.global_classification_metrics[j].add_result(self.y_test[i], prediction[j][i])
+                                        self.partial_classification_metrics[j].add_result(self.y_test[i], prediction[j][i])
                             before_count += 1
                             self.update_metrics()
 
@@ -220,46 +245,45 @@ class EvaluateHoldout(BaseEvaluator):
             logging.info('\nEvaluation time: %s s', str(round(end_time - init_time, 3)))
         logging.info('Total instances: %s', str(self.global_sample_count))
 
-        if 'performance' in self.plot_options:
-            logging.info('Global accuracy: %s', str(round(self.global_classification_metrics.get_performance(), 3)))
-        if 'kappa' in self.plot_options:
-            logging.info('Global kappa: %s', str(round(self.global_classification_metrics.get_kappa(), 3)))
-        if 'kappa_t' in self.plot_options:
-            logging.info('Global kappa T: %s', str(round(self.global_classification_metrics.get_kappa_t(), 3)))
-        if 'kappa_m' in self.plot_options:
-            logging.info('Global kappa M: %s', str(round(self.global_classification_metrics.get_kappa_m(), 3)))
-        if 'scatter' in self.plot_options:
-            pass
-        if 'hamming_score' in self.plot_options:
-            logging.info('Global hamming score: %s',
-                         str(round(self.global_classification_metrics.get_hamming_score(), 3)))
-        if 'hamming_loss' in self.plot_options:
-            logging.info('Global hamming loss: %s',
-                         str(round(self.global_classification_metrics.get_hamming_loss(), 3)))
-        if 'exact_match' in self.plot_options:
-            logging.info('Global exact matches: %s',
-                         str(round(self.global_classification_metrics.get_exact_match(), 3)))
-        if 'j_index' in self.plot_options:
-            logging.info('Global j index: %s', str(round(self.global_classification_metrics.get_j_index(), 3)))
-        if 'mean_square_error' in self.plot_options:
-            logging.info('Global MSE: %s', str(round(self.global_classification_metrics.get_mean_square_error(), 6)))
-        if 'mean_absolute_error' in self.plot_options:
-            logging.info('Global MAE: %s', str(round(self.global_classification_metrics.get_average_error(), 6)))
-        if 'true_vs_predicts' in self.plot_options:
-            pass
-
+        for i in range(self.n_classifiers):
+            if 'performance' in self.plot_options:
+                logging.info('Classifier %s - Global accuracy: %s', str(i), str(round(self.global_classification_metrics[i].get_performance(), 3)))
+            if 'kappa' in self.plot_options:
+                logging.info('Classifier %s - Global kappa: %s', str(i), str(round(self.global_classification_metrics[i].get_kappa(), 3)))
+            if 'kappa_t' in self.plot_options:
+                logging.info('Classifier %s - Global kappa T: %s', str(i), str(round(self.global_classification_metrics[i].get_kappa_t(), 3)))
+            if 'kappa_m' in self.plot_options:
+                logging.info('Classifier %s - Global kappa M: %s', str(i), str(round(self.global_classification_metrics[i].get_kappa_m(), 3)))
+            if 'scatter' in self.plot_options:
+                pass
+            if 'hamming_score' in self.plot_options:
+                logging.info('Classifier %s - Global hamming score: %s', str(i), str(round(self.global_classification_metrics[i].get_hamming_score(), 3)))
+            if 'hamming_loss' in self.plot_options:
+                logging.info('Classifier %s - Global hamming loss: %s', str(i), str(round(self.global_classification_metrics[i].get_hamming_loss(), 3)))
+            if 'exact_match' in self.plot_options:
+                logging.info('Classifier %s - Global exact matches: %s', str(i), str(round(self.global_classification_metrics[i].get_exact_match(), 3)))
+            if 'j_index' in self.plot_options:
+                logging.info('Classifier %s - Global j index: %s', str(i), str(round(self.global_classification_metrics[i].get_j_index(), 3)))
+            if 'mean_square_error' in self.plot_options:
+                logging.info('Classifier %s - Global MSE: %s', str(i), str(round(self.global_classification_metrics[i].get_mean_square_error(), 6)))
+            if 'mean_absolute_error' in self.plot_options:
+                logging.info('Classifier %s - Global MAE: %s', str(i), str(round(self.global_classification_metrics[i].get_average_error(), 6)))
+            if 'true_vs_predicts' in self.plot_options:
+                pass
         return self.classifier
 
     def partial_fit(self, X, y):
         if self.classifier is not None:
-            self.classifier.partial_fit(X, y)
+            for i in range(self.n_classifiers):
+                self.classifier[i].partial_fit(X, y)
             return self
         else:
             return self
 
     def predict(self, X):
         if self.classifier is not None:
-            self.classifier.predict(X)
+            for i in range(self.n_classifiers):
+                self.classifier[i].predict(X)
             return self
         else:
             return self
@@ -267,42 +291,73 @@ class EvaluateHoldout(BaseEvaluator):
     def update_plot(self, current_x, new_points_dict):
         if self.output_file is not None:
             line = str(current_x)
-            if 'classification' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_performance(), 3))
-                line += ',' + str(round(self.partial_classification_metrics.get_performance(), 3))
+            if 'performance' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_performance(), 3))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_performance(), 3))
             if 'kappa' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_kappa(), 3))
-                line += ',' + str(round(self.partial_classification_metrics.get_kappa(), 3))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_kappa(), 3))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_kappa(), 3))
             if 'kappa_t' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_kappa_t(), 3))
-                line += ',' + str(round(self.partial_classification_metrics.get_kappa_t(), 3))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_kappa_t(), 3))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_kappa_t(), 3))
             if 'kappa_m' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_kappa_m(), 3))
-                line += ',' + str(round(self.partial_classification_metrics.get_kappa_m(), 3))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_kappa_m(), 3))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_kappa_m(), 3))
             if 'scatter' in self.plot_options:
-                line += ',' + str(new_points_dict['scatter'][0]) + ',' + str(new_points_dict['scatter'][1])
+                for i in range(self.n_classifiers):
+                    line += ',' + str(new_points_dict['scatter'][i][0]) + ',' + str(new_points_dict['scatter'][i][1])
             if 'hamming_score' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_hamming_score() ,3))
-                line += ',' + str(round(self.partial_classification_metrics.get_hamming_score(), 3))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_hamming_score() ,3))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_hamming_score(), 3))
             if 'hamming_loss' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_hamming_loss() ,3))
-                line += ',' + str(round(self.partial_classification_metrics.get_hamming_loss(), 3))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_hamming_loss() ,3))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_hamming_loss(), 3))
             if 'exact_match' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_exact_match() ,3))
-                line += ',' + str(round(self.partial_classification_metrics.get_exact_match(), 3))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_exact_match() ,3))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_exact_match(), 3))
             if 'j_index' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_j_index() ,3))
-                line += ',' + str(round(self.partial_classification_metrics.get_j_index(), 3))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_j_index() ,3))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_j_index(), 3))
             if 'mean_square_error' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_mean_square_error(), 6))
-                line += ',' + str(round(self.partial_classification_metrics.get_mean_square_error(), 6))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_mean_square_error(), 6))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_mean_square_error(), 6))
             if 'mean_absolute_error' in self.plot_options:
-                line += ',' + str(round(self.global_classification_metrics.get_average_error(), 6))
-                line += ',' + str(round(self.partial_classification_metrics.get_average_error(), 6))
+                for i in range(self.n_classifiers):
+                    line += ',' + str(round(self.global_classification_metrics[i].get_average_error(), 6))
+                    line += ',' + str(round(self.partial_classification_metrics[i].get_average_error(), 6))
             with open(self.output_file, 'a') as f:
                 f.write('\n' + line)
 
-        self.visualizer.on_new_train_step(current_x, new_points_dict)
+        if self.show_plot:
+            self.visualizer.on_new_train_step(current_x, new_points_dict)
+
+    def start_metrics(self):
+        self.global_classification_metrics = []
+        self.partial_classification_metrics = []
+
+        if self.task_type in ['classification']:
+            for i in range(self.n_classifiers):
+                self.global_classification_metrics.append(ClassificationMeasurements())
+                self.partial_classification_metrics.append(WindowClassificationMeasurements(window_size=self.n_wait))
+
+        elif self.task_type in ['multi_output']:
+            for i in range(self.n_classifiers):
+                self.global_classification_metrics.append(MultiOutputMeasurements())
+                self.partial_classification_metrics.append(WindowMultiOutputMeasurements(window_size=self.n_wait))
+
+        elif self.task_type in ['regression']:
+            for i in range(self.n_classifiers):
+                self.global_classification_metrics.append(RegressionMeasurements())
+                self.partial_classification_metrics.append(WindowRegressionMeasurements(window_size=self.n_wait))
 
     def update_metrics(self):
         """ Updates the metrics of interest.
@@ -315,36 +370,74 @@ class EvaluateHoldout(BaseEvaluator):
         """
 
         new_points_dict = {}
-
         if 'performance' in self.plot_options:
-            new_points_dict['performance'] = [self.global_classification_metrics.get_performance(), self.partial_classification_metrics.get_performance()]
+            new_points_dict['performance'] = [[self.global_classification_metrics[i].get_performance(),
+                                               self.partial_classification_metrics[i].get_performance()]
+                                              for i in range(self.n_classifiers)]
+
         if 'kappa' in self.plot_options:
-            new_points_dict['kappa'] = [self.global_classification_metrics.get_kappa(), self.partial_classification_metrics.get_kappa()]
+            new_points_dict['kappa'] = [[self.global_classification_metrics[i].get_kappa(),
+                                         self.partial_classification_metrics[i].get_kappa()]
+                                        for i in range(self.n_classifiers)]
+
         if 'kappa_t' in self.plot_options:
-            new_points_dict['kappa_t'] = [self.global_classification_metrics.get_kappa_t(), self.partial_classification_metrics.get_kappa_t()]
+            new_points_dict['kappa_t'] = [[self.global_classification_metrics[i].get_kappa_t(),
+                                           self.partial_classification_metrics[i].get_kappa_t()]
+                                          for i in range(self.n_classifiers)]
+
         if 'kappa_m' in self.plot_options:
-            new_points_dict['kappa_m'] = [self.global_classification_metrics.get_kappa_m(), self.partial_classification_metrics.get_kappa_m()]
+            new_points_dict['kappa_m'] = [[self.global_classification_metrics[i].get_kappa_m(),
+                                           self.partial_classification_metrics[i].get_kappa_m()]
+                                          for i in range(self.n_classifiers)]
+
         if 'scatter' in self.plot_options:
-            true, pred = self.global_classification_metrics.get_last()
-            new_points_dict['scatter'] = [true, pred]
+            true, pred = [], []
+            for i in range(self.n_classifiers):
+                t, p = self.global_classification_metrics[i].get_last()
+                true.append(t)
+                pred.append(p)
+            new_points_dict['scatter'] = [[true[i], pred[i]] for i in range(self.n_classifiers)]
+
         if 'hamming_score' in self.plot_options:
-            new_points_dict['hamming_score'] = [self.global_classification_metrics.get_hamming_score(), self.partial_classification_metrics.get_hamming_score()]
+            new_points_dict['hamming_score'] = [[self.global_classification_metrics[i].get_hamming_score(),
+                                                 self.partial_classification_metrics[i].get_hamming_score()]
+                                                for i in range(self.n_classifiers)]
+
         if 'hamming_loss' in self.plot_options:
-            new_points_dict['hamming_loss'] = [self.global_classification_metrics.get_hamming_loss(), self.partial_classification_metrics.get_hamming_loss()]
+            new_points_dict['hamming_loss'] = [[self.global_classification_metrics[i].get_hamming_loss(),
+                                                self.partial_classification_metrics[i].get_hamming_loss()]
+                                               for i in range(self.n_classifiers)]
+
         if 'exact_match' in self.plot_options:
-            new_points_dict['exact_match'] = [self.global_classification_metrics.get_exact_match(), self.partial_classification_metrics.get_exact_match()]
+            new_points_dict['exact_match'] = [[self.global_classification_metrics[i].get_exact_match(),
+                                               self.partial_classification_metrics[i].get_exact_match()]
+                                              for i in range(self.n_classifiers)]
+
         if 'j_index' in self.plot_options:
-            new_points_dict['j_index'] = [self.global_classification_metrics.get_j_index(), self.partial_classification_metrics.get_j_index()]
+            new_points_dict['j_index'] = [[self.global_classification_metrics[i].get_j_index(),
+                                           self.partial_classification_metrics[i].get_j_index()]
+                                          for i in range(self.n_classifiers)]
+
         if 'mean_square_error' in self.plot_options:
-            new_points_dict['mean_square_error'] = [self.global_classification_metrics.get_mean_square_error(), self.partial_classification_metrics.get_mean_square_error()]
+            new_points_dict['mean_square_error'] = [[self.global_classification_metrics[i].get_mean_square_error(),
+                                                     self.partial_classification_metrics[i].get_mean_square_error()]
+                                                    for i in range(self.n_classifiers)]
+
         if 'mean_absolute_error' in self.plot_options:
-            new_points_dict['mean_absolute_error'] = [self.global_classification_metrics.get_average_error(), self.partial_classification_metrics.get_average_error()]
+            new_points_dict['mean_absolute_error'] = [[self.global_classification_metrics[i].get_average_error(),
+                                                       self.partial_classification_metrics[i].get_average_error()]
+                                                      for i in range(self.n_classifiers)]
+
         if 'true_vs_predicts' in self.plot_options:
-            true, pred = self.global_classification_metrics.get_last()
-            new_points_dict['true_vs_predicts'] = [true, pred]
-            #print(str(true) + ' ' + str(pred))
-        if self.show_plot:
-            self.update_plot(self.global_sample_count, new_points_dict)
+            true, pred = [], []
+            for i in range(self.n_classifiers):
+                t, p = self.global_classification_metrics.get_last()
+                true.append(t)
+                pred.append(p)
+            new_points_dict['true_vs_predicts'] = [[true[i], pred[i]] for i in range(self.n_classifiers)]
+            # print(str(true) + ' ' + str(pred))
+            print(new_points_dict)
+        self.update_plot(self.global_sample_count, new_points_dict)
 
     def set_params(self, dict):
         params_list = dict_to_tuple_list(dict)
@@ -369,7 +462,8 @@ class EvaluateHoldout(BaseEvaluator):
                 self.show_scatter_points = value
 
     def start_plot(self, n_wait, dataset_name):
-        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, plots=self.plot_options)
+        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, plots=self.plot_options,
+                                               n_learners=self.n_classifiers)
 
     def _reset_globals(self):
         self.global_sample_count = 0
