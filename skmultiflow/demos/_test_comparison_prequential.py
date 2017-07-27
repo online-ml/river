@@ -38,7 +38,7 @@ def demo(instances=2000):
     pipe_one = Pipeline([('one_hot_to_categorical', t_one), ('KNN', clf_one)])
     #pipe_two = Pipeline([('one_hot_to_categorical', t_two), ('KNN', clf_two)])
 
-    classifier = [pipe_one, clf]
+    classifier = [clf, pipe_one]
     # classifier = SGDRegressor()
     # classifier = PerceptronMask()
 

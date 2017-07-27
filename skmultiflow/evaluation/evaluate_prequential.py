@@ -61,7 +61,7 @@ class EvaluatePrequential(BaseEvaluator):
                 self.plot_options = ['mean_square_error', 'true_vs_predict']
             elif self.task_type == 'multi_output':
                 self.plot_options = ['hamming_score', 'exact_match', 'j_index']
-        elif  plot_options is not None:
+        elif plot_options is not None:
             self.plot_options = [x.lower() for x in plot_options]
 
         for i in range(len(self.plot_options)):
@@ -207,7 +207,7 @@ class EvaluatePrequential(BaseEvaluator):
                 if X is not None and y is not None:
                     prediction = [[] for n in range(self.n_classifiers)]
                     for i in range(self.n_classifiers):
-                        prediction[i].append(self.classifier[i].predict(X))
+                        prediction[i].extend(self.classifier[i].predict(X))
 
                     self.global_sample_count += self.batch_size
 
@@ -282,14 +282,16 @@ class EvaluatePrequential(BaseEvaluator):
 
     def partial_fit(self, X, y):
         if self.classifier is not None:
-            self.classifier.partial_fit(X, y)
+            for i in range(self.n_classifiers):
+                self.classifier[i].partial_fit(X, y)
             return self
         else:
             return self
 
     def predict(self, X):
         if self.classifier is not None:
-            self.classifier.predict(X)
+            for i in range(self.n_classifiers):
+                self.classifier[i].predict(X)
             return self
         else:
             return self
