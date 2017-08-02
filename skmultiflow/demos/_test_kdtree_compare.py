@@ -1,0 +1,79 @@
+__author__ = 'Guilherme Matsumoto'
+
+import warnings
+import numpy as np
+from scipy import spatial
+from skmultiflow.classification.lazy.neighbours.kdtree import KDTree
+from sklearn import neighbors as ng
+from timeit import default_timer as timer
+from skmultiflow.options.file_option import FileOption
+from skmultiflow.data.file_stream import FileStream
+from skmultiflow.filtering.one_hot_to_categorical import OneHotToCategorical
+
+
+def demo():
+    warnings.filterwarnings("ignore", ".*Passing 1d.*")
+
+    opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
+    stream = FileStream(opt, -1, 1)
+    stream.prepare_for_use()
+    filter = OneHotToCategorical([[10, 11, 12, 13],
+                             [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+                              36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
+
+    X, y = stream.next_instance(1000)
+    X = filter.transform(X)
+    #print(X)
+
+    X_find, y = stream.next_instance(100)
+    X_find = filter.transform(X_find)
+
+    # Normal kdtree
+    start = timer()
+    scipy = spatial.KDTree(X, leafsize=40)
+    end = timer()
+    print("\nScipy KDTree construction time: " + str(end-start))
+
+    start = timer()
+    for i in range(10):
+        ind = scipy.query(X_find[i], 8)
+        #print(ind)
+    end = timer()
+    print("Scipy KDTree query time: " + str(end - start))
+
+    del scipy
+
+    # Fast kdtree
+    start = timer()
+    opt = KDTree(X, metric='euclidean', return_distance=True)
+    end = timer()
+    print("\nOptimal KDTree construction time: " + str(end-start))
+
+    start = timer()
+    for i in range(100):
+        ind, dist = opt.query(X_find[i], 8)
+        #print(ind)
+        #print(dist)
+    end = timer()
+    print("Optimal KDTree query time: " + str(end - start))
+
+    del opt
+
+    # Sklearn kdtree
+    start = timer()
+    sk = ng.KDTree(X, metric='euclidean')
+    end = timer()
+    print("\nSklearn KDTree construction time: " + str(end-start))
+
+    start = timer()
+    for i in range(100):
+        ind, dist = sk.query(X_find[i], 8, return_distance=True)
+        #print(ind)
+        #print(dist)
+    end = timer()
+    print("Sklearn KDTree query time: " + str(end - start) + "\n")
+
+    del sk
+
+if __name__ == '__main__':
+    demo()

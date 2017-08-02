@@ -6,6 +6,7 @@ import skmultiflow.demos._test_stream_speed as ess
 import skmultiflow.demos._test_prequential as evp
 import skmultiflow.demos._test_mol as emol
 import skmultiflow.demos._test_comparison_prequential as comp
+import skmultiflow.demos._test_kdtree_compare as kdc
 
 
 def demoSCP():
@@ -67,6 +68,9 @@ def demo_multi_output():
 def demo_compare():
     comp.demo(20000)
 
+def demo_compare_kdtrees():
+    kdc.demo()
+
 if __name__ == '__main__':
     # NEW tests
 
@@ -86,5 +90,8 @@ if __name__ == '__main__':
     #demo_multi_output()
 
     # Demo for learner comparison feature
-    demo_compare()
+    #demo_compare()
+
+    # Demo for comparing kd tree efficiency
+    demo_compare_kdtrees()
 

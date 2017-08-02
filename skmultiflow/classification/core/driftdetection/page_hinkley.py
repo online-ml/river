@@ -4,6 +4,28 @@ from skmultiflow.classification.core.driftdetection.base_drift_detector import B
 
 
 class PageHinkley(BaseDriftDetector):
+    """ Page Hinkley change detector
+    
+    This change detection method works by computing the observed 
+    values and their mean up to the current moment. Page Hinkley 
+    won't output warning zone warnings, only change detections. 
+    The method works by means of the Page Hinkley test. In general 
+    lines it will detect a concept drift if the observed mean at 
+    some instant is greater then a threshold value lambda.
+    
+    Parameters
+    ----------
+    min_num_instances: int
+        The minimum number of instances before detecting change.
+    delta: float
+        The delta factor for the Page Hinkley test.
+    _lambda: int
+        The change detection threshold.
+    alpha: float
+        The forgetting factor, used to weight the observed value 
+        and the mean.
+    
+    """
     def __init__(self, min_num_instances=30, delta=0.005, _lambda=50, alpha=1-0.0001):
         super().__init__()
         self.min_instances = min_num_instances
@@ -22,6 +44,25 @@ class PageHinkley(BaseDriftDetector):
         self.sum = 0.0
 
     def add_element(self, x):
+        """ Add a new element to the statistics
+        
+        Parameters
+        ----------
+        x: numeric value
+            The observed value, from which we want to detect the
+            concept change.
+            
+        Returns
+        -------
+        self
+        
+        Notes
+        -----
+        After calling this method, to verify if change was detected, one 
+        should call the super method detected_change, which returns True 
+        if concept drift was detected and False otherwise.
+        
+        """
         if self.in_concept_change:
             self.reset()
 
@@ -41,6 +82,8 @@ class PageHinkley(BaseDriftDetector):
 
         if self.sum > self._lambda:
             self.in_concept_change = True
+
+        return self
 
     def get_info(self):
         return 'Not implemented.'

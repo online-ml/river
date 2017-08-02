@@ -9,7 +9,7 @@ from skmultiflow.core.utils.data_structures import InstanceWindow
 from skmultiflow.classification.lazy.neighbours.kdtree import KDTree
 import sklearn.neighbors as sk
 from skmultiflow.core.utils.utils import *
-from skmultiflow.classification.lazy.neighbours.distances import custom_distance
+from skmultiflow.classification.lazy.neighbours.distances import mixed_distance
 from timeit import default_timer as timer
 
 
@@ -150,10 +150,10 @@ class KNN(BaseClassifier):
     def _predict_proba(self, X):
         #dist, ind = tree_aux.query(np.asarray(X), k=self.k)
 
-        #tree = KDTree(self.window.get_attributes_matrix(), metric='modified_euclidean',
-        #              categorical_list=self.categorical_list, return_distance=True)
+        tree = KDTree(self.window.get_attributes_matrix(), metric='euclidean',
+                      categorical_list=self.categorical_list, return_distance=True)
 
-        tree = sk.KDTree(self.window.get_attributes_matrix(), self.leaf_size, metric='euclidean')
+        #tree = sk.KDTree(self.window.get_attributes_matrix(), self.leaf_size, metric='euclidean')
         dist, ind = tree.query(np.asarray(X), k=self.k)
         return dist, ind
 

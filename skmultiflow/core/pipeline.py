@@ -205,17 +205,23 @@ class Pipeline(BaseObject):
         transforms = estimators[:-1]
         i = 0
         for t in transforms:
-            if t.get_info() is not None:
-                info += t.get_info()
-                info += " #### "
-            else:
+            try:
+                if t.get_info() is not None:
+                    info += t.get_info()
+                    info += " #### "
+                else:
+                    info += 'Transform: no info available'
+            except NotImplementedError:
                 info += 'Transform: no info available'
             i += 1
 
         if classifier is not None:
-            if hasattr(classifier, 'get_info'):
-                info += classifier.get_info()
-            else:
+            try:
+                if hasattr(classifier, 'get_info'):
+                    info += classifier.get_info()
+                else:
+                    info += 'Classifier: no info available'
+            except NotImplementedError:
                 info += 'Classifier: no info available'
         return info
 

@@ -5,6 +5,18 @@ from skmultiflow.core.base_object import BaseObject
 
 
 class BaseDriftDetector(BaseObject, metaclass=ABCMeta):
+    """ Abstract Drift Detector
+    
+    Any drift detector class should follow this minimum structure in 
+    order to allow interchangeability between all change detection 
+    methods.
+    
+    Raises
+    ------
+    NotImplementedError. All child classes should implement the 
+    get_info function.
+    
+    """
     def __init__(self):
         super().__init__()
         self.in_concept_change = None
@@ -34,7 +46,7 @@ class BaseDriftDetector(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def get_info(self):
-        return 'Not implemented.'
+        raise NotImplementedError
 
     def get_class_type(self):
-        return 'drift detector'
+        return 'drift_detector'
