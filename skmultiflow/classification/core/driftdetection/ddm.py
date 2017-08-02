@@ -1,11 +1,45 @@
 __author__ = 'Guilherme Matsumoto'
 
 import numpy as np
-
 from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 
 
 class DDM(BaseDriftDetector):
+    """ Drift Detection Method
+    
+    This concept change detection method is based on the PAC learning model 
+    premise, that the learner's error rate will decrease as the number of 
+    analysed samples increase, as long as the data distribution is 
+    stationary.
+    
+    If the algorithm detects an increase in the error rate, that surpasses 
+    a calculated threshold, either change is detected or the algorithm will 
+    warn the user that change may occur in the near future, which is called 
+    the warning zone.
+    
+    The detection threshold is calculated in function of two statistics, 
+    obtained when (pi + si) is minimum: 
+    pmin: The minimum recorded error rate.
+    smin: The minimum recorded standard deviation.
+    
+    At instant i, the detection algorithm uses:
+    pi: The error rate at instant i.
+    si: The standard deviation at instant i.
+    
+    The conditions for entering the warning zone and detecting change are 
+    as follows:
+    if pi + si >= pmin + 2 * smin -> Warning zone
+    if pi + si >= pmin + 3 * smin -> Change detected
+    
+    Parameters
+    ----------
+    min_num_instances: int
+        The minimum required number of analyzed samples so change can be 
+        detected. This is used to avoid false detections during the early 
+        moments of the detector, when the weight of one sample is important.
+    
+    """
+
     def __init__(self, min_num_instances=30):
         super().__init__()
         self.min_instances = min_num_instances
@@ -27,11 +61,27 @@ class DDM(BaseDriftDetector):
         self.miss_sd_min = float("inf")
 
     def add_element(self, prediction):
-        '''
+        """ Add a new element to the statistics
         
-        :param prediction: 0 if there was no misclassification, 1 if there was a misclassification happened
-        :return: 
-        '''
+        Parameters
+        ----------
+        prediction: int. Either 0 or 1.
+            This parameter indicates whether the last sample analyzed was
+            correctly classified or not. 1 indicates a good classification 
+            and 0 a wrong classification.
+            
+        Returns
+        -------
+        self
+        
+        Notes
+        -----
+        After calling this method, to verify if change was detected or if  
+        the learner is in the warning zone, one should call the super method 
+        detected_change, which returns True if concept drift was detected and
+        False otherwise.
+        
+        """
         if self.in_concept_change:
             self.reset()
 
@@ -45,21 +95,27 @@ class DDM(BaseDriftDetector):
         self.delay = 0
 
         if (self.sample_count < self.min_instances):
-            return None
+            return self
 
         if (self.miss_prob + self.miss_std <= self.miss_prob_sd_min):
             self.miss_prob_min = self.miss_prob
             self.miss_sd_min = self.miss_std
             self.miss_prob_sd_min = self.miss_prob + self.miss_std
 
-        if (self.sample_count > self.min_instances) and (self.miss_prob + self.miss_std > self.miss_prob_min + 3*self.miss_sd_min):
+        if (self.sample_count > self.min_instances) and (self.miss_prob + self.miss_std >
+                                                         self.miss_prob_min + 3*self.miss_sd_min):
             self.in_concept_change = True
-        elif self.miss_prob + self.miss_std > self.miss_prob_min + 2*self.miss_sd_min:
+
+        elif self.miss_prob + self.miss_std > self.miss_prob_min + 2 * self.miss_sd_min:
             self.in_warning_zone = True
+
         else:
             self.in_warning_zone = False
 
-        return None
+        return self
 
     def get_info(self):
-        return 'Not implemented'
+        return 'DDM: min_num_instances: ' + str(self.min_instances) + ' - sample_count: ' + \
+               str(self.sample_count) + ' - error_rate: ' + str(self.miss_prob) + \
+               ' - std_dev: ' + str(self.miss_std) + ' - error_rate_min: ' + \
+               str(self.miss_prob_min) + ' - std_dev_min: ' + str(self.miss_sd_min)

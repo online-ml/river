@@ -1,12 +1,40 @@
 __author__ = 'Guilherme Matsumoto'
 
 import numpy as np
-
 from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 
 
 class EDDM(BaseDriftDetector):
-
+    """ Early Drift Detection Method
+    
+    This detection method was created to improve the detection 
+    rate of gradual concept drift in DDM, while keeping a good 
+    performance against abrupt concept drift. The implementation 
+    and complete method explanation can be found in Early Drift 
+    Detection Method by Baena-García, Campo-Ávila, Fidalgo, Bifet, 
+    Gavaldà and Morales-Bueno.
+    
+    This method works by keeping track of the average distance 
+    between two errors instead of only the error rate. For this, 
+    it's necessary to keep track of the running average distance 
+    and the running standard deviation, as well as the maximum 
+    distance and the maximum standard deviation.
+    
+    The algorithm works similarly to the DDM algorithm, by keeping 
+    track of statistics only. It works with the running average 
+    distance (pi') and the running standard deviation (si'), as 
+    well as p'max and s'max, which are the values of pi' and si' 
+    when (pi' + 2 * si') reaches its maximum.
+    
+    Like DDM, there are two threshold values that define the 
+    borderline between no change, warning zone, and drift detected.
+    These are as follows:
+    if (pi' + 2 * si')/(p'max + 2 * s'max) < alpha -> Warning zone
+    if (pi' + 2 * si')/(p'max + 2 * s'max) < beta -> Change detected
+    
+    Alpha and beta are set to 0.95 and 0.9, respectively.
+    
+    """
     FDDM_OUTCONTROL = 0.9
     FDDM_WARNING = 0.95
     FDDM_MIN_NUM_INSTANCES = 30
@@ -36,6 +64,28 @@ class EDDM(BaseDriftDetector):
         self.estimation = 0.0
 
     def add_element(self, prediction):
+        """ Add a new element to the statistics
+        
+        Parameters
+        ----------
+        prediction: int. Either 0 or 1.
+            This parameter indicates whether the last sample analyzed was
+            correctly classified or not. 1 indicates a good classification 
+            and 0 a wrong classification.
+        
+        Returns
+        -------
+        self
+        
+        Notes
+        -----
+        After calling this method, to verify if change was detected or if  
+        the learner is in the warning zone, one should call the super method 
+        detected_change, which returns True if concept drift was detected and
+        False otherwise.
+         
+        """
+
         if self.in_concept_change:
             self.reset()
 
@@ -73,6 +123,10 @@ class EDDM(BaseDriftDetector):
                 else:
                     self.in_warning_zone = False
 
+        return self
+
 
     def get_info(self):
-        return 'Not implemented.'
+        return 'EDDM: min_num_errors: ' + str(self.m_min_num_errors) + ' - n_samples: ' + str(self.m_n) + \
+            ' - mean: ' + str(self.m_mean) + ' - std_dev: ' + \
+               str(round(np.sqrt(self.m_std_temp/self.m_num_errors), 3))
