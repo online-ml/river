@@ -8,42 +8,86 @@ from skmultiflow.core.utils.utils import *
 
 
 class KDTree(BaseObject):
-    """ Simplistic kd tree implementation
+    """ KD Tree
+    
+    A K dimensional tree implementation, adapted for k dimensional problems.
 
-        For the purpose of the KNN algorithm, there is no need of adding and removing elements from the tree, so they 
-        are not currently implemented.
-
-        Accepts normal integer coded categorical features. If X contains one-hot encoded features use a pipeline with 
-        a one_hot_to_categorical transform.
-
-        Robust for mixed categorical and numerical X matrix.
-
-        The left subtree goes up to, but does not include, the splitting_value. The right subtree starts from, and 
-        includes, the splitting value and goes to the end of the samples 
+    A KD Tree is a space partitioning (in axis-aligned hyperrectangles) tree 
+    structure, where each node is associated with a feature and a splitting 
+    value. Each node can have up to two children nodes, with the property that 
+    all the samples stored by the left child have their feature value smaller 
+    then the node's splitting value, and all the samples stored by the right 
+    child have their relevant feature greater than or equal to the node's 
+    splitting value.
+    
+    The algorithm used to select the splitting feature and the splitting 
+    value for each node is called the sliding midpoint rule, as defined in 
+    Maneewongvatana and Mount 1999. The idea is that we don't need a balanced 
+    distribution of samples in all nodes, for the query time to be efficient, 
+    as long as there are 'fat' nodes around. This algorithm guarantees that 
+    the nodes won't become long and thin.
+    
+    Parameters
+    ----------
+    X: numpy.ndarray of shape (n_samples, n_features)
+        The data upon which the object is going to create its tree.
+    
+    metric: a string representation of a metric.
+        In the future custom metrics are going to be accepted.
+        
+    categorical_list: a list of the categorical feature's indexes.
+        It may be used by some custom metric to differentiate between 
+        categorical and numerical attributes.
+        
+    return_distance: bool
+        Whether to return only the indexes of the closes neighbors or 
+        also their distances.
+        
+    leaf_size: int
+        The number of samples that can be held by a leaf node, at which 
+        point the query algorithm will switch to brute force. The greater 
+        the number the faster the tree will be build, and the slower the 
+        query will be.
+    
+    kwargs: Additional keyword arguments
+        Additional keyword arguments will be passed to the metric function.
+    
+    Raises
+    ------
+    May raise ValueErrors if the parameters passed don't have the correct 
+    types.
+    
+    Notes
+    -----
+    This implementation is not faster than scikit-learn's implementation, 
+    nor than scipy's implementation, but it allow users to use a custom 
+    metric for the distance calculation.
+    term
     """
+
     METRICS = ['mixed', 'euclidean']
 
     def __init__(self, X, metric='mixed', categorical_list=None, return_distance=False, leaf_size=40, **kwargs):
-        """ KDTree constructor
-
-        :param X: Features matrix. shape: (n_samples, n_features). 
-        :param metric: The distance metric to be used. Needs to implement BaseDistanceMetric
-        :param categorical_list: List of lists with all categorical features. If a categorical attribute is one-hot 
-                                 encoded its associated list should contain all indexes of the one-hot coding
-        :param kwargs: Additional keyword arguments are passed to the metric function
-        """
-
         super().__init__()
 
         self.distance_function = None
 
-        if metric not in self.METRICS:
-            raise ValueError("The metric '" + metric + "' is not supported by the KDTree.")
+        self.metric = None
 
-        if metric == self.METRICS[0]:
-            self.distance_function = mixed_distance
-        if metric == self.METRICS[1]:
-            self.distance_function = euclidean_distance
+        # Accepts custom metrics
+        if not callable(metric):
+            if metric not in self.METRICS:
+                raise ValueError("The metric '" + metric + "' is not supported by the KDTree.")
+            else:
+                if metric == self.METRICS[0]:
+                    self.distance_function = mixed_distance
+                    self.metric = self.METRICS[0]
+                if metric == self.METRICS[1]:
+                    self.distance_function = euclidean_distance
+                    self.metric = self.METRICS[1]
+        else:
+            self.distance_function = metric
+            self.metric = 'custom'
 
         self.X = np.asarray(X)
         if self.X.ndim != 2:
@@ -70,9 +114,9 @@ class KDTree(BaseObject):
         self.root = None
         self.maxes = None
         self.mins = None
-        self.create_tree()
+        self.__build()
 
-    def create_tree(self):
+    def __build(self):
         # Getting mins and maxes from features
         self.maxes = np.amax(self.X, axis=0)
         self.mins = np.amin(self.X, axis=0)
@@ -104,9 +148,20 @@ class KDTree(BaseObject):
     def query(self, X, k=1):
         """ Searches the tree for the k nearest neighbors of X
 
-        :param X: Array-like of size n_features
-        :param k: The number of nearest neighbors to query for
-        :return: The k nearest neighbors of sample X
+        Parameters
+        ----------
+        X: Array-like of size n_features or matrix of shape (n_samples, n_features)
+            Stores the samples we want to find the nearest neighbors for.
+        
+        k: int
+            The number of nearest neighbors to query for.
+            
+        Returns
+        -------
+        Either a list containing all the indexes from the closest neighbors (if 
+        return_distance is False) or two lists, one with the neighbors indexes 
+        and another one with their distance to the samples in X. 
+        
         """
         r, c = get_dimensions(X)
         dist_all, ind_all = [], []
@@ -140,20 +195,80 @@ class KDTree(BaseObject):
                 return ind_all
 
     def query_radius(self, X, r):
-        pass
+        """ Radius based query
+        
+        Queries the tree based on a limited radius rather than a number of
+        neighbors. 
+        
+        Parameters
+        ----------
+        X: Array-like of size n_features or matrix of shape (n_samples, n_features)
+            Stores the samples we want to find the nearest neighbors for.
+            
+        r: float
+            The maximum radius for the query
+            
+        Returns
+        -------
+        A list of indexes, or indexes and distances (if return_distance is True), 
+        from all the neighbors within the maximum query radius.
+        
+        """
+        raise NotImplementedError
 
     @property
     def _root(self):
         return self.root
 
     def get_info(self):
-        return 'Not implemented.'
+        return 'KDTree: leaf_size: ' + str(self.leaf_size) + ' - metric: ' + str(self.metric) + ' - return_distance' + \
+               ('True' if self.return_distance else 'False')
 
     def get_class_type(self):
         return 'data_structure'
 
 
 class KDTreeNode(BaseObject):
+    """ KD Tree Node
+     
+    A node from a KD Tree. A node object will store the indexes of its children's 
+    samples, and only a reference to the tree's complete data.
+    
+    Parameters
+    ----------
+    data: Numpy.ndarray of shape (n_samples, n_features)
+        A reference to all the samples upon which the tree will be built.
+        
+    left_indexes: An array-like
+        All the indexes from the samples that should be kept under the node's left 
+        child.
+        
+    right_indexes: An array-like
+        All the indexes from the samples that should be kept under the node's right 
+        child.
+        
+    split_axis: int
+        The node's chosen feature's index. This will be the node's splitting axis.
+        
+    split_value: int, float (numeric value)
+        The node's splitting value.
+        
+    distance_function: A distance function.
+        Any function that computes the distance between two samples.
+        
+    leaf_size: int
+        The number of samples that can be stored in one leaf node, from which point 
+        the algorithm switches to a brute-force approach.
+        
+    Notes
+    -----
+    The sliding midpoint rule, described in Maneewongvatana and Mount 1999, is the 
+    algorithm of choice for building the KDTree. All the calculations are done by 
+    the node's parent. This changes for the root node, in which case it's the 
+    KDTree __build function that does all the calculations.
+    
+    """
+
     def __init__(self, data, left_indexes, right_indexes, split_axis, split_value, distance_function, leaf_size,
                  **kwargs):
         super().__init__()
@@ -177,10 +292,20 @@ class KDTreeNode(BaseObject):
         self.distance_function = distance_function
         self.kwargs = kwargs
 
-        self._start_node()
+        self.__start_node()
 
-    def _start_node(self):
-        # Handling left subtree
+    def __start_node(self):
+        """ Start a node
+        
+        This functions will start up a node, based on the sliding midpoint rule.
+        
+        Returns
+        -------
+        self
+        
+        """
+
+        # Checking if this could be a leaf node
         sum = 0
         if self.left_indexes is not None:
             sum += len(self.left_indexes)
@@ -198,7 +323,7 @@ class KDTreeNode(BaseObject):
                 self.leaf_indexes = list(set().union(self.left_indexes, self.right_indexes))
 
         else:
-
+            # Handling left subtree
             if self.left_indexes is not None:
                 if len(self.left_indexes) > 0:
                     aux_X = np.asarray([self.data[index] for index in self.left_indexes])
@@ -213,14 +338,18 @@ class KDTreeNode(BaseObject):
 
                     data = aux_X[:, d]
 
-                    # Get the split point and the current root node
+                    # Get the split point
                     split = (maxval + minval) / 2
 
+                    # Split the indexes between left and right child
                     left = np.nonzero(data < split)[0]
                     left = np.asarray([self.left_indexes[k] for k in left])
                     right = np.nonzero(data >= split)[0]
                     right = np.asarray([self.left_indexes[k] for k in right])
 
+                    # If there's a child with no indexes, while the other has more than
+                    # leaf_size indexes, we slide the cutting point towards the 'fat'
+                    # size until there's at least one index on each child.
                     if (len(right) == 0) or (len(left) == 0):
                         if (len(right) == 0) and (len(left) > self.leaf_size):
                             split = np.amax(data[data != np.amax(data)])
@@ -239,7 +368,7 @@ class KDTreeNode(BaseObject):
                         elif (len(left) == 0) and (len(right) <= self.leaf_size):
                             left = None
 
-                    # Creating left subtree
+                    # Creates the left subtree
                     self.left_subtree = KDTreeNode(data=self.data, left_indexes=left, right_indexes=right, split_axis=d,
                                                    split_value=split, distance_function=self.distance_function,
                                                    leaf_size=self.leaf_size, **self.kwargs)
@@ -264,14 +393,18 @@ class KDTreeNode(BaseObject):
 
                     data = aux_X[:, d]
 
-                    # Get the split point and the current root node
+                    # Get the split point
                     split = (maxval + minval) / 2
 
+                    # Split the indexes between left and right child
                     left = np.nonzero(data < split)[0]
                     left = np.asarray([self.right_indexes[k] for k in left])
                     right = np.nonzero(data >= split)[0]
                     right = np.asarray([self.right_indexes[k] for k in right])
 
+                    # If there's a child with no indexes, while the other has more than
+                    # leaf_size indexes, we slide the cutting point towards the 'fat'
+                    # size until there's at least one index on each child.
                     if (len(right) == 0) or (len(left) == 0):
                         if (len(right) == 0) and (len(left) > self.leaf_size):
                             split = np.amax(data[data != np.amax(data)])
@@ -290,7 +423,7 @@ class KDTreeNode(BaseObject):
                         elif (len(left) == 0) and (len(right) <= self.leaf_size):
                             left = None
 
-                    # Creating left subtree
+                    # Creates the right subtree
                     self.right_subtree = KDTreeNode(data=self.data, left_indexes=left, right_indexes=right, split_axis=d,
                                                     split_value=split, distance_function=self.distance_function,
                                                     leaf_size=self.leaf_size, **self.kwargs)
@@ -300,20 +433,36 @@ class KDTreeNode(BaseObject):
             else:
                 self.right_subtree = None
 
+        return self
+
     def query_node(self, X, k, neighbors_distance_list):
-        """ Queries a node and all of it's sub nodes, if there is a chance of finding a nearest neighbor in that branch. 
+        """ Query a node
+         
+        Queries a node and all of it's sub nodes, if there is a chance of finding 
+        a nearest neighbor in that branch. 
 
-        :param X: Array-like containing the sample.
-        :param k: Number of nearest neighbors to query for.
-        :param neighbors_distance_list: A list of tuples of the form (index, distance), containing all the nodes that
-        are already candidates to being a nearest neighbor
-
-        :return: No return, but alters the neighbors_distance_list tuple list. 
+        Parameters
+        ----------
+        X: Array-like
+            The sample (only one) wants to find the nearest neighbors for.
+            
+        k: int
+            The number of nearest neighbors to query for.
+        
+        neighbors_distance_list: A list of tuples
+            A list containing tuples that represent the current nearest 
+            neighbors found. The tuples are stored in the format (index, distance)
+            
+        Returns
+        -------
+        An updated version of the neighbors_distance_list
+         
         """
         # In case there is no more subtrees
         if not self:
             return neighbors_distance_list
 
+        # If the node is a leaf, adopt the brute-force strategy
         if self.is_leaf:
             for i in range(len(self.leaf_indexes)):
                 dist = self.distance_function(instance_one=self.data[self.leaf_indexes[i]], instance_two=X, **self.kwargs)
@@ -344,9 +493,10 @@ class KDTreeNode(BaseObject):
                         # Add because the list doesn't have k elements yet
                         neighbors_distance_list.insert(0, (self.leaf_indexes[i], dist))
 
-        # If not a leaf enter here
+        # If the node is an inner node the regular query strategy is used
         else:
-            # Advance in the tree structure
+
+            # Advance in the tree structure until a leaf node is reached
             if X[self.split_axis] < self.split_value:
                 if self.left_subtree is not None:
                     neighbors_distance_list = self.left_subtree.query_node(X, k, neighbors_distance_list)
@@ -354,7 +504,8 @@ class KDTreeNode(BaseObject):
                 if self.right_subtree is not None:
                     neighbors_distance_list = self.right_subtree.query_node(X, k, neighbors_distance_list)
 
-            # Check the other branch
+            # Check the other branch if it's possible that there is a nearest
+            # neighbor in that branch
             if X[self.split_axis] < self.split_value:
                 if self.right_subtree is not None:
                     if len(neighbors_distance_list) < k:
@@ -394,7 +545,8 @@ class KDTreeNode(BaseObject):
         return self.right_subtree
 
     def get_info(self):
-        return 'Not implemented.'
+        return 'KDTreeNode: is_leaf: ' + ('True' if self.is_leaf else 'False') + ' - split_axis: ' \
+               + str(self.split_axis) + ' - split_value: ' + str(self.split_value)
 
     def get_class_type(self):
         return 'data_structure'

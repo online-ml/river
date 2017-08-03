@@ -16,7 +16,7 @@ class ADWIN(BaseDriftDetector):
     Parameters
     ----------
     delta : float
-        The delta for the ADWIN algorithm.
+        The delta parameter for the ADWIN algorithm.
     clock : int
         The base clock value for the ADWIN algorithm.
         
@@ -46,7 +46,7 @@ class ADWIN(BaseDriftDetector):
         self.WIDTH = 0
         self.bucket_number = 0
 
-        self.init_buckets()
+        self.__init_buckets()
 
         # other default values
         self.mint_min_window_longitude = 10
@@ -66,9 +66,25 @@ class ADWIN(BaseDriftDetector):
         self.reset()
 
     def reset(self):
+        """ Reset detectors
+        
+        Resets statistics and adwin's window.
+        
+        Returns
+        -------
+        self
+        
+        """
         super().reset()
 
     def get_change(self):
+        """ Get drift
+        
+        Returns
+        -------
+        Whether or not a drift occurred 
+        
+        """
         return self.bln_bucket_deleted
 
     def reset_change(self):
@@ -110,7 +126,7 @@ class ADWIN(BaseDriftDetector):
     def _width_t(self):
         return self.mdbl_width
 
-    def init_buckets(self):
+    def __init_buckets(self):
         """ Initialize the bucket's List and statistics
         
         Set all statistics to 0 and create a new bucket List.
@@ -149,7 +165,7 @@ class ADWIN(BaseDriftDetector):
          
         """
         self.WIDTH += 1
-        self.insert_element_bucket(0, value, self.list_row_bucket._first)
+        self.__insert_element_bucket(0, value, self.list_row_bucket._first)
         incremental_variance = 0
 
         if self.WIDTH > 1:
@@ -158,9 +174,9 @@ class ADWIN(BaseDriftDetector):
 
         self.VARIANCE += incremental_variance
         self.TOTAL += value
-        self.compress_buckets()
+        self.__compress_buckets()
 
-    def insert_element_bucket(self, variance, value, node):
+    def __insert_element_bucket(self, variance, value, node):
         node.insert_bucket(value, variance)
         self.bucket_number += 1
 
@@ -197,7 +213,7 @@ class ADWIN(BaseDriftDetector):
 
         return n1
 
-    def compress_buckets(self):
+    def __compress_buckets(self):
         next_node = None
         cursor = self.list_row_bucket._first
         i = 0
@@ -291,7 +307,7 @@ class ADWIN(BaseDriftDetector):
 
                         abs_value = 1. * ((u0/n0) - (u1/n1))
                         if (n1 >= self.mint_min_window_length) and (n0 >= self.mint_min_window_length) and (
-                        self.bln_cut_expression(n0, n1, u0, u1, v0, v1, abs_value, self.delta)):
+                        self.__bln_cut_expression(n0, n1, u0, u1, v0, v1, abs_value, self.delta)):
                             bln_bucket_deleted = True
                             self.detect = self.mint_time
                             if self.detect == 0:
@@ -314,7 +330,7 @@ class ADWIN(BaseDriftDetector):
         self.in_concept_change = bln_change
         return bln_change
 
-    def bln_cut_expression(self, n0, n1, u0, u1, v0, v1, abs_value, delta):
+    def __bln_cut_expression(self, n0, n1, u0, u1, v0, v1, abs_value, delta):
         n = self._width
         dd = np.log(2*np.log(n)/delta)
         v = self._variance
@@ -434,11 +450,20 @@ class Item(BaseObject):
         self.reset()
 
     def reset(self):
+        """ Reset the algorithm's statistics and window
+        
+        Returns
+        -------
+        self
+        
+        """
         self.bucket_size_row = 0
         for i in range(ADWIN.MAXBUCKETS+1):
-            self.clear_bucket(i)
+            self.__clear_buckets(i)
 
-    def clear_bucket(self, index):
+        return self
+
+    def __clear_buckets(self, index):
         self.set_total(0, index)
         self.set_variance(0, index)
 
@@ -457,7 +482,7 @@ class Item(BaseObject):
             self.bucket_variance[i-num_deleted] = self.bucket_variance[i]
 
         for i in range(1, num_deleted+1):
-            self.clear_bucket(ADWIN.MAXBUCKETS-i+1)
+            self.__clear_buckets(ADWIN.MAXBUCKETS - i + 1)
 
         self.bucket_size_row -= num_deleted
 

@@ -9,9 +9,71 @@ from skmultiflow.core.utils.utils import *
 
 
 class LeverageBagging(BaseClassifier):
+    """ Leverage Bagging Classifier
+    
+    An ensemble method, which represents an improvement from the online Oza 
+    Bagging algorithm. The complete description of this method can be found 
+    in Bifet, Holmes, and Pfahringer's 'Leveraging Bagging for Evolving Data 
+    Streams'.
+    
+    The bagging performance is leveraged by increasing the re-sampling and 
+    by using output detection codes. We use a poisson distribution to 
+    simulate the re-sampling process. To increase re-sampling we use a higher 
+    value of the w parameter of the Poisson distribution, which is 6 by 
+    default. With this value we are increasing the input space diversity, by 
+    attributing a different range of weights to our samples.
+    
+    The second improvement is to use output detection codes. This consists of 
+    coding each label with a n bit long binary code and then associating n 
+    classifiers, one to each bit of the binary codes. At each new sample 
+    analyzed, each classifier is trained on its own bit. This allows, to some 
+    extent, the correction of errors.
+    
+    To deal with concept drift we use the ADWIN algorithm, one instance for 
+    each classifier. Each time a concept drift is detected we reset the worst 
+    ensemble's classifier, which is done by comparing the adwins' window sizes.
+    
+    Parameters
+    ----------
+    h: classifier (extension of the BaseClassifier)
+        This is the ensemble classifier type, each ensemble classifier is going 
+        to be a copy of the h classifier.
+        
+    ensemble_length: int
+        The size of the ensemble, in other words, how many classifiers to train.
+        
+    w: int
+        The poisson distribution's parameter, which is used to simulate 
+        re-sampling.
+        
+    delta: float
+        The delta parameter for the ADWIN change detector.
+    
+    enable_code_matrix: bool
+        If set to True it will enable the output detection code matrix.
+    
+    leverage_algorithm: string 
+        A string representing the bagging algorithm to use. Can be one of the 
+        following: 'leveraging_bag', 'leveraging_bag_me', 'leveraging_bag_half', 
+        'leveraging_bag_wt', 'leveraging_subag'
+    
+    Notes
+    -----
+    To choose the correct ensemble_length (a value too high or too low may 
+    deteriorate performance) there are different techniques. One of them is 
+    called 'The law of diminishing returns in ensemble construction' by Bonab 
+    and Can. This theoretical framework claims, with experimental results, that 
+    the optimal number of classifiers in an online ensemble method is equal to 
+    the number of labels in the classification task. Thus we chose a default 
+    value of 2, adapted to binary classification tasks.
+    
+    """
+
     LEVERAGE_ALGORITHMS = ['leveraging_bag', 'leveraging_bag_me', 'leveraging_bag_half', 'leveraging_bag_wt',
                            'leveraging_subag']
-    def __init__(self, h=KNN(), ensemble_length=2, w=6, delta=0.002, enable_code_matrix=False, leverage_algorithm='leveraging_bag'):
+    def __init__(self, h=KNN(), ensemble_length=2, w=6, delta=0.002, enable_code_matrix=False,
+                 leverage_algorithm='leveraging_bag'):
+
         super().__init__()
         # default values
         self.h = h.reset()
@@ -25,14 +87,14 @@ class LeverageBagging(BaseClassifier):
         self.delta = None
         self.classes = None
         self.leveraging_algorithm = None
-        self.configure(h, ensemble_length, w, delta, enable_code_matrix, leverage_algorithm)
+        self.__configure(h, ensemble_length, w, delta, enable_code_matrix, leverage_algorithm)
         self.init_matrix_codes = True
 
         self.adwin_ensemble = []
         for i in range(ensemble_length):
             self.adwin_ensemble.append(ADWIN(self.delta))
 
-    def configure(self, h, ensemble_length, w, delta, enable_code_matrix, leverage_algorithm):
+    def __configure(self, h, ensemble_length, w, delta, enable_code_matrix, leverage_algorithm):
         self.ensemble_length = ensemble_length
         self.ensemble = [cp.deepcopy(h) for x in range(ensemble_length)]
         self.w = w
@@ -46,6 +108,31 @@ class LeverageBagging(BaseClassifier):
         raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None):
+        """ partial_fit
+        
+        Partially fit the ensemble's method models. 
+        
+        This id done by calling the private funcion __partial_fit.
+        
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            The samples used to update the models.
+            
+        y: Numpy.array
+            An array containing all the labels for the samples in X.
+            
+        classes: list
+            A list with all the possible labels of the classification task.
+            It's an optional parameter, except for the first partial_fit 
+            call, when it's a requirement.
+        
+        
+        Returns
+        -------
+        self
+        
+        """
         if classes is None and self.classes is None:
             raise ValueError("The first partial_fit call should pass all the classes.")
         if classes is not None and self.classes is None:
@@ -59,9 +146,11 @@ class LeverageBagging(BaseClassifier):
 
         r, c = get_dimensions(X)
         for i in range(r):
-            self._partial_fit(X[i], y[i])
+            self.__partial_fit(X[i], y[i])
 
-    def _partial_fit(self, X, y):
+        return self
+
+    def __partial_fit(self, X, y):
         n_classes = len(self.classes)
         change = False
 
@@ -151,7 +240,7 @@ class LeverageBagging(BaseClassifier):
                 self.adwin_ensemble[imax] = ADWIN(self.delta)
         return self
 
-    def adjust_ensemble_size(self):
+    def __adjust_ensemble_size(self):
         if len(self.classes) != len(self.ensemble):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
@@ -160,6 +249,20 @@ class LeverageBagging(BaseClassifier):
                     self.ensemble_length += 1
 
     def predict(self, X):
+        """ predict
+        
+        Predicts the labels from all samples in the X matrix.
+        
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            A matrix of the samples we want to predict
+        
+        Returns
+        -------
+        A list with the label prediction for all the samples in X
+        
+        """
         r, c = get_dimensions(X)
         probs = self.predict_proba(X)
         preds = []
@@ -170,6 +273,27 @@ class LeverageBagging(BaseClassifier):
         return preds
 
     def predict_proba(self, X):
+        """ predict_proba
+
+        Calculates the probability of each sample in X belonging to each 
+        of the labels, based on the knn algorithm. This is done by predicting 
+        the class probability for each one of the ensemble's classifier, and 
+        then taking the absolute probability from the ensemble itself.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            All the samples we want to predict the label for.
+
+        Returns
+        -------
+        A list of lists, in which each outer entry is associated with 
+        the X entry of the same index. And where the list in index [i] 
+        contains len(self.classes) elements, each of which represents 
+        the probability that the i-th sample of X belongs to a certain 
+        label.
+
+        """
         if self.enable_matrix_codes:
             return self.predict_binary_proba(X)
         probs = []
@@ -179,7 +303,8 @@ class LeverageBagging(BaseClassifier):
                 partial_probs = self.ensemble[i].predict_proba(X)
                 if len(partial_probs[0]) != len(self.classes):
                     raise ValueError(
-                        "The number of classes is different in the bagging algorithm and in the chosen learning algorithm.")
+                        "The number of classes is different in the bagging algorithm and in the chosen learning "
+                        "algorithm.")
 
                 if len(probs) < 1:
                     for n in range(r):
@@ -199,6 +324,26 @@ class LeverageBagging(BaseClassifier):
         return aux
 
     def predict_binary_proba(self, X):
+        """ predict_binary_proba
+
+        Calculates the probability of each sample in X belonging to each 
+        coded label. This will only be used if matrix codes are enabled. 
+        Otherwise the method will use the normal predict_proba function.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            All the samples we want to predict the label for.
+
+        Returns
+        -------
+        A list of lists, in which each outer entry is associated with 
+        the X entry of the same index. And where the list in index [i] 
+        contains len(self.classes) elements, each of which represents 
+        the probability that the i-th sample of X belongs to a certain 
+        label.
+
+        """
         probs = []
         r, c = get_dimensions(X)
         if not self.init_matrix_codes:
@@ -237,7 +382,17 @@ class LeverageBagging(BaseClassifier):
         return None
 
     def reset(self):
-        self.configure(self.h, self.ensemble_length, self.w, self.delta, self.enable_matrix_codes)
+        """ reset
+        
+        Resets all the classifiers, as well as all the ADWIN change
+        detectors.
+        
+        Returns
+        -------
+        self
+        
+        """
+        self.__configure(self.h, self.ensemble_length, self.w, self.delta, self.enable_matrix_codes)
         self.adwin_ensemble = []
         for i in range(self.ensemble_length):
             self.adwin_ensemble.append(ADWIN(self.delta))
@@ -245,8 +400,13 @@ class LeverageBagging(BaseClassifier):
         self.classes = None
         self.init_matrix_codes = True
 
+        return self
+
     def score(self, X, y):
         raise NotImplementedError
 
     def get_info(self):
-        return ''
+        return 'LeverageBagging Classifier: h: ' + str(self.h) + ' - ensemble_length: ' \
+               + str(self.ensemble_length) + ' - w: ' + str(self.w) + ' - delta: ' + \
+               str(self.delta) + ' - enable_code_matrix: ' + ('True' if self.enable_matrix_codes else 'False') \
+               + ' - leveraging_algorithm: ' + self.leveraging_algorithm
