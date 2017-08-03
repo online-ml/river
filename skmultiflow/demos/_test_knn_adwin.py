@@ -14,7 +14,7 @@ from timeit import default_timer as timer
 def demo():
     start = timer()
     logging.basicConfig(format='%(message)s', level=logging.INFO)
-    warnings.filterwarnings("ignore", ".*Passing 1d.*")
+    #warnings.filterwarnings("ignore", ".*Passing 1d.*")
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/sea_big.csv', 'csv', False)
     stream = FileStream(opt, -1, 1)
@@ -46,7 +46,7 @@ def demo():
         compare.fit(X, y)
         first = False
     n_samples = 0
-    max_samples = 1000
+    max_samples = 100
     my_corrects = 0
     compare_corrects = 0
 
@@ -57,6 +57,7 @@ def demo():
         X, y = stream.next_instance()
         #my_pred = pipe.predict(X)
         my_pred = knn.predict(X)
+        #my_pred = [1]
         if first:
             #pipe.partial_fit(X, y, classes=stream.get_classes())
             #pipe.partial_fit(X, y, classes=stream.get_classes())

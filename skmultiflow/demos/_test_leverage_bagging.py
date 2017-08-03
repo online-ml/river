@@ -28,9 +28,8 @@ def demo():
     while sample_count < max_samples:
         if (sample_count+1) % (max_samples / 20) == 0:
             logging.info('%s%%', str(((sample_count // (max_samples / 20)+1) * 5)))
-        X, y = stream.next_instance()
+        X, y = stream.next_instance(2)
         my_pred = clf.predict(X)
-
         if first:
             clf.partial_fit(X, y, classes=stream.get_classes())
             first = False

@@ -73,7 +73,39 @@ def mixed_distance(instance_one, instance_two, **kwargs):
 
     return sum(partial_dist)
 
+
 def euclidean_distance(instance_one, instance_two, **kwargs):
+    """ Euclidean distance
+    
+    Function to compute the euclidean distance between two instances. 
+    When measuring distances between instances, it's important to know 
+    the properties of the samples' features. It won't work well with a 
+    mix of categorical and numerical features.
+    
+    Parameters
+    ----------
+    instance_one: array-like of size n_features
+        An array representing the features of a sample.
+        
+    instance_two: array-like of size n_features <possible a numeric value>
+        An array representing the features of a sample.
+        
+    kwargs: Additional keyword arguments
+        Serves the purpose of passing an index to the function, in 
+        which case it will return the distance between the instance_one 
+        feature at the given index and the instance_two.
+    
+    Returns
+    -------
+    The euclidean distance between the two instances
+    
+    Notes
+    -----
+    It's important to note that if the keyword argument 'index' is passed 
+    to the function it will expect a numeric value instead of an array as 
+    the instance_two parameter.
+    
+    """
     # Check for kwargs
     index = None
     for key, value in kwargs.items():
@@ -89,17 +121,3 @@ def euclidean_distance(instance_one, instance_two, **kwargs):
     two = np.array(instance_two)
     return np.sqrt(np.sum(np.power(np.subtract(one, two), [2 for i in range(one.size)])))
 
-if __name__ == '__main__':
-    """
-    inst1 = [10, 30, 1457, 2, 1]
-    inst2 = [20, 50, 22321, 1, 1]
-    cat_list = [3, 4]
-    distance_array = [10, 20, 32000, 12312, 0]
-    kwargs = {'categorical_list': cat_list, 'distance_array': distance_array}
-    dist = mixed_distance(inst1, inst2, **kwargs)
-    print(str(dist))
-    """
-    inst1 = [6, 1, 3, 9, 9]
-    inst2 = [8, 2, 2, 9, 13]
-    print(str(euclidean_distance(np.asarray(inst1), np.asarray(inst2))))
-    print(str(np.linalg.norm(np.asarray(inst1)-np.asarray(inst2))))

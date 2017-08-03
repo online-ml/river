@@ -446,14 +446,14 @@ class InstanceWindow(BaseObject):
                 self.buffer = np.zeros((0, self.n_attributes+self.n_target_tasks))
             else:
                 raise ValueError("Number of attributes in X is different from the objects buffer dimension. "
-                                 "Call configure() to correctly set up the InstanceWindow")
+                                 "Call __configure() to correctly set up the InstanceWindow")
 
         if self.n_samples >= self.max_size:
             self.n_samples -= 1
             self.buffer = np.delete(self.buffer, 0, axis=0)
 
         if self.buffer is None:
-            raise TypeError("None type not supported as the buffer, call configure() to correctly set up the InstanceWindow")
+            raise TypeError("None type not supported as the buffer, call __configure() to correctly set up the InstanceWindow")
 
         aux = np.concatenate((X, y), axis=1)
         self.buffer = np.concatenate((self.buffer, aux), axis=0)
