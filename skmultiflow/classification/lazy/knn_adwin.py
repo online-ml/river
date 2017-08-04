@@ -41,6 +41,14 @@ class KNNAdwin(KNN):
     categorical_list: An array-like
         Each entry is the index of a categorical feature. May be requested 
         further filtering.
+        
+    Raises
+    ------
+    NotImplementedError: A few of the functions described here are not 
+    implemented since they have no application in this context.
+    
+    ValueError: A ValueError is raised if the predict function is called 
+    before at least k samples have been analyzed by the algorithm.
 
     """
 

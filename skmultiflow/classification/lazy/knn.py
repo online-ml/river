@@ -47,6 +47,14 @@ class KNN(BaseClassifier):
         Each entry is the index of a categorical feature. May be requested 
         further filtering.
     
+    Raises
+    ------
+    NotImplementedError: A few of the functions described here are not 
+    implemented since they have no application in this context.
+    
+    ValueError: A ValueError is raised if the predict function is called 
+    before at least k samples have been analyzed by the algorithm.
+    
     Notes
     -----
     For a KDTree functionality explanation, please see our KDTree 
@@ -189,13 +197,18 @@ class KNN(BaseClassifier):
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
         
+        Raises
+        ------
+        ValueError: If there is an attempt to call this function before, 
+        at least, k samples have been analyzed by the learner, a ValueError 
+        is raised.
+        
         Returns
         -------
-        A list of lists, in which each outer entry is associated with 
-        the X entry of the same index. And where the list in index [i] 
-        contains len(self.classes) elements, each of which represents 
-        the probability that the i-th sample of X belongs to a certain 
-        label.
+        An array of shape (n_samples, n_features), in which each outer entry is 
+        associated with the X entry of the same index. And where the list in 
+        index [i] contains len(self.classes) elements, each of which represents 
+        the probability that the i-th sample of X belongs to a certain label.
          
         """
         if self.window is None:
