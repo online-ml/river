@@ -13,15 +13,6 @@ class ADWIN(BaseDriftDetector):
     a data stream. Allows algorithms not adapted for drifting data, to be 
     more resistant to this phenomenon.
     
-    Parameters
-    ----------
-    delta : float
-        The delta parameter for the ADWIN algorithm.
-    clock : int
-        The base clock value for the ADWIN algorithm.
-        
-    Notes
-    -----
     The ADWIN algorithm is described in Bifet and Gavaldà's 'Learning from 
     Time-Changing Data with Adaptive Windowing'. The general idea is to keep 
     statistics from a window of variable size while detecting concept drift. 
@@ -31,6 +22,13 @@ class ADWIN(BaseDriftDetector):
     these two windows. If the absolute value of the difference between the two 
     averages surpasses a pre-defined threshold, change is detected at that point 
     and all data before that time is discarded. 
+    
+    Parameters
+    ----------
+    delta : float
+        The delta parameter for the ADWIN algorithm.
+    clock : int
+        The base clock value for the ADWIN algorithm.
     
     """
     MAXBUCKETS = 5

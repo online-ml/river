@@ -57,6 +57,14 @@ class LeverageBagging(BaseClassifier):
         following: 'leveraging_bag', 'leveraging_bag_me', 'leveraging_bag_half', 
         'leveraging_bag_wt', 'leveraging_subag'
     
+    Raises
+    ------
+    NotImplementedError: A few of the functions described here are not 
+    implemented since they have no application in this context.
+    
+    ValueError: A ValueError is raised if the 'classes' parameter is 
+    not passed in the first partial_fit call.
+    
     Notes
     -----
     To choose the correct ensemble_length (a value too high or too low may 
@@ -119,7 +127,7 @@ class LeverageBagging(BaseClassifier):
         X: Numpy.ndarray of shape (n_samples, n_features)
             The samples used to update the models.
             
-        y: Numpy.array
+        y: Array-like
             An array containing all the labels for the samples in X.
             
         classes: list
@@ -127,6 +135,11 @@ class LeverageBagging(BaseClassifier):
             It's an optional parameter, except for the first partial_fit 
             call, when it's a requirement.
         
+        Raises
+        ------
+        ValueError: A ValueError is raised if the 'classes' parameter is not 
+        passed in the first partial_fit call, or if they are passed in further 
+        calls but differ from the initial classes list passed.
         
         Returns
         -------
@@ -256,11 +269,11 @@ class LeverageBagging(BaseClassifier):
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
-            A matrix of the samples we want to predict
+            A matrix of the samples we want to predict.
         
         Returns
         -------
-        A list with the label prediction for all the samples in X
+        A list with the label prediction for all the samples in X.
         
         """
         r, c = get_dimensions(X)
@@ -285,13 +298,17 @@ class LeverageBagging(BaseClassifier):
         X: Numpy.ndarray of shape (n_samples, n_features)
             All the samples we want to predict the label for.
 
+        Raises
+        ------
+        ValueError: A ValueError is raised if the number of classes in the h 
+        learner differs from that of the ensemble learner.
+
         Returns
         -------
-        A list of lists, in which each outer entry is associated with 
-        the X entry of the same index. And where the list in index [i] 
-        contains len(self.classes) elements, each of which represents 
-        the probability that the i-th sample of X belongs to a certain 
-        label.
+        An array of shape (n_samples, n_features), in which each outer entry is 
+        associated with the X entry of the same index. And where the list in 
+        index [i] contains len(self.classes) elements, each of which represents 
+        the probability that the i-th sample of X belongs to a certain label.
 
         """
         if self.enable_matrix_codes:

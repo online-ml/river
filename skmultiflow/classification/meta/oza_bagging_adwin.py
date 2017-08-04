@@ -9,6 +9,46 @@ from skmultiflow.core.utils.utils import *
 
 
 class OzaBaggingAdwin(BaseClassifier):
+    """ OzaBagging Classifier with ADWIN change detector
+    
+    This online ensemble learner method is an improvement from the Online 
+    Bagging algorithm described in Oza and Russel's 'Online Bagging and 
+    Boosting'. The improvement comes from the addition of a ADWIN change 
+    detector.
+    
+    ADWIN stands for Adaptive Windowing. It works by keeping updated 
+    statistics of a variable sized window, so it can detect changes and 
+    perform cuts in its window to better adapt the learning algorithms.
+    
+    Parameters
+    ----------
+    h: classifier (extension of the BaseClassifier)
+        This is the ensemble classifier type, each ensemble classifier is going 
+        to be a copy of the h classifier.
+    
+    ensemble_length: int
+        The size of the ensemble, in other words, how many classifiers to train.
+    
+    Raises
+    ------
+    NotImplementedError: A few of the functions described here are not 
+    implemented since they have no application in this context.
+    
+    ValueError: A ValueError is raised if the 'classes' parameter is 
+    not passed in the first partial_fit call.
+    
+    Notes
+    -----
+    To choose the correct ensemble_length (a value too high or too low may 
+    deteriorate performance) there are different techniques. One of them is 
+    called 'The law of diminishing returns in ensemble construction' by Bonab 
+    and Can. This theoretical framework claims, with experimental results, that 
+    the optimal number of classifiers in an online ensemble method is equal to 
+    the number of labels in the classification task. Thus we chose a default 
+    value of 2, adapted to binary classification tasks.
+    
+    """
+
     def __init__(self, h=KNNAdwin(), ensemble_length=2):
         super().__init__()
         # default values
@@ -16,13 +56,13 @@ class OzaBaggingAdwin(BaseClassifier):
         self.ensemble_length = None
         self.classes = None
         self.h = h.reset()
-        self.configure(h, ensemble_length)
+        self.__configure(h, ensemble_length)
 
         self.adwin_ensemble = []
         for i in range(ensemble_length):
             self.adwin_ensemble.append(ADWIN())
 
-    def configure(self, h, ensemble_length):
+    def __configure(self, h, ensemble_length):
         self.ensemble_length = ensemble_length
         self.ensemble = [cp.deepcopy(h) for j in range(self.ensemble_length)]
 
@@ -30,6 +70,46 @@ class OzaBaggingAdwin(BaseClassifier):
         raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None):
+        """ partial_fit
+
+        Partially fits the model, based on the X and y matrix.
+
+        Since it's an ensemble learner, if X and y matrix of more than one 
+        sample are passed, the algorithm will partial fit the model one sample 
+        at a time.
+
+        Each sample is trained by each classifier a total of K times, where K 
+        is drawn by a Poisson(1) distribution.
+        
+        Alongside updating the model, the learner will also update ADWIN's 
+        statistics over the new samples, so that the change detector can 
+        evaluate if a concept drift was detected. In the case drift is detected, 
+        the bagging algorithm will find the worst performing classifier and reset 
+        its statistics and window.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features) 
+            Features matrix used for partially updating the model.
+
+        y: Array-like
+            An array-like of all the class labels for the samples in X.
+
+        classes: list 
+            List of all existing classes. This is an optional parameter, except 
+            for the first partial_fit call, when it becomes obligatory.
+
+        Raises
+        ------
+        ValueError: A ValueError is raised if the 'classes' parameter is not 
+        passed in the first partial_fit call, or if they are passed in further 
+        calls but differ from the initial classes list passed.
+
+        Returns
+        _______
+        self
+
+        """
         r, c = get_dimensions(X)
         if self.classes is None:
             if classes is None:
@@ -44,7 +124,7 @@ class OzaBaggingAdwin(BaseClassifier):
                 raise ValueError(
                     "The classes passed to the partial_fit function differ from those passed in an earlier moment.")
 
-        self.adjust_ensemble_size()
+        self.__adjust_ensemble_size()
         change_detected = False
         for i in range(self.ensemble_length):
             k = np.random.poisson()
@@ -81,7 +161,7 @@ class OzaBaggingAdwin(BaseClassifier):
 
         return self
 
-    def adjust_ensemble_size(self):
+    def __adjust_ensemble_size(self):
         if len(self.classes) != len(self.ensemble):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
@@ -91,6 +171,21 @@ class OzaBaggingAdwin(BaseClassifier):
 
 
     def predict(self, X):
+        """ predict
+
+        The predict function will average the predictions from all its learners 
+        to find the most likely prediction for the sample matrix X.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            A matrix of the samples we want to predict.
+
+        Returns
+        -------
+        A list with the label prediction for all the samples in X.
+
+        """
         r, c = get_dimensions(X)
         probs = self.predict_proba(X)
         preds = []
@@ -101,13 +196,29 @@ class OzaBaggingAdwin(BaseClassifier):
         return preds
 
     def predict_proba(self, X):
-        """ Predicts the probability of classification
-
-                :param X: Feature matrix. shape (n_samples, n_features)
-                :return: A matrix with the probabilities for all classes of all samples passed in X. shape (n_samples, n_classes).
-                        If the learners' ensemble requires a minimum number of partial_fit/fit calls pefore any prediction is 
-                        made, this will return None
-                """
+        """ predict_proba
+        
+        Predicts the probability of each sample belonging to each one of the 
+        known classes.
+        
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            A matrix of the samples we want to predict.
+        
+        Raises
+        ------
+        ValueError: A ValueError is raised if the number of classes in the h 
+        learner differs from that of the ensemble learner.
+        
+        Returns
+        -------
+        An array of shape (n_samples, n_features), in which each outer entry is 
+        associated with the X entry of the same index. And where the list in 
+        index [i] contains len(self.classes) elements, each of which represents 
+        the probability that the i-th sample of X belongs to a certain label.
+        
+        """
         probs = []
         r, c = get_dimensions(X)
         try:
@@ -143,10 +254,10 @@ class OzaBaggingAdwin(BaseClassifier):
         pass
 
     def reset(self):
-        self.configure(self.h, self.ensemble_length)
+        self.__configure(self.h, self.ensemble_length)
         self.adwin_ensemble = []
         for i in range(self.ensemble_length):
             self.adwin_ensemble.append(ADWIN())
 
     def get_info(self):
-        return ''
+        return 'OzaBagging Classifier: h: ' + str(self.h) + ' - ensemble_length: ' + str(self.ensemble_length)

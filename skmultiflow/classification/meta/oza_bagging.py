@@ -7,6 +7,55 @@ from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
 from skmultiflow.core.utils.utils import *
 
 class OzaBagging(BaseClassifier):
+    """ OzaBagging Classifier
+    
+    Oza Bagging is an ensemble learning method first introduced by Oza and 
+    Russel's 'Online Bagging and Boosting'. They are an improvement of the 
+    well known Bagging ensemble method for the batch setting, which in this 
+    version can effectively handle data streams.
+    
+    For a traditional Bagging algorithm, adapted for the batch setting, we 
+    would have M classifiers training on M different datasets, created by 
+    drawing N samples from the N-sized training set with replacement.
+    
+    In the online context, since there is no training dataset, but a stream 
+    of samples, the drawing of samples with replacement can't be trivially 
+    executed. The strategy adopted by the Online Bagging algorithm is to 
+    simulate this task by training each arriving sample K times, which is 
+    drawn by the binomial distribution. Since we can consider the data stream 
+    to be infinite, and knowing that with infinite samples the binomial 
+    distribution tends to a Poisson(1) distribution, Oza and Russel found 
+    that to be a good 'drawing with replacement'.
+    
+    Parameters
+    ----------
+    h: classifier (extension of the BaseClassifier)
+        This is the ensemble classifier type, each ensemble classifier is going 
+        to be a copy of the h classifier.
+    
+    ensemble_length: int
+        The size of the ensemble, in other words, how many classifiers to train.
+    
+    Raises
+    ------
+    NotImplementedError: A few of the functions described here are not 
+    implemented since they have no application in this context.
+    
+    ValueError: A ValueError is raised if the 'classes' parameter is 
+    not passed in the first partial_fit call.
+    
+    Notes
+    -----
+    To choose the correct ensemble_length (a value too high or too low may 
+    deteriorate performance) there are different techniques. One of them is 
+    called 'The law of diminishing returns in ensemble construction' by Bonab 
+    and Can. This theoretical framework claims, with experimental results, that 
+    the optimal number of classifiers in an online ensemble method is equal to 
+    the number of labels in the classification task. Thus we chose a default 
+    value of 2, adapted to binary classification tasks.
+    
+    """
+
     def __init__(self, h=KNNAdwin(), ensemble_length=2):
         super().__init__()
         # default values
@@ -15,28 +64,52 @@ class OzaBagging(BaseClassifier):
         self.classes = None
         self.h = h.reset()
 
-        self.configure(h, ensemble_length)
+        self.__configure(h, ensemble_length)
 
-    def configure(self, h, ensemble_length):
+    def __configure(self, h, ensemble_length):
         self.ensemble_length = ensemble_length
         self.ensemble = [cp.deepcopy(h) for j in range(self.ensemble_length)]
 
     def reset(self):
-        self.configure(self.h, self.ensemble_length)
+        self.__configure(self.h, self.ensemble_length)
 
     def fit(self, X, y, classes=None):
         raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None):
-        """ Partially fits the model, based on the X and y matrix.
+        """ partial_fit
+         
+        Partially fits the model, based on the X and y matrix.
                 
-                Since it's an ensemble learner, if X and y matrix of more than one sample are passed, the algorithm
-                will partial fit the model one sample at a time.
+        Since it's an ensemble learner, if X and y matrix of more than one 
+        sample are passed, the algorithm will partial fit the model one sample 
+        at a time.
         
-        :param X: Features matrix. shape (n_samples, n_features)
-        :param y: Class matrix. size (n_samples)
-        :param classes: List of classes that can show up. Obligatory parameter for the first partial_fit call.
-        :return: self
+        Each sample is trained by each classifier a total of K times, where K 
+        is drawn by a Poisson(1) distribution.
+        
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features) 
+            Features matrix used for partially updating the model.
+            
+        y: Array-like
+            An array-like of all the class labels for the samples in X.
+            
+        classes: list 
+            List of all existing classes. This is an optional parameter, except 
+            for the first partial_fit call, when it becomes obligatory.
+        
+        Raises
+        ------
+        ValueError: A ValueError is raised if the 'classes' parameter is not 
+        passed in the first partial_fit call, or if they are passed in further 
+        calls but differ from the initial classes list passed.
+        
+        Returns
+        _______
+        self
+        
         """
         r, c = get_dimensions(X)
         if self.classes is None:
@@ -51,7 +124,7 @@ class OzaBagging(BaseClassifier):
             else:
                 raise ValueError("The classes passed to the partial_fit function differ from those passed in an earlier moment.")
 
-        self.adjust_ensemble_size()
+        self.__adjust_ensemble_size()
 
         for i in range(self.ensemble_length):
             k = np.random.poisson()
@@ -60,7 +133,7 @@ class OzaBagging(BaseClassifier):
                     self.ensemble[i].partial_fit(X, y, classes)
         return self
 
-    def adjust_ensemble_size(self):
+    def __adjust_ensemble_size(self):
         if len(self.classes) != len(self.ensemble):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
@@ -68,6 +141,21 @@ class OzaBagging(BaseClassifier):
                     self.ensemble_length += 1
 
     def predict(self, X):
+        """ predict
+        
+        The predict function will average the predictions from all its learners 
+        to find the most likely prediction for the sample matrix X.
+        
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            A matrix of the samples we want to predict.
+        
+        Returns
+        -------
+        A list with the label prediction for all the samples in X.
+        
+        """
         r, c = get_dimensions(X)
         probs = self.predict_proba(X)
         preds = []
@@ -78,12 +166,28 @@ class OzaBagging(BaseClassifier):
         return preds
 
     def predict_proba(self, X):
-        """ Predicts the probability of classification
-
-        :param X: Feature matrix. shape (n_samples, n_features)
-        :return: A matrix with the probabilities for all classes of all samples passed in X. shape (n_samples, n_classes).
-                If the learners' ensemble requires a minimum number of partial_fit/fit calls pefore any prediction is 
-                made, this will return None
+        """ predict_proba
+        
+        Predicts the probability of each sample belonging to each one of the 
+        known classes.
+        
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            A matrix of the samples we want to predict.
+        
+        Raises
+        ------
+        ValueError: A ValueError is raised if the number of classes in the h 
+        learner differs from that of the ensemble learner.
+        
+        Returns
+        -------
+        An array of shape (n_samples, n_features), in which each outer entry is 
+        associated with the X entry of the same index. And where the list in 
+        index [i] contains len(self.classes) elements, each of which represents 
+        the probability that the i-th sample of X belongs to a certain label.
+        
         """
         probs = []
         r, c = get_dimensions(X)
@@ -120,5 +224,5 @@ class OzaBagging(BaseClassifier):
         raise NotImplementedError
 
     def get_info(self):
-        raise NotImplementedError
+        return 'OzaBagging Classifier: h: ' + str(self.h) + ' - ensemble_length: ' + str(self.ensemble_length)
 

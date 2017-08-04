@@ -44,6 +44,7 @@ def demo():
 
     print(str(sample_count) + ' samples analyzed.')
     print('My performance: ' + str(correctly_classified / sample_count))
+    print(clf.get_info())
 
 if __name__ == '__main__':
     demo()
