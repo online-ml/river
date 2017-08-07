@@ -1,8 +1,6 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.data.base_instance_stream import BaseInstanceStream
-from skmultiflow.core.instances.instance import Instance
-from skmultiflow.core.instances.instance_header import InstanceHeader
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
 from timeit import default_timer as timer

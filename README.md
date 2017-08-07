@@ -70,3 +70,6 @@ A stream data framework.
     to:
     backend     : another backend that works on your machine
 
+### To clean
+* core.instances
+

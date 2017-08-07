@@ -1,7 +1,6 @@
 __author__ = "Guilherme Matsumoto"
 
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.file_to_stream import FileToStream
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
 from skmultiflow.data.generators.sea_generator import SEAGenerator
