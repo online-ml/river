@@ -4,21 +4,29 @@ from skmultiflow.core.base_object import BaseObject
 
 
 class InstanceHeader(BaseObject):
-    '''
-        Instance Header class
-        -----------------------------
-        Stores the header from an instance, simply keeps feature and label's names
+    ''' InstanceHeader
+    
+    Stores the header from an instance, simply keeps feature and 
+    label's names
+    
+    Parameters
+    ----------
+    header: list, optional
+        The entries of the header.
     '''
     def __init__(self, header = None):
         super().__init__()
         self.header = header
         pass
 
-    def get_header_label_at(self, headerIndex = -1):
-        return self.header[headerIndex] if (headerIndex > -1) else None
+    def get_header_label_at(self, header_index = -1):
+        if self.header is not None:
+            return self.header[header_index] if ((header_index > -1) and (header_index < len(self.header))) else None
+        else:
+            return None
 
     def get_class_type(self):
         return 'instance'
 
     def get_info(self):
-        pass
+        return str(self.header)

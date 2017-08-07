@@ -16,7 +16,7 @@ class MultiOutputLearner(BaseClassifier) :
     a way that each classifier is in charge of a single classification 
     problem.
     
-    Should be use to make single output predictors capable of learning 
+    Should be used to make single output predictors capable of learning 
     a multi output problem.
     
     Parameters

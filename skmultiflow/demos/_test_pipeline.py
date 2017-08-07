@@ -25,7 +25,7 @@ def demo():
     classifier = PassiveAggressiveClassifier()
 
     # Setup the pipeline
-    pipe = Pipeline([('perceptron', classifier)])
+    pipe = Pipeline([('passive_aggressive', classifier)])
 
     # Setup the evaluator
     eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=500000)

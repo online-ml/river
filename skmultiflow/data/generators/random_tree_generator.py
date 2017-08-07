@@ -1,15 +1,10 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.core.instances.instance_header import InstanceHeader
-from skmultiflow.core.instances.instance_data import InstanceData
 from skmultiflow.data.base_instance_stream import BaseInstanceStream
-from skmultiflow.core.instances.instance import Instance
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
 from array import array
-'''
-    keep track of the last instance generated
-'''
 
 
 class RandomTreeGenerator(BaseInstanceStream, BaseObject):
