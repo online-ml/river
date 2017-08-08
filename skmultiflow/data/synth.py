@@ -1,6 +1,7 @@
 from numpy import *
 
 def make_logical(n_tiles=1):
+
     '''
         Make a toy dataset with three labels that represent the logical functions: OR, XOR, AND (functions of the 2D input).
     '''

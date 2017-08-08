@@ -8,32 +8,52 @@ from array import array
 
 
 class RandomTreeGenerator(BaseInstanceStream, BaseObject):
-    '''
-        RandomTreeGenerator
-        ---------------------------------------------
-        Instance generator based on a random tree that splits attributes and sets labels to its leafs.
-        Supports the addition of noise.
-        
-        Parser parameters
-        ---------------------------------------------
-        -r: Seed for random generation of tree (Default: 23)
-        -i: Seed for random generation of instances (Default: 12)
-        -c: The number of targets to generate (Default: 2)
-        -o: The number of nominal attributes to generate (Default: 5)
-        -u: The number of numerical attributes to generate (Default: 5)
-        -v: The number of values to generate per nominal attribute (Default: 5)
-        -d: The maximum depth of the tree concept (Default: 5)
-        -l: The first level of the tree above MaxTreeDepth that can have leaves (Default: 3)
-        -f: The fraction of leaves per level from FirstLeafLevel onwards (Default: 0.15)
-        
-        Instance Data Format
-        --------------------------------------------
-        The data coming from this generator follows a strict form:
-         ___________________________________________________________
-        |   Numeric Attributes  |   Nominal Attributes  |   Class   |
-         -----------------------------------------------------------
-    '''
-    def __init__(self, opt_list = None):
+    """ RandomTreeGenerator
+       
+    This generator is built based on its description in Domingo and Hulten's 
+    'Knowledge Discovery and Data Mining'. The generator is based on a random 
+    tree that splits attributes at random and sets labels to its leafs.
+    
+    The tree structure is composed on Node objects, which can be either inner 
+    nodes or leaf nodes. The choice comes as a function fo the parameters 
+    passed to its initializer.
+    
+    Since the concepts are generated and classified according to a tree 
+    structure, in theory, it should favour decision tree learners.
+    
+    Parameters
+    ----------
+    tree_seed: int (Default: 23)
+        Seed for random generation of tree.
+    
+    instance_seed: int (Default: 12)
+        Seed for random generation of instances.
+    
+    n_classes: int (Default: 2)
+        The number of targets to generate.
+    
+    n_nominal_attributes: int (Default: 5)
+        The number of nominal attributes to generate.
+    
+    n_numerical_attributes: int (Default: 5)
+        The number of numerical attributes to generate.
+    
+    n_values_per_nominal: int (Default: 5)
+        The number of values to generate per nominal attribute.
+    
+    max_depth: int (Default: 5)
+        The maximum depth of the tree concept.
+    
+    min_leaf_depth: int (Default: 3)
+        The first level of the tree above MaxTreeDepth that can have leaves.
+    
+    fraction_leaves_per_level: float (Default: 0.15)
+        The fraction of leaves per level from min_leaf_depth onwards.
+    
+    """
+    def __init__(self, tree_seed=23, instance_seed=12, n_classes=2, n_nominal_attributes=5,
+                 n_numerical_attributes=5, n_values_per_nominal=5, max_depth=5, min_leaf_depth=3,
+                 fraction_leaves_per_level=0.15):
         super().__init__()
 
         # default values
@@ -54,31 +74,23 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         self.instance_random = None
         self.current_instance_x = None
         self.current_instance_y = None
-        self.configure(opt_list)
-        pass
+        self.__configure(tree_seed, instance_seed, n_classes, n_nominal_attributes,
+                         n_numerical_attributes, n_values_per_nominal, max_depth, min_leaf_depth,
+                         fraction_leaves_per_level)
 
-    def configure(self, opt_list):
-        if opt_list is not None:
-            for i in range(len(opt_list)):
-                opt, arg = opt_list[i]
-                if opt in ("-r"):
-                    self.random_tree_seed = int(arg)
-                elif opt in ("-i"):
-                    self.random_instance_seed = int(arg)
-                elif opt in ("-c"):
-                    self.num_classes = int(arg)
-                elif opt in ("-o"):
-                    self.num_nominal_attributes = int(arg)
-                elif opt in ("-u"):
-                    self.num_numerical_attributes = int(arg)
-                elif opt in ("-v"):
-                    self.num_values_per_nominal_att = int(arg)
-                elif opt in ("-d"):
-                    self.max_tree_depth = int(arg)
-                elif opt in ("-l"):
-                    self.min_leaf_depth = int(arg)
-                elif opt in ("-f"):
-                    self.fraction_of_leaves_per_level = float(arg)
+    def __configure(self, tree_seed, instance_seed, n_classes, n_nominal_attributes,
+                    n_numerical_attributes, n_values_per_nominal, max_depth, min_leaf_depth,
+                    fraction_leaves_per_level):
+        self.random_tree_seed = tree_seed
+        self.random_instance_seed = instance_seed
+        self.num_classes = n_classes
+        self.num_nominal_attributes = n_nominal_attributes
+        self.num_numerical_attributes = n_numerical_attributes
+        self.num_values_per_nominal_att = n_values_per_nominal
+        self.max_tree_depth = max_depth
+        self.min_leaf_depth = min_leaf_depth
+        self.fraction_of_leaves_per_level = fraction_leaves_per_level
+
         self.class_header = InstanceHeader(["class"])
         self.attributes_header = []
         for i in range(self.num_numerical_attributes):
@@ -87,22 +99,28 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
             for j in range(self.num_values_per_nominal_att):
                 self.attributes_header.append("NomAtt" + str(i) + "_Val" + str(j))
 
-        #print(self.attributes_header)
-
-        pass
-
     def prepare_for_use(self):
         self.instance_random = np.random
         self.instance_random.seed(self.random_instance_seed)
         self.restart()
 
     def generate_random_tree(self):
+        """ generate_random_tree
+        
+        Generates the random tree, starting from the root node and following 
+        the constraints passed as parameters to the initializer. 
+        
+        The tree is recursively generated, node by node, until it reaches the
+        maximum tree depth.
+        
+        """
+        # Starting random generators and parameter arrays
         tree_rand = np.random
         tree_rand.seed(self.random_tree_seed)
         nominal_att_candidates = array('i')
-
         min_numeric_vals = array('d')
         max_numeric_vals = array('d')
+
         for i in range(self.num_numerical_attributes):
             min_numeric_vals.append(0.0)
             max_numeric_vals.append(1.0)
@@ -114,6 +132,54 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
 
 
     def generate_random_tree_node(self, current_depth, nominal_att_candidates, min_numeric_vals, max_numeric_vals, rand):
+        """ generate_random_tree_node
+        
+        Creates a node, choosing at random the splitting attribute and the 
+        split value. Fill the features with random feature values, and then 
+        recursively generates its children. If the split attribute is a 
+        numerical attribute there are going to be two children nodes, one
+        for samples where the value for the split attribute is smaller than 
+        the split value, and one for the other case.
+        
+        Once the recursion passes the leaf minimum depth, it probabilistic 
+        chooses if the node is a leaf or not. If not, the recursion follow 
+        the same way as before. If it decides the node is a leaf, a class 
+        label is chosen for the leaf at random.
+        
+        Furthermore, if the current_depth is equal or higher than the tree 
+        maximum depth, a leaf node is immediately returned.
+        
+        Parameters
+        ----------
+        current_depth: int
+            The current tree depth.
+        
+        nominal_att_candidates: list
+            A list containing all the, still not chosen for the split, 
+            nominal attributes.
+        
+        min_numeric_vals: list 
+            The minimum value reachable, at this branch of the 
+            tree, for all numeric attributes.
+        
+        max_numeric_vals: list
+            The minimum value reachable, at this branch of the 
+            tree, for all numeric attributes.
+            
+        rand: numpy.random
+            A numpy random generator instance.
+        
+        Returns
+        -------
+        Returns the node, either a inner node or a leaf node.
+        
+        Notes
+        -----
+        If the splitting attribute of a node happens to be a nominal attribute 
+        we guarantee that none of its children will split on the same attribute, 
+        as it would have no use for that split.
+         
+        """
         if ((current_depth >= self.max_tree_depth) | ((current_depth >= self.min_leaf_depth) & (self.fraction_of_leaves_per_level >= (1.0 - rand.rand())))):
             leaf = Node()
             leaf.class_label = rand.randint(0, self.num_classes)
@@ -147,20 +213,58 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         return node
 
     def classify_instance(self, node, att_vals):
+        """ classify_instance
+        
+        After a sample is generated it passes through this function, which 
+        advances the tree structure until it finds a leaf node.
+        
+        Parameters
+        ----------
+        node: Node object
+            The Node that will be verified. Either it's a leaf, and then the 
+            label is returned, or it's a inner node, and so the algorithm 
+            will continue to advance in the structure.
+            
+        att_vals: numpy.array
+            The set of generated feature values of the sample.
+        
+        Returns
+        -------
+        Return a tuple with the features matrix and the labels matrix 
+        for the batch_size samples that were requested.
+        
+        """
         if len(node.children) == 0:
             return node.class_label
         if node.split_att_index < self.num_numerical_attributes:
             aux = 0 if att_vals[node.split_att_index] < node.split_att_value else 1
             return self.classify_instance(node.children[aux], att_vals)
         else:
-            return self.classify_instance(node.children[self.get_integer_nominal_attribute_representation(node.split_att_index, att_vals)], att_vals)
+            return self.classify_instance(node.children[self.__get_integer_nominal_attribute_representation(node.split_att_index, att_vals)], att_vals)
 
-    def get_integer_nominal_attribute_representation(self, nominal_index = None, att_vals = None):
-        '''
-            The nominal_index uses as reference the number of nominal attributes plus the number of numerical attributes.
-             In this way, to find which 'hot one' variable from a nominal attribute is active, we do some basic math.
-             This function returns the index of the active variable in a nominal attribute 'hot one' representation.
-        '''
+    def __get_integer_nominal_attribute_representation(self, nominal_index = None, att_vals = None):
+        """ __get_integer_nominal_attribute_representation
+        
+        Utility function, to determine a nominal index when coded in one-hot 
+        fashion.
+        
+        The nominal_index uses as reference the number of nominal attributes 
+        plus the number of numerical attributes. 
+        
+        Parameters
+        ----------
+        nominal_index: int
+            The nominal feature index.
+            
+        att_vals: np.array
+            The features array.
+            
+        Returns
+        -------
+        This function returns the index of the active variable in a nominal 
+        attribute 'hot one' representation.
+        
+        """
         minIndex = self.num_numerical_attributes + (nominal_index - self.num_numerical_attributes) * self.num_values_per_nominal_att
         for i in range(self.num_values_per_nominal_att):
             if att_vals[int(minIndex)] == 1:
@@ -175,14 +279,31 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         return True
 
     def next_instance(self, batch_size = 1):
-        #att = array('d')
+        """ next_instance
+        
+        Randomly generates attributes values, and then classify each instance 
+        generated.
+        
+        Parameters
+        ----------
+        batch_size: int
+            The number of samples to return.
+         
+        Returns
+        -------
+        Return a tuple with the features matrix and the labels matrix for the 
+        batch_size samples that were requested.
+         
+        """
         num_attributes = -1
-        data = np.zeros([batch_size, self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att) + 1])
+        data = np.zeros([batch_size, self.num_numerical_attributes + (self.num_nominal_attributes
+                                                                      * self.num_values_per_nominal_att) + 1])
         for j in range (batch_size):
             for i in range(self.num_numerical_attributes):
                 data[j,i] = self.instance_random.rand()
 
-            for i in range(self.num_numerical_attributes, self.num_numerical_attributes+(self.num_nominal_attributes*self.num_values_per_nominal_att), self.num_values_per_nominal_att):
+            for i in range(self.num_numerical_attributes, self.num_numerical_attributes+
+                    (self.num_nominal_attributes*self.num_values_per_nominal_att), self.num_values_per_nominal_att):
                 aux = self.instance_random.randint(0, self.num_values_per_nominal_att)
                 for k in range(self.num_values_per_nominal_att):
                     if aux == k:
@@ -190,12 +311,18 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
                     else:
                         data[j, k+i] = 0.0
 
-            data[j, self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)] = self.classify_instance(self.tree_root, data[j])
-            #att.append(self.classify_instance(self.treeRoot, att))
-            self.current_instance_x = data[:self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)]
-            self.current_instance_y = data[self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att):]
-            #self.current_instance = Instance(self.num_nominal_attributes*self.num_values_per_nominal_att + self.num_numerical_attributes, self.num_classes, -1, att)
-            num_attributes = self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)
+            data[j, self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)] \
+                = self.classify_instance(self.tree_root, data[j])
+
+            self.current_instance_x = data[:self.num_numerical_attributes + (self.num_nominal_attributes
+                                                                             * self.num_values_per_nominal_att)]
+
+            self.current_instance_y = data[self.num_numerical_attributes + (self.num_nominal_attributes
+                                                                            * self.num_values_per_nominal_att):]
+
+            num_attributes = self.num_numerical_attributes + (self.num_nominal_attributes
+                                                              * self.num_values_per_nominal_att)
+
         return (data[:, :num_attributes], np.ravel(data[:, num_attributes:]))
 
     def is_restartable(self):
@@ -206,7 +333,6 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         self.instance_random = np.random
         self.instance_random.seed(self.random_instance_seed)
         self.generate_random_tree()
-        pass
 
     def has_more_mini_batch(self):
         pass
@@ -245,12 +371,37 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         return c
 
     def get_info(self):
-        pass
+        return 'RandomTreegenerator: tree_seed: ' + str(self.random_tree_seed) + ' - instance_seed: ' \
+               + str(self.random_instance_seed) + ' - n_classes: ' + str(self.num_classes) + \
+               ' - n_nominal_attributes: ' + str(self.num_nominal_attributes) + ' - n_numerical_attributes: ' \
+               + str(self.num_numerical_attributes) + ' - n_values_per_nominal_attribute: ' \
+               + str(self.num_values_per_nominal_att) + ' - max_depth: ' + str(self.max_tree_depth) \
+               + ' - min_leaf_depth: ' + str(self.min_leaf_depth) + ' - fraction_leaves_per_level: ' \
+               + str(self.fraction_of_leaves_per_level)
 
     def get_num_targeting_tasks(self):
         return 1
 
 class Node:
+    """ Node
+    
+    Class that stores the attributes of a node. No further methods.
+    
+    Parameters
+    ----------
+    class_label: int, optional
+        If given it means the node is a leaf and the class label associated 
+        with it is class_label.
+        
+    split_att_index: int, optional
+        If given it means the node is an inner node and the split attribute 
+        is split_att_index.
+        
+    split_att_value: int, optional
+        If given it means the node is an inner node and the split value is 
+        split_att_value.
+    
+    """
     def __init__(self, class_label = None, split_att_index = None, split_att_value = None):
         self.class_label = class_label
         self.split_att_index = split_att_index

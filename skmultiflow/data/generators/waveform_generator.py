@@ -7,17 +7,22 @@ from timeit import default_timer as timer
 
 
 class WaveformGenerator(BaseInstanceStream, BaseObject):
-    '''
-        WaveformGenerator
-        ------------------------------------------
-        Generates instances with 21 numeric attributes and 3 targets, based on a random differentiation of some base 
-        wave forms. Supports noise addition, but in this case the generator will have 40 attribute instances
-         
-        Parser parameters
-        ---------------------------------------------
-        -i: Seed for random generation of instances (Default: 23)
-        -n: Add noise (Default: False)
-    '''
+    """ WaveformGenerator
+    
+    Generates instances with 21 numeric attributes and 3 targets, based 
+    on a random differentiation of some base waveforms. Supports noise 
+    addition, but in this case the generator will have 40 attribute 
+    instances
+     
+    Parameters
+    ----------
+    seed: int
+        Seed for random generation of instances (Default: 23)
+    add_noise: bool
+        Add noise (Default: False)
+        
+    """
+    
     NUM_CLASSES = 3
     NUM_BASE_ATTRIBUTES = 21
     TOTAL_ATTRIBUTES_INCLUDING_NOISE = 40
@@ -25,7 +30,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],
                            [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])
 
-    def __init__(self, opt_list = None):
+    def __init__(self, seed=23, add_noise=False):
         super().__init__()
         # default values
         self.random_seed = 1
@@ -42,17 +47,12 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
         self.num_attributes = 0
         self.instance_index = 0
 
-        self.configure(opt_list)
+        self.__configure(seed, add_noise)
         pass
 
-    def configure(self, opt_list):
-        if opt_list is not None:
-            for i in range(len(opt_list)):
-                opt, arg = opt_list[i]
-                if opt in ("-i"):
-                    self.random_seed = int(arg)
-                elif opt in ("-n"):
-                    self.add_noise = True
+    def __configure(self, seed, add_noise):
+        self.random_seed = seed if seed is not None else 23
+        self.add_noise = add_noise if add_noise is not None else False
 
         self.instance_length = 100000
         self.num_attributes = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.add_noise else self.NUM_BASE_ATTRIBUTES
@@ -65,7 +65,6 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
 
     def prepare_for_use(self):
         self.restart()
-        pass
 
     def estimated_remaining_instances(self):
         return -1
@@ -74,10 +73,37 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
         return True
 
     def next_instance(self, batch_size = 1):
+        """ next_instance
+        
+        An instance is generated based on the parameters passed. If noise 
+        is included the total number of attributes will be 40, if it's not 
+        included there will be 21 attributes. In both cases there is one 
+        classification task, which chooses one between three labels.
+        
+        After the number of attributes is chosen, the algorithm will randomly
+        choose one of the hard coded waveforms, as well as random multipliers. 
+        For each attribute, the actual value generated will be a a combination 
+        of the hard coded functions, with the multipliers and a random value.
+        
+        Furthermore, if noise is added the attributes from 21 to 40 will be 
+        replaced with a random normal value.
+        
+        Parameters
+        ----------
+        batch_size: int
+            The number of samples to return.
+            
+        Returns
+        -------
+        Return a tuple with the features matrix and the labels matrix 
+        for the batch_size samples that were requested.
+        
+        """
         if self.has_noise():
             data = np.zeros([batch_size, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE + 1])
         else:
             data = np.zeros([batch_size, self.NUM_BASE_ATTRIBUTES + 1])
+
         for j in range (batch_size):
             self.instance_index += 1
             waveform = np.random.randint(0, self.NUM_CLASSES)
@@ -85,31 +111,20 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
             choice_b = 1 if (waveform == 0) else 2
             multiplier_a = np.random.rand()
             multiplier_b = 1.0 - multiplier_a
-            #print(data)
-            #print(str(j))
+
             for i in range(self.NUM_BASE_ATTRIBUTES):
-                #data.put(i, multiplier_a*self.H_FUNCTION[choice_a][i]
-                            #+ multiplier_b*self.H_FUNCTION[choice_b][i]
-                            #+ np.random.normal())
                 data[j,i] = multiplier_a*self.H_FUNCTION[choice_a][i] \
                             + multiplier_b*self.H_FUNCTION[choice_b][i] \
                             + np.random.normal()
-            #print(data)
+
             if self.has_noise():
                 for i in range(self.NUM_BASE_ATTRIBUTES,self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    #data.put(i, np.random.normal())
                     data[j,i] = np.random.normal()
-            #print(data)
-            #data.put(data.size - 1, waveform)
+
             data[j, data[j].size-1] = waveform
-            #self.current_instance_x = data[:self.num_attributes]
-            #self.current_instance_y = data[self.num_attributes:]
             self.current_instance_x = data[j, :self.num_attributes]
             self.current_instance_y = data[j, self.num_attributes:]
-            #print(self.current_instance_x)
-            #print(self.current_instance_y)
-            #print(data)
-        #return (self.current_instance_x, self.current_instance_y)
+
         return (data[:, :self.num_attributes], np.ravel(data[:, self.num_attributes:]))
 
     def is_restartable(self):
@@ -176,10 +191,6 @@ def demo():
     print(wfg.get_class_type())
     i = 0
     start = timer()
-    #while(wfg.has_more_instances()):
-    #for i in range(20000):
-        #o = wfg.next_instance()
-        #o.to_string()
     oi = np.zeros([4])
     oi.put(0, 3)
     oi.put(2, 1.3)

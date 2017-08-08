@@ -154,8 +154,8 @@ class Pipeline(BaseObject):
         Returns
         -------
         self
+        
         """
-        #
         Xt = X
         for name, transform in self.steps[:-1]:
             if transform is None:

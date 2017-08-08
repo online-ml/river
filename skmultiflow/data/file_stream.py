@@ -1,21 +1,63 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.data import base_instance_stream
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.core.base_object import BaseObject
 import pandas as pd
 import numpy as np
 
 class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
-    '''
-        CSV File Stream
-        -------------------------------------------
-        Generates a stream based on the data from a file
+    """ FileStream
+    
+    A stream generated from the entries of a file. For the moment only 
+    csv files are supported, but the idea is to support any file format, 
+    as long as there is a function that correctly reads, interprets, and 
+    returns a pandas' Dataframe or numpy.ndarray with the data.
+    
+    The stream is able to provide, as requested, a number of samples, in 
+    a way that old samples cannot be accessed in a later time. This is done 
+    so that a stream context can be correctly simulated. 
+    
+    Parameters
+    ----------
+    file_opt: FileOption object
+        Holds the options relative to the file to be read. For a detailed 
+        documentation please refer to: skmultiflow.options.file_option.
         
-        Parser parameters
-        ---------------------------------------------
-        -f: CSV file to load
-    '''
+    targets_index: int
+        The index from which the targets (labels) start.
+        
+    num_target_tasks: int
+        The number of targeting tasks.
+        
+    Examples
+    --------
+    >>> # Imports
+    >>> import numpy as np
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> # Setup the stream
+    >>> file_option = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'csv', False)
+    >>> file_stream = FileStream(file_option, -1, 1)
+    >>> file_stream.prepare_for_use()
+    >>> # Setup the classifier
+    >>> clf = KNN(k=8, max_window_size=1000, leaf_size=4)
+    >>> # Initial partial_fit of at least k=8 samples
+    >>> X, y = file_stream.next_instance(8)
+    >>> clf.partial_fit(X, y, classes=file_stream.get_classes())
+    >>> # Loop the stream, partially fitting and predicting
+    >>> predictions = []
+    >>> true_labels = []
+    >>> for i in range(2000):
+    ...     X, y = file_stream.next_instance()
+    ...     predictions.extend(clf.predict(X))
+    ...     true_labels.extend(y)
+    ...     clf.partial_fit(X, y)
+    >>> corrects = (np.asarray(predictions) == np.asarray(true_labels)).sum()
+    >>> print("The classifier's performance: ", str(round(corrects/2000, 3)))
+    
+    """
+
     def __init__(self, file_opt, targets_index=-1, num_target_tasks=1):
         super().__init__()
         # default values
@@ -41,19 +83,9 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         self.num_attributes = 0
         self.num_classes = 0
 
-        self.configure(file_opt, targets_index, num_target_tasks)
+        self.__configure(file_opt, targets_index, num_target_tasks)
 
-    def configure(self, file_opt, targets_index, num_target_tasks):
-        '''
-        __init__(self, file_name, index)
-        
-        Parameters
-        ----------------------------------------
-        file_name : string
-                   Name of the file
-        index : int
-                Class index parameter
-        '''
+    def __configure(self, file_opt, targets_index, num_target_tasks):
         self.file_name = file_opt.get_file_name()
         self.target_index = targets_index
         self.instances = None
@@ -64,20 +96,26 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         self.X = None
         self.y = None
 
-
-
-
     def prepare_for_use(self):
+        """ prepare_for_use
+        
+        Prepares the stream for use. This functions should always be 
+        called after the stream initialization.
+        
+        """
         self.restart()
 
 
     def restart(self):
-        '''
-        restart(self)
-        ----------------------------------------
-        Read the file and set object attributes
-        '''
-
+        """ restart
+        
+        Restarts the stream's sample feeding, while keeping all of its 
+        parameters.
+        
+        It basically server the purpose of reinitializing the stream to 
+        its initial state.
+        
+        """
         try:
             instance_aux = self.read_function(self.file_name)
             self.instance_length = len(instance_aux.index)
@@ -98,21 +136,6 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
 
             self.X = instance_aux.drop(x_labels, axis=1)
 
-            #self.classes_header = labels[self.target_index:(self.target_index + self.num_target_tasks)]
-
-            '''
-            if self.class_last:
-                self.X = instance_aux.iloc[:, 0:(len(labels)-self.num_classification_tasks)]
-                self.y = instance_aux.iloc[:, (len(labels)-self.num_classification_tasks):]
-                self.attributes_header = labels[0:(len(labels) - self.num_classification_tasks)]
-                self.classes_header = labels[(len(labels) - self.num_classification_tasks):]
-            else:
-                self.y = instance_aux.iloc[:, 0:self.num_classification_tasks]
-                self.X = instance_aux.iloc[:, self.num_classification_tasks:]
-                self.classes_header = labels[0:self.num_classification_tasks]
-                self.attributes_header = labels[self.num_classification_tasks:]
-            '''
-
             self.num_classes = len(np.unique(self.y))
 
         except IOError:
@@ -123,9 +146,23 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         return True
 
     def next_instance(self, batch_size = 1):
+        """ next_instance
+        
+        If there is enough instances to supply at least batch_size samples, those 
+        are returned. If there aren't a tuple of (None, None) is returned.
+        
+        Parameters
+        ----------
+        batch_size: int
+            The number of instances to return.
+        
+        Returns
+        -------
+        Returns the next batch_size instances in a pandas.dataframe partition. 
+        For general purposes the return can be treated as a numpy.ndarray.
+        
+        """
         self.instance_index += batch_size
-        #self.current_instance_x = self.X[self.instance_index-1:self.instance_index+batchSize-1].values[0]
-        #self.current_instance_y = self.y[self.instance_index-1:self.instance_index+batchSize-1].values[0]
         try:
 
             self.current_instance_x = self.X.iloc[self.instance_index - batch_size:self.instance_index,
@@ -134,21 +171,6 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
                                       :].values
             if self.num_target_tasks < 2:
                 self.current_instance_y = self.current_instance_y.flatten()
-
-            '''
-            if self.class_last:
-                self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values
-                self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1, :].values
-                if self.num_classification_tasks < 2:
-                    self.current_instance_y = self.current_instance_y.flatten()
-            else:
-                self.current_instance_x = self.X.iloc[self.instance_index - 1:self.instance_index + batch_size - 1,
-                                          :].values
-                self.current_instance_y = self.y.iloc[self.instance_index - 1:self.instance_index + batch_size - 1,
-                                          :].values
-                if self.num_classification_tasks < 2:
-                    self.current_instance_y = self.current_instance_y.flatten()
-            '''
 
         except IndexError:
             self.current_instance_x = None
