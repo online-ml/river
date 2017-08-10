@@ -4,27 +4,141 @@ import warnings
 import logging
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import BaseEvaluator
-from skmultiflow.evaluation.measure_collection import ClassificationMeasurements, WindowClassificationMeasurements, RegressionMeasurements, WindowRegressionMeasurements, MultiOutputMeasurements, WindowMultiOutputMeasurements
+from skmultiflow.evaluation.measure_collection import ClassificationMeasurements, WindowClassificationMeasurements, \
+    RegressionMeasurements, WindowRegressionMeasurements, MultiOutputMeasurements, WindowMultiOutputMeasurements
 from skmultiflow.core.utils.utils import dict_to_tuple_list
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 
 
 class EvaluateHoldout(BaseEvaluator):
+    """ EvaluateHoldout
+    
+    The holdout evaluation method, or periodic holdout evaluation method, analyses 
+    each arriving sample, without computing performance metrics, nor predicting 
+    labels or regressing values, but by updating its statistics.
+    
+    The performance evaluation happens at every n_wait analysed samples, at which 
+    moment the evaluator will test the learners performance on a test set, formed 
+    by yet unseen samples, which will be used to evaluate performance, but not to 
+    train the model. 
+    
+    It's possible to use the same test set for every test made, but it's also 
+    possible to dynamically create test sets, so that they differ from each other. 
+    If dynamic test sets are enabled, we use the data stream to create test sets 
+    on the go. This process is more likely to generate test sets that follow the 
+    current concept, in comparison to static test sets.
+    
+    Thus, if concept drift is known to be present in the dataset/generator enabling 
+    dynamic test sets is highly recommended. If no concept drift is expected, 
+    disabling this parameter will speed up the evaluation process.
+    
+    Parameters
+    ----------
+    n_wait: int (Default: 10000)
+        The number of samples to process between each holdout set test.
+        Also defines when to plot points if the plot is active.
+        
+    max_instances: int (Default: 100000)
+        The maximum number of samples to process during the evaluation.
+    
+    max_time: float (Default: float("inf"))
+        The maximum duration of the simulation.
+    
+    output_file: string, optional (Default: None)
+        If specified, this string defines the name of the output file. If 
+        the file doesn't exist it will be created.
+    
+    batch_size: int (Default: 1)
+        The number of samples to process at each iteration of the algorithm. 
+        
+    pretrain_size: int (Default: 200)
+        The number of samples to use as an initial training set, which will 
+        not be accounted by evaluation metrics.
+    
+    test_size: int (Default: 20000)
+        The size, in samples, of the test set.
+    
+    task_type: string (Default: 'classification')
+        The type of task to execute. Can be one of the following: 'classification', 
+        'regression' or 'multi_output'.
+    
+    show_plot: bool (Default: False)
+        Whether to plot the metrics or not. Plotting will slow down the evaluation 
+        process.
+    
+    plot_options: list, optional (Default: None)
+        Which metrics to compute, and if show_plot is True, which metrics to 
+        display. Plot options can contain how many of the following as the user 
+        wants: 'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
+        'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
+        'true_vs_predicts', 'kappa_t', 'kappa_m']
+    
+    dynamic_test_set: bool (Default: False)
+        Whether to change the test set at each test or to use always the same. 
+        If True it will always change the test set, otherwise it will use one 
+        test set for all tests.
+        
+    Raises
+    ------
+    ValueError: A ValueError is raised in 3 situations. If the training set 
+    size is set to 0. If the task type passed to __init__ is not supported. 
+    Or if any of the plot options passed to __init__ is not supported.
+    
+    Notes
+    -----
+    It's important to note that testing the model too often, which means choosing 
+    a n_wait parameter too small, will significantly slow the evaluation process, 
+    depending on the test size. 
+    
+    This evaluator accepts to types of evaluation processes. It can either evaluate 
+    a single learner while computing its metrics or it can evaluate multiple learners 
+    at a time, as a means of comparing different approaches to the same problem.
+    
+    Examples
+    --------
+    The first example demonstrates how to use the evaluator to evaluate one learner
+    >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
+    >>> # Setup the File Stream
+    >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
+    >>> stream = FileStream(opt, -1, 1)
+    >>> stream.prepare_for_use()
+    >>> # Setup the classifier
+    >>> classifier = PassiveAggressiveClassifier()
+    >>> # Setup the pipeline
+    >>> pipe = Pipeline([('Classifier', classifier)])
+    >>> # Setup the evaluator
+    >>> eval = EvaluateHoldout(pretrain_size=200, max_instances=100000, batch_size=1, n_wait=10000, max_time=1000, 
+    ... output_file=None, task_type='classification', show_plot=True, plot_options=['kappa', 'performance'], 
+    ... test_size=5000, dynamic_test_set=True)
+    >>> # Evaluate
+    >>> eval.eval(stream=stream, classifier=pipe)
+    
+    The second example will demonstrate how to compare two classifiers with
+    the EvaluateHoldout
+    >>> from skmultiflow.data.generators.waveform_generator import WaveformGenerator
+    >>> from sklearn.linear_model.stochastic_gradient import SGDClassifier
+    >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
+    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+    >>> stream = WaveformGenerator()
+    >>> stream.prepare_for_use()
+    >>> clf_one = SGDClassifier()
+    >>> clf_two = KNNAdwin(k=8,max_window_size=2000)
+    >>> classifier = [clf_one, clf_two]
+    >>> eval = EvaluateHoldout(pretrain_size=200, test_size=5000, dynamic_test_set=True, max_instances=100000, 
+    ... batch_size=1, n_wait=10000, max_time=1000, output_file=None, task_type='classification', 
+    ... show_plot=True, plot_options=['kappa', 'performance'])
+    >>> eval.eval(stream=stream, classifier=classifier)
+    
+    """
+
     def __init__(self, n_wait=10000, max_instances=100000, max_time=float("inf"), output_file=None,
                  batch_size=1, pretrain_size=200, test_size=20000, task_type='classification', show_plot=False,
                  plot_options=None, dynamic_test_set=False):
-        '''
-        
-        :param n_wait: 
-        :param max_instances: 
-        :param max_time: 
-        :param output_file: 
-        :param batch_size: 
-        :param pretrain_size: 
-        :param task_type: 
-        :param show_plot: 
-        :param plot_options: 
-        '''
+
         PLOT_TYPES = ['performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 'exact_match', 'j_index',
                       'mean_square_error', 'mean_absolute_error', 'true_vs_predicts', 'kappa_t', 'kappa_m']
         TASK_TYPES = ['classification', 'regression', 'multi_output']
@@ -70,7 +184,7 @@ class EvaluateHoldout(BaseEvaluator):
         # metrics
         self.global_classification_metrics = None
         self.partial_classification_metrics = None
-        self.start_metrics()
+        self.__start_metrics()
 
         self.global_sample_count = 0
 
@@ -78,6 +192,28 @@ class EvaluateHoldout(BaseEvaluator):
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
     def eval(self, stream, classifier):
+        """ eval
+        
+        Parameters
+        ---------
+        stream: A stream (an extension from BaseInstanceStream) 
+            The stream from which to draw the samples. 
+        
+        classifier: A learner (an extension from BaseClassifier) or a list of learners.
+            The learner or learners on which to train the model and measure the 
+            performance metrics.
+            
+        Returns
+        -------
+        Returns the trained learner.
+        
+        Notes
+        -----
+        The classifier parameter should be an extension from the BaseClassifier. In 
+        the future, when BaseRegressor is created, it could be an axtension from that 
+        class as well.
+        
+        """
         # First off we need to verify if this is a simple evaluation task or a comparison between learners task.
         if isinstance(classifier, type([])):
             self.n_classifiers = len(classifier)
@@ -87,19 +223,48 @@ class EvaluateHoldout(BaseEvaluator):
             else:
                 return None
 
-        self.start_metrics()
+        # Metrics and statistics are started.
+        self.__start_metrics()
 
         if self.show_plot:
-            self.start_plot(self.n_wait, stream.get_plot_name())
-        self._reset_globals()
+            self.__start_plot(self.n_wait, stream.get_plot_name())
+
+        self.__reset_globals()
         self.classifier = classifier if self.n_classifiers > 1 else [classifier]
         self.stream = stream
-        self.classifier = self.periodic_holdout(stream, classifier)
+        self.classifier = self.__periodic_holdout(stream, self.classifier)
+
         if self.show_plot:
             self.visualizer.hold()
+
         return self.classifier
 
-    def periodic_holdout(self, stream=None, classifier=None):
+    def __periodic_holdout(self, stream=None, classifier=None):
+        """ __periodic_holdout
+        
+        Executes the periodic holdout evaluation, as described in the class' main 
+        documentation.
+        
+        Parameters
+        ----------
+        stream: A stream (an extension from BaseInstanceStream) 
+            The stream from which to draw the samples. 
+        
+        classifier: A learner (an extension from BaseClassifier) or a list of learners.
+            The learner or learners on which to train the model and measure the 
+            performance metrics.
+             
+        Returns
+        -------
+        Returns the trained learner 
+        
+        Notes
+        -----
+        The classifier parameter should be an extension from the BaseClassifier. In 
+        the future, when BaseRegressor is created, it could be an axtension from that 
+        class as well.
+        
+        """
         logging.basicConfig(format='%(message)s', level=logging.INFO)
         init_time = timer()
         end_time = timer()
@@ -107,7 +272,7 @@ class EvaluateHoldout(BaseEvaluator):
             self.classifier = classifier
         if stream is not None:
             self.stream = stream
-        self._reset_globals()
+        self.__reset_globals()
         prediction = None
         logging.info('Holdout Evaluation')
         logging.info('Generating %s targets.', str(self.stream.get_num_targets()))
@@ -160,8 +325,6 @@ class EvaluateHoldout(BaseEvaluator):
                 if 'mean_absolute_error' in self.plot_options:
                     for i in range(self.n_classifiers):
                         header += ',global_mae_'+str(i)+',sliding_window_mae_'+str(i)
-                    # if 'true_vs_predicts' in self.plot_options:
-                    # header += ',true_label,prediction'
                 f.write(header)
 
         first_run = True
@@ -220,22 +383,21 @@ class EvaluateHoldout(BaseEvaluator):
                             for i in range(self.n_classifiers):
                                 prediction[i].extend(self.classifier[i].predict(self.X_test))
 
-                            #for i in range(len(prediction)):
                             if prediction is not None:
                                 for j in range(self.n_classifiers):
                                     for i in range(len(prediction[0])):
                                         self.global_classification_metrics[j].add_result(self.y_test[i], prediction[j][i])
                                         self.partial_classification_metrics[j].add_result(self.y_test[i], prediction[j][i])
                             before_count += 1
-                            self.update_metrics()
+                            self._update_metrics()
 
                 end_time = timer()
             except BaseException as exc:
                 if exc is KeyboardInterrupt:
                     if self.show_scatter_points:
-                        self.update_metrics()
+                        self._update_metrics()
                     else:
-                        self.update_metrics()
+                        self._update_metrics()
                 break
 
         if (end_time - init_time > self.max_time):
@@ -272,23 +434,83 @@ class EvaluateHoldout(BaseEvaluator):
                 pass
         return self.classifier
 
-    def partial_fit(self, X, y):
+    def partial_fit(self, X, y, classes=None):
+        """ partial_fit
+        
+        Partially fit all the learners on the given data.
+        
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            The data upon which the algorithm will create its model.
+            
+        y: Array-like
+            An array-like containing the classification targets for all 
+            samples in X.
+            
+        classes: list
+            Stores all the classes that may be encountered during the 
+            classification task.
+        
+        Returns
+        -------
+        self
+         
+        """
         if self.classifier is not None:
             for i in range(self.n_classifiers):
-                self.classifier[i].partial_fit(X, y)
+                self.classifier[i].partial_fit(X, y, classes)
             return self
         else:
             return self
 
     def predict(self, X):
-        if self.classifier is not None:
-            for i in range(self.n_classifiers):
-                self.classifier[i].predict(X)
-            return self
-        else:
-            return self
+        """ predict
 
-    def update_plot(self, current_x, new_points_dict):
+        Predicts the labels of the X samples, by calling the predict 
+        function of all the learners.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            All the samples we want to predict the label for.
+
+        Returns
+        -------
+        A list containing the predicted labels for all instances in X in 
+        all learners.
+
+        """
+        predictions = None
+        if self.classifier is not None:
+            predictions = []
+            for i in range(self.n_classifiers):
+                predictions.append(self.classifier[i].predict(X))
+
+        return predictions
+
+    def __update_plot(self, current_x, new_points_dict):
+        """ __update_plot
+        
+        Creates a dictionary of new points to plot. The keys of this dictionary are 
+        the strings in self.plot_options, which define the metrics to keep track of, 
+        and the values are two element lists, or tuples, containing each metric's 
+        global value and their partial value (measured from the last n_wait samples).
+        
+        If more than one learner is evaluated at once, the value from the dictionary 
+        will be a list of lists, or tuples, containing the global metric value and 
+        the partial metric value, for each of the metrics.
+        
+        Parameters
+        ----------
+        current_x: int
+            The current count of analysed samples.
+        
+        new_points_dict: dictionary
+            A dictionary of new points, in the format described in this 
+            function's documentation.
+         
+        """
         if self.output_file is not None:
             line = str(current_x)
             if 'performance' in self.plot_options:
@@ -340,7 +562,13 @@ class EvaluateHoldout(BaseEvaluator):
         if self.show_plot:
             self.visualizer.on_new_train_step(current_x, new_points_dict)
 
-    def start_metrics(self):
+    def __start_metrics(self):
+        """ __start_metrics
+        
+        Starts up the metrics and statistics watchers. One watcher is created 
+        for each of the learners to be evaluated.
+        
+        """
         self.global_classification_metrics = []
         self.partial_classification_metrics = []
 
@@ -359,16 +587,13 @@ class EvaluateHoldout(BaseEvaluator):
                 self.global_classification_metrics.append(RegressionMeasurements())
                 self.partial_classification_metrics.append(WindowRegressionMeasurements(window_size=self.n_wait))
 
-    def update_metrics(self):
-        """ Updates the metrics of interest.
+    def _update_metrics(self):
+        """ _update_metrics
+         
+        Updates the metrics of interest. This function creates a metrics dictionary, 
+        which will be sent to __update_plot, if the plot is enabled.
 
-            It's possible that cohen_kappa_score will return a NaN value, which happens if the predictions
-            and the true labels are in perfect accordance, causing pe=1, which results in a division by 0.
-            If this is detected the plot will assume it to be 1.
-
-        :return: No return.
         """
-
         new_points_dict = {}
         if 'performance' in self.plot_options:
             new_points_dict['performance'] = [[self.global_classification_metrics[i].get_performance(),
@@ -435,11 +660,24 @@ class EvaluateHoldout(BaseEvaluator):
                 true.append(t)
                 pred.append(p)
             new_points_dict['true_vs_predicts'] = [[true[i], pred[i]] for i in range(self.n_classifiers)]
-            # print(str(true) + ' ' + str(pred))
             print(new_points_dict)
-        self.update_plot(self.global_sample_count, new_points_dict)
+
+        self.__update_plot(self.global_sample_count, new_points_dict)
 
     def set_params(self, dict):
+        """ set_params
+        
+        This function allows the users to change some of the evaluator's parameters, 
+        by passing a dictionary where keys are the parameters names, and values are 
+        the new parameters' values.
+        
+        Parameters
+        ----------
+        dict: Dictionary
+            A dictionary where the keys are the names of attributes the user 
+            wants to change, and the values are the new values of those attributes.
+             
+        """
         params_list = dict_to_tuple_list(dict)
         for name, value in params_list:
             if name == 'n_wait':
@@ -450,23 +688,40 @@ class EvaluateHoldout(BaseEvaluator):
                 self.max_time = value
             elif name == 'output_file':
                 self.output_file = value
-            elif name == 'show_performance':
-                self.show_performance = value
             elif name == 'batch_size':
                 self.batch_size = value
             elif name == 'pretrain_size':
                 self.pretrain_size = value
-            elif name == 'show_kappa':
-                self.show_kappa = value
-            elif name == 'show_scatter_points':
-                self.show_scatter_points = value
+            elif name == 'test_size':
+                self.test_size = value
 
-    def start_plot(self, n_wait, dataset_name):
+    def __start_plot(self, n_wait, dataset_name):
+        """ __start_plot
+        
+        Parameters
+        ----------
+        n_wait: int 
+            The number of samples to process before each holddout set test.
+            
+        dataset_name: string
+            The dataset name, will be part of the plot name.
+             
+        """
         self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, plots=self.plot_options,
                                                n_learners=self.n_classifiers)
 
-    def _reset_globals(self):
+    def __reset_globals(self):
         self.global_sample_count = 0
 
     def get_info(self):
-        return 'Not implemented.'
+        return 'EvaluateHoldout: n_wait: ' + str(self.n_wait) + \
+               ' - max_instances: ' + str(self.max_instances) + \
+               ' - max_time: ' + str(self.max_time) + \
+               ' - output_file: ' + (self.output_file if self.output_file is not None else 'None') + \
+               ' - batch_size: ' + str(self.batch_size) + \
+               ' - pretrain_size: ' + str(self.pretrain_size) + \
+               ' - test_size: ' + str(self.test_size) + \
+               ' - task_type: ' + self.task_type + \
+               ' - show_plot' + ('True' if self.show_plot else 'False') + \
+               ' - plot_options: ' + (str(self.plot_options) if self.plot_options is not None else 'None') + \
+               ' - dynamic_test_set: ' + ('True' if self.dynamic_test_set else 'False')

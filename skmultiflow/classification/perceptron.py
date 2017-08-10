@@ -36,6 +36,8 @@ class PerceptronMask(BaseClassifier):
         fit_int = 'True' if fit_int else 'False'
         shuffle = params['shuffle']
         shuffle = 'True' if shuffle else 'False'
-        return 'Perceptron: penalty: ' + penalty + '  -  alpha: ' + str(round(params['alpha'], 3)) + \
-               '  -  fit_intercept: ' + fit_int + '  -  n_iter: ' + str(params['n_iter']) + \
+        return 'Perceptron: penalty: ' + penalty + \
+               '  -  alpha: ' + str(round(params['alpha'], 3)) + \
+               '  -  fit_intercept: ' + fit_int + \
+               '  -  n_iter: ' + str(params['n_iter']) + \
                '  -  shuffle: ' + shuffle

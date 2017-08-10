@@ -10,6 +10,10 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
     so that it can work along the other modules in the scikit-multiflow 
     framework.
     
+    Raises
+    ------
+    NotImplementedError: This is an abstract class.
+    
     """
     def __init__(self):
         super().__init__()
@@ -17,11 +21,11 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def estimated_remaining_instances(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def has_more_instances(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def next_instance(self, batch_size = 1):
@@ -39,11 +43,11 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         A numpy.ndarray of shape (batch_size, n_features + n_classification_tasks) 
         representing the next batch_size samples.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def is_restartable(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def restart(self):
@@ -52,11 +56,11 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         Restart the stream's configurations.
         
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def has_more_mini_batch(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_num_nominal_attributes(self):
@@ -67,7 +71,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         The number of nominal attributes given by the stream.
         
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_num_numerical_attributes(self):
@@ -78,7 +82,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         The number of numerical attributes given by the stream.
 
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_num_values_per_nominal_attribute(self):
@@ -89,7 +93,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         The number of possible values for each nominal attribute.
 
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_num_attributes(self):
@@ -100,23 +104,23 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         The total number of attributes.
 
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_num_targets(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_attributes_header(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_classes_header(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_last_instance(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def prepare_for_use(self):
@@ -131,7 +135,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         Every time a stream is created this function has to be called.
         
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_plot_name(self):
@@ -147,7 +151,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         A string representing the plot name.
         
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_classes(self):
@@ -159,15 +163,15 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         
         :return: 
         """
-        pass
+        raise NotImplementedError
 
     def get_class_type(self):
         return 'stream'
 
     @abstractmethod
     def get_info(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_num_targeting_tasks(self):
-        pass
+        raise NotImplementedError

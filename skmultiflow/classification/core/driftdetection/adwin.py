@@ -337,9 +337,13 @@ class ADWIN(BaseDriftDetector):
         return (np.absolute(abs_value) > epsilon)
 
     def get_info(self):
-        return 'ADWIN: delta: ' + str(self.delta) + ' - clock: ' + str(self.mint_clock) + ' - total: ' + \
-        str(self.TOTAL) + ' - variance: ' + str(self.VARIANCE) + ' - width: ' + str(self.WIDTH) + \
-        ' - time: ' + str(self.mint_time) + ' - num_detections: ' + str(self.num_detections)
+        return 'ADWIN: delta: ' + str(self.delta) + \
+               ' - clock: ' + str(self.mint_clock) + \
+               ' - total: ' + str(self.TOTAL) + \
+               ' - variance: ' + str(self.VARIANCE) + \
+               ' - width: ' + str(self.WIDTH) + \
+               ' - time: ' + str(self.mint_time) + \
+               ' - num_detections: ' + str(self.num_detections)
 
 
 class List(BaseObject):
@@ -511,8 +515,10 @@ class Item(BaseObject):
         self.bucket_variance[index] = value
 
     def get_info(self):
-        return 'Item: bucket_size_row: ' + str(self.bucket_size_row) + ' - max_buckets: ' + str(self.max_buckets) + \
-        ' - bucket_total: ' + str(self.bucket_total) + ' - bucket_variance: ' + str(self.bucket_variance)
+        return 'Item: bucket_size_row: ' + str(self.bucket_size_row) + \
+               ' - max_buckets: ' + str(self.max_buckets) + \
+               ' - bucket_total: ' + str(self.bucket_total) + \
+               ' - bucket_variance: ' + str(self.bucket_variance)
 
     def get_class_type(self):
         return 'data_structure'

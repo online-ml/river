@@ -5,41 +5,40 @@ from skmultiflow.core.base_object import BaseObject
 
 
 class BaseOption(BaseObject, metaclass=ABCMeta):
-    """Base Classifier class
+    """ BaseOption
+    
+    The abstract class that defines the constraints for all option 
+    classes in this framework.
+    
+    Raises
+    ------
+    NotImplementedError: This is an abstract class.
+    
     """
+
     def __init__(self):
         super().__init__()
-        """ Initialization.
-        """
         pass
 
     @abstractmethod
     def get_name(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_value(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_cli_char(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_option_type(self):
-        pass
-
-    @abstractmethod
-    def set_value_via_cli_string(self, cli_string = None):
-        pass
-
-    @abstractmethod
-    def get_cli_option_from_dictionary(self):
-        pass
+        raise NotImplementedError
 
     def get_class_type(self):
         return 'option'
 
     @abstractmethod
     def get_info(self):
-        pass
+        raise NotImplementedError

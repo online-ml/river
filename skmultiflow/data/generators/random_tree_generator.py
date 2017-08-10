@@ -371,13 +371,15 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         return c
 
     def get_info(self):
-        return 'RandomTreegenerator: tree_seed: ' + str(self.random_tree_seed) + ' - instance_seed: ' \
-               + str(self.random_instance_seed) + ' - n_classes: ' + str(self.num_classes) + \
-               ' - n_nominal_attributes: ' + str(self.num_nominal_attributes) + ' - n_numerical_attributes: ' \
-               + str(self.num_numerical_attributes) + ' - n_values_per_nominal_attribute: ' \
-               + str(self.num_values_per_nominal_att) + ' - max_depth: ' + str(self.max_tree_depth) \
-               + ' - min_leaf_depth: ' + str(self.min_leaf_depth) + ' - fraction_leaves_per_level: ' \
-               + str(self.fraction_of_leaves_per_level)
+        return 'RandomTreegenerator: tree_seed: ' + str(self.random_tree_seed) + \
+               ' - instance_seed: ' + str(self.random_instance_seed) + \
+               ' - n_classes: ' + str(self.num_classes) + \
+               ' - n_nominal_attributes: ' + str(self.num_nominal_attributes) + \
+               ' - n_numerical_attributes: ' + str(self.num_numerical_attributes) + \
+               ' - n_values_per_nominal_attribute: ' + str(self.num_values_per_nominal_att) + \
+               ' - max_depth: ' + str(self.max_tree_depth) + \
+               ' - min_leaf_depth: ' + str(self.min_leaf_depth) + \
+               ' - fraction_leaves_per_level: ' + str(self.fraction_of_leaves_per_level)
 
     def get_num_targeting_tasks(self):
         return 1

@@ -115,7 +115,9 @@ class DDM(BaseDriftDetector):
         return self
 
     def get_info(self):
-        return 'DDM: min_num_instances: ' + str(self.min_instances) + ' - sample_count: ' + \
-               str(self.sample_count) + ' - error_rate: ' + str(self.miss_prob) + \
-               ' - std_dev: ' + str(self.miss_std) + ' - error_rate_min: ' + \
-               str(self.miss_prob_min) + ' - std_dev_min: ' + str(self.miss_sd_min)
+        return 'DDM: min_num_instances: ' + str(self.min_instances) + \
+               ' - sample_count: ' + str(self.sample_count) + \
+               ' - error_rate: ' + str(self.miss_prob) + \
+               ' - std_dev: ' + str(self.miss_std) + \
+               ' - error_rate_min: ' + str(self.miss_prob_min) + \
+               ' - std_dev_min: ' + str(self.miss_sd_min)

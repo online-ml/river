@@ -155,8 +155,9 @@ class RegressionGenerator(BaseInstanceStream):
         return 'stream'
 
     def get_info(self):
-        return 'RegressionGenerator: n_samples: ' + str(self.num_samples) + ' - n_features: ' + \
-               str(self.num_features) + ' - n_informative: ' + str(self.num_informative) + \
+        return 'RegressionGenerator: n_samples: ' + str(self.num_samples) + \
+               ' - n_features: ' + str(self.num_features) + \
+               ' - n_informative: ' + str(self.num_informative) + \
                ' - n_targets: ' + str(self.num_target_tasks)
 
     def get_num_targeting_tasks(self):

@@ -29,4 +29,4 @@ class InstanceHeader(BaseObject):
         return 'instance'
 
     def get_info(self):
-        return str(self.header)
+        return 'InstanceHeader: header: ' + str(self.header)

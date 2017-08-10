@@ -221,8 +221,9 @@ class KDTree(BaseObject):
         return self.root
 
     def get_info(self):
-        return 'KDTree: leaf_size: ' + str(self.leaf_size) + ' - metric: ' + str(self.metric) + ' - return_distance' + \
-               ('True' if self.return_distance else 'False')
+        return 'KDTree: leaf_size: ' + str(self.leaf_size) + \
+               ' - metric: ' + str(self.metric) + \
+               ' - return_distance' + ('True' if self.return_distance else 'False')
 
     def get_class_type(self):
         return 'data_structure'
@@ -545,8 +546,9 @@ class KDTreeNode(BaseObject):
         return self.right_subtree
 
     def get_info(self):
-        return 'KDTreeNode: is_leaf: ' + ('True' if self.is_leaf else 'False') + ' - split_axis: ' \
-               + str(self.split_axis) + ' - split_value: ' + str(self.split_value)
+        return 'KDTreeNode: is_leaf: ' + ('True' if self.is_leaf else 'False') + \
+               ' - split_axis: ' + str(self.split_axis) + \
+               ' - split_value: ' + str(self.split_value)
 
     def get_class_type(self):
         return 'data_structure'

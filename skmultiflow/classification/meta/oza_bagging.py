@@ -224,5 +224,6 @@ class OzaBagging(BaseClassifier):
         raise NotImplementedError
 
     def get_info(self):
-        return 'OzaBagging Classifier: h: ' + str(self.h) + ' - ensemble_length: ' + str(self.ensemble_length)
+        return 'OzaBagging Classifier: h: ' + str(self.h) + \
+               ' - ensemble_length: ' + str(self.ensemble_length)
 

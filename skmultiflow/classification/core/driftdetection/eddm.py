@@ -127,6 +127,7 @@ class EDDM(BaseDriftDetector):
 
 
     def get_info(self):
-        return 'EDDM: min_num_errors: ' + str(self.m_min_num_errors) + ' - n_samples: ' + str(self.m_n) + \
-            ' - mean: ' + str(self.m_mean) + ' - std_dev: ' + \
-               str(round(np.sqrt(self.m_std_temp/self.m_num_errors), 3))
+        return 'EDDM: min_num_errors: ' + str(self.m_min_num_errors) + \
+               ' - n_samples: ' + str(self.m_n) + \
+               ' - mean: ' + str(self.m_mean) + \
+               ' - std_dev: ' + str(round(np.sqrt(self.m_std_temp/self.m_num_errors), 3))

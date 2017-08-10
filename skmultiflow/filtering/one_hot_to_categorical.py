@@ -2,27 +2,47 @@ __author__ = 'Guilherme Matsumoto'
 
 import numpy as np
 from skmultiflow.filtering.base_transform import BaseTransform
+from skmultiflow.core.utils.utils import get_dimensions
 
 
 class OneHotToCategorical(BaseTransform):
+    """ OneHotToCategorical
+    
+    Transform that receives a features matrix, with some features coded as 
+    one hot, and transform these features in basic int coded categorical 
+    features.
+    
+    Parameters
+    ----------
+    categorical_list: list of lists
+        Each inner list contains all the one hot indexes associated with 
+        the same categorical feature.
+    
+    """
     def __init__(self, categorical_list):
         super().__init__()
         self.categorical_list = categorical_list
 
     def get_info(self):
-        return 'Not implemented.'
+        return 'OneHotToCategorical: categorical_list: ' + str(self.categorical_list)
 
     def transform(self, X):
-        r, c = 0, 0
-        if hasattr(X, 'shape'):
-            r, c = X.shape
-        elif hasattr(X, 'size'):
-            r, c = 1, X.size
-        elif isinstance(X, type([])):
-            if isinstance(X[0], type([])):
-                r, c = len(X), len(X[0])
-            else:
-                r, c = 1, len(X[0])
+        """ transform
+        
+        Transform one hot features in the X matrix into int coded 
+        categorical features.
+        
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            The sample or set of samples that should be transformed.
+         
+        Returns
+        -------
+        The transformed data.
+        
+        """
+        r, c = get_dimensions(X)
 
         new_width = c
         for i in range(len(self.categorical_list)):

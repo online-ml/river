@@ -570,8 +570,9 @@ class ConfusionMatrix(BaseObject):
         return self.sample_count
 
     def get_info(self):
-        return 'ConfusionMatrix: n_targets: ' + str(self.n_targets) + ' - sample_count: ' \
-               + str(self.sample_count) + ' - dtype: ' + str(self.dtype)
+        return 'ConfusionMatrix: n_targets: ' + str(self.n_targets) + \
+               ' - sample_count: ' + str(self.sample_count) + \
+               ' - dtype: ' + str(self.dtype)
 
     def get_class_type(self):
         return 'collection'
@@ -841,9 +842,10 @@ class MOLConfusionMatrix(BaseObject):
             return None
 
     def get_info(self):
-        return 'MOLConfusionMatrix: n_targets: ' + str(self.n_targets) + ' - total_sum: ' \
-               + str(self.get_total_sum()) + ' - total_discordance: ' + \
-               str(self.get_total_discordance()) + ' - dtype: ' + str(self.dtype)
+        return 'MOLConfusionMatrix: n_targets: ' + str(self.n_targets) + \
+               ' - total_sum: ' + str(self.get_total_sum()) + \
+               ' - total_discordance: ' + str(self.get_total_discordance()) + \
+               ' - dtype: ' + str(self.dtype)
 
     def get_class_type(self):
         return 'collection'
@@ -1007,9 +1009,11 @@ class InstanceWindow(BaseObject):
         return 'data_structure'
 
     def get_info(self):
-        return 'InstanceWindow: n_attributes: ' + str(self.n_attributes) + ' - n_target_tasks: ' \
-               + str(self.n_target_tasks) + ' - n_samples: ' + str(self.n_samples) + ' - max_size: ' \
-               + str(self.max_size) + ' - dtype: ' + str(self.dtype)
+        return 'InstanceWindow: n_attributes: ' + str(self.n_attributes) + \
+               ' - n_target_tasks: ' + str(self.n_target_tasks) + \
+               ' - n_samples: ' + str(self.n_samples) + \
+               ' - max_size: ' + str(self.max_size) + \
+               ' - dtype: ' + str(self.dtype)
 
 if __name__ == '__main__':
     text = '/asddfdsd/'

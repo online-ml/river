@@ -1,42 +1,142 @@
 __author__ = 'Guilherme Matsumoto'
 
-import numpy as np
-import math
 import logging
 import warnings
-import time
 from skmultiflow.evaluation.base_evaluator import BaseEvaluator
-from sklearn.metrics import cohen_kappa_score
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 from skmultiflow.core.utils.utils import dict_to_tuple_list
-from skmultiflow.core.utils.data_structures import FastBuffer
-from skmultiflow.evaluation.measure_collection import WindowClassificationMeasurements, ClassificationMeasurements, MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
+from skmultiflow.evaluation.measure_collection import WindowClassificationMeasurements, ClassificationMeasurements, \
+    MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
 from timeit import default_timer as timer
 
 
 class EvaluatePrequential(BaseEvaluator):
+    """ EvaluatePrequential
+    
+    The prequential evaluation method, or interleaved test-then-train method, 
+    is an alternative to the traditional holdout evaluation, inherited from 
+    batch setting problems. 
+    
+    The prequential evaluation is designed specifically for stream settings, 
+    in the sense that each sample serves two purposes, and that samples are 
+    analysed sequentially, in order of arrival, and become immediately 
+    inaccessible by the means of the stream.
+    
+    This method consists of using each sample to test the model, which means 
+    to make a predictions or a regression, and then the same sample is used 
+    to train the learner (partial fit it). This way the learner is always 
+    being tested on samples that it hasn't seen yet.
+    
+    Parameters
+    ----------
+    n_wait: int (Default: 10000)
+        The number of samples to process between each holdout set test.
+        Also defines when to plot points if the plot is active.
+        
+    max_instances: int (Default: 100000)
+        The maximum number of samples to process during the evaluation.
+    
+    max_time: float (Default: float("inf"))
+        The maximum duration of the simulation.
+    
+    output_file: string, optional (Default: None)
+        If specified, this string defines the name of the output file. If 
+        the file doesn't exist it will be created.
+    
+    batch_size: int (Default: 1)
+        The number of samples to process at each iteration of the algorithm. 
+        
+    pretrain_size: int (Default: 200)
+        The number of samples to use as an initial training set, which will 
+        not be accounted by evaluation metrics.
+    
+    task_type: string (Default: 'classification')
+        The type of task to execute. Can be one of the following: 'classification', 
+        'regression' or 'multi_output'.
+    
+    show_plot: bool (Default: False)
+        Whether to plot the metrics or not. Plotting will slow down the evaluation 
+        process.
+    
+    plot_options: list, optional (Default: None)
+        Which metrics to compute, and if show_plot is True, which metrics to 
+        display. Plot options can contain how many of the following as the user 
+        wants: 'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
+        'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
+        'true_vs_predicts', 'kappa_t', 'kappa_m']
+        
+    Raises
+    ------
+    ValueError: A ValueError is raised in 2 situations. If the task type passed to 
+    __init__ is not supported. Or if any of the plot options passed to __init__ is 
+    not supported.
+    
+    Notes
+    -----
+    This evaluator accepts to types of evaluation processes. It can either evaluate 
+    a single learner while computing its metrics or it can evaluate multiple learners 
+    at a time, as a means of comparing different approaches to the same problem.
+    
+    Parameter show_scatter_points should only be used for small datasets, and 
+    non-intensive evaluations, as it will drastically slower the evaluation process.
+    
+    Examples
+    --------
+    The first example demonstrates how to use the evaluator to evaluate one learner
+    >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+    >>> # Setup the File Stream
+    >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
+    >>> stream = FileStream(opt, -1, 1)
+    >>> stream.prepare_for_use()
+    >>> # Setup the classifier
+    >>> classifier = PassiveAggressiveClassifier()
+    >>> # Setup the pipeline
+    >>> pipe = Pipeline([('Classifier', classifier)])
+    >>> # Setup the evaluator
+    >>> eval = EvaluatePrequential(pretrain_size=200, max_instances=10000, batch_size=1, n_wait=200, max_time=1000, 
+    ... output_file=None, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
+    >>> # Evaluate
+    >>> eval.eval(stream=stream, classifier=pipe)
+    
+    The second example will demonstrate how to compare two classifiers with
+    the EvaluatePrequential
+    >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+    >>> # Setup the File Stream
+    >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
+    >>> stream = FileStream(opt, -1, 1)
+    >>> stream.prepare_for_use()
+    >>> # Setup the classifiers
+    >>> clf_one = PassiveAggressiveClassifier()
+    >>> clf_two = KNNAdwin(k=8)
+    >>> # Setup the pipeline for clf_one
+    >>> pipe = Pipeline([('Classifier', clf_one)])
+    >>> # Create the list to hold both classifiers
+    >>> classifier = [pipe, clf_two]
+    >>> # Setup the evaluator
+    >>> eval = EvaluatePrequential(pretrain_size=200, max_instances=10000, batch_size=1, n_wait=200, max_time=1000, 
+    ... output_file=None, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
+    >>> # Evaluate
+    >>> eval.eval(stream=stream, classifier=classifier)
+    
+    """
+
     def __init__(self, n_wait=200, max_instances=100000, max_time=float("inf"), output_file=None,
                  batch_size=1, pretrain_size=200, task_type='classification', show_plot=False, plot_options=None):
-        """
-            Parameter show_scatter_points should only be used for small datasets, and non-intensive evaluations, as it
-            will drastically slower the evaluation process.
 
-        :param n_wait: int. Number of samples processed between metric updates, including plot points
-        :param max_instances: int. Maximum number of samples to be processed
-        :param max_time: int. Maximum amount of time, in seconds, that the evaluation can take
-        :param output_file: string. Output file name. If given this is where the evaluation log will be saved.
-        :param show_plot: boolean. If true a plot including the performance evolution will be shown.
-        :param batch_size: int. The size of each batch, which means, how many samples will be treated at a time.
-        :param pretrain_size: int. How many samples will be used to pre train de model. These won't be considered for metrics calculation.
-        :param show_kappa: boolean. If true the visualization module will display the Kappa statistic plot.
-        :param track_global_kappa: If true will keep track of a global kappa statistic. Will consume more memory and will be plotted if show_kappa is True.
-        :param show_scatter_points: boolean. If True the visualization module will display a scatter of True labels vs Predicts.
-        """
         PLOT_TYPES = ['performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 'exact_match', 'j_index',
                       'mean_square_error', 'mean_absolute_error', 'true_vs_predicts', 'kappa_t', 'kappa_m']
         TASK_TYPES = ['classification', 'regression', 'multi_output']
+
         super().__init__()
-        # default values
         self.n_wait = n_wait
         self.max_instances = max_instances
         self.max_time = max_time
@@ -71,7 +171,7 @@ class EvaluatePrequential(BaseEvaluator):
         #metrics
         self.global_classification_metrics = None
         self.partial_classification_metrics = None
-        self.start_metrics()
+        self.__start_metrics()
 
         self.global_sample_count = 0
 
@@ -79,13 +179,31 @@ class EvaluatePrequential(BaseEvaluator):
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
     def eval(self, stream, classifier):
-        """ Evaluates a learner or set of learners by feeding them with the stream samples.
+        """ eval 
         
-        :param stream: A stream object.
-        :param classifier: A leaner or list of learners.
-        :return: The learner or set of learners, properly fitted after the end of the evaluation process.
+        Evaluates a learner or set of learners by feeding them with the stream 
+        samples.
+        
+        Parameters
+        ----------
+        stream: A stream (an extension from BaseInstanceStream) 
+            The stream from which to draw the samples. 
+        
+        classifier: A learner (an extension from BaseClassifier) or a list of learners.
+            The learner or learners on which to train the model and measure the 
+            performance metrics.
+            
+        Returns
+        -------
+        Returns the trained learner.
+        
+        Notes
+        -----
+        The classifier parameter should be an extension from the BaseClassifier. In 
+        the future, when BaseRegressor is created, it could be an axtension from that 
+        class as well.
+        
         """
-
         # First off we need to verify if this is a simple evaluation task or a comparison between learners task.
         if isinstance(classifier, type([])):
             self.n_classifiers = len(classifier)
@@ -95,32 +213,53 @@ class EvaluatePrequential(BaseEvaluator):
             else:
                 return None
 
-        self.start_metrics()
+        self.__start_metrics()
 
         if self.show_plot:
-            self.start_plot(self.n_wait, stream.get_plot_name())
-        self._reset_globals()
+            self.__start_plot(self.n_wait, stream.get_plot_name())
+
+        self.__reset_globals()
         self.classifier = classifier if self.n_classifiers > 1 else [classifier]
         self.stream = stream
-        self.classifier = self.train_and_test(stream, self.classifier)
+        self.classifier = self.__train_and_test(stream, self.classifier)
 
         if self.show_plot:
             self.visualizer.hold()
+
         return self.classifier
 
-    def train_and_test(self, stream=None, classifier=None):
-        """ Method to control the prequential evaluation.
+    def __train_and_test(self, stream=None, classifier=None):
+        """ __train_and_test 
         
-        :param stream: A stream object.
-        :param classifier: A learner or list of learners.
-        :return: The learner or set of learners, properly fitted after the end of the evaluation process.
+        Method to control the prequential evaluation, as described in the class' 
+        main documentation.
+        
+        Parameters
+        ----------
+        stream: A stream (an extension from BaseInstanceStream) 
+            The stream from which to draw the samples. 
+        
+        classifier: A learner (an extension from BaseClassifier) or a list of learners.
+            The learner or learners on which to train the model and measure the 
+            performance metrics.
+             
+        Returns
+        -------
+        Returns the trained learner 
+        
+        Notes
+        -----
+        The classifier parameter should be an extension from the BaseClassifier. In 
+        the future, when BaseRegressor is created, it could be an axtension from that 
+        class as well.
+        
         """
         logging.basicConfig(format='%(message)s', level=logging.INFO)
         init_time = timer()
         end_time = timer()
         self.classifier = classifier
         self.stream = stream
-        self._reset_globals()
+        self.__reset_globals()
         prediction = None
         logging.info('Prequential Evaluation')
         logging.info('Generating %s targets.', str(self.stream.get_num_targets()))
@@ -179,8 +318,6 @@ class EvaluatePrequential(BaseEvaluator):
                 if 'mean_absolute_error' in self.plot_options:
                     for i in range(self.n_classifiers):
                         header += ',global_mae_'+str(i)+',sliding_window_mae_'+str(i)
-                #if 'true_vs_predicts' in self.plot_options:
-                    #header += ',true_label,prediction'
                 f.write(header)
 
         first_run = True
@@ -218,11 +355,10 @@ class EvaluatePrequential(BaseEvaluator):
                                 self.partial_classification_metrics[j].add_result(y[i], prediction[j][i])
 
                         nul_count = self.global_sample_count - self.batch_size
+
                         if ((nul_count + i + 1) % (rest / 20)) == 0:
                             logging.info('%s%%', str(((nul_count + i + 1) // (rest / 20)) * 5))
-                                # if self.show_scatter_points:
-                                # self.visualizer.on_new_scatter_data(self.global_sample_count - self.batch_size + i, y[i],
-                                # prediction[i])
+
                     if first_run:
                         for i in range(self.n_classifiers):
                             self.classifier[i].partial_fit(X, y, self.stream.get_classes())
@@ -236,14 +372,14 @@ class EvaluatePrequential(BaseEvaluator):
                         (self.global_sample_count / self.n_wait > before_count + 1)):
                         before_count += 1
                         if prediction is not None:
-                            self.update_metrics()
+                            self._update_metrics()
                 end_time = timer()
             except BaseException as exc:
                 if exc is KeyboardInterrupt:
                     if self.show_scatter_points:
-                        self.update_metrics()
+                        self._update_metrics()
                     else:
-                        self.update_metrics()
+                        self._update_metrics()
                 break
 
         if (end_time - init_time > self.max_time):
@@ -280,23 +416,83 @@ class EvaluatePrequential(BaseEvaluator):
 
         return self.classifier
 
-    def partial_fit(self, X, y):
+    def partial_fit(self, X, y, classes=None):
+        """ partial_fit
+
+        Partially fit all the learners on the given data.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            The data upon which the algorithm will create its model.
+
+        y: Array-like
+            An array-like containing the classification targets for all 
+            samples in X.
+
+        classes: list
+            Stores all the classes that may be encountered during the 
+            classification task.
+
+        Returns
+        -------
+        self
+
+        """
         if self.classifier is not None:
             for i in range(self.n_classifiers):
-                self.classifier[i].partial_fit(X, y)
+                self.classifier[i].partial_fit(X, y, classes)
             return self
         else:
             return self
 
     def predict(self, X):
-        if self.classifier is not None:
-            for i in range(self.n_classifiers):
-                self.classifier[i].predict(X)
-            return self
-        else:
-            return self
+        """ predict
 
-    def update_plot(self, current_x, new_points_dict):
+        Predicts the labels of the X samples, by calling the predict 
+        function of all the learners.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            All the samples we want to predict the label for.
+
+        Returns
+        -------
+        A list containing the predicted labels for all instances in X in 
+        all learners.
+
+        """
+        predictions = None
+        if self.classifier is not None:
+            predictions = []
+            for i in range(self.n_classifiers):
+                predictions.append(self.classifier[i].predict(X))
+
+        return predictions
+
+    def __update_plot(self, current_x, new_points_dict):
+        """ __update_plot
+
+        Creates a dictionary of new points to plot. The keys of this dictionary are 
+        the strings in self.plot_options, which define the metrics to keep track of, 
+        and the values are two element lists, or tuples, containing each metric's 
+        global value and their partial value (measured from the last n_wait samples).
+
+        If more than one learner is evaluated at once, the value from the dictionary 
+        will be a list of lists, or tuples, containing the global metric value and 
+        the partial metric value, for each of the metrics.
+
+        Parameters
+        ----------
+        current_x: int
+            The current count of analysed samples.
+
+        new_points_dict: dictionary
+            A dictionary of new points, in the format described in this 
+            function's documentation.
+
+        """
         if self.output_file is not None:
             line = str(current_x)
             if 'performance' in self.plot_options:
@@ -348,7 +544,13 @@ class EvaluatePrequential(BaseEvaluator):
         if self.show_plot:
             self.visualizer.on_new_train_step(current_x, new_points_dict)
 
-    def start_metrics(self):
+    def __start_metrics(self):
+        """ __start_metrics
+
+        Starts up the metrics and statistics watchers. One watcher is created 
+        for each of the learners to be evaluated.
+
+        """
         self.global_classification_metrics = []
         self.partial_classification_metrics = []
 
@@ -367,17 +569,13 @@ class EvaluatePrequential(BaseEvaluator):
                 self.global_classification_metrics.append(RegressionMeasurements())
                 self.partial_classification_metrics.append(WindowRegressionMeasurements(window_size=self.n_wait))
 
+    def _update_metrics(self):
+        """ _update_metrics
+         
+        Updates the metrics of interest. This function creates a metrics dictionary, 
+        which will be sent to __update_plot, if the plot is enabled.
 
-    def update_metrics(self):
-        """ Updates the metrics of interest.
-
-            It's possible that cohen_kappa_score will return a NaN value, which happens if the predictions
-            and the true labels are in perfect accordance, causing pe=1, which results in a division by 0.
-            If this is detected the plot will assume it to be 1.
-
-        :return: No return.
         """
-
         new_points_dict = {}
         if 'performance' in self.plot_options:
             new_points_dict['performance'] = [[self.global_classification_metrics[i].get_performance(),
@@ -444,17 +642,41 @@ class EvaluatePrequential(BaseEvaluator):
                 true.append(t)
                 pred.append(p)
             new_points_dict['true_vs_predicts'] = [[true[i], pred[i]] for i in range(self.n_classifiers)]
-            #print(str(true) + ' ' + str(pred))
-        self.update_plot(self.global_sample_count, new_points_dict)
 
-    def _reset_globals(self):
+        self.__update_plot(self.global_sample_count, new_points_dict)
+
+    def __reset_globals(self):
         self.global_sample_count = 0
 
-    def start_plot(self, n_wait, dataset_name):
+    def __start_plot(self, n_wait, dataset_name):
+        """ __start_plot
+
+        Parameters
+        ----------
+        n_wait: int 
+            The number of samples to process before each holddout set test.
+
+        dataset_name: string
+            The dataset name, will be part of the plot name.
+
+        """
         self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name,
                                                plots=self.plot_options, n_learners=self.n_classifiers)
 
     def set_params(self, dict):
+        """ set_params
+
+        This function allows the users to change some of the evaluator's parameters, 
+        by passing a dictionary where keys are the parameters names, and values are 
+        the new parameters' values.
+
+        Parameters
+        ----------
+        dict: Dictionary
+            A dictionary where the keys are the names of attributes the user 
+            wants to change, and the values are the new values of those attributes.
+
+        """
         params_list = dict_to_tuple_list(dict)
         for name, value in params_list:
             if name == 'n_wait':
@@ -465,23 +687,19 @@ class EvaluatePrequential(BaseEvaluator):
                 self.max_time = value
             elif name == 'output_file':
                 self.output_file = value
-            elif name == 'show_performance':
-                self.show_performance = value
             elif name == 'batch_size':
                 self.batch_size = value
             elif name == 'pretrain_size':
                 self.pretrain_size = value
-            elif name == 'show_kappa':
-                self.show_kappa = value
-            elif name == 'show_scatter_points':
-                self.show_scatter_points = value
+
 
     def get_info(self):
-        plot = 'True' if self.show_plot else 'False'
         return 'Prequential Evaluator: n_wait: ' + str(self.n_wait) + \
-               '  -  max_instances: ' + str(self.max_instances) + \
-               '  -  max_time: ' + str(self.max_time) + \
-               '  -  batch_size: ' + str(self.batch_size) + \
-               '  -  pretrain_size: ' + str(self.pretrain_size) + \
-               '  -  show_plot: ' + plot + \
-               '  -  plot_options: ' + str(self.plot_options)
+               ' - max_instances: ' + str(self.max_instances) + \
+               ' - max_time: ' + str(self.max_time) + \
+               ' - output_file: ' + (self.output_file if self.output_file is not None else 'None') + \
+               ' - batch_size: ' + str(self.batch_size) + \
+               ' - pretrain_size: ' + str(self.pretrain_size) + \
+               ' - task_type: ' + self.task_type + \
+               ' - show_plot' + ('True' if self.show_plot else 'False') + \
+               ' - plot_options: ' + (str(self.plot_options) if self.plot_options is not None else 'None')
