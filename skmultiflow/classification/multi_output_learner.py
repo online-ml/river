@@ -153,11 +153,13 @@ class MultiOutputLearner(BaseClassifier) :
         return P
 
     def get_info(self):
-        return ''
+        return 'MultiOutputLearner: h: ' + str(self.h) + \
+               ' - n_learners: ' + str(len(self.h)) + \
+               ' - n_classification_tasks: ' + str(self.L)
 
 
     def score(self, X, y):
-        pass
+        raise NotImplementedError
 
 def demo():
     import sys

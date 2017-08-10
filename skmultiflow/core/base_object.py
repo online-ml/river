@@ -27,7 +27,7 @@ class BaseObject(metaclass=ABCMeta):
         The class type
         
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_info(self):
@@ -44,4 +44,4 @@ class BaseObject(metaclass=ABCMeta):
         A string with the class' relevant information.
         
         """
-        pass
+        raise NotImplementedError

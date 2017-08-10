@@ -103,7 +103,7 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
         the difference is the extra step taken to setup the drift, if there's 
         any.
         
-        To configure the drift, random offset speeds are chosen for 
+        To __configure the drift, random offset speeds are chosen for 
         self.num_drift_centroids centroids. Finally, the speed are 
         normalized.
         
@@ -139,10 +139,13 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
         self.instance_random.seed(self.instance_seed)
 
     def get_info(self):
-        return 'RandomRBFGenerator: model_seed: ' + str(self.model_seed) + ' - instance_seed: ' + \
-               str(self.instance_seed) + ' - num_classes: ' + str(self.num_classes) + ' - num_att: ' \
-               + str(self.num_numerical_attributes) + ' - num_centroids: ' + str(self.num_centroids) + \
-               ' - change_speed: ' + str(self.change_speed) + ' - num_drift_centroids: ' + str(self.num_drift_centroids)
+        return 'RandomRBFGenerator: model_seed: ' + str(self.model_seed) + \
+               ' - instance_seed: ' + str(self.instance_seed) + \
+               ' - num_classes: ' + str(self.num_classes) + \
+               ' - num_att: ' + str(self.num_numerical_attributes) + \
+               ' - num_centroids: ' + str(self.num_centroids) + \
+               ' - change_speed: ' + str(self.change_speed) + \
+               ' - num_drift_centroids: ' + str(self.num_drift_centroids)
 
     def get_num_targeting_tasks(self):
         return 1

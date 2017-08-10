@@ -423,7 +423,9 @@ class LeverageBagging(BaseClassifier):
         raise NotImplementedError
 
     def get_info(self):
-        return 'LeverageBagging Classifier: h: ' + str(self.h) + ' - ensemble_length: ' \
-               + str(self.ensemble_length) + ' - w: ' + str(self.w) + ' - delta: ' + \
-               str(self.delta) + ' - enable_code_matrix: ' + ('True' if self.enable_matrix_codes else 'False') \
-               + ' - leveraging_algorithm: ' + self.leveraging_algorithm
+        return 'LeverageBagging Classifier: h: ' + str(self.h) + \
+               ' - ensemble_length: ' + str(self.ensemble_length) + \
+               ' - w: ' + str(self.w) + \
+               ' - delta: ' + str(self.delta) + \
+               ' - enable_code_matrix: ' + ('True' if self.enable_matrix_codes else 'False') + \
+               ' - leveraging_algorithm: ' + self.leveraging_algorithm

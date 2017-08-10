@@ -18,11 +18,10 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
     NotImplementedError: This is an abstract class.
     
     """
+
     def __init__(self):
         super().__init__()
-        """ Initialization.
-        """
-        pass
+
 
     @abstractmethod
     def fit(self, X, y, classes = None):

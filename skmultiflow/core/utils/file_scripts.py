@@ -102,7 +102,8 @@ class RemoveHeader(BaseObject):
 
 
     def get_info(self):
-        return 'Remove Header: base_file: ' + self.base_file + '  -  new_file: ' + self.new_file + \
+        return 'Remove Header: base_file: ' + self.base_file + \
+               '  -  new_file: ' + self.new_file + \
                '  -  ignore_char: ' + self.ignore_char
 
     def get_class_type(self):

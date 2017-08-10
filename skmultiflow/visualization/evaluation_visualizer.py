@@ -1,22 +1,70 @@
 __author__ = 'Guilherme Matsumoto'
 
-import time
 import warnings
-import copy as cp
 from skmultiflow.visualization.base_listener import BaseListener
-from skmultiflow.core.utils.data_structures import FastBuffer
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 
 class EvaluationVisualizer(BaseListener):
-    #COLOR_MAP = ['b','c','m','y','k','w']
+    """ EvaluationVisualizer
+    
+    This class is responsible for maintaining and updating the plot modules 
+    for all the evaluators in scikit-multiflow. 
+    
+    It uses matplotlib's pyplot modules to create the main plot, which 
+    depending on the options passed to it as parameter, will create multiple 
+    subplots to better display all requested metrics.
+    
+    The plots are updated on the go, at each n_wait samples. The plot is 
+    redrawn at each step, which may cause significant slow down, depending on 
+    the processor used and the plotting options.
+    
+    Line objects are used to describe performance measurements and scatter 
+    instances will represent true labels and predictions, when requested.
+    
+    It supports the visualization of multiple learners per subplot as a way 
+    of comparing the performance of different learning algorithms facing the 
+    same data stream.
+    
+    Parameters
+    ----------
+    n_wait: int (Default: 200)
+        The interval between each plot point.
+    
+    dataset_name: string (Default: 'Unnamed graph')
+        The title of the plot. Algorithmically it's not important.
+    
+    plots: list
+        A list containing all the subplots to plot. Can be any of: 
+        'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
+        'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
+        'true_vs_predicts', 'kappa_t', 'kappa_m'
+    
+    n_learners: int
+        The number of learners to compare.
+    
+    Raises
+    ------
+    ValueError: A ValueError can be raised for a series of reasons. If no plots 
+    are passed as parameter to the constructor a ValueError is raised. If the wrong 
+    type of parameter is passed to on_new_train_step the same error is raised.
+    
+    Notes
+    -----
+    Using more than 3 plot types at a time is not recommended, as it will 
+    significantly slow down processing. Also, for the same reason comparing 
+    more than 3 learners at a time is not recommended.
+    
+    """
+
     COLOR_MAP = ['#0000FF', '#FF0000', '#00CC01', '#2F2F2F', '#8900CC', '#0099CC', '#ACE600', '#D9007E', '#FFCCCC',
                  '#5E6600', '#FFFF00', '#999999', '#FF6000', '#00FF00', '#FF00FF', '#00FFFF', '#FFFF0F', '#F0CC01',
                  '#9BC6ED', '#915200', '#0000FF', '#FF0000', '#00CC01', '#2F2F2F', '#8900CC', '#0099CC', '#ACE600',
                  '#D9007E', '#FFCCCC', '#5E6600', '#FFFF00', '#999999', '#FF6000', '#00FF00', '#FF00FF', '#00FFFF',
                  '#FFFF0F', '#F0CC01', '#9BC6ED', '#915200']
+
     def __init__(self, n_wait = 200, dataset_name = 'Unnamed graph', plots=None, n_learners=1):
         super().__init__()
         #default values
@@ -65,7 +113,6 @@ class EvaluationVisualizer(BaseListener):
 
         self.regression_true = None
         self.regression_pred = None
-
 
         #configs
         self.n_wait = None
@@ -130,25 +177,79 @@ class EvaluationVisualizer(BaseListener):
             if len(plots) < 1:
                 raise ValueError('No plots were given.')
             else:
-                self.configure(n_wait, dataset_name, plots, n_learners)
+                self.__configure(n_wait, dataset_name, plots, n_learners)
         else:
             raise ValueError('No plots were given.')
 
     def on_new_train_step(self, train_step, dict):
+        """ on_new_train_step
+        
+        This is the listener main function, which gives it the ability to 
+        'listen' for the caller. Whenever the EvaluationVisualiser should 
+        be aware of some new data, the caller will call this function, 
+        passing the new data as parameter.
+        
+        Parameters
+        ----------
+        train_step: int
+            The number of samples processed to this moment.
+        
+        dict: dictionary
+            A dictionary containing tuples, where the first element is the 
+            string that identifies one of the plot's subplot names, and the 
+            second element is its numerical value.
+            
+        Raises
+        ------
+        ValueError: If wrong data formats are passed as parameter this error 
+        is raised.
+         
+        """
         if (train_step % self.n_wait == 0):
             try:
                 self.draw(train_step, dict)
-                #self.draw_scatter_points(train_step, dict)
             except BaseException as exc:
                 raise ValueError('Wrong data format.')
-        pass
 
     def on_new_scatter_data(self, X, y, prediction):
-        #self.draw_scatter_points(X, y, prediction)
         pass
 
 
-    def configure(self, n_wait, dataset_name, plots, n_learners):
+    def __configure(self, n_wait, dataset_name, plots, n_learners):
+        """ __configure
+        
+        This function will verify which subplots it should create. For each one 
+        of those, it will initialize all relevant objects to keep track of the 
+        plotting points.
+        
+        Basic structures needed to keep track of plot values (for each subplot) 
+        are: lists of values and matplotlib's line objects (not necessary for 
+        scatter type subplots).
+        
+        The __configure function will also initialize each subplot with the 
+        correct name, will setup the axis and create legends for all lines. 
+        
+        The subplot size will self adjust to each screen size, so that data can 
+        be better viewed in different contexts.
+        
+        Parameters
+        ----------
+        n_wait: int (Default: 200)
+            The interval between each plot point.
+    
+        dataset_name: string (Default: 'Unnamed graph')
+            The title of the plot. Algorithmically it's not important.
+    
+        plots: list
+            A list containing all the subplots to plot. Can be any of: 
+            'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
+            'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
+            'true_vs_predicts', 'kappa_t', 'kappa_m'
+        
+        n_learners: int
+            The number of learners to compare.
+         
+        """
         warnings.filterwarnings("ignore", ".*GUI is implemented.*")
         warnings.filterwarnings("ignore", ".*left==right.*")
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
@@ -464,6 +565,21 @@ class EvaluationVisualizer(BaseListener):
         self.fig.tight_layout(pad=2.6, w_pad=0.5, h_pad=1.0)
 
     def draw(self, train_step, dict):
+        """ draw
+        
+        Updates and redraws the plot.
+        
+        Parameters
+        ----------
+        train_step: int
+            The number of samples processed to this moment.
+        
+        dict: dictionary
+            A dictionary containing tuples, where the first element is the 
+            string that identifies one of the plot's subplot names, and the 
+            second element is its numerical value.
+             
+        """
         self.X.append(train_step)
 
         for i in range(len(self.temp)):
@@ -523,7 +639,6 @@ class EvaluationVisualizer(BaseListener):
                 minimum = min(min(minimum, min(self.global_kappa_t[i])), min(minimum, min(self.partial_kappa_t[i])))
 
             self.subplot_kappa_t.set_xlim([0, 1.2 * np.max(self.X)])
-            # self.subplot_kappa_t.set_ylim([min([min(self.global_kappa_t), min(self.partial_kappa_t), -1.]), 1.])
             self.subplot_kappa_t.set_ylim([minimum, 1.])
 
 
@@ -544,7 +659,6 @@ class EvaluationVisualizer(BaseListener):
                 minimum = min(min(minimum, min(self.global_kappa_m[i])), min(minimum, min(self.partial_kappa_m[i])))
 
             self.subplot_kappa_m.set_xlim([0, 1.2 * np.max(self.X)])
-            # self.subplot_kappa_m.set_ylim([min([min(self.global_kappa_m), min(self.partial_kappa_m), -1.]), 1.])
             self.subplot_kappa_m.set_ylim([minimum, 1.])
 
         if 'scatter' in self.plots:
@@ -581,7 +695,6 @@ class EvaluationVisualizer(BaseListener):
             recs = []
             for i in range(0, len(colour)):
                 recs.append(mpatches.Circle((0, 0), 1, fc=colour[i]))
-            #self.subplot_scatter_points.legend(handles=[scat_true, scat_pred])
             self.subplot_scatter_points.legend(recs, legend, loc=4)
 
         if 'hamming_score' in self.plots:
@@ -701,8 +814,6 @@ class EvaluationVisualizer(BaseListener):
             maximum = 0
             for i in range(self.n_learners):
                 self.regression_pred[i].append(dict['true_vs_predicts'][i][1])
-                #self.line_regression_true.set_data(self.X, self.regression_true)
-                #self.line_regression_pred.set_data(self.X, self.regression_pred)
                 scat_pred = self.subplot_true_vs_predicts.scatter(self.X, self.regression_pred[i], s=6,
                                                                 label='Clf '+str(i)+' - Predictions', c=self.COLOR_MAP[i%len(self.COLOR_MAP)])
                 minimum = min([min(self.regression_pred[i]), min(self.regression_true[i]), minimum])

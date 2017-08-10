@@ -145,6 +145,7 @@ class KNN(BaseClassifier):
         Returns
         -------
         self
+        
         """
         r, c = get_dimensions(X)
         if self.window is None:

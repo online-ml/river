@@ -184,9 +184,11 @@ class RandomRBFGenerator(BaseInstanceStream, BaseObject):
             self.centroid_weights.append(model_random.rand())
 
     def get_info(self):
-        return 'RandomRBFGenerator: model_seed: ' + str(self.model_seed) + ' - instance_seed: ' + \
-               str(self.instance_seed) + ' - num_classes: ' + str(self.num_classes) + ' - num_att: ' \
-               + str(self.num_numerical_attributes) + ' - num_centroids: ' + str(self.num_centroids)
+        return 'RandomRBFGenerator: model_seed: ' + str(self.model_seed) + \
+               ' - instance_seed: ' + str(self.instance_seed) + \
+               ' - num_classes: ' + str(self.num_classes) + \
+               ' - num_att: ' + str(self.num_numerical_attributes) + \
+               ' - num_centroids: ' + str(self.num_centroids)
 
     def get_num_targeting_tasks(self):
         return 1

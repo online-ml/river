@@ -32,4 +32,4 @@ class NaiveBayes(BaseClassifier):
         return self.classifier.score(X, y)
 
     def get_info(self):
-        pass
+        return 'NaiveBayes: N/A'

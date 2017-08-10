@@ -305,8 +305,9 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
 
     def get_info(self):
         return 'SEAGenerator: classification_function: ' + str(self.classification_function_index) + \
-               ' - instance_seed: ' + str(self.instance_seed) + ' - balance_classes: ' + \
-               ('True' if self.balance_classes else 'False') + ' - noise_percentage: ' + str(self.noise_percentage)
+               ' - instance_seed: ' + str(self.instance_seed) + \
+               ' - balance_classes: ' + ('True' if self.balance_classes else 'False') + \
+               ' - noise_percentage: ' + str(self.noise_percentage)
 
     def get_num_targeting_tasks(self):
         return 1

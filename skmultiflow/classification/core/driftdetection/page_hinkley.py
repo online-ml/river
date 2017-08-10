@@ -86,4 +86,7 @@ class PageHinkley(BaseDriftDetector):
         return self
 
     def get_info(self):
-        return 'Not implemented.'
+        return 'PageHinkley: min_num_instances: ' + str(self.min_instances) + \
+               ' - delta: ' + str(self.delta) + \
+               ' - lambda: ' + str(self._lambda) + \
+               ' - alpha: ' + str(self.alpha)

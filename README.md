@@ -73,3 +73,5 @@ A stream data framework.
 ### To clean
 * core.instances
 
+* Cython
+* Numba

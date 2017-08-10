@@ -260,4 +260,5 @@ class OzaBaggingAdwin(BaseClassifier):
             self.adwin_ensemble.append(ADWIN())
 
     def get_info(self):
-        return 'OzaBagging Classifier: h: ' + str(self.h) + ' - ensemble_length: ' + str(self.ensemble_length)
+        return 'OzaBagging Classifier: h: ' + str(self.h) + \
+               ' - ensemble_length: ' + str(self.ensemble_length)

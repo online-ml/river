@@ -4,17 +4,44 @@ import numpy as np
 from scipy import stats
 from skmultiflow.filtering.base_transform import BaseTransform
 from skmultiflow.core.utils.data_structures import FastBuffer
+from skmultiflow.core.utils.utils import get_dimensions
 
 
 class MissingValuesCleaner(BaseTransform):
+    """ MissingValuesCleaner
+    
+    This is a transform object. It provides a simple way to replace missing 
+    values in samples with another value, which can be chosen from a set of 
+    replacing strategies.
+    
+    A missing value in a sample can be coded in many different ways, but the 
+    most common one is to use numpy's NaN, that's why that is the default 
+    missing value parameter.
+    
+    The user should choose the correct substitution strategy for his use 
+    case, as each strategy has its pros and cons. The strategy can be chosen 
+    from a set of predefined strategies, which are: 'zero', 'mean', 'median', 
+    'mode', 'custom'.
+    
+    Parameters
+    ----------
+    missing_value: int, char (Default: numpy.nan)
+        The way a missed value is coded in the matrices that are to be 
+        transformed.
+    
+    strategy: string (Default: 'zero')
+        The strategy adopted to find the missing value replacement. It can 
+        be one of the following: 'zero', 'mean', 'median', 'mode', 'custom'.
+    
+    window_size: int (Default: 200)
+        Defines the window size for the 'mean', 'median' and 'mode' strategies.
+    
+    new_value: int (Default: 1)
+        This is the replacement value in case the chosen strategy is 'custom'.
+    
+    """
+
     def __init__(self, missing_value=np.nan, strategy='zero', window_size=200, new_value=1):
-        """ 
-        
-        :param missing_value: value or value list to be transformed
-        :param strategy: one of 'zero', 'mean', 'median', 'mode', 'custom'
-        :param window_size: int. sliding window size, required if strategy is mean, median, or mode
-        :param new_value: custom value to put in the place of missing_value
-        """
         super().__init__()
         #default_values
         self.missing_value = np.nan
@@ -23,9 +50,9 @@ class MissingValuesCleaner(BaseTransform):
         self.window = None
         self.new_value = 1
 
-        self.configure(missing_value, strategy, window_size, new_value)
+        self.__configure(missing_value, strategy, window_size, new_value)
 
-    def configure(self, missing_value, strategy, window_size, new_value=1):
+    def __configure(self, missing_value, strategy, window_size, new_value=1):
         if hasattr(missing_value, 'append'):
             self.missing_value = missing_value
         else:
@@ -38,15 +65,39 @@ class MissingValuesCleaner(BaseTransform):
             self.window = FastBuffer(max_size=window_size)
 
     def transform(self, X):
-        X = np.array(X)
-        for i in range(len(X)):
-            for j in range(len(X[i])):
+        """ transform
+        
+        Does the transformation process in the samples in X.
+        
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            The sample or set of samples that should be transformed.
+        
+        """
+        r, c = get_dimensions(X)
+        for i in range(r):
+            for j in range(c):
                 if X[i][j] in self.missing_value:
-                    #print(np.array(self.window.get_queue()))
                     X[i][j] = self._get_substitute(j)
+
         return X
 
     def _get_substitute(self, column_index):
+        """ _get_substitute
+        
+        Computes the replacement for a missing value.
+        
+        Parameters
+        ----------
+        column_index: int
+            The index from the column where the missing value was found.
+            
+        Returns
+        -------
+        The replacement.
+        
+        """
         if self.strategy == 'zero':
             return 0
         elif self.strategy == 'mean':
@@ -70,6 +121,23 @@ class MissingValuesCleaner(BaseTransform):
             return self.new_value
 
     def partial_fit_transform(self, X, y=None):
+        """ partial_fit_transform
+        
+        Partially fits the model and then apply the transform to the data.
+        
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            The sample or set of samples that should be transformed.
+            
+        y: Array-like
+            The true labels.
+         
+        Returns
+        -------
+        The transformed data.
+        
+        """
         X = self.transform(X)
         if self.strategy in ['mean', 'median', 'mode']:
             self.window.add_element(X)
@@ -77,12 +145,33 @@ class MissingValuesCleaner(BaseTransform):
         return X
 
     def partial_fit(self, X, y=None):
+        """ partial_fit
+        
+        Partial fits the model.
+        
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            The sample or set of samples that should be transformed.
+            
+        y: Array-like
+            The true labels.
+        
+        Returns
+        -------
+        self.
+        
+        """
         X = np.asarray(X)
         if self.strategy in ['mean', 'meadian', 'mode']:
             self.window.add_element(X)
-        pass
+        return self
+
 
     def get_info(self):
-        pass
+        return 'MissingValueCleaner: missing_value: ' + str(self.missing_value) + \
+               ' - strategy: ' + self.strategy + \
+               ' - window_size: ' + str(self.window_size) + \
+               ' - new_value: ' + str(self.new_value)
 
 

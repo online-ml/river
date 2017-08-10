@@ -152,9 +152,10 @@ class MultilabelGenerator(BaseInstanceStream):
         return 'stream'
 
     def get_info(self):
-        return 'MultilabelGenerator: n_samples: ' + str(self.num_samples) + ' - n_features: ' + \
-                str(self.num_features) + ' - n_targets: ' + str(self.num_target_tasks) + ' - n_labels:' \
-                + str(self.num_labels)
+        return 'MultilabelGenerator: n_samples: ' + str(self.num_samples) + \
+               ' - n_features: ' + str(self.num_features) + \
+               ' - n_targets: ' + str(self.num_target_tasks) + \
+               ' - n_labels:' + str(self.num_labels)
 
     def get_num_targeting_tasks(self):
         return self.num_target_tasks

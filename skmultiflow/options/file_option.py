@@ -3,11 +3,29 @@ __author__ = 'Guilherme Matsumoto'
 from skmultiflow.options.base_option import BaseOption
 
 class FileOption(BaseOption):
-    '''
-        fileOption class
-        --------------------------------------
-        Maintain options concerning file management.
-    '''
+    """ FileOption
+    
+    This class keeps information about a file.
+    
+    Parameters
+    ----------
+    option_type: string 
+        The type of file related to the option. Can be anything.
+        
+    option_name: string 
+        The option identification. Can be anything.
+    
+    option_value: string 
+        The complete path to the file.
+    
+    file_extension: string 
+        The type of extension.
+    
+    is_out: bool
+        Whether it's an output file or not.
+    
+    """
+
     def __init__(self, option_type = None, option_name = None, option_value = None, file_extension = None, is_out = False):
         super().__init__()
         self.option_name = option_name
@@ -35,12 +53,9 @@ class FileOption(BaseOption):
     def is_output(self):
         return self.is_output
 
-    def set_value_via_cli_string(self, cli_string = None):
-        self.option_value = cli_string
-
-    def get_cli_option_from_dictionary(self):
-        return {"file_name" : "-n",
-                "file_type" : "-t"}[self.option_type]
-
     def get_info(self):
-        pass
+        return 'FileOption: option_type: ' + str(self.option_type) + \
+               ' - option_name: ' + str(self.option_name) + \
+               ' - option_value: ' + str(self.option_value) + \
+               ' - file_extension: ' + str(self.file_type) + \
+               ' - is_out: ' + ('True' if self.is_output else 'False')
