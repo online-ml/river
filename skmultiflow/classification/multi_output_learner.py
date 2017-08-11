@@ -161,6 +161,9 @@ class MultiOutputLearner(BaseClassifier) :
     def score(self, X, y):
         raise NotImplementedError
 
+    def reset(self):
+        raise NotImplementedError
+
 def demo():
     import sys
     sys.path.append( '../data' )

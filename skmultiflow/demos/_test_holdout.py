@@ -5,7 +5,8 @@ from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
 from sklearn.linear_model.perceptron import Perceptron
 from skmultiflow.classification.perceptron import PerceptronMask
 from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream, FileOption
+from skmultiflow.data.file_stream import FileStream
+from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
 

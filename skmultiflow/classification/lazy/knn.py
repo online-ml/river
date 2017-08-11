@@ -2,9 +2,9 @@ __author__ = 'Guilherme Matsumoto'
 
 import numpy as np
 from skmultiflow.classification.base import BaseClassifier
-from skmultiflow.classification.lazy.neighbours.distances import euclidean_distance, mixed_distance
+from skmultiflow.classification.lazy.neighbors.distances import euclidean_distance, mixed_distance
 from skmultiflow.core.utils.data_structures import InstanceWindow
-from skmultiflow.classification.lazy.neighbours.kdtree import KDTree
+from skmultiflow.classification.lazy.neighbors.kdtree import KDTree
 import sklearn.neighbors as sk
 from skmultiflow.core.utils.utils import *
 

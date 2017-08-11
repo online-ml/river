@@ -1,0 +1,414 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.core package &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.core.instances package" href="skmultiflow.core.instances.html" />
+    <link rel="prev" title="skmultiflow.classification.meta package" href="skmultiflow.classification.meta.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.instances.html" title="skmultiflow.core.instances package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.classification.meta.html" title="skmultiflow.classification.meta package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" accesskey="U">skmultiflow package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="skmultiflow-core-package">
+<h1>skmultiflow.core package<a class="headerlink" href="#skmultiflow-core-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.core.instances.html">skmultiflow.core.instances package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.instances.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.instances.html#module-skmultiflow.core.instances.instance_header">skmultiflow.core.instances.instance_header module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.instances.html#module-skmultiflow.core.instances">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.core.utils.html">skmultiflow.core.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.utils.html#module-skmultiflow.core.utils.data_structures">skmultiflow.core.utils.data_structures module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.utils.html#module-skmultiflow.core.utils.file_scripts">skmultiflow.core.utils.file_scripts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.utils.html#module-skmultiflow.core.utils.pseudo_random_processes">skmultiflow.core.utils.pseudo_random_processes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.utils.html#module-skmultiflow.core.utils.utils">skmultiflow.core.utils.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.core.utils.html#module-skmultiflow.core.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-skmultiflow.core.base_object">
+<span id="skmultiflow-core-base-object-module"></span><h2>skmultiflow.core.base_object module<a class="headerlink" href="#module-skmultiflow.core.base_object" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.core.base_object.BaseObject">
+<em class="property">class </em><code class="descclassname">skmultiflow.core.base_object.</code><code class="descname">BaseObject</code><a class="reference internal" href="_modules/skmultiflow/core/base_object.html#BaseObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.base_object.BaseObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The most basic object, from which classes in scikit-multiflow
+derive from. It guarantees that all classes have at least the
+two basic functions described in this base class.</p>
+<dl class="method">
+<dt id="skmultiflow.core.base_object.BaseObject.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/base_object.html#BaseObject.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.base_object.BaseObject.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class type is a string that identifies the type of object
+generated by that module.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">The class type</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.base_object.BaseObject.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/base_object.html#BaseObject.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.base_object.BaseObject.get_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sum up of all important characteristics of a class.</p>
+<p>The default format of the return string is as follows:
+ClassName: attribute_one: value_one - attribute_two: value_two - info_one: info_one_value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">A string with the class’ relevant information.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.core.pipeline">
+<span id="skmultiflow-core-pipeline-module"></span><h2>skmultiflow.core.pipeline module<a class="headerlink" href="#module-skmultiflow.core.pipeline" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.core.pipeline.Pipeline">
+<em class="property">class </em><code class="descclassname">skmultiflow.core.pipeline.</code><code class="descname">Pipeline</code><span class="sig-paren">(</span><em>steps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>A pipeline structure that holds a set of sequential Transforms, followed
+by a single learner. It allows for easy manipulation of datasets that may
+require several transformation processes before being used by a learner.
+Also allows for the cross-validation of several steps.</p>
+<p>Each of the intermediate steps should be an extension of the BaseTransform
+class, or at least implement the transform and partial_fit functions or the
+partial_fit_transform.</p>
+<p>The last step should be an estimator (learner), so it should implement
+partial_fit, and predict at least.</p>
+<p>Since it has an estimator as the last step, the Pipeline will act like as
+an estimator itself, in a way that it can be directly passed to evaluation
+objects, as if it was a learner.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dict</strong> (<em>list of tuple</em>) – Tuple list containing the set of transforms and the final estimator.
+It doesn’t need to contain a transform type object, but the estimator
+is required. Each tuple should be of the format (‘name’, estimator).</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li>TypeError: If the intermediate steps or the final estimator do not implement</li>
+<li>the necessary functions for the pipeline to work, a TypeError is raised.</li>
+<li>NotImplementedError: Some of the functions are yet to be implemented.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Imports</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.linear_model.passive_aggressive</span> <span class="k">import</span> <span class="n">PassiveAggressiveClassifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.core.pipeline</span> <span class="k">import</span> <span class="n">Pipeline</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.data.file_stream</span> <span class="k">import</span> <span class="n">FileStream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.evaluation.evaluate_prequential</span> <span class="k">import</span> <span class="n">EvaluatePrequential</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.options.file_option</span> <span class="k">import</span> <span class="n">FileOption</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setting up the stream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opt</span> <span class="o">=</span> <span class="n">FileOption</span><span class="p">(</span><span class="s2">&quot;FILE&quot;</span><span class="p">,</span> <span class="s2">&quot;OPT_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;skmultiflow/datasets/covtype.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;CSV&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">FileStream</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">prepare_for_use</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setting up the classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classifier</span> <span class="o">=</span> <span class="n">PassiveAggressiveClassifier</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the pipeline</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s1">&#39;passive_aggressive&#39;</span><span class="p">,</span> <span class="n">classifier</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the evaluator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span> <span class="o">=</span> <span class="n">EvaluatePrequential</span><span class="p">(</span><span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pretrain_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">max_instances</span><span class="o">=</span><span class="mi">500000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Evaluate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="n">pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="skmultiflow.core.pipeline.Pipeline.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sequentially fit and transform data in all but last step, then fit
+the model in last step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data upon which the transforms/estimator will create their
+model.</li>
+<li><strong>y</strong> (<em>An array_like object of length n_samples</em>) – Contains the true class labels for all the samples in X.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.pipeline.Pipeline.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.pipeline.Pipeline.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.pipeline.Pipeline.named_steps">
+<code class="descname">named_steps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline.named_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline.named_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a dictionary to access all the steps’ properties.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">A steps dictionary, so that each step can be accessed by name.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.pipeline.Pipeline.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sequentially partial fit and transform data in all but last step,
+then partial fit data in last step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data upon which the transforms/estimator will create their
+model.</li>
+<li><strong>y</strong> (<em>An array_like object of length n_samples</em>) – Contains the true class labels for all the samples in X</li>
+<li><strong>classes</strong> (<em>list</em><em>, </em><em>optional</em>) – A list containing all classes that can show up during subsequent
+partial_fit calls. It’s optional for all but the first call, when
+it’s obligatory.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.pipeline.Pipeline.partial_fit_predict">
+<code class="descname">partial_fit_predict</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline.partial_fit_predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline.partial_fit_predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partial fits and transforms data in all but last step, then partial
+fits and predicts in the last step</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – All the samples we want to predict the label for.</li>
+<li><strong>y</strong> (<em>An array_like object of length n_samples</em>) – Contains the true class labels for all the samples in X</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The predicted class label for all the samples in X.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.pipeline.Pipeline.partial_fit_transform">
+<code class="descname">partial_fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline.partial_fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline.partial_fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>partial_fit_trasnform</p>
+<p>Partial fits and transforms data in all but last step, then
+partial_fit in last step</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data upon which the transforms/estimator will create their
+model.</li>
+<li><strong>y</strong> (<em>An array_like object of length n_samples</em>) – Contains the true class labels for all the samples in X</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.pipeline.Pipeline.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/pipeline.html#Pipeline.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.pipeline.Pipeline.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sequentially applies all transforms and then predict with last step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – All the samples we want to predict the label for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">The predicted class label for all the samples in X.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.core" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">skmultiflow.core package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.core.base_object">skmultiflow.core.base_object module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.core.pipeline">skmultiflow.core.pipeline module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.core">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.classification.meta.html"
+                        title="previous chapter">skmultiflow.classification.meta package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.core.instances.html"
+                        title="next chapter">skmultiflow.core.instances package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.core.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.instances.html" title="skmultiflow.core.instances package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.classification.meta.html" title="skmultiflow.classification.meta package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

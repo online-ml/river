@@ -1,0 +1,168 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.core.instances package &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.core.utils package" href="skmultiflow.core.utils.html" />
+    <link rel="prev" title="skmultiflow.core package" href="skmultiflow.core.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.utils.html" title="skmultiflow.core.utils package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.html" title="skmultiflow.core package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.core.html" accesskey="U">skmultiflow.core package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="skmultiflow-core-instances-package">
+<h1>skmultiflow.core.instances package<a class="headerlink" href="#skmultiflow-core-instances-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-skmultiflow.core.instances.instance_header">
+<span id="skmultiflow-core-instances-instance-header-module"></span><h2>skmultiflow.core.instances.instance_header module<a class="headerlink" href="#module-skmultiflow.core.instances.instance_header" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.core.instances.instance_header.InstanceHeader">
+<em class="property">class </em><code class="descclassname">skmultiflow.core.instances.instance_header.</code><code class="descname">InstanceHeader</code><span class="sig-paren">(</span><em>header=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/instances/instance_header.html#InstanceHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.instances.instance_header.InstanceHeader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>Stores the header from an instance, simply keeps feature and
+label’s names</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>header</strong> (<em>list</em><em>, </em><em>optional</em>) – The entries of the header.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.core.instances.instance_header.InstanceHeader.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/instances/instance_header.html#InstanceHeader.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.instances.instance_header.InstanceHeader.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.instances.instance_header.InstanceHeader.get_header_label_at">
+<code class="descname">get_header_label_at</code><span class="sig-paren">(</span><em>header_index=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/instances/instance_header.html#InstanceHeader.get_header_label_at"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.instances.instance_header.InstanceHeader.get_header_label_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.core.instances.instance_header.InstanceHeader.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/instances/instance_header.html#InstanceHeader.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.instances.instance_header.InstanceHeader.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.core.instances">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.core.instances" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">skmultiflow.core.instances package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.core.instances.instance_header">skmultiflow.core.instances.instance_header module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.core.instances">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.core.html"
+                        title="previous chapter">skmultiflow.core package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.core.utils.html"
+                        title="next chapter">skmultiflow.core.utils package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.core.instances.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.utils.html" title="skmultiflow.core.utils package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.html" title="skmultiflow.core package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.core.html" >skmultiflow.core package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

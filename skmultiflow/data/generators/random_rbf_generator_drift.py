@@ -41,14 +41,15 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
         
     Examples
     --------
-    opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
-    stream = FileStream(opt, -1, 1)
-    stream.prepare_for_use()
-    rbf_drift = RandomRBFGeneratorDrift(change_speed=41.00, num_centroids=50, model_seed=32523423, instance_seed=5435,
-                                     num_classes=2, num_att=10, num_drift_centroids=50)
-    rbf_drift.prepare_for_use()
+    >>> opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
+    >>> stream = FileStream(opt, -1, 1)
+    >>> stream.prepare_for_use()
+    >>> rbf_drift = RandomRBFGeneratorDrift(change_speed=41.00, num_centroids=50, model_seed=32523423, 
+    ... instance_seed=5435, num_classes=2, num_att=10, num_drift_centroids=50)
+    >>> rbf_drift.prepare_for_use()
           
     """
+
     def __init__(self, model_seed=21, instance_seed=5, num_classes=2, num_att=10, num_centroids=50,
                  change_speed=0.0, num_drift_centroids=50):
         super().__init__(model_seed, instance_seed, num_classes, num_att, num_centroids)

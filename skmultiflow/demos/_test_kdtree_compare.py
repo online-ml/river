@@ -3,7 +3,7 @@ __author__ = 'Guilherme Matsumoto'
 import warnings
 import numpy as np
 from scipy import spatial
-from skmultiflow.classification.lazy.neighbours.kdtree import KDTree
+from skmultiflow.classification.lazy.neighbors.kdtree import KDTree
 from sklearn import neighbors as ng
 from timeit import default_timer as timer
 from skmultiflow.options.file_option import FileOption

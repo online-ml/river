@@ -70,7 +70,8 @@ class ADWIN(BaseDriftDetector):
         
         Returns
         -------
-        self
+        bool 
+            self
         
         """
         super().reset()

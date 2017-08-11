@@ -1,0 +1,251 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.data.generators.regression_generator &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for skmultiflow.data.generators.regression_generator</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Guilherme Matsumoto&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.data.base_instance_stream</span> <span class="k">import</span> <span class="n">BaseInstanceStream</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="k">import</span> <span class="n">make_regression</span>
+
+
+<div class="viewcode-block" id="RegressionGenerator"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator">[docs]</a><span class="k">class</span> <span class="nc">RegressionGenerator</span><span class="p">(</span><span class="n">BaseInstanceStream</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; RegressionGenerator</span>
+<span class="sd">    </span>
+<span class="sd">    This generator creates a stream of samples for a regression problem. It </span>
+<span class="sd">    uses the make_regression function from scikit-learn, which creates a </span>
+<span class="sd">    batch setting regression problem. These samples are then sequentially </span>
+<span class="sd">    fed by the next_instance function.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_samples: int (Default: 40000)</span>
+<span class="sd">        Total amount of samples to generate.</span>
+<span class="sd">    </span>
+<span class="sd">    n_features: int (Default: 100)</span>
+<span class="sd">        Number of features to generate.</span>
+<span class="sd">        </span>
+<span class="sd">    n_informative: int (Default: 10)</span>
+<span class="sd">        Number of relevant features, in other words, the number of features </span>
+<span class="sd">        that influence the class label.</span>
+<span class="sd">    </span>
+<span class="sd">    n_targets: int (Default: 1)</span>
+<span class="sd">        Number of targeting tasks to generate.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">n_informative</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_targets</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_target_tasks</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_informative</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__configure</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">,</span> <span class="n">n_informative</span><span class="p">,</span> <span class="n">n_targets</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">,</span> <span class="n">n_informative</span><span class="p">,</span> <span class="n">n_targets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; __configure</span>
+<span class="sd">        </span>
+<span class="sd">        Uses the make_regression function from scikit-learn to generate a </span>
+<span class="sd">        regression problem. This problem will be kept in memory and provided </span>
+<span class="sd">        as demanded.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_samples: int</span>
+<span class="sd">            Total amount of samples to generate.</span>
+<span class="sd">        </span>
+<span class="sd">        n_features: int</span>
+<span class="sd">            Number of features to generate.</span>
+<span class="sd">            </span>
+<span class="sd">        n_informative: int</span>
+<span class="sd">            Number of relevant features, in other words, the number of features </span>
+<span class="sd">            that influence the class label.</span>
+<span class="sd">        </span>
+<span class="sd">        n_targets: int</span>
+<span class="sd">            Number of targeting tasks to generate.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">make_regression</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="n">n_features</span><span class="p">,</span>
+                                         <span class="n">n_informative</span><span class="o">=</span><span class="n">n_informative</span><span class="p">,</span> <span class="n">n_targets</span><span class="o">=</span><span class="n">n_targets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">n_targets</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">=</span> <span class="n">n_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="n">n_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_target_tasks</span> <span class="o">=</span> <span class="n">n_targets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_informative</span> <span class="o">=</span> <span class="n">n_informative</span>
+
+<div class="viewcode-block" id="RegressionGenerator.estimated_remaining_instances"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.estimated_remaining_instances">[docs]</a>    <span class="k">def</span> <span class="nf">estimated_remaining_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.has_more_instances"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.has_more_instances">[docs]</a>    <span class="k">def</span> <span class="nf">has_more_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.next_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.next_instance">[docs]</a>    <span class="k">def</span> <span class="nf">next_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; next_instance</span>
+<span class="sd">        </span>
+<span class="sd">        Returns batch_size samples from the generated regression problem.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch_size: int</span>
+<span class="sd">            The number of sample to return.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Return a tuple with the features matrix and the labels matrix for </span>
+<span class="sd">        the batch_size samples that were requested.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span> <span class="o">+=</span> <span class="n">batch_size</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span> <span class="o">-</span> <span class="n">batch_size</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span> <span class="o">-</span> <span class="n">batch_size</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_target_tasks</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_x</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_instance_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.is_restartable"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.is_restartable">[docs]</a>    <span class="k">def</span> <span class="nf">is_restartable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.restart"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.restart">[docs]</a>    <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.has_more_mini_batch"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.has_more_mini_batch">[docs]</a>    <span class="k">def</span> <span class="nf">has_more_mini_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_num_nominal_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_nominal_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_nominal_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_num_numerical_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_numerical_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_numerical_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_num_values_per_nominal_attribute"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_values_per_nominal_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_values_per_nominal_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_num_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_num_targets"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_targets">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_target_tasks</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_attributes_header"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_attributes_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_classes_header"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_classes_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_last_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_last_instance">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_y</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.prepare_for_use"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.prepare_for_use">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_for_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_plot_name"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_plot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Regression dataset&#39;</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_classes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_classes">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_class_type"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;stream&#39;</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_info"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;RegressionGenerator: n_samples: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span><span class="p">)</span> <span class="o">+</span> \
+               <span class="s1">&#39; - n_features: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">)</span> <span class="o">+</span> \
+               <span class="s1">&#39; - n_informative: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_informative</span><span class="p">)</span> <span class="o">+</span> \
+               <span class="s1">&#39; - n_targets: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_target_tasks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegressionGenerator.get_num_targeting_tasks"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_targeting_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_targeting_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_target_tasks</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>
