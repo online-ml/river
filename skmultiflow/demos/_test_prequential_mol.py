@@ -6,7 +6,8 @@ from sklearn.linear_model.perceptron import Perceptron
 from skmultiflow.classification.perceptron import PerceptronMask
 from skmultiflow.classification.multi_output_learner import MultiOutputLearner
 from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream, FileOption
+from skmultiflow.data.file_stream import FileStream
+from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential

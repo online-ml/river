@@ -1,0 +1,1469 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.evaluation package &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.evaluation.metrics package" href="skmultiflow.evaluation.metrics.html" />
+    <link rel="prev" title="skmultiflow.demos package" href="skmultiflow.demos.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.evaluation.metrics.html" title="skmultiflow.evaluation.metrics package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.demos.html" title="skmultiflow.demos package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" accesskey="U">skmultiflow package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="skmultiflow-evaluation-package">
+<h1>skmultiflow.evaluation package<a class="headerlink" href="#skmultiflow-evaluation-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.evaluation.metrics.html">skmultiflow.evaluation.metrics package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.evaluation.metrics.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.evaluation.metrics.html#module-skmultiflow.evaluation.metrics.metrics">skmultiflow.evaluation.metrics.metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.evaluation.metrics.html#module-skmultiflow.evaluation.metrics">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-skmultiflow.evaluation.base_evaluator">
+<span id="skmultiflow-evaluation-base-evaluator-module"></span><h2>skmultiflow.evaluation.base_evaluator module<a class="headerlink" href="#module-skmultiflow.evaluation.base_evaluator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.evaluation.base_evaluator.BaseEvaluator">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.base_evaluator.</code><code class="descname">BaseEvaluator</code><a class="reference internal" href="_modules/skmultiflow/evaluation/base_evaluator.html#BaseEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>The abstract class that works as a base model for all of this framework’s
+evaluators. It creates a basic interface that evaluation modules should
+follow in order to use them with all the tools available in scikit-workflow.</p>
+<p>This class should not me instantiated, as none of its methods, except the
+get_class_type, are implemented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">NotImplementedError: This is an abstract class.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.evaluation.base_evaluator.BaseEvaluator.eval">
+<code class="descname">eval</code><span class="sig-paren">(</span><em>stream</em>, <em>classifier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/base_evaluator.html#BaseEvaluator.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator.eval" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.base_evaluator.BaseEvaluator.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/base_evaluator.html#BaseEvaluator.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.base_evaluator.BaseEvaluator.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/base_evaluator.html#BaseEvaluator.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.base_evaluator.BaseEvaluator.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/base_evaluator.html#BaseEvaluator.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.base_evaluator.BaseEvaluator.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/base_evaluator.html#BaseEvaluator.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.base_evaluator.BaseEvaluator.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/base_evaluator.html#BaseEvaluator.set_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator.set_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.evaluation.evaluate_holdout">
+<span id="skmultiflow-evaluation-evaluate-holdout-module"></span><h2>skmultiflow.evaluation.evaluate_holdout module<a class="headerlink" href="#module-skmultiflow.evaluation.evaluate_holdout" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.evaluate_holdout.</code><code class="descname">EvaluateHoldout</code><span class="sig-paren">(</span><em>n_wait=10000</em>, <em>max_instances=100000</em>, <em>max_time=inf</em>, <em>output_file=None</em>, <em>batch_size=1</em>, <em>pretrain_size=200</em>, <em>test_size=20000</em>, <em>task_type='classification'</em>, <em>show_plot=False</em>, <em>plot_options=None</em>, <em>dynamic_test_set=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_holdout.html#EvaluateHoldout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator" title="skmultiflow.evaluation.base_evaluator.BaseEvaluator"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.evaluation.base_evaluator.BaseEvaluator</span></code></a></p>
+<p>The holdout evaluation method, or periodic holdout evaluation method, analyses
+each arriving sample, without computing performance metrics, nor predicting
+labels or regressing values, but by updating its statistics.</p>
+<p>The performance evaluation happens at every n_wait analysed samples, at which
+moment the evaluator will test the learners performance on a test set, formed
+by yet unseen samples, which will be used to evaluate performance, but not to
+train the model.</p>
+<p>It’s possible to use the same test set for every test made, but it’s also
+possible to dynamically create test sets, so that they differ from each other.
+If dynamic test sets are enabled, we use the data stream to create test sets
+on the go. This process is more likely to generate test sets that follow the
+current concept, in comparison to static test sets.</p>
+<p>Thus, if concept drift is known to be present in the dataset/generator enabling
+dynamic test sets is highly recommended. If no concept drift is expected,
+disabling this parameter will speed up the evaluation process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n_wait</strong> (<em>int</em><em> (</em><em>Default: 10000</em><em>)</em>) – The number of samples to process between each holdout set test.
+Also defines when to plot points if the plot is active.</li>
+<li><strong>max_instances</strong> (<em>int</em><em> (</em><em>Default: 100000</em><em>)</em>) – The maximum number of samples to process during the evaluation.</li>
+<li><strong>max_time</strong> (<em>float</em><em> (</em><em>Default: float</em><em>(</em><em>&quot;inf&quot;</em><em>)</em><em>)</em>) – The maximum duration of the simulation.</li>
+<li><strong>output_file</strong> (<em>string</em><em>, </em><em>optional</em><em> (</em><em>Default: None</em><em>)</em>) – If specified, this string defines the name of the output file. If
+the file doesn’t exist it will be created.</li>
+<li><strong>batch_size</strong> (<em>int</em><em> (</em><em>Default: 1</em><em>)</em>) – The number of samples to process at each iteration of the algorithm.</li>
+<li><strong>pretrain_size</strong> (<em>int</em><em> (</em><em>Default: 200</em><em>)</em>) – The number of samples to use as an initial training set, which will
+not be accounted by evaluation metrics.</li>
+<li><strong>test_size</strong> (<em>int</em><em> (</em><em>Default: 20000</em><em>)</em>) – The size, in samples, of the test set.</li>
+<li><strong>task_type</strong> (<em>string</em><em> (</em><em>Default: 'classification'</em><em>)</em>) – The type of task to execute. Can be one of the following: ‘classification’,
+‘regression’ or ‘multi_output’.</li>
+<li><strong>show_plot</strong> (<em>bool</em><em> (</em><em>Default: False</em><em>)</em>) – Whether to plot the metrics or not. Plotting will slow down the evaluation
+process.</li>
+<li><strong>plot_options</strong> (<em>list</em><em>, </em><em>optional</em><em> (</em><em>Default: None</em><em>)</em>) – Which metrics to compute, and if show_plot is True, which metrics to
+display. Plot options can contain how many of the following as the user
+wants: ‘performance’, ‘kappa’, ‘scatter’, ‘hamming_score’, ‘hamming_loss’,
+‘exact_match’, ‘j_index’, ‘mean_square_error’, ‘mean_absolute_error’,
+‘true_vs_predicts’, ‘kappa_t’, ‘kappa_m’]</li>
+<li><strong>dynamic_test_set</strong> (<em>bool</em><em> (</em><em>Default: False</em><em>)</em>) – Whether to change the test set at each test or to use always the same.
+If True it will always change the test set, otherwise it will use one
+test set for all tests.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: A ValueError is raised in 3 situations. If the training set</li>
+<li>size is set to 0. If the task type passed to __init__ is not supported.</li>
+<li>Or if any of the plot options passed to __init__ is not supported.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>It’s important to note that testing the model too often, which means choosing
+a n_wait parameter too small, will significantly slow the evaluation process,
+depending on the test size.</p>
+<p>This evaluator accepts to types of evaluation processes. It can either evaluate
+a single learner while computing its metrics or it can evaluate multiple learners
+at a time, as a means of comparing different approaches to the same problem.</p>
+<p class="rubric">Examples</p>
+<p>The first example demonstrates how to use the evaluator to evaluate one learner
+&gt;&gt;&gt; from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+&gt;&gt;&gt; from skmultiflow.core.pipeline import Pipeline
+&gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream
+&gt;&gt;&gt; from skmultiflow.options.file_option import FileOption
+&gt;&gt;&gt; from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
+&gt;&gt;&gt; # Setup the File Stream
+&gt;&gt;&gt; opt = FileOption(“FILE”, “OPT_NAME”, “skmultiflow/datasets/covtype.csv”, “CSV”, False)
+&gt;&gt;&gt; stream = FileStream(opt, -1, 1)
+&gt;&gt;&gt; stream.prepare_for_use()
+&gt;&gt;&gt; # Setup the classifier
+&gt;&gt;&gt; classifier = PassiveAggressiveClassifier()
+&gt;&gt;&gt; # Setup the pipeline
+&gt;&gt;&gt; pipe = Pipeline([(‘Classifier’, classifier)])
+&gt;&gt;&gt; # Setup the evaluator
+&gt;&gt;&gt; eval = EvaluateHoldout(pretrain_size=200, max_instances=100000, batch_size=1, n_wait=10000, max_time=1000,
+… output_file=None, task_type=’classification’, show_plot=True, plot_options=[‘kappa’, ‘performance’],
+… test_size=5000, dynamic_test_set=True)
+&gt;&gt;&gt; # Evaluate
+&gt;&gt;&gt; eval.eval(stream=stream, classifier=pipe)</p>
+<p>The second example will demonstrate how to compare two classifiers with
+the EvaluateHoldout
+&gt;&gt;&gt; from skmultiflow.data.generators.waveform_generator import WaveformGenerator
+&gt;&gt;&gt; from sklearn.linear_model.stochastic_gradient import SGDClassifier
+&gt;&gt;&gt; from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
+&gt;&gt;&gt; from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+&gt;&gt;&gt; stream = WaveformGenerator()
+&gt;&gt;&gt; stream.prepare_for_use()
+&gt;&gt;&gt; clf_one = SGDClassifier()
+&gt;&gt;&gt; clf_two = KNNAdwin(k=8,max_window_size=2000)
+&gt;&gt;&gt; classifier = [clf_one, clf_two]
+&gt;&gt;&gt; eval = EvaluateHoldout(pretrain_size=200, test_size=5000, dynamic_test_set=True, max_instances=100000,
+… batch_size=1, n_wait=10000, max_time=1000, output_file=None, task_type=’classification’,
+… show_plot=True, plot_options=[‘kappa’, ‘performance’])
+&gt;&gt;&gt; eval.eval(stream=stream, classifier=classifier)</p>
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.eval">
+<code class="descname">eval</code><span class="sig-paren">(</span><em>stream</em>, <em>classifier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_holdout.html#EvaluateHoldout.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.eval" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>stream</strong> (<em>A stream</em><em> (</em><em>an extension from BaseInstanceStream</em><em>)</em>) – The stream from which to draw the samples.</li>
+<li><strong>classifier</strong> (<em>A learner</em><em> (</em><em>an extension from BaseClassifier</em><em>) or </em><em>a list of learners.</em>) – The learner or learners on which to train the model and measure the
+performance metrics.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Returns the trained learner.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The classifier parameter should be an extension from the BaseClassifier. In
+the future, when BaseRegressor is created, it could be an axtension from that
+class as well.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_holdout.html#EvaluateHoldout.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_holdout.html#EvaluateHoldout.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partially fit all the learners on the given data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data upon which the algorithm will create its model.</li>
+<li><strong>y</strong> (<em>Array-like</em>) – An array-like containing the classification targets for all
+samples in X.</li>
+<li><strong>classes</strong> (<em>list</em>) – Stores all the classes that may be encountered during the
+classification task.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_holdout.html#EvaluateHoldout.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts the labels of the X samples, by calling the predict
+function of all the learners.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – All the samples we want to predict the label for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>A list containing the predicted labels for all instances in X in</em></li>
+<li><em>all learners.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_holdout.html#EvaluateHoldout.set_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function allows the users to change some of the evaluator’s parameters,
+by passing a dictionary where keys are the parameters names, and values are
+the new parameters’ values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dict</strong> (<em>Dictionary</em>) – A dictionary where the keys are the names of attributes the user
+wants to change, and the values are the new values of those attributes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.evaluation.evaluate_prequential">
+<span id="skmultiflow-evaluation-evaluate-prequential-module"></span><h2>skmultiflow.evaluation.evaluate_prequential module<a class="headerlink" href="#module-skmultiflow.evaluation.evaluate_prequential" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.evaluate_prequential.</code><code class="descname">EvaluatePrequential</code><span class="sig-paren">(</span><em>n_wait=200</em>, <em>max_instances=100000</em>, <em>max_time=inf</em>, <em>output_file=None</em>, <em>batch_size=1</em>, <em>pretrain_size=200</em>, <em>task_type='classification'</em>, <em>show_plot=False</em>, <em>plot_options=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_prequential.html#EvaluatePrequential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.evaluation.base_evaluator.BaseEvaluator" title="skmultiflow.evaluation.base_evaluator.BaseEvaluator"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.evaluation.base_evaluator.BaseEvaluator</span></code></a></p>
+<p>The prequential evaluation method, or interleaved test-then-train method,
+is an alternative to the traditional holdout evaluation, inherited from
+batch setting problems.</p>
+<p>The prequential evaluation is designed specifically for stream settings,
+in the sense that each sample serves two purposes, and that samples are
+analysed sequentially, in order of arrival, and become immediately
+inaccessible by the means of the stream.</p>
+<p>This method consists of using each sample to test the model, which means
+to make a predictions or a regression, and then the same sample is used
+to train the learner (partial fit it). This way the learner is always
+being tested on samples that it hasn’t seen yet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n_wait</strong> (<em>int</em><em> (</em><em>Default: 10000</em><em>)</em>) – The number of samples to process between each holdout set test.
+Also defines when to plot points if the plot is active.</li>
+<li><strong>max_instances</strong> (<em>int</em><em> (</em><em>Default: 100000</em><em>)</em>) – The maximum number of samples to process during the evaluation.</li>
+<li><strong>max_time</strong> (<em>float</em><em> (</em><em>Default: float</em><em>(</em><em>&quot;inf&quot;</em><em>)</em><em>)</em>) – The maximum duration of the simulation.</li>
+<li><strong>output_file</strong> (<em>string</em><em>, </em><em>optional</em><em> (</em><em>Default: None</em><em>)</em>) – If specified, this string defines the name of the output file. If
+the file doesn’t exist it will be created.</li>
+<li><strong>batch_size</strong> (<em>int</em><em> (</em><em>Default: 1</em><em>)</em>) – The number of samples to process at each iteration of the algorithm.</li>
+<li><strong>pretrain_size</strong> (<em>int</em><em> (</em><em>Default: 200</em><em>)</em>) – The number of samples to use as an initial training set, which will
+not be accounted by evaluation metrics.</li>
+<li><strong>task_type</strong> (<em>string</em><em> (</em><em>Default: 'classification'</em><em>)</em>) – The type of task to execute. Can be one of the following: ‘classification’,
+‘regression’ or ‘multi_output’.</li>
+<li><strong>show_plot</strong> (<em>bool</em><em> (</em><em>Default: False</em><em>)</em>) – Whether to plot the metrics or not. Plotting will slow down the evaluation
+process.</li>
+<li><strong>plot_options</strong> (<em>list</em><em>, </em><em>optional</em><em> (</em><em>Default: None</em><em>)</em>) – Which metrics to compute, and if show_plot is True, which metrics to
+display. Plot options can contain how many of the following as the user
+wants: ‘performance’, ‘kappa’, ‘scatter’, ‘hamming_score’, ‘hamming_loss’,
+‘exact_match’, ‘j_index’, ‘mean_square_error’, ‘mean_absolute_error’,
+‘true_vs_predicts’, ‘kappa_t’, ‘kappa_m’]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: A ValueError is raised in 2 situations. If the task type passed to</li>
+<li>__init__ is not supported. Or if any of the plot options passed to __init__ is</li>
+<li>not supported.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This evaluator accepts to types of evaluation processes. It can either evaluate
+a single learner while computing its metrics or it can evaluate multiple learners
+at a time, as a means of comparing different approaches to the same problem.</p>
+<p>Parameter show_scatter_points should only be used for small datasets, and
+non-intensive evaluations, as it will drastically slower the evaluation process.</p>
+<p class="rubric">Examples</p>
+<p>The first example demonstrates how to use the evaluator to evaluate one learner
+&gt;&gt;&gt; from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+&gt;&gt;&gt; from skmultiflow.core.pipeline import Pipeline
+&gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream
+&gt;&gt;&gt; from skmultiflow.options.file_option import FileOption
+&gt;&gt;&gt; from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+&gt;&gt;&gt; # Setup the File Stream
+&gt;&gt;&gt; opt = FileOption(“FILE”, “OPT_NAME”, “skmultiflow/datasets/covtype.csv”, “CSV”, False)
+&gt;&gt;&gt; stream = FileStream(opt, -1, 1)
+&gt;&gt;&gt; stream.prepare_for_use()
+&gt;&gt;&gt; # Setup the classifier
+&gt;&gt;&gt; classifier = PassiveAggressiveClassifier()
+&gt;&gt;&gt; # Setup the pipeline
+&gt;&gt;&gt; pipe = Pipeline([(‘Classifier’, classifier)])
+&gt;&gt;&gt; # Setup the evaluator
+&gt;&gt;&gt; eval = EvaluatePrequential(pretrain_size=200, max_instances=10000, batch_size=1, n_wait=200, max_time=1000,
+… output_file=None, task_type=’classification’, show_plot=True, plot_options=[‘kappa’, ‘kappa_t’, ‘performance’])
+&gt;&gt;&gt; # Evaluate
+&gt;&gt;&gt; eval.eval(stream=stream, classifier=pipe)</p>
+<p>The second example will demonstrate how to compare two classifiers with
+the EvaluatePrequential
+&gt;&gt;&gt; from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+&gt;&gt;&gt; from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+&gt;&gt;&gt; from skmultiflow.core.pipeline import Pipeline
+&gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream
+&gt;&gt;&gt; from skmultiflow.options.file_option import FileOption
+&gt;&gt;&gt; from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+&gt;&gt;&gt; # Setup the File Stream
+&gt;&gt;&gt; opt = FileOption(“FILE”, “OPT_NAME”, “skmultiflow/datasets/covtype.csv”, “CSV”, False)
+&gt;&gt;&gt; stream = FileStream(opt, -1, 1)
+&gt;&gt;&gt; stream.prepare_for_use()
+&gt;&gt;&gt; # Setup the classifiers
+&gt;&gt;&gt; clf_one = PassiveAggressiveClassifier()
+&gt;&gt;&gt; clf_two = KNNAdwin(k=8)
+&gt;&gt;&gt; # Setup the pipeline for clf_one
+&gt;&gt;&gt; pipe = Pipeline([(‘Classifier’, clf_one)])
+&gt;&gt;&gt; # Create the list to hold both classifiers
+&gt;&gt;&gt; classifier = [pipe, clf_two]
+&gt;&gt;&gt; # Setup the evaluator
+&gt;&gt;&gt; eval = EvaluatePrequential(pretrain_size=200, max_instances=10000, batch_size=1, n_wait=200, max_time=1000,
+… output_file=None, task_type=’classification’, show_plot=True, plot_options=[‘kappa’, ‘kappa_t’, ‘performance’])
+&gt;&gt;&gt; # Evaluate
+&gt;&gt;&gt; eval.eval(stream=stream, classifier=classifier)</p>
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.eval">
+<code class="descname">eval</code><span class="sig-paren">(</span><em>stream</em>, <em>classifier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_prequential.html#EvaluatePrequential.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates a learner or set of learners by feeding them with the stream
+samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>stream</strong> (<em>A stream</em><em> (</em><em>an extension from BaseInstanceStream</em><em>)</em>) – The stream from which to draw the samples.</li>
+<li><strong>classifier</strong> (<em>A learner</em><em> (</em><em>an extension from BaseClassifier</em><em>) or </em><em>a list of learners.</em>) – The learner or learners on which to train the model and measure the
+performance metrics.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Returns the trained learner.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The classifier parameter should be an extension from the BaseClassifier. In
+the future, when BaseRegressor is created, it could be an axtension from that
+class as well.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_prequential.html#EvaluatePrequential.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_prequential.html#EvaluatePrequential.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partially fit all the learners on the given data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data upon which the algorithm will create its model.</li>
+<li><strong>y</strong> (<em>Array-like</em>) – An array-like containing the classification targets for all
+samples in X.</li>
+<li><strong>classes</strong> (<em>list</em>) – Stores all the classes that may be encountered during the
+classification task.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_prequential.html#EvaluatePrequential.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts the labels of the X samples, by calling the predict
+function of all the learners.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – All the samples we want to predict the label for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>A list containing the predicted labels for all instances in X in</em></li>
+<li><em>all learners.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_prequential.html#EvaluatePrequential.set_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function allows the users to change some of the evaluator’s parameters,
+by passing a dictionary where keys are the parameters names, and values are
+the new parameters’ values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dict</strong> (<em>Dictionary</em>) – A dictionary where the keys are the names of attributes the user
+wants to change, and the values are the new values of those attributes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.evaluation.evaluate_stream_gen_speed">
+<span id="skmultiflow-evaluation-evaluate-stream-gen-speed-module"></span><h2>skmultiflow.evaluation.evaluate_stream_gen_speed module<a class="headerlink" href="#module-skmultiflow.evaluation.evaluate_stream_gen_speed" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.evaluate_stream_gen_speed.</code><code class="descname">EvaluateStreamGenerationSpeed</code><span class="sig-paren">(</span><em>num_samples=100000</em>, <em>max_time=inf</em>, <em>output_file=None</em>, <em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_stream_gen_speed.html#EvaluateStreamGenerationSpeed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>EvaluateStreamGeneration</p>
+<p>Measures the stream’s sample generation time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_samples</strong> (<em>int</em><em> (</em><em>Default: 100000</em><em>)</em>) – The number of samples to generate.</li>
+<li><strong>max_time</strong> (<em>float</em><em> (</em><em>Default: float</em><em>(</em><em>&quot;inf&quot;</em><em>)</em><em>)</em>) – The maximum simulation time.</li>
+<li><strong>output_file</strong> (<em>string</em><em>, </em><em>optional</em><em> (</em><em>Default: None</em><em>)</em>) – The name of the output file (Not yet implemented).</li>
+<li><strong>batch_size</strong> (<em>int</em><em> (</em><em>Default: 1</em><em>)</em>) – The number of samples to generate at a time.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.data.generators.random_rbf_generator_drift</span> <span class="k">import</span> <span class="n">RandomRBFGeneratorDrift</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.evaluation.evaluate_stream_gen_speed</span> <span class="k">import</span> <span class="n">EvaluateStreamGenerationSpeed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">RandomRBFGeneratorDrift</span><span class="p">(</span><span class="n">change_speed</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">prepare_for_use</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span> <span class="o">=</span> <span class="n">EvaluateStreamGenerationSpeed</span><span class="p">(</span><span class="mi">100000</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="nb">eval</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+<span class="go">Evaluation time: 110.064</span>
+<span class="go">Generated 100000 samples</span>
+<span class="go">Samples/second = 908.56</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.eval">
+<code class="descname">eval</code><span class="sig-paren">(</span><em>stream</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_stream_gen_speed.html#EvaluateStreamGenerationSpeed.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will evaluate the stream passed as parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>stream</strong> (<em>A stream</em><em> (</em><em>an extension from BaseInstanceStream</em><em>)</em>) – The stream from which to draw the samples.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">The used stream.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_stream_gen_speed.html#EvaluateStreamGenerationSpeed.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_stream_gen_speed.html#EvaluateStreamGenerationSpeed.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_stream_gen_speed.html#EvaluateStreamGenerationSpeed.set_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function allows the users to change some of the evaluator’s parameters,
+by passing a dictionary where keys are the parameters names, and values are
+the new parameters’ values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dict</strong> (<em>Dictionary</em>) – A dictionary where the keys are the names of attributes the user
+wants to change, and the values are the new values of those attributes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.evaluation.measure_collection">
+<span id="skmultiflow-evaluation-measure-collection-module"></span><h2>skmultiflow.evaluation.measure_collection module<a class="headerlink" href="#module-skmultiflow.evaluation.measure_collection" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.measure_collection.</code><code class="descname">ClassificationMeasurements</code><span class="sig-paren">(</span><em>targets=None</em>, <em>dtype=&lt;class 'numpy.int64'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>Class used to keep updated statistics about a classifier, in order
+to be able to provide, at any given moment, any relevant metric about
+that classifier.</p>
+<p>It combines a ConfusionMatrix object, with some additional statistics,
+to compute a range of performance metrics.</p>
+<p>In order to keep statistics updated, the class won’t require lots of
+information, but two: the predictions and true labels.</p>
+<p>At any given moment, it can compute the following statistics: performance,
+kappa, kappa_t, kappa_m, majority_class and error rate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>targets</strong> (<em>list</em>) – A list containing the possible labels.</li>
+<li><strong>dtype</strong> (<em>data type</em><em> (</em><em>Default: numpy.int64</em><em>)</em>) – The data type of the existing labels.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.add_result">
+<code class="descname">add_result</code><span class="sig-paren">(</span><em>sample</em>, <em>prediction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.add_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.add_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates its statistics with the results of a prediction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sample</strong> (<em>int</em>) – The true label.</li>
+<li><strong>prediction</strong> (<em>int</em>) – The classifier’s prediction</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_incorrectly_classified_ratio">
+<code class="descname">get_incorrectly_classified_ratio</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_incorrectly_classified_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_incorrectly_classified_ratio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_kappa">
+<code class="descname">get_kappa</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_kappa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_kappa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Cohen’s kappa coefficient.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the Cohen’s kappa coefficient.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_kappa_m">
+<code class="descname">get_kappa_m</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_kappa_m"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_kappa_m" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_kappa_t</p>
+<p>Computes the Cohen’s kappa M coefficient.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the Cohen’s kappa M coefficient.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_kappa_t">
+<code class="descname">get_kappa_t</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_kappa_t"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_kappa_t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Cohen’s kappa T coefficient. This measures the
+temporal correlation between samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the Cohen’s kappa T coefficient.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_last">
+<code class="descname">get_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_last" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_majority_class">
+<code class="descname">get_majority_class</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_majority_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_majority_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the true majority class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the true majority class.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_performance">
+<code class="descname">get_performance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.get_performance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.get_performance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the performance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the performance.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.ClassificationMeasurements.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>targets=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#ClassificationMeasurements.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.ClassificationMeasurements.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.measure_collection.</code><code class="descname">MultiOutputMeasurements</code><span class="sig-paren">(</span><em>targets=None</em>, <em>dtype=&lt;class 'numpy.int64'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>This class will keep updated statistics about a multi output classifier,
+using a confusion matrix adapted to multi output problems, the
+MOLConfusionMatrix, alongside other of the classifier’s relevant
+attributes.</p>
+<p>The performance metrics for multi output tasks are different from those used
+for normal classification tasks. Thus, the statistics provided by this class
+are different from those provided by the ClassificationMeasurements and from
+the WindowClassificationMeasurements.</p>
+<p>At any given moment, it can compute the following statistics: hamming_loss,
+hamming_score, exact_match and j_index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>targets</strong> (<em>list</em>) – A list containing the possible labels.</li>
+<li><strong>dtype</strong> (<em>data type</em><em> (</em><em>Default: numpy.int64</em><em>)</em>) – The data type of the existing labels.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.add_result">
+<code class="descname">add_result</code><span class="sig-paren">(</span><em>sample</em>, <em>prediction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.add_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.add_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates its statistics with the results of a prediction.</p>
+<p>Adds the result to the MOLConfusionMatrix and update exact_matches and
+j-index sum counts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sample</strong> (<em>int</em>) – The true label.</li>
+<li><strong>prediction</strong> (<em>int</em>) – The classifier’s prediction</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_exact_match">
+<code class="descname">get_exact_match</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.get_exact_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_exact_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the exact match metric.</p>
+<p>This is the most strict multi output metric, defined as the number of
+samples that have all their labels correctly classified, divided by the
+total number of samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the exact match metric.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_hamming_loss">
+<code class="descname">get_hamming_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.get_hamming_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_hamming_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Hamming loss, which is the complement of the hamming
+score metric.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">The hamming loss.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_hamming_score">
+<code class="descname">get_hamming_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.get_hamming_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_hamming_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the hamming score, defined as the number of correctly classified
+labels divided by the total number of labels classified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">The hamming score.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_j_index">
+<code class="descname">get_j_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.get_j_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_j_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Jaccard index, also known as the intersection over union
+metric. It is calculated by dividing the number of correctly classified
+labels by the union of predicted and true labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">The Jaccard index.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_last">
+<code class="descname">get_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.get_last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_last" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_total_sum">
+<code class="descname">get_total_sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.get_total_sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.get_total_sum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>targets=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#MultiOutputMeasurements.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.MultiOutputMeasurements.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="skmultiflow.evaluation.measure_collection.RegressionMeasurements">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.measure_collection.</code><code class="descname">RegressionMeasurements</code><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#RegressionMeasurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.RegressionMeasurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>This class is used to keep updated statistics over a regression
+learner in a regression problem context.</p>
+<p>It will keep track of global metrics, that can be provided at
+any moment. The relevant metrics kept by an instance of this class
+are: MSE (mean square error) and MAE (mean absolute error).</p>
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.RegressionMeasurements.add_result">
+<code class="descname">add_result</code><span class="sig-paren">(</span><em>sample</em>, <em>prediction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#RegressionMeasurements.add_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.RegressionMeasurements.add_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the true label and the prediction to update the statistics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sample</strong> (<em>int</em>) – The true label.</li>
+<li><strong>prediction</strong> (<em>int</em>) – The classifier’s prediction</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_average_error">
+<code class="descname">get_average_error</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#RegressionMeasurements.get_average_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_average_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the mean absolute error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the mean absolute error.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#RegressionMeasurements.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#RegressionMeasurements.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_last">
+<code class="descname">get_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#RegressionMeasurements.get_last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_last" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_mean_square_error">
+<code class="descname">get_mean_square_error</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#RegressionMeasurements.get_mean_square_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.RegressionMeasurements.get_mean_square_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the mean square error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the mean square error.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.RegressionMeasurements.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#RegressionMeasurements.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.RegressionMeasurements.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.measure_collection.</code><code class="descname">WindowClassificationMeasurements</code><span class="sig-paren">(</span><em>targets=None</em>, <em>dtype=&lt;class 'numpy.int64'&gt;</em>, <em>window_size=200</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>This class will maintain a fixed sized window of the newest information
+about one classifier. It can provide, as requested, any of the relevant
+current metrics about the classifier, measured inside the window.</p>
+<p>To keep track of statistics inside a window, the class will use a
+ConfusionMatrix object, alongside FastBuffers, to simulate fixed sized
+windows of the important classifier’s attributes.</p>
+<p>Its functionalities are somewhat similar to those of the
+ClassificationMeasurements class. The difference is that the statistics
+kept by this class are local, or partial, while the statistics kept by
+the ClassificationMeasurements class are global.</p>
+<p>At any given moment, it can compute the following statistics: performance,
+kappa, kappa_t, kappa_m, majority_class and error rate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>targets</strong> (<em>list</em>) – A list containing the possible labels.</li>
+<li><strong>dtype</strong> (<em>data type</em><em> (</em><em>Default: numpy.int64</em><em>)</em>) – The data type of the existing labels.</li>
+<li><strong>window_size</strong> (<em>int</em><em> (</em><em>Default: 200</em><em>)</em>) – The width of the window. Determines how many samples the object
+can see.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.add_result">
+<code class="descname">add_result</code><span class="sig-paren">(</span><em>sample</em>, <em>prediction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.add_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.add_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates its statistics with the results of a prediction. If needed it
+will remove samples from the observation window.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sample</strong> (<em>int</em>) – The true label.</li>
+<li><strong>prediction</strong> (<em>int</em>) – The classifier’s prediction</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_incorrectly_classified_ratio">
+<code class="descname">get_incorrectly_classified_ratio</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_incorrectly_classified_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_incorrectly_classified_ratio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_kappa">
+<code class="descname">get_kappa</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_kappa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_kappa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local Cohen’s kappa coefficient.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the window/local Cohen’s kappa coefficient.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_kappa_m">
+<code class="descname">get_kappa_m</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_kappa_m"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_kappa_m" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_kappa_t</p>
+<p>Computes the window/local Cohen’s kappa M coefficient.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the window/local Cohen’s kappa M coefficient.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_kappa_t">
+<code class="descname">get_kappa_t</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_kappa_t"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_kappa_t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local Cohen’s kappa T coefficient. This measures
+the temporal correlation between samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the window/local Cohen’s kappa T coefficient.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_last">
+<code class="descname">get_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_last" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_majority_class">
+<code class="descname">get_majority_class</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_majority_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_majority_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local true majority class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the true window/local majority class.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_performance">
+<code class="descname">get_performance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.get_performance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.get_performance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local performance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the window/local performance.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>targets=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowClassificationMeasurements.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowClassificationMeasurements.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.measure_collection.</code><code class="descname">WindowMultiOutputMeasurements</code><span class="sig-paren">(</span><em>targets=None</em>, <em>dtype=&lt;class 'numpy.int64'&gt;</em>, <em>window_size=200</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>MultiOutputMeasurements</p>
+<p>This class will maintain a fixed sized window of the newest information
+about one classifier. It can provide, as requested, any of the relevant
+current metrics about the classifier, measured inside the window.</p>
+<p>This class will keep updated statistics about a multi output classifier,
+using a confusion matrix adapted to multi output problems, the
+MOLConfusionMatrix, alongside other of the classifier’s relevant
+attributes stored in ComplexFastBuffer objects, which will simulate
+fixed sized windows.</p>
+<p>Its functionalities are somewhat similar to those of the
+MultiOutputMeasurements class. The difference is that the statistics
+kept by this class are local, or partial, while the statistics kept by
+the MultiOutputMeasurements class are global.</p>
+<p>At any given moment, it can compute the following statistics: hamming_loss,
+hamming_score, exact_match and j_index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>targets</strong> (<em>list</em>) – A list containing the possible labels.</li>
+<li><strong>dtype</strong> (<em>data type</em><em> (</em><em>Default: numpy.int64</em><em>)</em>) – The data type of the existing labels.</li>
+<li><strong>window_size</strong> (<em>int</em><em> (</em><em>Default: 200</em><em>)</em>) – The width of the window. Determines how many samples the object
+can see.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.add_result">
+<code class="descname">add_result</code><span class="sig-paren">(</span><em>sample</em>, <em>prediction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.add_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.add_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates its statistics with the results of a prediction.</p>
+<p>Adds the result to the MOLConfusionMatrix, and updates the
+ComplexFastBuffer objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sample</strong> (<em>int</em>) – The true label.</li>
+<li><strong>prediction</strong> (<em>int</em>) – The classifier’s prediction</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_exact_match">
+<code class="descname">get_exact_match</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.get_exact_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_exact_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local exact match metric.</p>
+<p>This is the most strict multi output metric, defined as the number of
+samples that have all their labels correctly classified, divided by the
+total number of samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the window/local exact match metric.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_hamming_loss">
+<code class="descname">get_hamming_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.get_hamming_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_hamming_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local Hamming loss, which is the complement of
+the hamming score metric.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">The window/local hamming loss.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_hamming_score">
+<code class="descname">get_hamming_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.get_hamming_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_hamming_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local hamming score, defined as the number of
+correctly classified labels divided by the total number of labels
+classified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">The window/local hamming score.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_j_index">
+<code class="descname">get_j_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.get_j_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_j_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local Jaccard index, also known as the intersection
+over union metric. It is calculated by dividing the number of correctly
+classified labels by the union of predicted and true labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">The window/local Jaccard index.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_last">
+<code class="descname">get_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.get_last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_last" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_total_sum">
+<code class="descname">get_total_sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.get_total_sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.get_total_sum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>targets=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowMultiOutputMeasurements.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements">
+<em class="property">class </em><code class="descclassname">skmultiflow.evaluation.measure_collection.</code><code class="descname">WindowRegressionMeasurements</code><span class="sig-paren">(</span><em>window_size=200</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowRegressionMeasurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>This class is used to keep updated statistics over a regression
+learner in a regression problem context inside a fixed sized window.
+It uses FastBuffer objects to simulate the fixed sized windows.</p>
+<p>It will keep track of partial metrics, that can be provided at
+any moment. The relevant metrics kept by an instance of this class
+are: MSE (mean square error) and MAE (mean absolute error).</p>
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.add_result">
+<code class="descname">add_result</code><span class="sig-paren">(</span><em>sample</em>, <em>prediction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowRegressionMeasurements.add_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.add_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the true label and the prediction to update the statistics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sample</strong> (<em>int</em>) – The true label.</li>
+<li><strong>prediction</strong> (<em>int</em>) – The classifier’s prediction</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_average_error">
+<code class="descname">get_average_error</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowRegressionMeasurements.get_average_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_average_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local mean absolute error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the window/local mean absolute error.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowRegressionMeasurements.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowRegressionMeasurements.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_last">
+<code class="descname">get_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowRegressionMeasurements.get_last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_last" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_mean_square_error">
+<code class="descname">get_mean_square_error</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowRegressionMeasurements.get_mean_square_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.get_mean_square_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the window/local mean square error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Returns the window/local mean square error.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/measure_collection.html#WindowRegressionMeasurements.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.measure_collection.WindowRegressionMeasurements.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.evaluation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.evaluation" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">skmultiflow.evaluation package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.evaluation.base_evaluator">skmultiflow.evaluation.base_evaluator module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.evaluation.evaluate_holdout">skmultiflow.evaluation.evaluate_holdout module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.evaluation.evaluate_prequential">skmultiflow.evaluation.evaluate_prequential module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.evaluation.evaluate_stream_gen_speed">skmultiflow.evaluation.evaluate_stream_gen_speed module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.evaluation.measure_collection">skmultiflow.evaluation.measure_collection module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.evaluation">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.demos.html"
+                        title="previous chapter">skmultiflow.demos package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.evaluation.metrics.html"
+                        title="next chapter">skmultiflow.evaluation.metrics package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.evaluation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.evaluation.metrics.html" title="skmultiflow.evaluation.metrics package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.demos.html" title="skmultiflow.demos package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

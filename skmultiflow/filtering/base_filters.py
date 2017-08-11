@@ -106,9 +106,7 @@ class MissingValuesCleaner(BaseTransform):
             else:
                 return self.new_value
         elif self.strategy == 'median':
-            print(self.window.get_queue())
             if not self.window.isempty():
-                print('go2')
                 return np.median(np.array(self.window.get_queue())[:, column_index:column_index+1].flatten())
             else:
                 return self.new_value

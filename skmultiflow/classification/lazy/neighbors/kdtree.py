@@ -3,7 +3,7 @@ __author__ = 'Guilherme Matsumoto'
 import numpy as np
 import copy as cp
 from skmultiflow.core.base_object import BaseObject
-from skmultiflow.classification.lazy.neighbours.distances import mixed_distance, euclidean_distance
+from skmultiflow.classification.lazy.neighbors.distances import mixed_distance, euclidean_distance
 from skmultiflow.core.utils.utils import *
 
 

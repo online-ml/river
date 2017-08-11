@@ -552,9 +552,10 @@ class EvaluationVisualizer(BaseListener):
                                                                             label='True y')
             handle = [self.line_regression_true]
 
+            self.line_regression_pred = [None for i in range(self.n_learners)]
+
             for i in range(self.n_learners):
-                self.line_regression_pred[i], = self.subplot_true_vs_predicts.plot(self.X, self.regression_pred[i],
-                                                                                label='Classifier '+str(i)+' - Predicted y', linestyle='dotted')
+                self.line_regression_pred[i], = self.subplot_true_vs_predicts.plot(self.X, self.regression_pred[i],label='Classifier '+str(i)+' - Predicted y', linestyle='dotted')
                 handle.append(self.line_regression_pred[i])
 
             self.subplot_true_vs_predicts.legend(handles=handle)
@@ -816,8 +817,8 @@ class EvaluationVisualizer(BaseListener):
                 self.regression_pred[i].append(dict['true_vs_predicts'][i][1])
                 scat_pred = self.subplot_true_vs_predicts.scatter(self.X, self.regression_pred[i], s=6,
                                                                 label='Clf '+str(i)+' - Predictions', c=self.COLOR_MAP[i%len(self.COLOR_MAP)])
-                minimum = min([min(self.regression_pred[i]), min(self.regression_true[i]), minimum])
-                maximum = max([max(self.regression_pred[i]), max(self.regression_true[i]), maximum])
+                minimum = min([min(self.regression_pred[i]), min(self.regression_true), minimum])
+                maximum = max([max(self.regression_pred[i]), max(self.regression_true), maximum])
 
             self.subplot_true_vs_predicts.set_ylim([minimum - 1., maximum + 1.])
             self.subplot_true_vs_predicts.set_xlim([0, 1.2 * np.max(self.X)])

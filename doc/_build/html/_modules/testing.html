@@ -1,0 +1,184 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>testing &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for testing</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Guilherme Matsumoto&#39;</span>
+
+<span class="kn">import</span> <span class="nn">skmultiflow.demos._test_stream_classifier</span> <span class="k">as</span> <span class="nn">spc</span>
+<span class="kn">import</span> <span class="nn">skmultiflow.demos._test_pipeline</span> <span class="k">as</span> <span class="nn">ewp</span>
+<span class="kn">import</span> <span class="nn">skmultiflow.demos._test_stream_speed</span> <span class="k">as</span> <span class="nn">ess</span>
+<span class="kn">import</span> <span class="nn">skmultiflow.demos._test_prequential</span> <span class="k">as</span> <span class="nn">evp</span>
+<span class="kn">import</span> <span class="nn">skmultiflow.demos._test_mol</span> <span class="k">as</span> <span class="nn">emol</span>
+<span class="kn">import</span> <span class="nn">skmultiflow.demos._test_comparison_prequential</span> <span class="k">as</span> <span class="nn">comp</span>
+<span class="kn">import</span> <span class="nn">skmultiflow.demos._test_kdtree_compare</span> <span class="k">as</span> <span class="nn">kdc</span>
+
+
+<div class="viewcode-block" id="demoSCP"><a class="viewcode-back" href="../testing.html#testing.demoSCP">[docs]</a><span class="k">def</span> <span class="nf">demoSCP</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Demo for a stream plus a classifier - No evaluation module used</span>
+<span class="sd">    </span>
+<span class="sd">        Used mainly before the Pipeline and Prequential evaluation were created    </span>
+<span class="sd">        Stream: FileStream with covtype.csv</span>
+<span class="sd">        Classifier: Pipeline with Perceptron classifier</span>
+<span class="sd">        Evaluator: No evaluator</span>
+<span class="sd">        </span>
+<span class="sd">    :return: No return</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spc</span><span class="o">.</span><span class="n">demo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="demo_pipeline"><a class="viewcode-back" href="../testing.html#testing.demo_pipeline">[docs]</a><span class="k">def</span> <span class="nf">demo_pipeline</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Demo for a Prequential Evaluator with a Pipeline as the main Classifier</span>
+<span class="sd">    </span>
+<span class="sd">        For this example, the Pipeline was initialized with only one classifier and no transforms.</span>
+<span class="sd">        Stream: FileStream with covtype.csv</span>
+<span class="sd">        Classifier: Pipeline with PassiveAgressiveClassifier classifier</span>
+<span class="sd">        Evaluator: PrequentialEvaluator</span>
+<span class="sd">    </span>
+<span class="sd">    :return: No return</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ewp</span><span class="o">.</span><span class="n">demo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="demo_preq"><a class="viewcode-back" href="../testing.html#testing.demo_preq">[docs]</a><span class="k">def</span> <span class="nf">demo_preq</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Demo for a Prequential evaluation</span>
+<span class="sd">        </span>
+<span class="sd">        Stream: FileStream with covtype.csv</span>
+<span class="sd">        Classifier: Perceptron classifier</span>
+<span class="sd">        Evaluator: PrequentialEvaluator</span>
+<span class="sd">    </span>
+<span class="sd">    :return: No returns </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">evp</span><span class="o">.</span><span class="n">demo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="demo_stream_speed"><a class="viewcode-back" href="../testing.html#testing.demo_stream_speed">[docs]</a><span class="k">def</span> <span class="nf">demo_stream_speed</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Demo for stream generation speed</span>
+<span class="sd">    </span>
+<span class="sd">        Stream: Various option - change in skmultiflow.demos.evalStreamSpeed</span>
+<span class="sd">        Evaluator: EvaluateStreamGenerationSpeed</span>
+<span class="sd">    </span>
+<span class="sd">    :return: </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ess</span><span class="o">.</span><span class="n">demo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="demo_multi_output"><a class="viewcode-back" href="../testing.html#testing.demo_multi_output">[docs]</a><span class="k">def</span> <span class="nf">demo_multi_output</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Demo for multi output learners</span>
+<span class="sd">        </span>
+<span class="sd">        Stream: from file music.csv</span>
+<span class="sd">        Classifier: Various types, given by name to the MultiOutputLearner class</span>
+<span class="sd">        Evaluator: Don&#39;t now yet</span>
+<span class="sd">    </span>
+<span class="sd">    :return: </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">emol</span><span class="o">.</span><span class="n">demo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="demo_compare"><a class="viewcode-back" href="../testing.html#testing.demo_compare">[docs]</a><span class="k">def</span> <span class="nf">demo_compare</span><span class="p">():</span>
+    <span class="n">comp</span><span class="o">.</span><span class="n">demo</span><span class="p">(</span><span class="mi">20000</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="demo_compare_kdtrees"><a class="viewcode-back" href="../testing.html#testing.demo_compare_kdtrees">[docs]</a><span class="k">def</span> <span class="nf">demo_compare_kdtrees</span><span class="p">():</span>
+    <span class="n">kdc</span><span class="o">.</span><span class="n">demo</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># NEW tests</span>
+
+    <span class="c1"># Stream plus classifier - no evaluation</span>
+    <span class="c1">#demoSCP()</span>
+
+    <span class="c1"># Demo Prequential evaluation - go to skmultiflow.demos.evalPrequential to change demo parameters</span>
+    <span class="c1">#demo_preq()</span>
+
+    <span class="c1"># Demo Prequential eval with pipeline - go to skmultiflow.demos.evalWithPipeline to change demo parameters</span>
+    <span class="c1">#demo_pipeline()</span>
+
+    <span class="c1"># Demo eval stream speed - go to skmultiflow.demos.evalStreamSpeed to change demo parameters</span>
+    <span class="c1">#demo_stream_speed()</span>
+
+    <span class="c1"># Demo for multi output classification, trying with the music.csv from Jesse Read&#39;s repository</span>
+    <span class="c1">#demo_multi_output()</span>
+
+    <span class="c1"># Demo for learner comparison feature</span>
+    <span class="c1">#demo_compare()</span>
+
+    <span class="c1"># Demo for comparing kd tree efficiency</span>
+    <span class="n">demo_compare_kdtrees</span><span class="p">()</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

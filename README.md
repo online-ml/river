@@ -75,3 +75,6 @@ A stream data framework.
 
 * Cython
 * Numba
+
+* stream_classifier
+* test regression

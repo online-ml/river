@@ -1,0 +1,528 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.classification package &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.classification.core package" href="skmultiflow.classification.core.html" />
+    <link rel="prev" title="skmultiflow package" href="skmultiflow.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.classification.core.html" title="skmultiflow.classification.core package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.html" title="skmultiflow package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" accesskey="U">skmultiflow package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="skmultiflow-classification-package">
+<h1>skmultiflow.classification package<a class="headerlink" href="#skmultiflow-classification-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.classification.core.html">skmultiflow.classification.core package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.core.html#module-skmultiflow.classification.core">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.classification.lazy.html">skmultiflow.classification.lazy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.lazy.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.lazy.html#module-skmultiflow.classification.lazy.knn">skmultiflow.classification.lazy.knn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.lazy.html#module-skmultiflow.classification.lazy.knn_adwin">skmultiflow.classification.lazy.knn_adwin module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.lazy.html#module-skmultiflow.classification.lazy">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.classification.meta.html">skmultiflow.classification.meta package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.meta.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.meta.html#module-skmultiflow.classification.meta.leverage_bagging">skmultiflow.classification.meta.leverage_bagging module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.meta.html#module-skmultiflow.classification.meta.oza_bagging">skmultiflow.classification.meta.oza_bagging module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.meta.html#module-skmultiflow.classification.meta.oza_bagging_adwin">skmultiflow.classification.meta.oza_bagging_adwin module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmultiflow.classification.meta.html#module-skmultiflow.classification.meta">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-skmultiflow.classification.base">
+<span id="skmultiflow-classification-base-module"></span><h2>skmultiflow.classification.base module<a class="headerlink" href="#module-skmultiflow.classification.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.classification.base.BaseClassifier">
+<em class="property">class </em><code class="descclassname">skmultiflow.classification.base.</code><code class="descname">BaseClassifier</code><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>The abstract class that works as a base model for all of this framework’s
+classifiers. It creates a basic interface that classifiers should follow
+in order to use them with all the tools available in scikit-workflow.</p>
+<p>This class should not me instantiated, as none of its methods, except the
+get_class_type, are implemented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">NotImplementedError: This is an abstract class.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.classification.base.BaseClassifier.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the model under a batch setting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The array of samples used to fit the model.</li>
+<li><strong>y</strong> (<em>Array-like</em>) – An array-like with the labels of all samples in X.</li>
+<li><strong>classes</strong> (<em>Array-like</em>) – Optional parameter that contains all labels that may appear
+in samples.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.base.BaseClassifier.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.base.BaseClassifier.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.base.BaseClassifier.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partial (incremental) fit the model under an online learning setting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The array of samples used to fit the model.</li>
+<li><strong>y</strong> (<em>Array-like</em>) – An array-like with the labels of all samples in X.</li>
+<li><strong>classes</strong> (<em>Array-like</em>) – Contains all labels that may appear in samples. It’s an optional
+parameter, except during the first partial_fit call, when it’s
+obligatory.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.base.BaseClassifier.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts labels using the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The matrix of samples one wants to predict.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">An array-like with all the predictions for the samples in X.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.base.BaseClassifier.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the probability of each sample in X belonging to each of
+the existing labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The matrix of samples one wants to predict.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>An array of shape (n_samples, n_labels), in which each outer entry is</em></li>
+<li><em>associated with the X entry of the same index. And where the list in</em></li>
+<li><em>index [i] contains len(self.classes) elements, each of which represents</em></li>
+<li><em>the probability that the i-th sample of X belongs to a certain label.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.base.BaseClassifier.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.base.BaseClassifier.score">
+<code class="descname">score</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/base.html#BaseClassifier.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.base.BaseClassifier.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.classification.multi_output_learner">
+<span id="skmultiflow-classification-multi-output-learner-module"></span><h2>skmultiflow.classification.multi_output_learner module<a class="headerlink" href="#module-skmultiflow.classification.multi_output_learner" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner">
+<em class="property">class </em><code class="descclassname">skmultiflow.classification.multi_output_learner.</code><code class="descname">MultiOutputLearner</code><span class="sig-paren">(</span><em>h=SGDClassifier(alpha=0.0001</em>, <em>average=False</em>, <em>class_weight=None</em>, <em>epsilon=0.1</em>, <em>eta0=0.0</em>, <em>fit_intercept=True</em>, <em>l1_ratio=0.15</em>, <em>learning_rate='optimal'</em>, <em>loss='hinge'</em>, <em>n_iter=100</em>, <em>n_jobs=1</em>, <em>penalty='l2'</em>, <em>power_t=0.5</em>, <em>random_state=None</em>, <em>shuffle=True</em>, <em>verbose=0</em>, <em>warm_start=False)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#MultiOutputLearner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.classification.base.BaseClassifier" title="skmultiflow.classification.base.BaseClassifier"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.classification.base.BaseClassifier</span></code></a></p>
+<p>A Meta Learner. Does either classifier or regression, depending on
+base learner (which by default is LogisticRegression). It will keep
+one instance of the base learner for each classification task, in
+a way that each classifier is in charge of a single classification
+problem.</p>
+<p>Should be used to make single output predictors capable of learning
+a multi output problem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>h</strong> (<em>classifier</em><em> (</em><em>extension of the BaseClassifier</em><em>)</em>) – This is the ensemble classifier type, each ensemble classifier is going
+to be a copy of the h classifier.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.L">
+<code class="descname">L</code><em class="property"> = -1</em><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.L" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#MultiOutputLearner.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the N classifiers, one for each classification task.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The array of samples used to fit the model.</li>
+<li><strong>y</strong> (<em>Array-like</em>) – An array-like with the labels of all samples in X.</li>
+<li><strong>classes</strong> (<em>Array-like</em>) – Optional parameter that contains all labels that may appear
+in samples.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#MultiOutputLearner.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.h">
+<code class="descname">h</code><em class="property"> = None</em><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.h" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#MultiOutputLearner.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partially fit each of the classifiers on the X matrix and the
+corresponding entry at the Y array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The array of samples used to fit the model.</li>
+<li><strong>y</strong> (<em>Array-like</em>) – An array-like with the labels of all samples in X.</li>
+<li><strong>classes</strong> (<em>Array-like</em>) – Contains all labels that may appear in samples. It’s an optional
+parameter, except during the first partial_fit call, when it’s
+obligatory.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#MultiOutputLearner.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates over all the classifiers, predicting with each one, to obtain
+the multi output prediction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The matrix of samples one wants to predict.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">An array-like with all the predictions for the samples in X.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#MultiOutputLearner.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the probability of each sample in X belonging to each of
+the existing labels for each of the classification tasks.</p>
+<p>It’s a simple call to all of the classifier’s predict_proba function,
+return the probabilities for all the classification problems.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>Numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The matrix of samples one wants to predict.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>An array of shape (n_samples, n_classification_tasks, n_labels), in which</em></li>
+<li><em>we store the probability that each sample in X belongs to each of the labels,</em></li>
+<li><em>in each of the classification tasks.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#MultiOutputLearner.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.multi_output_learner.MultiOutputLearner.score">
+<code class="descname">score</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#MultiOutputLearner.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.MultiOutputLearner.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="skmultiflow.classification.multi_output_learner.demo">
+<code class="descclassname">skmultiflow.classification.multi_output_learner.</code><code class="descname">demo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/multi_output_learner.html#demo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.multi_output_learner.demo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.classification.naive_bayes">
+<span id="skmultiflow-classification-naive-bayes-module"></span><h2>skmultiflow.classification.naive_bayes module<a class="headerlink" href="#module-skmultiflow.classification.naive_bayes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.classification.naive_bayes.NaiveBayes">
+<em class="property">class </em><code class="descclassname">skmultiflow.classification.naive_bayes.</code><code class="descname">NaiveBayes</code><a class="reference internal" href="_modules/skmultiflow/classification/naive_bayes.html#NaiveBayes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.naive_bayes.NaiveBayes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.classification.base.BaseClassifier" title="skmultiflow.classification.base.BaseClassifier"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.classification.base.BaseClassifier</span></code></a></p>
+<dl class="method">
+<dt id="skmultiflow.classification.naive_bayes.NaiveBayes.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/naive_bayes.html#NaiveBayes.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.naive_bayes.NaiveBayes.fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.naive_bayes.NaiveBayes.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/naive_bayes.html#NaiveBayes.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.naive_bayes.NaiveBayes.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.naive_bayes.NaiveBayes.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em>, <em>warmstart=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/naive_bayes.html#NaiveBayes.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.naive_bayes.NaiveBayes.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.naive_bayes.NaiveBayes.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/naive_bayes.html#NaiveBayes.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.naive_bayes.NaiveBayes.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.naive_bayes.NaiveBayes.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/naive_bayes.html#NaiveBayes.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.naive_bayes.NaiveBayes.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.naive_bayes.NaiveBayes.score">
+<code class="descname">score</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/naive_bayes.html#NaiveBayes.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.naive_bayes.NaiveBayes.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.classification.perceptron">
+<span id="skmultiflow-classification-perceptron-module"></span><h2>skmultiflow.classification.perceptron module<a class="headerlink" href="#module-skmultiflow.classification.perceptron" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.classification.perceptron.PerceptronMask">
+<em class="property">class </em><code class="descclassname">skmultiflow.classification.perceptron.</code><code class="descname">PerceptronMask</code><a class="reference internal" href="_modules/skmultiflow/classification/perceptron.html#PerceptronMask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.perceptron.PerceptronMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.classification.base.BaseClassifier" title="skmultiflow.classification.base.BaseClassifier"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.classification.base.BaseClassifier</span></code></a></p>
+<dl class="method">
+<dt id="skmultiflow.classification.perceptron.PerceptronMask.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/perceptron.html#PerceptronMask.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.perceptron.PerceptronMask.fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.perceptron.PerceptronMask.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/perceptron.html#PerceptronMask.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.perceptron.PerceptronMask.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.perceptron.PerceptronMask.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/perceptron.html#PerceptronMask.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.perceptron.PerceptronMask.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.perceptron.PerceptronMask.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/perceptron.html#PerceptronMask.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.perceptron.PerceptronMask.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.perceptron.PerceptronMask.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/perceptron.html#PerceptronMask.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.perceptron.PerceptronMask.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.perceptron.PerceptronMask.score">
+<code class="descname">score</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/perceptron.html#PerceptronMask.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.perceptron.PerceptronMask.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.classification">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.classification" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">skmultiflow.classification package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.classification.base">skmultiflow.classification.base module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.classification.multi_output_learner">skmultiflow.classification.multi_output_learner module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.classification.naive_bayes">skmultiflow.classification.naive_bayes module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.classification.perceptron">skmultiflow.classification.perceptron module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.classification">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.html"
+                        title="previous chapter">skmultiflow package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.classification.core.html"
+                        title="next chapter">skmultiflow.classification.core package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.classification.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.classification.core.html" title="skmultiflow.classification.core package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.html" title="skmultiflow package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

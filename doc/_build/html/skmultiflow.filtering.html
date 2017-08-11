@@ -1,0 +1,342 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.filtering package &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.options package" href="skmultiflow.options.html" />
+    <link rel="prev" title="skmultiflow.evaluation.metrics package" href="skmultiflow.evaluation.metrics.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.options.html" title="skmultiflow.options package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.evaluation.metrics.html" title="skmultiflow.evaluation.metrics package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" accesskey="U">skmultiflow package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="skmultiflow-filtering-package">
+<h1>skmultiflow.filtering package<a class="headerlink" href="#skmultiflow-filtering-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-skmultiflow.filtering.base_filters">
+<span id="skmultiflow-filtering-base-filters-module"></span><h2>skmultiflow.filtering.base_filters module<a class="headerlink" href="#module-skmultiflow.filtering.base_filters" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.filtering.base_filters.MissingValuesCleaner">
+<em class="property">class </em><code class="descclassname">skmultiflow.filtering.base_filters.</code><code class="descname">MissingValuesCleaner</code><span class="sig-paren">(</span><em>missing_value=nan</em>, <em>strategy='zero'</em>, <em>window_size=200</em>, <em>new_value=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_filters.html#MissingValuesCleaner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_filters.MissingValuesCleaner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.filtering.base_transform.BaseTransform" title="skmultiflow.filtering.base_transform.BaseTransform"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.filtering.base_transform.BaseTransform</span></code></a></p>
+<p>This is a transform object. It provides a simple way to replace missing
+values in samples with another value, which can be chosen from a set of
+replacing strategies.</p>
+<p>A missing value in a sample can be coded in many different ways, but the
+most common one is to use numpy’s NaN, that’s why that is the default
+missing value parameter.</p>
+<p>The user should choose the correct substitution strategy for his use
+case, as each strategy has its pros and cons. The strategy can be chosen
+from a set of predefined strategies, which are: ‘zero’, ‘mean’, ‘median’,
+‘mode’, ‘custom’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>missing_value</strong> (<em>int</em><em>, </em><em>char</em><em> (</em><em>Default: numpy.nan</em><em>)</em>) – The way a missed value is coded in the matrices that are to be
+transformed.</li>
+<li><strong>strategy</strong> (<em>string</em><em> (</em><em>Default: 'zero'</em><em>)</em>) – The strategy adopted to find the missing value replacement. It can
+be one of the following: ‘zero’, ‘mean’, ‘median’, ‘mode’, ‘custom’.</li>
+<li><strong>window_size</strong> (<em>int</em><em> (</em><em>Default: 200</em><em>)</em>) – Defines the window size for the ‘mean’, ‘median’ and ‘mode’ strategies.</li>
+<li><strong>new_value</strong> (<em>int</em><em> (</em><em>Default: 1</em><em>)</em>) – This is the replacement value in case the chosen strategy is ‘custom’.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.filtering.base_filters.MissingValuesCleaner.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_filters.html#MissingValuesCleaner.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_filters.MissingValuesCleaner.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.base_filters.MissingValuesCleaner.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_filters.html#MissingValuesCleaner.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_filters.MissingValuesCleaner.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partial fits the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The sample or set of samples that should be transformed.</li>
+<li><strong>y</strong> (<em>Array-like</em>) – The true labels.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.base_filters.MissingValuesCleaner.partial_fit_transform">
+<code class="descname">partial_fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_filters.html#MissingValuesCleaner.partial_fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_filters.MissingValuesCleaner.partial_fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partially fits the model and then apply the transform to the data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The sample or set of samples that should be transformed.</li>
+<li><strong>y</strong> (<em>Array-like</em>) – The true labels.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The transformed data.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.base_filters.MissingValuesCleaner.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_filters.html#MissingValuesCleaner.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_filters.MissingValuesCleaner.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the transformation process in the samples in X.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The sample or set of samples that should be transformed.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.filtering.base_transform">
+<span id="skmultiflow-filtering-base-transform-module"></span><h2>skmultiflow.filtering.base_transform module<a class="headerlink" href="#module-skmultiflow.filtering.base_transform" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.filtering.base_transform.BaseTransform">
+<em class="property">class </em><code class="descclassname">skmultiflow.filtering.base_transform.</code><code class="descname">BaseTransform</code><a class="reference internal" href="_modules/skmultiflow/filtering/base_transform.html#BaseTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_transform.BaseTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>Abstract class that explicits the constraints to all Transform objects
+in this framework.</p>
+<p>This class should not be instantiated as it has no implementations and
+will raise NotImplementedErrors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">NotImplementedError: This is an abstract class.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.filtering.base_transform.BaseTransform.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_transform.html#BaseTransform.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_transform.BaseTransform.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.base_transform.BaseTransform.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_transform.html#BaseTransform.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_transform.BaseTransform.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.base_transform.BaseTransform.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_transform.html#BaseTransform.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_transform.BaseTransform.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.base_transform.BaseTransform.partial_fit_transform">
+<code class="descname">partial_fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_transform.html#BaseTransform.partial_fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_transform.BaseTransform.partial_fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.base_transform.BaseTransform.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/base_transform.html#BaseTransform.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.base_transform.BaseTransform.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.filtering.one_hot_to_categorical">
+<span id="skmultiflow-filtering-one-hot-to-categorical-module"></span><h2>skmultiflow.filtering.one_hot_to_categorical module<a class="headerlink" href="#module-skmultiflow.filtering.one_hot_to_categorical" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical">
+<em class="property">class </em><code class="descclassname">skmultiflow.filtering.one_hot_to_categorical.</code><code class="descname">OneHotToCategorical</code><span class="sig-paren">(</span><em>categorical_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/one_hot_to_categorical.html#OneHotToCategorical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.filtering.base_transform.BaseTransform" title="skmultiflow.filtering.base_transform.BaseTransform"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.filtering.base_transform.BaseTransform</span></code></a></p>
+<p>Transform that receives a features matrix, with some features coded as
+one hot, and transform these features in basic int coded categorical
+features.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>categorical_list</strong> (<em>list of lists</em>) – Each inner list contains all the one hot indexes associated with
+the same categorical feature.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/one_hot_to_categorical.html#OneHotToCategorical.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/one_hot_to_categorical.html#OneHotToCategorical.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/one_hot_to_categorical.html#OneHotToCategorical.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.partial_fit_transform">
+<code class="descname">partial_fit_transform</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/one_hot_to_categorical.html#OneHotToCategorical.partial_fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.partial_fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/filtering/one_hot_to_categorical.html#OneHotToCategorical.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform one hot features in the X matrix into int coded
+categorical features.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The sample or set of samples that should be transformed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">The transformed data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.filtering">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.filtering" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">skmultiflow.filtering package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.filtering.base_filters">skmultiflow.filtering.base_filters module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.filtering.base_transform">skmultiflow.filtering.base_transform module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.filtering.one_hot_to_categorical">skmultiflow.filtering.one_hot_to_categorical module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.filtering">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.evaluation.metrics.html"
+                        title="previous chapter">skmultiflow.evaluation.metrics package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.options.html"
+                        title="next chapter">skmultiflow.options package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.filtering.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.options.html" title="skmultiflow.options package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.evaluation.metrics.html" title="skmultiflow.evaluation.metrics package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

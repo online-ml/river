@@ -1,0 +1,398 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.core.pipeline &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for skmultiflow.core.pipeline</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Guilherme Matsumoto&#39;</span>
+
+<span class="kn">from</span> <span class="nn">skmultiflow.core.utils.utils</span> <span class="k">import</span> <span class="n">dict_to_list</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.core.base_object</span> <span class="k">import</span> <span class="n">BaseObject</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="k">import</span> <span class="n">tosequence</span>
+
+<div class="viewcode-block" id="Pipeline"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline">[docs]</a><span class="k">class</span> <span class="nc">Pipeline</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Pipeline</span>
+<span class="sd">        </span>
+<span class="sd">    A pipeline structure that holds a set of sequential Transforms, followed </span>
+<span class="sd">    by a single learner. It allows for easy manipulation of datasets that may </span>
+<span class="sd">    require several transformation processes before being used by a learner. </span>
+<span class="sd">    Also allows for the cross-validation of several steps.</span>
+<span class="sd">    </span>
+<span class="sd">    Each of the intermediate steps should be an extension of the BaseTransform </span>
+<span class="sd">    class, or at least implement the transform and partial_fit functions or the </span>
+<span class="sd">    partial_fit_transform.</span>
+<span class="sd">    </span>
+<span class="sd">    The last step should be an estimator (learner), so it should implement </span>
+<span class="sd">    partial_fit, and predict at least.</span>
+<span class="sd">    </span>
+<span class="sd">    Since it has an estimator as the last step, the Pipeline will act like as </span>
+<span class="sd">    an estimator itself, in a way that it can be directly passed to evaluation </span>
+<span class="sd">    objects, as if it was a learner.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dict: list of tuple</span>
+<span class="sd">        Tuple list containing the set of transforms and the final estimator. </span>
+<span class="sd">        It doesn&#39;t need to contain a transform type object, but the estimator </span>
+<span class="sd">        is required. Each tuple should be of the format (&#39;name&#39;, estimator).</span>
+<span class="sd">    </span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError: If the intermediate steps or the final estimator do not implement </span>
+<span class="sd">    the necessary functions for the pipeline to work, a TypeError is raised.</span>
+<span class="sd">    </span>
+<span class="sd">    NotImplementedError: Some of the functions are yet to be implemented.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Imports</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.core.pipeline import Pipeline</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.options.file_option import FileOption</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the stream</span>
+<span class="sd">    &gt;&gt;&gt; opt = FileOption(&quot;FILE&quot;, &quot;OPT_NAME&quot;, &quot;skmultiflow/datasets/covtype.csv&quot;, &quot;CSV&quot;, False)</span>
+<span class="sd">    &gt;&gt;&gt; stream = FileStream(opt, -1, 1)</span>
+<span class="sd">    &gt;&gt;&gt; stream.prepare_for_use()</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the classifier</span>
+<span class="sd">    &gt;&gt;&gt; classifier = PassiveAggressiveClassifier()</span>
+<span class="sd">    &gt;&gt;&gt; # Setup the pipeline</span>
+<span class="sd">    &gt;&gt;&gt; pipe = Pipeline([(&#39;passive_aggressive&#39;, classifier)])</span>
+<span class="sd">    &gt;&gt;&gt; # Setup the evaluator</span>
+<span class="sd">    &gt;&gt;&gt; eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=500000)</span>
+<span class="sd">    &gt;&gt;&gt; # Evaluate</span>
+<span class="sd">    &gt;&gt;&gt; eval.eval(stream=stream, classifier=pipe)</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+        <span class="c1">#default values</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="n">tosequence</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__configure</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; __configure </span>
+<span class="sd">        </span>
+<span class="sd">        Initial Pipeline configuration. Validates the Pipeline&#39;s steps.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_steps</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Pipeline.predict"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; predict</span>
+<span class="sd">         </span>
+<span class="sd">        Sequentially applies all transforms and then predict with last step.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            All the samples we want to predict the label for.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The predicted class label for all the samples in X.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Xt</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">Xt</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pipeline.fit"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; fit </span>
+<span class="sd">        </span>
+<span class="sd">        Sequentially fit and transform data in all but last step, then fit </span>
+<span class="sd">        the model in last step.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            The data upon which the transforms/estimator will create their </span>
+<span class="sd">            model.</span>
+<span class="sd">            </span>
+<span class="sd">        y: An array_like object of length n_samples</span>
+<span class="sd">            Contains the true class labels for all the samples in X.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Xt</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">&quot;fit_transform&quot;</span><span class="p">):</span>
+                <span class="n">Xt</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Xt</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Pipeline.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; partial_fit </span>
+<span class="sd">        </span>
+<span class="sd">        Sequentially partial fit and transform data in all but last step, </span>
+<span class="sd">        then partial fit data in last step.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            The data upon which the transforms/estimator will create their </span>
+<span class="sd">            model.</span>
+<span class="sd">        </span>
+<span class="sd">        y: An array_like object of length n_samples</span>
+<span class="sd">            Contains the true class labels for all the samples in X</span>
+<span class="sd">        </span>
+<span class="sd">        classes: list, optional</span>
+<span class="sd">            A list containing all classes that can show up during subsequent </span>
+<span class="sd">            partial_fit calls. It&#39;s optional for all but the first call, when </span>
+<span class="sd">            it&#39;s obligatory.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Xt</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s1">&#39;fit_transform&#39;</span><span class="p">):</span>
+                <span class="n">Xt</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">partial_fit_transform</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Xt</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Pipeline.partial_fit_predict"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.partial_fit_predict">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; partial_fit_predict</span>
+<span class="sd">        </span>
+<span class="sd">        Partial fits and transforms data in all but last step, then partial </span>
+<span class="sd">        fits and predicts in the last step</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            All the samples we want to predict the label for.</span>
+<span class="sd">        </span>
+<span class="sd">        y: An array_like object of length n_samples</span>
+<span class="sd">            Contains the true class labels for all the samples in X</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The predicted class label for all the samples in X.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Xt</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">&quot;partial_fit_transform&quot;</span><span class="p">):</span>
+                <span class="n">Xt</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">partial_fit_transform</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Xt</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span><span class="p">,</span> <span class="s2">&quot;partial_fit_predict&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span><span class="o">.</span><span class="n">partial_fit_predict</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pipeline.partial_fit_transform"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.partial_fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; partial_fit_trasnform </span>
+<span class="sd">        </span>
+<span class="sd">        Partial fits and transforms data in all but last step, then </span>
+<span class="sd">        partial_fit in last step</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            The data upon which the transforms/estimator will create their </span>
+<span class="sd">            model.</span>
+<span class="sd">        </span>
+<span class="sd">        y: An array_like object of length n_samples</span>
+<span class="sd">            Contains the true class labels for all the samples in X</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Pipeline.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;estimator&#39;</span></div>
+
+    <span class="k">def</span> <span class="nf">_validate_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; validate_steps</span>
+<span class="sd">         </span>
+<span class="sd">        Validates all steps, guaranteeing that there&#39;s an estimator in its last step.</span>
+<span class="sd">        </span>
+<span class="sd">        Alters the value of self.active according to the validity of the steps.</span>
+<span class="sd">        </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError: If the intermediate steps or the final estimator do not implement </span>
+<span class="sd">        the necessary functions for the pipeline to work, a TypeError is raised.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">names</span><span class="p">,</span> <span class="n">estimators</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
+        <span class="n">transforms</span> <span class="o">=</span> <span class="n">classifier</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">classifier</span> <span class="o">=</span> <span class="n">estimators</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">transforms</span> <span class="o">=</span> <span class="n">estimators</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;fit&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;fit_transform&quot;</span><span class="p">))</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;transform&quot;</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All intermediate steps, including an evaluator, &quot;</span>
+                                    <span class="s2">&quot;should implement fit and transform.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">classifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="s2">&quot;partial_fit&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="Pipeline.named_steps"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.named_steps">[docs]</a>    <span class="k">def</span> <span class="nf">named_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; named_steps</span>
+<span class="sd">         </span>
+<span class="sd">        Generates a dictionary to access all the steps&#39; properties.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A steps dictionary, so that each step can be accessed by name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pipeline.get_info"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s2">&quot;Pipeline: &quot;</span>
+        <span class="n">names</span><span class="p">,</span> <span class="n">estimators</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
+        <span class="n">classifier</span> <span class="o">=</span> <span class="n">estimators</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">transforms</span> <span class="o">=</span> <span class="n">estimators</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">get_info</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">info</span> <span class="o">+=</span> <span class="n">t</span><span class="o">.</span><span class="n">get_info</span><span class="p">()</span>
+                    <span class="n">info</span> <span class="o">+=</span> <span class="s2">&quot; #### &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">info</span> <span class="o">+=</span> <span class="s1">&#39;Transform: no info available&#39;</span>
+            <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                <span class="n">info</span> <span class="o">+=</span> <span class="s1">&#39;Transform: no info available&#39;</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">classifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="s1">&#39;get_info&#39;</span><span class="p">):</span>
+                    <span class="n">info</span> <span class="o">+=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">get_info</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">info</span> <span class="o">+=</span> <span class="s1">&#39;Classifier: no info available&#39;</span>
+            <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                <span class="n">info</span> <span class="o">+=</span> <span class="s1">&#39;Classifier: no info available&#39;</span>
+        <span class="k">return</span> <span class="n">info</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_final_estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; _final_estimator</span>
+<span class="sd">        </span>
+<span class="sd">        Easy to access estimator.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: Returns the Pipeline&#39;s classifier </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

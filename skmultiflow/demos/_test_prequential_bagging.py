@@ -5,7 +5,8 @@ from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.classification.meta.oza_bagging_adwin import OzaBaggingAdwin
 from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
 from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream, FileOption
+from skmultiflow.data.file_stream import FileStream
+from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.sea_generator import SEAGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 

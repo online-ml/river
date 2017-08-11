@@ -325,14 +325,20 @@ class EvaluatePrequential(BaseEvaluator):
             logging.info('Pretraining on %s samples.', str(self.pretrain_size))
             X, y = self.stream.next_instance(self.pretrain_size)
             for i in range(self.n_classifiers):
-                self.classifier[i].partial_fit(X, y, self.stream.get_classes())
+                if self.task_type != 'regression':
+                    self.classifier[i].partial_fit(X, y, self.stream.get_classes())
+                else:
+                    self.classifier[i].partial_fit(X, y)
             first_run = False
 
         else:
             logging.info('Pretraining on 1 sample.')
             X, y = self.stream.next_instance()
             for i in range(self.n_classifiers):
-                self.classifier[i].partial_fit(X, y, self.stream.get_classes())
+                if self.task_type != 'regression':
+                    self.classifier[i].partial_fit(X, y, self.stream.get_classes())
+                else:
+                    self.classifier[i].partial_fit(X, y)
             first_run = False
 
         before_count = 0
@@ -341,6 +347,7 @@ class EvaluatePrequential(BaseEvaluator):
                    & (self.stream.has_more_instances())):
             try:
                 X, y = self.stream.next_instance(self.batch_size)
+
                 if X is not None and y is not None:
                     prediction = [[] for n in range(self.n_classifiers)]
                     for i in range(self.n_classifiers):
@@ -361,7 +368,10 @@ class EvaluatePrequential(BaseEvaluator):
 
                     if first_run:
                         for i in range(self.n_classifiers):
-                            self.classifier[i].partial_fit(X, y, self.stream.get_classes())
+                            if self.task_type != 'regression':
+                                self.classifier[i].partial_fit(X, y, self.stream.get_classes())
+                            else:
+                                self.classifier[i].partial_fit(X, y)
                         first_run = False
                     else:
                         for i in range(self.n_classifiers):
@@ -373,8 +383,10 @@ class EvaluatePrequential(BaseEvaluator):
                         before_count += 1
                         if prediction is not None:
                             self._update_metrics()
+
                 end_time = timer()
             except BaseException as exc:
+                print(exc)
                 if exc is KeyboardInterrupt:
                     if self.show_scatter_points:
                         self._update_metrics()
@@ -638,7 +650,7 @@ class EvaluatePrequential(BaseEvaluator):
         if 'true_vs_predicts' in self.plot_options:
             true, pred = [], []
             for i in range(self.n_classifiers):
-                t, p = self.global_classification_metrics.get_last()
+                t, p = self.global_classification_metrics[i].get_last()
                 true.append(t)
                 pred.append(p)
             new_points_dict['true_vs_predicts'] = [[true[i], pred[i]] for i in range(self.n_classifiers)]

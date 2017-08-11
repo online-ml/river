@@ -18,9 +18,9 @@ def demo():
     X[9, 0] = -47
 
     for i in range(10):
-        X[i] = filter.partial_fit_transform([X[i]])
+        temp = filter.partial_fit_transform([X[i].tolist()])
+        print(temp)
 
-    print(X)
 
     #for i in range(10):
         #X[i] = filter.partial_fit_transform(X[i])

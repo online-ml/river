@@ -1,0 +1,354 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.classification.lazy.knn &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for skmultiflow.classification.lazy.knn</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Guilherme Matsumoto&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.classification.base</span> <span class="k">import</span> <span class="n">BaseClassifier</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.classification.lazy.neighbors.distances</span> <span class="k">import</span> <span class="n">euclidean_distance</span><span class="p">,</span> <span class="n">mixed_distance</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.core.utils.data_structures</span> <span class="k">import</span> <span class="n">InstanceWindow</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.classification.lazy.neighbors.kdtree</span> <span class="k">import</span> <span class="n">KDTree</span>
+<span class="kn">import</span> <span class="nn">sklearn.neighbors</span> <span class="k">as</span> <span class="nn">sk</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.core.utils.utils</span> <span class="k">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="KNN"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn.KNN">[docs]</a><span class="k">class</span> <span class="nc">KNN</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; K-Nearest Neighbors Classifier</span>
+<span class="sd">    </span>
+<span class="sd">    This is a non-parametric classification method. The output of this</span>
+<span class="sd">    algorithm are the k closest training examples to the query sample </span>
+<span class="sd">    X.</span>
+<span class="sd">    </span>
+<span class="sd">    It works by keeping track of a fixed number of training samples, in </span>
+<span class="sd">    our case it keeps track of the last max_window_size training samples.</span>
+<span class="sd">    Then, whenever a query request is executed, the algorithm will search </span>
+<span class="sd">    its stored samples and find the closest ones using a selected distance </span>
+<span class="sd">    metric.</span>
+<span class="sd">    </span>
+<span class="sd">    To store the samples, while reducing search times, we use a structure </span>
+<span class="sd">    called KD Tree (a K Dimensional Tree, for k dimensional problems). </span>
+<span class="sd">    Although we do have our own KDTree implementation, which accepts </span>
+<span class="sd">    custom metrics, we recommend using the standard scikit-learn KDTree,  </span>
+<span class="sd">    that even though doesn&#39;t accept custom metrics, is optimized and will </span>
+<span class="sd">    function faster.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    k: int</span>
+<span class="sd">        The number of nearest neighbors to search for.</span>
+<span class="sd">        </span>
+<span class="sd">    max_window_size: int</span>
+<span class="sd">        The maximum size of the window storing the last viewed samples.</span>
+<span class="sd">        </span>
+<span class="sd">    leaf_size: int</span>
+<span class="sd">        The maximum number of samples that can be stored in one leaf node, </span>
+<span class="sd">        which determines from which point the algorithm will switch for a </span>
+<span class="sd">        brute-force approach. The bigger this number the faster the tree </span>
+<span class="sd">        construction time, but the slower the query time will be.</span>
+<span class="sd">        </span>
+<span class="sd">    categorical_list: An array-like</span>
+<span class="sd">        Each entry is the index of a categorical feature. May be requested </span>
+<span class="sd">        further filtering.</span>
+<span class="sd">    </span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError: A few of the functions described here are not </span>
+<span class="sd">    implemented since they have no application in this context.</span>
+<span class="sd">    </span>
+<span class="sd">    ValueError: A ValueError is raised if the predict function is called </span>
+<span class="sd">    before at least k samples have been analyzed by the algorithm.</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For a KDTree functionality explanation, please see our KDTree </span>
+<span class="sd">    documentation, under skmultiflow.lazy.neighbors.kdtree.</span>
+<span class="sd">    </span>
+<span class="sd">    This classifier is not optimal for a mixture of categorical and </span>
+<span class="sd">    numerical features.</span>
+<span class="sd">    </span>
+<span class="sd">    If you wish to use our KDTree implementation please refer to this class&#39; </span>
+<span class="sd">    function __predict_proba</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_window_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">leaf_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">categorical_list</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_window_size</span> <span class="o">=</span> <span class="n">max_window_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">InstanceWindow</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="n">max_window_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_fit</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span> <span class="o">=</span> <span class="n">leaf_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categorical_list</span> <span class="o">=</span> <span class="n">categorical_list</span>
+
+<div class="viewcode-block" id="KNN.fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn.KNN.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; fit</span>
+<span class="sd">        </span>
+<span class="sd">        Fits the model on the samples X and targets y. This is actually the </span>
+<span class="sd">        function as the partial fit.</span>
+<span class="sd">        </span>
+<span class="sd">        For the K-Nearest Neighbors Classifier, fitting the model is the </span>
+<span class="sd">        equivalent of inserting the newer samples in the observed window, </span>
+<span class="sd">        and if the size_limit is reached, removing older results. To store </span>
+<span class="sd">        the viewed samples we use a InstanceWindow object. For this class&#39; </span>
+<span class="sd">        documentation please visit skmultiflow.core.utils.data_structures</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: Numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            The data upon which the algorithm will create its model.</span>
+<span class="sd">            </span>
+<span class="sd">        y: Array-like</span>
+<span class="sd">            An array-like containing the classification targets for all </span>
+<span class="sd">            samples in X.</span>
+<span class="sd">            </span>
+<span class="sd">        classes: Not used. Was inherited from the Abstract parent class.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">InstanceWindow</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_window_size</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]]]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]]]))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="KNN.partial_fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn.KNN.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; partial_fit</span>
+<span class="sd">        </span>
+<span class="sd">        Fits the model on the samples X and targets y.</span>
+<span class="sd">        </span>
+<span class="sd">        For the K-Nearest Neighbors Classifier, fitting the model is the </span>
+<span class="sd">        equivalent of inserting the newer samples in the observed window, </span>
+<span class="sd">        and if the size_limit is reached, removing older results. To store </span>
+<span class="sd">        the viewed samples we use a InstanceWindow object. For this class&#39; </span>
+<span class="sd">        documentation please visit skmultiflow.core.utils.data_structures</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: Numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            The data upon which the algorithm will create its model.</span>
+<span class="sd">            </span>
+<span class="sd">        y: Array-like</span>
+<span class="sd">            An array-like containing the classification targets for all </span>
+<span class="sd">            samples in X.</span>
+<span class="sd">            </span>
+<span class="sd">        classes: list</span>
+<span class="sd">            Stores all the classes that may be encountered during the </span>
+<span class="sd">            classification task.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">InstanceWindow</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_window_size</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]]]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]]]))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="KNN.reset"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn.KNN.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="KNN.predict"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn.KNN.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; predict</span>
+<span class="sd">        </span>
+<span class="sd">        Predicts the label of the X sample, by searching the KDTree for </span>
+<span class="sd">        the k-Nearest Neighbors.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: Numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            All the samples we want to predict the label for.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list containing the predicted labels for all instances in X.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="n">preds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">probs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">probs</span><span class="p">[</span><span class="n">i</span><span class="p">]))])</span>
+        <span class="k">return</span> <span class="n">preds</span></div>
+
+    <span class="k">def</span> <span class="nf">_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="KNN.predict_proba"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn.KNN.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; predict_proba</span>
+<span class="sd">         </span>
+<span class="sd">        Calculates the probability of each sample in X belonging to each </span>
+<span class="sd">        of the labels, based on the knn algorithm.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: Numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">        </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError: If there is an attempt to call this function before, </span>
+<span class="sd">        at least, k samples have been analyzed by the learner, a ValueError </span>
+<span class="sd">        is raised.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        An array of shape (n_samples, n_features), in which each outer entry is </span>
+<span class="sd">        associated with the X entry of the same index. And where the list in </span>
+<span class="sd">        index [i] contains len(self.classes) elements, each of which represents </span>
+<span class="sd">        the probability that the i-th sample of X belongs to a certain label.</span>
+<span class="sd">         </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;KNN should be partially fitted on at least k samples before doing any prediction.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">_num_samples</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;KNN should be partially fitted on at least k samples before doing any prediction.&quot;</span><span class="p">)</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">()</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">get_targets_matrix</span><span class="p">())))</span>
+
+        <span class="n">new_dist</span><span class="p">,</span> <span class="n">new_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">))]</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">new_ind</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">classes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">get_targets_matrix</span><span class="p">()[</span><span class="n">index</span><span class="p">])]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">probs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">new_ind</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">probs</span></div>
+
+    <span class="k">def</span> <span class="nf">__predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; __predict_proba</span>
+<span class="sd">        </span>
+<span class="sd">        Private implementation of the predict_proba method.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: Numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        One list with the k-nearest neighbor&#39;s distances and another </span>
+<span class="sd">        one with their indexes.</span>
+<span class="sd">        </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If you wish to use our own KDTree implementation please comment </span>
+<span class="sd">        the third line of this function and uncomment the first and </span>
+<span class="sd">        second lines.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#tree = KDTree(self.window.get_attributes_matrix(), metric=&#39;euclidean&#39;,</span>
+        <span class="c1">#              categorical_list=self.categorical_list, return_distance=True)</span>
+
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">sk</span><span class="o">.</span><span class="n">KDTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">get_attributes_matrix</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">)</span>
+        <span class="n">dist</span><span class="p">,</span> <span class="n">ind</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dist</span><span class="p">,</span> <span class="n">ind</span>
+
+<div class="viewcode-block" id="KNN.score"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn.KNN.score">[docs]</a>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="KNN.get_info"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn.KNN.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;KNN Classifier: max_window_size: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_window_size</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="s1">&#39; - leaf_size: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

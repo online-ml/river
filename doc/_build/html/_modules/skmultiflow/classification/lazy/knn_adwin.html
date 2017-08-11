@@ -1,0 +1,211 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.classification.lazy.knn_adwin &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for skmultiflow.classification.lazy.knn_adwin</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Guilherme Matsumoto&#39;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.classification.lazy.knn</span> <span class="k">import</span> <span class="n">KNN</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.classification.core.driftdetection.adwin</span> <span class="k">import</span> <span class="n">ADWIN</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.core.utils.data_structures</span> <span class="k">import</span> <span class="n">InstanceWindow</span>
+<span class="kn">from</span> <span class="nn">skmultiflow.core.utils.utils</span> <span class="k">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="KNNAdwin"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin">[docs]</a><span class="k">class</span> <span class="nc">KNNAdwin</span><span class="p">(</span><span class="n">KNN</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; K-Nearest Neighbors Classifier with ADWIN Change detector </span>
+<span class="sd">    </span>
+<span class="sd">    This Classifier is an improvement from the regular KNN classifier, </span>
+<span class="sd">    as it is resistant to concept drift. It utilises the ADWIN change </span>
+<span class="sd">    detector to decide which samples to keep and which ones to forget, </span>
+<span class="sd">    and by doing so it regulates the sample window size.</span>
+<span class="sd">     </span>
+<span class="sd">    To know more about the ADWIN change detector, please visit </span>
+<span class="sd">    skmultiflow.classification.core.driftdetection.adwin</span>
+
+<span class="sd">    It uses the regular KNN Classifier as a base class, with the </span>
+<span class="sd">    major difference that this class keeps a variable size window, </span>
+<span class="sd">    instead of a fixed size one and also it updates the adwin algorithm </span>
+<span class="sd">    at each partial_fit call.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    k: int</span>
+<span class="sd">        The number of nearest neighbors to search for.</span>
+<span class="sd">        </span>
+<span class="sd">    max_window_size: int</span>
+<span class="sd">        The maximum size of the window storing the last viewed samples.</span>
+<span class="sd">        </span>
+<span class="sd">    leaf_size: int</span>
+<span class="sd">        The maximum number of samples that can be stored in one leaf node, </span>
+<span class="sd">        which determines from which point the algorithm will switch for a </span>
+<span class="sd">        brute-force approach. The bigger this number the faster the tree </span>
+<span class="sd">        construction time, but the slower the query time will be.</span>
+<span class="sd">        </span>
+<span class="sd">    categorical_list: An array-like</span>
+<span class="sd">        Each entry is the index of a categorical feature. May be requested </span>
+<span class="sd">        further filtering.</span>
+<span class="sd">        </span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError: A few of the functions described here are not </span>
+<span class="sd">    implemented since they have no application in this context.</span>
+<span class="sd">    </span>
+<span class="sd">    ValueError: A ValueError is raised if the predict function is called </span>
+<span class="sd">    before at least k samples have been analyzed by the algorithm.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_window_size</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">,</span> <span class="n">leaf_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">categorical_list</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">max_window_size</span><span class="o">=</span><span class="n">max_window_size</span><span class="p">,</span> <span class="n">leaf_size</span><span class="o">=</span><span class="n">leaf_size</span><span class="p">,</span> <span class="n">categorical_list</span><span class="o">=</span><span class="n">categorical_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span> <span class="o">=</span> <span class="n">ADWIN</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="KNNAdwin.reset"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; reset</span>
+<span class="sd">        </span>
+<span class="sd">        Resets the adwin algorithm as well as the base model </span>
+<span class="sd">        kept by the KNN base class.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span> <span class="o">=</span> <span class="n">ADWIN</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="KNNAdwin.partial_fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; partial_fit</span>
+<span class="sd">        </span>
+<span class="sd">        Partially fits the model. This is done by updating the window </span>
+<span class="sd">        with new samples while also updating the adwin algorithm. Then </span>
+<span class="sd">        we verify if a change was detected, and if so, the window is </span>
+<span class="sd">        correctly split at the drift moment.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: Numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            The data upon which the algorithm will create its model.</span>
+<span class="sd">            </span>
+<span class="sd">        y: Array-like</span>
+<span class="sd">            An array-like containing the classification targets for all </span>
+<span class="sd">            samples in X.</span>
+<span class="sd">            </span>
+<span class="sd">        classes: list</span>
+<span class="sd">            Stores all the classes that may be encountered during the </span>
+<span class="sd">            classification task.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">InstanceWindow</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_window_size</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]]]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]]]))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">_num_samples</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
+                <span class="n">add</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]]))</span> <span class="o">==</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">add</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">_num_samples</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
+            <span class="n">changed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span><span class="o">.</span><span class="n">detected_change</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">changed</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span><span class="o">.</span><span class="n">_width</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">_num_samples</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">_num_samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">delete_element</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

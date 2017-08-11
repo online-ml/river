@@ -1,0 +1,1384 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.data.generators package &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.demos package" href="skmultiflow.demos.html" />
+    <link rel="prev" title="skmultiflow.data package" href="skmultiflow.data.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.demos.html" title="skmultiflow.demos package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.html" title="skmultiflow.data package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.data.html" accesskey="U">skmultiflow.data package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="skmultiflow-data-generators-package">
+<h1>skmultiflow.data.generators package<a class="headerlink" href="#skmultiflow-data-generators-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-skmultiflow.data.generators.multilabel_generator">
+<span id="skmultiflow-data-generators-multilabel-generator-module"></span><h2>skmultiflow.data.generators.multilabel_generator module<a class="headerlink" href="#module-skmultiflow.data.generators.multilabel_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.multilabel_generator.</code><code class="descname">MultilabelGenerator</code><span class="sig-paren">(</span><em>n_samples=40000</em>, <em>n_features=20</em>, <em>n_targets=5</em>, <em>n_labels=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream" title="skmultiflow.data.base_instance_stream.BaseInstanceStream"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.data.base_instance_stream.BaseInstanceStream</span></code></a></p>
+<p>This generator creates a stream of samples for a multilabel problem.
+It uses the make_multilabel_classification function from scikit-learn,
+which creates a batch setting multilabel classification problem. These
+samples are then sequentially fed by the next_instance function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n_samples</strong> (<em>int</em><em> (</em><em>Default: 40000</em><em>)</em>) – Total amount of samples to generate.</li>
+<li><strong>n_features</strong> (<em>int</em><em> (</em><em>Default: 100</em><em>)</em>) – Number of features to generate.</li>
+<li><strong>n_targets</strong> (<em>int</em><em> (</em><em>Default: 1</em><em>)</em>) – Number of targeting tasks to generate.</li>
+<li><strong>n_labels</strong> (<em>int</em><em> (</em><em>Default: 2</em><em>)</em>) – Number of labels to generate.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.estimated_remaining_instances">
+<code class="descname">estimated_remaining_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.estimated_remaining_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.estimated_remaining_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_attributes_header">
+<code class="descname">get_attributes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_attributes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_attributes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_classes">
+<code class="descname">get_classes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_classes_header">
+<code class="descname">get_classes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_classes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_classes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_last_instance">
+<code class="descname">get_last_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_last_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_last_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_attributes">
+<code class="descname">get_num_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_num_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_nominal_attributes">
+<code class="descname">get_num_nominal_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_num_nominal_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_nominal_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_numerical_attributes">
+<code class="descname">get_num_numerical_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_num_numerical_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_numerical_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_targets">
+<code class="descname">get_num_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_num_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_values_per_nominal_attribute">
+<code class="descname">get_num_values_per_nominal_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_num_values_per_nominal_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_num_values_per_nominal_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_plot_name">
+<code class="descname">get_plot_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.get_plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.get_plot_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.has_more_instances">
+<code class="descname">has_more_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.has_more_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.has_more_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.has_more_mini_batch">
+<code class="descname">has_more_mini_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.has_more_mini_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.has_more_mini_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.is_restartable">
+<code class="descname">is_restartable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.is_restartable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.is_restartable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return batch_size samples from the X and y matrices stored in
+memory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – The number of samples to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>Return a tuple with the features matrix and the labels matrix for</em></li>
+<li><em>the batch_size samples that were requested.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/multilabel_generator.html#MultilabelGenerator.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.multilabel_generator.MultilabelGenerator.restart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.data.generators.random_rbf_generator">
+<span id="skmultiflow-data-generators-random-rbf-generator-module"></span><h2>skmultiflow.data.generators.random_rbf_generator module<a class="headerlink" href="#module-skmultiflow.data.generators.random_rbf_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.data.generators.random_rbf_generator.Centroid">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.random_rbf_generator.</code><code class="descname">Centroid</code><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#Centroid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.Centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class that stores a centroid’s attributes. No further methods.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.random_rbf_generator.</code><code class="descname">RandomRBFGenerator</code><span class="sig-paren">(</span><em>model_seed=21</em>, <em>instance_seed=5</em>, <em>num_classes=2</em>, <em>num_att=10</em>, <em>num_centroids=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream" title="skmultiflow.data.base_instance_stream.BaseInstanceStream"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.data.base_instance_stream.BaseInstanceStream</span></code></a>, <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>This generator produces a radial basis function stream.</p>
+<p>A number of centroids, having a random central position, a standard
+deviation, a class label and weight, are generated. A new sample is
+created by choosing one of the centroids at random, taking into
+account their weights, and offsetting the attributes at a random
+direction from the centroid’s center. The offset length is drawn
+from a Gaussian distribution.</p>
+<p>This process will create a normally distributed hypersphere of samples
+on the surrounds of each centroid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model_seed</strong> (<em>int</em><em> (</em><em>Default: 21</em><em>)</em>) – The seed to be used by the model random generator.</li>
+<li><strong>instance_seed</strong> (<em>int</em><em> (</em><em>Default: 5</em><em>)</em>) – The seed to be used by the instance random generator.</li>
+<li><strong>num_classes</strong> (<em>int</em><em> (</em><em>Default: 2</em><em>)</em>) – The number of class labels to generate.</li>
+<li><strong>num_att</strong> (<em>int</em><em> (</em><em>Default: 10</em><em>)</em>) – The total number of attributes to generate.</li>
+<li><strong>num_centroids</strong> (<em>int</em><em> (</em><em>Default: 50</em><em>)</em>) – The total number of centroids to generate.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.estimated_remaining_instances">
+<code class="descname">estimated_remaining_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.estimated_remaining_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.estimated_remaining_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.generate_centroids">
+<code class="descname">generate_centroids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.generate_centroids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.generate_centroids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sequentially creates all the centroids, choosing at random a center,
+a label, a standard deviation and a weight.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_attributes_header">
+<code class="descname">get_attributes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_attributes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_attributes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_classes">
+<code class="descname">get_classes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_classes_header">
+<code class="descname">get_classes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_classes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_classes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_last_instance">
+<code class="descname">get_last_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_last_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_last_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_attributes">
+<code class="descname">get_num_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_num_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_nominal_attributes">
+<code class="descname">get_num_nominal_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_num_nominal_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_nominal_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_numerical_attributes">
+<code class="descname">get_num_numerical_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_num_numerical_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_numerical_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_targets">
+<code class="descname">get_num_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_num_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_values_per_nominal_attribute">
+<code class="descname">get_num_values_per_nominal_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_num_values_per_nominal_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_num_values_per_nominal_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_plot_name">
+<code class="descname">get_plot_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.get_plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.get_plot_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.has_more_instances">
+<code class="descname">has_more_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.has_more_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.has_more_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.has_more_mini_batch">
+<code class="descname">has_more_mini_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.has_more_mini_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.has_more_mini_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.is_restartable">
+<code class="descname">is_restartable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.is_restartable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.is_restartable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return batch_size samples generated by choosing a centroid at
+random and randomly offsetting its attributes so that it is
+placed inside the hypersphere of that centroid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – The number of samples to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>Return a tuple with the features matrix and the labels matrix for</em></li>
+<li><em>the batch_size samples that were requested.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator.html#RandomRBFGenerator.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator.restart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.data.generators.random_rbf_generator_drift">
+<span id="skmultiflow-data-generators-random-rbf-generator-drift-module"></span><h2>skmultiflow.data.generators.random_rbf_generator_drift module<a class="headerlink" href="#module-skmultiflow.data.generators.random_rbf_generator_drift" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.random_rbf_generator_drift.</code><code class="descname">RandomRBFGeneratorDrift</code><span class="sig-paren">(</span><em>model_seed=21</em>, <em>instance_seed=5</em>, <em>num_classes=2</em>, <em>num_att=10</em>, <em>num_centroids=50</em>, <em>change_speed=0.0</em>, <em>num_drift_centroids=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator_drift.html#RandomRBFGeneratorDrift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator" title="skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.data.generators.random_rbf_generator.RandomRBFGenerator</span></code></a>, <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>This class is an extension from the RandomRBFGenerator. It functions
+as the parent class, except that drift can be introduced in objects
+of this class.</p>
+<p>The drift is created by adding a speed to certain centroids. As the
+samples are generated each of the moving centroids’ centers is
+changed by an amount determined by its speed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model_seed</strong> (<em>int</em><em> (</em><em>Default: 21</em><em>)</em>) – The seed to be used by the model random generator.</li>
+<li><strong>instance_seed</strong> (<em>int</em><em> (</em><em>Default: 5</em><em>)</em>) – The seed to be used by the instance random generator.</li>
+<li><strong>num_classes</strong> (<em>int</em><em> (</em><em>Default: 2</em><em>)</em>) – The number of class labels to generate.</li>
+<li><strong>num_att</strong> (<em>int</em><em> (</em><em>Default: 10</em><em>)</em>) – The total number of attributes to generate.</li>
+<li><strong>num_centroids</strong> (<em>int</em><em> (</em><em>Default: 50</em><em>)</em>) – The total number of centroids to generate.</li>
+<li><strong>change_speed</strong> (<em>float</em><em> (</em><em>Default: 0.0</em><em>)</em>) – The concept drift speed.</li>
+<li><strong>num_drift_centroids</strong> (<em>int</em><em> (</em><em>Default: 50</em><em>)</em>) – The number of centroids that will drift.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">opt</span> <span class="o">=</span> <span class="n">FileOption</span><span class="p">(</span><span class="s1">&#39;FILE&#39;</span><span class="p">,</span> <span class="s1">&#39;OPT_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;../datasets/covtype.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;csv&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">FileStream</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">prepare_for_use</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rbf_drift</span> <span class="o">=</span> <span class="n">RandomRBFGeneratorDrift</span><span class="p">(</span><span class="n">change_speed</span><span class="o">=</span><span class="mf">41.00</span><span class="p">,</span> <span class="n">num_centroids</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">model_seed</span><span class="o">=</span><span class="mi">32523423</span><span class="p">,</span>
+<span class="gp">... </span><span class="n">instance_seed</span><span class="o">=</span><span class="mi">5435</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_att</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_drift_centroids</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rbf_drift</span><span class="o">.</span><span class="n">prepare_for_use</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.generate_centroids">
+<code class="descname">generate_centroids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator_drift.html#RandomRBFGeneratorDrift.generate_centroids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.generate_centroids" title="Permalink to this definition">¶</a></dt>
+<dd><p>The centroids are generated just as it’s done in the parent class,
+the difference is the extra step taken to setup the drift, if there’s
+any.</p>
+<p>To __configure the drift, random offset speeds are chosen for
+self.num_drift_centroids centroids. Finally, the speed are
+normalized.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator_drift.html#RandomRBFGeneratorDrift.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator_drift.html#RandomRBFGeneratorDrift.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator_drift.html#RandomRBFGeneratorDrift.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return batch_size samples generated by choosing a centroid at
+random and randomly offsetting its attributes so that it is
+placed inside the hypersphere of that centroid.</p>
+<p>In addition to that, drift is introduced to a chosen number of
+centroids. Each chosen center is moved at each generated sample.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – The number of samples to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>Return a tuple with the features matrix and the labels matrix for</em></li>
+<li><em>the batch_size samples that were requested.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator_drift.html#RandomRBFGeneratorDrift.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_rbf_generator_drift.html#RandomRBFGeneratorDrift.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.restart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.data.generators.random_tree_generator">
+<span id="skmultiflow-data-generators-random-tree-generator-module"></span><h2>skmultiflow.data.generators.random_tree_generator module<a class="headerlink" href="#module-skmultiflow.data.generators.random_tree_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.data.generators.random_tree_generator.Node">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.random_tree_generator.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>class_label=None</em>, <em>split_att_index=None</em>, <em>split_att_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.Node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class that stores the attributes of a node. No further methods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>class_label</strong> (<em>int</em><em>, </em><em>optional</em>) – If given it means the node is a leaf and the class label associated
+with it is class_label.</li>
+<li><strong>split_att_index</strong> (<em>int</em><em>, </em><em>optional</em>) – If given it means the node is an inner node and the split attribute
+is split_att_index.</li>
+<li><strong>split_att_value</strong> (<em>int</em><em>, </em><em>optional</em>) – If given it means the node is an inner node and the split value is
+split_att_value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.random_tree_generator.</code><code class="descname">RandomTreeGenerator</code><span class="sig-paren">(</span><em>tree_seed=23</em>, <em>instance_seed=12</em>, <em>n_classes=2</em>, <em>n_nominal_attributes=5</em>, <em>n_numerical_attributes=5</em>, <em>n_values_per_nominal=5</em>, <em>max_depth=5</em>, <em>min_leaf_depth=3</em>, <em>fraction_leaves_per_level=0.15</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream" title="skmultiflow.data.base_instance_stream.BaseInstanceStream"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.data.base_instance_stream.BaseInstanceStream</span></code></a>, <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>This generator is built based on its description in Domingo and Hulten’s
+‘Knowledge Discovery and Data Mining’. The generator is based on a random
+tree that splits attributes at random and sets labels to its leafs.</p>
+<p>The tree structure is composed on Node objects, which can be either inner
+nodes or leaf nodes. The choice comes as a function fo the parameters
+passed to its initializer.</p>
+<p>Since the concepts are generated and classified according to a tree
+structure, in theory, it should favour decision tree learners.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tree_seed</strong> (<em>int</em><em> (</em><em>Default: 23</em><em>)</em>) – Seed for random generation of tree.</li>
+<li><strong>instance_seed</strong> (<em>int</em><em> (</em><em>Default: 12</em><em>)</em>) – Seed for random generation of instances.</li>
+<li><strong>n_classes</strong> (<em>int</em><em> (</em><em>Default: 2</em><em>)</em>) – The number of targets to generate.</li>
+<li><strong>n_nominal_attributes</strong> (<em>int</em><em> (</em><em>Default: 5</em><em>)</em>) – The number of nominal attributes to generate.</li>
+<li><strong>n_numerical_attributes</strong> (<em>int</em><em> (</em><em>Default: 5</em><em>)</em>) – The number of numerical attributes to generate.</li>
+<li><strong>n_values_per_nominal</strong> (<em>int</em><em> (</em><em>Default: 5</em><em>)</em>) – The number of values to generate per nominal attribute.</li>
+<li><strong>max_depth</strong> (<em>int</em><em> (</em><em>Default: 5</em><em>)</em>) – The maximum depth of the tree concept.</li>
+<li><strong>min_leaf_depth</strong> (<em>int</em><em> (</em><em>Default: 3</em><em>)</em>) – The first level of the tree above MaxTreeDepth that can have leaves.</li>
+<li><strong>fraction_leaves_per_level</strong> (<em>float</em><em> (</em><em>Default: 0.15</em><em>)</em>) – The fraction of leaves per level from min_leaf_depth onwards.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.classify_instance">
+<code class="descname">classify_instance</code><span class="sig-paren">(</span><em>node</em>, <em>att_vals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.classify_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.classify_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>After a sample is generated it passes through this function, which
+advances the tree structure until it finds a leaf node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<em>Node object</em>) – The Node that will be verified. Either it’s a leaf, and then the
+label is returned, or it’s a inner node, and so the algorithm
+will continue to advance in the structure.</li>
+<li><strong>att_vals</strong> (<em>numpy.array</em>) – The set of generated feature values of the sample.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>Return a tuple with the features matrix and the labels matrix</em></li>
+<li><em>for the batch_size samples that were requested.</em></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.estimated_remaining_instances">
+<code class="descname">estimated_remaining_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.estimated_remaining_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.estimated_remaining_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.generate_random_tree">
+<code class="descname">generate_random_tree</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.generate_random_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.generate_random_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the random tree, starting from the root node and following
+the constraints passed as parameters to the initializer.</p>
+<p>The tree is recursively generated, node by node, until it reaches the
+maximum tree depth.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.generate_random_tree_node">
+<code class="descname">generate_random_tree_node</code><span class="sig-paren">(</span><em>current_depth</em>, <em>nominal_att_candidates</em>, <em>min_numeric_vals</em>, <em>max_numeric_vals</em>, <em>rand</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.generate_random_tree_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.generate_random_tree_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a node, choosing at random the splitting attribute and the
+split value. Fill the features with random feature values, and then
+recursively generates its children. If the split attribute is a
+numerical attribute there are going to be two children nodes, one
+for samples where the value for the split attribute is smaller than
+the split value, and one for the other case.</p>
+<p>Once the recursion passes the leaf minimum depth, it probabilistic
+chooses if the node is a leaf or not. If not, the recursion follow
+the same way as before. If it decides the node is a leaf, a class
+label is chosen for the leaf at random.</p>
+<p>Furthermore, if the current_depth is equal or higher than the tree
+maximum depth, a leaf node is immediately returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>current_depth</strong> (<em>int</em>) – The current tree depth.</li>
+<li><strong>nominal_att_candidates</strong> (<em>list</em>) – A list containing all the, still not chosen for the split,
+nominal attributes.</li>
+<li><strong>min_numeric_vals</strong> (<em>list</em>) – The minimum value reachable, at this branch of the
+tree, for all numeric attributes.</li>
+<li><strong>max_numeric_vals</strong> (<em>list</em>) – The minimum value reachable, at this branch of the
+tree, for all numeric attributes.</li>
+<li><strong>rand</strong> (<em>numpy.random</em>) – A numpy random generator instance.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Returns the node, either a inner node or a leaf node.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If the splitting attribute of a node happens to be a nominal attribute
+we guarantee that none of its children will split on the same attribute,
+as it would have no use for that split.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_attributes_header">
+<code class="descname">get_attributes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_attributes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_attributes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_classes">
+<code class="descname">get_classes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_classes_header">
+<code class="descname">get_classes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_classes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_classes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_last_instance">
+<code class="descname">get_last_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_last_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_last_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_attributes">
+<code class="descname">get_num_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_num_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_nominal_attributes">
+<code class="descname">get_num_nominal_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_num_nominal_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_nominal_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_numerical_attributes">
+<code class="descname">get_num_numerical_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_num_numerical_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_numerical_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_targets">
+<code class="descname">get_num_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_num_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_values_per_nominal_attribute">
+<code class="descname">get_num_values_per_nominal_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_num_values_per_nominal_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_values_per_nominal_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_plot_name">
+<code class="descname">get_plot_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.get_plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_plot_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.has_more_instances">
+<code class="descname">has_more_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.has_more_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.has_more_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.has_more_mini_batch">
+<code class="descname">has_more_mini_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.has_more_mini_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.has_more_mini_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.is_restartable">
+<code class="descname">is_restartable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.is_restartable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.is_restartable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly generates attributes values, and then classify each instance
+generated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – The number of samples to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>Return a tuple with the features matrix and the labels matrix for the</em></li>
+<li><em>batch_size samples that were requested.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/random_tree_generator.html#RandomTreeGenerator.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.restart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.data.generators.regression_generator">
+<span id="skmultiflow-data-generators-regression-generator-module"></span><h2>skmultiflow.data.generators.regression_generator module<a class="headerlink" href="#module-skmultiflow.data.generators.regression_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.regression_generator.</code><code class="descname">RegressionGenerator</code><span class="sig-paren">(</span><em>n_samples=40000</em>, <em>n_features=100</em>, <em>n_informative=10</em>, <em>n_targets=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream" title="skmultiflow.data.base_instance_stream.BaseInstanceStream"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.data.base_instance_stream.BaseInstanceStream</span></code></a></p>
+<p>This generator creates a stream of samples for a regression problem. It
+uses the make_regression function from scikit-learn, which creates a
+batch setting regression problem. These samples are then sequentially
+fed by the next_instance function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n_samples</strong> (<em>int</em><em> (</em><em>Default: 40000</em><em>)</em>) – Total amount of samples to generate.</li>
+<li><strong>n_features</strong> (<em>int</em><em> (</em><em>Default: 100</em><em>)</em>) – Number of features to generate.</li>
+<li><strong>n_informative</strong> (<em>int</em><em> (</em><em>Default: 10</em><em>)</em>) – Number of relevant features, in other words, the number of features
+that influence the class label.</li>
+<li><strong>n_targets</strong> (<em>int</em><em> (</em><em>Default: 1</em><em>)</em>) – Number of targeting tasks to generate.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.estimated_remaining_instances">
+<code class="descname">estimated_remaining_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.estimated_remaining_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.estimated_remaining_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_attributes_header">
+<code class="descname">get_attributes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_attributes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_attributes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_classes">
+<code class="descname">get_classes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_classes_header">
+<code class="descname">get_classes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_classes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_classes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_last_instance">
+<code class="descname">get_last_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_last_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_last_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_attributes">
+<code class="descname">get_num_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_num_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_nominal_attributes">
+<code class="descname">get_num_nominal_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_num_nominal_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_nominal_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_numerical_attributes">
+<code class="descname">get_num_numerical_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_num_numerical_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_numerical_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_targets">
+<code class="descname">get_num_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_num_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_values_per_nominal_attribute">
+<code class="descname">get_num_values_per_nominal_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_num_values_per_nominal_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_num_values_per_nominal_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.get_plot_name">
+<code class="descname">get_plot_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.get_plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.get_plot_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.has_more_instances">
+<code class="descname">has_more_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.has_more_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.has_more_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.has_more_mini_batch">
+<code class="descname">has_more_mini_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.has_more_mini_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.has_more_mini_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.is_restartable">
+<code class="descname">is_restartable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.is_restartable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.is_restartable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns batch_size samples from the generated regression problem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – The number of sample to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>Return a tuple with the features matrix and the labels matrix for</em></li>
+<li><em>the batch_size samples that were requested.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.regression_generator.RegressionGenerator.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/regression_generator.html#RegressionGenerator.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.regression_generator.RegressionGenerator.restart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.data.generators.sea_generator">
+<span id="skmultiflow-data-generators-sea-generator-module"></span><h2>skmultiflow.data.generators.sea_generator module<a class="headerlink" href="#module-skmultiflow.data.generators.sea_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.sea_generator.</code><code class="descname">SEAGenerator</code><span class="sig-paren">(</span><em>classification_function=0</em>, <em>instance_seed=42</em>, <em>balance_classes=False</em>, <em>noise_percentage=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream" title="skmultiflow.data.base_instance_stream.BaseInstanceStream"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.data.base_instance_stream.BaseInstanceStream</span></code></a>, <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>This generator is an implementation of the data stream with abrupt
+concept drift, first described in Street and Kim’s ‘A streaming
+ensemble algorithm (SEA) for large-scale classification’.</p>
+<p>It generates 3 numerical attributes, that vary from 0 to 10, where
+only 2 of them are relevant to the classification task. A classification
+function is chosen, among four possible ones. These functions compare
+the sum of the two relevant attributes with a threshold value, unique
+for each of the classification functions. Depending on the comparison
+the generator will classify an instance as one of the two possible
+labels.</p>
+<p>Concept drift is possible if used in conjunction with the concept
+drift generator, that at the time of this framework’s first release
+is not yet implemented. The abrupt drift is generated by changing
+the classification function, thus changing the threshold.</p>
+<p>Two important features are the possibility to balance classes, which
+means the class distribution will tend to a uniform one, and the possibility
+to add noise, which will, according to some probability, change the chosen
+label for an instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>classification_function</strong> (<em>int</em><em> (</em><em>Default: 0</em><em>)</em>) – Which of the four classification functions to use for the generation.
+This value can vary from 0 to 3, and the thresholds are, 8, 9, 7 and 9.5.</li>
+<li><strong>instance_seed</strong> (<em>int</em><em> (</em><em>Default: 42</em><em>)</em>) – The seed used to initialize the random generator, which is an instance
+of numpy’s random.</li>
+<li><strong>balance_classes</strong> (<em>bool</em><em> (</em><em>Default: False</em><em>)</em>) – Whether to balance classes or not. If balanced, the class distribution
+will converge to a uniform distribution.</li>
+<li><strong>noise_percentage</strong> (<em>float</em><em> (</em><em>Default: 0.0</em><em>)</em>) – The probability that noise will happen in the generation. At each
+new sample generated, a random probability is generated, and if that
+probability is higher than the noise_percentage, the chosen label will
+be switched.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Concept drift is not yet available, since the support class that adds
+the drift is not yet implemented.</p>
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.classification_function_one">
+<code class="descname">classification_function_one</code><span class="sig-paren">(</span><em>att1</em>, <em>att2</em>, <em>att3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.classification_function_one"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.classification_function_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decides the sample class label based on the sum of att1 and att2,
+and the threshold value of 9.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>att1</strong> (<em>float</em>) – First numeric attribute.</li>
+<li><strong>att2</strong> (<em>float</em>) – Second numeric attribute.</li>
+<li><strong>att3</strong> (<em>float</em>) – Third numeric attribute.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Returns the sample class label, either 0 or 1.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.classification_function_three">
+<code class="descname">classification_function_three</code><span class="sig-paren">(</span><em>att1</em>, <em>att2</em>, <em>att3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.classification_function_three"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.classification_function_three" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decides the sample class label based on the sum of att1 and att2,
+and the threshold value of 9.5.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>att1</strong> (<em>float</em>) – First numeric attribute.</li>
+<li><strong>att2</strong> (<em>float</em>) – Second numeric attribute.</li>
+<li><strong>att3</strong> (<em>float</em>) – Third numeric attribute.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Returns the sample class label, either 0 or 1.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.classification_function_two">
+<code class="descname">classification_function_two</code><span class="sig-paren">(</span><em>att1</em>, <em>att2</em>, <em>att3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.classification_function_two"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.classification_function_two" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decides the sample class label based on the sum of att1 and att2,
+and the threshold value of 7.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>att1</strong> (<em>float</em>) – First numeric attribute.</li>
+<li><strong>att2</strong> (<em>float</em>) – Second numeric attribute.</li>
+<li><strong>att3</strong> (<em>float</em>) – Third numeric attribute.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Returns the sample class label, either 0 or 1.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.classification_function_zero">
+<code class="descname">classification_function_zero</code><span class="sig-paren">(</span><em>att1</em>, <em>att2</em>, <em>att3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.classification_function_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.classification_function_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decides the sample class label based on the sum of att1 and att2,
+and the threshold value of 8.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>att1</strong> (<em>float</em>) – First numeric attribute.</li>
+<li><strong>att2</strong> (<em>float</em>) – Second numeric attribute.</li>
+<li><strong>att3</strong> (<em>float</em>) – Third numeric attribute.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Returns the sample class label, either 0 or 1.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.estimated_remaining_instances">
+<code class="descname">estimated_remaining_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.estimated_remaining_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.estimated_remaining_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.generate_drift">
+<code class="descname">generate_drift</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.generate_drift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.generate_drift" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_attributes_header">
+<code class="descname">get_attributes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_attributes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_attributes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_classes">
+<code class="descname">get_classes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_classes_header">
+<code class="descname">get_classes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_classes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_classes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_last_instance">
+<code class="descname">get_last_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_last_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_last_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_attributes">
+<code class="descname">get_num_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_num_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_nominal_attributes">
+<code class="descname">get_num_nominal_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_num_nominal_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_nominal_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_numerical_attributes">
+<code class="descname">get_num_numerical_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_num_numerical_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_numerical_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_targets">
+<code class="descname">get_num_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_num_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_values_per_nominal_attribute">
+<code class="descname">get_num_values_per_nominal_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_num_values_per_nominal_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_num_values_per_nominal_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.get_plot_name">
+<code class="descname">get_plot_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.get_plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.get_plot_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.has_more_instances">
+<code class="descname">has_more_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.has_more_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.has_more_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.has_more_mini_batch">
+<code class="descname">has_more_mini_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.has_more_mini_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.has_more_mini_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.is_restartable">
+<code class="descname">is_restartable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.is_restartable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.is_restartable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sample generation works as follows: The three attributes are
+generated with the random generator, initialized with the seed passed
+by the user. Then, the classification function decides, as a function
+of the two relevant attributes, whether to classify the instance as
+class 0 or class 1. The next step is to verify if the classes should
+be balanced, and if so, balance the classes. The last step is to add
+noise, if the noise percentage is higher than 0.0.</p>
+<p>The generated sample will have 3 features, where only the two first
+are relevant, and 1 label (it has one classification task).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – The number of samples to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>Return a tuple with the features matrix and the labels matrix for</em></li>
+<li><em>the batch_size samples that were requested.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.sea_generator.SEAGenerator.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/sea_generator.html#SEAGenerator.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.sea_generator.SEAGenerator.restart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.data.generators.waveform_generator">
+<span id="skmultiflow-data-generators-waveform-generator-module"></span><h2>skmultiflow.data.generators.waveform_generator module<a class="headerlink" href="#module-skmultiflow.data.generators.waveform_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.waveform_generator.</code><code class="descname">WaveformGenerator</code><span class="sig-paren">(</span><em>seed=23</em>, <em>add_noise=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream" title="skmultiflow.data.base_instance_stream.BaseInstanceStream"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.data.base_instance_stream.BaseInstanceStream</span></code></a>, <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>Generates instances with 21 numeric attributes and 3 targets, based
+on a random differentiation of some base waveforms. Supports noise
+addition, but in this case the generator will have 40 attribute
+instances</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>seed</strong> (<em>int</em>) – Seed for random generation of instances (Default: 23)</li>
+<li><strong>add_noise</strong> (<em>bool</em>) – Add noise (Default: False)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.H_FUNCTION">
+<code class="descname">H_FUNCTION</code><em class="property"> = array([[0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],        [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])</em><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.H_FUNCTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.NUM_BASE_ATTRIBUTES">
+<code class="descname">NUM_BASE_ATTRIBUTES</code><em class="property"> = 21</em><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.NUM_BASE_ATTRIBUTES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.NUM_CLASSES">
+<code class="descname">NUM_CLASSES</code><em class="property"> = 3</em><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.NUM_CLASSES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.TOTAL_ATTRIBUTES_INCLUDING_NOISE">
+<code class="descname">TOTAL_ATTRIBUTES_INCLUDING_NOISE</code><em class="property"> = 40</em><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.TOTAL_ATTRIBUTES_INCLUDING_NOISE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.estimated_remaining_instances">
+<code class="descname">estimated_remaining_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.estimated_remaining_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.estimated_remaining_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_attributes_header">
+<code class="descname">get_attributes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_attributes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_attributes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_classes">
+<code class="descname">get_classes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_classes_header">
+<code class="descname">get_classes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_classes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_classes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_last_instance">
+<code class="descname">get_last_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_last_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_last_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_attributes">
+<code class="descname">get_num_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_nominal_attributes">
+<code class="descname">get_num_nominal_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_nominal_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_nominal_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_numerical_attributes">
+<code class="descname">get_num_numerical_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_numerical_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_numerical_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_targets">
+<code class="descname">get_num_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_values_per_nominal_attribute">
+<code class="descname">get_num_values_per_nominal_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_values_per_nominal_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_values_per_nominal_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_plot_name">
+<code class="descname">get_plot_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_plot_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_more_instances">
+<code class="descname">has_more_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.has_more_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_more_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_more_mini_batch">
+<code class="descname">has_more_mini_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.has_more_mini_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_more_mini_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_noise">
+<code class="descname">has_noise</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.has_noise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_noise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.is_restartable">
+<code class="descname">is_restartable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.is_restartable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.is_restartable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance is generated based on the parameters passed. If noise
+is included the total number of attributes will be 40, if it’s not
+included there will be 21 attributes. In both cases there is one
+classification task, which chooses one between three labels.</p>
+<p>After the number of attributes is chosen, the algorithm will randomly
+choose one of the hard coded waveforms, as well as random multipliers.
+For each attribute, the actual value generated will be a a combination
+of the hard coded functions, with the multipliers and a random value.</p>
+<p>Furthermore, if noise is added the attributes from 21 to 40 will be
+replaced with a random normal value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – The number of samples to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>Return a tuple with the features matrix and the labels matrix</em></li>
+<li><em>for the batch_size samples that were requested.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.restart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="skmultiflow.data.generators.waveform_generator.demo">
+<code class="descclassname">skmultiflow.data.generators.waveform_generator.</code><code class="descname">demo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#demo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.demo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-skmultiflow.data.generators">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.data.generators" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">skmultiflow.data.generators package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.data.generators.multilabel_generator">skmultiflow.data.generators.multilabel_generator module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.data.generators.random_rbf_generator">skmultiflow.data.generators.random_rbf_generator module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.data.generators.random_rbf_generator_drift">skmultiflow.data.generators.random_rbf_generator_drift module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.data.generators.random_tree_generator">skmultiflow.data.generators.random_tree_generator module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.data.generators.regression_generator">skmultiflow.data.generators.regression_generator module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.data.generators.sea_generator">skmultiflow.data.generators.sea_generator module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.data.generators.waveform_generator">skmultiflow.data.generators.waveform_generator module</a></li>
+<li><a class="reference internal" href="#module-skmultiflow.data.generators">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.data.html"
+                        title="previous chapter">skmultiflow.data package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.demos.html"
+                        title="next chapter">skmultiflow.demos package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.data.generators.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.demos.html" title="skmultiflow.demos package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.html" title="skmultiflow.data package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.data.html" >skmultiflow.data package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>
