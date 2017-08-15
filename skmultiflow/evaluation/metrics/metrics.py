@@ -22,7 +22,8 @@ def hamming_score(true_labels, predicts):
     
     Returns
     -------
-    The hamming score, or label-based accuracy, for the given sets.
+    float
+        The hamming score, or label-based accuracy, for the given sets.
     
     Examples
     --------
@@ -60,7 +61,8 @@ def j_index(true_labels, predicts):
     
     Returns
     -------
-    The J-index, or 'intersection over union', for the given sets. 
+    float
+        The J-index, or 'intersection over union', for the given sets. 
     
     Examples
     --------
@@ -104,7 +106,8 @@ def exact_match(true_labels, predicts):
         
     Returns
     -------
-    The exact match percentage between the given sets.  
+    float
+        The exact match percentage between the given sets.  
     
     Examples
     --------

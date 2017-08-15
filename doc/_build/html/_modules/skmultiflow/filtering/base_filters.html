@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.filtering.base_filters &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -54,7 +68,7 @@
 <span class="kn">from</span> <span class="nn">skmultiflow.core.utils.utils</span> <span class="k">import</span> <span class="n">get_dimensions</span>
 
 
-<div class="viewcode-block" id="MissingValuesCleaner"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.base_filters.MissingValuesCleaner">[docs]</a><span class="k">class</span> <span class="nc">MissingValuesCleaner</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
+<div class="viewcode-block" id="MissingValuesCleaner"><a class="viewcode-back" href="../../../skmultiflow.filtering.base_filters.html#skmultiflow.filtering.base_filters.MissingValuesCleaner">[docs]</a><span class="k">class</span> <span class="nc">MissingValuesCleaner</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; MissingValuesCleaner</span>
 <span class="sd">    </span>
 <span class="sd">    This is a transform object. It provides a simple way to replace missing </span>
@@ -85,6 +99,36 @@
 <span class="sd">    </span>
 <span class="sd">    new_value: int (Default: 1)</span>
 <span class="sd">        This is the replacement value in case the chosen strategy is &#39;custom&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Imports</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.options.file_option import FileOption</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.filtering.base_filters import MissingValuesCleaner</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up a stream</span>
+<span class="sd">    &gt;&gt;&gt; opt = FileOption(&#39;FILE&#39;, &#39;OPT_NAME&#39;, &#39;skmultiflow/datasets/covtype.csv&#39;, &#39;csv&#39;, False)</span>
+<span class="sd">    &gt;&gt;&gt; stream = FileStream(opt, -1, 1)</span>
+<span class="sd">    &gt;&gt;&gt; stream.prepare_for_use()</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the filter to substitute values -47 by the median of the </span>
+<span class="sd">    &gt;&gt;&gt; # last 10 samples</span>
+<span class="sd">    &gt;&gt;&gt; filter = MissingValuesCleaner(-47, &#39;median&#39;, 10)</span>
+<span class="sd">    &gt;&gt;&gt; X, y = stream.next_instance(10)</span>
+<span class="sd">    &gt;&gt;&gt; X[9, 0] = -47</span>
+<span class="sd">    &gt;&gt;&gt; # We will use this list to keep track of values</span>
+<span class="sd">    &gt;&gt;&gt; list = []</span>
+<span class="sd">    &gt;&gt;&gt; # Iterate over the first 9 samples, to build a sample window</span>
+<span class="sd">    &gt;&gt;&gt; for i in range(9):</span>
+<span class="sd">    ...     X_transf = filter.partial_fit_transform([X[i].tolist()])</span>
+<span class="sd">    ...     list.append(X_transf[0][0])</span>
+<span class="sd">    ...     print(X_transf)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Transform last sample. The first feature should be replaced by the list&#39;s </span>
+<span class="sd">    &gt;&gt;&gt; # median value</span>
+<span class="sd">    &gt;&gt;&gt; X_transf = filter.partial_fit_transform([X[9].tolist()])</span>
+<span class="sd">    &gt;&gt;&gt; print(X_transf)</span>
+<span class="sd">    &gt;&gt;&gt; np.median(list)</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -111,7 +155,7 @@
         <span class="k">if</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;median&#39;</span><span class="p">,</span> <span class="s1">&#39;mode&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">FastBuffer</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MissingValuesCleaner.transform"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.base_filters.MissingValuesCleaner.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="MissingValuesCleaner.transform"><a class="viewcode-back" href="../../../skmultiflow.filtering.base_filters.html#skmultiflow.filtering.base_filters.MissingValuesCleaner.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; transform</span>
 <span class="sd">        </span>
 <span class="sd">        Does the transformation process in the samples in X.</span>
@@ -142,7 +186,8 @@
 <span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The replacement.</span>
+<span class="sd">        int or float</span>
+<span class="sd">            The replacement.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s1">&#39;zero&#39;</span><span class="p">:</span>
@@ -165,7 +210,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s1">&#39;custom&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_value</span>
 
-<div class="viewcode-block" id="MissingValuesCleaner.partial_fit_transform"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.base_filters.MissingValuesCleaner.partial_fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MissingValuesCleaner.partial_fit_transform"><a class="viewcode-back" href="../../../skmultiflow.filtering.base_filters.html#skmultiflow.filtering.base_filters.MissingValuesCleaner.partial_fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit_transform</span>
 <span class="sd">        </span>
 <span class="sd">        Partially fits the model and then apply the transform to the data.</span>
@@ -180,7 +225,8 @@
 <span class="sd">         </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The transformed data.</span>
+<span class="sd">        numpy.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            The transformed data.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -189,7 +235,7 @@
 
         <span class="k">return</span> <span class="n">X</span></div>
 
-<div class="viewcode-block" id="MissingValuesCleaner.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.base_filters.MissingValuesCleaner.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MissingValuesCleaner.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.filtering.base_filters.html#skmultiflow.filtering.base_filters.MissingValuesCleaner.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit</span>
 <span class="sd">        </span>
 <span class="sd">        Partial fits the model.</span>
@@ -204,7 +250,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self.</span>
+<span class="sd">        MissingValuesCleaner</span>
+<span class="sd">            self</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -213,7 +260,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-<div class="viewcode-block" id="MissingValuesCleaner.get_info"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.base_filters.MissingValuesCleaner.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MissingValuesCleaner.get_info"><a class="viewcode-back" href="../../../skmultiflow.filtering.base_filters.html#skmultiflow.filtering.base_filters.MissingValuesCleaner.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;MissingValueCleaner: missing_value: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">missing_value</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - strategy: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">+</span> \
                <span class="s1">&#39; - window_size: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">)</span> <span class="o">+</span> \
@@ -223,20 +270,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -13,38 +13,12 @@ Subpackages
 Submodules
 ----------
 
-skmultiflow\.classification\.base module
-----------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.classification.base
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.classification\.multi\_output\_learner module
-----------------------------------------------------------
-
-.. automodule:: skmultiflow.classification.multi_output_learner
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.classification\.naive\_bayes module
-------------------------------------------------
-
-.. automodule:: skmultiflow.classification.naive_bayes
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.classification\.perceptron module
-----------------------------------------------
-
-.. automodule:: skmultiflow.classification.perceptron
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.classification.base
+   skmultiflow.classification.multi_output_learner
+   skmultiflow.classification.naive_bayes
+   skmultiflow.classification.perceptron
 
 Module contents
 ---------------

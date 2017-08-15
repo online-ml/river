@@ -85,9 +85,10 @@ class FastBuffer(BaseObject):
             
         Returns
         -------
-        If no elements need to be popped from the queue to make space for new 
-        entries there is no return. On the other hand, if elements need to be 
-        removed, they are added to an auxiliary list, and that list is returned.
+        list
+            If no elements need to be popped from the queue to make space for new 
+            entries there is no return. On the other hand, if elements need to be 
+            removed, they are added to an auxiliary list, and that list is returned.
         
         """
         if (self.current_size+len(element_list)) <= self.max_size:
@@ -114,7 +115,8 @@ class FastBuffer(BaseObject):
         
         Returns
         -------
-        The first element in the queue.
+        int or float
+            The first element in the queue.
         
         """
         return self.buffer.pop(0)
@@ -147,7 +149,8 @@ class FastBuffer(BaseObject):
         
         Returns
         -------
-        The head of the queue.
+        int or float
+            The head of the queue.
         
         """
         try:
@@ -224,9 +227,10 @@ class FastComplexBuffer(BaseObject):
 
         Returns
         -------
-        If no elements need to be popped from the queue to make space for new 
-        entries there is no return. On the other hand, if elements need to be 
-        removed, they are added to an auxiliary list, and that list is returned.
+        list
+            If no elements need to be popped from the queue to make space for new 
+            entries there is no return. On the other hand, if elements need to be 
+            removed, they are added to an auxiliary list, and that list is returned.
 
         """
         is_list = True
@@ -288,7 +292,8 @@ class FastComplexBuffer(BaseObject):
         
         Returns
         -------
-        The first element of the queue.
+        tuple
+            The first element of the queue.
         
         """
         return self.buffer.pop(0)
@@ -321,7 +326,8 @@ class FastComplexBuffer(BaseObject):
 
         Returns
         -------
-        The head of the queue.
+        tuple
+            The head of the queue.
 
         """
         try:
@@ -407,8 +413,9 @@ class ConfusionMatrix(BaseObject):
         
         Returns
         -------
-        True if the update was successful and False if it was unsuccessful, 
-        case in which a index is out of range. 
+        bool
+            True if the update was successful and False if it was unsuccessful, 
+            case in which a index is out of range. 
         
         Notes
         -----
@@ -448,7 +455,8 @@ class ConfusionMatrix(BaseObject):
         
         Returns
         -------
-        True if the removal was successful and False otherwise.
+        bools
+            True if the removal was successful and False otherwise.
         
         Notes
         -----
@@ -489,7 +497,8 @@ class ConfusionMatrix(BaseObject):
         
         Returns
         -------
-        The confusion matrix's shape.
+        tuple
+            The confusion matrix's shape.
         
         """
         return self.confusion_matrix.shape
@@ -507,7 +516,8 @@ class ConfusionMatrix(BaseObject):
         
         Returns
         -------
-        The current occurrence count at position [i, j].
+        int
+            The current occurrence count at position [i, j].
         
         """
         return self.confusion_matrix[i, j]
@@ -522,7 +532,8 @@ class ConfusionMatrix(BaseObject):
         
         Returns
         -------
-        The complete row indexed by r.
+        numpy.array
+            The complete row indexed by r.
         
         """
         return self.confusion_matrix[r:r+1, :]
@@ -537,7 +548,8 @@ class ConfusionMatrix(BaseObject):
 
         Returns
         -------
-        The complete column indexed by c.
+        numpy.array
+            The complete column indexed by c.
 
         """
         return self.confusion_matrix[:, c:c+1]
@@ -549,7 +561,8 @@ class ConfusionMatrix(BaseObject):
         
         Returns
         -------
-        The occurrence count in the main diagonal.
+        int
+            The occurrence count in the main diagonal.
         
         """
         m, n = self.confusion_matrix.shape
@@ -659,7 +672,8 @@ class MOLConfusionMatrix(BaseObject):
         
         Returns
         -------
-        True if the update was successful, False otherwise.
+        bool
+            True if the update was successful, False otherwise.
         
         """
         if target is None or true is None or pred is None:
@@ -697,7 +711,8 @@ class MOLConfusionMatrix(BaseObject):
         
         Returns
         -------
-        True if the removal was successful, False otherwise.
+        bools
+            True if the removal was successful, False otherwise.
         
         """
         if true is None or pred is None or target is None:
@@ -743,7 +758,8 @@ class MOLConfusionMatrix(BaseObject):
         
         Returns
         -------
-        The current occurrence count at position [target, i, j].
+        int
+            The current occurrence count at position [target, i, j].
         
         """
         return self.confusion_matrix[target, i, j]
@@ -758,7 +774,8 @@ class MOLConfusionMatrix(BaseObject):
 
         Returns
         -------
-        The complete row indexed by r.
+        numpy.array
+            The complete row indexed by r.
 
         """
         return self.confusion_matrix[r:r+1, :]
@@ -773,7 +790,8 @@ class MOLConfusionMatrix(BaseObject):
 
         Returns
         -------
-        The complete column indexed by c.
+        numpy.array
+            The complete column indexed by c.
 
         """
         return self.confusion_matrix[:, c:c+1]
@@ -788,7 +806,8 @@ class MOLConfusionMatrix(BaseObject):
 
         Returns
         -------
-        The complete target indexed by t.
+        numpy.ndarray
+            The complete target indexed by t.
 
         """
         return self.confusion_matrix[t, :, :]
@@ -800,7 +819,8 @@ class MOLConfusionMatrix(BaseObject):
 
         Returns
         -------
-        The occurrence count in the main diagonals.
+        int
+            The occurrence count in the main diagonals.
 
         """
         t, m, n = self.confusion_matrix.shape
@@ -815,7 +835,8 @@ class MOLConfusionMatrix(BaseObject):
         
         Returns
         ------
-        The sum of occurrences in the metrix.
+        int
+            The sum of occurrences in the metrix.
         
         """
         return np.sum(self.confusion_matrix)
@@ -829,7 +850,8 @@ class MOLConfusionMatrix(BaseObject):
         
         Returns
         -------
-        The total discordance from all target's matrices.
+        float
+            The total discordance from all target's matrices.
         
         """
         return self.get_total_sum() - self.get_sum_main_diagonal()
@@ -926,10 +948,6 @@ class InstanceWindow(BaseObject):
         
         TypeError: If the buffer type is altered by the user, or isn't correctly 
         initialized, a TypeError may be raised.
-            
-        Returns
-        -------
-        None
         
         """
         if (self.n_attributes != X.size):
@@ -957,10 +975,6 @@ class InstanceWindow(BaseObject):
         
         Delete the oldest element from the sample window.
         
-        Returns
-        ------
-        None
-        
         """
         self.n_samples -= 1
         self.buffer = self.buffer[1:, :]
@@ -983,8 +997,9 @@ class InstanceWindow(BaseObject):
         
         Returns
         -------
-        A tuple containing both the attributes and the targets from sample 
-        indexed of index.
+        tuple
+            A tuple containing both the attributes and the targets from sample 
+            indexed of index.
         
         """
         return self.get_attributes_matrix()[index], self.get_targets_matrix()[index]

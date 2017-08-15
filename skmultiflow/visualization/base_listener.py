@@ -25,6 +25,21 @@ class BaseListener(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def on_new_train_step(self, performance_point, train_step):
+        """ on new_train_step
+        
+        At each relevant update (usually at each n_wait samples) this function 
+        should be called to enable the plot update.
+        
+        Parameters
+        ----------
+        performance_point: int
+            The number of samples analyzed.
+        
+        train_step: dictionary
+            A dictionary containing all subplots to update as keys and as values 
+            their new values.
+         
+        """
         raise NotImplementedError
 
     def get_class_type(self):

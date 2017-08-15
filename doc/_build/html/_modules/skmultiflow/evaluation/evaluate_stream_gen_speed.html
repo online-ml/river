@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.evaluation.evaluate_stream_gen_speed &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -53,7 +67,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 
-<div class="viewcode-block" id="EvaluateStreamGenerationSpeed"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed">[docs]</a><span class="k">class</span> <span class="nc">EvaluateStreamGenerationSpeed</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateStreamGenerationSpeed"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_stream_gen_speed.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed">[docs]</a><span class="k">class</span> <span class="nc">EvaluateStreamGenerationSpeed</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; EvaluateStreamGeneration</span>
 <span class="sd">    </span>
 <span class="sd">    Measures the stream&#39;s sample generation time.</span>
@@ -92,7 +106,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">output_file</span> <span class="o">=</span> <span class="n">output_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 
-<div class="viewcode-block" id="EvaluateStreamGenerationSpeed.eval"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateStreamGenerationSpeed.eval"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_stream_gen_speed.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; eval</span>
 <span class="sd">        </span>
 <span class="sd">        This function will evaluate the stream passed as parameter.</span>
@@ -104,7 +118,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The used stream.</span>
+<span class="sd">        BaseInstanceStream</span>
+<span class="sd">            The used stream.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_measure_stream_speed</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
@@ -132,7 +147,7 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Samples/second = </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">sample_count</span><span class="o">/</span><span class="p">(</span><span class="n">end_time</span><span class="o">-</span><span class="n">init_time</span><span class="p">),</span> <span class="mi">3</span><span class="p">)))</span>
 
 
-<div class="viewcode-block" id="EvaluateStreamGenerationSpeed.set_params"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.set_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateStreamGenerationSpeed.set_params"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_stream_gen_speed.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.set_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; set_params</span>
 
 <span class="sd">        This function allows the users to change some of the evaluator&#39;s parameters, </span>
@@ -157,10 +172,10 @@
             <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="EvaluateStreamGenerationSpeed.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateStreamGenerationSpeed.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_stream_gen_speed.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;estimator&#39;</span></div>
 
-<div class="viewcode-block" id="EvaluateStreamGenerationSpeed.get_info"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateStreamGenerationSpeed.get_info"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_stream_gen_speed.html#skmultiflow.evaluation.evaluate_stream_gen_speed.EvaluateStreamGenerationSpeed.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;EvaluateStreamGenerationSpeed: num_samples: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - max_time: &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_time</span><span class="p">))</span> <span class="o">+</span> \
                <span class="s1">&#39; - output_file: &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_file</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;None&#39;</span><span class="p">)</span> <span class="o">+</span> \
@@ -174,20 +189,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

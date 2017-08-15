@@ -116,10 +116,40 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def reset(self):
+        """ reset
+        
+        Resets the classifier's parameters.
+        
+        Returns
+        -------
+        BaseClassifier
+            self
+        
+        """
         raise NotImplementedError
 
     @abstractmethod
     def score(self, X, y):
+        """ score
+        
+        This function isn't natively implemented on all classifiers. But if 
+        it's, it will return the performance base metric for that classifier 
+        at that moment and having the X matrix as input.
+        
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_sample, n_features)
+            The features matrix.
+        
+        y: Array-like
+            An array-like containing the class labels for all samples in X.
+            
+        Returns
+        -------
+        float
+            The classifier's score.
+        
+        """
         raise NotImplementedError
 
     def get_class_type(self):

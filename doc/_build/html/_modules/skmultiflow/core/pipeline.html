@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.core.pipeline &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -51,7 +65,7 @@
 <span class="kn">from</span> <span class="nn">skmultiflow.core.base_object</span> <span class="k">import</span> <span class="n">BaseObject</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="k">import</span> <span class="n">tosequence</span>
 
-<div class="viewcode-block" id="Pipeline"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline">[docs]</a><span class="k">class</span> <span class="nc">Pipeline</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline">[docs]</a><span class="k">class</span> <span class="nc">Pipeline</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Pipeline</span>
 <span class="sd">        </span>
 <span class="sd">    A pipeline structure that holds a set of sequential Transforms, followed </span>
@@ -87,19 +101,23 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; # Imports</span>
-<span class="sd">    &gt;&gt;&gt; from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.classification.lazy.knn_adwin import KNNAdwin</span>
 <span class="sd">    &gt;&gt;&gt; from skmultiflow.core.pipeline import Pipeline</span>
 <span class="sd">    &gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream</span>
 <span class="sd">    &gt;&gt;&gt; from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential</span>
 <span class="sd">    &gt;&gt;&gt; from skmultiflow.options.file_option import FileOption</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.filtering.one_hot_to_categorical import OneHotToCategorical</span>
 <span class="sd">    &gt;&gt;&gt; # Setting up the stream</span>
 <span class="sd">    &gt;&gt;&gt; opt = FileOption(&quot;FILE&quot;, &quot;OPT_NAME&quot;, &quot;skmultiflow/datasets/covtype.csv&quot;, &quot;CSV&quot;, False)</span>
 <span class="sd">    &gt;&gt;&gt; stream = FileStream(opt, -1, 1)</span>
 <span class="sd">    &gt;&gt;&gt; stream.prepare_for_use()</span>
+<span class="sd">    &gt;&gt;&gt; transform = OneHotToCategorical([[10, 11, 12, 13],</span>
+<span class="sd">    ... [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,</span>
+<span class="sd">    ... 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])</span>
 <span class="sd">    &gt;&gt;&gt; # Setting up the classifier</span>
-<span class="sd">    &gt;&gt;&gt; classifier = PassiveAggressiveClassifier()</span>
+<span class="sd">    &gt;&gt;&gt; classifier = KNNAdwin(k=8, max_window_size=2000, leaf_size=40)</span>
 <span class="sd">    &gt;&gt;&gt; # Setup the pipeline</span>
-<span class="sd">    &gt;&gt;&gt; pipe = Pipeline([(&#39;passive_aggressive&#39;, classifier)])</span>
+<span class="sd">    &gt;&gt;&gt; pipe = Pipeline([(&#39;transform&#39;, transform), (&#39;passive_aggressive&#39;, classifier)])</span>
 <span class="sd">    &gt;&gt;&gt; # Setup the evaluator</span>
 <span class="sd">    &gt;&gt;&gt; eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=500000)</span>
 <span class="sd">    &gt;&gt;&gt; # Evaluate</span>
@@ -123,7 +141,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_steps</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Pipeline.predict"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline.predict"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; predict</span>
 <span class="sd">         </span>
 <span class="sd">        Sequentially applies all transforms and then predict with last step.</span>
@@ -135,7 +153,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The predicted class label for all the samples in X.</span>
+<span class="sd">        list</span>
+<span class="sd">            The predicted class label for all the samples in X.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Xt</span> <span class="o">=</span> <span class="n">X</span>
@@ -144,7 +163,7 @@
                 <span class="n">Xt</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pipeline.fit"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline.fit"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; fit </span>
 <span class="sd">        </span>
 <span class="sd">        Sequentially fit and transform data in all but last step, then fit </span>
@@ -161,7 +180,8 @@
 <span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self</span>
+<span class="sd">        Pipeline</span>
+<span class="sd">            self</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Xt</span> <span class="o">=</span> <span class="n">X</span>
@@ -178,7 +198,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Pipeline.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit </span>
 <span class="sd">        </span>
 <span class="sd">        Sequentially partial fit and transform data in all but last step, </span>
@@ -200,7 +220,8 @@
 <span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self</span>
+<span class="sd">        Pipeline</span>
+<span class="sd">            self</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Xt</span> <span class="o">=</span> <span class="n">X</span>
@@ -216,7 +237,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Pipeline.partial_fit_predict"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.partial_fit_predict">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline.partial_fit_predict"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline.partial_fit_predict">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit_predict</span>
 <span class="sd">        </span>
 <span class="sd">        Partial fits and transforms data in all but last step, then partial </span>
@@ -232,7 +253,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The predicted class label for all the samples in X.</span>
+<span class="sd">        list</span>
+<span class="sd">            The predicted class label for all the samples in X.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Xt</span> <span class="o">=</span> <span class="n">X</span>
@@ -249,7 +271,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">Xt</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xt</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pipeline.partial_fit_transform"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.partial_fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline.partial_fit_transform"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline.partial_fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit_trasnform </span>
 <span class="sd">        </span>
 <span class="sd">        Partial fits and transforms data in all but last step, then </span>
@@ -266,12 +288,13 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self</span>
+<span class="sd">        Pipeline</span>
+<span class="sd">            self</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Pipeline.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;estimator&#39;</span></div>
 
     <span class="k">def</span> <span class="nf">_validate_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -309,18 +332,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="Pipeline.named_steps"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.named_steps">[docs]</a>    <span class="k">def</span> <span class="nf">named_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline.named_steps"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline.named_steps">[docs]</a>    <span class="k">def</span> <span class="nf">named_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; named_steps</span>
 <span class="sd">         </span>
 <span class="sd">        Generates a dictionary to access all the steps&#39; properties.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A steps dictionary, so that each step can be accessed by name.</span>
+<span class="sd">        dictionary</span>
+<span class="sd">            A steps dictionary, so that each step can be accessed by name.</span>
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pipeline.get_info"><a class="viewcode-back" href="../../../skmultiflow.core.html#skmultiflow.core.pipeline.Pipeline.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pipeline.get_info"><a class="viewcode-back" href="../../../skmultiflow.core.pipeline.html#skmultiflow.core.pipeline.Pipeline.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">info</span> <span class="o">=</span> <span class="s2">&quot;Pipeline: &quot;</span>
         <span class="n">names</span><span class="p">,</span> <span class="n">estimators</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
         <span class="n">classifier</span> <span class="o">=</span> <span class="n">estimators</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -353,26 +378,16 @@
 <span class="sd">        </span>
 <span class="sd">        Easy to access estimator.</span>
 <span class="sd">        </span>
-<span class="sd">        :return: Returns the Pipeline&#39;s classifier </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Extension of BaseClassifier</span>
+<span class="sd">            The Pipeline&#39;s classifier</span>
+<span class="sd">             </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

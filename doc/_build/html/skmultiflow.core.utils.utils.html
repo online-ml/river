@@ -1,0 +1,198 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.core.utils.utils module &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.core.base_object module" href="skmultiflow.core.base_object.html" />
+    <link rel="prev" title="skmultiflow.core.utils.pseudo_random_processes module" href="skmultiflow.core.utils.pseudo_random_processes.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.base_object.html" title="skmultiflow.core.base_object module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.utils.pseudo_random_processes.html" title="skmultiflow.core.utils.pseudo_random_processes module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.core.html" >skmultiflow.core package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="skmultiflow.core.utils.html" accesskey="U">skmultiflow.core.utils package</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.core.utils.pseudo_random_processes.html"
+                        title="previous chapter">skmultiflow.core.utils.pseudo_random_processes module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.core.base_object.html"
+                        title="next chapter">skmultiflow.core.base_object module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.core.utils.utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-skmultiflow.core.utils.utils">
+<span id="skmultiflow-core-utils-utils-module"></span><h1>skmultiflow.core.utils.utils module<a class="headerlink" href="#module-skmultiflow.core.utils.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="skmultiflow.core.utils.utils.dict_to_list">
+<code class="descclassname">skmultiflow.core.utils.utils.</code><code class="descname">dict_to_list</code><span class="sig-paren">(</span><em>dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/utils/utils.html#dict_to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.utils.utils.dict_to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a list, based on the entries of a dictionary. To do so it ignores the
+dictionary’s keys, accounting only for its indexes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dict</strong> (<em>dictionary</em>) – The dictionary that will originate the list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The generated list, where the first dimension is relative to the dictionary’s
+key indexes and the second dimension represents the dictionary’s values.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="skmultiflow.core.utils.utils.dict_to_tuple_list">
+<code class="descclassname">skmultiflow.core.utils.utils.</code><code class="descname">dict_to_tuple_list</code><span class="sig-paren">(</span><em>dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/utils/utils.html#dict_to_tuple_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.utils.utils.dict_to_tuple_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a tuple list based on a dict. It does so, by converting each
+of the dictionary’s entry into two entries of the same list’s index and then
+converting each of the lists entries into a tuple.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dict</strong> (<em>dictionary.</em>) – The dictionary to be converted to a tuple list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list, where each entry contains two elements, which are the corresponding
+tuple’s entries.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="skmultiflow.core.utils.utils.get_dimensions">
+<code class="descclassname">skmultiflow.core.utils.utils.</code><code class="descname">get_dimensions</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/utils/utils.html#get_dimensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.utils.utils.get_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dimensions from a numpy.array, numpy.ndarray or list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>numpy.array</em><em>, </em><em>numpy.ndarray</em><em>, </em><em>list</em><em>, </em><em>list of lists.</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A tuple representing the X structure’s dimensions.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="skmultiflow.core.utils.utils.tuple_list_to_list">
+<code class="descclassname">skmultiflow.core.utils.utils.</code><code class="descname">tuple_list_to_list</code><span class="sig-paren">(</span><em>tup_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/core/utils/utils.html#tuple_list_to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.core.utils.utils.tuple_list_to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a list based on a list of tuples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tup_list</strong> (<em>list of tuples.</em>) – The tuple list to be converted to a list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list, where each entry contains two elements, which are the corresponding
+tuple’s entries.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.base_object.html" title="skmultiflow.core.base_object module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.core.utils.pseudo_random_processes.html" title="skmultiflow.core.utils.pseudo_random_processes module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.core.html" >skmultiflow.core package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="skmultiflow.core.utils.html" >skmultiflow.core.utils package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

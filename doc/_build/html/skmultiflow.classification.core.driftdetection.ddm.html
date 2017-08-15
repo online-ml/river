@@ -1,0 +1,210 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.classification.core.driftdetection.ddm module &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.classification.core.driftdetection.eddm module" href="skmultiflow.classification.core.driftdetection.eddm.html" />
+    <link rel="prev" title="skmultiflow.classification.core.driftdetection.base_drift_detector module" href="skmultiflow.classification.core.driftdetection.base_drift_detector.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.classification.core.driftdetection.eddm.html" title="skmultiflow.classification.core.driftdetection.eddm module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.classification.core.driftdetection.base_drift_detector.html" title="skmultiflow.classification.core.driftdetection.base_drift_detector module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.classification.html" >skmultiflow.classification package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="skmultiflow.classification.core.html" >skmultiflow.classification.core package</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="skmultiflow.classification.core.driftdetection.html" accesskey="U">skmultiflow.classification.core.driftdetection package</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.classification.core.driftdetection.base_drift_detector.html"
+                        title="previous chapter">skmultiflow.classification.core.driftdetection.base_drift_detector module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.classification.core.driftdetection.eddm.html"
+                        title="next chapter">skmultiflow.classification.core.driftdetection.eddm module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.classification.core.driftdetection.ddm.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-skmultiflow.classification.core.driftdetection.ddm">
+<span id="skmultiflow-classification-core-driftdetection-ddm-module"></span><h1>skmultiflow.classification.core.driftdetection.ddm module<a class="headerlink" href="#module-skmultiflow.classification.core.driftdetection.ddm" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="skmultiflow.classification.core.driftdetection.ddm.DDM">
+<em class="property">class </em><code class="descclassname">skmultiflow.classification.core.driftdetection.ddm.</code><code class="descname">DDM</code><span class="sig-paren">(</span><em>min_num_instances=30</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/core/driftdetection/ddm.html#DDM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.core.driftdetection.ddm.DDM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.classification.core.driftdetection.base_drift_detector.html#skmultiflow.classification.core.driftdetection.base_drift_detector.BaseDriftDetector" title="skmultiflow.classification.core.driftdetection.base_drift_detector.BaseDriftDetector"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.classification.core.driftdetection.base_drift_detector.BaseDriftDetector</span></code></a></p>
+<p>Drift Detection Method</p>
+<p>This concept change detection method is based on the PAC learning model
+premise, that the learner’s error rate will decrease as the number of
+analysed samples increase, as long as the data distribution is
+stationary.</p>
+<p>If the algorithm detects an increase in the error rate, that surpasses
+a calculated threshold, either change is detected or the algorithm will
+warn the user that change may occur in the near future, which is called
+the warning zone.</p>
+<p>The detection threshold is calculated in function of two statistics,
+obtained when (pi + si) is minimum:
+pmin: The minimum recorded error rate.
+smin: The minimum recorded standard deviation.</p>
+<p>At instant i, the detection algorithm uses:
+pi: The error rate at instant i.
+si: The standard deviation at instant i.</p>
+<p>The conditions for entering the warning zone and detecting change are
+as follows:
+if pi + si &gt;= pmin + 2 * smin -&gt; Warning zone
+if pi + si &gt;= pmin + 3 * smin -&gt; Change detected</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>min_num_instances</strong> (<em>int</em>) – The minimum required number of analyzed samples so change can be
+detected. This is used to avoid false detections during the early
+moments of the detector, when the weight of one sample is important.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Imports</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.classification.core.driftdetection.ddm</span> <span class="k">import</span> <span class="n">DDM</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ddm</span> <span class="o">=</span> <span class="n">DDM</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Simulating a data stream as a normal distribution of 1&#39;s and 0&#39;s</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_stream</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Changing the data concept from index 999 to 1500, simulating an</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># increase in error rate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">999</span><span class="p">,</span> <span class="mi">1500</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">data_stream</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Adding stream elements to ADWIN and verifying if drift occurred</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">ddm</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">data_stream</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">ddm</span><span class="o">.</span><span class="n">detected_warning_zone</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning zone has been detected in data: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_stream</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; - of index: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">ddm</span><span class="o">.</span><span class="n">detected_change</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Change has been detected in data: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_stream</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; - of index: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="skmultiflow.classification.core.driftdetection.ddm.DDM.add_element">
+<code class="descname">add_element</code><span class="sig-paren">(</span><em>prediction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/core/driftdetection/ddm.html#DDM.add_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.core.driftdetection.ddm.DDM.add_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new element to the statistics</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prediction</strong> (<em>int. Either 0</em><em> or </em><em>1.</em>) – This parameter indicates whether the last sample analyzed was
+correctly classified or not. 1 indicates a good classification
+and 0 a wrong classification.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>After calling this method, to verify if change was detected or if
+the learner is in the warning zone, one should call the super method
+detected_change, which returns True if concept drift was detected and
+False otherwise.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.core.driftdetection.ddm.DDM.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/core/driftdetection/ddm.html#DDM.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.core.driftdetection.ddm.DDM.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.core.driftdetection.ddm.DDM.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/core/driftdetection/ddm.html#DDM.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.core.driftdetection.ddm.DDM.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the change detector parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.classification.core.driftdetection.eddm.html" title="skmultiflow.classification.core.driftdetection.eddm module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.classification.core.driftdetection.base_drift_detector.html" title="skmultiflow.classification.core.driftdetection.base_drift_detector module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.classification.html" >skmultiflow.classification package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="skmultiflow.classification.core.html" >skmultiflow.classification.core package</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="skmultiflow.classification.core.driftdetection.html" >skmultiflow.classification.core.driftdetection package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

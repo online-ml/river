@@ -57,7 +57,8 @@ class EvaluateStreamGenerationSpeed(BaseObject):
         
         Returns
         -------
-        The used stream.
+        BaseInstanceStream
+            The used stream.
         
         """
         self._measure_stream_speed(stream)

@@ -39,7 +39,8 @@ class OneHotToCategorical(BaseTransform):
          
         Returns
         -------
-        The transformed data.
+        numpy.ndarray
+            The transformed data.
         
         """
         r, c = get_dimensions(X)

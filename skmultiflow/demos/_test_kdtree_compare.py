@@ -27,7 +27,7 @@ def demo():
 
     X_find, y = stream.next_instance(100)
     X_find = filter.transform(X_find)
-
+    print(X_find[4])
     # Normal kdtree
     start = timer()
     scipy = spatial.KDTree(X, leafsize=40)
@@ -67,7 +67,7 @@ def demo():
 
     start = timer()
     for i in range(100):
-        ind, dist = sk.query(X_find[i], 8, return_distance=True)
+        ind, dist = sk.query(np.asarray(X_find[i]).reshape(1, -1), 8, return_distance=True)
         #print(ind)
         #print(dist)
     end = timer()

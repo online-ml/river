@@ -39,7 +39,6 @@ def demo():
     my_corrects = 0
     compare_corrects = 0
 
-    pass
     while n_samples < max_samples:
         X, y = stream.next_instance()
         #my_pred = pipe.predict(X)

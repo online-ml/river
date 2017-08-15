@@ -4,14 +4,9 @@ skmultiflow\.evaluation\.metrics package
 Submodules
 ----------
 
-skmultiflow\.evaluation\.metrics\.metrics module
-------------------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.evaluation.metrics.metrics
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.evaluation.metrics.metrics
 
 Module contents
 ---------------

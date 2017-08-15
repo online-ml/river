@@ -54,6 +54,38 @@ class OzaBagging(BaseClassifier):
     the number of labels in the classification task. Thus we chose a default 
     value of 2, adapted to binary classification tasks.
     
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.classification.meta.oza_bagging import OzaBagging
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.generators.sea_generator import SEAGenerator
+    >>> # Setting up the stream
+    >>> stream = SEAGenerator(1, noise_percentage=6.7)
+    >>> stream.prepare_for_use()
+    >>> # Setting up the OzaBagging classifier to work with KNN classifiers
+    >>> clf = OzaBagging(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=2)
+    >>> # Keeping track of sample count and correct prediction count
+    >>> sample_count = 0
+    >>> corrects = 0
+    >>> # Pre training the classifier with 200 samples
+    >>> X, y = stream.next_instance(200)
+    >>> clf = clf.partial_fit(X, y, classes=stream.get_classes())
+    >>> for i in range(2000):
+    ...     X, y = stream.next_instance()
+    ...     pred = clf.predict(X)
+    ...     clf = clf.partial_fit(X, y)
+    ...     if pred is not None:
+    ...         if y[0] == pred[0]:
+    ...             corrects += 1
+    ...     sample_count += 1
+    >>> 
+    >>> # Displaying the results
+    >>> print(str(sample_count) + ' samples analyzed.')
+    2000 samples analyzed.
+    >>> print('OzaBagging classifier performance: ' + str(corrects / sample_count))
+    OzaBagging classifier performance: 0.9645
+    
     """
 
     def __init__(self, h=KNNAdwin(), ensemble_length=2):
@@ -108,7 +140,8 @@ class OzaBagging(BaseClassifier):
         
         Returns
         _______
-        self
+        OzaBagging
+            self
         
         """
         r, c = get_dimensions(X)
@@ -153,7 +186,8 @@ class OzaBagging(BaseClassifier):
         
         Returns
         -------
-        A list with the label prediction for all the samples in X.
+        list
+            A list with the label prediction for all the samples in X.
         
         """
         r, c = get_dimensions(X)
@@ -183,10 +217,11 @@ class OzaBagging(BaseClassifier):
         
         Returns
         -------
-        An array of shape (n_samples, n_features), in which each outer entry is 
-        associated with the X entry of the same index. And where the list in 
-        index [i] contains len(self.classes) elements, each of which represents 
-        the probability that the i-th sample of X belongs to a certain label.
+        numpy.ndarray
+            An array of shape (n_samples, n_features), in which each outer entry is 
+            associated with the X entry of the same index. And where the list in 
+            index [i] contains len(self.classes) elements, each of which represents 
+            the probability that the i-th sample of X belongs to a certain label.
         
         """
         probs = []

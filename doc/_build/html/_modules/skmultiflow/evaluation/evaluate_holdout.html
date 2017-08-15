@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.evaluation.evaluate_holdout &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -57,7 +71,7 @@
 <span class="kn">from</span> <span class="nn">skmultiflow.visualization.evaluation_visualizer</span> <span class="k">import</span> <span class="n">EvaluationVisualizer</span>
 
 
-<div class="viewcode-block" id="EvaluateHoldout"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout">[docs]</a><span class="k">class</span> <span class="nc">EvaluateHoldout</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateHoldout"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_holdout.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout">[docs]</a><span class="k">class</span> <span class="nc">EvaluateHoldout</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; EvaluateHoldout</span>
 <span class="sd">    </span>
 <span class="sd">    The holdout evaluation method, or periodic holdout evaluation method, analyses </span>
@@ -238,7 +252,7 @@
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;.*invalid value encountered in true_divide.*&quot;</span><span class="p">)</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;.*Passing 1d.*&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvaluateHoldout.eval"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">classifier</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateHoldout.eval"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_holdout.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">classifier</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; eval</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -252,7 +266,8 @@
 <span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Returns the trained learner.</span>
+<span class="sd">        BaseClassifier extension or list of BaseClassifier extensions</span>
+<span class="sd">            The trained classifier&#39;s at the end of the evaluation process.</span>
 <span class="sd">        </span>
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -303,7 +318,8 @@
 <span class="sd">             </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Returns the trained learner </span>
+<span class="sd">        BaseClassifier extension or list of BaseClassifier extensions</span>
+<span class="sd">            The trained classifiers. </span>
 <span class="sd">        </span>
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -490,7 +506,7 @@
                 <span class="k">pass</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span>
 
-<div class="viewcode-block" id="EvaluateHoldout.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateHoldout.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_holdout.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit</span>
 <span class="sd">        </span>
 <span class="sd">        Partially fit all the learners on the given data.</span>
@@ -510,7 +526,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self</span>
+<span class="sd">        EvaluateHoldout</span>
+<span class="sd">            self</span>
 <span class="sd">         </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -520,7 +537,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="EvaluateHoldout.predict"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateHoldout.predict"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_holdout.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; predict</span>
 
 <span class="sd">        Predicts the labels of the X samples, by calling the predict </span>
@@ -533,8 +550,9 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A list containing the predicted labels for all instances in X in </span>
-<span class="sd">        all learners.</span>
+<span class="sd">        list</span>
+<span class="sd">            A list containing the predicted labels for all instances in X in </span>
+<span class="sd">            all learners.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">predictions</span> <span class="o">=</span> <span class="kc">None</span>
@@ -719,7 +737,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__update_plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_sample_count</span><span class="p">,</span> <span class="n">new_points_dict</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvaluateHoldout.set_params"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.set_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateHoldout.set_params"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_holdout.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.set_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; set_params</span>
 <span class="sd">        </span>
 <span class="sd">        This function allows the users to change some of the evaluator&#39;s parameters, </span>
@@ -768,7 +786,7 @@
     <span class="k">def</span> <span class="nf">__reset_globals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_sample_count</span> <span class="o">=</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="EvaluateHoldout.get_info"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluateHoldout.get_info"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_holdout.html#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;EvaluateHoldout: n_wait: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_wait</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - max_instances: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - max_time: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_time</span><span class="p">)</span> <span class="o">+</span> \
@@ -783,20 +801,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

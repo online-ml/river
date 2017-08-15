@@ -40,19 +40,23 @@ class Pipeline(BaseObject):
     Examples
     --------
     >>> # Imports
-    >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.filtering.one_hot_to_categorical import OneHotToCategorical
     >>> # Setting up the stream
     >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     >>> stream = FileStream(opt, -1, 1)
     >>> stream.prepare_for_use()
+    >>> transform = OneHotToCategorical([[10, 11, 12, 13],
+    ... [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+    ... 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
     >>> # Setting up the classifier
-    >>> classifier = PassiveAggressiveClassifier()
+    >>> classifier = KNNAdwin(k=8, max_window_size=2000, leaf_size=40)
     >>> # Setup the pipeline
-    >>> pipe = Pipeline([('passive_aggressive', classifier)])
+    >>> pipe = Pipeline([('transform', transform), ('passive_aggressive', classifier)])
     >>> # Setup the evaluator
     >>> eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=500000)
     >>> # Evaluate
@@ -88,7 +92,8 @@ class Pipeline(BaseObject):
         
         Returns
         -------
-        The predicted class label for all the samples in X.
+        list
+            The predicted class label for all the samples in X.
         
         """
         Xt = X
@@ -114,7 +119,8 @@ class Pipeline(BaseObject):
             
         Returns
         -------
-        self
+        Pipeline
+            self
         
         """
         Xt = X
@@ -153,7 +159,8 @@ class Pipeline(BaseObject):
             
         Returns
         -------
-        self
+        Pipeline
+            self
         
         """
         Xt = X
@@ -185,7 +192,8 @@ class Pipeline(BaseObject):
         
         Returns
         -------
-        The predicted class label for all the samples in X.
+        list
+            The predicted class label for all the samples in X.
         
         """
         Xt = X
@@ -219,7 +227,8 @@ class Pipeline(BaseObject):
         
         Returns
         -------
-        self
+        Pipeline
+            self
         
         """
         raise NotImplementedError
@@ -269,7 +278,9 @@ class Pipeline(BaseObject):
         
         Returns
         -------
-        A steps dictionary, so that each step can be accessed by name.
+        dictionary
+            A steps dictionary, so that each step can be accessed by name.
+        
         """
         return dict(self.steps)
 
@@ -306,6 +317,10 @@ class Pipeline(BaseObject):
         
         Easy to access estimator.
         
-        :return: Returns the Pipeline's classifier 
+        Returns
+        -------
+        Extension of BaseClassifier
+            The Pipeline's classifier
+             
         """
         return self.steps[-1][-1]

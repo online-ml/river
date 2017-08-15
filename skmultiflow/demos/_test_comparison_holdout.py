@@ -13,6 +13,7 @@ def demo(output_file=None, instances=40000):
     # stream = FileStream(opt, -1, 1)
     stream = WaveformGenerator()
     stream.prepare_for_use()
+
     # Setup the classifier
     clf_one = SGDClassifier()
     clf_two = KNNAdwin(k=8,max_window_size=2000)

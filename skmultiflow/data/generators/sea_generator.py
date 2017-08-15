@@ -55,6 +55,35 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
     Concept drift is not yet available, since the support class that adds 
     the drift is not yet implemented.
     
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.data.generators.sea_generator import SEAGenerator
+    >>> # Setting up the stream
+    >>> stream = SEAGenerator(classification_function = 2, instance_seed = 112, balance_classes = False, 
+    ... noise_percentage = 0.28)
+    >>> stream.prepare_for_use()
+    >>> # Retrieving one sample
+    >>> stream.next_instance()
+    (array([[ 3.75057129,  6.4030462 ,  9.50016579]]), array([ 0.]))
+    >>> # Retrieving 10 samples
+    >>> stream.next_instance(10)
+    (array([[ 7.76929659,  8.32745763,  0.5480574 ],
+       [ 8.85351458,  7.22346511,  0.02556032],
+       [ 3.43419851,  0.94759888,  3.94642589],
+       [ 7.3670683 ,  9.55806869,  8.20609371],
+       [ 3.78544458,  7.84763615,  0.86231513],
+       [ 1.6222602 ,  2.90069726,  0.45008172],
+       [ 7.36533216,  8.39211485,  7.09361615],
+       [ 9.8566856 ,  3.88003308,  5.03154482],
+       [ 6.8373245 ,  7.21957381,  2.14152091],
+       [ 0.75216155,  6.10890702,  4.25630425]]), array([ 1.,  1.,  1.,  1.,  1.,  0.,  0.,  1.,  1.,  1.]))
+    >>> # Generators will have infinite remaining instances, so it returns -1
+    >>> stream.estimated_remaining_instances()
+    -1
+    >>> stream.has_more_instances()
+    True
+    
     """
     def __init__(self, classification_function = 0, instance_seed = 42, balance_classes = False, noise_percentage = 0.0):
         super().__init__()
@@ -125,8 +154,9 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         
         Returns
         -------
-        Return a tuple with the features matrix and the labels matrix for 
-        the batch_size samples that were requested.
+        tuple or tuple list
+            Return a tuple with the features matrix and the labels matrix for 
+            the batch_size samples that were requested.
          
         """
         data = np.zeros([batch_size, self.num_numerical_attributes + 1])
@@ -217,7 +247,8 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         
         Returns
         -------
-        Returns the sample class label, either 0 or 1.
+        int
+            Returns the sample class label, either 0 or 1.
         
         """
         return 0 if (att1 + att2 <= 8) else 1
@@ -241,7 +272,8 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
 
         Returns
         -------
-        Returns the sample class label, either 0 or 1.
+        int
+            Returns the sample class label, either 0 or 1.
 
         """
         return 0 if (att1 + att2 <= 9) else 1
@@ -265,7 +297,8 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
 
         Returns
         -------
-        Returns the sample class label, either 0 or 1.
+        int
+            Returns the sample class label, either 0 or 1.
 
         """
         return 0 if (att1 + att2 <= 7) else 1
@@ -289,7 +322,8 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
 
         Returns
         -------
-        Returns the sample class label, either 0 or 1.
+        int
+            Returns the sample class label, either 0 or 1.
 
         """
         return 0 if (att1 + att2 <= 9.5) else 1

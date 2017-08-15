@@ -29,6 +29,23 @@ class ADWIN(BaseDriftDetector):
         The delta parameter for the ADWIN algorithm.
     clock : int
         The base clock value for the ADWIN algorithm.
+        
+    Examples
+    --------
+    >>> # Imports
+    >>> import numpy as np
+    >>> from skmultiflow.classification.core.driftdetection.adwin import ADWIN
+    >>> adwin = ADWIN()
+    >>> # Simulating a data stream as a normal distribution of 1's and 0's
+    >>> data_stream = np.random.randint(2, size=2000)
+    >>> # Changing the data concept from index 999 to 2000
+    >>> for i in range(999, 2000):
+    ...     data_stream[i] = np.random.randint(4, high=8)
+    >>> # Adding stream elements to ADWIN and verifying if drift occurred
+    >>> for i in range(2000):
+    ...     adwin.add_element(data_stream[i])
+    ...     if adwin.detected_change():
+    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
     
     """
     MAXBUCKETS = 5
@@ -70,7 +87,7 @@ class ADWIN(BaseDriftDetector):
         
         Returns
         -------
-        bool 
+        ADWIN 
             self
         
         """
@@ -81,7 +98,8 @@ class ADWIN(BaseDriftDetector):
         
         Returns
         -------
-        Whether or not a drift occurred 
+        bool
+            Whether or not a drift occurred 
         
         """
         return self.bln_bucket_deleted
@@ -192,7 +210,8 @@ class ADWIN(BaseDriftDetector):
         
         Returns
         -------
-        The bucket size from the updated bucket
+        int
+            The bucket size from the updated bucket
         
         """
         node = self.list_row_bucket._last
@@ -457,7 +476,8 @@ class Item(BaseObject):
         
         Returns
         -------
-        self
+        ADWIN
+            self
         
         """
         self.bucket_size_row = 0

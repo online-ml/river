@@ -4,22 +4,10 @@ skmultiflow\.options package
 Submodules
 ----------
 
-skmultiflow\.options\.base\_option module
------------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.options.base_option
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.options\.file\_option module
------------------------------------------
-
-.. automodule:: skmultiflow.options.file_option
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.options.base_option
+   skmultiflow.options.file_option
 
 Module contents
 ---------------

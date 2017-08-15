@@ -158,9 +158,10 @@ class KDTree(BaseObject):
             
         Returns
         -------
-        Either a list containing all the indexes from the closest neighbors (if 
-        return_distance is False) or two lists, one with the neighbors indexes 
-        and another one with their distance to the samples in X. 
+        list or tuple list
+            Either a list containing all the indexes from the closest neighbors (if 
+            return_distance is False) or two lists, one with the neighbors indexes 
+            and another one with their distance to the samples in X. 
         
         """
         r, c = get_dimensions(X)
@@ -210,8 +211,9 @@ class KDTree(BaseObject):
             
         Returns
         -------
-        A list of indexes, or indexes and distances (if return_distance is True), 
-        from all the neighbors within the maximum query radius.
+        list or tuple list
+            A list of indexes, or indexes and distances (if return_distance is True), 
+            from all the neighbors within the maximum query radius.
         
         """
         raise NotImplementedError
@@ -302,7 +304,8 @@ class KDTreeNode(BaseObject):
         
         Returns
         -------
-        self
+        KDTree
+            self
         
         """
 
@@ -456,7 +459,8 @@ class KDTreeNode(BaseObject):
             
         Returns
         -------
-        An updated version of the neighbors_distance_list
+        list
+            An updated version of the neighbors_distance_list
          
         """
         # In case there is no more subtrees

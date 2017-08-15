@@ -25,6 +25,23 @@ class PageHinkley(BaseDriftDetector):
         The forgetting factor, used to weight the observed value 
         and the mean.
     
+    Examples
+    --------
+    >>> # Imports
+    >>> import numpy as np
+    >>> from skmultiflow.classification.core.driftdetection.page_hinkley import PageHinkley
+    >>> ph = PageHinkley()
+    >>> # Simulating a data stream as a normal distribution of 1's and 0's
+    >>> data_stream = np.random.randint(2, size=2000)
+    >>> # Changing the data concept from index 999 to 2000
+    >>> for i in range(999, 2000):
+    ...     data_stream[i] = np.random.randint(4, high=8)
+    >>> # Adding stream elements to ADWIN and verifying if drift occurred
+    >>> for i in range(2000):
+    ...     ph.add_element(data_stream[i])
+    ...     if ph.detected_change():
+    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    
     """
     def __init__(self, min_num_instances=30, delta=0.005, _lambda=50, alpha=1-0.0001):
         super().__init__()
@@ -38,6 +55,11 @@ class PageHinkley(BaseDriftDetector):
         self.reset()
 
     def reset(self):
+        """ reset
+
+        Resets the change detector parameters.
+
+        """
         super().reset()
         self.sample_count = 1
         self.x_mean = 0.0
@@ -51,10 +73,6 @@ class PageHinkley(BaseDriftDetector):
         x: numeric value
             The observed value, from which we want to detect the
             concept change.
-            
-        Returns
-        -------
-        self
         
         Notes
         -----
@@ -83,7 +101,6 @@ class PageHinkley(BaseDriftDetector):
         if self.sum > self._lambda:
             self.in_concept_change = True
 
-        return self
 
     def get_info(self):
         return 'PageHinkley: min_num_instances: ' + str(self.min_instances) + \

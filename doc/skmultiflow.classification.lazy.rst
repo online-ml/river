@@ -1,25 +1,20 @@
 skmultiflow\.classification\.lazy package
 =========================================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    skmultiflow.classification.lazy.neighbors
+
 Submodules
 ----------
 
-skmultiflow\.classification\.lazy\.knn module
----------------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.classification.lazy.knn
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.classification\.lazy\.knn\_adwin module
-----------------------------------------------------
-
-.. automodule:: skmultiflow.classification.lazy.knn_adwin
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.classification.lazy.knn
+   skmultiflow.classification.lazy.knn_adwin
 
 Module contents
 ---------------

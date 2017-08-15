@@ -97,7 +97,8 @@ def euclidean_distance(instance_one, instance_two, **kwargs):
     
     Returns
     -------
-    The euclidean distance between the two instances
+    float
+        The euclidean distance between the two instances
     
     Notes
     -----

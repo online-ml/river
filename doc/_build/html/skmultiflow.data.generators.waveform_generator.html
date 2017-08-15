@@ -1,0 +1,349 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.data.generators.waveform_generator module &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.data.base_instance_stream module" href="skmultiflow.data.base_instance_stream.html" />
+    <link rel="prev" title="skmultiflow.data.generators.sea_generator module" href="skmultiflow.data.generators.sea_generator.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.base_instance_stream.html" title="skmultiflow.data.base_instance_stream module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.generators.sea_generator.html" title="skmultiflow.data.generators.sea_generator module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.data.html" >skmultiflow.data package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="skmultiflow.data.generators.html" accesskey="U">skmultiflow.data.generators package</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.data.generators.sea_generator.html"
+                        title="previous chapter">skmultiflow.data.generators.sea_generator module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.data.base_instance_stream.html"
+                        title="next chapter">skmultiflow.data.base_instance_stream module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.data.generators.waveform_generator.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-skmultiflow.data.generators.waveform_generator">
+<span id="skmultiflow-data-generators-waveform-generator-module"></span><h1>skmultiflow.data.generators.waveform_generator module<a class="headerlink" href="#module-skmultiflow.data.generators.waveform_generator" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.generators.waveform_generator.</code><code class="descname">WaveformGenerator</code><span class="sig-paren">(</span><em>seed=23</em>, <em>add_noise=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream" title="skmultiflow.data.base_instance_stream.BaseInstanceStream"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.data.base_instance_stream.BaseInstanceStream</span></code></a>, <a class="reference internal" href="skmultiflow.core.base_object.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>Generates instances with 21 numeric attributes and 3 targets, based
+on a random differentiation of some base waveforms. Supports noise
+addition, but in this case the generator will have 40 attribute
+instances</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>seed</strong> (<em>int</em>) – Seed for random generation of instances (Default: 23)</li>
+<li><strong>add_noise</strong> (<em>bool</em>) – Add noise (Default: False)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Imports</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.data.generators.waveform_generator</span> <span class="k">import</span> <span class="n">WaveformGenerator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setting up the stream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">WaveformGenerator</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">774</span><span class="p">,</span> <span class="n">add_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">prepare_for_use</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Retrieving one sample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">next_instance</span><span class="p">()</span>
+<span class="go">(array([[ -3.87277692e-03,   5.35892351e-01,  -6.07354638e-02,</span>
+<span class="go">      1.70731601e+00,   5.34361689e-01,  -1.77051944e-01,</span>
+<span class="go">      1.14121806e+00,   1.35608518e-01,   1.41239266e+00,</span>
+<span class="go">      3.54064724e+00,   3.07032776e+00,   4.51698567e+00,</span>
+<span class="go">      4.68043133e+00,   3.56075018e+00,   3.83788037e+00,</span>
+<span class="go">      2.71987164e+00,   4.77706723e-01,   2.12187988e+00,</span>
+<span class="go">      1.59313816e+00,  -5.11689592e-01,   5.99317674e-01,</span>
+<span class="go">      2.14508816e-01,  -1.05534090e+00,  -1.34679419e-01,</span>
+<span class="go">      5.32610078e-01,  -1.39251668e+00,   1.13220325e+00,</span>
+<span class="go">      3.04748552e-01,   1.41454012e+00,   6.73651106e-01,</span>
+<span class="go">      1.85981832e-01,  -1.76774471e+00,   3.31777766e-02,</span>
+<span class="go">      8.17011922e-02,   1.70686324e+00,   1.10471095e+00,</span>
+<span class="go">     -5.08874759e-01,   4.16279862e-01,  -4.26805543e-01,</span>
+<span class="go">      9.94596567e-01]]), array([ 2.]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Retrieving 2 samples</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">next_instance</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">(array([[ -6.72385828e-01,   1.51039782e+00,   5.64599422e-01,</span>
+<span class="go">      2.77481410e+00,   2.27653785e+00,   4.40016488e+00,</span>
+<span class="go">      3.87856303e+00,   4.90321750e+00,   4.40651078e+00,</span>
+<span class="go">      5.07337409e+00,   3.23727692e+00,   2.99724461e+00,</span>
+<span class="go">      1.46384329e+00,   1.30042173e+00,   3.67083253e-02,</span>
+<span class="go">      3.80546239e-01,  -2.05337011e+00,   6.06889589e-01,</span>
+<span class="go">     -1.10649679e+00,   3.38098465e-01,  -8.33683681e-01,</span>
+<span class="go">     -3.35283052e-02,  -6.65394037e-01,  -1.09290608e+00,</span>
+<span class="go">      4.15778821e-01,   3.64210364e-01,   1.18695445e+00,</span>
+<span class="go">      2.77980322e-01,   8.69224059e-01,  -4.93428014e-01,</span>
+<span class="go">     -1.08745643e+00,  -9.80906438e-01,   4.12116697e-01,</span>
+<span class="go">      2.39579703e-01,   1.53145126e+00,   6.26022691e-01,</span>
+<span class="go">      9.82996997e-02,   8.33911055e-01,   8.55830752e-02,</span>
+<span class="go">      1.54462877e+00],</span>
+<span class="go">   [  3.34017183e-01,  -5.00919347e-01,   2.67311051e+00,</span>
+<span class="go">      3.23473039e+00,   2.04091185e+00,   5.62868585e+00,</span>
+<span class="go">      4.79611194e+00,   4.14500688e+00,   5.76366418e+00,</span>
+<span class="go">      4.18105491e+00,   4.73064582e+00,   3.03461230e+00,</span>
+<span class="go">      1.79417942e+00,  -9.84100765e-01,   1.34212863e+00,</span>
+<span class="go">      1.29337991e-01,   6.08571939e-01,  -8.56504577e-01,</span>
+<span class="go">      2.95358587e-01,   9.12880505e-01,   2.88118824e-01,</span>
+<span class="go">     -4.49398914e-01,   5.44025828e-03,  -1.78535212e+00,</span>
+<span class="go">      1.41541455e-01,  -6.91216596e-01,  -8.66808201e-02,</span>
+<span class="go">     -1.27541907e-01,  -5.38038710e-01,  -1.19807563e+00,</span>
+<span class="go">      1.03113317e+00,   2.39999025e-01,   5.24084853e-02,</span>
+<span class="go">      1.04314518e+00,   3.20412032e+00,   1.26117112e+00,</span>
+<span class="go">     -7.10479419e-01,   4.60132194e-01,  -5.63210805e-02,</span>
+<span class="go">     -1.56883271e-01]]), array([ 1.,  1.]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Generators will have infinite remaining instances, so it returns -1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">estimated_remaining_instances</span><span class="p">()</span>
+<span class="go">-1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">has_more_instances</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.H_FUNCTION">
+<code class="descname">H_FUNCTION</code><em class="property"> = array([[0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],        [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])</em><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.H_FUNCTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.NUM_BASE_ATTRIBUTES">
+<code class="descname">NUM_BASE_ATTRIBUTES</code><em class="property"> = 21</em><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.NUM_BASE_ATTRIBUTES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.NUM_CLASSES">
+<code class="descname">NUM_CLASSES</code><em class="property"> = 3</em><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.NUM_CLASSES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.TOTAL_ATTRIBUTES_INCLUDING_NOISE">
+<code class="descname">TOTAL_ATTRIBUTES_INCLUDING_NOISE</code><em class="property"> = 40</em><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.TOTAL_ATTRIBUTES_INCLUDING_NOISE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.estimated_remaining_instances">
+<code class="descname">estimated_remaining_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.estimated_remaining_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.estimated_remaining_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_attributes_header">
+<code class="descname">get_attributes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_attributes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_attributes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_classes">
+<code class="descname">get_classes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_classes_header">
+<code class="descname">get_classes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_classes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_classes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_last_instance">
+<code class="descname">get_last_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_last_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_last_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_attributes">
+<code class="descname">get_num_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_nominal_attributes">
+<code class="descname">get_num_nominal_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_nominal_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_nominal_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_numerical_attributes">
+<code class="descname">get_num_numerical_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_numerical_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_numerical_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_targets">
+<code class="descname">get_num_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_values_per_nominal_attribute">
+<code class="descname">get_num_values_per_nominal_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_num_values_per_nominal_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_num_values_per_nominal_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_plot_name">
+<code class="descname">get_plot_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.get_plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.get_plot_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_more_instances">
+<code class="descname">has_more_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.has_more_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_more_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_more_mini_batch">
+<code class="descname">has_more_mini_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.has_more_mini_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_more_mini_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_noise">
+<code class="descname">has_noise</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.has_noise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.has_noise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.is_restartable">
+<code class="descname">is_restartable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.is_restartable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.is_restartable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance is generated based on the parameters passed. If noise
+is included the total number of attributes will be 40, if it’s not
+included there will be 21 attributes. In both cases there is one
+classification task, which chooses one between three labels.</p>
+<p>After the number of attributes is chosen, the algorithm will randomly
+choose one of the hard coded waveforms, as well as random multipliers.
+For each attribute, the actual value generated will be a a combination
+of the hard coded functions, with the multipliers and a random value.</p>
+<p>Furthermore, if noise is added the attributes from 21 to 40 will be
+replaced with a random normal value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – The number of samples to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Return a tuple with the features matrix and the labels matrix
+for the batch_size samples that were requested.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple or tuple list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.generators.waveform_generator.WaveformGenerator.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#WaveformGenerator.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.WaveformGenerator.restart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="skmultiflow.data.generators.waveform_generator.demo">
+<code class="descclassname">skmultiflow.data.generators.waveform_generator.</code><code class="descname">demo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/generators/waveform_generator.html#demo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.generators.waveform_generator.demo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.base_instance_stream.html" title="skmultiflow.data.base_instance_stream module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.generators.sea_generator.html" title="skmultiflow.data.generators.sea_generator module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.data.html" >skmultiflow.data package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="skmultiflow.data.generators.html" >skmultiflow.data.generators package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

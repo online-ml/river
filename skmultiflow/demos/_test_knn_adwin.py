@@ -15,7 +15,6 @@ def demo():
     start = timer()
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     #warnings.filterwarnings("ignore", ".*Passing 1d.*")
-    opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/sea_big.csv', 'csv', False)
     stream = FileStream(opt, -1, 1)
     #stream = RandomRBFGeneratorDrift(change_speed=41.00, num_centroids=50, model_seed=32523423, instance_seed=5435,
