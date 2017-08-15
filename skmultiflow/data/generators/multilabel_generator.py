@@ -26,6 +26,42 @@ class MultilabelGenerator(BaseInstanceStream):
         
     n_labels: int (Default: 2)
         Number of labels to generate.
+        
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
+    >>> # Setting up the stream
+    >>> stream = MultilabelGenerator(n_samples=40000, n_features=10, n_targets=4, n_labels=4)
+    >>> stream.prepare_for_use()
+    >>> # Retrieving one sample
+    >>> stream.next_instance()
+    (array([[ 7.,  2.,  7.,  5.,  3.,  2.,  6.,  8.,  3.,  6.]]), array([[1, 1, 1, 1]]))
+    >>> # Retrieving 10 samples
+    >>> stream.next_instance(10)
+    (array([[  2.,   2.,   5.,   2.,   5.,   5.,   4.,   2.,   3.,   5.],
+       [  2.,   1.,   5.,   5.,   1.,   1.,   7.,  10.,   5.,   4.],
+       [  6.,   5.,  11.,   6.,  11.,   0.,   4.,   6.,   0.,   1.],
+       [  9.,   6.,   4.,   4.,   3.,   9.,   6.,   8.,   9.,   0.],
+       [  5.,   3.,   5.,   2.,   5.,   3.,   4.,  10.,   5.,   1.],
+       [ 12.,   8.,   9.,   9.,   2.,   5.,   8.,   8.,   4.,   2.],
+       [  9.,   8.,   3.,   3.,   4.,   5.,   8.,  11.,   3.,   2.],
+       [  5.,   5.,   3.,   0.,   7.,   4.,   7.,   8.,   9.,   0.],
+       [  4.,   2.,  11.,   4.,   7.,   2.,   4.,   4.,   3.,   4.],
+       [  5.,   0.,  10.,   6.,   6.,   6.,   5.,   4.,  11.,   3.]]), array([[0, 1, 1, 1],
+       [1, 1, 1, 1],
+       [1, 0, 0, 0],
+       [0, 0, 1, 1],
+       [1, 1, 1, 1],
+       [1, 0, 1, 1],
+       [1, 0, 1, 0],
+       [0, 1, 1, 1],
+       [1, 1, 1, 1],
+       [0, 1, 1, 1]]))
+    >>> stream.estimated_remaining_instances()
+    39989
+    >>> stream.has_more_instances()
+    True
 
     """
 
@@ -89,8 +125,9 @@ class MultilabelGenerator(BaseInstanceStream):
         
         Returns
         -------
-        Return a tuple with the features matrix and the labels matrix for 
-        the batch_size samples that were requested.
+        tuple or tuple list
+            Return a tuple with the features matrix and the labels matrix for 
+            the batch_size samples that were requested.
         
         """
         self.instance_index += batch_size

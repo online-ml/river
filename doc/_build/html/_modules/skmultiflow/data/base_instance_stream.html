@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.data.base_instance_stream &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -50,7 +64,7 @@
 <span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">skmultiflow.core.base_object</span> <span class="k">import</span> <span class="n">BaseObject</span>
 
-<div class="viewcode-block" id="BaseInstanceStream"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream">[docs]</a><span class="k">class</span> <span class="nc">BaseInstanceStream</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseInstanceStream"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream">[docs]</a><span class="k">class</span> <span class="nc">BaseInstanceStream</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; BaseInstanceStream</span>
 <span class="sd">    </span>
 <span class="sd">    The abstract class setting up the minimum requirements of a stream, </span>
@@ -66,15 +80,26 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="BaseInstanceStream.estimated_remaining_instances"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.estimated_remaining_instances">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.estimated_remaining_instances"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.estimated_remaining_instances">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">estimated_remaining_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; estimated_remaining_instances</span>
+<span class="sd">        </span>
+<span class="sd">        Returns the estimated number of remaining instances. Returns -1 </span>
+<span class="sd">        if it&#39;s infinite (generators&#39; case)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Remaining number of instances.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.has_more_instances"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.has_more_instances">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.has_more_instances"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.has_more_instances">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">has_more_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.next_instance"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.next_instance">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.next_instance"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.next_instance">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">next_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; next_instance</span>
 <span class="sd">        </span>
@@ -87,16 +112,18 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A numpy.ndarray of shape (batch_size, n_features + n_classification_tasks) </span>
-<span class="sd">        representing the next batch_size samples.</span>
+<span class="sd">        tuple or tuple list</span>
+<span class="sd">            A numpy.ndarray of shape (batch_size, n_features) and an array-like of size </span>
+<span class="sd">            n_classification_tasks, representing the next batch_size samples.</span>
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.is_restartable"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.is_restartable">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.is_restartable"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.is_restartable">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">is_restartable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.restart"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.restart">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.restart"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.restart">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; restart</span>
 <span class="sd">        </span>
@@ -105,71 +132,75 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.has_more_mini_batch"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.has_more_mini_batch">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.has_more_mini_batch"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.has_more_mini_batch">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">has_more_mini_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_num_nominal_attributes"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_nominal_attributes">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_num_nominal_attributes"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_nominal_attributes">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_num_nominal_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; get_num_nominal_attributes</span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The number of nominal attributes given by the stream.</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of nominal attributes given by the stream.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_num_numerical_attributes"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_numerical_attributes">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_num_numerical_attributes"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_numerical_attributes">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_num_numerical_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; get_num_numerical_attributes</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The number of numerical attributes given by the stream.</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of numerical attributes given by the stream.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_num_values_per_nominal_attribute"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_values_per_nominal_attribute">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_num_values_per_nominal_attribute"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_values_per_nominal_attribute">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_num_values_per_nominal_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; get_num_values_per_nominal_attribute</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The number of possible values for each nominal attribute.</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of possible values for each nominal attribute.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_num_attributes"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_attributes">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_num_attributes"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_attributes">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_num_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; get_num_attributes</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The total number of attributes.</span>
+<span class="sd">        int</span>
+<span class="sd">            The total number of attributes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_num_targets"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_targets">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_num_targets"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_targets">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_num_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_attributes_header"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_attributes_header">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_attributes_header"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_attributes_header">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_attributes_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_classes_header"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_classes_header">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_classes_header"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_classes_header">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_classes_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_last_instance"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_last_instance">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_last_instance"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_last_instance">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_last_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.prepare_for_use"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.prepare_for_use">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.prepare_for_use"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.prepare_for_use">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">prepare_for_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; prepare_for_use</span>
 <span class="sd">        </span>
@@ -184,7 +215,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_plot_name"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_plot_name">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_plot_name"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_plot_name">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_plot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; get_plot_name</span>
 <span class="sd">        </span>
@@ -195,12 +226,13 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A string representing the plot name.</span>
+<span class="sd">        string</span>
+<span class="sd">            A string representing the plot name.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_classes"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_classes">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_classes"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_classes">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; get_classes</span>
 <span class="sd">        </span>
@@ -212,33 +244,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;stream&#39;</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_info"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_info">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_info"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_info">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseInstanceStream.get_num_targeting_tasks"><a class="viewcode-back" href="../../../skmultiflow.data.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_targeting_tasks">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseInstanceStream.get_num_targeting_tasks"><a class="viewcode-back" href="../../../skmultiflow.data.base_instance_stream.html#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_targeting_tasks">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_num_targeting_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

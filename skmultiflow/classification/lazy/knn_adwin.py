@@ -49,6 +49,40 @@ class KNNAdwin(KNN):
     
     ValueError: A ValueError is raised if the predict function is called 
     before at least k samples have been analyzed by the algorithm.
+    
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> # Setting up the stream
+    >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'csv', False)
+    >>> stream = FileStream(opt, -1, 1)
+    >>> stream.prepare_for_use()
+    >>> # Setting up the KNNAdwin classifier
+    >>> knn_adwin = KNNAdwin(k=8, leaf_size=40, max_window_size=2000)
+    >>> # Pre training the classifier with 200 samples
+    >>> X, y = stream.next_instance(200)
+    >>> knn_adwin = knn_adwin.partial_fit(X, y)
+    >>> # Keeping track of sample count and correct prediction count
+    >>> n_samples = 0
+    >>> corrects = 0
+    >>> while n_samples < 5000:
+    ...     X, y = stream.next_instance()
+    ...     pred = knn_adwin.predict(X)
+    ...     if y[0] == pred[0]:
+    ...         corrects += 1
+    ...     knn_adwin = knn_adwin.partial_fit(X, y)
+    ...     n_samples += 1
+    >>>
+    >>> # Displaying the results
+    >>> print('KNN usage example')
+    >>> print(str(n_samples) + ' samples analyzed.')
+    5000 samples analyzed.
+    >>> print("KNNAdwin's performance: " + str(corrects/n_samples))
+    KNNAdwin's performance: 0.7798
 
     """
 
@@ -65,7 +99,8 @@ class KNNAdwin(KNN):
         
         Returns
         -------
-        self
+        KNNAdwin
+            self
         
         """
         self.adwin = ADWIN()
@@ -95,7 +130,8 @@ class KNNAdwin(KNN):
         
         Returns
         -------
-        self
+        KNNAdwin
+            self
         
         """
         r, c = get_dimensions(X)

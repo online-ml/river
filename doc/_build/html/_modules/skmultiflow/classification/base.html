@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.classification.base &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -50,7 +64,7 @@
 <span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">skmultiflow.core.base_object</span> <span class="k">import</span> <span class="n">BaseObject</span>
 
-<div class="viewcode-block" id="BaseClassifier"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier">[docs]</a><span class="k">class</span> <span class="nc">BaseClassifier</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseClassifier"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier">[docs]</a><span class="k">class</span> <span class="nc">BaseClassifier</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; BaseClassifier</span>
 <span class="sd">    </span>
 <span class="sd">    The abstract class that works as a base model for all of this framework&#39;s </span>
@@ -70,7 +84,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="BaseClassifier.fit"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier.fit">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseClassifier.fit"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier.fit">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; fit</span>
 <span class="sd">        </span>
@@ -95,7 +109,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseClassifier.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier.partial_fit">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseClassifier.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier.partial_fit">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit</span>
 <span class="sd">        </span>
@@ -121,7 +135,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseClassifier.predict"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier.predict">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseClassifier.predict"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier.predict">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; predict</span>
 <span class="sd">        </span>
@@ -139,7 +153,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseClassifier.predict_proba"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier.predict_proba">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseClassifier.predict_proba"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier.predict_proba">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; predict_proba</span>
 <span class="sd">        </span>
@@ -161,37 +175,53 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseClassifier.reset"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier.reset">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseClassifier.reset"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier.reset">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; reset</span>
+<span class="sd">        </span>
+<span class="sd">        Resets the classifier&#39;s parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        BaseClassifier</span>
+<span class="sd">            self</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseClassifier.score"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier.score">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseClassifier.score"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier.score">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; score</span>
+<span class="sd">        </span>
+<span class="sd">        This function isn&#39;t natively implemented on all classifiers. But if </span>
+<span class="sd">        it&#39;s, it will return the performance base metric for that classifier </span>
+<span class="sd">        at that moment and having the X matrix as input.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: numpy.ndarray of shape (n_sample, n_features)</span>
+<span class="sd">            The features matrix.</span>
+<span class="sd">        </span>
+<span class="sd">        y: Array-like</span>
+<span class="sd">            An array-like containing the class labels for all samples in X.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The classifier&#39;s score.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseClassifier.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseClassifier.get_class_type"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;estimator&#39;</span></div>
 
-<div class="viewcode-block" id="BaseClassifier.get_info"><a class="viewcode-back" href="../../../skmultiflow.classification.html#skmultiflow.classification.base.BaseClassifier.get_info">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseClassifier.get_info"><a class="viewcode-back" href="../../../skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier.get_info">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

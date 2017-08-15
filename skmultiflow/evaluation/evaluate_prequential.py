@@ -195,7 +195,8 @@ class EvaluatePrequential(BaseEvaluator):
             
         Returns
         -------
-        Returns the trained learner.
+        BaseClassifier extension or list of BaseClassifier extensions
+            The trained classifiers.
         
         Notes
         -----
@@ -245,7 +246,8 @@ class EvaluatePrequential(BaseEvaluator):
              
         Returns
         -------
-        Returns the trained learner 
+        BaseClassifier extension or list of BaseClassifier extensions
+            The trained classifiers. 
         
         Notes
         -----
@@ -448,7 +450,8 @@ class EvaluatePrequential(BaseEvaluator):
 
         Returns
         -------
-        self
+        EvaluatePrequential
+            self
 
         """
         if self.classifier is not None:
@@ -471,8 +474,9 @@ class EvaluatePrequential(BaseEvaluator):
 
         Returns
         -------
-        A list containing the predicted labels for all instances in X in 
-        all learners.
+        list
+            A list containing the predicted labels for all instances in X in 
+            all learners.
 
         """
         predictions = None

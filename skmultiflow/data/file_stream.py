@@ -158,8 +158,9 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         
         Returns
         -------
-        Returns the next batch_size instances in a pandas.dataframe partition. 
-        For general purposes the return can be treated as a numpy.ndarray.
+        tuple or tuple list
+            Returns the next batch_size instances in a pandas.dataframe partition. 
+            For general purposes the return can be treated as a numpy.ndarray.
         
         """
         self.instance_index += batch_size

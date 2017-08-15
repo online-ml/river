@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.visualization.evaluation_visualizer &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -54,7 +68,7 @@
 <span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">mpatches</span>
 
 
-<div class="viewcode-block" id="EvaluationVisualizer"><a class="viewcode-back" href="../../../skmultiflow.visualization.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer">[docs]</a><span class="k">class</span> <span class="nc">EvaluationVisualizer</span><span class="p">(</span><span class="n">BaseListener</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluationVisualizer"><a class="viewcode-back" href="../../../skmultiflow.visualization.evaluation_visualizer.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer">[docs]</a><span class="k">class</span> <span class="nc">EvaluationVisualizer</span><span class="p">(</span><span class="n">BaseListener</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; EvaluationVisualizer</span>
 <span class="sd">    </span>
 <span class="sd">    This class is responsible for maintaining and updating the plot modules </span>
@@ -228,7 +242,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No plots were given.&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvaluationVisualizer.on_new_train_step"><a class="viewcode-back" href="../../../skmultiflow.visualization.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.on_new_train_step">[docs]</a>    <span class="k">def</span> <span class="nf">on_new_train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_step</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluationVisualizer.on_new_train_step"><a class="viewcode-back" href="../../../skmultiflow.visualization.evaluation_visualizer.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.on_new_train_step">[docs]</a>    <span class="k">def</span> <span class="nf">on_new_train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_step</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; on_new_train_step</span>
 <span class="sd">        </span>
 <span class="sd">        This is the listener main function, which gives it the ability to </span>
@@ -258,7 +272,7 @@
             <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Wrong data format.&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvaluationVisualizer.on_new_scatter_data"><a class="viewcode-back" href="../../../skmultiflow.visualization.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.on_new_scatter_data">[docs]</a>    <span class="k">def</span> <span class="nf">on_new_scatter_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">prediction</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluationVisualizer.on_new_scatter_data"><a class="viewcode-back" href="../../../skmultiflow.visualization.evaluation_visualizer.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.on_new_scatter_data">[docs]</a>    <span class="k">def</span> <span class="nf">on_new_scatter_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">prediction</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 
@@ -612,7 +626,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">2.6</span><span class="p">,</span> <span class="n">w_pad</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">h_pad</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvaluationVisualizer.draw"><a class="viewcode-back" href="../../../skmultiflow.visualization.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_step</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluationVisualizer.draw"><a class="viewcode-back" href="../../../skmultiflow.visualization.evaluation_visualizer.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_step</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; draw</span>
 <span class="sd">        </span>
 <span class="sd">        Updates and redraws the plot.</span>
@@ -874,13 +888,13 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EvaluationVisualizer.draw_scatter_points"><a class="viewcode-back" href="../../../skmultiflow.visualization.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.draw_scatter_points">[docs]</a>    <span class="k">def</span> <span class="nf">draw_scatter_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">predict</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluationVisualizer.draw_scatter_points"><a class="viewcode-back" href="../../../skmultiflow.visualization.evaluation_visualizer.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.draw_scatter_points">[docs]</a>    <span class="k">def</span> <span class="nf">draw_scatter_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">predict</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EvaluationVisualizer.hold"><a class="viewcode-back" href="../../../skmultiflow.visualization.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.hold">[docs]</a>    <span class="k">def</span> <span class="nf">hold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluationVisualizer.hold"><a class="viewcode-back" href="../../../skmultiflow.visualization.evaluation_visualizer.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.hold">[docs]</a>    <span class="k">def</span> <span class="nf">hold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvaluationVisualizer.get_info"><a class="viewcode-back" href="../../../skmultiflow.visualization.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluationVisualizer.get_info"><a class="viewcode-back" href="../../../skmultiflow.visualization.evaluation_visualizer.html#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div></div>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -889,20 +903,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

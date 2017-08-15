@@ -34,6 +34,26 @@ class EDDM(BaseDriftDetector):
     
     Alpha and beta are set to 0.95 and 0.9, respectively.
     
+    Examples
+    --------
+    >>> # Imports
+    >>> import numpy as np
+    >>> from skmultiflow.classification.core.driftdetection.eddm import EDDM
+    >>> eddm = EDDM()
+    >>> # Simulating a data stream as a normal distribution of 1's and 0's
+    >>> data_stream = np.random.randint(2, size=2000)
+    >>> # Changing the data concept from index 999 to 1500, simulating an 
+    >>> # increase in error rate
+    >>> for i in range(999, 1500):
+    ...     data_stream[i] = 0
+    >>> # Adding stream elements to ADWIN and verifying if drift occurred
+    >>> for i in range(2000):
+    ...     eddm.add_element(data_stream[i])
+    ...     if eddm.detected_warning_zone():
+    ...         print('Warning zone has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    ...     if eddm.detected_change():
+    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    
     """
     FDDM_OUTCONTROL = 0.9
     FDDM_WARNING = 0.95
@@ -53,6 +73,11 @@ class EDDM(BaseDriftDetector):
         self.reset()
 
     def reset(self):
+        """ reset
+
+        Resets the change detector parameters.
+
+        """
         super().reset()
         self.m_n = 1
         self.m_num_errors = 0
@@ -75,7 +100,8 @@ class EDDM(BaseDriftDetector):
         
         Returns
         -------
-        self
+        EDDM
+            self
         
         Notes
         -----
@@ -122,8 +148,6 @@ class EDDM(BaseDriftDetector):
 
                 else:
                     self.in_warning_zone = False
-
-        return self
 
 
     def get_info(self):

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.evaluation.metrics package &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="skmultiflow.filtering package" href="skmultiflow.filtering.html" />
+    <link rel="next" title="skmultiflow.evaluation.metrics.metrics module" href="skmultiflow.evaluation.metrics.metrics.html" />
     <link rel="prev" title="skmultiflow.evaluation package" href="skmultiflow.evaluation.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="skmultiflow.filtering.html" title="skmultiflow.filtering package"
+          <a href="skmultiflow.evaluation.metrics.metrics.html" title="skmultiflow.evaluation.metrics.metrics module"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="skmultiflow.evaluation.html" title="skmultiflow.evaluation package"
@@ -46,145 +46,13 @@
           <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="skmultiflow.evaluation.html" accesskey="U">skmultiflow.evaluation package</a> &#187;</li> 
       </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="skmultiflow-evaluation-metrics-package">
-<h1>skmultiflow.evaluation.metrics package<a class="headerlink" href="#skmultiflow-evaluation-metrics-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-skmultiflow.evaluation.metrics.metrics">
-<span id="skmultiflow-evaluation-metrics-metrics-module"></span><h2>skmultiflow.evaluation.metrics.metrics module<a class="headerlink" href="#module-skmultiflow.evaluation.metrics.metrics" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="skmultiflow.evaluation.metrics.metrics.exact_match">
-<code class="descclassname">skmultiflow.evaluation.metrics.metrics.</code><code class="descname">exact_match</code><span class="sig-paren">(</span><em>true_labels</em>, <em>predicts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/metrics/metrics.html#exact_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.metrics.metrics.exact_match" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the most strict metric for the multi label setting. It’s defined
-as the percentage of samples that have all their labels correctly classified.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>true_labels</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_target_tasks</em><em>)</em>) – A matrix with the true labels for all the classification tasks and for
-n_samples.</li>
-<li><strong>predicts</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_target_tasks</em><em>)</em>) – A matrix with the predictions for all the classification tasks and for
-n_samples.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The exact match percentage between the given sets.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.evaluation.metrics.metrics</span> <span class="k">import</span> <span class="n">exact_match</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">true_labels</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predictions</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">exact_match</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
-<span class="go">0.5</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="skmultiflow.evaluation.metrics.metrics.hamming_score">
-<code class="descclassname">skmultiflow.evaluation.metrics.metrics.</code><code class="descname">hamming_score</code><span class="sig-paren">(</span><em>true_labels</em>, <em>predicts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/metrics/metrics.html#hamming_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.metrics.metrics.hamming_score" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes de hamming score, which is known as the label-based accuracy,
-designed for multi-label problems. It’s defined as the number of correctly
-predicted labels divided by all classified labels.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>true_labels</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_target_tasks</em><em>)</em>) – A matrix with the true labels for all the classification tasks and for
-n_samples.</li>
-<li><strong>predicts</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_target_tasks</em><em>)</em>) – A matrix with the predictions for all the classification tasks and for
-n_samples.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The hamming score, or label-based accuracy, for the given sets.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.evaluation.metrics.metrics</span> <span class="k">import</span> <span class="n">hamming_score</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">true_labels</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predictions</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hamming_score</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
-<span class="go">0.75</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="skmultiflow.evaluation.metrics.metrics.j_index">
-<code class="descclassname">skmultiflow.evaluation.metrics.metrics.</code><code class="descname">j_index</code><span class="sig-paren">(</span><em>true_labels</em>, <em>predicts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/metrics/metrics.html#j_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.metrics.metrics.j_index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the Jaccard Index of the given set, which is also called the
-‘intersection over union’ in multi-label settings. It’s defined as the
-intersection between the true label’s set and the prediction’s set,
-divided by the sum, or union, of those two sets.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>true_labels</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_target_tasks</em><em>)</em>) – A matrix with the true labels for all the classification tasks and for
-n_samples.</li>
-<li><strong>predicts</strong> (<em>numpy.ndarray of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_target_tasks</em><em>)</em>) – A matrix with the predictions for all the classification tasks and for
-n_samples.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The J-index, or ‘intersection over union’, for the given sets.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.evaluation.metrics.metrics</span> <span class="k">import</span> <span class="n">j_index</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">true_labels</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predictions</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">j_index</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
-<span class="go">0.66666666666666663</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</div>
-<div class="section" id="module-skmultiflow.evaluation.metrics">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.evaluation.metrics" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
-
-
-          </div>
-        </div>
-      </div>
+    </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">skmultiflow.evaluation.metrics package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-skmultiflow.evaluation.metrics.metrics">skmultiflow.evaluation.metrics.metrics module</a></li>
 <li><a class="reference internal" href="#module-skmultiflow.evaluation.metrics">Module contents</a></li>
 </ul>
 </li>
@@ -194,8 +62,8 @@ n_samples.</li>
   <p class="topless"><a href="skmultiflow.evaluation.html"
                         title="previous chapter">skmultiflow.evaluation package</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="skmultiflow.filtering.html"
-                        title="next chapter">skmultiflow.filtering package</a></p>
+  <p class="topless"><a href="skmultiflow.evaluation.metrics.metrics.html"
+                        title="next chapter">skmultiflow.evaluation.metrics.metrics module</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -215,6 +83,31 @@ n_samples.</li>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="skmultiflow-evaluation-metrics-package">
+<h1>skmultiflow.evaluation.metrics package<a class="headerlink" href="#skmultiflow-evaluation-metrics-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.evaluation.metrics.metrics.html">skmultiflow.evaluation.metrics.metrics module</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="module-skmultiflow.evaluation.metrics">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.evaluation.metrics" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -227,7 +120,7 @@ n_samples.</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="skmultiflow.filtering.html" title="skmultiflow.filtering package"
+          <a href="skmultiflow.evaluation.metrics.metrics.html" title="skmultiflow.evaluation.metrics.metrics module"
              >next</a> |</li>
         <li class="right" >
           <a href="skmultiflow.evaluation.html" title="skmultiflow.evaluation package"

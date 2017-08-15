@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.evaluation.evaluate_prequential &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -57,7 +71,7 @@
 <span class="kn">from</span> <span class="nn">timeit</span> <span class="k">import</span> <span class="n">default_timer</span> <span class="k">as</span> <span class="n">timer</span>
 
 
-<div class="viewcode-block" id="EvaluatePrequential"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential">[docs]</a><span class="k">class</span> <span class="nc">EvaluatePrequential</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluatePrequential"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_prequential.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential">[docs]</a><span class="k">class</span> <span class="nc">EvaluatePrequential</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; EvaluatePrequential</span>
 <span class="sd">    </span>
 <span class="sd">    The prequential evaluation method, or interleaved test-then-train method, </span>
@@ -225,7 +239,7 @@
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;.*invalid value encountered in true_divide.*&quot;</span><span class="p">)</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;.*Passing 1d.*&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvaluatePrequential.eval"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">classifier</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluatePrequential.eval"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_prequential.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">classifier</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; eval </span>
 <span class="sd">        </span>
 <span class="sd">        Evaluates a learner or set of learners by feeding them with the stream </span>
@@ -242,7 +256,8 @@
 <span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Returns the trained learner.</span>
+<span class="sd">        BaseClassifier extension or list of BaseClassifier extensions</span>
+<span class="sd">            The trained classifiers.</span>
 <span class="sd">        </span>
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -292,7 +307,8 @@
 <span class="sd">             </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Returns the trained learner </span>
+<span class="sd">        BaseClassifier extension or list of BaseClassifier extensions</span>
+<span class="sd">            The trained classifiers. </span>
 <span class="sd">        </span>
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -475,7 +491,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span>
 
-<div class="viewcode-block" id="EvaluatePrequential.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluatePrequential.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_prequential.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit</span>
 
 <span class="sd">        Partially fit all the learners on the given data.</span>
@@ -495,7 +511,8 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self</span>
+<span class="sd">        EvaluatePrequential</span>
+<span class="sd">            self</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -505,7 +522,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="EvaluatePrequential.predict"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluatePrequential.predict"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_prequential.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; predict</span>
 
 <span class="sd">        Predicts the labels of the X samples, by calling the predict </span>
@@ -518,8 +535,9 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A list containing the predicted labels for all instances in X in </span>
-<span class="sd">        all learners.</span>
+<span class="sd">        list</span>
+<span class="sd">            A list containing the predicted labels for all instances in X in </span>
+<span class="sd">            all learners.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">predictions</span> <span class="o">=</span> <span class="kc">None</span>
@@ -722,7 +740,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">EvaluationVisualizer</span><span class="p">(</span><span class="n">n_wait</span><span class="o">=</span><span class="n">n_wait</span><span class="p">,</span> <span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">,</span>
                                                <span class="n">plots</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_options</span><span class="p">,</span> <span class="n">n_learners</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classifiers</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvaluatePrequential.set_params"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.set_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluatePrequential.set_params"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_prequential.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.set_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; set_params</span>
 
 <span class="sd">        This function allows the users to change some of the evaluator&#39;s parameters, </span>
@@ -752,7 +770,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">pretrain_size</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="EvaluatePrequential.get_info"><a class="viewcode-back" href="../../../skmultiflow.evaluation.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvaluatePrequential.get_info"><a class="viewcode-back" href="../../../skmultiflow.evaluation.evaluate_prequential.html#skmultiflow.evaluation.evaluate_prequential.EvaluatePrequential.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;Prequential Evaluator: n_wait: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_wait</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - max_instances: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - max_time: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_time</span><span class="p">)</span> <span class="o">+</span> \
@@ -765,20 +783,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

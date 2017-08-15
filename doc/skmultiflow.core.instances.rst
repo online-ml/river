@@ -4,14 +4,9 @@ skmultiflow\.core\.instances package
 Submodules
 ----------
 
-skmultiflow\.core\.instances\.instance\_header module
------------------------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.core.instances.instance_header
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.core.instances.instance_header
 
 Module contents
 ---------------

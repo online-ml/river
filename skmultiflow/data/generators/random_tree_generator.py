@@ -49,6 +49,57 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
     
     fraction_leaves_per_level: float (Default: 0.15)
         The fraction of leaves per level from min_leaf_depth onwards.
+        
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
+    >>> # Setting up the stream
+    >>> stream = RandomTreeGenerator(tree_seed=8873, instance_seed=69, n_classes=2, n_nominal_attributes=2,
+    ... n_numerical_attributes=5, n_values_per_nominal=5, max_depth=6, min_leaf_depth=3, fraction_leaves_per_level=0.15)
+    >>> stream.prepare_for_use()
+    >>> # Retrieving one sample
+    >>> stream.next_instance()
+    (array([[ 0.16268102,  0.1105941 ,  0.7172657 ,  0.13021257,  0.61664241,
+         1.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  0.        ,  1.        ,  0.        ]]), array([ 0.]))
+    >>> # Retrieving 10 samples
+    >>> stream.next_instance(10)
+    (array([[ 0.23752865,  0.58739728,  0.33649431,  0.62104964,  0.85182531,
+         0.        ,  0.        ,  0.        ,  0.        ,  1.        ,
+         0.        ,  0.        ,  0.        ,  0.        ,  1.        ],
+       [ 0.80996022,  0.71970756,  0.49121675,  0.18175096,  0.41738968,
+         0.        ,  0.        ,  0.        ,  1.        ,  0.        ,
+         0.        ,  0.        ,  0.        ,  0.        ,  1.        ],
+       [ 0.3450778 ,  0.27301117,  0.52986614,  0.68253015,  0.79836113,
+         0.        ,  0.        ,  1.        ,  0.        ,  0.        ,
+         1.        ,  0.        ,  0.        ,  0.        ,  0.        ],
+       [ 0.28974746,  0.64385678,  0.11726876,  0.14956833,  0.90919843,
+         0.        ,  1.        ,  0.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  0.        ,  1.        ,  0.        ],
+       [ 0.85404693,  0.77693923,  0.25851095,  0.13574941,  0.01739845,
+         0.        ,  0.        ,  0.        ,  0.        ,  1.        ,
+         0.        ,  0.        ,  0.        ,  0.        ,  1.        ],
+       [ 0.23404205,  0.67644455,  0.65199858,  0.22742471,  0.01895565,
+         1.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  1.        ,  0.        ,  0.        ],
+       [ 0.12843591,  0.56112384,  0.08013747,  0.46674409,  0.48333615,
+         0.        ,  0.        ,  1.        ,  0.        ,  0.        ,
+         1.        ,  0.        ,  0.        ,  0.        ,  0.        ],
+       [ 0.52058342,  0.51999097,  0.28294293,  0.11435212,  0.83731519,
+         0.        ,  1.        ,  0.        ,  0.        ,  0.        ,
+         1.        ,  0.        ,  0.        ,  0.        ,  0.        ],
+       [ 0.82455551,  0.3758063 ,  0.02672009,  0.87081727,  0.3165448 ,
+         1.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  0.        ,  1.        ,  0.        ],
+       [ 0.03012729,  0.30479727,  0.65407304,  0.14532937,  0.47670874,
+         0.        ,  1.        ,  0.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  1.        ,  0.        ,  0.        ]]), array([ 1.,  1.,  1.,  1.,  0.,  1.,  1.,  0.,  0.,  0.]))
+    >>> # Generators will have infinite remaining instances, so it returns -1
+    >>> stream.estimated_remaining_instances()
+    -1
+    >>> stream.has_more_instances()
+    True
     
     """
     def __init__(self, tree_seed=23, instance_seed=12, n_classes=2, n_nominal_attributes=5,
@@ -171,7 +222,8 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         
         Returns
         -------
-        Returns the node, either a inner node or a leaf node.
+        Node
+            Returns the node, either a inner node or a leaf node.
         
         Notes
         -----
@@ -230,8 +282,9 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         
         Returns
         -------
-        Return a tuple with the features matrix and the labels matrix 
-        for the batch_size samples that were requested.
+        tuple or tuple list
+            Return a tuple with the features matrix and the labels matrix 
+            for the batch_size samples that were requested.
         
         """
         if len(node.children) == 0:
@@ -261,8 +314,9 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
             
         Returns
         -------
-        This function returns the index of the active variable in a nominal 
-        attribute 'hot one' representation.
+        int
+            This function returns the index of the active variable in a nominal 
+            attribute 'hot one' representation.
         
         """
         minIndex = self.num_numerical_attributes + (nominal_index - self.num_numerical_attributes) * self.num_values_per_nominal_att
@@ -291,8 +345,9 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
          
         Returns
         -------
-        Return a tuple with the features matrix and the labels matrix for the 
-        batch_size samples that were requested.
+        tuple or tuple list
+            Return a tuple with the features matrix and the labels matrix for the 
+            batch_size samples that were requested.
          
         """
         num_attributes = -1

@@ -1,6 +1,13 @@
 skmultiflow\.classification\.core package
 =========================================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    skmultiflow.classification.core.driftdetection
+
 Module contents
 ---------------
 

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.data.generators.random_rbf_generator_drift &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -52,7 +66,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="RandomRBFGeneratorDrift"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift">[docs]</a><span class="k">class</span> <span class="nc">RandomRBFGeneratorDrift</span><span class="p">(</span><span class="n">RandomRBFGenerator</span><span class="p">,</span> <span class="n">BaseObject</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomRBFGeneratorDrift"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_rbf_generator_drift.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift">[docs]</a><span class="k">class</span> <span class="nc">RandomRBFGeneratorDrift</span><span class="p">(</span><span class="n">RandomRBFGenerator</span><span class="p">,</span> <span class="n">BaseObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; RandomRBFGeneratorDrift</span>
 <span class="sd">    </span>
 <span class="sd">    This class is an extension from the RandomRBFGenerator. It functions </span>
@@ -88,12 +102,43 @@
 <span class="sd">        </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; opt = FileOption(&#39;FILE&#39;, &#39;OPT_NAME&#39;, &#39;../datasets/covtype.csv&#39;, &#39;csv&#39;, False)</span>
-<span class="sd">    &gt;&gt;&gt; stream = FileStream(opt, -1, 1)</span>
+<span class="sd">    &gt;&gt;&gt; # Imports</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the stream</span>
+<span class="sd">    &gt;&gt;&gt; stream = RandomRBFGeneratorDrift(model_seed=99, instance_seed = 50, num_classes = 4, num_att = 10, </span>
+<span class="sd">    ... num_centroids = 50, change_speed=0.87, num_drift_centroids=50)</span>
 <span class="sd">    &gt;&gt;&gt; stream.prepare_for_use()</span>
-<span class="sd">    &gt;&gt;&gt; rbf_drift = RandomRBFGeneratorDrift(change_speed=41.00, num_centroids=50, model_seed=32523423, </span>
-<span class="sd">    ... instance_seed=5435, num_classes=2, num_att=10, num_drift_centroids=50)</span>
-<span class="sd">    &gt;&gt;&gt; rbf_drift.prepare_for_use()</span>
+<span class="sd">    &gt;&gt;&gt; # Retrieving one sample</span>
+<span class="sd">    &gt;&gt;&gt; stream.next_instance()</span>
+<span class="sd">    (array([[ 0.87640769,  1.11561069,  0.61592869,  1.0580048 ,  0.34237265,</span>
+<span class="sd">         0.44265564,  0.8714499 ,  0.47178835,  1.07098717,  0.29090414]]), array([ 3.]))</span>
+<span class="sd">    &gt;&gt;&gt; # Retrieving 10 samples</span>
+<span class="sd">    &gt;&gt;&gt; stream.next_instance(10)</span>
+<span class="sd">    (array([[ 0.78413886,  0.98797944,  0.26981191,  0.92217135,  0.61152321,</span>
+<span class="sd">         1.02183543,  0.99855968,  0.71545227,  0.55584282,  0.32919095],</span>
+<span class="sd">       [ 0.45714164,  0.2610933 ,  0.07065982,  0.62751192,  0.75317802,</span>
+<span class="sd">         0.95785718,  0.32732265,  1.03553576,  0.58009199,  0.90331289],</span>
+<span class="sd">       [ 0.04165148,  0.38215897, -0.0173352 ,  0.64773072,  0.50398859,</span>
+<span class="sd">         1.00646399, -0.03972425,  0.62976581,  0.70082235,  0.90992945],</span>
+<span class="sd">       [ 0.37416657,  0.45838559,  0.82463152,  0.17117448,  0.97320165,</span>
+<span class="sd">         0.73638815,  0.80587782,  0.75280346,  0.40483112,  1.0012537 ],</span>
+<span class="sd">       [ 0.79264171,  0.13507299,  0.79600514,  0.33743781,  0.67766074,</span>
+<span class="sd">         0.70102531, -0.02483112,  0.1921961 ,  0.46693386, -0.02937016],</span>
+<span class="sd">       [ 0.5129367 ,  0.42697567,  0.25741495,  0.68854096,  0.1119384 ,</span>
+<span class="sd">         0.76748539,  0.91141342,  0.51498633,  0.17019881,  0.51172656],</span>
+<span class="sd">       [-0.07820356,  1.19744888,  0.82647513,  1.08993095,  0.67718824,</span>
+<span class="sd">         0.66486463,  0.52000702,  0.68708254,  0.21171053,  0.81696899],</span>
+<span class="sd">       [ 0.57232341,  1.13725733,  0.97343092,  1.11889521,  0.68894022,</span>
+<span class="sd">         1.27717546, -0.1063654 , -0.36732086,  0.54799583,  0.48858978],</span>
+<span class="sd">       [ 0.27969972, -0.06563579,  0.02834469,  0.05250523,  0.52713213,</span>
+<span class="sd">         0.73472713,  0.15381198, -0.07735765,  0.9792027 ,  0.92673772],</span>
+<span class="sd">       [ 0.52641196,  0.3009952 ,  0.56104759,  0.40478501,  0.63097374,</span>
+<span class="sd">         0.3797032 , -0.00446842,  0.52913688,  0.24908855,  0.22779074]]), array([ 3.,  3.,  3.,  2.,  3.,  2.,  0.,  2.,  0.,  2.]))</span>
+<span class="sd">    &gt;&gt;&gt; # Generators will have infinite remaining instances, so it returns -1</span>
+<span class="sd">    &gt;&gt;&gt; stream.estimated_remaining_instances()</span>
+<span class="sd">    -1</span>
+<span class="sd">    &gt;&gt;&gt; stream.has_more_instances()</span>
+<span class="sd">    True</span>
 <span class="sd">          </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -105,7 +150,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">num_drift_centroids</span> <span class="o">=</span> <span class="n">num_drift_centroids</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">centroid_speed</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="RandomRBFGeneratorDrift.next_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.next_instance">[docs]</a>    <span class="k">def</span> <span class="nf">next_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomRBFGeneratorDrift.next_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_rbf_generator_drift.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.next_instance">[docs]</a>    <span class="k">def</span> <span class="nf">next_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; next_instance</span>
 <span class="sd">        </span>
 <span class="sd">        Return batch_size samples generated by choosing a centroid at </span>
@@ -122,8 +167,9 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Return a tuple with the features matrix and the labels matrix for </span>
-<span class="sd">        the batch_size samples that were requested. </span>
+<span class="sd">        tuple or tuple list</span>
+<span class="sd">            Return a tuple with the features matrix and the labels matrix for </span>
+<span class="sd">            the batch_size samples that were requested. </span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_numerical_attributes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
@@ -144,7 +190,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">num_numerical_attributes</span><span class="p">],</span> <span class="n">data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_numerical_attributes</span><span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="RandomRBFGeneratorDrift.generate_centroids"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.generate_centroids">[docs]</a>    <span class="k">def</span> <span class="nf">generate_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomRBFGeneratorDrift.generate_centroids"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_rbf_generator_drift.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.generate_centroids">[docs]</a>    <span class="k">def</span> <span class="nf">generate_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; generate_centroids</span>
 <span class="sd">        </span>
 <span class="sd">        The centroids are generated just as it&#39;s done in the parent class, </span>
@@ -179,14 +225,14 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">centroid_speed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rand_speed</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RandomRBFGeneratorDrift.prepare_for_use"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.prepare_for_use">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_for_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomRBFGeneratorDrift.prepare_for_use"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_rbf_generator_drift.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.prepare_for_use">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_for_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">restart</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RandomRBFGeneratorDrift.restart"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.restart">[docs]</a>    <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomRBFGeneratorDrift.restart"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_rbf_generator_drift.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.restart">[docs]</a>    <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_centroids</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance_random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_seed</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RandomRBFGeneratorDrift.get_info"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomRBFGeneratorDrift.get_info"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_rbf_generator_drift.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;RandomRBFGenerator: model_seed: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_seed</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - instance_seed: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_seed</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - num_classes: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span> <span class="o">+</span> \
@@ -195,7 +241,7 @@
                <span class="s1">&#39; - change_speed: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_speed</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - num_drift_centroids: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_drift_centroids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RandomRBFGeneratorDrift.get_num_targeting_tasks"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.get_num_targeting_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_targeting_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomRBFGeneratorDrift.get_num_targeting_tasks"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_rbf_generator_drift.html#skmultiflow.data.generators.random_rbf_generator_drift.RandomRBFGeneratorDrift.get_num_targeting_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_targeting_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">1</span></div></div>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -208,20 +254,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

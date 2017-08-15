@@ -18,8 +18,9 @@ def dict_to_list(dict):
      
     Returns
     -------
-    The generated list, where the first dimension is relative to the dictionary's 
-    key indexes and the second dimension represents the dictionary's values.
+    list
+        The generated list, where the first dimension is relative to the dictionary's 
+        key indexes and the second dimension represents the dictionary's values.
     
     """
     aux = []
@@ -41,8 +42,9 @@ def tuple_list_to_list(tup_list):
     
     Returns
     -------
-    A list, where each entry contains two elements, which are the corresponding 
-    tuple's entries.
+    list
+        A list, where each entry contains two elements, which are the corresponding 
+        tuple's entries.
     
     """
     aux = []
@@ -64,8 +66,9 @@ def dict_to_tuple_list(dict):
     
     Returns
     -------
-    A list, where each entry contains two elements, which are the corresponding 
-    tuple's entries.
+    list
+        A list, where each entry contains two elements, which are the corresponding 
+        tuple's entries.
     
     """
     aux = []
@@ -86,7 +89,8 @@ def get_dimensions(X):
     
     Returns
     -------
-    A tuple representing the X structure's dimensions.
+    tuple
+        A tuple representing the X structure's dimensions.
     
     """
     r, c = 1, 1

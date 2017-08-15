@@ -205,7 +205,8 @@ class EvaluateHoldout(BaseEvaluator):
             
         Returns
         -------
-        Returns the trained learner.
+        BaseClassifier extension or list of BaseClassifier extensions
+            The trained classifier's at the end of the evaluation process.
         
         Notes
         -----
@@ -256,7 +257,8 @@ class EvaluateHoldout(BaseEvaluator):
              
         Returns
         -------
-        Returns the trained learner 
+        BaseClassifier extension or list of BaseClassifier extensions
+            The trained classifiers. 
         
         Notes
         -----
@@ -463,7 +465,8 @@ class EvaluateHoldout(BaseEvaluator):
         
         Returns
         -------
-        self
+        EvaluateHoldout
+            self
          
         """
         if self.classifier is not None:
@@ -486,8 +489,9 @@ class EvaluateHoldout(BaseEvaluator):
 
         Returns
         -------
-        A list containing the predicted labels for all instances in X in 
-        all learners.
+        list
+            A list containing the predicted labels for all instances in X in 
+            all learners.
 
         """
         predictions = None

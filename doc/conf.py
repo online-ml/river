@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # scikit-multiflow documentation build configuration file, created by
-# sphinx-quickstart on Fri Aug 11 18:48:28 2017.
+# sphinx-quickstart on Fri Aug 11 19:45:05 2017.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -86,8 +86,7 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
-html_theme = 'classic'
+html_theme = 'sphinxdoc'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

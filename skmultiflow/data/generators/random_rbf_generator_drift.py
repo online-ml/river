@@ -41,12 +41,43 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
         
     Examples
     --------
-    >>> opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
-    >>> stream = FileStream(opt, -1, 1)
+    >>> # Imports
+    >>> from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
+    >>> # Setting up the stream
+    >>> stream = RandomRBFGeneratorDrift(model_seed=99, instance_seed = 50, num_classes = 4, num_att = 10, 
+    ... num_centroids = 50, change_speed=0.87, num_drift_centroids=50)
     >>> stream.prepare_for_use()
-    >>> rbf_drift = RandomRBFGeneratorDrift(change_speed=41.00, num_centroids=50, model_seed=32523423, 
-    ... instance_seed=5435, num_classes=2, num_att=10, num_drift_centroids=50)
-    >>> rbf_drift.prepare_for_use()
+    >>> # Retrieving one sample
+    >>> stream.next_instance()
+    (array([[ 0.87640769,  1.11561069,  0.61592869,  1.0580048 ,  0.34237265,
+         0.44265564,  0.8714499 ,  0.47178835,  1.07098717,  0.29090414]]), array([ 3.]))
+    >>> # Retrieving 10 samples
+    >>> stream.next_instance(10)
+    (array([[ 0.78413886,  0.98797944,  0.26981191,  0.92217135,  0.61152321,
+         1.02183543,  0.99855968,  0.71545227,  0.55584282,  0.32919095],
+       [ 0.45714164,  0.2610933 ,  0.07065982,  0.62751192,  0.75317802,
+         0.95785718,  0.32732265,  1.03553576,  0.58009199,  0.90331289],
+       [ 0.04165148,  0.38215897, -0.0173352 ,  0.64773072,  0.50398859,
+         1.00646399, -0.03972425,  0.62976581,  0.70082235,  0.90992945],
+       [ 0.37416657,  0.45838559,  0.82463152,  0.17117448,  0.97320165,
+         0.73638815,  0.80587782,  0.75280346,  0.40483112,  1.0012537 ],
+       [ 0.79264171,  0.13507299,  0.79600514,  0.33743781,  0.67766074,
+         0.70102531, -0.02483112,  0.1921961 ,  0.46693386, -0.02937016],
+       [ 0.5129367 ,  0.42697567,  0.25741495,  0.68854096,  0.1119384 ,
+         0.76748539,  0.91141342,  0.51498633,  0.17019881,  0.51172656],
+       [-0.07820356,  1.19744888,  0.82647513,  1.08993095,  0.67718824,
+         0.66486463,  0.52000702,  0.68708254,  0.21171053,  0.81696899],
+       [ 0.57232341,  1.13725733,  0.97343092,  1.11889521,  0.68894022,
+         1.27717546, -0.1063654 , -0.36732086,  0.54799583,  0.48858978],
+       [ 0.27969972, -0.06563579,  0.02834469,  0.05250523,  0.52713213,
+         0.73472713,  0.15381198, -0.07735765,  0.9792027 ,  0.92673772],
+       [ 0.52641196,  0.3009952 ,  0.56104759,  0.40478501,  0.63097374,
+         0.3797032 , -0.00446842,  0.52913688,  0.24908855,  0.22779074]]), array([ 3.,  3.,  3.,  2.,  3.,  2.,  0.,  2.,  0.,  2.]))
+    >>> # Generators will have infinite remaining instances, so it returns -1
+    >>> stream.estimated_remaining_instances()
+    -1
+    >>> stream.has_more_instances()
+    True
           
     """
 
@@ -75,8 +106,9 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
         
         Returns
         -------
-        Return a tuple with the features matrix and the labels matrix for 
-        the batch_size samples that were requested. 
+        tuple or tuple list
+            Return a tuple with the features matrix and the labels matrix for 
+            the batch_size samples that were requested. 
         
         """
         data = np.zeros([batch_size, self.num_numerical_attributes + 1])

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.core.utils.utils &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -52,7 +66,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 
-<div class="viewcode-block" id="dict_to_list"><a class="viewcode-back" href="../../../../skmultiflow.core.utils.html#skmultiflow.core.utils.utils.dict_to_list">[docs]</a><span class="k">def</span> <span class="nf">dict_to_list</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="dict_to_list"><a class="viewcode-back" href="../../../../skmultiflow.core.utils.utils.html#skmultiflow.core.utils.utils.dict_to_list">[docs]</a><span class="k">def</span> <span class="nf">dict_to_list</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; dict_to_list</span>
 <span class="sd">    </span>
 <span class="sd">    Creates a list, based on the entries of a dictionary. To do so it ignores the </span>
@@ -65,8 +79,9 @@
 <span class="sd">     </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    The generated list, where the first dimension is relative to the dictionary&#39;s </span>
-<span class="sd">    key indexes and the second dimension represents the dictionary&#39;s values.</span>
+<span class="sd">    list</span>
+<span class="sd">        The generated list, where the first dimension is relative to the dictionary&#39;s </span>
+<span class="sd">        key indexes and the second dimension represents the dictionary&#39;s values.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">aux</span> <span class="o">=</span> <span class="p">[]</span>
@@ -76,7 +91,7 @@
         <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
     <span class="k">return</span> <span class="n">aux</span></div>
 
-<div class="viewcode-block" id="tuple_list_to_list"><a class="viewcode-back" href="../../../../skmultiflow.core.utils.html#skmultiflow.core.utils.utils.tuple_list_to_list">[docs]</a><span class="k">def</span> <span class="nf">tuple_list_to_list</span><span class="p">(</span><span class="n">tup_list</span><span class="p">):</span>
+<div class="viewcode-block" id="tuple_list_to_list"><a class="viewcode-back" href="../../../../skmultiflow.core.utils.utils.html#skmultiflow.core.utils.utils.tuple_list_to_list">[docs]</a><span class="k">def</span> <span class="nf">tuple_list_to_list</span><span class="p">(</span><span class="n">tup_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; tuple_list_to_list </span>
 <span class="sd">    </span>
 <span class="sd">    Generates a list based on a list of tuples.</span>
@@ -88,8 +103,9 @@
 <span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A list, where each entry contains two elements, which are the corresponding </span>
-<span class="sd">    tuple&#39;s entries.</span>
+<span class="sd">    list</span>
+<span class="sd">        A list, where each entry contains two elements, which are the corresponding </span>
+<span class="sd">        tuple&#39;s entries.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">aux</span> <span class="o">=</span> <span class="p">[]</span>
@@ -97,7 +113,7 @@
         <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">tup_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]])</span>
     <span class="k">return</span> <span class="n">aux</span></div>
 
-<div class="viewcode-block" id="dict_to_tuple_list"><a class="viewcode-back" href="../../../../skmultiflow.core.utils.html#skmultiflow.core.utils.utils.dict_to_tuple_list">[docs]</a><span class="k">def</span> <span class="nf">dict_to_tuple_list</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="dict_to_tuple_list"><a class="viewcode-back" href="../../../../skmultiflow.core.utils.utils.html#skmultiflow.core.utils.utils.dict_to_tuple_list">[docs]</a><span class="k">def</span> <span class="nf">dict_to_tuple_list</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; dict_to_tuple_list</span>
 <span class="sd">    </span>
 <span class="sd">    Generates a tuple list based on a dict. It does so, by converting each </span>
@@ -111,8 +127,9 @@
 <span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A list, where each entry contains two elements, which are the corresponding </span>
-<span class="sd">    tuple&#39;s entries.</span>
+<span class="sd">    list</span>
+<span class="sd">        A list, where each entry contains two elements, which are the corresponding </span>
+<span class="sd">        tuple&#39;s entries.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">aux</span> <span class="o">=</span> <span class="p">[]</span>
@@ -121,7 +138,7 @@
         <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">return</span> <span class="n">aux</span></div>
 
-<div class="viewcode-block" id="get_dimensions"><a class="viewcode-back" href="../../../../skmultiflow.core.utils.html#skmultiflow.core.utils.utils.get_dimensions">[docs]</a><span class="k">def</span> <span class="nf">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="get_dimensions"><a class="viewcode-back" href="../../../../skmultiflow.core.utils.utils.html#skmultiflow.core.utils.utils.get_dimensions">[docs]</a><span class="k">def</span> <span class="nf">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; get_dimensions</span>
 <span class="sd">    </span>
 <span class="sd">    Returns the dimensions from a numpy.array, numpy.ndarray or list.</span>
@@ -133,7 +150,8 @@
 <span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A tuple representing the X structure&#39;s dimensions.</span>
+<span class="sd">    tuple</span>
+<span class="sd">        A tuple representing the X structure&#39;s dimensions.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
@@ -170,20 +188,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.classification.meta.oza_bagging &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -53,7 +67,7 @@
 <span class="kn">from</span> <span class="nn">skmultiflow.classification.lazy.knn_adwin</span> <span class="k">import</span> <span class="n">KNNAdwin</span>
 <span class="kn">from</span> <span class="nn">skmultiflow.core.utils.utils</span> <span class="k">import</span> <span class="o">*</span>
 
-<div class="viewcode-block" id="OzaBagging"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.html#skmultiflow.classification.meta.oza_bagging.OzaBagging">[docs]</a><span class="k">class</span> <span class="nc">OzaBagging</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
+<div class="viewcode-block" id="OzaBagging"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.oza_bagging.html#skmultiflow.classification.meta.oza_bagging.OzaBagging">[docs]</a><span class="k">class</span> <span class="nc">OzaBagging</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; OzaBagging Classifier</span>
 <span class="sd">    </span>
 <span class="sd">    Oza Bagging is an ensemble learning method first introduced by Oza and </span>
@@ -101,6 +115,38 @@
 <span class="sd">    the number of labels in the classification task. Thus we chose a default </span>
 <span class="sd">    value of 2, adapted to binary classification tasks.</span>
 <span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Imports</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.classification.meta.oza_bagging import OzaBagging</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.classification.lazy.knn import KNN</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.data.generators.sea_generator import SEAGenerator</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the stream</span>
+<span class="sd">    &gt;&gt;&gt; stream = SEAGenerator(1, noise_percentage=6.7)</span>
+<span class="sd">    &gt;&gt;&gt; stream.prepare_for_use()</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the OzaBagging classifier to work with KNN classifiers</span>
+<span class="sd">    &gt;&gt;&gt; clf = OzaBagging(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=2)</span>
+<span class="sd">    &gt;&gt;&gt; # Keeping track of sample count and correct prediction count</span>
+<span class="sd">    &gt;&gt;&gt; sample_count = 0</span>
+<span class="sd">    &gt;&gt;&gt; corrects = 0</span>
+<span class="sd">    &gt;&gt;&gt; # Pre training the classifier with 200 samples</span>
+<span class="sd">    &gt;&gt;&gt; X, y = stream.next_instance(200)</span>
+<span class="sd">    &gt;&gt;&gt; clf = clf.partial_fit(X, y, classes=stream.get_classes())</span>
+<span class="sd">    &gt;&gt;&gt; for i in range(2000):</span>
+<span class="sd">    ...     X, y = stream.next_instance()</span>
+<span class="sd">    ...     pred = clf.predict(X)</span>
+<span class="sd">    ...     clf = clf.partial_fit(X, y)</span>
+<span class="sd">    ...     if pred is not None:</span>
+<span class="sd">    ...         if y[0] == pred[0]:</span>
+<span class="sd">    ...             corrects += 1</span>
+<span class="sd">    ...     sample_count += 1</span>
+<span class="sd">    &gt;&gt;&gt; </span>
+<span class="sd">    &gt;&gt;&gt; # Displaying the results</span>
+<span class="sd">    &gt;&gt;&gt; print(str(sample_count) + &#39; samples analyzed.&#39;)</span>
+<span class="sd">    2000 samples analyzed.</span>
+<span class="sd">    &gt;&gt;&gt; print(&#39;OzaBagging classifier performance: &#39; + str(corrects / sample_count))</span>
+<span class="sd">    OzaBagging classifier performance: 0.9645</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">KNNAdwin</span><span class="p">(),</span> <span class="n">ensemble_length</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
@@ -117,13 +163,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_length</span> <span class="o">=</span> <span class="n">ensemble_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span> <span class="o">=</span> <span class="p">[</span><span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_length</span><span class="p">)]</span>
 
-<div class="viewcode-block" id="OzaBagging.reset"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OzaBagging.reset"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.oza_bagging.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__configure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_length</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OzaBagging.fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OzaBagging.fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.oza_bagging.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="OzaBagging.partial_fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OzaBagging.partial_fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.oza_bagging.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit</span>
 <span class="sd">         </span>
 <span class="sd">        Partially fits the model, based on the X and y matrix.</span>
@@ -155,7 +201,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        _______</span>
-<span class="sd">        self</span>
+<span class="sd">        OzaBagging</span>
+<span class="sd">            self</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -187,7 +234,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_length</span> <span class="o">+=</span> <span class="mi">1</span>
 
-<div class="viewcode-block" id="OzaBagging.predict"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="OzaBagging.predict"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.oza_bagging.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; predict</span>
 <span class="sd">        </span>
 <span class="sd">        The predict function will average the predictions from all its learners </span>
@@ -200,7 +247,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A list with the label prediction for all the samples in X.</span>
+<span class="sd">        list</span>
+<span class="sd">            A list with the label prediction for all the samples in X.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -212,7 +260,7 @@
             <span class="n">preds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">probs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">probs</span><span class="p">[</span><span class="n">i</span><span class="p">]))])</span>
         <span class="k">return</span> <span class="n">preds</span></div>
 
-<div class="viewcode-block" id="OzaBagging.predict_proba"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="OzaBagging.predict_proba"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.oza_bagging.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; predict_proba</span>
 <span class="sd">        </span>
 <span class="sd">        Predicts the probability of each sample belonging to each one of the </span>
@@ -230,10 +278,11 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        An array of shape (n_samples, n_features), in which each outer entry is </span>
-<span class="sd">        associated with the X entry of the same index. And where the list in </span>
-<span class="sd">        index [i] contains len(self.classes) elements, each of which represents </span>
-<span class="sd">        the probability that the i-th sample of X belongs to a certain label.</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            An array of shape (n_samples, n_features), in which each outer entry is </span>
+<span class="sd">            associated with the X entry of the same index. And where the list in </span>
+<span class="sd">            index [i] contains len(self.classes) elements, each of which represents </span>
+<span class="sd">            the probability that the i-th sample of X belongs to a certain label.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">probs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -267,30 +316,16 @@
         <span class="k">return</span> <span class="n">aux</span></div>
 
 
-<div class="viewcode-block" id="OzaBagging.score"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.score">[docs]</a>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="OzaBagging.score"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.oza_bagging.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.score">[docs]</a>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="OzaBagging.get_info"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OzaBagging.get_info"><a class="viewcode-back" href="../../../../skmultiflow.classification.meta.oza_bagging.html#skmultiflow.classification.meta.oza_bagging.OzaBagging.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;OzaBagging Classifier: h: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - ensemble_length: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_length</span><span class="p">)</span></div></div>
 
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

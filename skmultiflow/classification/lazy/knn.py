@@ -66,6 +66,38 @@ class KNN(BaseClassifier):
     If you wish to use our KDTree implementation please refer to this class' 
     function __predict_proba
     
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> # Setting up the stream
+    >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/sea_big.csv', 'csv', False)
+    >>> stream = FileStream(opt, -1, 1)
+    >>> stream.prepare_for_use()
+    >>> # Pre training the classifier with 200 samples
+    >>> X, y = stream.next_instance(200)
+    >>> knn = KNN(k=8, max_window_size=2000, leaf_size=40)
+    >>> knn.partial_fit(X, y)
+    >>> # Preparing the processing of 5000 samples and correct prediction count
+    >>> n_samples = 0
+    >>> corrects = 0
+    >>> while n_samples < 5000:
+    ...     X, y = stream.next_instance()
+    ...     my_pred = knn.predict(X)
+    ...     if y[0] == my_pred[0]:
+    ...         corrects += 1
+    ...     knn = knn.partial_fit(X, y)
+    ...     n_samples += 1
+    >>>
+    >>> # Displaying results
+    >>> print('KNN usage example')
+    >>> print(str(n_samples) + ' samples analyzed.')
+    5000 samples analyzed.
+    >>> print("KNN's performance: " + str(corrects/n_samples))
+    KNN's performance: 0.868
+    
     """
 
     def __init__(self, k=5, max_window_size=1000, leaf_size=30, categorical_list=[]):
@@ -104,7 +136,8 @@ class KNN(BaseClassifier):
         
         Returns
         -------
-        self
+        KNN
+            self
         
         """
         r, c = get_dimensions(X)
@@ -144,7 +177,8 @@ class KNN(BaseClassifier):
         
         Returns
         -------
-        self
+        KNN
+            self
         
         """
         r, c = get_dimensions(X)
@@ -175,7 +209,8 @@ class KNN(BaseClassifier):
             
         Returns
         -------
-        A list containing the predicted labels for all instances in X.
+        list
+            A list containing the predicted labels for all instances in X.
         
         """
         r, c = get_dimensions(X)
@@ -206,10 +241,11 @@ class KNN(BaseClassifier):
         
         Returns
         -------
-        An array of shape (n_samples, n_features), in which each outer entry is 
-        associated with the X entry of the same index. And where the list in 
-        index [i] contains len(self.classes) elements, each of which represents 
-        the probability that the i-th sample of X belongs to a certain label.
+        numpy.ndarray
+            An array of shape (n_samples, n_features), in which each outer entry is 
+            associated with the X entry of the same index. And where the list in 
+            index [i] contains len(self.classes) elements, each of which represents 
+            the probability that the i-th sample of X belongs to a certain label.
          
         """
         if self.window is None:
@@ -242,8 +278,9 @@ class KNN(BaseClassifier):
         
         Returns
         -------
-        One list with the k-nearest neighbor's distances and another 
-        one with their indexes.
+        tuple list
+            One list with the k-nearest neighbor's distances and another 
+            one with their indexes.
         
         Notes
         -----

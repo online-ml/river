@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.data.generators.random_tree_generator &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -54,7 +68,7 @@
 <span class="kn">from</span> <span class="nn">array</span> <span class="k">import</span> <span class="n">array</span>
 
 
-<div class="viewcode-block" id="RandomTreeGenerator"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator">[docs]</a><span class="k">class</span> <span class="nc">RandomTreeGenerator</span><span class="p">(</span><span class="n">BaseInstanceStream</span><span class="p">,</span> <span class="n">BaseObject</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator">[docs]</a><span class="k">class</span> <span class="nc">RandomTreeGenerator</span><span class="p">(</span><span class="n">BaseInstanceStream</span><span class="p">,</span> <span class="n">BaseObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; RandomTreeGenerator</span>
 <span class="sd">       </span>
 <span class="sd">    This generator is built based on its description in Domingo and Hulten&#39;s </span>
@@ -96,6 +110,57 @@
 <span class="sd">    </span>
 <span class="sd">    fraction_leaves_per_level: float (Default: 0.15)</span>
 <span class="sd">        The fraction of leaves per level from min_leaf_depth onwards.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Imports</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the stream</span>
+<span class="sd">    &gt;&gt;&gt; stream = RandomTreeGenerator(tree_seed=8873, instance_seed=69, n_classes=2, n_nominal_attributes=2,</span>
+<span class="sd">    ... n_numerical_attributes=5, n_values_per_nominal=5, max_depth=6, min_leaf_depth=3, fraction_leaves_per_level=0.15)</span>
+<span class="sd">    &gt;&gt;&gt; stream.prepare_for_use()</span>
+<span class="sd">    &gt;&gt;&gt; # Retrieving one sample</span>
+<span class="sd">    &gt;&gt;&gt; stream.next_instance()</span>
+<span class="sd">    (array([[ 0.16268102,  0.1105941 ,  0.7172657 ,  0.13021257,  0.61664241,</span>
+<span class="sd">         1.        ,  0.        ,  0.        ,  0.        ,  0.        ,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  1.        ,  0.        ]]), array([ 0.]))</span>
+<span class="sd">    &gt;&gt;&gt; # Retrieving 10 samples</span>
+<span class="sd">    &gt;&gt;&gt; stream.next_instance(10)</span>
+<span class="sd">    (array([[ 0.23752865,  0.58739728,  0.33649431,  0.62104964,  0.85182531,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  0.        ,  1.        ,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  0.        ,  1.        ],</span>
+<span class="sd">       [ 0.80996022,  0.71970756,  0.49121675,  0.18175096,  0.41738968,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  1.        ,  0.        ,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  0.        ,  1.        ],</span>
+<span class="sd">       [ 0.3450778 ,  0.27301117,  0.52986614,  0.68253015,  0.79836113,</span>
+<span class="sd">         0.        ,  0.        ,  1.        ,  0.        ,  0.        ,</span>
+<span class="sd">         1.        ,  0.        ,  0.        ,  0.        ,  0.        ],</span>
+<span class="sd">       [ 0.28974746,  0.64385678,  0.11726876,  0.14956833,  0.90919843,</span>
+<span class="sd">         0.        ,  1.        ,  0.        ,  0.        ,  0.        ,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  1.        ,  0.        ],</span>
+<span class="sd">       [ 0.85404693,  0.77693923,  0.25851095,  0.13574941,  0.01739845,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  0.        ,  1.        ,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  0.        ,  1.        ],</span>
+<span class="sd">       [ 0.23404205,  0.67644455,  0.65199858,  0.22742471,  0.01895565,</span>
+<span class="sd">         1.        ,  0.        ,  0.        ,  0.        ,  0.        ,</span>
+<span class="sd">         0.        ,  0.        ,  1.        ,  0.        ,  0.        ],</span>
+<span class="sd">       [ 0.12843591,  0.56112384,  0.08013747,  0.46674409,  0.48333615,</span>
+<span class="sd">         0.        ,  0.        ,  1.        ,  0.        ,  0.        ,</span>
+<span class="sd">         1.        ,  0.        ,  0.        ,  0.        ,  0.        ],</span>
+<span class="sd">       [ 0.52058342,  0.51999097,  0.28294293,  0.11435212,  0.83731519,</span>
+<span class="sd">         0.        ,  1.        ,  0.        ,  0.        ,  0.        ,</span>
+<span class="sd">         1.        ,  0.        ,  0.        ,  0.        ,  0.        ],</span>
+<span class="sd">       [ 0.82455551,  0.3758063 ,  0.02672009,  0.87081727,  0.3165448 ,</span>
+<span class="sd">         1.        ,  0.        ,  0.        ,  0.        ,  0.        ,</span>
+<span class="sd">         0.        ,  0.        ,  0.        ,  1.        ,  0.        ],</span>
+<span class="sd">       [ 0.03012729,  0.30479727,  0.65407304,  0.14532937,  0.47670874,</span>
+<span class="sd">         0.        ,  1.        ,  0.        ,  0.        ,  0.        ,</span>
+<span class="sd">         0.        ,  0.        ,  1.        ,  0.        ,  0.        ]]), array([ 1.,  1.,  1.,  1.,  0.,  1.,  1.,  0.,  0.,  0.]))</span>
+<span class="sd">    &gt;&gt;&gt; # Generators will have infinite remaining instances, so it returns -1</span>
+<span class="sd">    &gt;&gt;&gt; stream.estimated_remaining_instances()</span>
+<span class="sd">    -1</span>
+<span class="sd">    &gt;&gt;&gt; stream.has_more_instances()</span>
+<span class="sd">    True</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree_seed</span><span class="o">=</span><span class="mi">23</span><span class="p">,</span> <span class="n">instance_seed</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_nominal_attributes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
@@ -146,12 +211,12 @@
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_values_per_nominal_att</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">attributes_header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;NomAtt&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_Val&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
 
-<div class="viewcode-block" id="RandomTreeGenerator.prepare_for_use"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.prepare_for_use">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_for_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.prepare_for_use"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.prepare_for_use">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_for_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance_random</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance_random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_instance_seed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">restart</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.generate_random_tree"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.generate_random_tree">[docs]</a>    <span class="k">def</span> <span class="nf">generate_random_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.generate_random_tree"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.generate_random_tree">[docs]</a>    <span class="k">def</span> <span class="nf">generate_random_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; generate_random_tree</span>
 <span class="sd">        </span>
 <span class="sd">        Generates the random tree, starting from the root node and following </span>
@@ -178,7 +243,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tree_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_random_tree_node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nominal_att_candidates</span><span class="p">,</span> <span class="n">min_numeric_vals</span><span class="p">,</span> <span class="n">max_numeric_vals</span><span class="p">,</span> <span class="n">tree_rand</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="RandomTreeGenerator.generate_random_tree_node"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.generate_random_tree_node">[docs]</a>    <span class="k">def</span> <span class="nf">generate_random_tree_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_depth</span><span class="p">,</span> <span class="n">nominal_att_candidates</span><span class="p">,</span> <span class="n">min_numeric_vals</span><span class="p">,</span> <span class="n">max_numeric_vals</span><span class="p">,</span> <span class="n">rand</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.generate_random_tree_node"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.generate_random_tree_node">[docs]</a>    <span class="k">def</span> <span class="nf">generate_random_tree_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_depth</span><span class="p">,</span> <span class="n">nominal_att_candidates</span><span class="p">,</span> <span class="n">min_numeric_vals</span><span class="p">,</span> <span class="n">max_numeric_vals</span><span class="p">,</span> <span class="n">rand</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; generate_random_tree_node</span>
 <span class="sd">        </span>
 <span class="sd">        Creates a node, choosing at random the splitting attribute and the </span>
@@ -218,7 +283,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Returns the node, either a inner node or a leaf node.</span>
+<span class="sd">        Node</span>
+<span class="sd">            Returns the node, either a inner node or a leaf node.</span>
 <span class="sd">        </span>
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -259,7 +325,7 @@
 
         <span class="k">return</span> <span class="n">node</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.classify_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.classify_instance">[docs]</a>    <span class="k">def</span> <span class="nf">classify_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">att_vals</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.classify_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.classify_instance">[docs]</a>    <span class="k">def</span> <span class="nf">classify_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">att_vals</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; classify_instance</span>
 <span class="sd">        </span>
 <span class="sd">        After a sample is generated it passes through this function, which </span>
@@ -277,8 +343,9 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Return a tuple with the features matrix and the labels matrix </span>
-<span class="sd">        for the batch_size samples that were requested.</span>
+<span class="sd">        tuple or tuple list</span>
+<span class="sd">            Return a tuple with the features matrix and the labels matrix </span>
+<span class="sd">            for the batch_size samples that were requested.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -308,8 +375,9 @@
 <span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        This function returns the index of the active variable in a nominal </span>
-<span class="sd">        attribute &#39;hot one&#39; representation.</span>
+<span class="sd">        int</span>
+<span class="sd">            This function returns the index of the active variable in a nominal </span>
+<span class="sd">            attribute &#39;hot one&#39; representation.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">minIndex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_numerical_attributes</span> <span class="o">+</span> <span class="p">(</span><span class="n">nominal_index</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_numerical_attributes</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_values_per_nominal_att</span>
@@ -319,13 +387,13 @@
             <span class="n">minIndex</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="RandomTreeGenerator.estimated_remaining_instances"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.estimated_remaining_instances">[docs]</a>    <span class="k">def</span> <span class="nf">estimated_remaining_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.estimated_remaining_instances"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.estimated_remaining_instances">[docs]</a>    <span class="k">def</span> <span class="nf">estimated_remaining_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.has_more_instances"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.has_more_instances">[docs]</a>    <span class="k">def</span> <span class="nf">has_more_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.has_more_instances"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.has_more_instances">[docs]</a>    <span class="k">def</span> <span class="nf">has_more_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.next_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.next_instance">[docs]</a>    <span class="k">def</span> <span class="nf">next_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.next_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.next_instance">[docs]</a>    <span class="k">def</span> <span class="nf">next_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; next_instance</span>
 <span class="sd">        </span>
 <span class="sd">        Randomly generates attributes values, and then classify each instance </span>
@@ -338,8 +406,9 @@
 <span class="sd">         </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Return a tuple with the features matrix and the labels matrix for the </span>
-<span class="sd">        batch_size samples that were requested.</span>
+<span class="sd">        tuple or tuple list</span>
+<span class="sd">            Return a tuple with the features matrix and the labels matrix for the </span>
+<span class="sd">            batch_size samples that were requested.</span>
 <span class="sd">         </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_attributes</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -372,52 +441,52 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_attributes</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">num_attributes</span><span class="p">:]))</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.is_restartable"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.is_restartable">[docs]</a>    <span class="k">def</span> <span class="nf">is_restartable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.is_restartable"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.is_restartable">[docs]</a>    <span class="k">def</span> <span class="nf">is_restartable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.restart"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.restart">[docs]</a>    <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.restart"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.restart">[docs]</a>    <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance_random</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance_random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_instance_seed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_random_tree</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.has_more_mini_batch"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.has_more_mini_batch">[docs]</a>    <span class="k">def</span> <span class="nf">has_more_mini_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.has_more_mini_batch"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.has_more_mini_batch">[docs]</a>    <span class="k">def</span> <span class="nf">has_more_mini_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_num_nominal_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_nominal_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_nominal_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_num_nominal_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_nominal_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_nominal_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nominal_attributes</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_num_numerical_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_numerical_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_numerical_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_num_numerical_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_numerical_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_numerical_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_numerical_attributes</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_num_values_per_nominal_attribute"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_values_per_nominal_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_values_per_nominal_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_num_values_per_nominal_attribute"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_values_per_nominal_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_values_per_nominal_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_values_per_nominal_att</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_num_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_num_attributes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_numerical_attributes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nominal_attributes</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_values_per_nominal_att</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_num_targets"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_targets">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_num_targets"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_targets">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_attributes_header"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_attributes_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_attributes_header"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_attributes_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_header</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_classes_header"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_classes_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_classes_header"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_classes_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_header</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_last_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_last_instance">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_last_instance"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_last_instance">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_instance_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_instance_y</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_plot_name"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_plot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_plot_name"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_plot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Random Tree Generator - &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; class labels&quot;</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_classes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_classes">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_classes"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_classes">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">c</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">):</span>
             <span class="n">c</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">c</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_info"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_info"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;RandomTreegenerator: tree_seed: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_tree_seed</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - instance_seed: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_instance_seed</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - n_classes: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span> <span class="o">+</span> \
@@ -428,10 +497,10 @@
                <span class="s1">&#39; - min_leaf_depth: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_leaf_depth</span><span class="p">)</span> <span class="o">+</span> \
                <span class="s1">&#39; - fraction_leaves_per_level: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fraction_of_leaves_per_level</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RandomTreeGenerator.get_num_targeting_tasks"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_targeting_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_targeting_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomTreeGenerator.get_num_targeting_tasks"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.RandomTreeGenerator.get_num_targeting_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_targeting_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">1</span></div></div>
 
-<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.html#skmultiflow.data.generators.random_tree_generator.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../../skmultiflow.data.generators.random_tree_generator.html#skmultiflow.data.generators.random_tree_generator.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Node</span>
 <span class="sd">    </span>
 <span class="sd">    Class that stores the attributes of a node. No further methods.</span>
@@ -468,20 +537,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

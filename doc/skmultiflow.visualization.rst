@@ -4,22 +4,10 @@ skmultiflow\.visualization package
 Submodules
 ----------
 
-skmultiflow\.visualization\.base\_listener module
--------------------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.visualization.base_listener
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.visualization\.evaluation\_visualizer module
----------------------------------------------------------
-
-.. automodule:: skmultiflow.visualization.evaluation_visualizer
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.visualization.base_listener
+   skmultiflow.visualization.evaluation_visualizer
 
 Module contents
 ---------------

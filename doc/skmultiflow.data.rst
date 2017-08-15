@@ -11,30 +11,11 @@ Subpackages
 Submodules
 ----------
 
-skmultiflow\.data\.base\_instance\_stream module
-------------------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.data.base_instance_stream
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.data\.file\_stream module
---------------------------------------
-
-.. automodule:: skmultiflow.data.file_stream
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.data\.synth module
--------------------------------
-
-.. automodule:: skmultiflow.data.synth
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.data.base_instance_stream
+   skmultiflow.data.file_stream
+   skmultiflow.data.synth
 
 Module contents
 ---------------

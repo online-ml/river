@@ -8,7 +8,7 @@ from skmultiflow.evaluation.metrics.metrics import *
 
 
 class MultiOutputLearner(BaseClassifier) :
-    ''' MultiOutputLearner
+    """ MultiOutputLearner
     
     A Meta Learner. Does either classifier or regression, depending on 
     base learner (which by default is LogisticRegression). It will keep 
@@ -24,8 +24,45 @@ class MultiOutputLearner(BaseClassifier) :
     h: classifier (extension of the BaseClassifier)
         This is the ensemble classifier type, each ensemble classifier is going 
         to be a copy of the h classifier.
+        
+    Examples
+    --------
+    # Imports
+    >>> from skmultiflow.classification.multi_output_learner import MultiOutputLearner
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.evaluation.metrics.metrics import *
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from sklearn.linear_model.perceptron import Perceptron
+    >>> # Setup the file stream
+    >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/music.csv", "CSV", False)
+    >>> stream = FileStream(opt, 0, 6)
+    >>> stream.prepare_for_use()
+    >>> # Setup the MultiOutputLearner using sklearn Perceptrons
+    >>> classifier = MultiOutputLearner(h=Perceptron())
+    >>> # Setup the pipeline
+    >>> pipe = Pipeline([('classifier', classifier)])
+    >>> # Pre training the classifier with 150 samples
+    >>> X, y = stream.next_instance(150)
+    >>> pipe = pipe.partial_fit(X, y, classes=stream.get_classes())
+    >>> # Keeping track of sample count, true labels and predictions to later 
+    >>> # compute the classifier's hamming score
+    >>> count = 0
+    >>> true_labels = []
+    >>> predicts = []
+    >>> while stream.has_more_instances():
+    ...     X, y = stream.next_instance()
+    ...     p = pipe.predict(X)
+    ...     pipe = pipe.partial_fit(X, y)
+    ...     predicts.extend(p)
+    ...     true_labels.extend(y)
+    ...     count += 1
+    >>>
+    >>> perf = hamming_score(true_labels, predicts)
+    >>> print('Total samples analyzed: ' + str(count))
+    >>> print("The classifier's static Hamming score    : " + str(perf))
     
-    '''
+    """
 
     h = None
     L = -1
@@ -58,7 +95,8 @@ class MultiOutputLearner(BaseClassifier) :
 
         Returns
         -------
-        self
+        MultiOutputLearner
+            self
 
         """
         N,L = Y.shape
@@ -90,7 +128,8 @@ class MultiOutputLearner(BaseClassifier) :
 
         Returns
         -------
-        self
+        MultiOutputLearner
+            self
 
         """
         N,self.L = Y.shape
@@ -116,7 +155,8 @@ class MultiOutputLearner(BaseClassifier) :
             
         Returns
         -------
-        An array-like with all the predictions for the samples in X.
+        Array-like
+            An array-like with all the predictions for the samples in X.
         
         '''
         N,D = X.shape
@@ -141,9 +181,10 @@ class MultiOutputLearner(BaseClassifier) :
 
         Returns
         -------
-        An array of shape (n_samples, n_classification_tasks, n_labels), in which 
-        we store the probability that each sample in X belongs to each of the labels, 
-        in each of the classification tasks.
+        numpy.ndarray
+            An array of shape (n_samples, n_classification_tasks, n_labels), in which 
+            we store the probability that each sample in X belongs to each of the labels, 
+            in each of the classification tasks.
         
         """
         N,D = X.shape

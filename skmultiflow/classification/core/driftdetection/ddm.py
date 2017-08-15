@@ -37,6 +37,26 @@ class DDM(BaseDriftDetector):
         The minimum required number of analyzed samples so change can be 
         detected. This is used to avoid false detections during the early 
         moments of the detector, when the weight of one sample is important.
+        
+    Examples
+    --------
+    >>> # Imports
+    >>> import numpy as np
+    >>> from skmultiflow.classification.core.driftdetection.ddm import DDM
+    >>> ddm = DDM()
+    >>> # Simulating a data stream as a normal distribution of 1's and 0's
+    >>> data_stream = np.random.randint(2, size=2000)
+    >>> # Changing the data concept from index 999 to 1500, simulating an 
+    >>> # increase in error rate
+    >>> for i in range(999, 1500):
+    ...     data_stream[i] = 0
+    >>> # Adding stream elements to ADWIN and verifying if drift occurred
+    >>> for i in range(2000):
+    ...     ddm.add_element(data_stream[i])
+    ...     if ddm.detected_warning_zone():
+    ...         print('Warning zone has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    ...     if ddm.detected_change():
+    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
     
     """
 
@@ -52,6 +72,11 @@ class DDM(BaseDriftDetector):
         self.reset()
 
     def reset(self):
+        """ reset
+
+        Resets the change detector parameters.
+
+        """
         super().reset()
         self.sample_count = 1
         self.miss_prob = 1
@@ -69,10 +94,6 @@ class DDM(BaseDriftDetector):
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates a good classification 
             and 0 a wrong classification.
-            
-        Returns
-        -------
-        self
         
         Notes
         -----
@@ -95,7 +116,7 @@ class DDM(BaseDriftDetector):
         self.delay = 0
 
         if (self.sample_count < self.min_instances):
-            return self
+            pass
 
         if (self.miss_prob + self.miss_std <= self.miss_prob_sd_min):
             self.miss_prob_min = self.miss_prob
@@ -111,8 +132,6 @@ class DDM(BaseDriftDetector):
 
         else:
             self.in_warning_zone = False
-
-        return self
 
     def get_info(self):
         return 'DDM: min_num_instances: ' + str(self.min_instances) + \

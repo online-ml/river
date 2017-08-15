@@ -26,14 +26,66 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def eval(self, stream, classifier):
+        """ eval
+        
+        This function evaluates the classifier, using the class parameters, and 
+        by feeding it with instances coming from the stream parameter.
+        
+        Parameters
+        ----------
+        stream: BaseInstanceStream extension
+            The stream to be use in the evaluation process.
+        
+        classifier: BaseClassifier extension or list of BaseClassifier extensions
+            The classifier or classifiers to be evaluated.
+            
+        Returns
+        -------
+        BaseClassifier extension or list of BaseClassifier extensions
+            The trained classifier's at the end of the evaluation process.
+            
+        """
         raise NotImplementedError
 
     @abstractmethod
     def partial_fit(self, X, y, classes=None):
+        """ partial_fit
+        
+        Partially fits the classifiers.
+        
+        X: numpy.ndarray of shape (n_samples, n_features)
+            The feature's matrix.
+        
+        y: Array-like
+            An array-like containing the class labels of all samples in X.
+        
+        classes: list
+            A list containing all class labels of the classification problem.
+        
+        Returns
+        -------
+        BaseClassifier extension or list of BaseClassifier extensions
+            The trained classifier's at the end of the evaluation process.
+        
+        """
         raise NotImplementedError
 
     @abstractmethod
     def predict(self, X):
+        """ predict
+        
+        Predicts with the classifier, or classifiers, being evaluated.
+        
+        X: numpy.ndarray of shape (n_samples, n_features)
+            The feature's matrix.
+        
+        Returns
+        -------
+        list
+            A list containing the array-likes representing each classifier's 
+            prediction.
+        
+        """
         raise NotImplementedError
 
     def get_class_type(self):
@@ -41,10 +93,27 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def set_params(self, dict):
+        """ set_params
+        
+        Pass parameter names and values through a dictionary so that their 
+        values can be updated.
+        
+        Parameters
+        ----------
+        dict: dictionary
+            A dictionary where the keys are parameters' names and the values 
+            are the new values for those parameters.
+         
+        """
         raise NotImplementedError
 
     @abstractmethod
     def _update_metrics(self):
+        """ _update_metrics
+        
+        Updates the classifiers' evaluation metrics.
+        
+        """
         raise NotImplementedError
 
     @abstractmethod

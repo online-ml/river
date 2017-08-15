@@ -12,22 +12,10 @@ Subpackages
 Submodules
 ----------
 
-skmultiflow\.core\.base\_object module
---------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.core.base_object
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.core\.pipeline module
-----------------------------------
-
-.. automodule:: skmultiflow.core.pipeline
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.core.base_object
+   skmultiflow.core.pipeline
 
 Module contents
 ---------------

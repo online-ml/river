@@ -21,6 +21,17 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def estimated_remaining_instances(self):
+        """ estimated_remaining_instances
+        
+        Returns the estimated number of remaining instances. Returns -1 
+        if it's infinite (generators' case)
+        
+        Returns
+        -------
+        int
+            Remaining number of instances.
+        
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -40,8 +51,10 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         
         Returns
         -------
-        A numpy.ndarray of shape (batch_size, n_features + n_classification_tasks) 
-        representing the next batch_size samples.
+        tuple or tuple list
+            A numpy.ndarray of shape (batch_size, n_features) and an array-like of size 
+            n_classification_tasks, representing the next batch_size samples.
+        
         """
         raise NotImplementedError
 
@@ -68,7 +81,8 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         
         Returns
         -------
-        The number of nominal attributes given by the stream.
+        int
+            The number of nominal attributes given by the stream.
         
         """
         raise NotImplementedError
@@ -79,7 +93,8 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
 
         Returns
         -------
-        The number of numerical attributes given by the stream.
+        int
+            The number of numerical attributes given by the stream.
 
         """
         raise NotImplementedError
@@ -90,7 +105,8 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
 
         Returns
         -------
-        The number of possible values for each nominal attribute.
+        int
+            The number of possible values for each nominal attribute.
 
         """
         raise NotImplementedError
@@ -101,7 +117,8 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
 
         Returns
         -------
-        The total number of attributes.
+        int
+            The total number of attributes.
 
         """
         raise NotImplementedError
@@ -148,7 +165,8 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         
         Returns
         -------
-        A string representing the plot name.
+        string
+            A string representing the plot name.
         
         """
         raise NotImplementedError

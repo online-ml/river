@@ -8,6 +8,7 @@ from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
 from skmultiflow.evaluation.metrics.metrics import *
 from skmultiflow.options.file_option import FileOption
+from sklearn.linear_model.perceptron import Perceptron
 
 
 def demo():
@@ -20,18 +21,18 @@ def demo():
     stream.prepare_for_use()
 
     # Setup the classifier, by default it uses Logistic Regression
-    classifier = MultiOutputLearner()
+    #classifier = MultiOutputLearner()
     #classifier = MultiOutputLearner(h=SGDClassifier(n_iter=100))
-    #classifier = MultiOutputLearner(h=Perceptron())
+    classifier = MultiOutputLearner(h=Perceptron())
 
     # Setup the pipeline
     pipe = Pipeline([('classifier', classifier)])
 
-    pretrain_size = 200
+    pretrain_size = 150
     logging.info('Pre training on %s samples', str(pretrain_size))
     X, y = stream.next_instance(pretrain_size)
     #classifier.fit(X, y)
-    pipe.fit(X, y)
+    pipe.partial_fit(X, y, classes=stream.get_classes())
     count = 0
     true_labels = []
     predicts = []

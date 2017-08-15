@@ -94,7 +94,8 @@ class ClassificationMeasurements(BaseObject):
          
         Returns
         -------
-        Returns the true majority class.
+        int
+            Returns the true majority class.
         
         """
         if (self.n_targets is None) or (self.n_targets == 0):
@@ -119,7 +120,8 @@ class ClassificationMeasurements(BaseObject):
         
         Returns
         -------
-        Returns the performance.
+        float
+            Returns the performance.
         
         """
         sum = 0
@@ -148,7 +150,8 @@ class ClassificationMeasurements(BaseObject):
         
         Returns
         -------
-        The target index in the self.targets list.
+        int
+            The target index in the self.targets list.
         
         """
         if (self.targets is None) and add:
@@ -174,7 +177,8 @@ class ClassificationMeasurements(BaseObject):
         
         Returns
         -------
-        Returns the Cohen's kappa coefficient.
+        float
+            Returns the Cohen's kappa coefficient.
          
         """
         p0 = self.get_performance()
@@ -200,7 +204,8 @@ class ClassificationMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the Cohen's kappa T coefficient.
+        float
+            Returns the Cohen's kappa T coefficient.
 
         """
         p0 = self.get_performance()
@@ -219,7 +224,8 @@ class ClassificationMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the Cohen's kappa M coefficient.
+        float
+            Returns the Cohen's kappa M coefficient.
 
         """
         p0 = self.get_performance()
@@ -374,7 +380,8 @@ class WindowClassificationMeasurements(BaseObject):
          
         Returns
         -------
-        Returns the true window/local majority class.
+        int
+            Returns the true window/local majority class.
         
         """
         if (self.n_targets is None) or (self.n_targets == 0):
@@ -399,7 +406,8 @@ class WindowClassificationMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the window/local performance.
+        float
+            Returns the window/local performance.
 
         """
         sum = 0
@@ -428,7 +436,8 @@ class WindowClassificationMeasurements(BaseObject):
 
         Returns
         -------
-        The target index in the self.targets list.
+        int
+            The target index in the self.targets list.
 
         """
         if (self.targets is None) and add:
@@ -454,7 +463,8 @@ class WindowClassificationMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the window/local Cohen's kappa coefficient.
+        float
+            Returns the window/local Cohen's kappa coefficient.
 
         """
         p0 = self.get_performance()
@@ -481,7 +491,8 @@ class WindowClassificationMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the window/local Cohen's kappa T coefficient.
+        float
+            Returns the window/local Cohen's kappa T coefficient.
 
         """
         p0 = self.get_performance()
@@ -500,7 +511,8 @@ class WindowClassificationMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the window/local Cohen's kappa M coefficient.
+        float
+            Returns the window/local Cohen's kappa M coefficient.
 
         """
         p0 = self.get_performance()
@@ -645,7 +657,8 @@ class MultiOutputMeasurements(BaseObject):
         
         Returns
         -------
-        The hamming loss.
+        float
+            The hamming loss.
         
         """
         return 1.0 - self.get_hamming_score()
@@ -658,7 +671,8 @@ class MultiOutputMeasurements(BaseObject):
         
         Returns
         -------
-        The hamming score.
+        float
+            The hamming score.
         
         """
         return self.confusion_matrix.get_sum_main_diagonal() / (self.sample_count * self.n_targets)
@@ -674,7 +688,8 @@ class MultiOutputMeasurements(BaseObject):
         
         Returns
         -------
-        Returns the exact match metric.
+        float
+            Returns the exact match metric.
         
         """
         return self.exact_match_count / self.sample_count
@@ -688,7 +703,8 @@ class MultiOutputMeasurements(BaseObject):
         
         Returns
         -------
-        The Jaccard index.
+        float
+            The Jaccard index.
         
         """
         return self.j_sum / self.sample_count
@@ -826,7 +842,8 @@ class WindowMultiOutputMeasurements(BaseObject):
 
         Returns
         -------
-        The window/local hamming loss.
+        float
+            The window/local hamming loss.
 
         """
         return 1.0 - self.get_hamming_score()
@@ -840,7 +857,8 @@ class WindowMultiOutputMeasurements(BaseObject):
 
         Returns
         -------
-        The window/local hamming score.
+        float
+            The window/local hamming score.
 
         """
         return metrics.hamming_score(self.true_labels.get_queue(), self.predictions.get_queue())
@@ -856,7 +874,8 @@ class WindowMultiOutputMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the window/local exact match metric.
+        float
+            Returns the window/local exact match metric.
 
         """
         return metrics.exact_match(self.true_labels.get_queue(), self.predictions.get_queue())
@@ -870,7 +889,8 @@ class WindowMultiOutputMeasurements(BaseObject):
 
         Returns
         -------
-        The window/local Jaccard index.
+        float
+            The window/local Jaccard index.
 
         """
         return metrics.j_index(self.true_labels.get_queue(), self.predictions.get_queue())
@@ -952,7 +972,8 @@ class RegressionMeasurements(BaseObject):
         
         Returns
         -------
-        Returns the mean square error.
+        float
+            Returns the mean square error.
         
         """
         if self.sample_count == 0:
@@ -967,7 +988,8 @@ class RegressionMeasurements(BaseObject):
         
         Returns
         -------
-        Returns the mean absolute error.
+        float
+            Returns the mean absolute error.
         
         """
         if self.sample_count == 0:
@@ -1055,7 +1077,8 @@ class WindowRegressionMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the window/local mean square error.
+        float
+            Returns the window/local mean square error.
 
         """
         if self._sample_count == 0:
@@ -1070,7 +1093,8 @@ class WindowRegressionMeasurements(BaseObject):
 
         Returns
         -------
-        Returns the window/local mean absolute error.
+        float
+            Returns the window/local mean absolute error.
 
         """
         if self._sample_count == 0:

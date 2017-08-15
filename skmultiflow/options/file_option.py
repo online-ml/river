@@ -23,6 +23,25 @@ class FileOption(BaseOption):
     
     is_out: bool
         Whether it's an output file or not.
+        
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> # Create the file option
+    >>> option = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
+    >>> # Using the file option to create a file stream
+    >>> stream = FileStream(option, -1, 1)
+    >>> # Prepare the stream
+    >>> stream.prepare_for_use()
+    >>> # Stream is ready to use
+    >>> stream.next_instance()
+    (array([[2596,   51,    3,  258,    0,  510,  221,  232,  148, 6279,    1,
+           0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+           0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+           0,    0,    0,    0,    0,    0,    0,    0,    0,    1,    0,
+           0,    0,    0,    0,    0,    0,    0,    0,    0,    0]]), array([5]))
     
     """
 

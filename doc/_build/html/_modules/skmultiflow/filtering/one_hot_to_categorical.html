@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.filtering.one_hot_to_categorical &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -52,7 +66,7 @@
 <span class="kn">from</span> <span class="nn">skmultiflow.core.utils.utils</span> <span class="k">import</span> <span class="n">get_dimensions</span>
 
 
-<div class="viewcode-block" id="OneHotToCategorical"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical">[docs]</a><span class="k">class</span> <span class="nc">OneHotToCategorical</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
+<div class="viewcode-block" id="OneHotToCategorical"><a class="viewcode-back" href="../../../skmultiflow.filtering.one_hot_to_categorical.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical">[docs]</a><span class="k">class</span> <span class="nc">OneHotToCategorical</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; OneHotToCategorical</span>
 <span class="sd">    </span>
 <span class="sd">    Transform that receives a features matrix, with some features coded as </span>
@@ -70,10 +84,10 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">categorical_list</span> <span class="o">=</span> <span class="n">categorical_list</span>
 
-<div class="viewcode-block" id="OneHotToCategorical.get_info"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OneHotToCategorical.get_info"><a class="viewcode-back" href="../../../skmultiflow.filtering.one_hot_to_categorical.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;OneHotToCategorical: categorical_list: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_list</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OneHotToCategorical.transform"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="OneHotToCategorical.transform"><a class="viewcode-back" href="../../../skmultiflow.filtering.one_hot_to_categorical.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; transform</span>
 <span class="sd">        </span>
 <span class="sd">        Transform one hot features in the X matrix into int coded </span>
@@ -86,7 +100,8 @@
 <span class="sd">         </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        The transformed data.</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            The transformed data.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -126,31 +141,17 @@
 
         <span class="k">return</span> <span class="n">ret</span>
 
-<div class="viewcode-block" id="OneHotToCategorical.fit"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="OneHotToCategorical.fit"><a class="viewcode-back" href="../../../skmultiflow.filtering.one_hot_to_categorical.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="OneHotToCategorical.partial_fit_transform"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.partial_fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OneHotToCategorical.partial_fit_transform"><a class="viewcode-back" href="../../../skmultiflow.filtering.one_hot_to_categorical.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.partial_fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OneHotToCategorical.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.filtering.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OneHotToCategorical.partial_fit"><a class="viewcode-back" href="../../../skmultiflow.filtering.one_hot_to_categorical.html#skmultiflow.filtering.one_hot_to_categorical.OneHotToCategorical.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span></div></div>
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

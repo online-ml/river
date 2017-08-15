@@ -1,0 +1,331 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.data.base_instance_stream module &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="skmultiflow.data.file_stream module" href="skmultiflow.data.file_stream.html" />
+    <link rel="prev" title="skmultiflow.data.generators.waveform_generator module" href="skmultiflow.data.generators.waveform_generator.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.file_stream.html" title="skmultiflow.data.file_stream module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.generators.waveform_generator.html" title="skmultiflow.data.generators.waveform_generator module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.data.html" accesskey="U">skmultiflow.data package</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="skmultiflow.data.generators.waveform_generator.html"
+                        title="previous chapter">skmultiflow.data.generators.waveform_generator module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="skmultiflow.data.file_stream.html"
+                        title="next chapter">skmultiflow.data.file_stream module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.data.base_instance_stream.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-skmultiflow.data.base_instance_stream">
+<span id="skmultiflow-data-base-instance-stream-module"></span><h1>skmultiflow.data.base_instance_stream module<a class="headerlink" href="#module-skmultiflow.data.base_instance_stream" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream">
+<em class="property">class </em><code class="descclassname">skmultiflow.data.base_instance_stream.</code><code class="descname">BaseInstanceStream</code><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.base_object.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
+<p>The abstract class setting up the minimum requirements of a stream,
+so that it can work along the other modules in the scikit-multiflow
+framework.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">NotImplementedError: This is an abstract class.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.estimated_remaining_instances">
+<code class="descname">estimated_remaining_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.estimated_remaining_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.estimated_remaining_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the estimated number of remaining instances. Returns -1
+if it’s infinite (generators’ case)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Remaining number of instances.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_attributes_header">
+<code class="descname">get_attributes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_attributes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_attributes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_class_type">
+<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_class_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_classes">
+<code class="descname">get_classes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_classes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all classes that can be generated, either by random generation
+or by reading a file. In the latter, the classes can be interpreted
+as a np.unique(y) where y is the labels matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_classes_header">
+<code class="descname">get_classes_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_classes_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_classes_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_last_instance">
+<code class="descname">get_last_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_last_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_last_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_attributes">
+<code class="descname">get_num_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_num_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The total number of attributes.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_nominal_attributes">
+<code class="descname">get_num_nominal_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_num_nominal_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_nominal_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The number of nominal attributes given by the stream.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_numerical_attributes">
+<code class="descname">get_num_numerical_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_num_numerical_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_numerical_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The number of numerical attributes given by the stream.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_targeting_tasks">
+<code class="descname">get_num_targeting_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_num_targeting_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_targeting_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_targets">
+<code class="descname">get_num_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_num_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_values_per_nominal_attribute">
+<code class="descname">get_num_values_per_nominal_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_num_values_per_nominal_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_num_values_per_nominal_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The number of possible values for each nominal attribute.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.get_plot_name">
+<code class="descname">get_plot_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.get_plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.get_plot_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the name of the plot, which is a string that will appear
+in evaluation methods, to represent the stream.</p>
+<p>The default format is: ‘Stream name - x labels’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A string representing the plot name.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.has_more_instances">
+<code class="descname">has_more_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.has_more_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.has_more_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.has_more_mini_batch">
+<code class="descname">has_more_mini_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.has_more_mini_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.has_more_mini_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.is_restartable">
+<code class="descname">is_restartable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.is_restartable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.is_restartable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.next_instance">
+<code class="descname">next_instance</code><span class="sig-paren">(</span><em>batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.next_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.next_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates or returns some amount of samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<em>int</em>) – How many samples at a time to return.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A numpy.ndarray of shape (batch_size, n_features) and an array-like of size
+n_classification_tasks, representing the next batch_size samples.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple or tuple list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.prepare_for_use">
+<code class="descname">prepare_for_use</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.prepare_for_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.prepare_for_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare the stream for use. Can be the reading of a file, or
+the generation of a function, or anything necessary for the
+stream to work after its initialization.</p>
+<p class="rubric">Notes</p>
+<p>Every time a stream is created this function has to be called.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.data.base_instance_stream.BaseInstanceStream.restart">
+<code class="descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/data/base_instance_stream.html#BaseInstanceStream.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.data.base_instance_stream.BaseInstanceStream.restart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restart the stream’s configurations.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.file_stream.html" title="skmultiflow.data.file_stream module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="skmultiflow.data.generators.waveform_generator.html" title="skmultiflow.data.generators.waveform_generator module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="skmultiflow.data.html" >skmultiflow.data package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

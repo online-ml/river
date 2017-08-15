@@ -19,7 +19,8 @@ def random_index_based_on_weights(weights, rand):
     
     Returns
     -------
-    The generated index.
+    int
+        The generated index.
     
     """
     prob_sum = np.sum(weights)

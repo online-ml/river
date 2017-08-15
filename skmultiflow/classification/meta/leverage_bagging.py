@@ -75,6 +75,38 @@ class LeverageBagging(BaseClassifier):
     the number of labels in the classification task. Thus we chose a default 
     value of 2, adapted to binary classification tasks.
     
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.generators.sea_generator import SEAGenerator
+    >>> # Setting up the stream
+    >>> stream = SEAGenerator(1, noise_percentage=6.7)
+    >>> stream.prepare_for_use()
+    >>> # Setting up the LeverageBagging classifier to work with KNN classifiers
+    >>> clf = LeverageBagging(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=2)
+    >>> # Keeping track of sample count and correct prediction count
+    >>> sample_count = 0
+    >>> corrects = 0
+    >>> # Pre training the classifier with 200 samples
+    >>> X, y = stream.next_instance(200)
+    >>> clf = clf.partial_fit(X, y, classes=stream.get_classes())
+    >>> for i in range(2000):
+    ...     X, y = stream.next_instance()
+    ...     pred = clf.predict(X)
+    ...     clf = clf.partial_fit(X, y)
+    ...     if pred is not None:
+    ...         if y[0] == pred[0]:
+    ...             corrects += 1
+    ...     sample_count += 1
+    >>> 
+    >>> # Displaying the results
+    >>> print(str(sample_count) + ' samples analyzed.')
+    2000 samples analyzed.
+    >>> print('LeverageBagging classifier performance: ' + str(corrects / sample_count))
+    LeverageBagging classifier performance: 0.945
+    
     """
 
     LEVERAGE_ALGORITHMS = ['leveraging_bag', 'leveraging_bag_me', 'leveraging_bag_half', 'leveraging_bag_wt',
@@ -143,7 +175,8 @@ class LeverageBagging(BaseClassifier):
         
         Returns
         -------
-        self
+        LeverageBagging
+            self
         
         """
         if classes is None and self.classes is None:
@@ -273,7 +306,8 @@ class LeverageBagging(BaseClassifier):
         
         Returns
         -------
-        A list with the label prediction for all the samples in X.
+        list
+            A list with the label prediction for all the samples in X.
         
         """
         r, c = get_dimensions(X)
@@ -305,10 +339,11 @@ class LeverageBagging(BaseClassifier):
 
         Returns
         -------
-        An array of shape (n_samples, n_features), in which each outer entry is 
-        associated with the X entry of the same index. And where the list in 
-        index [i] contains len(self.classes) elements, each of which represents 
-        the probability that the i-th sample of X belongs to a certain label.
+        numpy.ndarray
+            An array of shape (n_samples, n_features), in which each outer entry is 
+            associated with the X entry of the same index. And where the list in 
+            index [i] contains len(self.classes) elements, each of which represents 
+            the probability that the i-th sample of X belongs to a certain label.
 
         """
         if self.enable_matrix_codes:
@@ -354,11 +389,12 @@ class LeverageBagging(BaseClassifier):
 
         Returns
         -------
-        A list of lists, in which each outer entry is associated with 
-        the X entry of the same index. And where the list in index [i] 
-        contains len(self.classes) elements, each of which represents 
-        the probability that the i-th sample of X belongs to a certain 
-        label.
+        list
+            A list of lists, in which each outer entry is associated with 
+            the X entry of the same index. And where the list in index [i] 
+            contains len(self.classes) elements, each of which represents 
+            the probability that the i-th sample of X belongs to a certain 
+            label.
 
         """
         probs = []
@@ -406,7 +442,8 @@ class LeverageBagging(BaseClassifier):
         
         Returns
         -------
-        self
+        LeverageBagging
+            self
         
         """
         self.__configure(self.h, self.ensemble_length, self.w, self.delta, self.enable_matrix_codes)

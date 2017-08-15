@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.evaluation.metrics.metrics &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -50,7 +64,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="hamming_score"><a class="viewcode-back" href="../../../../skmultiflow.evaluation.metrics.html#skmultiflow.evaluation.metrics.metrics.hamming_score">[docs]</a><span class="k">def</span> <span class="nf">hamming_score</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predicts</span><span class="p">):</span>
+<div class="viewcode-block" id="hamming_score"><a class="viewcode-back" href="../../../../skmultiflow.evaluation.metrics.metrics.html#skmultiflow.evaluation.metrics.metrics.hamming_score">[docs]</a><span class="k">def</span> <span class="nf">hamming_score</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predicts</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; hamming_score</span>
 <span class="sd">    </span>
 <span class="sd">    Computes de hamming score, which is known as the label-based accuracy,  </span>
@@ -69,7 +83,8 @@
 <span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    The hamming score, or label-based accuracy, for the given sets.</span>
+<span class="sd">    float</span>
+<span class="sd">        The hamming score, or label-based accuracy, for the given sets.</span>
 <span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -87,7 +102,7 @@
     <span class="n">N</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">true_labels</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">true_labels</span> <span class="o">==</span> <span class="n">predicts</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span> <span class="o">/</span> <span class="n">L</span></div>
 
-<div class="viewcode-block" id="j_index"><a class="viewcode-back" href="../../../../skmultiflow.evaluation.metrics.html#skmultiflow.evaluation.metrics.metrics.j_index">[docs]</a><span class="k">def</span> <span class="nf">j_index</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predicts</span><span class="p">):</span>
+<div class="viewcode-block" id="j_index"><a class="viewcode-back" href="../../../../skmultiflow.evaluation.metrics.metrics.html#skmultiflow.evaluation.metrics.metrics.j_index">[docs]</a><span class="k">def</span> <span class="nf">j_index</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predicts</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; j_index</span>
 <span class="sd">    </span>
 <span class="sd">    Computes the Jaccard Index of the given set, which is also called the </span>
@@ -107,7 +122,8 @@
 <span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    The J-index, or &#39;intersection over union&#39;, for the given sets. </span>
+<span class="sd">    float</span>
+<span class="sd">        The J-index, or &#39;intersection over union&#39;, for the given sets. </span>
 <span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -133,7 +149,7 @@
             <span class="n">s</span> <span class="o">+=</span> <span class="mf">1.</span>
     <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">N</span></div>
 
-<div class="viewcode-block" id="exact_match"><a class="viewcode-back" href="../../../../skmultiflow.evaluation.metrics.html#skmultiflow.evaluation.metrics.metrics.exact_match">[docs]</a><span class="k">def</span> <span class="nf">exact_match</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predicts</span><span class="p">):</span>
+<div class="viewcode-block" id="exact_match"><a class="viewcode-back" href="../../../../skmultiflow.evaluation.metrics.metrics.html#skmultiflow.evaluation.metrics.metrics.exact_match">[docs]</a><span class="k">def</span> <span class="nf">exact_match</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">predicts</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; exact_match</span>
 <span class="sd">    </span>
 <span class="sd">    This is the most strict metric for the multi label setting. It&#39;s defined </span>
@@ -151,7 +167,8 @@
 <span class="sd">        </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    The exact match percentage between the given sets.  </span>
+<span class="sd">    float</span>
+<span class="sd">        The exact match percentage between the given sets.  </span>
 <span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -171,20 +188,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

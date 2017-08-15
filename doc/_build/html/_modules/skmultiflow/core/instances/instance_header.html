@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.core.instances.instance_header &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,51 +37,7 @@
         <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for skmultiflow.core.instances.instance_header</h1><div class="highlight"><pre>
-<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Guilherme Matsumoto&#39;</span>
-
-<span class="kn">from</span> <span class="nn">skmultiflow.core.base_object</span> <span class="k">import</span> <span class="n">BaseObject</span>
-
-
-<div class="viewcode-block" id="InstanceHeader"><a class="viewcode-back" href="../../../../skmultiflow.core.instances.html#skmultiflow.core.instances.instance_header.InstanceHeader">[docs]</a><span class="k">class</span> <span class="nc">InstanceHeader</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; InstanceHeader</span>
-<span class="sd">    </span>
-<span class="sd">    Stores the header from an instance, simply keeps feature and </span>
-<span class="sd">    label&#39;s names</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    header: list, optional</span>
-<span class="sd">        The entries of the header.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
-        <span class="k">pass</span>
-
-<div class="viewcode-block" id="InstanceHeader.get_header_label_at"><a class="viewcode-back" href="../../../../skmultiflow.core.instances.html#skmultiflow.core.instances.instance_header.InstanceHeader.get_header_label_at">[docs]</a>    <span class="k">def</span> <span class="nf">get_header_label_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">header_index</span><span class="p">]</span> <span class="k">if</span> <span class="p">((</span><span class="n">header_index</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">header_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)))</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="InstanceHeader.get_class_type"><a class="viewcode-back" href="../../../../skmultiflow.core.instances.html#skmultiflow.core.instances.instance_header.InstanceHeader.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;instance&#39;</span></div>
-
-<div class="viewcode-block" id="InstanceHeader.get_info"><a class="viewcode-back" href="../../../../skmultiflow.core.instances.html#skmultiflow.core.instances.instance_header.InstanceHeader.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;InstanceHeader: header: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span></div></div>
-</pre></div>
-
-          </div>
-        </div>
-      </div>
+    </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
@@ -94,6 +50,68 @@
     </form>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for skmultiflow.core.instances.instance_header</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Guilherme Matsumoto&#39;</span>
+
+<span class="kn">from</span> <span class="nn">skmultiflow.core.base_object</span> <span class="k">import</span> <span class="n">BaseObject</span>
+
+
+<div class="viewcode-block" id="InstanceHeader"><a class="viewcode-back" href="../../../../skmultiflow.core.instances.instance_header.html#skmultiflow.core.instances.instance_header.InstanceHeader">[docs]</a><span class="k">class</span> <span class="nc">InstanceHeader</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; InstanceHeader</span>
+<span class="sd">    </span>
+<span class="sd">    Stores the header from an instance, simply keeps feature and </span>
+<span class="sd">    label&#39;s names</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    header: list, optional</span>
+<span class="sd">        The entries of the header.</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="InstanceHeader.get_header_label_at"><a class="viewcode-back" href="../../../../skmultiflow.core.instances.instance_header.html#skmultiflow.core.instances.instance_header.InstanceHeader.get_header_label_at">[docs]</a>    <span class="k">def</span> <span class="nf">get_header_label_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; get_header_label_at</span>
+<span class="sd">        </span>
+<span class="sd">        Gets the header label at index header_index.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        header_index: int</span>
+<span class="sd">            An index from the instance header.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        string</span>
+<span class="sd">            The index label.</span>
+<span class="sd">        </span>
+<span class="sd">         </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">header_index</span><span class="p">]</span> <span class="k">if</span> <span class="p">((</span><span class="n">header_index</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">header_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)))</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="InstanceHeader.get_class_type"><a class="viewcode-back" href="../../../../skmultiflow.core.instances.instance_header.html#skmultiflow.core.instances.instance_header.InstanceHeader.get_class_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;instance&#39;</span></div>
+
+<div class="viewcode-block" id="InstanceHeader.get_info"><a class="viewcode-back" href="../../../../skmultiflow.core.instances.instance_header.html#skmultiflow.core.instances.instance_header.InstanceHeader.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;InstanceHeader: header: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
         </div>
       </div>
       <div class="clearer"></div>

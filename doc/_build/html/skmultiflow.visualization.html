@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.visualization package &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="testing module" href="testing.html" />
-    <link rel="prev" title="skmultiflow.options package" href="skmultiflow.options.html" /> 
+    <link rel="next" title="skmultiflow.visualization.base_listener module" href="skmultiflow.visualization.base_listener.html" />
+    <link rel="prev" title="skmultiflow.options.file_option module" href="skmultiflow.options.file_option.html" /> 
   </head>
   <body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,214 +37,32 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="testing.html" title="testing module"
+          <a href="skmultiflow.visualization.base_listener.html" title="skmultiflow.visualization.base_listener module"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="skmultiflow.options.html" title="skmultiflow.options package"
+          <a href="skmultiflow.options.file_option.html" title="skmultiflow.options.file_option module"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="skmultiflow.html" accesskey="U">skmultiflow package</a> &#187;</li> 
       </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="skmultiflow-visualization-package">
-<h1>skmultiflow.visualization package<a class="headerlink" href="#skmultiflow-visualization-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-skmultiflow.visualization.base_listener">
-<span id="skmultiflow-visualization-base-listener-module"></span><h2>skmultiflow.visualization.base_listener module<a class="headerlink" href="#module-skmultiflow.visualization.base_listener" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="skmultiflow.visualization.base_listener.BaseListener">
-<em class="property">class </em><code class="descclassname">skmultiflow.visualization.base_listener.</code><code class="descname">BaseListener</code><a class="reference internal" href="_modules/skmultiflow/visualization/base_listener.html#BaseListener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.base_listener.BaseListener" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="skmultiflow.core.html#skmultiflow.core.base_object.BaseObject" title="skmultiflow.core.base_object.BaseObject"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.core.base_object.BaseObject</span></code></a></p>
-<p>An abstract class that defines the constraints for all the listener
-type objects in this framework.</p>
-<p>This class should not be instantiated, as its functions are not
-implemented.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">NotImplementedError: This is an abstract class.</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="skmultiflow.visualization.base_listener.BaseListener.get_class_type">
-<code class="descname">get_class_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/base_listener.html#BaseListener.get_class_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.base_listener.BaseListener.get_class_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="skmultiflow.visualization.base_listener.BaseListener.get_info">
-<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/base_listener.html#BaseListener.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.base_listener.BaseListener.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="skmultiflow.visualization.base_listener.BaseListener.on_new_train_step">
-<code class="descname">on_new_train_step</code><span class="sig-paren">(</span><em>performance_point</em>, <em>train_step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/base_listener.html#BaseListener.on_new_train_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.base_listener.BaseListener.on_new_train_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-skmultiflow.visualization.evaluation_visualizer">
-<span id="skmultiflow-visualization-evaluation-visualizer-module"></span><h2>skmultiflow.visualization.evaluation_visualizer module<a class="headerlink" href="#module-skmultiflow.visualization.evaluation_visualizer" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer">
-<em class="property">class </em><code class="descclassname">skmultiflow.visualization.evaluation_visualizer.</code><code class="descname">EvaluationVisualizer</code><span class="sig-paren">(</span><em>n_wait=200</em>, <em>dataset_name='Unnamed graph'</em>, <em>plots=None</em>, <em>n_learners=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/evaluation_visualizer.html#EvaluationVisualizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#skmultiflow.visualization.base_listener.BaseListener" title="skmultiflow.visualization.base_listener.BaseListener"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.visualization.base_listener.BaseListener</span></code></a></p>
-<p>This class is responsible for maintaining and updating the plot modules
-for all the evaluators in scikit-multiflow.</p>
-<p>It uses matplotlib’s pyplot modules to create the main plot, which
-depending on the options passed to it as parameter, will create multiple
-subplots to better display all requested metrics.</p>
-<p>The plots are updated on the go, at each n_wait samples. The plot is
-redrawn at each step, which may cause significant slow down, depending on
-the processor used and the plotting options.</p>
-<p>Line objects are used to describe performance measurements and scatter
-instances will represent true labels and predictions, when requested.</p>
-<p>It supports the visualization of multiple learners per subplot as a way
-of comparing the performance of different learning algorithms facing the
-same data stream.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>n_wait</strong> (<em>int</em><em> (</em><em>Default: 200</em><em>)</em>) – The interval between each plot point.</li>
-<li><strong>dataset_name</strong> (<em>string</em><em> (</em><em>Default: 'Unnamed graph'</em><em>)</em>) – The title of the plot. Algorithmically it’s not important.</li>
-<li><strong>plots</strong> (<em>list</em>) – A list containing all the subplots to plot. Can be any of:
-‘performance’, ‘kappa’, ‘scatter’, ‘hamming_score’, ‘hamming_loss’,
-‘exact_match’, ‘j_index’, ‘mean_square_error’, ‘mean_absolute_error’,
-‘true_vs_predicts’, ‘kappa_t’, ‘kappa_m’</li>
-<li><strong>n_learners</strong> (<em>int</em>) – The number of learners to compare.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li>ValueError: A ValueError can be raised for a series of reasons. If no plots</li>
-<li>are passed as parameter to the constructor a ValueError is raised. If the wrong</li>
-<li>type of parameter is passed to on_new_train_step the same error is raised.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Notes</p>
-<p>Using more than 3 plot types at a time is not recommended, as it will
-significantly slow down processing. Also, for the same reason comparing
-more than 3 learners at a time is not recommended.</p>
-<dl class="attribute">
-<dt id="skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.COLOR_MAP">
-<code class="descname">COLOR_MAP</code><em class="property"> = ['#0000FF', '#FF0000', '#00CC01', '#2F2F2F', '#8900CC', '#0099CC', '#ACE600', '#D9007E', '#FFCCCC', '#5E6600', '#FFFF00', '#999999', '#FF6000', '#00FF00', '#FF00FF', '#00FFFF', '#FFFF0F', '#F0CC01', '#9BC6ED', '#915200', '#0000FF', '#FF0000', '#00CC01', '#2F2F2F', '#8900CC', '#0099CC', '#ACE600', '#D9007E', '#FFCCCC', '#5E6600', '#FFFF00', '#999999', '#FF6000', '#00FF00', '#FF00FF', '#00FFFF', '#FFFF0F', '#F0CC01', '#9BC6ED', '#915200']</em><a class="headerlink" href="#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.COLOR_MAP" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.draw">
-<code class="descname">draw</code><span class="sig-paren">(</span><em>train_step</em>, <em>dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/evaluation_visualizer.html#EvaluationVisualizer.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.draw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates and redraws the plot.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>train_step</strong> (<em>int</em>) – The number of samples processed to this moment.</li>
-<li><strong>dict</strong> (<em>dictionary</em>) – A dictionary containing tuples, where the first element is the
-string that identifies one of the plot’s subplot names, and the
-second element is its numerical value.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.draw_scatter_points">
-<code class="descname">draw_scatter_points</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>predict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/evaluation_visualizer.html#EvaluationVisualizer.draw_scatter_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.draw_scatter_points" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.get_info">
-<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/evaluation_visualizer.html#EvaluationVisualizer.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.hold">
-<code class="descname">hold</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/evaluation_visualizer.html#EvaluationVisualizer.hold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.hold" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.on_new_scatter_data">
-<code class="descname">on_new_scatter_data</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>prediction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/evaluation_visualizer.html#EvaluationVisualizer.on_new_scatter_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.on_new_scatter_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.on_new_train_step">
-<code class="descname">on_new_train_step</code><span class="sig-paren">(</span><em>train_step</em>, <em>dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/visualization/evaluation_visualizer.html#EvaluationVisualizer.on_new_train_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.visualization.evaluation_visualizer.EvaluationVisualizer.on_new_train_step" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the listener main function, which gives it the ability to
-‘listen’ for the caller. Whenever the EvaluationVisualiser should
-be aware of some new data, the caller will call this function,
-passing the new data as parameter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>train_step</strong> (<em>int</em>) – The number of samples processed to this moment.</li>
-<li><strong>dict</strong> (<em>dictionary</em>) – A dictionary containing tuples, where the first element is the
-string that identifies one of the plot’s subplot names, and the
-second element is its numerical value.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li>ValueError: If wrong data formats are passed as parameter this error</li>
-<li>is raised.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-skmultiflow.visualization">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.visualization" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
-
-
-          </div>
-        </div>
-      </div>
+    </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">skmultiflow.visualization package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-skmultiflow.visualization.base_listener">skmultiflow.visualization.base_listener module</a></li>
-<li><a class="reference internal" href="#module-skmultiflow.visualization.evaluation_visualizer">skmultiflow.visualization.evaluation_visualizer module</a></li>
 <li><a class="reference internal" href="#module-skmultiflow.visualization">Module contents</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="skmultiflow.options.html"
-                        title="previous chapter">skmultiflow.options package</a></p>
+  <p class="topless"><a href="skmultiflow.options.file_option.html"
+                        title="previous chapter">skmultiflow.options.file_option module</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="testing.html"
-                        title="next chapter">testing module</a></p>
+  <p class="topless"><a href="skmultiflow.visualization.base_listener.html"
+                        title="next chapter">skmultiflow.visualization.base_listener module</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -264,6 +82,32 @@ second element is its numerical value.</li>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="skmultiflow-visualization-package">
+<h1>skmultiflow.visualization package<a class="headerlink" href="#skmultiflow-visualization-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.visualization.base_listener.html">skmultiflow.visualization.base_listener module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="skmultiflow.visualization.evaluation_visualizer.html">skmultiflow.visualization.evaluation_visualizer module</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="module-skmultiflow.visualization">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-skmultiflow.visualization" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -276,10 +120,10 @@ second element is its numerical value.</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="testing.html" title="testing module"
+          <a href="skmultiflow.visualization.base_listener.html" title="skmultiflow.visualization.base_listener module"
              >next</a> |</li>
         <li class="right" >
-          <a href="skmultiflow.options.html" title="skmultiflow.options package"
+          <a href="skmultiflow.options.file_option.html" title="skmultiflow.options.file_option module"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="skmultiflow.html" >skmultiflow package</a> &#187;</li> 

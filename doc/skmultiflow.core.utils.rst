@@ -4,38 +4,12 @@ skmultiflow\.core\.utils package
 Submodules
 ----------
 
-skmultiflow\.core\.utils\.data\_structures module
--------------------------------------------------
+.. toctree::
 
-.. automodule:: skmultiflow.core.utils.data_structures
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.core\.utils\.file\_scripts module
-----------------------------------------------
-
-.. automodule:: skmultiflow.core.utils.file_scripts
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.core\.utils\.pseudo\_random\_processes module
-----------------------------------------------------------
-
-.. automodule:: skmultiflow.core.utils.pseudo_random_processes
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-skmultiflow\.core\.utils\.utils module
---------------------------------------
-
-.. automodule:: skmultiflow.core.utils.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   skmultiflow.core.utils.data_structures
+   skmultiflow.core.utils.file_scripts
+   skmultiflow.core.utils.pseudo_random_processes
+   skmultiflow.core.utils.utils
 
 Module contents
 ---------------

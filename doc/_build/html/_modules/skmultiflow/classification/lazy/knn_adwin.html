@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>skmultiflow.classification.lazy.knn_adwin &#8212; scikit-multiflow 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,21 @@
         <li class="nav-item nav-item-0"><a href="../../../../index.html">scikit-multiflow 1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -55,7 +69,7 @@
 <span class="kn">from</span> <span class="nn">skmultiflow.core.utils.utils</span> <span class="k">import</span> <span class="o">*</span>
 
 
-<div class="viewcode-block" id="KNNAdwin"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin">[docs]</a><span class="k">class</span> <span class="nc">KNNAdwin</span><span class="p">(</span><span class="n">KNN</span><span class="p">):</span>
+<div class="viewcode-block" id="KNNAdwin"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.knn_adwin.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin">[docs]</a><span class="k">class</span> <span class="nc">KNNAdwin</span><span class="p">(</span><span class="n">KNN</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; K-Nearest Neighbors Classifier with ADWIN Change detector </span>
 <span class="sd">    </span>
 <span class="sd">    This Classifier is an improvement from the regular KNN classifier, </span>
@@ -96,6 +110,40 @@
 <span class="sd">    </span>
 <span class="sd">    ValueError: A ValueError is raised if the predict function is called </span>
 <span class="sd">    before at least k samples have been analyzed by the algorithm.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Imports</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.classification.lazy.knn_adwin import KNNAdwin</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.classification.lazy.knn import KNN</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream</span>
+<span class="sd">    &gt;&gt;&gt; from skmultiflow.options.file_option import FileOption</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the stream</span>
+<span class="sd">    &gt;&gt;&gt; opt = FileOption(&#39;FILE&#39;, &#39;OPT_NAME&#39;, &#39;skmultiflow/datasets/covtype.csv&#39;, &#39;csv&#39;, False)</span>
+<span class="sd">    &gt;&gt;&gt; stream = FileStream(opt, -1, 1)</span>
+<span class="sd">    &gt;&gt;&gt; stream.prepare_for_use()</span>
+<span class="sd">    &gt;&gt;&gt; # Setting up the KNNAdwin classifier</span>
+<span class="sd">    &gt;&gt;&gt; knn_adwin = KNNAdwin(k=8, leaf_size=40, max_window_size=2000)</span>
+<span class="sd">    &gt;&gt;&gt; # Pre training the classifier with 200 samples</span>
+<span class="sd">    &gt;&gt;&gt; X, y = stream.next_instance(200)</span>
+<span class="sd">    &gt;&gt;&gt; knn_adwin = knn_adwin.partial_fit(X, y)</span>
+<span class="sd">    &gt;&gt;&gt; # Keeping track of sample count and correct prediction count</span>
+<span class="sd">    &gt;&gt;&gt; n_samples = 0</span>
+<span class="sd">    &gt;&gt;&gt; corrects = 0</span>
+<span class="sd">    &gt;&gt;&gt; while n_samples &lt; 5000:</span>
+<span class="sd">    ...     X, y = stream.next_instance()</span>
+<span class="sd">    ...     pred = knn_adwin.predict(X)</span>
+<span class="sd">    ...     if y[0] == pred[0]:</span>
+<span class="sd">    ...         corrects += 1</span>
+<span class="sd">    ...     knn_adwin = knn_adwin.partial_fit(X, y)</span>
+<span class="sd">    ...     n_samples += 1</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Displaying the results</span>
+<span class="sd">    &gt;&gt;&gt; print(&#39;KNN usage example&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(str(n_samples) + &#39; samples analyzed.&#39;)</span>
+<span class="sd">    5000 samples analyzed.</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;KNNAdwin&#39;s performance: &quot; + str(corrects/n_samples))</span>
+<span class="sd">    KNNAdwin&#39;s performance: 0.7798</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -104,7 +152,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span> <span class="o">=</span> <span class="n">ADWIN</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="KNNAdwin.reset"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="KNNAdwin.reset"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.knn_adwin.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; reset</span>
 <span class="sd">        </span>
 <span class="sd">        Resets the adwin algorithm as well as the base model </span>
@@ -112,14 +160,15 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self</span>
+<span class="sd">        KNNAdwin</span>
+<span class="sd">            self</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adwin</span> <span class="o">=</span> <span class="n">ADWIN</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="KNNAdwin.partial_fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="KNNAdwin.partial_fit"><a class="viewcode-back" href="../../../../skmultiflow.classification.lazy.knn_adwin.html#skmultiflow.classification.lazy.knn_adwin.KNNAdwin.partial_fit">[docs]</a>    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; partial_fit</span>
 <span class="sd">        </span>
 <span class="sd">        Partially fits the model. This is done by updating the window </span>
@@ -142,7 +191,8 @@
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self</span>
+<span class="sd">        KNNAdwin</span>
+<span class="sd">            self</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_dimensions</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -172,20 +222,6 @@
 </pre></div>
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
