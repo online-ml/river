@@ -555,7 +555,7 @@ class EvaluationVisualizer(BaseListener):
             self.line_regression_pred = [None for i in range(self.n_learners)]
 
             for i in range(self.n_learners):
-                self.line_regression_pred[i], = self.subplot_true_vs_predicts.plot(self.X, self.regression_pred[i],label='Classifier '+str(i)+' - Predicted y', linestyle='dotted')
+                self.line_regression_pred[i], = self.subplot_true_vs_predicts.plot(self.X, self.regression_pred[i],label='Regressor '+str(i)+' - Predicted y', linestyle='dotted')
                 handle.append(self.line_regression_pred[i])
 
             self.subplot_true_vs_predicts.legend(handles=handle)

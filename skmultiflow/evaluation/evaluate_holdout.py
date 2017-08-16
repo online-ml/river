@@ -96,7 +96,7 @@ class EvaluateHoldout(BaseEvaluator):
     
     Examples
     --------
-    The first example demonstrates how to use the evaluator to evaluate one learner
+    >>> # The first example demonstrates how to use the evaluator to evaluate one learner
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
@@ -117,8 +117,8 @@ class EvaluateHoldout(BaseEvaluator):
     >>> # Evaluate
     >>> eval.eval(stream=stream, classifier=pipe)
     
-    The second example will demonstrate how to compare two classifiers with
-    the EvaluateHoldout
+    >>> # The second example will demonstrate how to compare two classifiers with
+    >>> # the EvaluateHoldout
     >>> from skmultiflow.data.generators.waveform_generator import WaveformGenerator
     >>> from sklearn.linear_model.stochastic_gradient import SGDClassifier
     >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout

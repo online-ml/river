@@ -82,7 +82,7 @@ class EvaluatePrequential(BaseEvaluator):
     
     Examples
     --------
-    The first example demonstrates how to use the evaluator to evaluate one learner
+    >>> # The first example demonstrates how to use the evaluator to evaluate one learner
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
@@ -102,8 +102,8 @@ class EvaluatePrequential(BaseEvaluator):
     >>> # Evaluate
     >>> eval.eval(stream=stream, classifier=pipe)
     
-    The second example will demonstrate how to compare two classifiers with
-    the EvaluatePrequential
+    >>> # The second example will demonstrate how to compare two classifiers with
+    >>> # the EvaluatePrequential
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
     >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
     >>> from skmultiflow.core.pipeline import Pipeline

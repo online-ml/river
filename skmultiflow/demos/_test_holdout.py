@@ -12,11 +12,28 @@ from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
 
 
 def demo(output_file=None, instances=40000):
+    """ _test_holdout
+    
+    This demo runs a holdout evaluation task with one learner. The default 
+    stream is a WaveformGenerator. The default learner is a SGDClassifier, 
+    which is inserted into a Pipeline structure. All the default values can 
+    be changing by uncommenting/commenting the code below.
+    
+    Parameters
+    ----------
+    output_file: string
+        The name of the csv output file
+    
+    instances: int
+        The evaluation's max number of instances
+         
+    """
     # Setup the File Stream
     #opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     #stream = FileStream(opt, -1, 1)
     stream = WaveformGenerator()
     stream.prepare_for_use()
+
     # Setup the classifier
     classifier = SGDClassifier()
     #classifier = PassiveAggressiveClassifier()

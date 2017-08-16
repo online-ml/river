@@ -9,6 +9,16 @@ from skmultiflow.data.generators.sea_generator import SEAGenerator
 
 
 def demo():
+    """ _test_leverage_bagging
+
+    This demo tests the LeverageBagging classifier on a file stream, which gives 
+    instances coming from a SEA generator. 
+
+    The test computes the performance of the LeverageBagging classifier as well 
+    as the time to create the structure and classify max_samples (2000 by default) 
+    instances.
+
+    """
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
     stream = SEAGenerator(1, noise_percentage=6.7)

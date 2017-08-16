@@ -12,6 +12,18 @@ from skmultiflow.filtering.one_hot_to_categorical import OneHotToCategorical
 
 
 def demo():
+    """ _test_kdtree_compare
+    
+    This demo compares creation and query speed for different kd tree 
+    implementations. They are fed with instances from the covtype dataset. 
+    
+    Three kd tree implementations are compared: SciPy's KDTree, NumPy's 
+    KDTree and scikit-multiflow's KDTree. For each of them the demo will 
+    time the construction of the tree on 1000 instances, and then measure 
+    the time to query 100 instances. The results are displayed in the 
+    terminal.
+    
+    """
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)

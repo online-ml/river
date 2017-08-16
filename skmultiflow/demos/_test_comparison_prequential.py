@@ -12,7 +12,17 @@ from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
 
 
 def demo(instances=2000):
-
+    """ _test_comparison_prequential
+    
+    This demo will test a prequential evaluation when more than one learner is 
+    passed, which makes it a comparison task.
+    
+    Parameters
+    ----------
+    instances: int
+        The evaluation's maximum number of instances.
+     
+    """
     # Stream setup
     opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     #opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_big.csv", "CSV", False)
@@ -53,4 +63,4 @@ def demo(instances=2000):
     eval.eval(stream=stream, classifier=classifier)
 
 if __name__ == '__main__':
-    demo(instances=20000)
+    demo(instances=1000)

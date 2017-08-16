@@ -7,6 +7,12 @@ from skmultiflow.options.file_option import FileOption
 
 
 def demo():
+    """ _test_streams
+    
+    This demo tests if the streams are correctly generating samples.
+    
+    :return: 
+    """
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
     stream = FileStream(opt, -1, 1)
     stream.prepare_for_use()

@@ -12,6 +12,20 @@ from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
 
 def demo(output_file=None, instances=40000):
+    """ _test_prequential_bagging
+    
+    This demo shows the evaluation process of a LeverageBagging classifier, 
+    initialized with KNN classifiers.
+    
+    Parameters
+    ----------
+    output_file: string
+        The name of the csv output file
+    
+    instances: int
+        The evaluation's max number of instances
+    
+    """
     # Setup the File Stream
     # opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_big.csv", "CSV", False)
     # stream = FileStream(opt, -1, 1)

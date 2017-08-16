@@ -7,6 +7,18 @@ from skmultiflow.filtering.base_filters import MissingValuesCleaner
 
 
 def demo():
+    """ _test_filters
+    
+    This demo test the MissingValuesCleaner filter. The transform is set 
+    to clean any value equal to -47, replacing it with the median value 
+    of the last 10 samples, or less if there aren't 10 samples available. 
+    
+    The output will be the 10 instances used in the transform. The first 
+    9 are kept untouched, as they don't have any feature value of -47. The 
+    last samples has its first feature value equal to -47, so it's replaced 
+    by the median of the 9 first samples.
+    
+    """
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/covtype.csv', 'csv', False)
     stream = FileStream(opt, -1, 1)
     stream.prepare_for_use()
@@ -20,12 +32,6 @@ def demo():
     for i in range(10):
         temp = filter.partial_fit_transform([X[i].tolist()])
         print(temp)
-
-
-    #for i in range(10):
-        #X[i] = filter.partial_fit_transform(X[i])
-        #print(X[i])
-
 
 if __name__ == '__main__':
     demo()

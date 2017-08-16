@@ -10,6 +10,16 @@ from timeit import default_timer as timer
 
 
 def demo():
+    """ _test_knn
+    
+    This demo tests the KNN classifier on a file stream, which gives 
+    instances coming from a SEA generator. 
+    
+    The test computes the performance of the KNN classifier as well as 
+    the time to create the structure and classify max_samples (5000 by 
+    default) instances.
+    
+    """
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/sea_big.csv', 'csv', False)
     stream = FileStream(opt, -1, 1)
     stream.prepare_for_use()
@@ -58,7 +68,7 @@ def demo():
     print('Evaluation time: ' + str(end-start))
     print(str(n_samples) + ' samples analyzed.')
     print('My performance: ' + str(my_corrects/n_samples))
-    print('Compare performance: ' + str(compare_corrects/n_samples))
+    #print('Compare performance: ' + str(compare_corrects/n_samples))
 
 if __name__ == '__main__':
     demo()

@@ -11,9 +11,15 @@ from skmultiflow.evaluation.evaluate_stream_gen_speed import EvaluateStreamGener
 
 
 def demo():
+    """ _test_stream_speed
+    
+    This demo tests the sample generation speed of the file stream.
+    
+    """
     # Setup the stream
     opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     stream = FileStream(opt, -1, 1)
+    stream = RandomRBFGeneratorDrift()
     stream.prepare_for_use()
 
     # Test with RandomTreeGenerator

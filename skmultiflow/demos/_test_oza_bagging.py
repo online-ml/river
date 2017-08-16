@@ -8,6 +8,16 @@ from skmultiflow.data.generators.sea_generator import SEAGenerator
 
 
 def demo():
+    """ _test_oza_bagging
+
+    This demo tests the OzaBagging classifier using KNNAdwin classifiers, 
+    on samples given by a SEAGenerator. 
+
+    The test computes the performance of the OzaBagging classifier as well 
+    as the time to create the structure and classify max_samples (5000 by 
+    default) instances.
+
+    """
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
     stream = SEAGenerator(1, noise_percentage=6.7)
@@ -16,7 +26,7 @@ def demo():
     clf = OzaBagging(h=KNNAdwin(k=8,max_window_size=2000,leaf_size=30), ensemble_length=2)
     sample_count = 0
     correctly_classified = 0
-    max_samples = 100
+    max_samples = 5000
     train_size = 8
     first = True
     if train_size > 0:

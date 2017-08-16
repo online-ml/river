@@ -73,7 +73,6 @@ def mixed_distance(instance_one, instance_two, **kwargs):
 
     return sum(partial_dist)
 
-
 def euclidean_distance(instance_one, instance_two, **kwargs):
     """ Euclidean distance
     
