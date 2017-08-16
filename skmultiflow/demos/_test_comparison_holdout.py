@@ -8,6 +8,21 @@ from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
 
 
 def demo(output_file=None, instances=40000):
+    """ _test_comparison_holdout
+    
+    This demo will test a holdout evaluation task when more than one learner is 
+    evaluated, which makes it a comparison task. 
+    
+    Parameters
+    ----------
+    output_file: string, optional
+        If passed this parameter indicates the output file name. If left blank, 
+        no output file will be generated.
+    
+    instances: int (Default: 40000)
+        The evaluation's maximum number of instances.
+    
+    """
     # Setup the File Stream
     # opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     # stream = FileStream(opt, -1, 1)

@@ -13,6 +13,21 @@ from skmultiflow.data.generators.regression_generator import RegressionGenerator
 
 
 def demo(output_file=None, instances=40000):
+    """ _test_regression
+
+    This demo demonstrates how to evaluate a regressor. The data stream used 
+    is an instance of the RegressionGenerator, which feeds an instance from 
+    sklearn's SGDRegressor.
+
+    Parameters
+    ----------
+    output_file: string
+        The name of the csv output file
+
+    instances: int
+        The evaluation's max number of instances
+
+    """
     # Setup the File Stream
     #opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     #stream = FileStream(opt, -1, 1)

@@ -148,41 +148,45 @@ depending on the test size.</p>
 a single learner while computing its metrics or it can evaluate multiple learners
 at a time, as a means of comparing different approaches to the same problem.</p>
 <p class="rubric">Examples</p>
-<p>The first example demonstrates how to use the evaluator to evaluate one learner
-&gt;&gt;&gt; from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-&gt;&gt;&gt; from skmultiflow.core.pipeline import Pipeline
-&gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream
-&gt;&gt;&gt; from skmultiflow.options.file_option import FileOption
-&gt;&gt;&gt; from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
-&gt;&gt;&gt; # Setup the File Stream
-&gt;&gt;&gt; opt = FileOption(“FILE”, “OPT_NAME”, “skmultiflow/datasets/covtype.csv”, “CSV”, False)
-&gt;&gt;&gt; stream = FileStream(opt, -1, 1)
-&gt;&gt;&gt; stream.prepare_for_use()
-&gt;&gt;&gt; # Setup the classifier
-&gt;&gt;&gt; classifier = PassiveAggressiveClassifier()
-&gt;&gt;&gt; # Setup the pipeline
-&gt;&gt;&gt; pipe = Pipeline([(‘Classifier’, classifier)])
-&gt;&gt;&gt; # Setup the evaluator
-&gt;&gt;&gt; eval = EvaluateHoldout(pretrain_size=200, max_instances=100000, batch_size=1, n_wait=10000, max_time=1000,
-… output_file=None, task_type=’classification’, show_plot=True, plot_options=[‘kappa’, ‘performance’],
-… test_size=5000, dynamic_test_set=True)
-&gt;&gt;&gt; # Evaluate
-&gt;&gt;&gt; eval.eval(stream=stream, classifier=pipe)</p>
-<p>The second example will demonstrate how to compare two classifiers with
-the EvaluateHoldout
-&gt;&gt;&gt; from skmultiflow.data.generators.waveform_generator import WaveformGenerator
-&gt;&gt;&gt; from sklearn.linear_model.stochastic_gradient import SGDClassifier
-&gt;&gt;&gt; from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
-&gt;&gt;&gt; from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
-&gt;&gt;&gt; stream = WaveformGenerator()
-&gt;&gt;&gt; stream.prepare_for_use()
-&gt;&gt;&gt; clf_one = SGDClassifier()
-&gt;&gt;&gt; clf_two = KNNAdwin(k=8,max_window_size=2000)
-&gt;&gt;&gt; classifier = [clf_one, clf_two]
-&gt;&gt;&gt; eval = EvaluateHoldout(pretrain_size=200, test_size=5000, dynamic_test_set=True, max_instances=100000,
-… batch_size=1, n_wait=10000, max_time=1000, output_file=None, task_type=’classification’,
-… show_plot=True, plot_options=[‘kappa’, ‘performance’])
-&gt;&gt;&gt; eval.eval(stream=stream, classifier=classifier)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># The first example demonstrates how to use the evaluator to evaluate one learner</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.linear_model.passive_aggressive</span> <span class="k">import</span> <span class="n">PassiveAggressiveClassifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.core.pipeline</span> <span class="k">import</span> <span class="n">Pipeline</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.data.file_stream</span> <span class="k">import</span> <span class="n">FileStream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.options.file_option</span> <span class="k">import</span> <span class="n">FileOption</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.evaluation.evaluate_holdout</span> <span class="k">import</span> <span class="n">EvaluateHoldout</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the File Stream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opt</span> <span class="o">=</span> <span class="n">FileOption</span><span class="p">(</span><span class="s2">&quot;FILE&quot;</span><span class="p">,</span> <span class="s2">&quot;OPT_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;skmultiflow/datasets/covtype.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;CSV&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">FileStream</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">prepare_for_use</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classifier</span> <span class="o">=</span> <span class="n">PassiveAggressiveClassifier</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the pipeline</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s1">&#39;Classifier&#39;</span><span class="p">,</span> <span class="n">classifier</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the evaluator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span> <span class="o">=</span> <span class="n">EvaluateHoldout</span><span class="p">(</span><span class="n">pretrain_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">max_instances</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_wait</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="gp">... </span><span class="n">output_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task_type</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_options</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;kappa&#39;</span><span class="p">,</span> <span class="s1">&#39;performance&#39;</span><span class="p">],</span>
+<span class="gp">... </span><span class="n">test_size</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">dynamic_test_set</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Evaluate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="n">pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># The second example will demonstrate how to compare two classifiers with</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># the EvaluateHoldout</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.data.generators.waveform_generator</span> <span class="k">import</span> <span class="n">WaveformGenerator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.linear_model.stochastic_gradient</span> <span class="k">import</span> <span class="n">SGDClassifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.evaluation.evaluate_holdout</span> <span class="k">import</span> <span class="n">EvaluateHoldout</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.classification.lazy.knn_adwin</span> <span class="k">import</span> <span class="n">KNNAdwin</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">WaveformGenerator</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">prepare_for_use</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clf_one</span> <span class="o">=</span> <span class="n">SGDClassifier</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clf_two</span> <span class="o">=</span> <span class="n">KNNAdwin</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="n">max_window_size</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classifier</span> <span class="o">=</span> <span class="p">[</span><span class="n">clf_one</span><span class="p">,</span> <span class="n">clf_two</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span> <span class="o">=</span> <span class="n">EvaluateHoldout</span><span class="p">(</span><span class="n">pretrain_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">dynamic_test_set</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_instances</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
+<span class="gp">... </span><span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_wait</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task_type</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_options</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;kappa&#39;</span><span class="p">,</span> <span class="s1">&#39;performance&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="n">classifier</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.eval">
 <code class="descname">eval</code><span class="sig-paren">(</span><em>stream</em>, <em>classifier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/evaluation/evaluate_holdout.html#EvaluateHoldout.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.evaluation.evaluate_holdout.EvaluateHoldout.eval" title="Permalink to this definition">¶</a></dt>

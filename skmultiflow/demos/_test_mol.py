@@ -12,6 +12,16 @@ from sklearn.linear_model.perceptron import Perceptron
 
 
 def demo():
+    """ _test_mol
+
+    This demo tests the MOL learner on a file stream, which reads from 
+    the music.csv file.
+
+    The test computes the performance of the MOL learner as well as 
+    the time to create the structure and classify all the samples in 
+    the file.
+
+    """
     # Setup logging
     logging.basicConfig(format='%(message)s', level=logging.INFO)
 

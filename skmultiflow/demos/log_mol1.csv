@@ -1,0 +1,12 @@
+# SETUP BEGIN
+# MultilabelGenerator: n_samples: 50000 - n_features: 20 - n_targets: 5 - n_labels:2
+# Prequential Evaluator: n_wait: 200 - max_instances: 40000 - max_time: 1000 - output_file: log_mol1.csv - batch_size: 1 - pretrain_size: 5000 - task_type: multi_output - show_plotTrue - plot_options: ['hamming_score', 'j_index', 'exact_match']
+# SETUP END
+x_count,global_hamming_score_0,sliding_window_hamming_score_0,global_exact_match_0,sliding_window_exact_match_0,global_j_index_0,sliding_window_j_index_0
+200,0.718,0.718,0.2,0.2,0.476,0.476
+400,0.722,0.726,0.237,0.275,0.498,0.52
+600,0.723,0.726,0.242,0.25,0.513,0.544
+800,0.717,0.699,0.237,0.225,0.511,0.502
+1000,0.711,0.684,0.227,0.185,0.507,0.493
+1200,0.712,0.721,0.229,0.24,0.505,0.496
+1400,0.718,0.75,0.232,0.25,0.508,0.526

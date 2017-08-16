@@ -12,6 +12,16 @@ from sklearn.neighbors.classification import KNeighborsClassifier
 from timeit import default_timer as timer
 
 def demo():
+    """ _test_knn_adwin
+
+    This demo tests the KNNAdwin classifier on a file stream, which gives 
+    instances coming from a SEA generator. 
+    
+    The test computes the performance of the KNNAdwin classifier as well as 
+    the time to create the structure and classify max_samples (10000 by 
+    default) instances.
+    
+    """
     start = timer()
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     #warnings.filterwarnings("ignore", ".*Passing 1d.*")
@@ -45,7 +55,7 @@ def demo():
         compare.fit(X, y)
         first = False
     n_samples = 0
-    max_samples = 100
+    max_samples = 10000
     my_corrects = 0
     compare_corrects = 0
 

@@ -9,6 +9,13 @@ from skmultiflow.options.file_option import FileOption
 
 
 def demo():
+    """ _test_pipeline
+    
+    This demo demonstrates the Pipeline structure seemingly working as a 
+    learner, while being passed as parameter to an EvaluatePrequential 
+    object.
+     
+    """
     # Setup the stream
     opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     stream = FileStream(opt, -1, 1)

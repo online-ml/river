@@ -14,6 +14,20 @@ from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
 
 def demo(output_file=None, instances=40000):
+    """ _test_prequential_mol
+
+    This demo shows the evaluation process of a MOL classifier, initialized 
+    with sklearn's SGDClassifier.
+
+    Parameters
+    ----------
+    output_file: string
+        The name of the csv output file
+
+    instances: int
+        The evaluation's max number of instances
+
+    """
     # Setup the File Stream
     #opt = FileOption("FILE", "OPT_NAME", "../datasets/music.csv", "CSV", False)
     #stream = FileStream(opt, 0, 6)

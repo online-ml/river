@@ -3,13 +3,15 @@
 A stream data framework.
 
 ### Dependencies
-
 * python3
 * matplotlib
 * numpy
 * scipy
 * pandas
 * scikit-learn
+
+* Due to a known issue with NumPy's install requirements, all of the dependencies should be manually installed.
+Then the setup.py can be run to install the scikit-multiflow package.
 
 ### Project leaders
 
@@ -34,47 +36,23 @@ A stream data framework.
 * I'll send you through the google hangouts chat the conda configuration file
 * See the matplotlib backend considerations in the end of this README.md file
 
-### Terminal library example
-* Go to skmultiflow root folder
-* Open a python terminal
-* Type:
-    >>> from skmultiflow.data.FileStream import FileStream
-    >>> from skmultiflow.options.FileOption import FileOption
-    >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-    >>> from skmultiflow.core.pipeline.Pipeline import Pipeline
-    >>> from skmultiflow.evaluation.EvaluatePrequential import EvaluatePrequential
-    >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'CSV', False)
-    >>> stream = FileStream(opt, 7)
-    >>> stream.prepare_for_use()
-    >>> classifier = PassiveAggressiveClassifier()
-    >>> pipe = Pipeline([('Pipeline', classifier)])
-    >>> eval = EvaluatePrequential(show_plot=True, pretrain_size=1000)
-    >>> eval.eval(stream=stream, classifier=pipe)
-* If your system doesn't support a graphic interface change the line:
-    >>> eval = EvaluatePrequential(show_plot=True, pretrain_size=1000)
-    to:
-    >>> eval = EvaluatePrequential(show_plot=False, pretrain_size=1000)
-
-### Terminal demos
-* Go to skmultiflow root folder
-* Enter python testing.py
-* Let the demo run
-* To change the demo you want simply comment/uncomment the testing.py lines, in the root directory
+### Independent demos
+To run independent demos, make your way to ".../skmultiflow/demos/" and run in a terminal:
+>>> python <test_name>
 
 ### matplotlib backend considerations
 * You may need to change your matplotlib backend, because not all backends work in all machines
 * If this is the case you can find the conda virtual environment matplotlib config file in:
     /miniconda3/pkgs/matplotlib-2.0.2-np112py35_0/lib/python3.5/site-packages/matplotlib/mpl-data/matplotlibrc
 * In the matplotlibrc file you will need to change the line:
-    backend     : macosx
+    backend     : Qt5Agg
     to:
     backend     : another backend that works on your machine
+* The Qt5Agg backend should work with most machines, but a change may be needed.
 
-### To clean
-* core.instances
+### License
+* 3-Clause BSD License
 
-* Cython
-* Numba
+* SAM knn
+* classifiers to regressor in visualization
 
-* stream_classifier
-* test regression

@@ -143,7 +143,7 @@
 <span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    The first example demonstrates how to use the evaluator to evaluate one learner</span>
+<span class="sd">    &gt;&gt;&gt; # The first example demonstrates how to use the evaluator to evaluate one learner</span>
 <span class="sd">    &gt;&gt;&gt; from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier</span>
 <span class="sd">    &gt;&gt;&gt; from skmultiflow.core.pipeline import Pipeline</span>
 <span class="sd">    &gt;&gt;&gt; from skmultiflow.data.file_stream import FileStream</span>
@@ -163,8 +163,8 @@
 <span class="sd">    &gt;&gt;&gt; # Evaluate</span>
 <span class="sd">    &gt;&gt;&gt; eval.eval(stream=stream, classifier=pipe)</span>
 <span class="sd">    </span>
-<span class="sd">    The second example will demonstrate how to compare two classifiers with</span>
-<span class="sd">    the EvaluatePrequential</span>
+<span class="sd">    &gt;&gt;&gt; # The second example will demonstrate how to compare two classifiers with</span>
+<span class="sd">    &gt;&gt;&gt; # the EvaluatePrequential</span>
 <span class="sd">    &gt;&gt;&gt; from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier</span>
 <span class="sd">    &gt;&gt;&gt; from skmultiflow.classification.lazy.knn_adwin import KNNAdwin</span>
 <span class="sd">    &gt;&gt;&gt; from skmultiflow.core.pipeline import Pipeline</span>
