@@ -12,7 +12,6 @@ Welcome to scikit-multiflow's documentation!
 
    setup
    skmultiflow
-   testing
 
 
 Indices and tables
