@@ -29,7 +29,6 @@ def demo(instances=2000):
     stream = FileStream(opt, -1, 1)
     #stream = SEAGenerator(classification_function=2, instance_seed=53432, balance_classes=False)
     stream.prepare_for_use()
-
     # Setup the classifier
     clf = SGDClassifier()
     # classifier = KNNAdwin(k=8, max_window_size=2000,leaf_size=40, categorical_list=None)

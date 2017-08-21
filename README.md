@@ -9,9 +9,11 @@ A stream data framework.
 * scipy
 * pandas
 * scikit-learn
+* libNearestNeighbors
 
-* Due to a known issue with NumPy's install requirements, all of the dependencies should be manually installed.
-Then the setup.py can be run to install the scikit-multiflow package.
+* Due to a known issue with NumPy's install requirements, all of the dependencies, except libNearestNeighbors, should
+be manually installed. Then the setup.py can be run to install the scikit-multiflow package.
+* The libNearestNeighbors is a C++ library, installed by the setup.py and used by some of scikit-multiflow's modules.
 
 ### Project leaders
 
@@ -53,6 +55,10 @@ To run independent demos, make your way to ".../skmultiflow/demos/" and run in a
 ### License
 * 3-Clause BSD License
 
-* SAM knn
-* classifiers to regressor in visualization
-
+### Sphinx documentation
+* We generate our documentation directly through sphinx.
+* To update the documentation follow the steps below:
+    * Make your way to the scikit-multiflow parent directory
+    * Type in 'sphinx-apidoc -o scikit-multiflow/doc scikit-multiflow/ -e -f'
+    * Go to scikit-multiflow/doc
+    * Type in 'make html'

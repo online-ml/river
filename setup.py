@@ -1,12 +1,29 @@
 import os
+import numpy as np
 from setuptools import setup, find_packages
+from distutils.core import Extension
+from distutils.sysconfig import get_python_inc
 
-# Utility function to read the README file.
-# Used for the long_description.  It's nice, because now 1) we have a top level
-# README file and 2) it's easier to type in the README file than to put a raw
-# string in below ...
+"""
+### Dependencies
+* python3
+* matplotlib
+* numpy
+* scipy
+* pandas
+* scikit-learn
+* libNearestNeighbors
+
+"""
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+nnExtension = Extension('libNearestNeighbor',
+                    include_dirs = [get_python_inc(), np.get_include()],
+                    libraries = [],
+                    library_dirs = [],
+		    extra_compile_args = ['-O3'],
+                    sources = ['skmultiflow/classification/lazy/libNearestNeighbors/nearestNeighbor.cpp'])
 
 setup(
     name = "scikit-multiflow",
@@ -16,4 +33,5 @@ setup(
     description = ("Setup for the scikit-multiflow package"),
     packages=find_packages(),
     long_description=read('README.md'),
+    ext_modules = [nnExtension]
 )

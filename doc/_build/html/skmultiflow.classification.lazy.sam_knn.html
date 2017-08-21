@@ -1,0 +1,311 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>skmultiflow.classification.lazy.sam_knn module &#8212; scikit-multiflow 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/skmultiflow.classification.lazy.sam_knn.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-skmultiflow.classification.lazy.sam_knn">
+<span id="skmultiflow-classification-lazy-sam-knn-module"></span><h1>skmultiflow.classification.lazy.sam_knn module<a class="headerlink" href="#module-skmultiflow.classification.lazy.sam_knn" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN">
+<em class="property">class </em><code class="descclassname">skmultiflow.classification.lazy.sam_knn.</code><code class="descname">SAMKNN</code><span class="sig-paren">(</span><em>n_neighbors=5</em>, <em>knnWeights='distance'</em>, <em>maxSize=5000</em>, <em>LTMSizeProportion=0.4</em>, <em>minSTMSize=50</em>, <em>STMSizeAdaption='maxACCApprox'</em>, <em>useLTM=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="skmultiflow.classification.base.html#skmultiflow.classification.base.BaseClassifier" title="skmultiflow.classification.base.BaseClassifier"><code class="xref py py-class docutils literal"><span class="pre">skmultiflow.classification.base.BaseClassifier</span></code></a></p>
+<p>Self Adjusting Memory (SAM) coupled with the k Nearest Neighbor classifier.
+Described for the first time in Losing, Hammer and Wersing’s ‘KNN Classifier
+with Self Adjusting Memory for Heterogeneous Concept Drift.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n_neighbors</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default=5</em><em>)</em>) – number of evaluated nearest neighbors.</li>
+<li><strong>knnWeights</strong> (<em>string</em><em>, </em><em>optional</em><em> (</em><em>default='distance'</em><em>)</em>) – Type of weighting of the nearest neighbors. It must be either ‘distance’
+or ‘uniform’ (majority voting).</li>
+<li><strong>maxSize</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default=5000</em><em>)</em>) – Maximum number of overall stored data points.</li>
+<li><strong>LTMSizeProportion</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>default=0.4</em><em>)</em>) – Proportion of the overall instances that may be used for the LTM. This is
+only relevant when the maximum number(maxSize) of stored instances is reached.</li>
+<li><strong>STMSizeAdaption</strong> (<em>string</em><em>, </em><em>optional</em><em> (</em><em>default='maxACCApprox'</em><em>)</em>) – Type of STM size adaption.
+‘maxACC’ calculates the Interleaved test-train error exactly for each of the
+evaluated window sizes, which means it has often to be recalculated from the
+scratch.
+‘maxACCApprox’ approximates the Interleaved test-train error and is
+significantly faster than the exact version. If set to None, the STM is not
+adapted at all. When additionally useLTM=false, this algorithm is simply a kNN
+with fixed sliding window size.</li>
+<li><strong>minSTMSize</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default=50</em><em>)</em>) – Minimum STM size which is evaluated during the STM size adaption.</li>
+<li><strong>useLTM</strong> (<em>boolean</em><em>, </em><em>optional</em><em> (</em><em>default=True</em><em>)</em>) – Specifies whether the LTM should be used at all.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.classification.lazy.sam_knn</span> <span class="k">import</span> <span class="n">SAMKNN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.data.file_stream</span> <span class="k">import</span> <span class="n">FileStream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.options.file_option</span> <span class="k">import</span> <span class="n">FileOption</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skmultiflow.evaluation.evaluate_prequential</span> <span class="k">import</span> <span class="n">EvaluatePrequential</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the File Stream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opt</span> <span class="o">=</span> <span class="n">FileOption</span><span class="p">(</span><span class="s2">&quot;FILE&quot;</span><span class="p">,</span> <span class="s2">&quot;OPT_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;skmultiflow/datasets/movingSquares.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;CSV&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">FileStream</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">prepare_for_use</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classifier</span> <span class="o">=</span> <span class="n">SAMKNN</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">knnWeights</span><span class="o">=</span><span class="s1">&#39;distance&#39;</span><span class="p">,</span> <span class="n">maxSize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">STMSizeAdaption</span><span class="o">=</span><span class="s1">&#39;maxACCApprox&#39;</span><span class="p">,</span> <span class="n">useLTM</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup the evaluator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span> <span class="o">=</span> <span class="n">EvaluatePrequential</span><span class="p">(</span><span class="n">pretrain_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_instances</span><span class="o">=</span><span class="mi">200000</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_wait</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="gp">... </span><span class="n">output_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task_type</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_options</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;performance&#39;</span><span class="p">,</span> <span class="s1">&#39;kappa_t&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Evaluate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">eval</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="n">classifier</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>This modules uses the libNearestNeighbor, a C++ library used to speed up some of
+the algorithm’s computations. When invoking the library’s functions it’s important
+to pass the right argument type. Although most of this framework’s functionalities
+will work with python standard types, the C++ library will work with 8-bit labels,
+which is already done by the SAMKNN class, but may be absent in custom classes that
+use SAMKNN static methods, or other custom functions that use the C++ library.</p>
+<dl class="attribute">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.LTMLabels">
+<code class="descname">LTMLabels</code><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.LTMLabels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.LTMSamples">
+<code class="descname">LTMSamples</code><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.LTMSamples" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.STMLabels">
+<code class="descname">STMLabels</code><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.STMLabels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.STMSamples">
+<code class="descname">STMSamples</code><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.STMSamples" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.clean_samples">
+<code class="descname">clean_samples</code><span class="sig-paren">(</span><em>samplesCl</em>, <em>labelsCl</em>, <em>onlyLast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.clean_samples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.clean_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes distance-based all instances from the input samples that contradict those in the STM.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.cluster_down">
+<code class="descname">cluster_down</code><span class="sig-paren">(</span><em>samples</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.cluster_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.cluster_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs classwise kMeans++ clustering for given samples with corresponding labels. The number of samples is halved per class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.get_complexity">
+<code class="descname">get_complexity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.get_complexity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.get_complexity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.get_complexity_num_parameter_metric">
+<code class="descname">get_complexity_num_parameter_metric</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.get_complexity_num_parameter_metric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.get_complexity_num_parameter_metric" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.get_distance_weighted_label">
+<em class="property">static </em><code class="descname">get_distance_weighted_label</code><span class="sig-paren">(</span><em>distances</em>, <em>labels</em>, <em>numNeighbours</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.get_distance_weighted_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.get_distance_weighted_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the the distance weighted label of the k nearest neighbors.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.get_distances">
+<em class="property">static </em><code class="descname">get_distances</code><span class="sig-paren">(</span><em>sample</em>, <em>samples</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.get_distances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.get_distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate distances from sample to all samples.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.get_maj_label">
+<em class="property">static </em><code class="descname">get_maj_label</code><span class="sig-paren">(</span><em>distances</em>, <em>labels</em>, <em>numNeighbours</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.get_maj_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.get_maj_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the majority label of the k nearest neighbors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.partial_fit">
+<code class="descname">partial_fit</code><span class="sig-paren">(</span><em>samples</em>, <em>labels</em>, <em>classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.partial_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.partial_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes a new sample.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.score">
+<code class="descname">score</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.size_check_STMLTM">
+<code class="descname">size_check_STMLTM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.size_check_STMLTM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.size_check_STMLTM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes sure that the STM and LTM combined doe not surpass the maximum size, only used when useLTM=True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skmultiflow.classification.lazy.sam_knn.SAMKNN.size_check_fade_out">
+<code class="descname">size_check_fade_out</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#SAMKNN.size_check_fade_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.SAMKNN.size_check_fade_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes sure that the STM does not surpass the maximum size, only used when useLTM=False.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="skmultiflow.classification.lazy.sam_knn.STMSizer">
+<em class="property">class </em><code class="descclassname">skmultiflow.classification.lazy.sam_knn.</code><code class="descname">STMSizer</code><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#STMSizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.STMSizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Utility class to adapt the size of the sliding window of the STM.</p>
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.STMSizer.accScore">
+<em class="property">static </em><code class="descname">accScore</code><span class="sig-paren">(</span><em>predLabels</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#STMSizer.accScore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.STMSizer.accScore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the achieved accuracy.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.STMSizer.adaptHistories">
+<em class="property">static </em><code class="descname">adaptHistories</code><span class="sig-paren">(</span><em>numberOfDeletions</em>, <em>predictionHistories</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#STMSizer.adaptHistories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.STMSizer.adaptHistories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes predictions of the largest window size and shifts the remaining ones accordingly.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.STMSizer.getInterleavedTestTrainAcc">
+<em class="property">static </em><code class="descname">getInterleavedTestTrainAcc</code><span class="sig-paren">(</span><em>labels</em>, <em>nNeighbours</em>, <em>getLabelsFct</em>, <em>distancesSTM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#STMSizer.getInterleavedTestTrainAcc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.STMSizer.getInterleavedTestTrainAcc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the interleaved test train accuracy from the scratch.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.STMSizer.getInterleavedTestTrainAccPredHistory">
+<em class="property">static </em><code class="descname">getInterleavedTestTrainAccPredHistory</code><span class="sig-paren">(</span><em>labels</em>, <em>nNeighbours</em>, <em>getLabelsFct</em>, <em>predictionHistory</em>, <em>distancesSTM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#STMSizer.getInterleavedTestTrainAccPredHistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.STMSizer.getInterleavedTestTrainAccPredHistory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the interleaved test train accuracy incrementally by using the previous predictions.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.STMSizer.getMaxAccApproxWindowSize">
+<em class="property">static </em><code class="descname">getMaxAccApproxWindowSize</code><span class="sig-paren">(</span><em>labels</em>, <em>nNeighbours</em>, <em>getLabelsFct</em>, <em>predictionHistories</em>, <em>distancesSTM</em>, <em>minSize=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#STMSizer.getMaxAccApproxWindowSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.STMSizer.getMaxAccApproxWindowSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the window size with the minimum Interleaved test-train error(using an approximation).</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.STMSizer.getMaxAccWindowSize">
+<em class="property">static </em><code class="descname">getMaxAccWindowSize</code><span class="sig-paren">(</span><em>labels</em>, <em>nNeighbours</em>, <em>getLabelsFct</em>, <em>predictionHistories</em>, <em>distancesSTM</em>, <em>minSize=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#STMSizer.getMaxAccWindowSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.STMSizer.getMaxAccWindowSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the window size with the minimum Interleaved test-train error(exact calculation).</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="skmultiflow.classification.lazy.sam_knn.STMSizer.getNewSTMSize">
+<em class="property">static </em><code class="descname">getNewSTMSize</code><span class="sig-paren">(</span><em>adaptionStrategy</em>, <em>labels</em>, <em>nNeighbours</em>, <em>getLabelsFct</em>, <em>predictionHistories</em>, <em>distancesSTM</em>, <em>minSTMSize</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/skmultiflow/classification/lazy/sam_knn.html#STMSizer.getNewSTMSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skmultiflow.classification.lazy.sam_knn.STMSizer.getNewSTMSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the new STM size.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">scikit-multiflow 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, various.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>
