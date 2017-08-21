@@ -334,13 +334,15 @@ class EvaluatePrequential(BaseEvaluator):
             first_run = False
 
         else:
-            logging.info('Pretraining on 1 sample.')
+            logging.info('No pretrain.')
+            """
             X, y = self.stream.next_instance()
             for i in range(self.n_classifiers):
                 if self.task_type != 'regression':
                     self.classifier[i].partial_fit(X, y, self.stream.get_classes())
                 else:
                     self.classifier[i].partial_fit(X, y)
+            """
             first_run = False
 
         before_count = 0
@@ -354,7 +356,6 @@ class EvaluatePrequential(BaseEvaluator):
                     prediction = [[] for n in range(self.n_classifiers)]
                     for i in range(self.n_classifiers):
                         prediction[i].extend(self.classifier[i].predict(X))
-
                     self.global_sample_count += self.batch_size
 
                     if prediction is not None:
