@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
 
 
-class SplitCriterion(BaseObject, metaclass=ABCMeta):
+class SplitCriterion(metaclass=ABCMeta):
     """ SplitCriterion
 
     Abstract class for computing splitting criteria with respect to distributions of class values.

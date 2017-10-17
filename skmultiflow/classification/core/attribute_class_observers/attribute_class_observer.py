@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
 
 
-class AttributeClassObserver(BaseObject, metaclass=ABCMeta):
+class AttributeClassObserver(metaclass=ABCMeta):
     """ AttributeClassObserver
 
     Abstract class for observing the class data distribution for an attribute.
