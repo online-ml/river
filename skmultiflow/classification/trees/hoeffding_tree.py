@@ -2,7 +2,7 @@ __author__ = 'Jacob Montiel'
 
 import sys
 import logging
-import numpy as np
+import textwrap
 from abc import ABCMeta
 from operator import attrgetter
 from skmultiflow.core.utils.utils import *
@@ -150,10 +150,14 @@ class HoeffdingTree(BaseClassifier):
         def calc_byte_size_including_subtree(self):
             return self.__sizeof__()
 
-        # TODO
-        def describe_subtree(self):
-            pass
+        def describe_subtree(self, ht, buffer, indent=0):
+            buffer[0] += textwrap.indent('Leaf ', ' '*indent)
+            buffer[0] += type(ht).__name__ + ' = '
+            class_val = max(self._observed_class_distribution, key=self._observed_class_distribution.get)
+            max_val = self._observed_class_distribution[class_val]
+            buffer[0] += '{} ({})\n'.format(class_val, max_val)
 
+        # TODO
         def get_description(self):
             pass
 
@@ -218,9 +222,14 @@ class HoeffdingTree(BaseClassifier):
                     byte_size += child.calc_byte_size_including_subtree()
             return byte_size
 
-        # TODO
-        def describe_subtree(self):
-            pass
+        def describe_subtree(self, ht, buffer, indent=0):
+            for branch_idx in range(self.num_children()):
+                child = self.get_child(branch_idx)
+                if child is not None:
+                    buffer[0] += textwrap.indent('if ', ' '*indent)
+                    buffer[0] += self._split_test.describe_condition_for_branch(branch_idx)
+                    buffer[0] += ':\n'
+                    child.describe_subtree(ht, buffer, indent+2)
 
     class LearningNode(Node):
         def __init__(self, initial_class_observations=None):
@@ -270,7 +279,7 @@ class HoeffdingTree(BaseClassifier):
             for i in range(len(X)):
                 obs = self._attribute_observers[i]
                 if obs is None:
-                    if i in ht._nominal_attributes:    # TODO define
+                    if i in ht._nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
                         obs = GaussianNumericAttributeClassObserver()
@@ -646,7 +655,13 @@ class HoeffdingTree(BaseClassifier):
             return self.ActiveLearningNode(initial_class_observations)
 
     def get_model_description(self):
-        pass    # TODO
+        if self._tree_root is not None:
+            buffer = ['']
+            description = ''
+            self._tree_root.describe_subtree(self, buffer, 0)
+            for line in range(len(buffer)):
+                description += buffer[line]
+            return description
 
     def is_randomizable(self):    # TODO do we need this?
         return False
@@ -811,7 +826,7 @@ class HoeffdingTree(BaseClassifier):
         raise NotImplementedError
 
     def get_info(self):
-        description = 'HoeffdingTree: '
+        description = type(ht).__name__ + ': '
         description += 'max_byte_size: {} - '.format(self.max_byte_size_option)
         description += 'memory_estimate_period: {} - '.format(self.memory_estimate_period_option)
         description += 'grace_period: {} - '.format(self.grace_period_option)
