@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
 
 
-class InstanceConditionalTest(BaseObject, metaclass=ABCMeta):
+class InstanceConditionalTest(metaclass=ABCMeta):
     """ InstanceConditionalTest
 
     Abstract class for instance conditional test to split nodes in Hoeffding Trees.

@@ -46,8 +46,8 @@ class InfoGainSplitCriterion(SplitCriterion):
     def num_subsets_greater_than_frac(self, distributions, min_frac):
         total_weight = 0.0
         dist_sums = []*len(distributions)
-        for i in range(len(distributions)):
-            dist_sums[i] = sum(distributions[i].values())
+        for i in range(len(dist_sums)):
+            dist_sums[i] = sum(distributions[[i]].values())
             total_weight += dist_sums[i]
         num_greater = 0
         for d in dist_sums:

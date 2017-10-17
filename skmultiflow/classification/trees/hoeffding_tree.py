@@ -4,6 +4,7 @@ import sys
 import logging
 import numpy as np
 from abc import ABCMeta
+from operator import attrgetter
 from skmultiflow.core.utils.utils import *
 from skmultiflow.classification.base import BaseClassifier
 from skmultiflow.classification.core.attribute_class_observers.gaussian_numeric_attribute_class_observer\
@@ -156,10 +157,9 @@ class HoeffdingTree(BaseClassifier):
         def get_description(self):
             pass
 
-
     class SplitNode(Node):
         """
-        Class for a node that splits the data in a Hoeffding tree
+        Class for a node that splits the data in a Hoeffding Tree
         """
 
         def __init__(self, split_test, class_observations, size=-1):
@@ -175,7 +175,9 @@ class HoeffdingTree(BaseClassifier):
             return len(self._children)
 
         def set_child(self, index, node):
-            self._children[index] = node
+            if self._split_test.max_branches() >= 0 and index >= self._split_test.max_branches():
+                raise IndexError
+            self._children.insert(index, node)
 
         def get_child(self, index):
             return self._children[index]
@@ -234,6 +236,8 @@ class HoeffdingTree(BaseClassifier):
         def learn_from_instance(self, X, y, weight, ht):
             if y > len(self._observed_class_distribution) -1:
                 return
+            if y not in self._observed_class_distribution:
+                self._observed_class_distribution[y] = 0.0
             self._observed_class_distribution[y] += weight
 
     class ActiveLearningNode(LearningNode):
@@ -259,6 +263,8 @@ class HoeffdingTree(BaseClassifier):
             if not self._is_initialized:
                 self._attribute_observers = [None]*len(X)
                 self._is_initialized = True
+            if y not in self._observed_class_distribution:
+                self._observed_class_distribution[y] = 0.0
             self._observed_class_distribution[y] += weight
 
             for i in range(len(X)):
@@ -537,20 +543,15 @@ class HoeffdingTree(BaseClassifier):
         """
         if y is not None:
             if weight is None:
-                weight = 1
+                weight = np.array([1.0])
             row_cnt, _ = get_dimensions(X)
             wrow_cnt, _ = get_dimensions(weight)
             if row_cnt != wrow_cnt:
                 weight = [weight]*row_cnt
-            if row_cnt > 1:
-                for i in range(row_cnt):
-                    if weight[i] != 0.0:
-                        self._train_weight_seen_by_model += weight[i]
-                        self._partial_fit(X[i], y[i], weight[i])
-            else:
-                if weight != 0.0:
-                    self._train_weight_seen_by_model += weight
-                    self._partial_fit(X, y, weight)
+            for i in range(row_cnt):
+                if weight[i] != 0.0:
+                    self._train_weight_seen_by_model += weight[i]
+                    self._partial_fit(X[i], y[i], weight[i])
 
     def _partial_fit(self, X, y, weight):
         if self._tree_root is None:
@@ -658,20 +659,20 @@ class HoeffdingTree(BaseClassifier):
 
     def attempt_to_split(self, node:ActiveLearningNode, parent:SplitNode, parent_idx:int):
         if not node.observed_class_distribution_is_pure():
-            if self._split_criterion_option == self._GINI_SPLIT:
+            if self._split_criterion_option == GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
-            elif self._split_criterion_option == self._INFO_GAIN_SPLIT:
+            elif self._split_criterion_option == INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
             best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
-            best_split_suggestions.sort()
+            best_split_suggestions.sort(key=attrgetter('merit'))
             should_split = False
             if len(best_split_suggestions) < 2:
                 should_split = len(best_split_suggestions) > 0
             else:
-                hoeffding_bound = self.compute_hoeffding_bound(
-                                       split_criterion.get_range_of_merit(node.get_observed_class_distribution()))
+                hoeffding_bound = self.compute_hoeffding_bound(split_criterion.get_range_of_merit(\
+                    node.get_observed_class_distribution()), self.split_confidence_option, node.get_weight_seen())
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
                 if best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound or \
