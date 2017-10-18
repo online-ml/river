@@ -130,7 +130,7 @@ class HoeffdingTree(BaseClassifier):
             for _, weight in self._observed_class_distribution.items():
                 if weight is not 0:
                     count += 1
-                    if count > 1:   # No need to count beyond this point
+                    if count >= 2:   # No need to count beyond this point
                         break
             return count < 2
 
@@ -152,10 +152,10 @@ class HoeffdingTree(BaseClassifier):
 
         def describe_subtree(self, ht, buffer, indent=0):
             buffer[0] += textwrap.indent('Leaf ', ' '*indent)
-            buffer[0] += type(ht).__name__ + ' = '
+            buffer[0] += type(self).__name__ + ' = '
             class_val = max(self._observed_class_distribution, key=self._observed_class_distribution.get)
             max_val = self._observed_class_distribution[class_val]
-            buffer[0] += '{} ({})\n'.format(class_val, max_val)
+            buffer[0] += 'Class {} | {}\n'.format(class_val, self._observed_class_distribution)
 
         # TODO
         def get_description(self):
@@ -171,7 +171,7 @@ class HoeffdingTree(BaseClassifier):
             self._split_test = split_test
             # Dict of tuples (branch, child)
             if size > 0:
-                self._children = []*size
+                self._children = [None]*size
             else:
                 self._children = []
 
@@ -181,7 +181,7 @@ class HoeffdingTree(BaseClassifier):
         def set_child(self, index, node):
             if self._split_test.max_branches() >= 0 and index >= self._split_test.max_branches():
                 raise IndexError
-            self._children.insert(index, node)
+            self._children[index] = node
 
         def get_child(self, index):
             return self._children[index]
@@ -311,11 +311,11 @@ class HoeffdingTree(BaseClassifier):
 
             """
             best_suggestions = []
-            pre_split_dist = [self._observed_class_distribution]
+            pre_split_dist = self._observed_class_distribution
             if not ht.no_pre_prune_option:
                 # Add null split as an option
                 null_split = AttributeSplitSuggestion(None, pre_split_dist,
-                                                      criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))  # TODO check
+                                                      criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
                 best_suggestions.append(null_split)
             for i, obs in enumerate(self._attribute_observers):
                 best_suggestion = obs.get_best_evaluated_split_suggestion(criterion, pre_split_dist,
@@ -566,25 +566,24 @@ class HoeffdingTree(BaseClassifier):
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._active_leaf_node_cnt = 1
-        if isinstance(self._tree_root, self.LearningNode):
-            found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
-            leaf_node = found_node.node
-            if leaf_node is None:
-                leaf_node = self._new_learning_node()
-                found_node.parent.set_child(found_node.parent_branch, leaf_node)
-                self._active_leaf_node_cnt += 1
-            if isinstance(leaf_node, self.LearningNode):
-                learning_node = leaf_node
-                learning_node.learn_from_instance(X, y, weight, self)
-                if self._growth_allowed and isinstance(learning_node, self.ActiveLearningNode):
-                    active_learning_node = learning_node
-                    weight_seen = active_learning_node.get_weight_seen()
-                    weight_diff = weight_seen - active_learning_node.get_weight_seen_at_last_split_evaluation()
-                    if weight_diff >= self._grace_period_option:
-                        self.attempt_to_split(active_learning_node, found_node.parent, found_node.parent_branch)
-                        active_learning_node.set_weight_seen_at_last_split_evaluation(weight_seen)
-            if self._train_weight_seen_by_model % self._memory_estimate_period_option == 0:
-                self.estimate_model_byte_size()
+        found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
+        leaf_node = found_node.node
+        if leaf_node is None:
+            leaf_node = self._new_learning_node()
+            found_node.parent.set_child(found_node.parent_branch, leaf_node)
+            self._active_leaf_node_cnt += 1
+        if isinstance(leaf_node, self.LearningNode):
+            learning_node = leaf_node
+            learning_node.learn_from_instance(X, y, weight, self)
+            if self._growth_allowed and isinstance(learning_node, self.ActiveLearningNode):
+                active_learning_node = learning_node
+                weight_seen = active_learning_node.get_weight_seen()
+                weight_diff = weight_seen - active_learning_node.get_weight_seen_at_last_split_evaluation()
+                if weight_diff >= self._grace_period_option:
+                    self.attempt_to_split(active_learning_node, found_node.parent, found_node.parent_branch)
+                    active_learning_node.set_weight_seen_at_last_split_evaluation(weight_seen)
+        if self._train_weight_seen_by_model % self._memory_estimate_period_option == 0:
+            self.estimate_model_byte_size()
 
     def get_votes_for_instance(self, X):
         if self._tree_root is not None:
@@ -667,7 +666,7 @@ class HoeffdingTree(BaseClassifier):
         return False
 
     def compute_hoeffding_bound(self, range_val, confidence, n):
-        return np.sqrt( (range_val * range_val * np.log(1.0/confidence)) / (2.0 * n))
+        return np.sqrt( (range_val * range_val * np.log(1.0 / confidence)) / (2.0 * n))
 
     def new_split_node(self, split_test, class_observations, size=-1):
         return self.SplitNode(split_test, class_observations, size)
@@ -713,7 +712,7 @@ class HoeffdingTree(BaseClassifier):
                         node.disable_attribute(poor_att)
             if should_split:
                 split_decision = best_split_suggestions[-1]
-                if split_decision == None or not isinstance(split_decision, AttributeSplitSuggestion):
+                if split_decision is None or not isinstance(split_decision, AttributeSplitSuggestion):
                     # Preprune - null wins
                     self.deactivate_learning_node(node, parent, parent_idx)
                 else:

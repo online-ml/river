@@ -33,7 +33,7 @@ class GaussianEstimator(object):
             return
         if self._weight_sum > 0.0:
             self._weight_sum += weight
-            last_mean = self._mean
+            last_mean = self._mean.copy()
             self._mean += weight * (value - last_mean) / self._weight_sum
             self._variance_sum += weight * (value - last_mean) * (value - self._mean)
         else:
@@ -70,20 +70,18 @@ class GaussianEstimator(object):
             std_dev = self.get_std_dev()
             if std_dev > 0.0:
                 diff = value - self.get_mean()
-                return (1.0 / (self._NORMAL_CONSTANT * std_dev)) * np.exp(-(diff**2 / (2.0 * std_dev**2)))
-            else:
-                return 1.0 if value == self.get_mean() else 0.0
-        else:
-            return 0.0
+                return (1.0 / (self._NORMAL_CONSTANT * std_dev)) * np.exp(-(diff * diff / (2.0 * std_dev * std_dev)))
+            return 1.0 if value == self.get_mean() else 0.0
+        return 0.0
 
     def estimated_weight_lessthan_equalto_greaterthan_value(self, value):
         equalto_weight = self.probability_density(value) * self._weight_sum
         std_dev = self.get_std_dev()
+        mean = self.get_mean()
         if std_dev > 0.0:
-            lessthan_weight = normal_probability((value * self.get_mean()) / std_dev) * self._weight_sum \
-                              - equalto_weight
+            lessthan_weight = normal_probability((value - mean) / std_dev) * self._weight_sum - equalto_weight
         else:
-            if value < self.get_mean():
+            if value < mean:
                 lessthan_weight = self._weight_sum - equalto_weight
             else:
                 lessthan_weight = 0.0

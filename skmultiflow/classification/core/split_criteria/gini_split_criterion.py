@@ -5,7 +5,7 @@ from skmultiflow.classification.core.split_criteria.split_criterion import Split
 class GiniSplitCriterion(SplitCriterion):
     def get_merit_of_split(self, pre_split_dist, post_split_dist):
         total_weight = 0.0
-        dist_weights = []*len(post_split_dist)
+        dist_weights = [0.0]*len(post_split_dist)
         for i in range(len(post_split_dist)):
             dist_weights[i] = sum(post_split_dist[i].values())
             total_weight += dist_weights[i]

@@ -26,7 +26,7 @@ def normal_probability(a):
     z = np.abs(x)
     
     if z < SQRTH:
-        y = 0.5 + (0.5 * error_function(x))
+        y = 0.5 + 0.5 * error_function(x)
     else:
         y = 0.5 * error_function_complemented(z)
         if x > 0:
@@ -62,7 +62,8 @@ def error_function(x):
         return 1.0 - error_function_complemented(x)
     else:
         z = x * x
-        return x * pol_evl(z, T, 4) / p1_evl(z, U, 5)
+        y = x * pol_evl(z, T, 4) / p1_evl(z, U, 5)
+        return y
 
 
 def error_function_complemented(a):
@@ -192,5 +193,5 @@ def p1_evl(x, coef, N):
     """
     ans = x + coef[0]
     for i in range(1, N):
-        ans = ans * x * coef[i]
+        ans = ans * x + coef[i]
     return ans

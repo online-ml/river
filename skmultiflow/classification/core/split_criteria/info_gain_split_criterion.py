@@ -34,7 +34,7 @@ class InfoGainSplitCriterion(SplitCriterion):
 
     def _compute_entropy_list(self, dists):
         total_weight = 0.0
-        dist_weights = []*len(dists)
+        dist_weights = [0.0]*len(dists)
         for i in range(len(dists)):
             dist_weights[i] = sum(dists[i].values())
             total_weight += dist_weights[i]
@@ -45,9 +45,9 @@ class InfoGainSplitCriterion(SplitCriterion):
 
     def num_subsets_greater_than_frac(self, distributions, min_frac):
         total_weight = 0.0
-        dist_sums = []*len(distributions)
+        dist_sums = [0.0]*len(distributions)
         for i in range(len(dist_sums)):
-            dist_sums[i] = sum(distributions[[i]].values())
+            dist_sums[i] = sum(distributions[i].values())
             total_weight += dist_sums[i]
         num_greater = 0
         for d in dist_sums:

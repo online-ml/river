@@ -57,7 +57,7 @@ class GaussianNumericAttributeClassObserver(AttributeClassObserver):
         return best_suggestion
 
     def get_split_point_suggestions(self):
-        suggestions = SortedList()
+        suggested_split_values = SortedList()
         min_value = np.inf
         max_value = -np.inf
         for k, estimator in self._att_val_dist_per_class.items():
@@ -66,13 +66,13 @@ class GaussianNumericAttributeClassObserver(AttributeClassObserver):
             if self._max_value_observed_per_class[k] > max_value:
                 max_value = self._max_value_observed_per_class[k]
         if min_value < np.inf:
-            new_bin = max_value - min_value
-            new_bin /= (self.num_bin_options + 1.0)
+            bin = max_value - min_value
+            bin /= (float(self.num_bin_options) + 1.0)
             for i in range(self.num_bin_options):
-                split_value = (new_bin * (i + 1)) + min_value
+                split_value = min_value + (bin * (i + 1))
                 if split_value > min_value and split_value < max_value:
-                    suggestions.add(split_value)
-        return suggestions
+                    suggested_split_values.add(split_value)
+        return suggested_split_values
 
     def get_class_dists_from_binary_split(self, split_value):
         """
