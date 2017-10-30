@@ -3,6 +3,7 @@ __author__ = 'Jacob Montiel'
 import numpy as np
 from skmultiflow.core.utils.statistics import normal_probability
 
+
 class GaussianEstimator(object):
     """ GaussianEstimator
     Gaussian incremental estimator that uses incremental method that is more resistant to floating point imprecision.
@@ -33,7 +34,7 @@ class GaussianEstimator(object):
             return
         if self._weight_sum > 0.0:
             self._weight_sum += weight
-            last_mean = self._mean.copy()
+            last_mean = self._mean
             self._mean += weight * (value - last_mean) / self._weight_sum
             self._variance_sum += weight * (value - last_mean) * (value - self._mean)
         else:
@@ -68,10 +69,12 @@ class GaussianEstimator(object):
         """
         if self._weight_sum > 0.0:
             std_dev = self.get_std_dev()
+            mean = self.get_mean()
             if std_dev > 0.0:
-                diff = value - self.get_mean()
+                diff = value - mean
                 return (1.0 / (self._NORMAL_CONSTANT * std_dev)) * np.exp(-(diff * diff / (2.0 * std_dev * std_dev)))
-            return 1.0 if value == self.get_mean() else 0.0
+            if value == mean:
+                return 1.0
         return 0.0
 
     def estimated_weight_lessthan_equalto_greaterthan_value(self, value):

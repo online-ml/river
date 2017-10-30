@@ -2,6 +2,7 @@ __author__ = 'Jacob Montiel'
 
 from skmultiflow.classification.core.split_criteria.split_criterion import SplitCriterion
 
+
 class GiniSplitCriterion(SplitCriterion):
     def get_merit_of_split(self, pre_split_dist, post_split_dist):
         total_weight = 0.0
@@ -16,10 +17,12 @@ class GiniSplitCriterion(SplitCriterion):
 
     def compute_gini(self, dist, dist_sum_of_weights):
         gini = 1.0
-        for _, val in dist.items():
-            rel_freq = val / dist_sum_of_weights
-            gini -= rel_freq * rel_freq
+        if dist_sum_of_weights != 0.0:
+            for _, val in dist.items():
+                rel_freq = val / dist_sum_of_weights
+                gini -= rel_freq * rel_freq
         return gini
 
-    def get_range_of_merit(self, pre_split_dist):
+    @staticmethod
+    def get_range_of_merit(pre_split_dist):
         return 1.0

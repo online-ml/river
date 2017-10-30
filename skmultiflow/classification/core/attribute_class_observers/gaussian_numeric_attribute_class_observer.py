@@ -7,6 +7,7 @@ from skmultiflow.classification.core.attribute_split_suggestion import Attribute
 from sortedcontainers.sortedlist import SortedList
 import numpy as np
 
+
 class GaussianNumericAttributeClassObserver(AttributeClassObserver):
     """ GaussianNumericAttributeClassObserver
 
@@ -22,7 +23,7 @@ class GaussianNumericAttributeClassObserver(AttributeClassObserver):
         self.num_bin_options = 10     # The number of bins, default 10
 
     def observe_attribute_class(self, att_val, class_val, weight):
-        if att_val == None:
+        if att_val is None:
             return
         else:
             if class_val not in self._att_val_dist_per_class:
@@ -51,7 +52,7 @@ class GaussianNumericAttributeClassObserver(AttributeClassObserver):
         for split_value in suggested_split_values:
             post_split_dist = self.get_class_dists_from_binary_split(split_value)
             merit = criterion.get_merit_of_split(pre_split_dist, post_split_dist)
-            if best_suggestion == None or merit > best_suggestion.merit:
+            if best_suggestion is None or merit > best_suggestion.merit:
                 num_att_binary_test = NumericAttributeBinaryTest(att_idx, split_value, True)
                 best_suggestion = AttributeSplitSuggestion(num_att_binary_test, post_split_dist, merit)
         return best_suggestion
@@ -66,10 +67,10 @@ class GaussianNumericAttributeClassObserver(AttributeClassObserver):
             if self._max_value_observed_per_class[k] > max_value:
                 max_value = self._max_value_observed_per_class[k]
         if min_value < np.inf:
-            bin = max_value - min_value
-            bin /= (float(self.num_bin_options) + 1.0)
+            bin_size = max_value - min_value
+            bin_size /= (float(self.num_bin_options) + 1.0)
             for i in range(self.num_bin_options):
-                split_value = min_value + (bin * (i + 1))
+                split_value = min_value + (bin_size * (i + 1))
                 if split_value > min_value and split_value < max_value:
                     suggested_split_values.add(split_value)
         return suggested_split_values

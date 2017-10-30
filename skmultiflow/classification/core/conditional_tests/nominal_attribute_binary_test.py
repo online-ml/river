@@ -2,8 +2,10 @@ __author__ = 'Jacob Montiel'
 
 from skmultiflow.classification.core.conditional_tests.instance_conditional_test import InstanceConditionalTest
 
+
 class NominalAttributeBinaryTest(InstanceConditionalTest):
     def __init__(self, att_idx, att_value):
+        super().__init__()
         self._att_idx = att_idx
         self._att_value = att_value
 
@@ -13,11 +15,12 @@ class NominalAttributeBinaryTest(InstanceConditionalTest):
         else:
             return 0 if int(X[self._att_idx]) == self._att_value else 1
 
-    def max_branches(self):
+    @staticmethod
+    def max_branches():
         return 2
 
     def describe_condition_for_branch(self, branch):
-        condition = ' <= 'if branch == 0 else ' > '
+        condition = ' = ' if branch == 0 else ' != '
         return 'Attribute {}{}{}'.format(self._att_idx, condition, self._att_value)
 
     def get_atts_test_depends_on(self):
