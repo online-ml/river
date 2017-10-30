@@ -37,15 +37,16 @@ class InstanceConditionalTest(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
+    @staticmethod
     @abstractmethod
-    def max_branches(self):
+    def max_branches():
         """ branch_for_instance
 
         Gets the number of maximum branches, -1 if unknown.
 
         Parameters
         ----------
-        self
+        None
 
         Returns
         -------

@@ -2,8 +2,10 @@ __author__ = 'Jacob Montiel'
 
 from skmultiflow.classification.core.conditional_tests.instance_conditional_test import InstanceConditionalTest
 
+
 class NominalAttributeMultiwayTest(InstanceConditionalTest):
     def __init__(self, att_idx):
+        super().__init__()
         self._att_idx = att_idx
 
     def branch_for_instance(self, X):
@@ -12,7 +14,8 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
         else:
             return X[self._att_idx]
 
-    def max_branches(self):
+    @staticmethod
+    def max_branches():
         return -1
 
     def describe_condition_for_branch(self, branch):

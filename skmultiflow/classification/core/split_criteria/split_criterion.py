@@ -1,7 +1,6 @@
 __author__ = 'Jacob Montiel'
 
 from abc import ABCMeta, abstractmethod
-from skmultiflow.core.base_object import BaseObject
 
 
 class SplitCriterion(metaclass=ABCMeta):
@@ -39,8 +38,9 @@ class SplitCriterion(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
+    @staticmethod
     @abstractmethod
-    def get_range_of_merit(self, pre_split_dist):
+    def get_range_of_merit(pre_split_dist):
         """ get_merit_of_split
 
         Computes the range of splitting merit.

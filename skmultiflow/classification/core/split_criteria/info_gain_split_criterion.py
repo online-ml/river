@@ -3,8 +3,10 @@ __author__ = 'Jacob Montiel'
 from skmultiflow.classification.core.split_criteria.split_criterion import SplitCriterion
 import numpy as np
 
+
 class InfoGainSplitCriterion(SplitCriterion):
     def __init__(self, min_branch_frac_option=0.01):
+        super().__init__()
         # Minimum fraction of weight required down at least two branches.
         self.min_branch_frac_option = min_branch_frac_option
 
@@ -13,8 +15,10 @@ class InfoGainSplitCriterion(SplitCriterion):
             return -np.inf
         return self.compute_entropy(pre_split_dist) - self.compute_entropy(post_split_dist)
 
-    def get_range_of_merit(self, pre_split_dist):
-        num_classes = len(pre_split_dist) if len(pre_split_dist) > 2 else 2
+    @staticmethod
+    def get_range_of_merit(pre_split_dist):
+        num_classes = len(pre_split_dist)
+        num_classes = num_classes if num_classes > 2 else 2
         return np.log2(num_classes)
 
     def compute_entropy(self, dist):
@@ -23,7 +27,8 @@ class InfoGainSplitCriterion(SplitCriterion):
         elif isinstance(dist, list):
             return self._compute_entropy_list(dist)
 
-    def _compute_entropy_dict(self, dist):
+    @staticmethod
+    def _compute_entropy_dict(dist):
         entropy = 0.0
         dis_sums = 0.0
         for _, d in dist.items():
@@ -43,7 +48,8 @@ class InfoGainSplitCriterion(SplitCriterion):
             entropy += dist_weights[i] * self.compute_entropy(dists[i])
         return entropy / total_weight
 
-    def num_subsets_greater_than_frac(self, distributions, min_frac):
+    @staticmethod
+    def num_subsets_greater_than_frac(distributions, min_frac):
         total_weight = 0.0
         dist_sums = [0.0]*len(distributions)
         for i in range(len(dist_sums)):

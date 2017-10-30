@@ -7,11 +7,11 @@ from abc import ABCMeta
 from operator import attrgetter
 from skmultiflow.core.utils.utils import *
 from skmultiflow.classification.base import BaseClassifier
-from skmultiflow.classification.core.attribute_class_observers.gaussian_numeric_attribute_class_observer\
+from skmultiflow.classification.core.attribute_class_observers.gaussian_numeric_attribute_class_observer \
     import GaussianNumericAttributeClassObserver
-from skmultiflow.classification.core.attribute_class_observers.nominal_attribute_class_observer\
+from skmultiflow.classification.core.attribute_class_observers.nominal_attribute_class_observer \
     import NominalAttributeClassObserver
-from skmultiflow.classification.core.attribute_class_observers.null_attribute_class_observer\
+from skmultiflow.classification.core.attribute_class_observers.null_attribute_class_observer \
     import NullAttributeClassObserver
 from skmultiflow.classification.core.attribute_split_suggestion import AttributeSplitSuggestion
 from skmultiflow.classification.core.split_criteria.gini_split_criterion import GiniSplitCriterion
@@ -28,8 +28,9 @@ NAIVE_BAYES_ADAPTIVE = 'nba'
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class HoeffdingTree(BaseClassifier):
-    '''
+    """
     Hoeffding Tree or VFDT.
 
     A Hoeffding tree is an incremental, anytime decision tree induction algorithm that is capable of learning from
@@ -95,7 +96,7 @@ class HoeffdingTree(BaseClassifier):
 
     nominal_attributes: List
         List of Nominal attributes
-    '''
+    """
 
     class FoundNode(object):
         def __init__(self, node=None, parent=None, parent_branch=None):
@@ -110,10 +111,11 @@ class HoeffdingTree(BaseClassifier):
 
         def __init__(self, class_observations=None):
             if class_observations is None:
-                class_observations = {}   # Dictionary (class_value, weight)
+                class_observations = {}  # Dictionary (class_value, weight)
             self._observed_class_distribution = class_observations
 
-        def is_leaf(self):
+        @staticmethod
+        def is_leaf():
             return True
 
         def filter_instance_to_leaf(self, X, parent, parent_branch):
@@ -130,7 +132,7 @@ class HoeffdingTree(BaseClassifier):
             for _, weight in self._observed_class_distribution.items():
                 if weight is not 0:
                     count += 1
-                    if count >= 2:   # No need to count beyond this point
+                    if count == 2:  # No need to count beyond this point
                         break
             return count < 2
 
@@ -151,10 +153,8 @@ class HoeffdingTree(BaseClassifier):
             return self.__sizeof__()
 
         def describe_subtree(self, ht, buffer, indent=0):
-            buffer[0] += textwrap.indent('Leaf ', ' '*indent)
-            buffer[0] += type(self).__name__ + ' = '
+            buffer[0] += textwrap.indent('Leaf = ', ' ' * indent)
             class_val = max(self._observed_class_distribution, key=self._observed_class_distribution.get)
-            max_val = self._observed_class_distribution[class_val]
             buffer[0] += 'Class {} | {}\n'.format(class_val, self._observed_class_distribution)
 
         # TODO
@@ -171,7 +171,7 @@ class HoeffdingTree(BaseClassifier):
             self._split_test = split_test
             # Dict of tuples (branch, child)
             if size > 0:
-                self._children = [None]*size
+                self._children = [None] * size
             else:
                 self._children = []
 
@@ -189,11 +189,12 @@ class HoeffdingTree(BaseClassifier):
         def instance_child_index(self, X):
             return self._split_test.branch_for_instance(X)
 
-        def is_leaf(self):
+        @staticmethod
+        def is_leaf():
             return False
 
         def filter_instance_to_leaf(self, X, parent, parent_branch):
-            child_index = self.instance_child_index(X);
+            child_index = self.instance_child_index(X)
             if child_index >= 0:
                 child = self.get_child(child_index)
                 if child is not None:
@@ -226,10 +227,10 @@ class HoeffdingTree(BaseClassifier):
             for branch_idx in range(self.num_children()):
                 child = self.get_child(branch_idx)
                 if child is not None:
-                    buffer[0] += textwrap.indent('if ', ' '*indent)
+                    buffer[0] += textwrap.indent('if ', ' ' * indent)
                     buffer[0] += self._split_test.describe_condition_for_branch(branch_idx)
                     buffer[0] += ':\n'
-                    child.describe_subtree(ht, buffer, indent+2)
+                    child.describe_subtree(ht, buffer, indent + 2)
 
     class LearningNode(Node):
         def __init__(self, initial_class_observations=None):
@@ -239,11 +240,11 @@ class HoeffdingTree(BaseClassifier):
             pass
 
     class InactiveLearningNode(LearningNode):
-        def __init__(self, initial_class_observations):
+        def __init__(self, initial_class_observations=None):
             super().__init__(initial_class_observations)
 
         def learn_from_instance(self, X, y, weight, ht):
-            if y > len(self._observed_class_distribution) -1:
+            if y > len(self._observed_class_distribution) - 1:
                 return
             if y not in self._observed_class_distribution:
                 self._observed_class_distribution[y] = 0.0
@@ -270,7 +271,7 @@ class HoeffdingTree(BaseClassifier):
 
             """
             if not self._is_initialized:
-                self._attribute_observers = [None]*len(X)
+                self._attribute_observers = [None] * len(X)
                 self._is_initialized = True
             if y not in self._observed_class_distribution:
                 self._observed_class_distribution[y] = 0.0
@@ -279,7 +280,7 @@ class HoeffdingTree(BaseClassifier):
             for i in range(len(X)):
                 obs = self._attribute_observers[i]
                 if obs is None:
-                    if i in ht._nominal_attributes:
+                    if i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
                         obs = GaussianNumericAttributeClassObserver()
@@ -312,14 +313,14 @@ class HoeffdingTree(BaseClassifier):
             """
             best_suggestions = []
             pre_split_dist = self._observed_class_distribution
-            if not ht.no_pre_prune_option:
+            if not ht.no_preprune:
                 # Add null split as an option
-                null_split = AttributeSplitSuggestion(None, pre_split_dist,
+                null_split = AttributeSplitSuggestion(None, [{}],
                                                       criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
                 best_suggestions.append(null_split)
             for i, obs in enumerate(self._attribute_observers):
                 best_suggestion = obs.get_best_evaluated_split_suggestion(criterion, pre_split_dist,
-                                                                          i, ht.binary_split_option)
+                                                                          i, ht.binary_split)
                 if best_suggestion is not None:
                     best_suggestions.append(best_suggestion)
             return best_suggestions
@@ -333,7 +334,7 @@ class HoeffdingTree(BaseClassifier):
             super().__init__(initial_class_observations)
 
         def get_class_votes(self, X, ht):
-            if self.get_weight_seen() >= ht._nb_threshold_option:
+            if self.get_weight_seen() >= ht.nb_threshold:
                 return do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
             else:
                 return super().get_class_votes(X, ht)
@@ -349,33 +350,44 @@ class HoeffdingTree(BaseClassifier):
             self._nb_correct_weight = 0.0
 
         def learn_from_instance(self, X, y, weight, ht):
-            if max(self._observed_class_distribution, key=self._observed_class_distribution.get) == y:
+            if self._observed_class_distribution == {}:
+                # All classes equal, default to class 0
+                if 0 == y:
+                    self._mc_correct_weight += weight
+            elif max(self._observed_class_distribution, key=self._observed_class_distribution.get) == y:
                 self._mc_correct_weight += weight
             nb_prediction = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
             if max(nb_prediction, key=nb_prediction.get) == y:
                 self._nb_correct_weight += weight
-            super().learn_from_instance(X, y, weight,ht)
+            super().learn_from_instance(X, y, weight, ht)
 
+        def get_class_votes(self, X, ht):
+            if self._mc_correct_weight > self._nb_correct_weight:
+                return self._observed_class_distribution
+            return do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
 
-
+    # ====================================
+    # == Hoeffding Tree implementation ===
+    # ====================================
     def __init__(self, max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
                  split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
-                 stop_mem_management=False, remove_poor_atts=False, no_pre_prune=False, leaf_prediction='mc',
-                 nb_threshold=0, nominal_attributes=[]):
+                 stop_mem_management=False, remove_poor_atts=False, no_preprune=False, leaf_prediction='mc',
+                 nb_threshold=0, nominal_attributes=None, classes=None):
         super().__init__()
-        self.max_byte_size_option = max_byte_size
-        self.memory_estimate_period_option = memory_estimate_period
-        self.grace_period_option = grace_period
-        self.split_criterion_option = split_criterion
-        self.split_confidence_option = split_confidence
-        self.tie_threshold_option = tie_threshold
-        self.binary_split_option = binary_split
-        self.stop_mem_management_option = stop_mem_management
-        self.remove_poor_atts_option = remove_poor_atts
-        self.no_pre_prune_option = no_pre_prune
-        self.leaf_prediction_option = leaf_prediction
-        self.nb_threshold_option = nb_threshold
+        self.max_byte_size = max_byte_size
+        self.memory_estimate_period = memory_estimate_period
+        self.grace_period = grace_period
+        self.split_criterion = split_criterion
+        self.split_confidence = split_confidence
+        self.tie_threshold = tie_threshold
+        self.binary_split = binary_split
+        self.stop_mem_management = stop_mem_management
+        self.remove_poor_atts = remove_poor_atts
+        self.no_preprune = no_preprune
+        self.leaf_prediction = leaf_prediction
+        self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
+        self.classes = classes
         # self._numeric_estimator_option = 'GaussianNumericAttributeClassObserver'           # Numeric estimator to use.
         # self._nominal_estimator_option = 'NominalAttributeClassObserver'                   # Nominal estimator to use.
 
@@ -390,109 +402,109 @@ class HoeffdingTree(BaseClassifier):
         self._train_weight_seen_by_model = 0.0
 
     @property
-    def max_byte_size_option(self):
-        return self._max_byte_size_option
+    def max_byte_size(self):
+        return self._max_byte_size
 
-    @max_byte_size_option.setter
-    def max_byte_size_option(self, max_byte_size):
-        self._max_byte_size_option = max_byte_size
-
-    @property
-    def memory_estimate_period_option(self):
-        return self._memory_estimate_period_option
-
-    @memory_estimate_period_option.setter
-    def memory_estimate_period_option(self, memory_estimate_period):
-        self._memory_estimate_period_option = memory_estimate_period
+    @max_byte_size.setter
+    def max_byte_size(self, max_byte_size):
+        self._max_byte_size = max_byte_size
 
     @property
-    def grace_period_option(self):
-        return self._grace_period_option
+    def memory_estimate_period(self):
+        return self._memory_estimate_period
 
-    @grace_period_option.setter
-    def grace_period_option(self, grace_period):
-        self._grace_period_option = grace_period
+    @memory_estimate_period.setter
+    def memory_estimate_period(self, memory_estimate_period):
+        self._memory_estimate_period = memory_estimate_period
 
     @property
-    def split_criterion_option(self):
-        return self._split_criterion_option
+    def grace_period(self):
+        return self._grace_period
 
-    @split_criterion_option.setter
-    def split_criterion_option(self, split_criterion):
+    @grace_period.setter
+    def grace_period(self, grace_period):
+        self._grace_period = grace_period
+
+    @property
+    def split_criterion(self):
+        return self._split_criterion
+
+    @split_criterion.setter
+    def split_criterion(self, split_criterion):
         if split_criterion != GINI_SPLIT and split_criterion != INFO_GAIN_SPLIT:
             logger.info("Invalid option {}', will use default '{}'".format(split_criterion, INFO_GAIN_SPLIT))
-            self._split_criterion_option = INFO_GAIN_SPLIT
+            self._split_criterion = INFO_GAIN_SPLIT
         else:
-            self._split_criterion_option = split_criterion
+            self._split_criterion = split_criterion
 
     @property
-    def split_confidence_option(self):
-        return self._split_confidence_option
+    def split_confidence(self):
+        return self._split_confidence
 
-    @split_confidence_option.setter
-    def split_confidence_option(self, split_confidence):
-        self._split_confidence_option = split_confidence
-
-    @property
-    def tie_threshold_option(self):
-        return self._tie_threshold_option
-
-    @tie_threshold_option.setter
-    def tie_threshold_option(self, tie_threshold):
-        self._tie_threshold_option = tie_threshold
+    @split_confidence.setter
+    def split_confidence(self, split_confidence):
+        self._split_confidence = split_confidence
 
     @property
-    def binary_split_option(self):
-        return self._binary_split_option
+    def tie_threshold(self):
+        return self._tie_threshold
 
-    @binary_split_option.setter
-    def binary_split_option(self, binary_split):
-        self._binary_split_option = binary_split
-
-    @property
-    def stop_mem_management_option(self):
-        return self._stop_mem_management_option
-
-    @stop_mem_management_option.setter
-    def stop_mem_management_option(self, stop_mem_management):
-        self._stop_mem_management_option = stop_mem_management
+    @tie_threshold.setter
+    def tie_threshold(self, tie_threshold):
+        self._tie_threshold = tie_threshold
 
     @property
-    def remove_poor_atts_option(self):
-        return self._remove_poor_atts_option
+    def binary_split(self):
+        return self._binary_split
 
-    @remove_poor_atts_option.setter
-    def remove_poor_atts_option(self, remove_poor_atts):
-        self._remove_poor_atts_option = remove_poor_atts
-
-    @property
-    def no_pre_prune_option(self):
-        return self._no_pre_prune_option
-
-    @no_pre_prune_option.setter
-    def no_pre_prune_option(self, no_pre_prune):
-        self._no_pre_prune_option = no_pre_prune
+    @binary_split.setter
+    def binary_split(self, binary_split):
+        self._binary_split = binary_split
 
     @property
-    def leaf_prediction_option(self):
-        return self._leaf_prediction_option
+    def stop_mem_management(self):
+        return self._stop_mem_management
 
-    @leaf_prediction_option.setter
-    def leaf_prediction_option(self, leaf_prediction):
+    @stop_mem_management.setter
+    def stop_mem_management(self, stop_mem_management):
+        self._stop_mem_management = stop_mem_management
+
+    @property
+    def remove_poor_atts(self):
+        return self._remove_poor_atts
+
+    @remove_poor_atts.setter
+    def remove_poor_atts(self, remove_poor_atts):
+        self._remove_poor_atts = remove_poor_atts
+
+    @property
+    def no_preprune(self):
+        return self._no_preprune
+
+    @no_preprune.setter
+    def no_preprune(self, no_pre_prune):
+        self._no_preprune = no_pre_prune
+
+    @property
+    def leaf_prediction(self):
+        return self._leaf_prediction
+
+    @leaf_prediction.setter
+    def leaf_prediction(self, leaf_prediction):
         if leaf_prediction != MAJORITY_CLASS and leaf_prediction != NAIVE_BAYES \
                 and leaf_prediction != NAIVE_BAYES_ADAPTIVE:
             logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, MAJORITY_CLASS))
-            self._leaf_prediction_option = MAJORITY_CLASS
+            self._leaf_prediction = MAJORITY_CLASS
         else:
-            self._leaf_prediction_option = leaf_prediction
+            self._leaf_prediction = leaf_prediction
 
     @property
-    def nb_threshold_option(self):
-        return self._nb_threshold_option
+    def nb_threshold(self):
+        return self._nb_threshold
 
-    @nb_threshold_option.setter
-    def nb_threshold_option(self, nb_threshold):
-        self._nb_threshold_option = nb_threshold
+    @nb_threshold.setter
+    def nb_threshold(self, nb_threshold):
+        self._nb_threshold = nb_threshold
 
     @property
     def nominal_attributes(self):
@@ -500,9 +512,21 @@ class HoeffdingTree(BaseClassifier):
 
     @nominal_attributes.setter
     def nominal_attributes(self, nominal_attributes):
-        if nominal_attributes == []:
+        if nominal_attributes is None:
+            nominal_attributes = []
             logger.info("No Nominal attributes have been defined, will consider all attributes as numerical")
-            self._nominal_attributes = nominal_attributes
+        self._nominal_attributes = nominal_attributes
+
+    @property
+    def classes(self):
+        return self._classes
+
+    @classes.setter
+    def classes(self, classes):
+        if classes is None:
+            raise ValueError("Need to define the classes.")
+        else:
+            self._classes = list(set(classes))  # Force unique values
 
     def __sizeof__(self):
         size = object.__sizeof__(self)
@@ -522,11 +546,11 @@ class HoeffdingTree(BaseClassifier):
         self._active_leaf_byte_size_estimate = 0.0
         self._byte_size_estimate_overhead_fraction = 1.0
         self._growth_allowed = True
-        if self._leaf_prediction_option != MAJORITY_CLASS:
-            self._remove_poor_atts_option = None
+        if self._leaf_prediction != MAJORITY_CLASS:
+            self._remove_poor_atts = None
         self._train_weight_seen_by_model = 0.0
 
-    def fit(self, X, y, classes = None):
+    def fit(self, X, y, classes=None):
         raise NotImplementedError
 
     def partial_fit(self, X, y, weight, classes=None):
@@ -556,7 +580,7 @@ class HoeffdingTree(BaseClassifier):
             row_cnt, _ = get_dimensions(X)
             wrow_cnt, _ = get_dimensions(weight)
             if row_cnt != wrow_cnt:
-                weight = [weight]*row_cnt
+                weight = [weight] * row_cnt
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
@@ -579,10 +603,10 @@ class HoeffdingTree(BaseClassifier):
                 active_learning_node = learning_node
                 weight_seen = active_learning_node.get_weight_seen()
                 weight_diff = weight_seen - active_learning_node.get_weight_seen_at_last_split_evaluation()
-                if weight_diff >= self._grace_period_option:
-                    self.attempt_to_split(active_learning_node, found_node.parent, found_node.parent_branch)
+                if weight_diff >= self.grace_period:
+                    self._attempt_to_split(active_learning_node, found_node.parent, found_node.parent_branch)
                     active_learning_node.set_weight_seen_at_last_split_evaluation(weight_seen)
-        if self._train_weight_seen_by_model % self._memory_estimate_period_option == 0:
+        if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self.estimate_model_byte_size()
 
     def get_votes_for_instance(self, X):
@@ -616,7 +640,7 @@ class HoeffdingTree(BaseClassifier):
         for i in range(r):
             votes = self.get_votes_for_instance(X[i])
             if votes == {}:
-                # Tree is empty, all classes equal, default to first class
+                # Tree is empty, all classes equal, default to zero
                 predictions.append(0)
             else:
                 predictions.append(max(votes, key=votes.get)
@@ -626,32 +650,33 @@ class HoeffdingTree(BaseClassifier):
     def predict_proba(self, X):
         raise NotImplementedError
 
+    @property
     def get_model_measurements(self):
-        measurements = {}
-        measurements['Tree size (nodes)'] = self._decision_node_cnt +\
-                                            self._active_leaf_node_cnt +\
-                                            self._inactive_leaf_node_cnt
-        measurements['Tree size (leaves)'] = self._active_leaf_node_cnt + self._inactive_leaf_node_cnt
-        measurements['Active learning nodes'] = self._active_leaf_node_cnt
-        measurements['Tree depth'] = self.measure_tree_depth()
-        measurements['Active leaf byte size estimate'] = self._active_leaf_byte_size_estimate
-        measurements['Inactive leaf byte size estimate'] = self._inactive_leaf_byte_size_estimate
-        measurements['Byte size estimate overhead'] = self._byte_size_estimate_overhead_fraction
+        measurements = {'Tree size (nodes)': self._decision_node_cnt
+                                               + self._active_leaf_node_cnt
+                                               + self._inactive_leaf_node_cnt,
+                        'Tree size (leaves)': self._active_leaf_node_cnt + self._inactive_leaf_node_cnt,
+                        'Active learning nodes': self._active_leaf_node_cnt, 'Tree depth': self.measure_tree_depth(),
+                        'Active leaf byte size estimate': self._active_leaf_byte_size_estimate,
+                        'Inactive leaf byte size estimate': self._inactive_leaf_byte_size_estimate,
+                        'Byte size estimate overhead': self._byte_size_estimate_overhead_fraction
+                        }
+        return measurements
 
     def measure_tree_depth(self):
         if isinstance(self._tree_root, self.Node):
             return self._tree_root.subtree_depth()
         return 0
 
-    def _new_learning_node(self, initial_class_observations={}):
-        if self._leaf_prediction_option == MAJORITY_CLASS:
+    def _new_learning_node(self, initial_class_observations=None):
+        if initial_class_observations is None:
+            initial_class_observations = {}
+        if self._leaf_prediction == MAJORITY_CLASS:
             return self.ActiveLearningNode(initial_class_observations)
-        elif self._leaf_prediction_option == NAIVE_BAYES:
+        elif self._leaf_prediction == NAIVE_BAYES:
             return self.LearningNodeNB(initial_class_observations)
-        elif self._leaf_prediction_option == NAIVE_BAYES_ADAPTIVE:
-            return self.LearningNodeNBAdaptive(initial_class_observations)
         else:
-            return self.ActiveLearningNode(initial_class_observations)
+            return self.LearningNodeNBAdaptive(initial_class_observations)
 
     def get_model_description(self):
         if self._tree_root is not None:
@@ -662,20 +687,22 @@ class HoeffdingTree(BaseClassifier):
                 description += buffer[line]
             return description
 
-    def is_randomizable(self):    # TODO do we need this?
+    @staticmethod
+    def is_randomizable():  # TODO do we need this?
         return False
 
-    def compute_hoeffding_bound(self, range_val, confidence, n):
-        return np.sqrt( (range_val * range_val * np.log(1.0 / confidence)) / (2.0 * n))
+    @staticmethod
+    def compute_hoeffding_bound(range_val, confidence, n):
+        return np.sqrt((range_val * range_val * np.log(1.0 / confidence)) / (2.0 * n))
 
     def new_split_node(self, split_test, class_observations, size=-1):
         return self.SplitNode(split_test, class_observations, size)
 
-    def attempt_to_split(self, node:ActiveLearningNode, parent:SplitNode, parent_idx:int):
+    def _attempt_to_split(self, node: ActiveLearningNode, parent: SplitNode, parent_idx: int):
         if not node.observed_class_distribution_is_pure():
-            if self._split_criterion_option == GINI_SPLIT:
+            if self._split_criterion == GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
-            elif self._split_criterion_option == INFO_GAIN_SPLIT:
+            elif self._split_criterion == INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
@@ -685,14 +712,14 @@ class HoeffdingTree(BaseClassifier):
             if len(best_split_suggestions) < 2:
                 should_split = len(best_split_suggestions) > 0
             else:
-                hoeffding_bound = self.compute_hoeffding_bound(split_criterion.get_range_of_merit(\
-                    node.get_observed_class_distribution()), self.split_confidence_option, node.get_weight_seen())
+                hoeffding_bound = self.compute_hoeffding_bound(split_criterion.get_range_of_merit(
+                    node.get_observed_class_distribution()), self.split_confidence, node.get_weight_seen())
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
-                if best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound or \
-                    hoeffding_bound < self._tie_threshold_option:
+                if (best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
+                        or hoeffding_bound < self.tie_threshold):    # best_suggestion.merit > 1e-10 and \
                     should_split = True
-                if self._remove_poor_atts_option is not None and self._remove_poor_atts_option:
+                if self.remove_poor_atts is not None and self.remove_poor_atts:
                     poor_atts = set()
                     # Scan 1 - add any poor attribute to set
                     for i in range(len(best_split_suggestions)):
@@ -712,9 +739,9 @@ class HoeffdingTree(BaseClassifier):
                         node.disable_attribute(poor_att)
             if should_split:
                 split_decision = best_split_suggestions[-1]
-                if split_decision is None or not isinstance(split_decision, AttributeSplitSuggestion):
+                if split_decision.split_test is None:
                     # Preprune - null wins
-                    self.deactivate_learning_node(node, parent, parent_idx)
+                    self._deactivate_learning_node(node, parent, parent_idx)
                 else:
                     new_split = self.new_split_node(split_decision.split_test,
                                                     node.get_observed_class_distribution(),
@@ -734,42 +761,42 @@ class HoeffdingTree(BaseClassifier):
 
     def enforce_tracker_limit(self):
         byte_size = (self._active_leaf_byte_size_estimate
-                     + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate)\
+                     + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate) \
                     * self._byte_size_estimate_overhead_fraction
-        if self._inactive_leaf_node_cnt > 0 or byte_size > self._max_byte_size_option:
+        if self._inactive_leaf_node_cnt > 0 or byte_size > self.max_byte_size:
             self._growth_allowed = False
             return
-        learning_nodes = self.find_learning_nodes()
-        learning_nodes.sort(key=lambda n:n.node.calculate_promise())
+        learning_nodes = self._find_learning_nodes()
+        learning_nodes.sort(key=lambda n: n.node.calculate_promise())
         max_active = 0
         while max_active < len(learning_nodes):
             max_active += 1
             if ((max_active * self._active_leaf_byte_size_estimate + (len(learning_nodes) - max_active)
                 * self._inactive_leaf_byte_size_estimate) * self._byte_size_estimate_overhead_fraction) \
-                > self._max_byte_size_option:
+                    > self.max_byte_size:
                 max_active -= 1
                 break
         cutoff = len(learning_nodes) - max_active
         for i in range(cutoff):
             if isinstance(learning_nodes[i].node, self.ActiveLearningNode):
-                self.deactivate_learning_node(learning_nodes[i].node,
-                                              learning_nodes[i].parent,
-                                              learning_nodes[i].parent_branch)
+                self._deactivate_learning_node(learning_nodes[i].node,
+                                               learning_nodes[i].parent,
+                                               learning_nodes[i].parent_branch)
         for i in range(cutoff, len(learning_nodes)):
             if isinstance(learning_nodes[i].node, self.InactiveLearningNode):
-                self.activate_learning_node(learning_nodes[i].node,
-                                            learning_nodes[i].parent,
-                                            learning_nodes[i].parent_branch)
+                self._activate_learning_node(learning_nodes[i].node,
+                                             learning_nodes[i].parent,
+                                             learning_nodes[i].parent_branch)
 
     def estimate_model_byte_size(self):
-        learning_nodes = self.find_learning_nodes()
+        learning_nodes = self._find_learning_nodes()
         total_active_size = 0
         total_inactive_size = 0
         for found_node in learning_nodes:
-            if isinstance(found_node, self.ActiveLearningNode):
+            if isinstance(found_node.node, self.ActiveLearningNode):
                 total_active_size += sys.getsizeof(found_node.node)
             else:
-                total_inactive_size +=  sys.getsizeof(found_node.node)
+                total_inactive_size += sys.getsizeof(found_node.node)
         if total_active_size > 0:
             self._active_leaf_byte_size_estimate = total_active_size / self._active_leaf_node_cnt
         if total_inactive_size > 0:
@@ -778,18 +805,18 @@ class HoeffdingTree(BaseClassifier):
         estimated_model_size = (self._active_leaf_node_cnt * self._active_leaf_byte_size_estimate
                                 + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate)
         self._byte_size_estimate_overhead_fraction = actual_model_size / estimated_model_size
-        if actual_model_size > self._max_byte_size_option:
+        if actual_model_size > self.max_byte_size:
             self.enforce_tracker_limit()
 
-    def deactivate_all_leaves(self):    # TODO do we need this?
-        learning_nodes = self.find_learning_nodes()
+    def deactivate_all_leaves(self):
+        learning_nodes = self._find_learning_nodes()
         for i in range(len(learning_nodes)):
             if isinstance(learning_nodes[i], self.ActiveLearningNode):
-                self.deactivate_learning_node(learning_nodes[i].node,
-                                              learning_nodes[i].parent,
-                                              learning_nodes[i].parent_branch)
+                self._deactivate_learning_node(learning_nodes[i].node,
+                                               learning_nodes[i].parent,
+                                               learning_nodes[i].parent_branch)
 
-    def deactivate_learning_node(self, to_deactivate:ActiveLearningNode, parent:SplitNode, parent_branch:int):
+    def _deactivate_learning_node(self, to_deactivate: ActiveLearningNode, parent: SplitNode, parent_branch: int):
         new_leaf = self.InactiveLearningNode(to_deactivate.get_observed_class_distribution())
         if parent is None:
             self._tree_root = new_leaf
@@ -798,7 +825,7 @@ class HoeffdingTree(BaseClassifier):
         self._active_leaf_node_cnt -= 1
         self._inactive_leaf_node_cnt += 1
 
-    def activate_learning_node(self, to_activate:InactiveLearningNode, parent:SplitNode, parent_branch:int):
+    def _activate_learning_node(self, to_activate: InactiveLearningNode, parent: SplitNode, parent_branch: int):
         new_leaf = self._new_learning_node(to_activate.get_observed_class_distribution())
         if parent is None:
             self._tree_root = new_leaf
@@ -807,36 +834,36 @@ class HoeffdingTree(BaseClassifier):
         self._active_leaf_node_cnt += 1
         self._inactive_leaf_node_cnt -= 1
 
-    def find_learning_nodes(self):
+    def _find_learning_nodes(self):
         found_list = []
-        self._find_learning_nodes(self._tree_root, None, -1, found_list)
+        self.__find_learning_nodes(self._tree_root, None, -1, found_list)
         return found_list
 
-    def _find_learning_nodes(self, node, parent, parent_branch, found):
+    def __find_learning_nodes(self, node, parent, parent_branch, found):
         if node is not None:
             if isinstance(node, self.LearningNode):
                 found.append(self.FoundNode(node, parent, parent_branch))
             if isinstance(node, self.SplitNode):
                 split_node = node
                 for i in range(split_node.num_children()):
-                    self._find_learning_nodes(split_node.get_child(i), split_node, i, found)
+                    self.__find_learning_nodes(split_node.get_child(i), split_node, i, found)
 
     def score(self, X, y):
         raise NotImplementedError
 
     def get_info(self):
-        description = type(ht).__name__ + ': '
-        description += 'max_byte_size: {} - '.format(self.max_byte_size_option)
-        description += 'memory_estimate_period: {} - '.format(self.memory_estimate_period_option)
-        description += 'grace_period: {} - '.format(self.grace_period_option)
-        description += 'split_criterion: {} - '.format(self.split_criterion_option)
-        description += 'split_confidence: {} - '.format(self.split_confidence_option)
-        description += 'tie_threshold: {} - '.format(self.tie_threshold_option)
-        description += 'binary_split: {} - '.format(self.binary_split_option)
-        description += 'stop_mem_management: {} - '.format(self.stop_mem_management_option)
-        description += 'remove_poor_atts: {} - '.format(self.remove_poor_atts_option)
-        description += 'no_pre_prune: {} - '.format(self.no_pre_prune_option)
-        description += 'leaf_prediction: {} - '.format(self.leaf_prediction_option)
-        description += 'nb_threshold: {} - '.format(self.nb_threshold_option)
+        description = type(self).__name__ + ': '
+        description += 'max_byte_size: {} - '.format(self.max_byte_size)
+        description += 'memory_estimate_period: {} - '.format(self.memory_estimate_period)
+        description += 'grace_period: {} - '.format(self.grace_period)
+        description += 'split_criterion: {} - '.format(self.split_criterion)
+        description += 'split_confidence: {} - '.format(self.split_confidence)
+        description += 'tie_threshold: {} - '.format(self.tie_threshold)
+        description += 'binary_split: {} - '.format(self.binary_split)
+        description += 'stop_mem_management: {} - '.format(self.stop_mem_management)
+        description += 'remove_poor_atts: {} - '.format(self.remove_poor_atts)
+        description += 'no_pre_prune: {} - '.format(self.no_preprune)
+        description += 'leaf_prediction: {} - '.format(self.leaf_prediction)
+        description += 'nb_threshold: {} - '.format(self.nb_threshold)
         description += 'nominal_attributes: {} - '.format(self.nominal_attributes)
         return description

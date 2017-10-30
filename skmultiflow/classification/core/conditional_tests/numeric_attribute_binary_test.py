@@ -2,13 +2,15 @@ __author__ = 'Jacob Montiel'
 
 from skmultiflow.classification.core.conditional_tests.instance_conditional_test import InstanceConditionalTest
 
+
 class NumericAttributeBinaryTest(InstanceConditionalTest):
     def __init__(self, att_idx, att_value, equal_passes_test):
+        super().__init__()
         self._att_idx = att_idx
         self._att_value = att_value
         self._equals_passes_test = equal_passes_test
 
-    def  branch_for_instance(self, X):
+    def branch_for_instance(self, X):
         if self._att_idx > len(X) or self._att_idx < 0:
             return -1
         v = X[self._att_idx]
@@ -16,7 +18,8 @@ class NumericAttributeBinaryTest(InstanceConditionalTest):
             return 0 if self._equals_passes_test else 1
         return 0 if v < self._att_value else 1
 
-    def max_branches(self):
+    @staticmethod
+    def max_branches():
         return 2
 
     def describe_condition_for_branch(self, branch):
