@@ -328,9 +328,9 @@ class EvaluatePrequential(BaseEvaluator):
             X, y = self.stream.next_instance(self.pretrain_size)
             for i in range(self.n_classifiers):
                 if self.task_type != 'regression':
-                    self.classifier[i].partial_fit(X, y, self.stream.get_classes())
+                    self.classifier[i].partial_fit(X=X, y=y, classes=self.stream.get_classes())
                 else:
-                    self.classifier[i].partial_fit(X, y)
+                    self.classifier[i].partial_fit(X=X, y=y)
             first_run = False
 
         else:

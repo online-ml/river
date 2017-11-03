@@ -6,6 +6,9 @@ from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 from skmultiflow.options.file_option import FileOption
+from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
+from skmultiflow.data.generators.waveform_generator import WaveformGenerator
+from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
 
 
 def demo():
@@ -16,26 +19,31 @@ def demo():
     object.
      
     """
-    # Setup the stream
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
-    stream = FileStream(opt, -1, 1)
-    stream.prepare_for_use()
+    # # Setup the stream
+    # opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
+    # stream = FileStream(opt, -1, 1)
+    # stream.prepare_for_use()
+    # # If used for Hoeffding Trees then need to pass indices for Nominal attributes
 
     # Test with RandomTreeGenerator
-    #opt_list = [['-c', '2'], ['-o', '0'], ['-u', '5'], ['-v', '4']]
-    #stream = RandomTreeGenerator(opt_list)
-    #stream.prepare_for_use()
+    stream = RandomTreeGenerator(n_classes=2, n_nominal_attributes=0, n_numerical_attributes=5, n_values_per_nominal=4)
+    stream.prepare_for_use()
+
+    # Test with WaveformGenerator
+    # stream = WaveformGenerator()
+    # stream.prepare_for_use()
 
     # Setup the classifier
     #classifier = PerceptronMask()
     #classifier = NaiveBayes()
-    classifier = PassiveAggressiveClassifier()
+    #classifier = PassiveAggressiveClassifier()
+    classifier = HoeffdingTree()
 
     # Setup the pipeline
-    pipe = Pipeline([('passive_aggressive', classifier)])
+    pipe = Pipeline([('Hoeffding Tree', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=500000)
+    eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=100000)
 
     # Evaluate
     eval.eval(stream=stream, classifier=pipe)
