@@ -173,7 +173,7 @@ class Pipeline(BaseObject):
                 Xt = transform.partial_fit(Xt, y, classes=classes).transform(Xt)
 
         if self._final_estimator is not None:
-            self._final_estimator.partial_fit(Xt, y, classes)
+            self._final_estimator.partial_fit(X=Xt, y=y, classes=classes)
         return self
 
     def partial_fit_predict(self, X, y):
