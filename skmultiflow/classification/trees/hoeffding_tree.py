@@ -372,7 +372,7 @@ class HoeffdingTree(BaseClassifier):
     def __init__(self, max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
                  split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
                  stop_mem_management=False, remove_poor_atts=False, no_preprune=False, leaf_prediction='mc',
-                 nb_threshold=0, nominal_attributes=None, classes=None):
+                 nb_threshold=0, nominal_attributes=None):
         super().__init__()
         self.max_byte_size = max_byte_size
         self.memory_estimate_period = memory_estimate_period
@@ -387,7 +387,6 @@ class HoeffdingTree(BaseClassifier):
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
-        self.classes = classes
         # self._numeric_estimator_option = 'GaussianNumericAttributeClassObserver'           # Numeric estimator to use.
         # self._nominal_estimator_option = 'NominalAttributeClassObserver'                   # Nominal estimator to use.
 
@@ -517,17 +516,6 @@ class HoeffdingTree(BaseClassifier):
             logger.info("No Nominal attributes have been defined, will consider all attributes as numerical")
         self._nominal_attributes = nominal_attributes
 
-    @property
-    def classes(self):
-        return self._classes
-
-    @classes.setter
-    def classes(self, classes):
-        if classes is None:
-            raise ValueError("Need to define the classes.")
-        else:
-            self._classes = list(set(classes))  # Force unique values
-
     def __sizeof__(self):
         size = object.__sizeof__(self)
         if self._tree_root is not None:
@@ -553,7 +541,7 @@ class HoeffdingTree(BaseClassifier):
     def fit(self, X, y, classes=None):
         raise NotImplementedError
 
-    def partial_fit(self, X, y, weight, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Trains the model on samples X and targets y.
@@ -580,7 +568,7 @@ class HoeffdingTree(BaseClassifier):
             row_cnt, _ = get_dimensions(X)
             wrow_cnt, _ = get_dimensions(weight)
             if row_cnt != wrow_cnt:
-                weight = [weight] * row_cnt
+                weight = [weight[0]] * row_cnt
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
