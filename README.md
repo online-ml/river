@@ -35,7 +35,6 @@ be manually installed. Then the setup.py can be run to install the scikit-multif
 
 ### Testing considerations
 * Always be in the correct virtual environment.
-* I'll send you through the google hangouts chat the conda configuration file
 * See the matplotlib backend considerations in the end of this README.md file
 
 ### Independent demos
