@@ -46,8 +46,8 @@ if __name__ == '__main__':
 
 
     logging.info('loading dataset')
-    #X=pd.read_csv('../datasets/NEweather_data.csv', sep=',', header=None).values
-    #y=pd.read_csv('../datasets/NEweather_class.csv', sep=',', header=None, dtype=np.int8).values.ravel()
+    #X=pd.read_csv('../datasets/neweather_data.csv', sep=',', header=None).values
+    #y=pd.read_csv('../datasets/neweather_class.csv', sep=',', header=None, dtype=np.int8).values.ravel()
     X = np.loadtxt('../datasets/movingSquares.data')
     y = np.loadtxt('../datasets/movingSquares.labels', dtype=np.uint8)
     logging.info('%d samples' % X.shape[0])
