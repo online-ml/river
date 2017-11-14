@@ -431,7 +431,7 @@ class EvaluatePrequential(BaseEvaluator):
 
         return self.classifier
 
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Partially fit all the learners on the given data.
@@ -442,12 +442,13 @@ class EvaluatePrequential(BaseEvaluator):
             The data upon which the algorithm will create its model.
 
         y: Array-like
-            An array-like containing the classification targets for all 
-            samples in X.
+            An array-like containing the classification targets for all samples in X.
 
         classes: list
-            Stores all the classes that may be encountered during the 
-            classification task.
+            Stores all the classes that may be encountered during the classification task.
+
+        weight: Array-like
+            Instance weight. If not provided, uniform weights are assumed.
 
         Returns
         -------
@@ -457,7 +458,7 @@ class EvaluatePrequential(BaseEvaluator):
         """
         if self.classifier is not None:
             for i in range(self.n_classifiers):
-                self.classifier[i].partial_fit(X, y, classes)
+                self.classifier[i].partial_fit(X, y, classes, weight)
             return self
         else:
             return self

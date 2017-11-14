@@ -98,10 +98,10 @@ class OzaBaggingAdwin(BaseClassifier):
         self.ensemble_length = ensemble_length
         self.ensemble = [cp.deepcopy(h) for j in range(self.ensemble_length)]
 
-    def fit(self, X, y, classes = None):
+    def fit(self, X, y, classes = None, weight=None):
         raise NotImplementedError
 
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Partially fits the model, based on the X and y matrix.
@@ -130,6 +130,9 @@ class OzaBaggingAdwin(BaseClassifier):
         classes: list 
             List of all existing classes. This is an optional parameter, except 
             for the first partial_fit call, when it becomes obligatory.
+
+        weight: Array-like
+            Instance weight. If not provided, uniform weights are assumed.
 
         Raises
         ------
@@ -163,7 +166,7 @@ class OzaBaggingAdwin(BaseClassifier):
             k = np.random.poisson()
             if k > 0:
                 for b in range(k):
-                    self.ensemble[i].partial_fit(X, y, classes)
+                    self.ensemble[i].partial_fit(X, y, classes, weight)
 
             try:
                 pred = self.ensemble[i].predict(X)
@@ -175,7 +178,7 @@ class OzaBaggingAdwin(BaseClassifier):
                         else:
                             self.adwin_ensemble[i].add_element(0)
                 if self.adwin_ensemble[i].detected_change():
-                    if self.adwin_ensemble[i] > error_estimation:
+                    if self.adwin_ensemble[i]._estimation > error_estimation:
                         change_detected = True
             except ValueError:
                 change_detected = False

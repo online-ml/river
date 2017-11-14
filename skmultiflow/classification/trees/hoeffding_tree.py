@@ -538,7 +538,7 @@ class HoeffdingTree(BaseClassifier):
             self._remove_poor_atts = None
         self._train_weight_seen_by_model = 0.0
 
-    def fit(self, X, y, classes=None):
+    def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None, weight=None):
@@ -552,10 +552,12 @@ class HoeffdingTree(BaseClassifier):
             Data instances.
 
         y: Array-like
-            An array-like containing the classification targets for all samples in X.
+            Contains the classification targets for all samples in X.
 
-        weight: list
-            Instance weight
+        classes: Not used.
+
+        weight: Float or Array-like
+            Instance weight. If not provided, uniform weights are assumed.
 
         Returns
         -------

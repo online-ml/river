@@ -76,7 +76,7 @@ class MultiOutputLearner(BaseClassifier) :
     def __configure(self):
         self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
-    def fit(self, X, Y, classes = None):
+    def fit(self, X, y, classes=None, weight=None):
         """ fit
 
         Fit the N classifiers, one for each classification task.
@@ -89,9 +89,9 @@ class MultiOutputLearner(BaseClassifier) :
         y: Array-like
             An array-like with the labels of all samples in X.
 
-        classes: Array-like
-            Optional parameter that contains all labels that may appear 
-            in samples.
+        classes: Not used.
+
+        weight: Not used.
 
         Returns
         -------
@@ -99,19 +99,19 @@ class MultiOutputLearner(BaseClassifier) :
             self
 
         """
-        N,L = Y.shape
+        N,L = y.shape
         self.L = L
         self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
         for j in range(self.L):
-            self.h[j].fit(X, Y[:,j])
+            self.h[j].fit(X, y[:, j])
         return self
 
-    def partial_fit(self, X, Y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Partially fit each of the classifiers on the X matrix and the 
-        corresponding entry at the Y array.
+        corresponding entry at the y array.
 
         Parameters
         ----------
@@ -126,19 +126,27 @@ class MultiOutputLearner(BaseClassifier) :
             parameter, except during the first partial_fit call, when it's 
             obligatory.
 
+        weight: Array-like.
+            Instance weight.
+
         Returns
         -------
         MultiOutputLearner
             self
 
         """
-        N,self.L = Y.shape
+        N,self.L = y.shape
 
         if self.h is None:
             self.__configure()
 
         for j in range(self.L):
-            self.h[j].partial_fit(X, Y[:,j], classes)
+            if "weight" in self.h[j].partial_fit.__code__.co_varnames:
+                self.h[j].partial_fit(X, y[:, j], classes, weight)
+            elif "sample_weight" in self.h[j].partial_fit.__code__.co_varnames:
+                self.h[j].partial_fit(X, y[:, j], classes, weight)
+            else:
+                self.h[j].partial_fit(X, y[:, j])
 
         return self
 

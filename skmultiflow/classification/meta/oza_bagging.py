@@ -105,10 +105,10 @@ class OzaBagging(BaseClassifier):
     def reset(self):
         self.__configure(self.h, self.ensemble_length)
 
-    def fit(self, X, y, classes=None):
+    def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
 
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
          
         Partially fits the model, based on the X and y matrix.
@@ -131,7 +131,10 @@ class OzaBagging(BaseClassifier):
         classes: list 
             List of all existing classes. This is an optional parameter, except 
             for the first partial_fit call, when it becomes obligatory.
-        
+
+        weight: Array-like
+            Instance weight. If not provided, uniform weights are assumed.
+
         Raises
         ------
         ValueError: A ValueError is raised if the 'classes' parameter is not 
@@ -155,7 +158,7 @@ class OzaBagging(BaseClassifier):
             if set(self.classes) == set(classes):
                 pass
             else:
-                raise ValueError("The classes passed to the partial_fit function differ from those passed in an earlier moment.")
+                raise ValueError("The classes passed to the partial_fit function differ from those passed earlier.")
 
         self.__adjust_ensemble_size()
 
@@ -163,7 +166,7 @@ class OzaBagging(BaseClassifier):
             k = np.random.poisson()
             if k > 0:
                 for b in range(k):
-                    self.ensemble[i].partial_fit(X, y, classes)
+                    self.ensemble[i].partial_fit(X, y, classes, weight)
         return self
 
     def __adjust_ensemble_size(self):
