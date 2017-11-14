@@ -14,6 +14,7 @@ from distutils.sysconfig import get_python_inc
 * pandas
 * scikit-learn
 * libNearestNeighbors
+* sortedcontainers
 
 """
 
