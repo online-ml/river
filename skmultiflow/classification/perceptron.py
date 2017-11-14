@@ -17,7 +17,7 @@ class PerceptronMask(BaseClassifier):
         super().__init__()
         self.classifier = Perceptron(n_iter=50)
 
-    def fit(self, X, y, classes = None):
+    def fit(self, X, y, classes = None, weight=None):
         """ fit
 
         Calls the Perceptron fit function from sklearn.
@@ -30,8 +30,9 @@ class PerceptronMask(BaseClassifier):
         y: Array-like
             The class labels for all samples in X.
 
-        classes: list, optional
-            A list with all the possible labels of the classification problem.
+        classes: Not used.
+
+        weight: Instance weight. If not provided, uniform weights are assumed.
 
         Returns
         -------
@@ -39,10 +40,10 @@ class PerceptronMask(BaseClassifier):
             self
 
         """
-        self.classifier.fit(X, y, classes)
+        self.classifier.fit(X, y, sample_weight=weight)
         return self
 
-    def partial_fit(self, X, y, classes = None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Calls the Perceptron partial_fit from sklearn.
@@ -58,13 +59,15 @@ class PerceptronMask(BaseClassifier):
         classes: list, optional
             A list with all the possible labels of the classification problem.
 
+        weight: Instance weight. If not provided, uniform weights are assumed.
+
         Returns
         -------
         PerceptronMask
             self
 
         """
-        self.classifier.partial_fit(X, y, classes)
+        self.classifier.partial_fit(X, y, classes, weight)
         return self
 
     def predict(self, X):

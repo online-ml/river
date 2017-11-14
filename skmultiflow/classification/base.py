@@ -24,7 +24,7 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
 
 
     @abstractmethod
-    def fit(self, X, y, classes = None):
+    def fit(self, X, y, classes=None, weight=None):
         """ fit
         
         Fit the model under a batch setting.
@@ -38,8 +38,11 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
             An array-like with the labels of all samples in X.
             
         classes: Array-like
-            Optional parameter that contains all labels that may appear 
-            in samples.
+            Contains all labels that may appear in samples. Applicability varies depending on the algorithm.
+
+        weight: Array-like
+            Instance weight. If not provided, uniform weights are assumed.
+            Applicability varies depending on the algorithm.
             
         Returns
         -------
@@ -49,7 +52,7 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
         
         Partial (incremental) fit the model under an online learning setting.
@@ -63,9 +66,12 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
             An array-like with the labels of all samples in X.
             
         classes: Array-like
-            Contains all labels that may appear in samples. It's an optional 
-            parameter, except during the first partial_fit call, when it's 
-            obligatory.
+            Contains all labels that may appear in samples. Applicability varies depending on the algorithm.
+            Optional parameter except during the first partial_fit call, when it's obligatory.
+
+        weight: Array-like
+            Instance weight. If not provided, uniform weights are assumed.
+            Applicability varies depending on the algorithm.
         
         Returns
         -------

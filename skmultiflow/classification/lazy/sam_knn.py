@@ -347,10 +347,10 @@ class SAMKNN(BaseClassifier):
             predictedLabel = self.getLabelsFct(distancesSTM, self._STMLabels, min(self.n_neighbors, currLen))[0]
         return predictedLabel
 
-    def fit(self, X, y, classes = None):
-        self.partial_fit(X, y, classes)
+    def fit(self, X, y, classes = None, weight=None):
+        self.partial_fit(X, y, classes, weight)
 
-    def partial_fit(self, samples, labels, classes=None):
+    def partial_fit(self, samples, labels, classes=None, weight=None):
         """Processes a new sample."""
         r, c = get_dimensions(samples)
         if self._STMSamples is None:

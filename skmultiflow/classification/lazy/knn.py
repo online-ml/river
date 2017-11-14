@@ -111,7 +111,7 @@ class KNN(BaseClassifier):
         self.leaf_size = leaf_size
         self.categorical_list = categorical_list
 
-    def fit(self, X, y, classes=None):
+    def fit(self, X, y, classes=None, weight=None):
         """ fit
         
         Fits the model on the samples X and targets y. This is actually the 
@@ -132,7 +132,9 @@ class KNN(BaseClassifier):
             An array-like containing the classification targets for all 
             samples in X.
             
-        classes: Not used. Was inherited from the Abstract parent class.
+        classes: Not used.
+
+        weight: Not used.
         
         Returns
         -------
@@ -151,7 +153,7 @@ class KNN(BaseClassifier):
                 self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
         return self
 
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
         
         Fits the model on the samples X and targets y.
@@ -170,10 +172,10 @@ class KNN(BaseClassifier):
         y: Array-like
             An array-like containing the classification targets for all 
             samples in X.
-            
-        classes: list
-            Stores all the classes that may be encountered during the 
-            classification task.
+
+        classes: Not used.
+
+        weight: Not used.
         
         Returns
         -------

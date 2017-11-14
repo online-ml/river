@@ -107,7 +107,7 @@ class KNNAdwin(KNN):
         return super().reset()
 
 
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
         
         Partially fits the model. This is done by updating the window 
@@ -124,9 +124,9 @@ class KNNAdwin(KNN):
             An array-like containing the classification targets for all 
             samples in X.
             
-        classes: list
-            Stores all the classes that may be encountered during the 
-            classification task.
+        classes: Not used.
+
+        weight: Not used.
         
         Returns
         -------

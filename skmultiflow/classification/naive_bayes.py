@@ -17,7 +17,7 @@ class NaiveBayes(BaseClassifier):
         super().__init__()
         self.classifier = MultinomialNB()
 
-    def fit(self, X, y, classes = None):
+    def fit(self, X, y, classes=None, weight=None):
         """ fit
         
         Calls the MultinomialNB fit function from sklearn.
@@ -32,17 +32,20 @@ class NaiveBayes(BaseClassifier):
             
         classes: list, optional
             A list with all the possible labels of the classification problem.
-        
+
+        weight: Array-like.
+            Instance weight. If not provided, uniform weights are assumed.
+
         Returns
         -------
         NaiveBayes
             self
         
         """
-        self.classifier.fit(X, y, classes)
+        self.classifier.fit(X, y, classes, weight)
         return self
 
-    def partial_fit(self, X, y, classes = None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Calls the MultinomialNB partial_fit from sklearn.
@@ -57,6 +60,8 @@ class NaiveBayes(BaseClassifier):
 
         classes: list, optional
             A list with all the possible labels of the classification problem.
+
+        weight: Not used.
 
         Returns
         -------

@@ -144,10 +144,10 @@ class LeverageBagging(BaseClassifier):
             raise ValueError("Leverage algorithm not supported.")
         self.leveraging_algorithm = leverage_algorithm
 
-    def fit(self, X, y, classes=None):
+    def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
 
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
         
         Partially fit the ensemble's method models. 
@@ -166,6 +166,8 @@ class LeverageBagging(BaseClassifier):
             A list with all the possible labels of the classification task.
             It's an optional parameter, except for the first partial_fit 
             call, when it's a requirement.
+
+        weight: Not used.
         
         Raises
         ------

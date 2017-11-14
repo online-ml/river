@@ -48,7 +48,7 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
         
         Partially fits the classifiers.
@@ -61,7 +61,11 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
         
         classes: list
             A list containing all class labels of the classification problem.
-        
+
+        weight: Array-like
+            Instance weight. If not provided, uniform weights are assumed.
+            Applicability varies depending on the algorithm.
+
         Returns
         -------
         BaseClassifier extension or list of BaseClassifier extensions
