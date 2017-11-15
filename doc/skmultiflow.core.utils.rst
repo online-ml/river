@@ -9,6 +9,7 @@ Submodules
    skmultiflow.core.utils.data_structures
    skmultiflow.core.utils.file_scripts
    skmultiflow.core.utils.pseudo_random_processes
+   skmultiflow.core.utils.statistics
    skmultiflow.core.utils.utils
 
 Module contents

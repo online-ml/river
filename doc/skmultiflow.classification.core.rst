@@ -6,7 +6,18 @@ Subpackages
 
 .. toctree::
 
+    skmultiflow.classification.core.attribute_class_observers
+    skmultiflow.classification.core.conditional_tests
     skmultiflow.classification.core.driftdetection
+    skmultiflow.classification.core.split_criteria
+    skmultiflow.classification.core.utils
+
+Submodules
+----------
+
+.. toctree::
+
+   skmultiflow.classification.core.attribute_split_suggestion
 
 Module contents
 ---------------

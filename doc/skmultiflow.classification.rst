@@ -9,6 +9,7 @@ Subpackages
     skmultiflow.classification.core
     skmultiflow.classification.lazy
     skmultiflow.classification.meta
+    skmultiflow.classification.trees
 
 Submodules
 ----------
