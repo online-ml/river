@@ -1,6 +1,6 @@
 # scikit-multiflow
 
-A stream data framework.
+A multi-output and stream data framework.
 
 ### Dependencies
 * python3
