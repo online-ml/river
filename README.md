@@ -17,9 +17,9 @@ be manually installed. Then the setup.py can be run to install the scikit-multif
 
 ### Project leaders
 
-* Albert BIFET
 * Jesse READ
 * Jacob MONTIEL
+* Albert BIFET
 
 ### Contributors
 
