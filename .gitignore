@@ -47,5 +47,4 @@ pip-delete-this-directory.txt
 # Text files
 # *.csv
 !data/*.csv
-*.txt
 !data/*.txt

@@ -35,6 +35,6 @@ setup(name="scikit-multiflow",
       author="Jacob MONTIEL",
       # author_email="",
       description="Setup for the scikit-multiflow package",
-      packages=find_packages(),
+      packages=find_packages(exclude=['docs', 'tests', '*.tests']),
       long_description=read('README.md'),ext_modules=[nnExtension], install_requires=['sortedcontainers', 'numpy']
       )

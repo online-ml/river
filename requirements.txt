@@ -1,0 +1,7 @@
+sortedcontainers
+numpy
+scipy
+matplotlib
+scikit-learn
+pandas
+sphinx_rtd_theme
