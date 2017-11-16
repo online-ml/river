@@ -30,29 +30,28 @@ logger = logging.getLogger(__name__)
 
 
 class HoeffdingTree(BaseClassifier):
-    """
-    Hoeffding Tree or VFDT.
+    """ Hoeffding Tree or VFDT
 
     A Hoeffding tree is an incremental, anytime decision tree induction algorithm that is capable of learning from
     massive data streams, assuming that the distribution generating examples does not change over time. Hoeffding trees
     exploit the fact that a small sample can often be enough to choose an optimal splitting attribute. This idea is
-    supported mathematically by the Hoeffding bound, which quantiﬁes the number of observations (in our case, examples)
+    supported mathematically by the Hoeffding bound, which quantifies the number of observations (in our case, examples)
     needed to estimate some statistics within a prescribed precision (in our case, the goodness of an attribute).
 
     A theoretically appealing feature of Hoeffding Trees not shared by other incremental decision tree learners is that
     it has sound guarantees of performance. Using the Hoeffding bound one can show that its output is asymptotically
-     nearly identical to that of a non-incremental learner using inﬁnitely many examples.
+    nearly identical to that of a non-incremental learner using infinitely many examples.
 
-     See for details:
-     G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
-    In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
+        See for details:
+        G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
+        In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
 
-    Implementation based on:
-    Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer (2010);
-    MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604
+        Implementation based on:
+        Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer (2010);
+        MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     max_byte_size: Int
         Maximum memory consumed by the tree.
 
@@ -96,6 +95,7 @@ class HoeffdingTree(BaseClassifier):
 
     nominal_attributes: List
         List of Nominal attributes
+
     """
 
     class FoundNode(object):
