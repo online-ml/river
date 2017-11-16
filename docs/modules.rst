@@ -1,8 +1,7 @@
-scikit-multiflow
-================
+skmultiflow
+===========
 
 .. toctree::
    :maxdepth: 4
 
-   setup
    skmultiflow
