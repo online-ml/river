@@ -26,7 +26,7 @@ def demo():
     # # If used for Hoeffding Trees then need to pass indices for Nominal attributes
 
     # Test with RandomTreeGenerator
-    stream = RandomTreeGenerator(n_classes=2, n_nominal_attributes=0, n_numerical_attributes=5, n_values_per_nominal=4)
+    stream = RandomTreeGenerator(n_classes=2, n_numerical_attributes=5)
     stream.prepare_for_use()
 
     # Test with WaveformGenerator
@@ -46,7 +46,7 @@ def demo():
     eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=100000)
 
     # Evaluate
-    eval.eval(stream=stream, classifier=pipe)
+    eval.eval(stream=stream, classifier=classifier)
 
 if __name__ == '__main__':
     demo()

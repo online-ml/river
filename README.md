@@ -33,13 +33,11 @@ be manually installed. Then the setup.py can be run to install the scikit-multif
 
     An example from the sphinx documentation: http://www.sphinx-doc.org/en/stable/ext/example_numpy.html
 
-### Testing considerations
-* Always be in the correct virtual environment.
-* See the matplotlib backend considerations in the end of this README.md file
-
 ### Independent demos
 To run independent demos, make your way to ".../skmultiflow/demos/" and run in a terminal:
->>> python <test_name>
+``` shell
+ python <test_name>
+```
 
 ### matplotlib backend considerations
 * You may need to change your matplotlib backend, because not all backends work in all machines
@@ -56,8 +54,11 @@ To run independent demos, make your way to ".../skmultiflow/demos/" and run in a
 
 ### Sphinx documentation
 * We generate our documentation directly through sphinx.
-* To update the documentation follow the steps below:
+* To update the documentation perform in a terminal the steps below:
     * Make your way to the scikit-multiflow parent directory
-    * Type in 'sphinx-apidoc -o scikit-multiflow/doc scikit-multiflow/ -e -f'
-    * Go to scikit-multiflow/doc
+    * Type in '
+      ``` shell
+      sphinx-apidoc -o scikit-multiflow/docs scikit-multiflow/ -e -f
+      ```
+    * Go to scikit-multiflow/docs
     * Type in 'make html'
