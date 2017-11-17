@@ -15,6 +15,7 @@ Welcome to scikit-multiflow's documentation!
    tutorial
    development
    API <skmultiflow>
+   Github Repository <https://github.com/scikit-multiflow/scikit-multiflow>
 
 
 Indices and tables

@@ -103,9 +103,6 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 # documentation.
 #html_theme_options = {}
 
-# Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
-
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 #html_title = None
@@ -139,6 +136,14 @@ html_static_path = ['_static']
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
 #html_last_updated_fmt = '%b %d, %Y'
+html_context = {
+  "display_github": True, # Add 'Edit on Github' link instead of 'View page source'
+  "github_user": "scikit-multiflow",
+  "github_repo": project,
+  "github_version": "master",
+  "conf_py_path": "/docs/",
+  "source_suffix": source_suffix,
+}
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
