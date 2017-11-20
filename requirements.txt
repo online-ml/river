@@ -1,7 +1,6 @@
-sortedcontainers
-numpy
-scipy
+sortedcontainers>=1.5.7
+numpy>=1.8.2
+scipy>=0.13.3
 matplotlib
 scikit-learn
 pandas
-sphinx_rtd_theme
