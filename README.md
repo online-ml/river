@@ -2,7 +2,8 @@
 
 
 A multi-output/multi-label and stream data framework.
-Inspired by MOA and MEKA, following scikit-learn philosophy.
+Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourceforge.net/),
+ following [scikit-learn](http://scikit-learn.org/stable/) philosophy.
 
 * [Webpage](https://scikit-multiflow.github.io/)
 * [Documentation](https://scikit-multiflow.github.io/scikit-multiflow/)
