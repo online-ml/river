@@ -10,14 +10,15 @@ from skmultiflow.evaluation.metrics.metrics import *
 class MultiOutputLearner(BaseClassifier) :
     """ MultiOutputLearner
     
-    A Meta Learner. Does either classifier or regression, depending on 
-    base learner (which by default is LogisticRegression). It will keep 
-    one instance of the base learner for each classification task, in 
-    a way that each classifier is in charge of a single classification 
-    problem.
+    A Multi-Output Learner learns to predict multiple outputs for each
+    instance. The outputs may either be discrete (i.e., classification),
+    or continuous (i.e., regression). This class takes any base learner
+    (which by default is LogisticRegression) and builds a separate model
+    for each output, and will distribute each instance to each model
+    for individual learning and classification. 
     
-    Should be used to make single output predictors capable of learning 
-    a multi output problem.
+    Use this classifier to make single output predictors capable of learning 
+    a multi output problem, by applying them individually to each output.
     
     Parameters
     ----------
@@ -76,7 +77,7 @@ class MultiOutputLearner(BaseClassifier) :
     def __configure(self):
         self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
-    def fit(self, X, y, classes=None, weight=None):
+    def fit(self, X, Y, classes=None, weight=None):
         """ fit
 
         Fit the N classifiers, one for each classification task.
@@ -86,7 +87,7 @@ class MultiOutputLearner(BaseClassifier) :
         X : Numpy.ndarray of shape (n_samples, n_features)
             The array of samples used to fit the model.
 
-        y: Array-like
+        Y: Array-like
             An array-like with the labels of all samples in X.
 
         classes: Not used.
@@ -99,26 +100,26 @@ class MultiOutputLearner(BaseClassifier) :
             self
 
         """
-        N,L = y.shape
+        N,L = Y.shape
         self.L = L
         self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
         for j in range(self.L):
-            self.h[j].fit(X, y[:, j])
+            self.h[j].fit(X, Y[:, j])
         return self
 
-    def partial_fit(self, X, y, classes=None, weight=None):
+    def partial_fit(self, X, Y, classes=None, weight=None):
         """ partial_fit
 
         Partially fit each of the classifiers on the X matrix and the 
-        corresponding entry at the y array.
+        corresponding Y matrix.
 
         Parameters
         ----------
         X : Numpy.ndarray of shape (n_samples, n_features)
             The array of samples used to fit the model.
 
-        y: Array-like
+        Y: Numpy.ndarray of shape (n_samples, n_labels)
             An array-like with the labels of all samples in X.
 
         classes: Array-like
@@ -135,18 +136,18 @@ class MultiOutputLearner(BaseClassifier) :
             self
 
         """
-        N,self.L = y.shape
+        N,self.L = Y.shape
 
         if self.h is None:
             self.__configure()
 
         for j in range(self.L):
             if "weight" in self.h[j].partial_fit.__code__.co_varnames:
-                self.h[j].partial_fit(X, y[:, j], classes, weight)
+                self.h[j].partial_fit(X, Y[:, j], classes, weight)
             elif "sample_weight" in self.h[j].partial_fit.__code__.co_varnames:
-                self.h[j].partial_fit(X, y[:, j], classes, weight)
+                self.h[j].partial_fit(X, Y[:, j], classes, weight)
             else:
-                self.h[j].partial_fit(X, y[:, j])
+                self.h[j].partial_fit(X, Y[:, j])
 
         return self
 
@@ -163,9 +164,9 @@ class MultiOutputLearner(BaseClassifier) :
             
         Returns
         -------
-        Array-like
-            An array-like with all the predictions for the samples in X.
-        
+        numpy.ndarray
+            Numpy.ndarray of shape (n_samples, n_labels)
+            All the predictions for the samples in X.
         '''
         N,D = X.shape
         Y = zeros((N,self.L))
