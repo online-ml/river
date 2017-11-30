@@ -12,9 +12,6 @@ class BaseObject(metaclass=ABCMeta):
     
     """
 
-    def __init__(self):
-        pass
-
     @abstractmethod
     def get_class_type(self):
         """ get_class_type
