@@ -1,5 +1,0 @@
-## Module
-Clustering algorithms
-
-### Categories
-...
