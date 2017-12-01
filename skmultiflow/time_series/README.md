@@ -1,5 +1,0 @@
-## Module
-Time-series
-
-### Categories
-...
