@@ -15,9 +15,6 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
     NotImplementedError: This is an abstract class.
     
     """
-    def __init__(self):
-        super().__init__()
-        pass
 
     @abstractmethod
     def estimated_remaining_instances(self):
