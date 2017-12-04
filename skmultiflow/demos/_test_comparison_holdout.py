@@ -31,7 +31,7 @@ def demo(output_file=None, instances=40000):
 
     # Setup the classifier
     clf_one = SGDClassifier()
-    clf_two = KNNAdwin(k=8,max_window_size=2000)
+    clf_two = KNNAdwin(k=8, max_window_size=2000)
     # classifier = PassiveAggressiveClassifier()
     # classifier = SGDRegressor()
     # classifier = PerceptronMask()
@@ -40,13 +40,13 @@ def demo(output_file=None, instances=40000):
     classifier = [clf_one, clf_two]
 
     # Setup the evaluator
-    eval = EvaluateHoldout(pretrain_size=2000, test_size=2000, dynamic_test_set=True, max_instances=instances,
+    evaluator = EvaluateHoldout(pretrain_size=2000, test_size=2000, dynamic_test_set=True, max_instances=instances,
                            batch_size=1, n_wait=5000, max_time=1000,
                            output_file=output_file, task_type='classification', show_plot=True,
                            plot_options=['kappa'])
 
     # Evaluate
-    eval.eval(stream=stream, classifier=classifier)
+    evaluator.eval(stream=stream, classifier=classifier)
 
 if __name__ == '__main__':
     demo(output_file='teste_2.csv', instances=100000)
