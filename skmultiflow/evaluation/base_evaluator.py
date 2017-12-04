@@ -20,10 +20,6 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
 
     """
 
-    def __init__(self):
-        super().__init__()
-        pass
-
     @abstractmethod
     def eval(self, stream, classifier):
         """ eval
@@ -96,7 +92,7 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
         return 'evaluator'
 
     @abstractmethod
-    def set_params(self, dict):
+    def set_params(self, **kwargs):
         """ set_params
         
         Pass parameter names and values through a dictionary so that their 
@@ -104,7 +100,7 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
         
         Parameters
         ----------
-        dict: dictionary
+        kwargs: dictionary
             A dictionary where the keys are parameters' names and the values 
             are the new values for those parameters.
          
