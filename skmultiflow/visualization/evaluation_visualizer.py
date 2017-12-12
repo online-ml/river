@@ -272,7 +272,7 @@ class EvaluationVisualizer(BaseListener):
             self.global_performance = [[] for i in range(self.n_learners)]
 
             self.subplot_performance = self.fig.add_subplot(base)
-            self.subplot_performance.set_title('Classifier\'s accuracy')
+            #self.subplot_performance.set_title('Classifier\'s accuracy')
             self.subplot_performance.set_ylabel('Performance ratio')
             self.subplot_performance.set_xlabel('Samples analyzed')
             base += 1
@@ -283,10 +283,10 @@ class EvaluationVisualizer(BaseListener):
 
             for i in range(self.n_learners):
                 self.line_partial_performance[i], = self.subplot_performance.plot(self.X, self.partial_performance[i],
-                                                                               label='Classifier '+str(i)+' - Partial performance (last ' + str(
+                                                                               label='Classifier '+str(i)+' (last ' + str(
                                                                                    self.n_wait) + ' samples)', linestyle='--')
                 self.line_global_performance[i], = self.subplot_performance.plot(self.X, self.global_performance[i],
-                                                                              label='Classifier '+str(i)+' - Global performance')
+                                                                              label='Classifier '+str(i))
                 handle.append(self.line_partial_performance[i])
                 handle.append(self.line_global_performance[i])
 
