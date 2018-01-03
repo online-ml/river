@@ -108,7 +108,7 @@ class MultiOutputLearner(BaseClassifier) :
             self.h[j].fit(X, Y[:, j])
         return self
 
-    def partial_fit(self, X, Y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Partially fit each of the classifiers on the X matrix and the 
@@ -136,6 +136,8 @@ class MultiOutputLearner(BaseClassifier) :
             self
 
         """
+        Y = y
+
         N,self.L = Y.shape
 
         if self.h is None:
