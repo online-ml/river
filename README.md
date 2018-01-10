@@ -7,7 +7,7 @@ Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourcef
 
 * [Webpage](https://scikit-multiflow.github.io/)
 * [Documentation](https://scikit-multiflow.github.io/scikit-multiflow/)
-* Google Group: TODO
+* [Users Group](https://groups.google.com/forum/#!forum/scikit-multiflow-users)
 
 ### Project leaders
 
