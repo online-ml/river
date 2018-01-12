@@ -147,10 +147,7 @@ class KNN(BaseClassifier):
             self.window = InstanceWindow(max_size=self.max_window_size)
 
         for i in range(r):
-            if r > 1:
-                self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
-            else:
-                self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
+            self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
         return self
 
     def partial_fit(self, X, y, classes=None, weight=None):
@@ -188,10 +185,7 @@ class KNN(BaseClassifier):
             self.window = InstanceWindow(max_size=self.max_window_size)
 
         for i in range(r):
-            if r > 1:
-                self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
-            else:
-                self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
+            self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
         return self
 
     def reset(self):
