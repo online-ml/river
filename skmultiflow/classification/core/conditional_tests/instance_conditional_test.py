@@ -5,9 +5,7 @@ from skmultiflow.core.base_object import BaseObject
 
 
 class InstanceConditionalTest(metaclass=ABCMeta):
-    """ InstanceConditionalTest
-
-    Abstract class for instance conditional test to split nodes in Hoeffding Trees.
+    """Abstract class for instance conditional test to split nodes in Hoeffding Trees.
 
     This class should not me instantiated, as none of its methods are implemented.
 
@@ -22,17 +20,17 @@ class InstanceConditionalTest(metaclass=ABCMeta):
 
     @abstractmethod
     def branch_for_instance(self, X):
-        """ branch_for_instance
-
-        Returns the number of the branch for an instance, -1 if unknown.
+        """Return the number of the branch for an instance, -1 if unknown.
 
         Parameters
         ----------
-        X : The instance to be used
+        X : Numpy.ndarray of shape (n_samples, n_features)
+            The instance to be used.
 
         Returns
         -------
-        The number of the branch for an instance, -1 if unknown.
+        int
+            The index of the branch for the instance, -1 if unknown.
 
         """
         raise NotImplementedError
@@ -40,51 +38,40 @@ class InstanceConditionalTest(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
     def max_branches():
-        """ branch_for_instance
-
-        Gets the number of maximum branches, -1 if unknown.
-
-        Parameters
-        ----------
-        None
+        """Get the max number branches, -1 if unknown.
 
         Returns
         -------
-        The number of maximum branches, -1 if unknown.
+        The max number of branches, -1 if unknown.
 
         """
         raise NotImplementedError
 
     @abstractmethod
     def describe_condition_for_branch(self, branch):
-        """ describe_condition_for_branch
-
-        Gets the text that describes the condition of a branch. It is used to describe the branch.
+        """Describe the condition of a branch. It is used to describe the branch.
 
         Parameters
         ----------
-        branch: The number of the branch to describe
+        branch: int
+            The index of the branch to describe
 
         Returns
         -------
-        The text that describes the condition of the branch
+        string
+            The description of the condition for the branch
 
         """
         raise NotImplementedError
 
     @abstractmethod
     def get_atts_test_depends_on(self):
-        """ get_atts_test_depends_on
-
-        Returns an array with the attributes that the test depends on.
-
-        Parameters
-        ----------
-        self
+        """Return an array with the attributes that the test depends on.
 
         Returns
         -------
-        An array with the attributes that the test depends on.
+        array_like
+            The attributes that the test depends on.
 
         """
         raise NotImplementedError

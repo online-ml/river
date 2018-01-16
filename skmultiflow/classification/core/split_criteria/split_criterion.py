@@ -22,9 +22,7 @@ class SplitCriterion(metaclass=ABCMeta):
 
     @abstractmethod
     def get_merit_of_split(self, pre_split_dist, post_split_dist):
-        """ get_merit_of_split
-
-        Computes the merit of splitting for a given ditribution before the split and after it.
+        """Compute the merit of splitting for a given ditribution before the split and after it.
 
         Parameters
         ----------
@@ -41,9 +39,7 @@ class SplitCriterion(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
     def get_range_of_merit(pre_split_dist):
-        """ get_merit_of_split
-
-        Computes the range of splitting merit.
+        """Compute the range of splitting merit.
 
         Parameters
         ----------

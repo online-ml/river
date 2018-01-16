@@ -30,9 +30,45 @@ logger = logging.getLogger(__name__)
 
 
 class HoeffdingTree(BaseClassifier):
-    """ Hoeffding Tree or VFDT
+    """Hoeffding Tree or VFDT
 
-    A Hoeffding tree is an incremental, anytime decision tree induction algorithm that is capable of learning from
+    Parameters
+    ----------
+    max_byte_size: int
+        Maximum memory consumed by the tree.
+    memory_estimate_period: int
+        How many instances between memory consumption checks.
+    grace_period: int
+        The number of instances a leaf should observe between split attempts.
+    split_criterion: string
+        Split criterion to use.
+        'gini' - Gini
+        'info_gain' - Information Gain
+    split_confidence: float
+        Allowed error in split decision, a value closer to 0 takes longer to decide.
+    tie_threshold: float
+        Threshold below which a split will be forced to break ties.
+    binary_split: boolean
+        If True only allow binary splits.
+    stop_mem_management: boolean
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_atts: boolean
+        If True, disable poor attributes.
+    no_preprune: boolean
+        If True, disable pre-pruning.
+    leaf_prediction: string
+        Prediction mechanism used at leafs.
+        'mc' - Majority Class
+        'nb' - Naive Bayes
+        'nba' - Naive BAyes Adaptive
+    nb_threshold: int
+        The number of instances a leaf should observe before permitting Naive Bayes.
+    nominal_attributes: list
+        List of Nominal attributes
+
+    Notes
+    -----
+    A Hoeffding Tree [1]_ is an incremental, anytime decision tree induction algorithm that is capable of learning from
     massive data streams, assuming that the distribution generating examples does not change over time. Hoeffding trees
     exploit the fact that a small sample can often be enough to choose an optimal splitting attribute. This idea is
     supported mathematically by the Hoeffding bound, which quantifies the number of observations (in our case, examples)
@@ -42,92 +78,104 @@ class HoeffdingTree(BaseClassifier):
     it has sound guarantees of performance. Using the Hoeffding bound one can show that its output is asymptotically
     nearly identical to that of a non-incremental learner using infinitely many examples.
 
-        See for details:
-        G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
-        In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
+    Implementation based on MOA [2]_.
 
-        Implementation based on:
-        Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer (2010);
-        MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604
-
-    Parameters
+    References
     ----------
-    max_byte_size: Int
-        Maximum memory consumed by the tree.
+    .. [1] G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
+       In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
 
-    memory_estimate_period: Int
-        How many instances between memory consumption checks.
-
-    grace_period: Int
-        The number of instances a leaf should observe between split attempts.
-
-    split_criterion: String
-        Split criterion to use.
-        'gini' - Gini
-        'info_gain' - Information Gain
-
-    split_confidence: Float
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
-
-    tie_threshold: Float
-        Threshold below which a split will be forced to break ties.
-
-    binary_split: Boolean
-        If True only allow binary splits.
-
-    stop_mem_management: Boolean
-        If True, stop growing as soon as memory limit is hit.
-
-    remove_poor_atts: Boolean
-        If True, disable poor attributes.
-
-    no_pre_prune: Boolean
-        If True, disable pre-pruning.
-
-    leaf_prediction: String
-        Prediction mechanism used at leafs.
-        'mc' - Majority Class
-        'nb' - Naive Bayes
-        'nba' - Naive BAyes Adaptive
-
-    nb_threshold: Int
-        The number of instances a leaf should observe before permitting Naive Bayes.
-
-    nominal_attributes: List
-        List of Nominal attributes
+    .. [2] Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
+       MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
 
     """
 
     class FoundNode(object):
+        """Base class for nodes in a Hoeffding Tree"""
+
         def __init__(self, node=None, parent=None, parent_branch=None):
+            """ FoundNode class constructor. """
             self.node = node
             self.parent = parent
             self.parent_branch = parent_branch
 
     class Node(metaclass=ABCMeta):
-        """
-        Base class for Nodes in a Hoeffding Tree
-        """
+        """Class for leaf nodes in a Hoeffding Tree"""
 
         def __init__(self, class_observations=None):
+            """ Node class constructor. """
             if class_observations is None:
                 class_observations = {}  # Dictionary (class_value, weight)
             self._observed_class_distribution = class_observations
 
         @staticmethod
         def is_leaf():
+            """Determine if the node is a leaf.
+
+            Returns
+            -------
+            True if leaf, False otherwise
+
+            """
             return True
 
         def filter_instance_to_leaf(self, X, parent, parent_branch):
+            """Travers down the tree to locate the corresponding leaf for an instance.
+
+            Parameters
+            ----------
+            X: Numpy.ndarray of shape (n_samples, n_features)
+               Data instances.
+            parent: Node
+                Parent node.
+            parent_branch: Int
+                Parent branch index
+
+            Returns
+            -------
+            FoundNode
+
+            """
             return HoeffdingTree.FoundNode(self, parent, parent_branch)
 
         def get_observed_class_distribution(self):
+            """Get the current observed class distribution at the node.
+
+            Returns
+            -------
+            Dictionary (class_value, weight)
+                Class distribution at the node.
+
+            """
             return self._observed_class_distribution
 
         def get_class_votes(self, X, ht):
+            """Get the votes per class for a given instance.
+
+            Parameters
+            ----------
+            X: Numpy.ndarray of length equal to the number of features.
+               Data instances.
+            ht: HoeffdingTree
+                The HoeffdingTree
+
+            Returns
+            -------
+            Dictionary (class_value, weight)
+                Class votes for the given instance.
+
+            """
             return self._observed_class_distribution
 
         def observed_class_distribution_is_pure(self):
+            """Check if observed class distribution is pure, i.e. if all samples belong to the same class.
+
+            Returns
+            -------
+            boolean
+                True if observed number of classes is less than 2, False otherwise.
+
+            """
             count = 0
             for _, weight in self._observed_class_distribution.items():
                 if weight is not 0:
@@ -137,9 +185,24 @@ class HoeffdingTree(BaseClassifier):
             return count < 2
 
         def subtree_depth(self):
+            """Calculate the depth of the sub-tree from this node.
+
+            Returns
+            -------
+            int
+                Subtree depth, 0 if the node is a leaf.
+
+            """
             return 0
 
         def calculate_promise(self):
+            """Calculate node's promise.
+
+            Returns
+            int
+                A small value indicates that the node has seen more samples of a given class than the other classes.
+
+            """
             total_seen = sum(self._observed_class_distribution.values())
             if total_seen > 0:
                 return total_seen - max(self._observed_class_distribution.values())
@@ -147,12 +210,40 @@ class HoeffdingTree(BaseClassifier):
                 return 0
 
         def __sizeof__(self):
+            """Calculate the size of the node.
+
+            Returns
+            -------
+            int
+                Size of the node in bytes.
+
+            """
             return object.__sizeof__(self) + sys.getsizeof(self._observed_class_distribution)
 
         def calc_byte_size_including_subtree(self):
+            """Calculate the size of the node including its sub-tree.
+
+            Returns
+            -------
+            int
+                Size of the node and its sub-tree in bytes.
+
+            """
             return self.__sizeof__()
 
         def describe_subtree(self, ht, buffer, indent=0):
+            """Walk the tree and write its structure to a buffer string.
+
+            Parameters
+            ----------
+            ht: HoeffdingTree
+                The tree to describe.
+            buffer: string
+                The string buffer where the tree's structure will be stored
+            indent: int
+                Indentation level (number of white spaces for current node.)
+
+            """
             buffer[0] += textwrap.indent('Leaf = ', ' ' * indent)
             class_val = max(self._observed_class_distribution, key=self._observed_class_distribution.get)
             buffer[0] += 'Class {} | {}\n'.format(class_val, self._observed_class_distribution)
@@ -162,11 +253,10 @@ class HoeffdingTree(BaseClassifier):
             pass
 
     class SplitNode(Node):
-        """
-        Class for a node that splits the data in a Hoeffding Tree
-        """
+        """Class for a node that splits the data in a Hoeffding Tree."""
 
         def __init__(self, split_test, class_observations, size=-1):
+            """SplitNode class constructor."""
             super().__init__(class_observations)
             self._split_test = split_test
             # Dict of tuples (branch, child)
@@ -176,24 +266,82 @@ class HoeffdingTree(BaseClassifier):
                 self._children = []
 
         def num_children(self):
+            """Count the number of children for a node."""
             return len(self._children)
 
         def set_child(self, index, node):
+            """Set node as child.
+
+            Parameters
+            ----------
+            index: int
+                Index (branch) where the node will be inserted.
+
+            node: Node
+                The node to insert.
+
+            """
             if self._split_test.max_branches() >= 0 and index >= self._split_test.max_branches():
                 raise IndexError
             self._children[index] = node
 
         def get_child(self, index):
+            """Retrieve a node's child given its index (branch).
+
+            Parameters
+            ----------
+            index: int
+                Node's index (branch).
+
+            Returns
+            -------
+            Node or None
+                The child node.
+
+            """
             return self._children[index]
 
         def instance_child_index(self, X):
+            """Get the branch index for a given instance at the current node.
+
+            Returns
+            -------
+            int
+                The index (branch), -1 if unknown.
+
+            """
             return self._split_test.branch_for_instance(X)
 
         @staticmethod
         def is_leaf():
+            """Determine if the node is a leaf.
+
+            Returns
+            -------
+            boolean
+                True if leaf, False otherwise
+
+            """
             return False
 
         def filter_instance_to_leaf(self, X, parent, parent_branch):
+            """Travers down the tree to locate the corresponding leaf for an instance.
+
+            Parameters
+            ----------
+            X: Numpy.ndarray of shape (n_samples, n_features)
+               Data instances.
+            parent: Node
+                Parent node.
+            parent_branch: int
+                Parent branch index
+
+            Returns
+            -------
+            FoundNode
+                Leaf node for the instance.
+
+            """
             child_index = self.instance_child_index(X)
             if child_index >= 0:
                 child = self.get_child(child_index)
@@ -205,6 +353,13 @@ class HoeffdingTree(BaseClassifier):
                 return HoeffdingTree.FoundNode(self, parent, parent_branch)
 
         def subtree_depth(self):
+            """Calculate the depth of the sub-tree from this node.
+
+            Returns
+            -------
+            int
+                Subtree depth, 0 if leaf.
+            """
             max_child_depth = 0
             for child in self._children:
                 if child is not None:
@@ -214,9 +369,23 @@ class HoeffdingTree(BaseClassifier):
             return max_child_depth + 1
 
         def __sizeof__(self):
+            """Calculate the size of the node.
+
+            Returns
+            -------
+            int
+                Size of the node in bytes.
+            """
             return object.__sizeof__(self) + sys.getsizeof(self._children) + sys.getsizeof(self._split_test)
 
         def calc_byte_size_including_subtree(self):
+            """Calculate the size of the node including its subtree.
+
+            Returns
+            -------
+            int
+                Size of the node and its subtree in bytes.
+            """
             byte_size = self.__sizeof__()
             for child in self._children:
                 if child is not None:
@@ -224,6 +393,18 @@ class HoeffdingTree(BaseClassifier):
             return byte_size
 
         def describe_subtree(self, ht, buffer, indent=0):
+            """Walk the tree and write its structure to a buffer string.
+
+            Parameters
+            ----------
+            ht: HoeffdingTree
+                The tree to describe.
+            buffer: string
+                The buffer where the tree's structure will be stored.
+            indent: int
+                Indentation level (number of white spaces for current node).
+
+            """
             for branch_idx in range(self.num_children()):
                 child = self.get_child(branch_idx)
                 if child is not None:
@@ -233,17 +414,49 @@ class HoeffdingTree(BaseClassifier):
                     child.describe_subtree(ht, buffer, indent + 2)
 
     class LearningNode(Node):
+        """Base class for Learning Nodes in a Hoeffding Tree. """
         def __init__(self, initial_class_observations=None):
+            """ LearningNode class constructor. """
             super().__init__(initial_class_observations)
 
         def learn_from_instance(self, X, y, weight, ht):
+            """Update the node with the provided instance.
+
+            Parameters
+            ----------
+            X: Numpy.ndarray of length equal to the number of features.
+                The attributes for updating the node.
+            y: int
+                The class.
+            weight: float
+                The instance's weight.
+            ht: HoeffdingTree
+                The Hoeffding Tree to update.
+
+            """
             pass
 
     class InactiveLearningNode(LearningNode):
+        """An inactive learning node that does not grow. """
         def __init__(self, initial_class_observations=None):
+            """ InactiveLearningNode class constructor. """
             super().__init__(initial_class_observations)
 
         def learn_from_instance(self, X, y, weight, ht):
+            """Update the node with the provided instance.
+
+            Parameters
+            ----------
+            X: Numpy.ndarray of length equal to the number of features.
+                The attributes for updating the node.
+            y: int
+                The class.
+            weight: float
+                The instance's weight.
+            ht: HoeffdingTree
+                The Hoeffding Tree to update.
+
+            """
             if y > len(self._observed_class_distribution) - 1:
                 return
             if y not in self._observed_class_distribution:
@@ -251,23 +464,27 @@ class HoeffdingTree(BaseClassifier):
             self._observed_class_distribution[y] += weight
 
     class ActiveLearningNode(LearningNode):
-        """A Hoeffding Tree node that supports growth."""
+        """A learning node that supports growth. """
         def __init__(self, initial_class_observations):
+            """ ActiveLearningNode class constructor. """
             super().__init__(initial_class_observations)
             self._weight_seen_at_last_split_evaluation = self.get_weight_seen()
             self._is_initialized = False
             self._attribute_observers = []
 
         def learn_from_instance(self, X, y, weight, ht):
-            """ learn_from_instance
-            Update the node with the supplied instance.
+            """Update the node with the provided instance.
 
             Parameters
             ----------
-            X: The attributes for updating the node
-            y: The class
-            weight: The instance's weight
-            ht: The Hoeffding Tree
+            X: Numpy.ndarray of length equal to the number of features.
+                The attributes for updating the node.
+            y: int
+                The class.
+            weight: float
+                The instance's weight.
+            ht: HoeffdingTree
+                The Hoeffding Tree to update.
 
             """
             if not self._is_initialized:
@@ -288,27 +505,52 @@ class HoeffdingTree(BaseClassifier):
                 obs.observe_attribute_class(X[i], int(y), weight)
 
         def get_weight_seen(self):
-            return sum(self._observed_class_distribution.values())
-
-        def get_weight_seen_at_last_split_evaluation(self):
-            return self._weight_seen_at_last_split_evaluation
-
-        def set_weight_seen_at_last_split_evaluation(self, weight):
-            self._weight_seen_at_last_split_evaluation = weight
-
-        def get_best_split_suggestions(self, criterion, ht):
-            """ get_best_split_suggestions
-
-            Return a list of the possible split candidates.
-
-            Parameters
-            ----------
-            criterion: The splitting criterion to be used.
-            ht: The Hoeffding Tree
+            """Calculate the total weight seen by the node.
 
             Returns
             -------
-            A list of the possible split candidates.
+            float
+                Total weight seen.
+
+            """
+            return sum(self._observed_class_distribution.values())
+
+        def get_weight_seen_at_last_split_evaluation(self):
+            """Retrieve the weight seen at last split evaluation.
+
+            Returns
+            -------
+            float
+                Weight seen at last split evaluation.
+
+            """
+            return self._weight_seen_at_last_split_evaluation
+
+        def set_weight_seen_at_last_split_evaluation(self, weight):
+            """Retrieve the weight seen at last split evaluation.
+
+            Parameters
+            ----------
+            weight: float
+                Weight seen at last split evaluation.
+
+            """
+            self._weight_seen_at_last_split_evaluation = weight
+
+        def get_best_split_suggestions(self, criterion, ht):
+            """Find possible split candidates.
+
+            Parameters
+            ----------
+            criterion: SplitCriterion
+                The splitting criterion to be used.
+            ht: HoeffdingTree
+                The Hoeffding Tree
+
+            Returns
+            -------
+            list
+                Possible split candidates.
 
             """
             best_suggestions = []
@@ -326,30 +568,80 @@ class HoeffdingTree(BaseClassifier):
             return best_suggestions
 
         def disable_attribute(self, att_idx):
+            """Disable an attribute observer.
+
+            Parameters
+            ----------
+            att_idx: int
+                Attribute index.
+
+            """
             if att_idx < len(self._attribute_observers) and att_idx > 0:
                 self._attribute_observers[att_idx] = NullAttributeClassObserver()
 
     class LearningNodeNB(ActiveLearningNode):
+        """A learning node that uses Naive Bayes models."""
         def __init__(self, initial_class_observations):
+            """ LearningNodeNB class constructor. """
             super().__init__(initial_class_observations)
 
         def get_class_votes(self, X, ht):
+            """Get the votes per class for a given instance.
+
+            Parameters
+            ----------
+            X: Numpy.ndarray of length equal to the number of features.
+               Data instances.
+            ht: HoeffdingTree
+                The HoeffdingTree
+
+            Returns
+            -------
+            Dictionary (class_value, weight)
+                Class votes for the given instance.
+
+            """
             if self.get_weight_seen() >= ht.nb_threshold:
                 return do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
             else:
                 return super().get_class_votes(X, ht)
 
         def disable_attribute(self, att_index):
-            # Should not disable poor attributes, they are used in NB calculation
+            """Disable an attribute observer.
+
+            Disabled in Nodes using Naive Bayes, since poor attributes are used in Naive Bayes calculation.
+
+            Parameters
+            ----------
+            att_idx: int
+                Attribute index.
+
+            """
             pass
 
     class LearningNodeNBAdaptive(LearningNodeNB):
+        """A learning node that uses Adaptive Naive Bayes models."""
         def __init__(self, initial_class_observations):
+            """LearningNodeNBAdaptive class constructor. """
             super().__init__(initial_class_observations)
             self._mc_correct_weight = 0.0
             self._nb_correct_weight = 0.0
 
         def learn_from_instance(self, X, y, weight, ht):
+            """Update the node with the provided instance.
+
+            Parameters
+            ----------
+            X: Numpy.ndarray of length equal to the number of features.
+                The attributes for updating the node.
+            y: int
+                The class.
+            weight: float
+                The instance's weight.
+            ht: HoeffdingTree
+                The Hoeffding Tree to update.
+
+            """
             if self._observed_class_distribution == {}:
                 # All classes equal, default to class 0
                 if 0 == y:
@@ -362,6 +654,21 @@ class HoeffdingTree(BaseClassifier):
             super().learn_from_instance(X, y, weight, ht)
 
         def get_class_votes(self, X, ht):
+            """Get the votes per class for a given instance.
+
+            Parameters
+            ----------
+            X: Numpy.ndarray of length equal to the number of features.
+               Data instances.
+            ht: HoeffdingTree
+                The HoeffdingTree
+
+            Returns
+            -------
+            Dictionary (class_value, weight)
+                Class votes for the given instance.
+
+            """
             if self._mc_correct_weight > self._nb_correct_weight:
                 return self._observed_class_distribution
             return do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
@@ -373,6 +680,7 @@ class HoeffdingTree(BaseClassifier):
                  split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
                  stop_mem_management=False, remove_poor_atts=False, no_preprune=False, leaf_prediction='mc',
                  nb_threshold=0, nominal_attributes=None):
+        """HoeffdingTree class constructor."""
         super().__init__()
         self.max_byte_size = max_byte_size
         self.memory_estimate_period = memory_estimate_period
@@ -517,15 +825,32 @@ class HoeffdingTree(BaseClassifier):
         self._nominal_attributes = nominal_attributes
 
     def __sizeof__(self):
+        """Calculate the size of the tree.
+
+        Returns
+        -------
+        int
+            Size of the tree in bytes.
+
+        """
         size = object.__sizeof__(self)
         if self._tree_root is not None:
             size += self._tree_root.calc_byte_size_including_subtree()
         return size
 
     def measure_byte_size(self):
+        """Calculate the size of the tree.
+
+        Returns
+        -------
+        int
+            Size of the tree in bytes.
+
+        """
         return self.__sizeof__()
 
     def reset(self):
+        """Reset the Hoeffding Tree to default values."""
         self._tree_root = None
         self._decision_node_cnt = 0
         self._active_leaf_node_cnt = 0
@@ -542,26 +867,28 @@ class HoeffdingTree(BaseClassifier):
         raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
+        """Trains the model on samples X and corresponding targets y.
 
-        Trains the model on samples X and targets y.
+        Following tasks are performed:
+
+        * Verify instance weight, if not provided then uniform weights (1.0) are assumed.
+        * If more than one instances are passed, then loop through matrix X and pass single instances.
+        * Update weight seen by model.
+        * If the tree is empty create a leaf node as the root.
+        * If the tree is already initialized then find the corresponding leaf for the instance and update the leaf node
+          statistics.
+        * If growth is allowed and the number of instances that the leaf has observed between split attempts
+        exceed the grace period then attempt to split.
 
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             Data instances.
-
-        y: Array-like
+        y: array_like
             Contains the classification targets for all samples in X.
-
         classes: Not used.
-
         weight: Float or Array-like
             Instance weight. If not provided, uniform weights are assumed.
-
-        Returns
-        -------
-        self
 
         """
         if y is not None:
@@ -577,6 +904,21 @@ class HoeffdingTree(BaseClassifier):
                     self._partial_fit(X[i], y[i], weight[i])
 
     def _partial_fit(self, X, y, weight):
+        """Trains the model on samples X and corresponding targets y.
+
+        Private function where actual training is carried on.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of shape (n_samples, n_features)
+            Data instances.
+        y: Array-like
+            Contains the classification targets for all samples in X.
+        classes: Not used.
+        weight: Float or array_like
+            Instance weight. If not provided, uniform weights are assumed.
+
+        """
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._active_leaf_node_cnt = 1
@@ -600,6 +942,18 @@ class HoeffdingTree(BaseClassifier):
             self.estimate_model_byte_size()
 
     def get_votes_for_instance(self, X):
+        """Get class votes for a single instance.
+
+        Parameters
+        ----------
+        X: Numpy.ndarray of length equal to the number of features.
+            Data instances.
+
+        Returns
+            -------
+            Dictionary (class_value, weight)
+
+        """
         if self._tree_root is not None:
             found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
             leaf_node = found_node.node
@@ -610,9 +964,7 @@ class HoeffdingTree(BaseClassifier):
             return {}
 
     def predict(self, X):
-        """ predict
-
-        Predicts the label of the X instance(s)
+        """Predicts the label of the X instance(s)
 
         Parameters
         ----------
@@ -622,7 +974,7 @@ class HoeffdingTree(BaseClassifier):
         Returns
         -------
         list
-            A list containing the predicted labels for all instances in X.
+            Predicted labels for all instances in X.
 
         """
         r, _ = get_dimensions(X)
@@ -642,6 +994,13 @@ class HoeffdingTree(BaseClassifier):
 
     @property
     def get_model_measurements(self):
+        """Collect metrics for the current status of the tree.
+
+        Returns
+        -------
+        string
+            A string buffer containing the measurements of the tree.
+        """
         measurements = {'Tree size (nodes)': self._decision_node_cnt
                                                + self._active_leaf_node_cnt
                                                + self._inactive_leaf_node_cnt,
@@ -654,11 +1013,19 @@ class HoeffdingTree(BaseClassifier):
         return measurements
 
     def measure_tree_depth(self):
+        """Calculate the depth of the tree.
+
+        Returns
+        -------
+        int
+            Depth of the tree.
+        """
         if isinstance(self._tree_root, self.Node):
             return self._tree_root.subtree_depth()
         return 0
 
     def _new_learning_node(self, initial_class_observations=None):
+        """Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
         if self._leaf_prediction == MAJORITY_CLASS:
@@ -669,6 +1036,14 @@ class HoeffdingTree(BaseClassifier):
             return self.LearningNodeNBAdaptive(initial_class_observations)
 
     def get_model_description(self):
+        """Walk the tree and return its structure in a buffer.
+
+        Returns
+        -------
+        string
+            The description of the model.
+
+        """
         if self._tree_root is not None:
             buffer = ['']
             description = ''
@@ -683,12 +1058,70 @@ class HoeffdingTree(BaseClassifier):
 
     @staticmethod
     def compute_hoeffding_bound(range_val, confidence, n):
+        r"""Compute the Hoeffding bound, used to decide how many samples are necessary at each node.
+
+        Notes
+        -----
+        The Hoeffding bound is defined as:
+
+        .. math::
+
+           \epsilon = \sqrt{\frac{R^2\ln(1/\delta))}{2n}}
+
+        where:
+
+        :math:`\epsilon`: Hoeffding bound.
+
+        :math:`R`: Range of a random variable. For a probability the range is 1, and for an information gain the range
+        is log *c*, where *c* is the number of classes.
+
+        :math:`\delta`: Confidence. 1 minus the desired probability of choosing the correct attribute at any given node.
+
+        :math:`n`: Number of samples.
+
+        Parameters
+        ----------
+        range_val: float
+            Range value.
+        confidence: float
+            Confidence of choosing the correct attribute.
+        n: int
+            Number of samples.
+
+        Returns
+        -------
+        float
+            The Hoeffding bound.
+
+        """
         return np.sqrt((range_val * range_val * np.log(1.0 / confidence)) / (2.0 * n))
 
     def new_split_node(self, split_test, class_observations, size=-1):
+        """Create a new split node."""
         return self.SplitNode(split_test, class_observations, size)
 
     def _attempt_to_split(self, node: ActiveLearningNode, parent: SplitNode, parent_idx: int):
+        """Attempt to split a node. If the samples seen so far are not from the same class then:
+
+        1. Find split candidates and select the top 2.
+        2. Compute the Hoeffding bound.
+        3. If the difference between the top 2 split candidates is larger than the Hoeffding bound:
+           3.1 Replace the leaf node by a split node.
+           3.2 Add a new leaf node on each branch of the new split node.
+           3.3 Update tree's metrics
+
+        Extra: Disable poor attributes, depending on the tree's configuration.
+
+        Parameters
+        ----------
+        node: ActiveLearningNode
+            The node to evaluate for split
+        parent: SplitNode
+            The node's parent
+        parent_idx: int
+            Parent node's index (branch).
+
+        """
         if not node.observed_class_distribution_is_pure():
             if self._split_criterion == GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
@@ -750,6 +1183,7 @@ class HoeffdingTree(BaseClassifier):
                 self.enforce_tracker_limit()
 
     def enforce_tracker_limit(self):
+        """Track the size of the tree and disable/enable nodes if required."""
         byte_size = (self._active_leaf_byte_size_estimate
                      + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate) \
                     * self._byte_size_estimate_overhead_fraction
@@ -779,6 +1213,8 @@ class HoeffdingTree(BaseClassifier):
                                              learning_nodes[i].parent_branch)
 
     def estimate_model_byte_size(self):
+        """Calculate the size of the model and trigger tracker function if the actual model size exceeds the max size
+        in the configuration."""
         learning_nodes = self._find_learning_nodes()
         total_active_size = 0
         total_inactive_size = 0
@@ -799,6 +1235,7 @@ class HoeffdingTree(BaseClassifier):
             self.enforce_tracker_limit()
 
     def deactivate_all_leaves(self):
+        """Deactivate all leaves."""
         learning_nodes = self._find_learning_nodes()
         for i in range(len(learning_nodes)):
             if isinstance(learning_nodes[i], self.ActiveLearningNode):
@@ -807,6 +1244,18 @@ class HoeffdingTree(BaseClassifier):
                                                learning_nodes[i].parent_branch)
 
     def _deactivate_learning_node(self, to_deactivate: ActiveLearningNode, parent: SplitNode, parent_branch: int):
+        """Deactivate a learning node.
+
+        Parameters
+        ----------
+        to_deactivate: ActiveLearningNode
+            The node to deactivate.
+        parent: SplitNode
+            The node's parent
+        parent_branch: int
+            Parent node's branch.
+
+        """
         new_leaf = self.InactiveLearningNode(to_deactivate.get_observed_class_distribution())
         if parent is None:
             self._tree_root = new_leaf
@@ -816,6 +1265,18 @@ class HoeffdingTree(BaseClassifier):
         self._inactive_leaf_node_cnt += 1
 
     def _activate_learning_node(self, to_activate: InactiveLearningNode, parent: SplitNode, parent_branch: int):
+        """Activate a learning node.
+
+        Parameters
+        ----------
+        to_activate: InactiveLearningNode
+            The node to activate.
+        parent: SplitNode
+            The node's parent
+        parent_branch: int
+            Parent node's branch.
+
+        """
         new_leaf = self._new_learning_node(to_activate.get_observed_class_distribution())
         if parent is None:
             self._tree_root = new_leaf
@@ -825,11 +1286,34 @@ class HoeffdingTree(BaseClassifier):
         self._inactive_leaf_node_cnt -= 1
 
     def _find_learning_nodes(self):
+        """Find learning nodes in the tree.
+
+        Returns
+        -------
+        list
+            List of learning nodes in the tree.
+        """
         found_list = []
         self.__find_learning_nodes(self._tree_root, None, -1, found_list)
         return found_list
 
     def __find_learning_nodes(self, node, parent, parent_branch, found):
+        """Find learning nodes in the tree from a given node.
+
+        Parameters
+        ----------
+        node: Node
+            The node to start the search.
+        parent: LearningNode or SplitNode
+            The node's parent.
+        parent_branch: int
+            Parent node's branch.
+
+        Returns
+        -------
+        list
+            List of learning nodes.
+        """
         if node is not None:
             if isinstance(node, self.LearningNode):
                 found.append(self.FoundNode(node, parent, parent_branch))
@@ -842,6 +1326,13 @@ class HoeffdingTree(BaseClassifier):
         raise NotImplementedError
 
     def get_info(self):
+        """ Collect information about the Hoeffding Tree configuration.
+
+        Returns
+        -------
+        string
+            Information about the Hoeffding Tree.
+        """
         description = type(self).__name__ + ': '
         description += 'max_byte_size: {} - '.format(self.max_byte_size)
         description += 'memory_estimate_period: {} - '.format(self.memory_estimate_period)
