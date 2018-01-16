@@ -5,9 +5,7 @@ from skmultiflow.core.base_object import BaseObject
 
 
 class AttributeClassObserver(metaclass=ABCMeta):
-    """ AttributeClassObserver
-
-    Abstract class for observing the class data distribution for an attribute.
+    """Abstract class for observing the class data distribution for an attribute.
     This observer monitors the class distribution of a given attribute.
 
     This class should not me instantiated, as none of its methods are implemented.
@@ -23,41 +21,38 @@ class AttributeClassObserver(metaclass=ABCMeta):
 
     @abstractmethod
     def observe_attribute_class(self, att_val, class_val, weight):
-        """ observe_attribute_class
-
-        Updates statistics of this observer given an attribute value, a class
-        and the weight of the instance observed
+        """Update statistics of this observer given an attribute value, a class and the weight of the instance observed.
 
         Parameters
         ----------
-        att_val : The value of the attribute
+        att_val : float
+            The value of the attribute.
 
-        class_val: The class
+        class_val: int
+            The class value.
 
-        weight: The weight of the instance
-
-        Returns
-        -------
-        self
+        weight: float
+            The weight of the instance.
 
         """
         raise NotImplementedError
 
     @abstractmethod
     def probability_of_attribute_value_given_class(self, att_val, class_val):
-        """ probability_of_attribute_value_given_class
-
-        Gets the probability for an attribute value given a class
+        """Get the probability for an attribute value given a class.
 
         Parameters
         ----------
-        att_val : The value of the attribute
+        att_val: float
+            The value of the attribute.
 
-        class_val: The class
+        class_val: int
+            The class value.
 
         Returns
         -------
-        Probability for an attribute value given a class
+        float
+            Probability for an attribute value given a class.
 
         """
         raise NotImplementedError
