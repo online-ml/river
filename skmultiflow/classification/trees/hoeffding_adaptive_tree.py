@@ -6,6 +6,8 @@ from abc import ABCMeta, abstractmethod
 from skmultiflow.core.utils.utils import *
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.classification.core.utils.utils import do_naive_bayes_prediction
+from skmultiflow.classification.core.utils.utils import normalize_values_in_dict
+from skmultiflow.classification.core.utils.utils import get_max_value_index
 from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
 import math
 import numpy as np
@@ -20,28 +22,7 @@ LearningNodeNBAdaptive = HoeffdingTree.LearningNodeNBAdaptive
 MAJORITY_CLASS = 'mc'
 NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
-
-
-# To add to utils
-def normalize(sum_value, dictionary):
-    if sum == 0:
-        raise ValueError('Can not normalize array. Sum is zero')
-    if math.isnan(sum_value):
-        raise ValueError('Can not normalize array. Sum is NaN')
-    for key, value in dictionary.items():  # loop over the keys, values in the dictionary
-        value = value / sum_value
-
-
-# To add to utils
-def max_index(dictionary):
-    maximum = 0
-    max_idx = 0
-    for key, value in dictionary.items():
-        if value > maximum:
-            maximum = value
-            max_idx = key
-    return max_idx
-
+error_width_threshold = 300
 
 class HAT(HoeffdingTree):
     """ Hoeffding Adaptive Tree for evolving data streams.
@@ -57,6 +38,23 @@ class HAT(HoeffdingTree):
     Parameters
     ----------
     TODO
+
+
+     Examples
+    --------
+    from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
+    from skmultiflow.data.file_stream import FileStream
+    from skmultiflow.options.file_option import FileOption
+    from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+    # Setup the File Stream
+    opt = FileOption("FILE", "OPT_NAME", "/Users/alessandro/Desktop/scikit-multiflow-master/skmultiflow/datasets/covtype.csv", "CSV", False)
+    stream = FileStream(opt, -1, 1)
+    stream.prepare_for_use()
+
+    classifier = HAT()
+    eval = EvaluatePrequential(pretrain_size=200, max_instances=50000, batch_size=1, n_wait=200, max_time=1000,output_file=None, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
+
+    eval.eval(stream=stream, classifier=classifier)
 
     """
 
@@ -150,7 +148,7 @@ class HAT(HoeffdingTree):
             class_prediction = 0
 
             if (self.filter_instance_to_leaf(X, parent, parent_branch).node) is not None:
-                class_prediction = max_index(
+                class_prediction = get_max_value_index(
                     self.filter_instance_to_leaf(X, parent, parent_branch).node.get_class_votes(X, hat))
 
             bl_correct = (true_class == class_prediction)
@@ -170,12 +168,14 @@ class HAT(HoeffdingTree):
             if (self.error_change is True and old_error > self.get_error_estimation()):
                 self.error_change = False
 
+            #Check condition to build a new alternate tree
             if (self.error_change is True):
                 self._alternate_tree = hat._new_learning_node()  # check call to new learning node
                 hat._alternateTrees += 1
 
+            #Condition to replace alternate tree
             elif (self._alternate_tree is not None and self._alternate_tree.is_null_error() is False):
-                if (self.get_error_width() > 300 and self._alternate_tree.get_error_width() > 300):
+                if (self.get_error_width() > error_width_threshold and self._alternate_tree.get_error_width() > error_width_threshold):
                     old_error_rate = self.get_error_estimation()
                     alt_error_rate = self._alternate_tree.get_error_estimation()
                     fDelta = .05
@@ -219,11 +219,8 @@ class HAT(HoeffdingTree):
             for child in self._children:
                 if child is not None:
                     # Delete alternate tree if it exists
-                    # TODO (check the casting to object)
-                    # if (isinstance(child, HAT.AdaSplitNode) and HAT.NewNode(HAT.AdaSplitNode(child)) is not None):
-                    # HAT.NewNode(HAT.AdaSplitNode(child)).kill_Tree_Childs(hat)
-                    # self._pruned_alternate_trees += 1
-
+                    if (isinstance(child, HAT.AdaSplitNode) and child._alternate_tree is not None):
+                        self._pruned_alternate_trees += 1
                     # Recursive delete of SplitNodes
                     if isinstance(child, HAT.AdaSplitNode):
                         child.kill_tree_childs(hat)
@@ -239,13 +236,6 @@ class HAT(HoeffdingTree):
         def filter_instance_to_leaves(self, X, parent, parent_branch, update_splitter_counts, found_nodes=None):
             if found_nodes is None:
                 found_nodes = []
-            # TODO
-            # if update_splitter_counts:
-            #     if y > len(self._observed_class_distribution) - 1:
-            #         return
-            #     if y not in self._observed_class_distribution:
-            #         self._observed_class_distribution[y] = 0.0
-            #     self._observed_class_distribution[y] += weight # Dictionary (class_value, weight)
 
             child_index = self.instance_child_index(X)
 
@@ -303,7 +293,7 @@ class HAT(HoeffdingTree):
 
             tmp = self.get_class_votes(X, hat)
 
-            class_prediction = max_index(tmp)
+            class_prediction = get_max_value_index(tmp)
 
             bl_correct = (true_class == class_prediction)
 
@@ -353,7 +343,7 @@ class HAT(HoeffdingTree):
             dist_sum = sum(dist.values())  # sum all values in dictionary
 
             if dist_sum * self.get_error_estimation() * self.get_error_estimation() > 0.0:
-                normalize(dist_sum * self.get_error_estimation() * self.get_error_estimation(), dist)
+                normalize_values_in_dict(dist_sum * self.get_error_estimation() * self.get_error_estimation(), dist)
 
             return dist
 
@@ -374,6 +364,7 @@ class HAT(HoeffdingTree):
         self._pruned_alternate_trees = 0
         self._switch_alternate_trees = 0
         self._tree_root = None  # CHECK I not utilize _tree_root of HoeffdingTree. OK
+
 
     def reset(self):
         self._alternate_trees = 0
@@ -473,17 +464,3 @@ class HAT(HoeffdingTree):
     def new_split_node(self, split_test, class_observations, size):
         return self.AdaSplitNode(split_test, class_observations, size)
 
-# Example TODO Create a demo/test from this
-# from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
-# from skmultiflow.data.file_stream import FileStream
-# from skmultiflow.options.file_option import FileOption
-# from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-## Setup the File Stream
-# opt = FileOption("FILE", "OPT_NAME", "/Users/alessandro/Desktop/scikit-multiflow-master/skmultiflow/datasets/covtype.csv", "CSV", False)
-# stream = FileStream(opt, -1, 1)
-# stream.prepare_for_use()
-#
-# classifier = HAT()
-# eval = EvaluatePrequential(pretrain_size=200, max_instances=50000, batch_size=1, n_wait=200, max_time=1000,output_file=None, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
-#
-# eval.eval(stream=stream, classifier=classifier)
