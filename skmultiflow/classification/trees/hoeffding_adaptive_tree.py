@@ -181,9 +181,7 @@ class HAT(HoeffdingTree):
                     fDelta = .05
                     fN = 1.0 / self._alternate_tree.get_error_width() + 1.0 / (self.get_error_width())
 
-                    # CHECK
-                    bound = 1.0 / math.sqrt(
-                        2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / fDelta) * fN)
+                    bound = math.sqrt(2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / fDelta) * fN)
                     # To check, bound never less than (old_error_rate - alt_error_rate)
                     if bound < (old_error_rate - alt_error_rate):
                         hat._active_leaf_node_cnt -= self.number_leaves()
@@ -371,41 +369,6 @@ class HAT(HoeffdingTree):
         self._pruned_alternate_trees = 0
         self._switch_alternate_trees = 0
         self._tree_root = None
-
-    # Override HoeffdingTree/BaseClassifier
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-
-        Trains the model on samples X and targets y.
-
-        Parameters
-        ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            Data instances.
-
-        y: Array-like
-            Contains the classification targets for all samples in X.
-
-        classes: Not used.
-
-        weight: Float or Array-like
-            Instance weight. If not provided, uniform weights are assumed.
-
-        Returns
-        -------
-        self
-
-        """
-        if y is not None:
-            if weight is None:
-                weight = np.array([1.0])
-            row_cnt, _ = get_dimensions(X)
-            wrow_cnt, _ = get_dimensions(weight)
-            if row_cnt != wrow_cnt:
-                weight = [weight[0]] * row_cnt
-            for i in range(row_cnt):
-                if weight[i] != 0.0:
-                    self._partial_fit(X[i], y[i], weight[i])
 
     # Override HoeffdingTree
     def _partial_fit(self, X, y, weight):
