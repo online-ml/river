@@ -326,11 +326,10 @@ class HAT(HoeffdingTree):
             dist = {}
             prediction_option = ht.leaf_prediction
 
-            # TODO
-            # if prediction_option == MAJORITY_CLASS:  # MC
-            #   dist = self.get_observed_class_distribution()
-            # elif prediction_option == NAIVE_BAYES:  # NB
-            #   dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
+            if prediction_option == MAJORITY_CLASS:  #MC
+                dist = self.get_observed_class_distribution()
+            elif prediction_option == NAIVE_BAYES:  #NB
+                dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
 
             # NBAdaptive
             if self._mc_correct_weight > self._nb_correct_weight:
