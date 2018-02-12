@@ -289,10 +289,7 @@ class HoeffdingTree(BaseClassifier):
             super().__init__(class_observations)
             self._split_test = split_test
             # Dict of tuples (branch, child)
-            if size > 0:
-                self._children = [None] * size
-            else:
-                self._children = []
+            self._children = {}
 
         def num_children(self):
             """Count the number of children for a node."""
@@ -328,7 +325,10 @@ class HoeffdingTree(BaseClassifier):
                 Child node.
 
             """
-            return self._children[index]
+            if index in self._children:
+                return self._children[index]
+            else:
+                return None
 
         def instance_child_index(self, X):
             """Get the branch index for a given instance at the current node.
