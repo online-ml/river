@@ -116,6 +116,7 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         its initial state.
         
         """
+        self.instance_index = 0
         try:
             instance_aux = self.read_function(self.file_name)
             self.instance_length = len(instance_aux.index)
