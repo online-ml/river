@@ -178,6 +178,57 @@ class EvaluatePrequential(BaseEvaluator):
         warnings.filterwarnings("ignore", ".*invalid value encountered in true_divide.*")
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
+    def _init_file(self):
+        with open(self.output_file, 'w+') as f:
+            f.write("# SETUP BEGIN")
+            if hasattr(self.stream, 'get_info'):
+                f.write("\n# " + self.stream.get_info())
+            if self.n_classifiers <= 1:
+                if hasattr(self.classifier, 'get_info'):
+                    f.write("\n# " + self.classifier.get_info())
+            else:
+                for i in range(self.n_classifiers):
+                    if hasattr(self.classifier[i], 'get_info'):
+                        f.write("\n# " + self.classifier[i].get_info())
+
+            f.write("\n# " + self.get_info())
+            f.write("\n# SETUP END")
+            header = '\nid'
+            if 'performance' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_performance_' + str(i) + ',sliding_window_performance_' + str(i)
+            if 'kappa' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_kappa_' + str(i) + ',sliding_window_kappa_' + str(i)
+            if 'kappa_t' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_kappa_t_' + str(i) + ',sliding_window_kappa_t_' + str(i)
+            if 'kappa_m' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_kappa_m_' + str(i) + ',sliding_window_kappa_m_' + str(i)
+            if 'scatter' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',true_label_' + str(i) + ',prediction_' + str(i)
+            if 'hamming_score' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_hamming_score_' + str(i) + ',sliding_window_hamming_score_' + str(i)
+            if 'hamming_loss' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_hamming_loss_' + str(i) + ',sliding_window_hamming_loss_' + str(i)
+            if 'exact_match' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_exact_match_' + str(i) + ',sliding_window_exact_match_' + str(i)
+            if 'j_index' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_j_index_' + str(i) + ',sliding_window_j_index_' + str(i)
+            if 'mean_square_error' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_mse_' + str(i) + ',sliding_window_mse_' + str(i)
+            if 'mean_absolute_error' in self.plot_options:
+                for i in range(self.n_classifiers):
+                    header += ',global_mae_' + str(i) + ',sliding_window_mae_' + str(i)
+            f.write(header)
+
     def eval(self, stream, classifier):
         """ eval 
         
@@ -272,55 +323,7 @@ class EvaluatePrequential(BaseEvaluator):
             else self.max_instances
 
         if self.output_file is not None:
-            with open(self.output_file, 'w+') as f:
-                f.write("# SETUP BEGIN")
-                if hasattr(self.stream, 'get_info'):
-                    f.write("\n# " + self.stream.get_info())
-                if self.n_classifiers <= 1:
-                    if hasattr(self.classifier, 'get_info'):
-                        f.write("\n# " + self.classifier.get_info())
-                else:
-                    for i in range(self.n_classifiers):
-                        if hasattr(self.classifier[i], 'get_info'):
-                            f.write("\n# " + self.classifier[i].get_info())
-
-                f.write("\n# " + self.get_info())
-                f.write("\n# SETUP END")
-                header = '\nx_count'
-                if 'performance' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_performance_'+str(i)+',sliding_window_performance_'+str(i)
-                if 'kappa' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_kappa_'+str(i)+',sliding_window_kappa_'+str(i)
-                if 'kappa_t' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_kappa_t_'+str(i)+',sliding_window_kappa_t_'+str(i)
-                if 'kappa_m' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_kappa_m_'+str(i)+',sliding_window_kappa_m_'+str(i)
-                if 'scatter' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',true_label_'+str(i)+',prediction_'+str(i)
-                if 'hamming_score' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_hamming_score_'+str(i)+',sliding_window_hamming_score_'+str(i)
-                if 'hamming_loss' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_hamming_loss_'+str(i)+',sliding_window_hamming_loss_'+str(i)
-                if 'exact_match' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_exact_match_'+str(i)+',sliding_window_exact_match_'+str(i)
-                if 'j_index' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_j_index_'+str(i)+',sliding_window_j_index_'+str(i)
-                if 'mean_square_error' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_mse_'+str(i)+',sliding_window_mse_'+str(i)
-                if 'mean_absolute_error' in self.plot_options:
-                    for i in range(self.n_classifiers):
-                        header += ',global_mae_'+str(i)+',sliding_window_mae_'+str(i)
-                f.write(header)
+            self._init_file()
 
         first_run = True
         if (self.pretrain_size > 0):
@@ -331,6 +334,7 @@ class EvaluatePrequential(BaseEvaluator):
                     self.classifier[i].partial_fit(X=X, y=y, classes=self.stream.get_classes())
                 else:
                     self.classifier[i].partial_fit(X=X, y=y)
+            self.global_sample_count += self.pretrain_size
             first_run = False
 
         else:
@@ -366,7 +370,8 @@ class EvaluatePrequential(BaseEvaluator):
 
                         nul_count = self.global_sample_count - self.batch_size
 
-                        if ((nul_count + i + 1) % (rest / 20)) == 0:
+                        # Update progress
+                        if ((nul_count + i + 1) % (rest // 20)) == 0:
                             logging.info('%s%%', str(((nul_count + i + 1) // (rest / 20)) * 5))
 
                     if first_run:
@@ -661,7 +666,7 @@ class EvaluatePrequential(BaseEvaluator):
                 pred.append(p)
             new_points_dict['true_vs_predicts'] = [[true[i], pred[i]] for i in range(self.n_classifiers)]
 
-        self.__update_plot(self.global_sample_count, new_points_dict)
+        self.__update_plot(self.global_sample_count - 1, new_points_dict)
 
     def __reset_globals(self):
         self.global_sample_count = 0
