@@ -216,17 +216,17 @@ class SAMKNN(BaseClassifier):
                     labelsCl = np.delete(labelsCl, wrongIndicesLTM[delIndices], 0)
         return samplesCl, labelsCl
 
-    def _partial_fit(self, sample, sampleLabel):
+    def _partial_fit(self, x, y):
         """Processes a new sample."""
-        distancesSTM = SAMKNN.get_distances(sample, self._STMSamples)
+        distancesSTM = SAMKNN.get_distances(x, self._STMSamples)
         if not self.useLTM:
-            self._partial_fit_by_stm(sample, sampleLabel, distancesSTM)
+            self._partial_fit_by_stm(x, y, distancesSTM)
         else:
-            self._partial_fit_by_all_memories(sample, sampleLabel, distancesSTM)
+            self._partial_fit_by_all_memories(x, y, distancesSTM)
 
         self.trainStepCount += 1
-        self._STMSamples = np.vstack([self._STMSamples, sample])
-        self._STMLabels = np.append(self._STMLabels, sampleLabel)
+        self._STMSamples = np.vstack([self._STMSamples, x])
+        self._STMLabels = np.append(self._STMLabels, y)
         STMShortened = self.sizeCheckFct()
 
 
@@ -234,7 +234,7 @@ class SAMKNN(BaseClassifier):
 
         if self.STMSizeAdaption is not None:
             if STMShortened:
-                distancesSTM = SAMKNN.get_distances(sample, self._STMSamples[:-1, :])
+                distancesSTM = SAMKNN.get_distances(x, self._STMSamples[:-1, :])
 
             self.STMDistances[len(self._STMLabels)-1,:len(self._STMLabels)-1] = distancesSTM
             oldWindowSize = len(self._STMLabels)
@@ -435,8 +435,8 @@ class SAMKNN(BaseClassifier):
 
     def get_info(self):
         result = ''
-        result += 'avg. STMSize %f LTMSize %f' % (np.mean(self.STMSizes), np.mean(self.LTMSizes)) + '\n'
-        result += 'num correct STM %d LTM %d CM %d ' % (self.numSTMCorrect, self.numLTMCorrect, self.numCMCorrect) + '\n'
+        result += 'avg. STMSize %f LTMSize %f' % (np.mean(self.STMSizes), np.mean(self.LTMSizes)) + '; '
+        result += 'num correct STM %d LTM %d CM %d ' % (self.numSTMCorrect, self.numLTMCorrect, self.numCMCorrect) + '; '
         result += 'num correct %d/%d' % (self.numCorrectPredictions, self.numPossibleCorrectPredictions) + '\n'
         return result
 
