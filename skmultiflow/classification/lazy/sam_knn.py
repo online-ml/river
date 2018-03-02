@@ -350,15 +350,15 @@ class SAMKNN(BaseClassifier):
     def fit(self, X, y, classes = None, weight=None):
         self.partial_fit(X, y, classes, weight)
 
-    def partial_fit(self, samples, labels, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """Processes a new sample."""
-        r, c = get_dimensions(samples)
+        r, c = get_dimensions(X)
         if self._STMSamples is None:
             self._STMSamples = np.empty(shape=(0, c))
             self._LTMSamples = np.empty(shape=(0, c))
 
         for i in range(r):
-            self._partial_fit(samples[i, :], labels[i])
+            self._partial_fit(X[i, :], y[i])
 
         return self
 
