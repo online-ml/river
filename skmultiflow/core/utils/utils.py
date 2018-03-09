@@ -1,6 +1,7 @@
 __author__ = 'Guilherme Matsumoto'
 
 import numpy as np
+import math
 from sklearn.utils import tosequence
 import time
 
@@ -30,6 +31,7 @@ def dict_to_list(dict):
         aux.append([keys[i], vals[i]])
     return aux
 
+
 def tuple_list_to_list(tup_list):
     """ tuple_list_to_list 
     
@@ -51,6 +53,7 @@ def tuple_list_to_list(tup_list):
     for i in range(len(tup_list)):
         aux.append([tup_list[i][0], tup_list[i][1]])
     return aux
+
 
 def dict_to_tuple_list(dict):
     """ dict_to_tuple_list
@@ -76,6 +79,7 @@ def dict_to_tuple_list(dict):
     for i in range(len(list)):
         aux.append((list[i][0], list[i][1]))
     return aux
+
 
 def get_dimensions(X):
     """ get_dimensions
@@ -106,6 +110,45 @@ def get_dimensions(X):
             r, c = 1, X.size
 
     return r, c
+
+
+def normalize_values_in_dict(factor, dictionary):
+    """ Normalize the values in a dictionary using the given factor.
+
+    Parameters
+    ----------
+    factor: float
+        Normalization value.
+    dictionary: dict
+        Dictionary to evaluate.
+
+    """
+    if sum == 0:
+        raise ValueError('Can not normalize array. Factor is zero')
+    if math.isnan(factor):
+        raise ValueError('Can not normalize array. Factor is NaN')
+    for key, value in dictionary.items():  # loop over the keys, values in the dictionary
+        dictionary[key] = value / factor
+
+
+def get_max_value_index(dictionary):
+    """ Find the index of the maximum value in a dictionary.
+
+    Parameters
+    ----------
+    dictionary: dict
+        Dictionary to evaluate.
+
+    Returns
+    -------
+    int
+        Index of the maximum value.
+    """
+    if dictionary and isinstance(dictionary, dict):
+        return max(dictionary, key=dictionary.get)
+    else:
+        return 0
+
 
 if __name__ == '__main__':
     aux1 = {'key1': 1.0, 'key2': 2.3, 'key3': 3.5, 'key4': 4.8}

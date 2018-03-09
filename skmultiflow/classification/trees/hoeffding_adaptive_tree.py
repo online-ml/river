@@ -6,8 +6,6 @@ from abc import ABCMeta, abstractmethod
 from skmultiflow.core.utils.utils import *
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.classification.core.utils.utils import do_naive_bayes_prediction
-from skmultiflow.classification.core.utils.utils import normalize_values_in_dict
-from skmultiflow.classification.core.utils.utils import get_max_value_index
 from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
 import math
 import numpy as np
@@ -24,43 +22,78 @@ NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
 error_width_threshold = 300
 
+
 class HAT(HoeffdingTree):
     """ Hoeffding Adaptive Tree for evolving data streams.
 
-    This adaptive Hoeffding Tree uses ADWIN to monitor performance of branches on the tree and to replace them with new
-    branches when their accuracy decreases if the new branches are more accurate.
-
-        See details in:
-
-        Adaptive Learning from Evolving Data Streams.
-        Albert Bifet, Ricard Gavaldà. IDA 2009
-
     Parameters
     ----------
-    TODO
+    max_byte_size: int (default=33554432)
+        Maximum memory consumed by the tree.
+    memory_estimate_period: int (default=1000000)
+        Number of instances between memory consumption checks.
+    grace_period: int (default=200)
+        Number of instances a leaf should observe between split attempts.
+    split_criterion: string (default='info_gain')
+        | Split criterion to use.
+        | 'gini' - Gini
+        | 'info_gain' - Information Gain
+    split_confidence: float (default=0.0000001)
+        Allowed error in split decision, a value closer to 0 takes longer to decide.
+    tie_threshold: float (default=0.05)
+        Threshold below which a split will be forced to break ties.
+    binary_split: boolean (default=False)
+        If True, only allow binary splits.
+    stop_mem_management: boolean (default=False)
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_atts: boolean (default=False)
+        If True, disable poor attributes.
+    no_preprune: boolean (default=False)
+        If True, disable pre-pruning.
+    leaf_prediction: string (default='nba')
+        | Prediction mechanism used at leafs.
+        | 'mc' - Majority Class
+        | 'nb' - Naive Bayes
+        | 'nba' - Naive Bayes Adaptive
+    nb_threshold: int (default=0)
+        Number of instances a leaf should observe before allowing Naive Bayes.
+    nominal_attributes: list, optional
+        List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
 
+    Notes
+    -----
+    The Hoeffding Adaptive Tree [1]_ uses ADWIN to monitor performance of branches on the tree and to replace them with
+    new branches when their accuracy decreases if the new branches are more accurate.
+
+    References
+    ----------
+    .. [1] Albert Bifet, Ricard Gavaldà. Adaptive Learning from Evolving Data Streams.
+       IDA 2009
 
      Examples
     --------
-    from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
-    from skmultiflow.data.file_stream import FileStream
-    from skmultiflow.options.file_option import FileOption
-    from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-    # Setup the File Stream
-    opt = FileOption("FILE", "OPT_NAME", "/Users/alessandro/Desktop/scikit-multiflow-master/skmultiflow/datasets/covtype.csv", "CSV", False)
-    stream = FileStream(opt, -1, 1)
-    stream.prepare_for_use()
+    .. code-block:: python
+       from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
+       from skmultiflow.data.file_stream import FileStream
+       from skmultiflow.options.file_option import FileOption
+       from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+       # Setup the File Stream
+       opt = FileOption("FILE", "OPT_NAME", "/skmultiflow/datasets/covtype.csv", "CSV", False)
+       stream = FileStream(opt, -1, 1)
+       stream.prepare_for_use()
 
-    classifier = HAT()
-    eval = EvaluatePrequential(pretrain_size=200, max_instances=50000, batch_size=1, n_wait=200, max_time=1000,output_file=None, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
+       classifier = HAT()
+       eval = EvaluatePrequential(pretrain_size=200, max_instances=50000, batch_size=1, n_wait=200, max_time=1000,
+                                  output_file=None, task_type='classification', show_plot=True,
+                                  plot_options=['kappa', 'kappa_t', 'performance'])
 
-    eval.eval(stream=stream, classifier=classifier)
+       eval.eval(stream=stream, classifier=classifier)
 
     """
 
     class NewNode(metaclass=ABCMeta):
         """
-            Abstract Class to create a New Node for HoeffdingAdaptiveTree(HAT)
+            Abstract Class to create a New Node for HoeffdingAdaptiveTree (HAT)
         """
 
         @abstractmethod
@@ -80,7 +113,7 @@ class HAT(HoeffdingTree):
             pass
 
         @abstractmethod
-        def kill_tree_childs(self, hat):
+        def kill_tree_children(self, hat):
             pass
 
         @abstractmethod
@@ -88,16 +121,15 @@ class HAT(HoeffdingTree):
             pass
 
         @abstractmethod
-        def filter_instance_to_leaves(self, X, parent, parent_branch, update_splitter_count, found_nodes=None):
-            # CHECK avoid mutable defaults, see:
-            # https://docs.quantifiedcode.com/python-anti-patterns/correctness/mutable_default_value_as_argument.html
+        def filter_instance_to_leaves(self, X, y, weight, parent, parent_branch,
+                                      update_splitter_counts, found_nodes=None):
             pass
 
     class AdaSplitNode(SplitNode, NewNode):
-        def __init__(self, split_test, class_observations, size):
-            SplitNode.__init__(self, split_test, class_observations, size)
+        def __init__(self, split_test, class_observations):
+            SplitNode.__init__(self, split_test, class_observations)
             self._estimation_error_weight = ADWIN()
-            self._alternate_tree = None  # CHECK not HoeffdingTree.Node(), I force alternatetree to be None so that will be that initialized as _new_learning_node (line 154)
+            self._alternate_tree = None
             self.error_change = False
             self._random_seed = 1
             self._classifier_random = random.seed(self._random_seed)
@@ -132,14 +164,14 @@ class HAT(HoeffdingTree):
         # Override NewNode
         def get_error_width(self):
             w = 0.0
-            if (self.is_null_error() is False):
+            if self.is_null_error() is False:
                 w = self._estimation_error_weight._width
 
             return w
 
         # Override NewNode
         def is_null_error(self):
-            return (self._estimation_error_weight is None)
+            return self._estimation_error_weight is None
 
         # Override NewNode
         def learn_from_instance(self, X, y, weight, hat, parent, parent_branch):
@@ -147,7 +179,7 @@ class HAT(HoeffdingTree):
             true_class = y
             class_prediction = 0
 
-            if (self.filter_instance_to_leaf(X, parent, parent_branch).node) is not None:
+            if self.filter_instance_to_leaf(X, parent, parent_branch).node is not None:
                 class_prediction = get_max_value_index(
                     self.filter_instance_to_leaf(X, parent, parent_branch).node.get_class_votes(X, hat))
 
@@ -158,24 +190,25 @@ class HAT(HoeffdingTree):
 
             old_error = self.get_error_estimation()
 
-            # Add element to Adwin
+            # Add element to ADWIN
             add = 0.0 if (bl_correct is True) else 1.0
 
             self._estimation_error_weight.add_element(add)
-            # Detect change with Adwin
+            # Detect change with ADWIN
             self.error_change = self._estimation_error_weight.detected_change()
 
-            if (self.error_change is True and old_error > self.get_error_estimation()):
+            if self.error_change is True and old_error > self.get_error_estimation():
                 self.error_change = False
 
-            #Check condition to build a new alternate tree
-            if (self.error_change is True):
-                self._alternate_tree = hat._new_learning_node()  # check call to new learning node
+            # Check condition to build a new alternate tree
+            if self.error_change is True:
+                self._alternate_tree = hat._new_learning_node()
                 hat._alternateTrees += 1
 
-            #Condition to replace alternate tree
-            elif (self._alternate_tree is not None and self._alternate_tree.is_null_error() is False):
-                if (self.get_error_width() > error_width_threshold and self._alternate_tree.get_error_width() > error_width_threshold):
+            # Condition to replace alternate tree
+            elif self._alternate_tree is not None and self._alternate_tree.is_null_error() is False:
+                if self.get_error_width() > error_width_threshold \
+                        and self._alternate_tree.get_error_width() > error_width_threshold:
                     old_error_rate = self.get_error_estimation()
                     alt_error_rate = self._alternate_tree.get_error_estimation()
                     fDelta = .05
@@ -186,42 +219,40 @@ class HAT(HoeffdingTree):
                     if bound < (old_error_rate - alt_error_rate):
                         hat._active_leaf_node_cnt -= self.number_leaves()
                         hat._active_leaf_node_cnt += self._alternate_tree.number_leaves()
-                        self.kill_tree_childs(hat)
+                        self.kill_tree_children(hat)
 
                         if parent is not None:
                             parent.set_child(parent_branch, self._alternate_tree)
                         else:
                             hat._tree_root = hat._tree_root.alternateTree
                         hat._switchAlternateTrees += 1
-                    elif (bound < alt_error_rate - old_error_rate):
+                    elif bound < alt_error_rate - old_error_rate:
                         if isinstance(self._alternate_tree, HAT.ActiveLearningNode):
                             self._alternate_tree = None
-                        elif (isinstance(self._alternate_tree, HAT.ActiveLearningNode)):
+                        elif isinstance(self._alternate_tree, HAT.ActiveLearningNode):
                             self._alternate_tree = None
                         else:
-                            self._alternate_tree.kill_tree_childs(hat)
+                            self._alternate_tree.kill_tree_children(hat)
                         hat._prunedalternateTree += 1  # hat._pruned_alternate_trees to check
 
             # Learn_From_Instance alternate Tree and Child nodes
             if self._alternate_tree is not None:
                 self._alternate_tree.learn_from_instance(X, y, weight, hat, parent, parent_branch)
-
             child_branch = self.instance_child_index(X)
             child = self.get_child(child_branch)
-
             if child is not None:
                 child.learn_from_instance(X, y, weight, hat, parent, parent_branch)
 
         # Override NewNode
-        def kill_tree_childs(self, hat):
+        def kill_tree_children(self, hat):
             for child in self._children:
                 if child is not None:
                     # Delete alternate tree if it exists
-                    if (isinstance(child, HAT.AdaSplitNode) and child._alternate_tree is not None):
+                    if isinstance(child, HAT.AdaSplitNode) and child._alternate_tree is not None:
                         self._pruned_alternate_trees += 1
                     # Recursive delete of SplitNodes
                     if isinstance(child, HAT.AdaSplitNode):
-                        child.kill_tree_childs(hat)
+                        child.kill_tree_children(hat)
 
                     if isinstance(child, HAT.ActiveLearningNode):
                         child = None
@@ -231,21 +262,26 @@ class HAT(HoeffdingTree):
                         hat._inactive_leaf_node_cnt -= 1
 
         # override NewNode
-        def filter_instance_to_leaves(self, X, parent, parent_branch, update_splitter_counts, found_nodes=None):
+        def filter_instance_to_leaves(self, X, y, weight, parent, parent_branch,
+                                      update_splitter_counts=False, found_nodes=None):
             if found_nodes is None:
                 found_nodes = []
-
+            if update_splitter_counts:
+                try:
+                    self._observed_class_distribution[y] += weight  # Dictionary (class_value, weight)
+                except KeyError:
+                    self._observed_class_distribution[y] = weight
             child_index = self.instance_child_index(X)
-
             if child_index >= 0:
                 child = self.get_child(child_index)
-
                 if child is not None:
-                    child.filter_instance_to_leaves(X, parent, parent_branch, update_splitter_counts, found_nodes)
+                    child.filter_instance_to_leaves(X, y, weight, parent, parent_branch,
+                                                    update_splitter_counts, found_nodes)
                 else:
                     found_nodes.append(HoeffdingTree.FoundNode(None, self, child_index))
             if self._alternate_tree is not None:
-                self._alternate_tree.filter_instance_to_leaves(X, self, -999, update_splitter_counts, found_nodes)
+                self._alternate_tree.filter_instance_to_leaves(X, y, weight, self, -999,
+                                                               update_splitter_counts, found_nodes)
 
     class AdaLearningNode(LearningNodeNBAdaptive, NewNode):
 
@@ -253,8 +289,8 @@ class HAT(HoeffdingTree):
             LearningNodeNBAdaptive.__init__(self, initial_class_observations)
             self.estimationErrorWeight = ADWIN()
             self.ErrorChange = False
-            self.randomSeed = 1
-            self.classifierRandom = random.seed(self.randomSeed)
+            self._randomSeed = 1
+            self._classifierRandom = random.seed(self._randomSeed)
 
         def calc_byte_size(self):
             byte_size = self.__sizeof__()
@@ -278,14 +314,14 @@ class HAT(HoeffdingTree):
         def is_null_error(self):
             return (self.estimationErrorWeight is None)
 
-        def kill_tree_childs(self, hat):
+        def kill_tree_children(self, hat):
             pass
 
         # Override NewNode
         def learn_from_instance(self, X, y, weight, hat, parent, parent_branch):
             true_class = y
 
-            k = np.random.poisson(1.0, self.classifierRandom)
+            k = np.random.poisson(1.0, self._classifierRandom)
             if k > 0:
                 weight = weight * k
 
@@ -307,7 +343,7 @@ class HAT(HoeffdingTree):
             # Detect change with Adwin
             self.ErrorChange = self.estimationErrorWeight.detected_change()
 
-            if (self.ErrorChange is True and old_error > self.get_error_estimation()):
+            if self.ErrorChange is True and old_error > self.get_error_estimation():
                 self.ErrorChange = False
 
             # Update statistics call LearningNodeNBAdaptive
@@ -322,20 +358,20 @@ class HAT(HoeffdingTree):
 
         # Override LearningNodeNBAdaptive
         def get_class_votes(self, X, ht):
-
             dist = {}
             prediction_option = ht.leaf_prediction
-
-            if prediction_option == MAJORITY_CLASS:  #MC
+            # MC
+            if prediction_option == MAJORITY_CLASS:
                 dist = self.get_observed_class_distribution()
-            elif prediction_option == NAIVE_BAYES:  #NB
+            # NB
+            elif prediction_option == NAIVE_BAYES:
                 dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
-
             # NBAdaptive
-            if self._mc_correct_weight > self._nb_correct_weight:
-                dist = self.get_observed_class_distribution()
             else:
-                dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
+                if self._mc_correct_weight > self._nb_correct_weight:
+                    dist = self.get_observed_class_distribution()
+                else:
+                    dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
 
             dist_sum = sum(dist.values())  # sum all values in dictionary
 
@@ -345,23 +381,48 @@ class HAT(HoeffdingTree):
             return dist
 
         # Override NewNode, New for option votes
-        def filter_instance_to_leaves(self, X, split_parent, parent_branch, update_splitter_counts, found_nodes=None):
+        def filter_instance_to_leaves(self, X, y, weight, parent, parent_branch,
+                                      update_splitter_counts, found_nodes=None):
             if found_nodes is None:
                 found_nodes = []
-            found_nodes.append(HoeffdingTree.FoundNode(self, split_parent, parent_branch))
+            found_nodes.append(HoeffdingTree.FoundNode(self, parent, parent_branch))
 
     # =============================================
     # == Hoeffding Adaptive Tree implementation ===
     # =============================================
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self,
+                 max_byte_size=33554432,
+                 memory_estimate_period=1000000,
+                 grace_period=200,
+                 split_criterion='info_gain',
+                 split_confidence=0.0000001,
+                 tie_threshold=0.05,
+                 binary_split=False,
+                 stop_mem_management=False,
+                 remove_poor_atts=False,
+                 no_preprune=False,
+                 leaf_prediction='nba',
+                 nb_threshold=0,
+                 nominal_attributes=None):
 
-        super(HAT, self).__init__(*args, **kwargs)
+        super(HAT, self).__init__(max_byte_size=max_byte_size,
+                                  memory_estimate_period=memory_estimate_period,
+                                  grace_period=grace_period,
+                                  split_criterion=split_criterion,
+                                  split_confidence=split_confidence,
+                                  tie_threshold=tie_threshold,
+                                  binary_split=binary_split,
+                                  stop_mem_management=stop_mem_management,
+                                  remove_poor_atts=remove_poor_atts,
+                                  no_preprune=no_preprune,
+                                  leaf_prediction=leaf_prediction,
+                                  nb_threshold=nb_threshold,
+                                  nominal_attributes=nominal_attributes)
         self._alternate_trees = 0
         self._pruned_alternate_trees = 0
         self._switch_alternate_trees = 0
-        self._tree_root = None  # CHECK I not utilize _tree_root of HoeffdingTree. OK
-
+        self._tree_root = None
 
     def reset(self):
         self._alternate_trees = 0
@@ -377,17 +438,17 @@ class HAT(HoeffdingTree):
             self._active_leaf_node_cnt = 1
         self._tree_root.learn_from_instance(X, y, weight, self, None, -1)
 
-    def filter_instance_to_leaves(self, X, split_parent, parent_branch, update_splitter_counts):
+    def filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch, update_splitter_counts):
         nodes = []
-        self._tree_root.filter_instance_to_leaves(X, split_parent, parent_branch, update_splitter_counts, nodes)
+        self._tree_root.filter_instance_to_leaves(X, y, weight, split_parent, parent_branch,
+                                                  update_splitter_counts, nodes)
         return nodes
 
     # Override HoeffdingTree
     def get_votes_for_instance(self, X):
+        result = {}
         if self._tree_root is not None:
-            found_node = self.filter_instance_to_leaves(X, None, -1, False)
-            result = {}
-            predict_path = 0
+            found_node = self.filter_instance_to_leaves(X, -np.inf, -np.inf, None, -1, False)
             for fn in found_node:
                 if fn.parent_branch != -999:
                     leaf_node = fn.node
@@ -395,9 +456,7 @@ class HAT(HoeffdingTree):
                         leaf_node = fn.parent
                     dist = leaf_node.get_class_votes(X, self)
                     result.update(dist)  # add elements to dictionary
-            return result
-        else:
-            return {}
+        return result
 
     # Override HoeffdingTree/BaseClassifier
     def predict(self, X):
@@ -423,6 +482,5 @@ class HAT(HoeffdingTree):
         return self.AdaLearningNode(initial_class_observations)
 
     # Override HoeffdingTree
-    def new_split_node(self, split_test, class_observations, size):
-        return self.AdaSplitNode(split_test, class_observations, size)
-
+    def new_split_node(self, split_test, class_observations):
+        return self.AdaSplitNode(split_test, class_observations)
