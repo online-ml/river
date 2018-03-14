@@ -5,15 +5,32 @@ from skmultiflow.classification.trees.hoeffding_tree import *
 
 
 class ARFHoeffdingTree(HoeffdingTree):
+    """ Adaptive Random Forest Hoeffding Tree.
+
+    Parameters
+    __________
+    TODO
+
+    Notes
+    _____
+    This is the base model for the Adaptive Random Forest ensemble learner
+    (See skmultiflow.classification.meta.adaptive_random_forests).
+    This Hoeffding Tree includes a subspace size parameter, which defines the number of randomly selected features to
+    be considered at each split.
+
+    """
     class RandomLearningNode(HoeffdingTree.ActiveLearningNode):
         """Random learning node.
+
         Parameters
         ----------
         initial_class_observations: dict (class_value, weight) or None
             Initial class observations
         """
 
-        def __init__(self, initial_class_observations, nb_attributes):
+        def __init__(self,
+                     initial_class_observations,
+                     nb_attributes):
             super().__init__(initial_class_observations)
             self.nb_attributes = nb_attributes
             self._attribute_observers = [None] * nb_attributes
@@ -40,7 +57,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                 self.list_attributes = [None] * self.nb_attributes
                 for j in range(self.nb_attributes):
                     is_unique = False
-                    while is_unique == False:
+                    while not is_unique:
                         self.list_attributes[j] = randint(0, self.nb_attributes - 1)
                         is_unique = True
                         for i in range(j):
@@ -159,6 +176,7 @@ class ARFHoeffdingTree(HoeffdingTree):
         else:  # NAIVE_BAYES_ADAPTIVE
             return self.LearningNodeNBAdaptive(initial_class_observations, self.nb_attributes)
 
+    @staticmethod
     def is_randomizable():
         return True
 

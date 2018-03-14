@@ -3,6 +3,7 @@ __author__ = 'Anderson Carlos Ferreira da Silva'
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.classification.trees.hoeffding_tree import *
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
+from skmultiflow.classification.trees.arf_hoeffding_tree import ARFHoeffdingTree
 
 INSTANCE_WEIGHT = np.array([1.0])
 FEATURE_MODE_M = ''
@@ -11,27 +12,46 @@ FEATURE_MODE_SQRT_INV = 'sqrt_inv'
 FEATURE_MODE_PERCENTAGE = 'percentage'
 
 
-# ## ADFHoeffdingTree
-
-# ### References
-
-# - [Hoeffding Tree](https://github.com/scikit-multiflow/scikit-multiflow/blob/17327dc81b7d6e35d533795ae13493ad08118708/skmultiflow/classification/trees/hoeffding_tree.py)
-# - [Adaptive Random Forest Hoeffding Tree](https://github.com/Waikato/moa/blob/f5cdc1051a7247bb61702131aec3e62b40aa82f8/moa/src/main/java/moa/classifiers/trees/ARFHoeffdingTree.java)
-
-
-
-# ## Adaptive Random Forest
-
-# - [Adaptive Random Forest](https://github.com/Waikato/moa/blob/master/moa/src/main/java/moa/classifiers/meta/AdaptiveRandomForest.java)
-
 class AdaptiveRandomForest(BaseClassifier):
-    
-    def __init__(self, nb_ensemble = 10, feature_mode = 'sqrt', nb_attributes = 2,
-                 disable_background_learner = False, disable_drift_detection = False, 
-                 disable_weighted_vote = False, w = 6, evaluator_method = None,
-                 drift_detection_method = ADWIN, warning_detection_method = ADWIN,
-                 drift_delta = 0.001, warning_delta = 0.01, nominal_atributes=None):
-        
+    """Adaptive Random Forest (ARF).
+
+        Parameters
+        ----------
+        # TODO
+
+        Notes
+        -----
+        The 3 most important aspects of Adaptive Random Forest [1]_ are:
+        (1) inducing diversity through re-sampling;
+        (2) inducing diversity through randomly selecting subsets of features for node splits (see
+        skmultiflow.classification.trees.arf_hoeffding_tree);
+        (3) drift detectors per base tree, which cause selective resets in response to drifts.
+        It also allows training background trees, which start training if a warning is detected and replace the active
+        tree if the warning escalates to a drift.
+
+        References
+        ----------
+        .. [1] Heitor Murilo Gomes, Albert Bifet, Jesse Read, Jean Paul Barddal, Fabricio Enembreck,
+           Bernhard Pfharinger, Geoff Holmes, Talel Abdessalem.
+           Adaptive random forests for evolving data stream classification.
+           In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.
+
+    """
+
+    def __init__(self,
+                 nb_ensemble=10,
+                 feature_mode='sqrt',
+                 nb_attributes=2,
+                 disable_background_learner=False,
+                 disable_drift_detection=False,
+                 disable_weighted_vote=False,
+                 lambda_value=6,
+                 evaluator_method=None,
+                 drift_detection_method=ADWIN,
+                 warning_detection_method=ADWIN,
+                 drift_delta=0.001,
+                 warning_delta=0.01,
+                 nominal_attributes=None):
         """AdaptiveRandomForest class constructor."""
         super().__init__()          
         self.nb_ensemble = nb_ensemble        
@@ -40,8 +60,9 @@ class AdaptiveRandomForest(BaseClassifier):
         self.disable_background_learner = disable_background_learner   
         self.disable_drift_detection = disable_drift_detection        
         self.disable_weighted_vote = disable_weighted_vote
-        self.w = w
-        self.evaluator_method = ARFBaseClassifierEvaluator
+        self.lambda_value = lambda_value
+        if evaluator_method is None:
+            self.evaluator_method = ARFBaseClassifierEvaluator
         self.drift_detection_method = drift_detection_method
         self.warning_detection_method = warning_detection_method
         self.instances_seen = 0
@@ -50,12 +71,12 @@ class AdaptiveRandomForest(BaseClassifier):
         self.ensemble = None
         self.warning_delta = warning_delta
         self.drift_delta = drift_delta
-        self.nominal_attributes = nominal_atributes
+        self.nominal_attributes = nominal_attributes
 
-    def fit(self, X, y, classes = None, weight = None):
+    def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
     
-    def partial_fit(self, X, y, classes = None, weight = None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         if y is not None:
             if weight is None:
                 weight = INSTANCE_WEIGHT
@@ -77,7 +98,7 @@ class AdaptiveRandomForest(BaseClassifier):
         for i in range(self.nb_ensemble):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
             self.ensemble[i].evaluator.update(y_predicted, np.asarray([y]), weight)
-            k = np.random.poisson(self.w)
+            k = np.random.poisson(self.lambda_value)
             if k > 0:
                 self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]), np.asarray([k]), self.instances_seen)
     
@@ -102,8 +123,8 @@ class AdaptiveRandomForest(BaseClassifier):
             else:
                 predict = []                
                 for vote in votes:                                        
-                    predict.append(max(vote, key = vote.get))            
-                y, counts = np.unique(predict, return_counts = True)
+                    predict.append(max(vote, key=vote.get))
+                y, counts = np.unique(predict, return_counts=True)
                 value = np.argmax(counts)                
                 predictions.append(y[value])                
         return predictions
@@ -112,7 +133,7 @@ class AdaptiveRandomForest(BaseClassifier):
         raise NotImplementedError
         
     def reset(self):        
-        """Reset attributes."""
+        """Reset ARF."""
         self.ensemble = None
         self.nb_attributes = 0
         self.instances_seen = 0
@@ -142,7 +163,7 @@ class AdaptiveRandomForest(BaseClassifier):
         
         self.nb_attributes = self.total_attributes
         
-        """The m (total number of attributes) depends on:"""
+        # The m (total number of attributes) depends on:
         _, n = get_dimensions(X)
         
         if self.feature_mode == FEATURE_MODE_SQRT:
@@ -153,25 +174,24 @@ class AdaptiveRandomForest(BaseClassifier):
             percent = (100 + self.nb_attributes) / 100.0 if self.nb_attributes < 0 else self.nb_attributes / 100.0
             self.nb_attributes = int(round(n * percent))
             
-        """Notice that if the selected feature_mode was FEATURE_MODE_M then nothing is performed, 
-        still it is necessary to check (and adjusted) for when a negative value was used. 
-        """
+        # Notice that if the selected feature_mode was FEATURE_MODE_M then nothing is performed,
+        # still it is necessary to check (and adjusted) for when a negative value was used.
         
-        """m is negative, use size(features) + -m"""
+        # m is negative, use size(features) + -m
         if self.nb_attributes < 0:
             self.nb_attributes += n
-        """Other sanity checks to avoid runtime errors."""
-        """m <= 0 (m can be negative if nb_attributes was negative and abs(m) > n), then use m = 1"""
+        # Other sanity checks to avoid runtime errors.
+        # m <= 0 (m can be negative if nb_attributes was negative and abs(m) > n), then use m = 1
         if self.nb_attributes <= 0:
             self.nb_attributes = 1
-        """m > n, then it should use n"""
+        # m > n, then it should use n
         if self.nb_attributes > n:
             self.nb_attributes = n
                                
         for i in range(self.nb_ensemble):            
             self.ensemble[i] = ARFBaseLearner(i,
                                               ARFHoeffdingTree(nominal_attributes=self.nominal_attributes,
-                                                               nb_attributes = self.nb_attributes),
+                                                               nb_attributes=self.nb_attributes),
                                               self.instances_seen,
                                               not self.disable_background_learner,
                                               not self.disable_drift_detection,
@@ -182,15 +202,28 @@ class AdaptiveRandomForest(BaseClassifier):
                                               self.warning_delta,
                                               False)            
                     
-    def is_randomizable():  
+    @staticmethod
+    def is_randomizable():
         return True                  
 
 
 class ARFBaseLearner(BaseObject):
-    
-    def __init__(self, index_original, classifier, instances_seen, use_background_learner, use_drift_detector,
-                 evaluator_method, drift_detection_method, warning_detection_method,
-                 drift_delta, warning_delta, is_background_learner):
+    """
+    Inner class that represents a single tree member of the forest.
+    Contains analysis information, such as the numberOfDriftsDetected,
+    """
+    def __init__(self,
+                 index_original,
+                 classifier,
+                 instances_seen,
+                 use_background_learner,
+                 use_drift_detector,
+                 evaluator_method,
+                 drift_detection_method,
+                 warning_detection_method,
+                 drift_delta,
+                 warning_delta,
+                 is_background_learner):
         self.index_original = index_original
         self.classifier = classifier 
         self.created_on = instances_seen
@@ -198,11 +231,13 @@ class ARFBaseLearner(BaseObject):
         self.use_drift_detector = use_drift_detector
         self.is_background_learner = is_background_learner
         self.evaluator_method = evaluator_method
+
+        # Drift and warning
         self.drift_detection_method = drift_detection_method
         self.warning_detection_method = warning_detection_method
-        self.warning_delta = warning_delta
         self.drift_delta = drift_delta
-                                   
+        self.warning_delta = warning_delta
+
         self.last_drift_on = 0
         self.last_warning_on = 0
         self.nb_drifts_detected = 0
@@ -214,11 +249,12 @@ class ARFBaseLearner(BaseObject):
         
         self.evaluator = evaluator_method()
 
-        if use_background_learner:
-            self.warning_detection = warning_detection_method(self.warning_delta)
-            
+        # Initialize drift and warning detectors
         if use_drift_detector:
             self.drift_detection = drift_detection_method(self.drift_delta)
+
+        if use_background_learner:
+            self.warning_detection = warning_detection_method(self.warning_delta)
             
     def reset(self, instances_seen):
         if self.use_background_learner and self.background_learner is not None:
@@ -286,10 +322,10 @@ class ARFBaseLearner(BaseObject):
         return "NotImplementedError"
 
 
-# - [Basic Classification Performance Evaluator](https://github.com/Waikato/moa/blob/8405512f6131260b3aab042d407a0afd41447b45/moa/src/main/java/moa/evaluation/BasicClassificationPerformanceEvaluator.java)
-
-
 class ARFBaseClassifierEvaluator(BaseObject):
+    """Basic Classification Performance Evaluator
+    TODO replace with skmultiflow evaluator
+    """
     
     def __init__(self):
         self.aggregation = 0
