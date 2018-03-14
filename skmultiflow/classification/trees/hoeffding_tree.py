@@ -896,7 +896,7 @@ class HoeffdingTree(BaseClassifier):
     def nominal_attributes(self, nominal_attributes):
         if nominal_attributes is None:
             nominal_attributes = []
-            logger.info("No Nominal attributes have been defined, will consider all attributes as numerical")
+            logger.debug("No Nominal attributes have been defined, will consider all attributes as numerical")
         self._nominal_attributes = nominal_attributes
 
     def __sizeof__(self):
