@@ -56,7 +56,7 @@ class HoeffdingTree(BaseClassifier):
         If True, disable poor attributes.
     no_preprune: boolean (default=False)
         If True, disable pre-pruning.
-    leaf_prediction: string (default='mc')
+    leaf_prediction: string (default='nba')
         | Prediction mechanism used at leafs.
         | 'mc' - Majority Class
         | 'nb' - Naive Bayes
@@ -752,7 +752,7 @@ class HoeffdingTree(BaseClassifier):
                  stop_mem_management=False,
                  remove_poor_atts=False,
                  no_preprune=False,
-                 leaf_prediction='mc',
+                 leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None):
         """HoeffdingTree class constructor."""
