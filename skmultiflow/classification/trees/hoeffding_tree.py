@@ -519,8 +519,7 @@ class HoeffdingTree(BaseClassifier):
             """ ActiveLearningNode class constructor. """
             super().__init__(initial_class_observations)
             self._weight_seen_at_last_split_evaluation = self.get_weight_seen()
-            self._is_initialized = False
-            self._attribute_observers = []
+            self._attribute_observers = {}
 
         def learn_from_instance(self, X, y, weight, ht):
             """Update the node with the provided instance.
@@ -537,17 +536,15 @@ class HoeffdingTree(BaseClassifier):
                 Hoeffding Tree to update.
 
             """
-            if not self._is_initialized:
-                self._attribute_observers = [None] * len(X)
-                self._is_initialized = True
             try:
                 self._observed_class_distribution[y] += weight
             except KeyError:
                 self._observed_class_distribution[y] = weight
 
             for i in range(len(X)):
-                obs = self._attribute_observers[i]
-                if obs is None:
+                try:
+                    obs = self._attribute_observers[i]
+                except KeyError:
                     if i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
@@ -611,7 +608,7 @@ class HoeffdingTree(BaseClassifier):
                 null_split = AttributeSplitSuggestion(None, [{}],
                                                       criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
                 best_suggestions.append(null_split)
-            for i, obs in enumerate(self._attribute_observers):
+            for i, obs in self._attribute_observers.items():
                 best_suggestion = obs.get_best_evaluated_split_suggestion(criterion, pre_split_dist,
                                                                           i, ht.binary_split)
                 if best_suggestion is not None:
@@ -627,7 +624,7 @@ class HoeffdingTree(BaseClassifier):
                 Attribute index.
 
             """
-            if att_idx < len(self._attribute_observers) and att_idx > 0:
+            if att_idx in self._attribute_observers:
                 self._attribute_observers[att_idx] = NullAttributeClassObserver()
 
     class LearningNodeNB(ActiveLearningNode):
