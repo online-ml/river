@@ -1,6 +1,6 @@
 __author__ = 'Anderson Carlos Ferreira da Silva'
 
-from random import randint
+from random import sample
 from skmultiflow.classification.trees.hoeffding_tree import *
 
 
@@ -69,7 +69,7 @@ class ARFHoeffdingTree(HoeffdingTree):
             super().__init__(initial_class_observations)
 
             self.subspace_size = subspace_size
-            self._attribute_observers = [None] * subspace_size
+            self._attribute_observers = {}
             self.list_attributes = []
 
         def learn_from_instance(self, X, y, weight, ht):
@@ -87,26 +87,18 @@ class ARFHoeffdingTree(HoeffdingTree):
                 Hoeffding Tree to update.
 
             """
-            if y not in self._observed_class_distribution:
-                self._observed_class_distribution[y] = 0.0
-
-            self._observed_class_distribution[y] += weight
+            try:
+                self._observed_class_distribution[y] += weight
+            except KeyError:
+                self._observed_class_distribution[y] = weight
             if not self.list_attributes:
-                self.list_attributes = [None] * self.subspace_size
-                for j in range(self.subspace_size):
-                    is_unique = False
-                    while not is_unique:
-                        self.list_attributes[j] = randint(0, self.subspace_size - 1)
-                        is_unique = True
-                        for i in range(j):
-                            if self.list_attributes[j] == self.list_attributes[i]:
-                                is_unique = False
-                                break
+                population = range(get_dimensions(X)[1])
+                self.list_attributes = sample(population, self.subspace_size)
 
-            for j in range(self.subspace_size):
-                i = self.list_attributes[j]
-                obs = self._attribute_observers[i]
-                if obs is None:
+            for i in self.list_attributes:
+                try:
+                    obs = self._attribute_observers[i]
+                except KeyError:
                     if i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
