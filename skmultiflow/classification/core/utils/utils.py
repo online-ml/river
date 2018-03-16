@@ -1,7 +1,7 @@
 __author__ = 'Jacob Montiel'
 
 
-def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_observers: list):
+def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_observers: dict):
     if observed_class_distribution == {}:
         # No observed class distributions, all classes equal
         return {0: 0.0}
@@ -11,10 +11,7 @@ def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_ob
         votes[class_index] = observed_class_val / observed_class_sum
         if attribute_observers:
             for att_idx in range(len(X)):
-                try:
+                if att_idx in attribute_observers:
                     obs = attribute_observers[att_idx]
-                except IndexError:
-                    obs = None
-                if obs is not None:
                     votes[class_index] *= obs.probability_of_attribute_value_given_class(X[att_idx], class_index)
     return votes
