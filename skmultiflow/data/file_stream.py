@@ -124,18 +124,18 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
             labels = instance_aux.columns.values.tolist()
 
             if ((self.target_index + self.num_target_tasks == len(labels)) or (self.target_index + self.num_target_tasks == 0)):
-                self.y = instance_aux.iloc[:, self.target_index:]
-                x_labels = labels[self.target_index:]
+                self.y = instance_aux.iloc[:, self.target_index:].as_matrix()
+                y_labels = labels[self.target_index:]
                 self.classes_header = labels[self.target_index:]
                 self.attributes_header = labels[:self.target_index]
             else:
-                self.y = instance_aux.iloc[:, self.target_index:self.target_index+self.num_target_tasks]
-                x_labels = labels[self.target_index:self.target_index+self.num_target_tasks]
+                self.y = instance_aux.iloc[:, self.target_index:self.target_index+self.num_target_tasks].as_matrix()
+                y_labels = labels[self.target_index:self.target_index+self.num_target_tasks]
                 self.classes_header = labels[self.num_target_tasks:self.target_index+self.num_target_tasks]
                 self.attributes_header = labels[:self.target_index]
                 self.attributes_header.extend(labels[self.target_index + self.num_target_tasks:])
 
-            self.X = instance_aux.drop(x_labels, axis=1)
+            self.X = instance_aux.drop(y_labels, axis=1).as_matrix()
 
             self.num_classes = len(np.unique(self.y))
 
@@ -167,10 +167,8 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         self.instance_index += batch_size
         try:
 
-            self.current_instance_x = self.X.iloc[self.instance_index - batch_size:self.instance_index,
-                                      :].values
-            self.current_instance_y = self.y.iloc[self.instance_index - batch_size:self.instance_index,
-                                      :].values
+            self.current_instance_x = self.X[self.instance_index - batch_size:self.instance_index, :]
+            self.current_instance_y = self.y[self.instance_index - batch_size:self.instance_index, :]
             if self.num_target_tasks < 2:
                 self.current_instance_y = self.current_instance_y.flatten()
 
