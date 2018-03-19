@@ -92,8 +92,7 @@ class ARFHoeffdingTree(HoeffdingTree):
             except KeyError:
                 self._observed_class_distribution[y] = weight
             if not self.list_attributes:
-                population = range(get_dimensions(X)[1])
-                self.list_attributes = sample(population, self.subspace_size)
+                self.list_attributes = sample(range(get_dimensions(X)[1]), self.subspace_size)  # TODO check attr-1
 
             for i in self.list_attributes:
                 try:
@@ -207,10 +206,10 @@ class ARFHoeffdingTree(HoeffdingTree):
 
     def __init__(self,
                  max_byte_size=33554432,
-                 memory_estimate_period=1000000,
-                 grace_period=200,
+                 memory_estimate_period=2000000,
+                 grace_period=50,
                  split_criterion='info_gain',
-                 split_confidence=0.0000001,
+                 split_confidence=0.01,
                  tie_threshold=0.05,
                  binary_split=False,
                  stop_mem_management=False,
@@ -248,7 +247,7 @@ class ARFHoeffdingTree(HoeffdingTree):
         # NAIVE BAYES
         elif self._leaf_prediction == NAIVE_BAYES:
             return self.LearningNodeNB(initial_class_observations, self.subspace_size)
-        # NAIVE_BAYES_ADAPTIVE
+        # NAIVE BAYES ADAPTIVE
         else:
             return self.LearningNodeNBAdaptive(initial_class_observations, self.subspace_size)
 
@@ -256,6 +255,6 @@ class ARFHoeffdingTree(HoeffdingTree):
     def is_randomizable():
         return True
 
-    def copy(self):
+    def new_instance(self):
         return ARFHoeffdingTree(nominal_attributes=self.nominal_attributes, subspace_size=self.subspace_size)
         # TODO Pass all HT parameters once they are available at the ARFHT class level
