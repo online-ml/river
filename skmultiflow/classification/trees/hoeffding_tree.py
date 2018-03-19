@@ -872,8 +872,8 @@ class HoeffdingTree(BaseClassifier):
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction != MAJORITY_CLASS and leaf_prediction != NAIVE_BAYES \
                 and leaf_prediction != NAIVE_BAYES_ADAPTIVE:
-            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, MAJORITY_CLASS))
-            self._leaf_prediction = MAJORITY_CLASS
+            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, NAIVE_BAYES_ADAPTIVE))
+            self._leaf_prediction = NAIVE_BAYES_ADAPTIVE
         else:
             self._leaf_prediction = leaf_prediction
 
