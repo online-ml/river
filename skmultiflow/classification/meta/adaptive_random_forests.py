@@ -275,8 +275,8 @@ class ARFBaseLearner(BaseObject):
         self.evaluator_method = evaluator_method
 
         # Drift and warning
-        self.drift_detection_method = deepcopy(drift_detection_method)
-        self.warning_detection_method = deepcopy(warning_detection_method)
+        self.drift_detection_method = drift_detection_method
+        self.warning_detection_method = warning_detection_method
 
         self.last_drift_on = 0
         self.last_warning_on = 0
@@ -328,8 +328,7 @@ class ARFBaseLearner(BaseObject):
                     self.last_warning_on = instances_seen
                     self.nb_warnings_detected += 1
                     # Create a new background tree classifier
-                    background_learner = self.classifier.copy()
-                    background_learner.reset() 
+                    background_learner = self.classifier.new_instance()
                     # Create a new background learner object
                     self.background_learner = ARFBaseLearner(self.index_original,
                                                              background_learner,
