@@ -98,16 +98,17 @@ def get_dimensions(X):
     
     """
     r, c = 1, 1
-    if isinstance(X, type([])):
-        if isinstance(X[0], type([])):
-            r, c = len(X), len(X[0])
-        else:
-            c = len(X)
-    elif isinstance(X, type(np.array([0]))):
+    if isinstance(X, type(np.array([0]))):
         if X.ndim > 1:
             r, c = X.shape
         else:
             r, c = 1, X.size
+
+    elif isinstance(X, type([])):
+        if isinstance(X[0], type([])):
+            r, c = len(X), len(X[0])
+        else:
+            c = len(X)
 
     return r, c
 
