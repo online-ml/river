@@ -124,11 +124,14 @@ class ClassificationMeasurements(BaseObject):
             Returns the performance.
         
         """
-        sum = 0
-        n, l = self.confusion_matrix.shape()
+        sum_value = 0.0
+        n, _ = self.confusion_matrix.shape()
         for i in range(n):
-            sum += self.confusion_matrix.value_at(i, i)
-        return sum / self.sample_count
+            sum_value += self.confusion_matrix.value_at(i, i)
+        try:
+            return sum_value / self.sample_count
+        except ZeroDivisionError:
+            return 0.0
 
     def get_incorrectly_classified_ratio(self):
         return 1.0 - self.get_performance()
@@ -410,11 +413,14 @@ class WindowClassificationMeasurements(BaseObject):
             Returns the window/local performance.
 
         """
-        sum = 0
-        n, l = self.confusion_matrix.shape()
+        sum_value = 0.0
+        n, _ = self.confusion_matrix.shape()
         for i in range(n):
-            sum += self.confusion_matrix.value_at(i, i)
-        return sum / self.true_labels.get_current_size()
+            sum_value += self.confusion_matrix.value_at(i, i)
+        try:
+            return sum_value / self.true_labels.get_current_size()
+        except ZeroDivisionError:
+            return 0.0
 
     def get_incorrectly_classified_ratio(self):
         return 1.0 - self.get_performance()
