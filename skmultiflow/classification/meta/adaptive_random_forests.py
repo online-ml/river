@@ -117,7 +117,7 @@ class AdaptiveRandomForest(BaseClassifier):
         
         if self.ensemble is None:
             self.init_ensemble(X)
-                      
+
         for i in range(self.nb_ensemble):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
             self.ensemble[i].evaluator.update(y_predicted, np.asarray([y]), weight)
@@ -141,15 +141,15 @@ class AdaptiveRandomForest(BaseClassifier):
         for i in range(r):
             votes = self.get_votes_for_instance(X[i])
             if votes == {}:
-                # Tree is empty, all classes equal, default to zero
+                # Ensemble is empty, all classes equal, default to zero
                 predictions.append(0)
             else:
-                predict = []                
-                for vote in votes:                                        
-                    predict.append(max(vote, key=vote.get))
-                y, counts = np.unique(predict, return_counts=True)
-                value = np.argmax(counts)                
-                predictions.append(y[value])                
+                # predict = []
+                # for vote in votes:
+                predictions.append(max(votes, key=votes.get))  # TODO Verify approach
+                # y, counts = np.unique(predict, return_counts=True)
+                # value = np.argmax(counts)
+                # predictions.append(y[value])
         return predictions
 
     def predict_proba(self, X):
@@ -172,13 +172,17 @@ class AdaptiveRandomForest(BaseClassifier):
     def get_votes_for_instance(self, X):
         if self.ensemble is None:
             self.init_ensemble(X)
-        combined_votes = []
-           
+        combined_votes = {}
+
         for i in range(self.nb_ensemble):
             vote = self.ensemble[i].get_votes_for_instance(X)
-            if sum(vote) > 0:
-                combined_votes.append(vote)
-        
+            if vote != {} and sum(vote.values()) > 0:    # TODO check vote normalization
+                normalize_values_in_dict(vote)
+                for k in vote:
+                    try:
+                        combined_votes[k] += vote[k]
+                    except KeyError:
+                        combined_votes[k] = vote[k]
         return combined_votes
         
     def init_ensemble(self, X):
