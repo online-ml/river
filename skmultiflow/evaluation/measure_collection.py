@@ -681,7 +681,10 @@ class MultiOutputMeasurements(BaseObject):
             The hamming score.
         
         """
-        return self.confusion_matrix.get_sum_main_diagonal() / (self.sample_count * self.n_targets)
+        try:
+            return self.confusion_matrix.get_sum_main_diagonal() / (self.sample_count * self.n_targets)
+        except ZeroDivisionError:
+            return 0.0
 
     def get_exact_match(self):
         """ get_exact_match
