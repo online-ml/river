@@ -40,8 +40,8 @@ class ARFHoeffdingTree(HoeffdingTree):
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes: list, optional
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
-    subspace_size: int (default=2)
-            Number of attributes per subset for each node split.
+    max_features: int (default=2)
+            Max number of attributes for each node split.
 
     Notes
     _____
@@ -218,7 +218,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                  leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None,
-                 subspace_size=2):
+                 max_features=2):
         """ADFHoeffdingTree class constructor."""
         # TODO Add HT parameters to ARF Hoeffding Tree constructor signature
         super().__init__(max_byte_size,
@@ -234,7 +234,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                          leaf_prediction,
                          nb_threshold,
                          nominal_attributes)
-        self.subspace_size = subspace_size
+        self.max_features = max_features
         self.remove_poor_attributes_option = None
 
     def _new_learning_node(self, initial_class_observations=None):
@@ -243,18 +243,18 @@ class ARFHoeffdingTree(HoeffdingTree):
             initial_class_observations = {}
         # MAJORITY CLASS
         if self._leaf_prediction == MAJORITY_CLASS:
-            return self.RandomLearningNode(initial_class_observations, self.subspace_size)
+            return self.RandomLearningNode(initial_class_observations, self.max_features)
         # NAIVE BAYES
         elif self._leaf_prediction == NAIVE_BAYES:
-            return self.LearningNodeNB(initial_class_observations, self.subspace_size)
+            return self.LearningNodeNB(initial_class_observations, self.max_features)
         # NAIVE BAYES ADAPTIVE
         else:
-            return self.LearningNodeNBAdaptive(initial_class_observations, self.subspace_size)
+            return self.LearningNodeNBAdaptive(initial_class_observations, self.max_features)
 
     @staticmethod
     def is_randomizable():
         return True
 
     def new_instance(self):
-        return ARFHoeffdingTree(nominal_attributes=self.nominal_attributes, subspace_size=self.subspace_size)
+        return ARFHoeffdingTree(nominal_attributes=self.nominal_attributes, max_features=self.max_features)
         # TODO Pass all HT parameters once they are available at the ARFHT class level
