@@ -6,6 +6,7 @@ from skmultiflow.classification.core.driftdetection.base_drift_detector import B
 from skmultiflow.classification.trees.hoeffding_tree import *
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.classification.trees.arf_hoeffding_tree import ARFHoeffdingTree
+from skmultiflow.core.utils.validation import check_random_state
 
 INSTANCE_WEIGHT = np.array([1.0])
 
@@ -38,6 +39,11 @@ class AdaptiveRandomForest(BaseClassifier):
             Warning Detection method. Set to None to disable warning detection.
         nominal_attributes: list, optional
             List of Nominal attributes. If empty, then assume that all attributes are numerical.
+        random_state: int, RandomState instance or None, optional (default=None)
+            If int, random_state is the seed used by the random number generator;
+            If RandomState instance, random_state is the random number generator;
+            If None, the random number generator is the RandomState instance used
+            by `np.random`.
 
 
         Notes
@@ -67,7 +73,8 @@ class AdaptiveRandomForest(BaseClassifier):
                  evaluator_method_metric='acc',
                  drift_detection_method: BaseDriftDetector=ADWIN(0.001),
                  warning_detection_method: BaseDriftDetector=ADWIN(0.01),
-                 nominal_attributes=None):
+                 nominal_attributes=None,
+                 random_state=None):
         """AdaptiveRandomForest class constructor."""
         super().__init__()          
         self.nb_ensemble = nb_ensemble        
@@ -86,6 +93,7 @@ class AdaptiveRandomForest(BaseClassifier):
         self._train_weight_seen_by_model = 0.0
         self.ensemble = None
         self.nominal_attributes = nominal_attributes
+        self.random_state = check_random_state(random_state)
         self._evaluator_method = ARFBaseClassifierEvaluator  # TODO use skmultiflow evaluator
 
     def fit(self, X, y, classes=None, weight=None):
@@ -113,7 +121,8 @@ class AdaptiveRandomForest(BaseClassifier):
         for i in range(self.nb_ensemble):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
             self.ensemble[i].evaluator.update(y_predicted, np.asarray([y]), weight)
-            k = np.random.poisson(self.lambda_value)
+            rnd = check_random_state(self.random_state)
+            k = rnd.poisson(self.lambda_value)
             if k > 0:
                 self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]), np.asarray([k]), self.instances_seen)
     
@@ -185,12 +194,14 @@ class AdaptiveRandomForest(BaseClassifier):
         for i in range(self.nb_ensemble):            
             self.ensemble[i] = ARFBaseLearner(i,
                                               ARFHoeffdingTree(nominal_attributes=self.nominal_attributes,
-                                                               max_features=self.max_features),
+                                                               max_features=self.max_features,
+                                                               random_state=self.random_state),
                                               self.instances_seen,
                                               self._evaluator_method,
                                               self.drift_detection_method,
                                               self.warning_detection_method,
                                               False)
+            # TODO Pass all HT parameters once they are available at the ARFHT class level
 
     def _set_max_features(self, n):
         if self.max_features == 'auto' or self.max_features == 'sqrt':
