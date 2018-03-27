@@ -1,7 +1,7 @@
 __author__ = 'Anderson Carlos Ferreira da Silva'
 
-from random import sample
 from skmultiflow.classification.trees.hoeffding_tree import *
+from skmultiflow.core.utils.validation import check_random_state
 
 
 class ARFHoeffdingTree(HoeffdingTree):
@@ -42,6 +42,11 @@ class ARFHoeffdingTree(HoeffdingTree):
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
     max_features: int (default=2)
             Max number of attributes for each node split.
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
 
     Notes
     _____
@@ -58,19 +63,23 @@ class ARFHoeffdingTree(HoeffdingTree):
         ----------
         initial_class_observations: dict (class_value, weight) or None
             Initial class observations
-        subspace_size: int
+        max_features: int
             Number of attributes per subset for each node split.
+        random_state: int, RandomState instance or None, optional (default=None)
+            If int, random_state is the seed used by the random number generator;
+            If RandomState instance, random_state is the random number generator;
+            If None, the random number generator is the RandomState instance used
+            by `np.random`.
 
         """
-        def __init__(self,
-                     initial_class_observations,
-                     subspace_size):
+        def __init__(self, initial_class_observations, max_features, random_state=None):
             """ RandomLearningNode class constructor. """
             super().__init__(initial_class_observations)
 
-            self.subspace_size = subspace_size
+            self.max_features = max_features
             self._attribute_observers = {}
-            self.list_attributes = []
+            self.list_attributes = np.array([])
+            self.random_state = random_state
 
         def learn_from_instance(self, X, y, weight, ht):
             """Update the node with the provided instance.
@@ -91,8 +100,8 @@ class ARFHoeffdingTree(HoeffdingTree):
                 self._observed_class_distribution[y] += weight
             except KeyError:
                 self._observed_class_distribution[y] = weight
-            if not self.list_attributes:
-                self.list_attributes = sample(range(get_dimensions(X)[1]), self.subspace_size)
+            if self.list_attributes.size == 0:
+                self.list_attributes = self._sample_features(get_dimensions(X)[1])
 
             for i in self.list_attributes:
                 try:
@@ -105,6 +114,10 @@ class ARFHoeffdingTree(HoeffdingTree):
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(X[i], int(y), weight)
 
+        def _sample_features(self, n_features):
+            rnd = check_random_state(self.random_state)
+            return rnd.choice(n_features, size=self.max_features, replace=False)
+
     class LearningNodeNB(RandomLearningNode):
         """Naive Bayes learning node class.
 
@@ -112,13 +125,18 @@ class ARFHoeffdingTree(HoeffdingTree):
         ----------
         initial_class_observations: dict (class_value, weight) or None
             Initial class observations
-        subspace_size: int
+        max_features: int
             Number of attributes per subset for each node split.
+        random_state: int, RandomState instance or None, optional (default=None)
+            If int, random_state is the seed used by the random number generator;
+            If RandomState instance, random_state is the random number generator;
+            If None, the random number generator is the RandomState instance used
+            by `np.random`.
 
         """
-        def __init__(self, initial_class_observations, subspace_size):
+        def __init__(self, initial_class_observations, max_features, random_state):
             """ LearningNodeNB class constructor. """
-            super().__init__(initial_class_observations, subspace_size)
+            super().__init__(initial_class_observations, max_features, random_state)
 
         def get_class_votes(self, X, ht):
             """Get the votes per class for a given instance.
@@ -148,13 +166,18 @@ class ARFHoeffdingTree(HoeffdingTree):
         ----------
         initial_class_observations: dict (class_value, weight) or None
             Initial class observations
-        subspace_size: int
+        max_features: int
             Number of attributes per subset for each node split.
+        random_state: int, RandomState instance or None, optional (default=None)
+            If int, random_state is the seed used by the random number generator;
+            If RandomState instance, random_state is the random number generator;
+            If None, the random number generator is the RandomState instance used
+            by `np.random`.
 
         """
-        def __init__(self, initial_class_observations, subspace_size):
+        def __init__(self, initial_class_observations, max_features, random_state):
             """LearningNodeNBAdaptive class constructor. """
-            super().__init__(initial_class_observations, subspace_size)
+            super().__init__(initial_class_observations, max_features, random_state)
             self._mc_correct_weight = 0.0
             self._nb_correct_weight = 0.0
 
@@ -218,7 +241,8 @@ class ARFHoeffdingTree(HoeffdingTree):
                  leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None,
-                 max_features=2):
+                 max_features=2,
+                 random_state=None):
         """ADFHoeffdingTree class constructor."""
         # TODO Add HT parameters to ARF Hoeffding Tree constructor signature
         super().__init__(max_byte_size,
@@ -236,6 +260,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                          nominal_attributes)
         self.max_features = max_features
         self.remove_poor_attributes_option = None
+        self.random_state = random_state
 
     def _new_learning_node(self, initial_class_observations=None):
         """Create a new learning node. The type of learning node depends on the tree configuration."""
@@ -243,18 +268,23 @@ class ARFHoeffdingTree(HoeffdingTree):
             initial_class_observations = {}
         # MAJORITY CLASS
         if self._leaf_prediction == MAJORITY_CLASS:
-            return self.RandomLearningNode(initial_class_observations, self.max_features)
+            return self.RandomLearningNode(initial_class_observations, self.max_features,
+                                           random_state=self.random_state)
         # NAIVE BAYES
         elif self._leaf_prediction == NAIVE_BAYES:
-            return self.LearningNodeNB(initial_class_observations, self.max_features)
+            return self.LearningNodeNB(initial_class_observations, self.max_features,
+                                       random_state=self.random_state)
         # NAIVE BAYES ADAPTIVE
         else:
-            return self.LearningNodeNBAdaptive(initial_class_observations, self.max_features)
+            return self.LearningNodeNBAdaptive(initial_class_observations, self.max_features,
+                                               random_state=self.random_state)
 
     @staticmethod
     def is_randomizable():
         return True
 
     def new_instance(self):
-        return ARFHoeffdingTree(nominal_attributes=self.nominal_attributes, max_features=self.max_features)
+        return ARFHoeffdingTree(nominal_attributes=self.nominal_attributes,
+                                max_features=self.max_features,
+                                random_state=self.random_state)
         # TODO Pass all HT parameters once they are available at the ARFHT class level
