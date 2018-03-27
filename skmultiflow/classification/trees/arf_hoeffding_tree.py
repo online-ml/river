@@ -92,7 +92,7 @@ class ARFHoeffdingTree(HoeffdingTree):
             except KeyError:
                 self._observed_class_distribution[y] = weight
             if not self.list_attributes:
-                self.list_attributes = sample(range(get_dimensions(X)[1]), self.subspace_size)  # TODO check attr-1
+                self.list_attributes = sample(range(get_dimensions(X)[1]), self.subspace_size)
 
             for i in self.list_attributes:
                 try:

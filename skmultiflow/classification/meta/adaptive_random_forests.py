@@ -8,11 +8,6 @@ from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.classification.trees.arf_hoeffding_tree import ARFHoeffdingTree
 
 INSTANCE_WEIGHT = np.array([1.0])
-FEATURE_MODE_M = ''
-FEATURE_MODE_SQRT = 'sqrt'
-FEATURE_MODE_SQRT_INV = 'sqrt_inv'
-FEATURE_MODE_PERCENTAGE = 'percentage'
-
 
 class AdaptiveRandomForest(BaseClassifier):
     """Adaptive Random Forest (ARF).
@@ -172,10 +167,8 @@ class AdaptiveRandomForest(BaseClassifier):
                 normalize_values_in_dict(vote)
                 if not self.disable_weighted_vote:
                     performance = self.ensemble[i].evaluator.get_performance()
-                    if performance > 0.0:
-                        # Weighted vote
-                        for k in vote:
-                            vote[k] = vote[k] * performance
+                    for k in vote:
+                        vote[k] = vote[k] * performance   # CHECK if we need to protect against 0
                 # Add values
                 for k in vote:
                     try:
@@ -201,19 +194,20 @@ class AdaptiveRandomForest(BaseClassifier):
 
     def _set_max_features(self, n):
         if self.max_features == 'auto' or self.max_features == 'sqrt':
-            self.max_features = int(math.sqrt(n))
+            self.max_features = round(math.sqrt(n))
         elif self.max_features == 'log2':
-            self.max_features = int(math.log2(n))
+            self.max_features = round(math.log2(n))
         elif isinstance(self.max_features, int):
             # Consider 'max_features' features at each split.
             pass
         elif isinstance(self.max_features, float):
+            # Consider 'max_features' as a percentage
             self.max_features = int(self.max_features * n)
         elif self.max_features is None:
             self.max_features = n
         else:
             # Default to "auto"
-            self.max_features = int(math.sqrt(n))
+            self.max_features = round(math.sqrt(n))
         # Sanity checks
         # max_features is negative, use max_features + n
         if self.max_features < 0:
@@ -309,7 +303,7 @@ class ARFBaseLearner(BaseObject):
         else:
             self.classifier.reset()
             self.created_on = instances_seen
-            self.drift_detection.reset()  # TODO check
+            self.drift_detection.reset()
         self.evaluator = self.evaluator_method()
 
     def partial_fit(self, X, y, weight, instances_seen):
@@ -340,7 +334,7 @@ class ARFBaseLearner(BaseObject):
                                                              True)
                     # Update the warning detection object for the current object
                     # (this effectively resets changes made to the object while it was still a bkg learner).
-                    self.warning_detection.reset()  # TODO check
+                    self.warning_detection.reset()
 
         # Update the drift detection
         self.drift_detection.add_element(int(not correctly_classifies))
