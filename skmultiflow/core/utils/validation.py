@@ -24,3 +24,21 @@ def check_random_state(seed):
     if isinstance(seed, np.random.RandomState):
         return seed
     raise ValueError('{} cannot be used to seed a numpy.random.RandomState instance'.format(seed))
+
+
+def check_weights(weight):
+    """Check if weights are valid
+    Parameters
+    ----------
+    weight : int, float, list, np.ndarray
+        If weight is a number (int, float), returns it inside a np.array
+        If weight is a list of numbers, returns it
+        Otherwise raise ValueError.
+    """
+    if isinstance(weight, (list, np.ndarray)):
+        if all(isinstance(x, (int, float)) for x in weight):
+            return weight
+    elif isinstance(weight, (int, float, np.integer, np.float)):
+        return np.array([weight], dtype=np.float)
+    else:
+        raise ValueError('Invalid weight(s): {}'.format(weight))

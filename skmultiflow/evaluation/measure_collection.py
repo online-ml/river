@@ -4,6 +4,7 @@ import skmultiflow.evaluation.metrics.metrics as metrics
 import numpy as np
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.core.utils.data_structures import FastBuffer, FastComplexBuffer, ConfusionMatrix, MOLConfusionMatrix
+from skmultiflow.core.utils.validation import check_weights
 
 
 class ClassificationMeasurements(BaseObject):
@@ -59,7 +60,7 @@ class ClassificationMeasurements(BaseObject):
         self.correct_no_change = 0
         self.confusion_matrix.restart(self.n_targets)
 
-    def add_result(self, sample, prediction):
+    def add_result(self, sample, prediction, weight=1.0):
         """ add_result
         
         Updates its statistics with the results of a prediction.
@@ -73,13 +74,17 @@ class ClassificationMeasurements(BaseObject):
             The classifier's prediction
          
         """
+        check_weights(weight)
+
         true_y = self._get_target_index(sample, True)
         pred = self._get_target_index(prediction, True)
         self.confusion_matrix.update(true_y, pred)
-        self.sample_count += 1
+        self.sample_count += weight
 
-        self.majority_classifier = (self.majority_classifier + 1) if (self.get_majority_class() == sample) else self.majority_classifier
-        self.correct_no_change = (self.correct_no_change + 1) if (self.last_true_label == sample) else self.correct_no_change
+        if self.get_majority_class() == sample:
+            self.majority_classifier = self.majority_classifier + weight
+        if self.last_true_label == sample:
+            self.correct_no_change = self.correct_no_change + weight
 
         self.last_true_label = sample
         self.last_prediction = prediction
