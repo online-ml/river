@@ -240,7 +240,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                  nominal_attributes=None,
                  max_features=2,
                  random_state=None):
-        """ADFHoeffdingTree class constructor."""
+        """ARFHoeffdingTree class constructor."""
         super().__init__(max_byte_size,
                          memory_estimate_period,
                          grace_period,
