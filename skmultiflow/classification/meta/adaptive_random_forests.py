@@ -6,9 +6,9 @@ from skmultiflow.classification.core.driftdetection.base_drift_detector import B
 from skmultiflow.classification.trees.hoeffding_tree import *
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.classification.trees.arf_hoeffding_tree import ARFHoeffdingTree
-from skmultiflow.core.utils.validation import check_random_state
+from skmultiflow.evaluation.measure_collection import ClassificationMeasurements
+from skmultiflow.core.utils.validation import check_random_state, check_weights
 
-INSTANCE_WEIGHT = np.array([1.0])
 
 class AdaptiveRandomForest(BaseClassifier):
     """Adaptive Random Forest (ARF).
@@ -30,9 +30,10 @@ class AdaptiveRandomForest(BaseClassifier):
             Weighted vote option.
         lambda_value: int (default=6)
             The lambda value for bagging (lambda=6 corresponds to Leverage Bagging).
-        evaluator_method_metric: string (default='acc')
-            / Metric used to track tree performance.
+        performance_metric: string, optional (default="acc")
+            / Metric used to track trees performance within the ensemble.
             / 'acc' - Accuracy
+            / 'kappa' - Accuracy
         drift_detection_method: BaseDriftDetector or None, default(ADWIN(0.001))
             Drift Detection method. Set to None to disable Drift detection.
         warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
@@ -70,7 +71,7 @@ class AdaptiveRandomForest(BaseClassifier):
                  max_features='auto',
                  disable_weighted_vote=False,
                  lambda_value=6,
-                 evaluator_method_metric='acc',
+                 performance_metric='acc',
                  drift_detection_method: BaseDriftDetector=ADWIN(0.001),
                  warning_detection_method: BaseDriftDetector=ADWIN(0.01),
                  nominal_attributes=None,
@@ -94,19 +95,21 @@ class AdaptiveRandomForest(BaseClassifier):
         self.ensemble = None
         self.nominal_attributes = nominal_attributes
         self.random_state = check_random_state(random_state)
-        self._evaluator_method = ARFBaseClassifierEvaluator  # TODO use skmultiflow evaluator
+        if performance_metric in ['acc', 'kappa']:
+            self.performance_metric = performance_metric
+        else:
+            raise ValueError('Invalid performance metric: {}'.format(performance_metric))
 
     def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
     
-    def partial_fit(self, X, y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, weight=1.0):
         if y is not None:
-            if weight is None:
-                weight = INSTANCE_WEIGHT
+            weight = check_weights(weight)
             row_cnt, _ = get_dimensions(X)
             wrow_cnt, _ = get_dimensions(weight)
             if row_cnt != wrow_cnt:
-                weight = [weight[0]] * row_cnt                
+                weight = [weight] * row_cnt
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
@@ -120,7 +123,7 @@ class AdaptiveRandomForest(BaseClassifier):
 
         for i in range(self.nb_ensemble):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
-            self.ensemble[i].evaluator.update(y_predicted, np.asarray([y]), weight)
+            self.ensemble[i].evaluator.add_result(y_predicted, y, weight)
             rnd = check_random_state(self.random_state)
             k = rnd.poisson(self.lambda_value)
             if k > 0:
@@ -145,7 +148,7 @@ class AdaptiveRandomForest(BaseClassifier):
                 # Ensemble is empty, all classes equal, default to zero
                 predictions.append(0)
             else:
-                predictions.append(max(votes, key=votes.get))  # TODO Verify approach
+                predictions.append(max(votes, key=votes.get))
         return predictions
 
     def predict_proba(self, X):
@@ -157,8 +160,7 @@ class AdaptiveRandomForest(BaseClassifier):
         self.max_features = 0
         self.instances_seen = 0
         self._train_weight_seen_by_model = 0.0
-        self._evaluator_method = ARFBaseClassifierEvaluator
-        
+
     def score(self, X, y):
         raise NotImplementedError
         
@@ -175,7 +177,9 @@ class AdaptiveRandomForest(BaseClassifier):
             if vote != {} and sum(vote.values()) > 0:
                 normalize_values_in_dict(vote)
                 if not self.disable_weighted_vote:
-                    performance = self.ensemble[i].evaluator.get_performance()
+                    performance = self.ensemble[i].evaluator.get_performance()\
+                        if self.performance_metric == 'acc'\
+                        else self.ensemble[i].evaluator.get_kappa()
                     for k in vote:
                         vote[k] = vote[k] * performance   # CHECK if we need to protect against 0
                 # Add values
@@ -192,15 +196,14 @@ class AdaptiveRandomForest(BaseClassifier):
         self._set_max_features(get_dimensions(X)[1])
 
         for i in range(self.nb_ensemble):            
-            self.ensemble[i] = ARFBaseLearner(i,
-                                              ARFHoeffdingTree(nominal_attributes=self.nominal_attributes,
-                                                               max_features=self.max_features,
-                                                               random_state=self.random_state),
-                                              self.instances_seen,
-                                              self._evaluator_method,
-                                              self.drift_detection_method,
-                                              self.warning_detection_method,
-                                              False)
+            self.ensemble[i] = ARFBaseLearner(index_original=i,
+                                              classifier=ARFHoeffdingTree(nominal_attributes=self.nominal_attributes,
+                                                                          max_features=self.max_features,
+                                                                          random_state=self.random_state),
+                                              instances_seen=self.instances_seen,
+                                              drift_detection_method=self.drift_detection_method,
+                                              warning_detection_method=self.warning_detection_method,
+                                              is_background_learner=False)
             # TODO Pass all HT parameters once they are available at the ARFHT class level
 
     def _set_max_features(self, n):
@@ -247,8 +250,6 @@ class ARFBaseLearner(BaseObject):
         Tree classifier
     instances_seen: int
         Number of instances seen by the tree
-    evaluator_method: ARFBaseClassifierEvaluator  # TODO change to skmultiflow evaluator
-        Evaluator for classifier performance
     drift_detection_method: BaseDriftDetector
         Drift Detection method
     warning_detection_method: BaseDriftDetector
@@ -266,7 +267,6 @@ class ARFBaseLearner(BaseObject):
                  index_original,
                  classifier: ARFHoeffdingTree,
                  instances_seen,
-                 evaluator_method,
                  drift_detection_method: BaseDriftDetector,
                  warning_detection_method: BaseDriftDetector,
                  is_background_learner):
@@ -274,7 +274,7 @@ class ARFBaseLearner(BaseObject):
         self.classifier = classifier 
         self.created_on = instances_seen
         self.is_background_learner = is_background_learner
-        self.evaluator_method = evaluator_method
+        self.evaluator_method = ClassificationMeasurements
 
         # Drift and warning
         self.drift_detection_method = drift_detection_method
@@ -291,8 +291,7 @@ class ARFBaseLearner(BaseObject):
         self._use_drift_detector = False
         self._use_background_learner = False
         
-        self.evaluator = evaluator_method()
-        # TODO add code to support the selection of evaluation metric
+        self.evaluator = self.evaluator_method()
 
         # Initialize drift and warning detectors
         if drift_detection_method is not None:
@@ -321,7 +320,7 @@ class ARFBaseLearner(BaseObject):
         self.classifier.partial_fit(X, y, weight)
 
         if self.background_learner:
-            self.background_learner.classifier.partial_fit(X, y, INSTANCE_WEIGHT)
+            self.background_learner.classifier.partial_fit(X, y, weight)
 
         correctly_classifies = False
         if self._use_drift_detector and not self.is_background_learner:
@@ -339,7 +338,6 @@ class ARFBaseLearner(BaseObject):
                     self.background_learner = ARFBaseLearner(self.index_original,
                                                              background_learner,
                                                              instances_seen,
-                                                             self.evaluator_method,
                                                              self.drift_detection_method,
                                                              self.warning_detection_method,
                                                              True)
@@ -367,30 +365,3 @@ class ARFBaseLearner(BaseObject):
 
     def get_info(self):
         return "NotImplementedError"
-
-
-class ARFBaseClassifierEvaluator(BaseObject):
-    """Basic Classification Performance Evaluator
-    TODO replace with skmultiflow evaluator
-    """
-    
-    def __init__(self):
-        self.aggregation = 0
-        self.length = 0
-        
-    def update(self, y_predicted, y, weight):
-        if weight > 0: 
-            self.aggregation += weight if y_predicted == y else 0
-
-    def get_performance(self):
-        return self.aggregation * 100
-    
-    def reset(self):
-        self.aggregation = 0
-        self.length = 0
-    
-    def get_class_type(self):
-        raise NotImplementedError
-
-    def get_info(self):
-        return NotImplementedError
