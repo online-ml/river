@@ -9,44 +9,41 @@ class ARFHoeffdingTree(HoeffdingTree):
 
     Parameters
     __________
-    max_byte_size: int (default=33554432)
+    max_byte_size: int, optional (default=33554432)
         Maximum memory consumed by the tree.
-    memory_estimate_period: int (default=1000000)
+    memory_estimate_period: int, optional (default=2000000)
         Number of instances between memory consumption checks.
-    grace_period: int (default=200)
+    grace_period: int, optional (default=50)
         Number of instances a leaf should observe between split attempts.
-    split_criterion: string (default='info_gain')
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
-    split_confidence: float (default=0.0000001)
+    split_criterion: string, optional (default='info_gain')
+        / Split criterion to use.
+        / 'gini' - Gini
+        / 'info_gain' - Information Gain
+    split_confidence: float, optional (default=0.01)
         Allowed error in split decision, a value closer to 0 takes longer to decide.
-    tie_threshold: float (default=0.05)
+    tie_threshold: float, optional (default=0.05)
         Threshold below which a split will be forced to break ties.
-    binary_split: boolean (default=False)
+    binary_split: bool, optional (default=False)
         If True, only allow binary splits.
-    stop_mem_management: boolean (default=False)
+    stop_mem_management: bool, optional (default=False)
         If True, stop growing as soon as memory limit is hit.
-    remove_poor_atts: boolean (default=False)
+    remove_poor_atts: bool, optional (default=False)
         If True, disable poor attributes.
-    no_preprune: boolean (default=False)
+    no_preprune: bool, optional (default=False)
         If True, disable pre-pruning.
-    leaf_prediction: string (default='nba')
-        | Prediction mechanism used at leafs.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
-    nb_threshold: int (default=0)
+    leaf_prediction: string, optional (default='nba')
+        / Prediction mechanism used at leafs.
+        / 'mc' - Majority Class
+        / 'nb' - Naive Bayes
+        / 'nba' - Naive Bayes Adaptive
+    nb_threshold: int, optional (default=0)
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes: list, optional
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
-    max_features: int (default=2)
-            Max number of attributes for each node split.
-    random_state: int, RandomState instance or None, optional (default=None)
+    random_state: int, RandomState or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        If None, the random number generator is the RandomState instance used by `np.random`.
 
     Notes
     _____
@@ -244,7 +241,6 @@ class ARFHoeffdingTree(HoeffdingTree):
                  max_features=2,
                  random_state=None):
         """ADFHoeffdingTree class constructor."""
-        # TODO Add HT parameters to ARF Hoeffding Tree constructor signature
         super().__init__(max_byte_size,
                          memory_estimate_period,
                          grace_period,
@@ -259,7 +255,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                          nb_threshold,
                          nominal_attributes)
         self.max_features = max_features
-        self.remove_poor_attributes_option = None
+        self.remove_poor_attributes = False
         self.random_state = random_state
 
     def _new_learning_node(self, initial_class_observations=None):
@@ -284,7 +280,18 @@ class ARFHoeffdingTree(HoeffdingTree):
         return True
 
     def new_instance(self):
-        return ARFHoeffdingTree(nominal_attributes=self.nominal_attributes,
+        return ARFHoeffdingTree(max_byte_size=self.max_byte_size,
+                                memory_estimate_period=self.memory_estimate_period,
+                                grace_period=self.grace_period,
+                                split_criterion=self.split_criterion,
+                                split_confidence=self.split_confidence,
+                                tie_threshold=self.tie_threshold,
+                                binary_split=self.binary_split,
+                                stop_mem_management=self.stop_mem_management,
+                                remove_poor_atts=self.remove_poor_atts,
+                                no_preprune=self.no_preprune,
+                                leaf_prediction=self.leaf_prediction,
+                                nb_threshold=self.nb_threshold,
+                                nominal_attributes=self.nominal_attributes,
                                 max_features=self.max_features,
                                 random_state=self.random_state)
-        # TODO Pass all HT parameters once they are available at the ARFHT class level

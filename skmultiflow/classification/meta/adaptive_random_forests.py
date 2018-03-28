@@ -15,7 +15,7 @@ class AdaptiveRandomForest(BaseClassifier):
 
         Parameters
         ----------
-        nb_ensemble: int (default=10)
+        nb_ensemble: int, optional (default=10)
             Number of trees oin the ensemble
         max_features : int, float, string or None, optional (default="auto")
             / Max number of attributes for each node split.
@@ -26,25 +26,66 @@ class AdaptiveRandomForest(BaseClassifier):
             / If "sqrt", then `max_features=sqrt(n_features)` (same as "auto").
             / If "log2", then `max_features=log2(n_features)`.
             / If None, then `max_features=n_features`.
-        disable_weighted_vote: bool (default=False)
+        disable_weighted_vote: bool, optional (default=False)
             Weighted vote option.
-        lambda_value: int (default=6)
+        lambda_value: int, optional (default=6)
             The lambda value for bagging (lambda=6 corresponds to Leverage Bagging).
         performance_metric: string, optional (default="acc")
             / Metric used to track trees performance within the ensemble.
             / 'acc' - Accuracy
             / 'kappa' - Accuracy
-        drift_detection_method: BaseDriftDetector or None, default(ADWIN(0.001))
+        drift_detection_method: BaseDriftDetector or None,, optional (default=ADWIN(0.001))
             Drift Detection method. Set to None to disable Drift detection.
         warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
             Warning Detection method. Set to None to disable warning detection.
+        max_byte_size: int, optional (default=33554432)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            Maximum memory consumed by the tree.
+        memory_estimate_period: int, optional (default=2000000)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            Number of instances between memory consumption checks.
+        grace_period: int, optional (default=50)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            Number of instances a leaf should observe between split attempts.
+        split_criterion: string, optional (default='info_gain')
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            / Split criterion to use.
+            / 'gini' - Gini
+            / 'info_gain' - Information Gain
+        split_confidence: float, optional (default=0.01)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            Allowed error in split decision, a value closer to 0 takes longer to decide.
+        tie_threshold: float, optional (default=0.05)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            Threshold below which a split will be forced to break ties.
+        binary_split: bool, optional (default=False)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            If True, only allow binary splits.
+        stop_mem_management: bool, optional (default=False)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            If True, stop growing as soon as memory limit is hit.
+        remove_poor_atts: bool, optional (default=False)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            If True, disable poor attributes.
+        no_preprune: bool, optional (default=False)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            If True, disable pre-pruning.
+        leaf_prediction: string, optional (default='nba')
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            / Prediction mechanism used at leafs.
+            / 'mc' - Majority Class
+            / 'nb' - Naive Bayes
+            / 'nba' - Naive Bayes Adaptive
+        nb_threshold: int, optional (default=0)
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            Number of instances a leaf should observe before allowing Naive Bayes.
         nominal_attributes: list, optional
-            List of Nominal attributes. If empty, then assume that all attributes are numerical.
+            (Adaptive Random Forest Hoeffding Tree parameter)
+            List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
         random_state: int, RandomState instance or None, optional (default=None)
             If int, random_state is the seed used by the random number generator;
             If RandomState instance, random_state is the random number generator;
-            If None, the random number generator is the RandomState instance used
-            by `np.random`.
+            If None, the random number generator is the RandomState instance used by `np.random`.
 
 
         Notes
@@ -74,6 +115,18 @@ class AdaptiveRandomForest(BaseClassifier):
                  performance_metric='acc',
                  drift_detection_method: BaseDriftDetector=ADWIN(0.001),
                  warning_detection_method: BaseDriftDetector=ADWIN(0.01),
+                 max_byte_size=33554432,
+                 memory_estimate_period=2000000,
+                 grace_period=50,
+                 split_criterion='info_gain',
+                 split_confidence=0.01,
+                 tie_threshold=0.05,
+                 binary_split=False,
+                 stop_mem_management=False,
+                 remove_poor_atts=False,
+                 no_preprune=False,
+                 leaf_prediction='nba',
+                 nb_threshold=0,
                  nominal_attributes=None,
                  random_state=None):
         """AdaptiveRandomForest class constructor."""
@@ -93,12 +146,26 @@ class AdaptiveRandomForest(BaseClassifier):
         self.instances_seen = 0
         self._train_weight_seen_by_model = 0.0
         self.ensemble = None
-        self.nominal_attributes = nominal_attributes
         self.random_state = check_random_state(random_state)
         if performance_metric in ['acc', 'kappa']:
             self.performance_metric = performance_metric
         else:
             raise ValueError('Invalid performance metric: {}'.format(performance_metric))
+
+        # ARH Hoeffding Tree configuration
+        self.max_byte_size = max_byte_size
+        self. memory_estimate_period = memory_estimate_period
+        self.grace_period = grace_period
+        self.split_criterion = split_criterion
+        self.split_confidence = split_confidence
+        self.tie_threshold = tie_threshold
+        self.binary_split = binary_split
+        self.stop_mem_management = stop_mem_management
+        self.remove_poor_atts = remove_poor_atts
+        self.no_preprune = no_preprune
+        self.leaf_prediction = leaf_prediction
+        self.nb_threshold = nb_threshold
+        self.nominal_attributes = nominal_attributes
 
     def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
@@ -197,15 +264,26 @@ class AdaptiveRandomForest(BaseClassifier):
         self._set_max_features(get_dimensions(X)[1])
 
         for i in range(self.nb_ensemble):            
-            self.ensemble[i] = ARFBaseLearner(index_original=i,
-                                              classifier=ARFHoeffdingTree(nominal_attributes=self.nominal_attributes,
-                                                                          max_features=self.max_features,
-                                                                          random_state=self.random_state),
-                                              instances_seen=self.instances_seen,
-                                              drift_detection_method=self.drift_detection_method,
-                                              warning_detection_method=self.warning_detection_method,
-                                              is_background_learner=False)
-            # TODO Pass all HT parameters once they are available at the ARFHT class level
+            self.ensemble[i] = ARFBaseLearner(i,
+                                              ARFHoeffdingTree(max_byte_size=self.max_byte_size,
+                                                               memory_estimate_period=self.memory_estimate_period,
+                                                               grace_period=self.grace_period,
+                                                               split_criterion=self.split_criterion,
+                                                               split_confidence=self.split_confidence,
+                                                               tie_threshold=self.tie_threshold,
+                                                               binary_split=self.binary_split,
+                                                               stop_mem_management=self.stop_mem_management,
+                                                               remove_poor_atts=self.remove_poor_atts,
+                                                               no_preprune=self.no_preprune,
+                                                               leaf_prediction=self.leaf_prediction,
+                                                               nb_threshold=self.nb_threshold,
+                                                               nominal_attributes=self.nominal_attributes,
+                                                               max_features=self.max_features,
+                                                               random_state=self.random_state),
+                                              self.instances_seen,
+                                              self.drift_detection_method,
+                                              self.warning_detection_method,
+                                              False)
 
     def _set_max_features(self, n):
         if self.max_features == 'auto' or self.max_features == 'sqrt':
