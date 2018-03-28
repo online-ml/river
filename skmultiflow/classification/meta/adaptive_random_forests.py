@@ -180,8 +180,9 @@ class AdaptiveRandomForest(BaseClassifier):
                     performance = self.ensemble[i].evaluator.get_performance()\
                         if self.performance_metric == 'acc'\
                         else self.ensemble[i].evaluator.get_kappa()
-                    for k in vote:
-                        vote[k] = vote[k] * performance   # CHECK if we need to protect against 0
+                    if performance != 0.0:  # CHECK How to handle negative (kappa) values?
+                        for k in vote:
+                            vote[k] = vote[k] * performance
                 # Add values
                 for k in vote:
                     try:
