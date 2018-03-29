@@ -720,7 +720,7 @@ class EvaluateHoldout(BaseEvaluator):
             The dataset name, will be part of the plot name.
              
         """
-        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name, plots=self.plot_options,
+        self.visualizer = EvaluationVisualizer(task_type=self.task_type, n_wait=n_wait, dataset_name=dataset_name, plots=self.plot_options,
                                                n_learners=self.n_classifiers)
 
     def __reset_globals(self):

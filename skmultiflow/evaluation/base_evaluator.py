@@ -19,6 +19,47 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
     NotImplementedError: This is an abstract class.
 
     """
+    # Constants
+    PERFORMANCE = 'performance'
+    KAPPA = 'kappa'
+    KAPPA_T = 'kappa_t'
+    KAPPA_M = 'kappa_m'
+    HAMMING_SCORE = 'hamming_score'
+    HAMMING_LOSS = 'hamming_loss'
+    EXACT_MATCH = 'exact_match'
+    J_INDEX = 'j_index'
+    MSE = 'mean_square_error'
+    MAE = 'mean_absolute_error'
+    TRUE_VS_PREDICT = 'true_vs_predicts'
+    PLOT_TYPES = [PERFORMANCE,
+                  KAPPA,
+                  KAPPA_T,
+                  KAPPA_M,
+                  HAMMING_SCORE,
+                  HAMMING_LOSS,
+                  EXACT_MATCH,
+                  J_INDEX,
+                  MSE,
+                  MAE,
+                  TRUE_VS_PREDICT]
+    CLASSIFICATION_METRICS = [PERFORMANCE,
+                              KAPPA,
+                              KAPPA_T,
+                              KAPPA_M,
+                              TRUE_VS_PREDICT]
+    REGRESSION_METRICS = [MSE,
+                          MAE,
+                          TRUE_VS_PREDICT]
+    MULTI_OUTPUT_METRICS = [HAMMING_SCORE,
+                            HAMMING_LOSS,
+                            EXACT_MATCH,
+                            J_INDEX]
+    CLASSIFICATION = 'classification'
+    REGRESSION = 'regression'
+    MULTI_OUTPUT = 'multi_output'
+    TASK_TYPES = [CLASSIFICATION,
+                  REGRESSION,
+                  MULTI_OUTPUT]
 
     def __init__(self):
         super().__init__()

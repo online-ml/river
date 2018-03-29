@@ -61,7 +61,7 @@ class EvaluatePrequential(BaseEvaluator):
     plot_options: list, optional (Default: None)
         Which metrics to compute, and if show_plot is True, which metrics to 
         display. Plot options can contain how many of the following as the user 
-        wants: 'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
+        wants: 'performance', 'kappa', 'hamming_score', 'hamming_loss',
         'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
         'true_vs_predicts', 'kappa_t', 'kappa_m']
         
@@ -76,9 +76,10 @@ class EvaluatePrequential(BaseEvaluator):
     This evaluator accepts to types of evaluation processes. It can either evaluate 
     a single learner while computing its metrics or it can evaluate multiple learners 
     at a time, as a means of comparing different approaches to the same problem.
-    
-    Parameter show_scatter_points should only be used for small datasets, and 
-    non-intensive evaluations, as it will drastically slower the evaluation process.
+
+    The 'true_vs_predicts' option is intended to be informative only. It corresponds
+    to evaluations at a specific moment which might not represent the actual learner
+    performance across all instances.
     
     Examples
     --------
@@ -130,11 +131,8 @@ class EvaluatePrequential(BaseEvaluator):
     """
 
     def __init__(self, n_wait=200, max_instances=100000, max_time=float("inf"), output_file=None,
-                 batch_size=1, pretrain_size=200, task_type='classification', show_plot=False, plot_options=None):
-
-        PLOT_TYPES = ['performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 'exact_match', 'j_index',
-                      'mean_square_error', 'mean_absolute_error', 'true_vs_predicts', 'kappa_t', 'kappa_m']
-        TASK_TYPES = ['classification', 'regression', 'multi_output']
+                 batch_size=1, pretrain_size=200, task_type='classification', show_plot=False,
+                 plot_options=None):
 
         super().__init__()
         self.n_wait = n_wait
@@ -148,30 +146,40 @@ class EvaluatePrequential(BaseEvaluator):
         self.visualizer = None
         self.n_classifiers = 0
 
-        #plotting configs
+        # Metrics
+        self.global_classification_metrics = None
+        self.partial_classification_metrics = None
         self.task_type = task_type.lower()
-        if self.task_type not in TASK_TYPES:
+        if self.task_type not in EvaluatePrequential.TASK_TYPES:
             raise ValueError('Task type not supported.')
+        self.__start_metrics()
+
+        # Plotting configuration
         self.show_plot = show_plot
         self.plot_options = None
         if plot_options is None:
-            if self.task_type == 'classification':
-                self.plot_options = ['performance', 'kappa']
-            elif self.task_type == 'regression':
-                self.plot_options = ['mean_square_error', 'true_vs_predict']
-            elif self.task_type == 'multi_output':
-                self.plot_options = ['hamming_score', 'exact_match', 'j_index']
+            if self.task_type == EvaluatePrequential.CLASSIFICATION:
+                self.plot_options = [EvaluatePrequential.PERFORMANCE, EvaluatePrequential.KAPPA]
+            elif self.task_type == EvaluatePrequential.REGRESSION:
+                self.plot_options = [EvaluatePrequential.MSE, EvaluatePrequential.TRUE_VS_PREDICT]
+            elif self.task_type == EvaluatePrequential.MULTI_OUTPUT:
+                self.plot_options = [EvaluatePrequential.HAMMING_SCORE, EvaluatePrequential.EXACT_MATCH,
+                                     EvaluatePrequential.J_INDEX]
         elif plot_options is not None:
             self.plot_options = [x.lower() for x in plot_options]
 
         for i in range(len(self.plot_options)):
-            if self.plot_options[i] not in PLOT_TYPES:
+            if self.plot_options[i] not in EvaluatePrequential.PLOT_TYPES:
                 raise ValueError(str(self.plot_options[i]) + ': Plot type not supported.')
-
-        #metrics
-        self.global_classification_metrics = None
-        self.partial_classification_metrics = None
-        self.__start_metrics()
+            elif self.task_type == EvaluatePrequential.CLASSIFICATION:
+                if self.plot_options[i] not in EvaluatePrequential.CLASSIFICATION_METRICS:
+                    raise ValueError(str('{}: not supported for {} task.'.format(self.plot_options[i], self.task_type)))
+            elif self.task_type == EvaluatePrequential.REGRESSION:
+                if self.plot_options[i] not in EvaluatePrequential.REGRESSION_METRICS:
+                    raise ValueError(str('{}: not supported for {} task.'.format(self.plot_options[i], self.task_type)))
+            else:
+                if self.plot_options[i] not in EvaluatePrequential.MULTI_OUTPUT_METRICS:
+                    raise ValueError(str('{}: not supported for {} task.'.format(self.plot_options[i], self.task_type)))
 
         self.global_sample_count = 0
 
@@ -179,8 +187,10 @@ class EvaluatePrequential(BaseEvaluator):
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
     def _init_file(self):
+        # Note: 'TRUE_VS_PREDICTS' or other informative values shall not be logged into the results file since they do
+        # not represent actual performance.
         with open(self.output_file, 'w+') as f:
-            f.write("# SETUP BEGIN")
+            f.write("# TEST CONFIGURATION BEGIN")
             if hasattr(self.stream, 'get_info'):
                 f.write("\n# " + self.stream.get_info())
             if self.n_classifiers <= 1:
@@ -192,41 +202,38 @@ class EvaluatePrequential(BaseEvaluator):
                         f.write("\n# " + self.classifier[i].get_info())
 
             f.write("\n# " + self.get_info())
-            f.write("\n# SETUP END")
+            f.write("\n# TEST CONFIGURATION END")
             header = '\nid'
-            if 'performance' in self.plot_options:
+            if EvaluatePrequential.PERFORMANCE in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_performance_' + str(i) + ',sliding_window_performance_' + str(i)
-            if 'kappa' in self.plot_options:
+                    header += ',global_performance_{},sliding_performance_{}'.format(i, i)
+            if EvaluatePrequential.KAPPA in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_kappa_' + str(i) + ',sliding_window_kappa_' + str(i)
-            if 'kappa_t' in self.plot_options:
+                    header += ',global_kappa_{},sliding_kappa_{}'.format(i, i)
+            if EvaluatePrequential.KAPPA_T in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_kappa_t_' + str(i) + ',sliding_window_kappa_t_' + str(i)
-            if 'kappa_m' in self.plot_options:
+                    header += ',global_kappa_t_{},sliding_kappa_t_{}'.format(i, i)
+            if EvaluatePrequential.KAPPA_M in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_kappa_m_' + str(i) + ',sliding_window_kappa_m_' + str(i)
-            if 'scatter' in self.plot_options:
+                    header += ',global_kappa_m_{},sliding_kappa_m_{}'.format(i, i)
+            if EvaluatePrequential.HAMMING_SCORE in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',true_label_' + str(i) + ',prediction_' + str(i)
-            if 'hamming_score' in self.plot_options:
+                    header += ',global_hamming_score_{},sliding_hamming_score_{}'.format(i, i)
+            if EvaluatePrequential.HAMMING_LOSS in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_hamming_score_' + str(i) + ',sliding_window_hamming_score_' + str(i)
-            if 'hamming_loss' in self.plot_options:
+                    header += ',global_hamming_loss_{},sliding_hamming_loss_{}'.format(i, i)
+            if EvaluatePrequential.EXACT_MATCH in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_hamming_loss_' + str(i) + ',sliding_window_hamming_loss_' + str(i)
-            if 'exact_match' in self.plot_options:
+                    header += ',global_exact_match_{},sliding_exact_match_{}'.format(i, i)
+            if EvaluatePrequential.J_INDEX in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_exact_match_' + str(i) + ',sliding_window_exact_match_' + str(i)
-            if 'j_index' in self.plot_options:
+                    header += ',global_j_index_{},sliding_j_index_{}'.format(i, i)
+            if EvaluatePrequential.MSE in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_j_index_' + str(i) + ',sliding_window_j_index_' + str(i)
-            if 'mean_square_error' in self.plot_options:
+                    header += ',global_mse_{},sliding_mse_{}'.format(i, i)
+            if EvaluatePrequential.MAE in self.plot_options:
                 for i in range(self.n_classifiers):
-                    header += ',global_mse_' + str(i) + ',sliding_window_mse_' + str(i)
-            if 'mean_absolute_error' in self.plot_options:
-                for i in range(self.n_classifiers):
-                    header += ',global_mae_' + str(i) + ',sliding_window_mae_' + str(i)
+                    header += ',global_mae_{},sliding_mae_{}'.format(i, i)
             f.write(header)
 
     def eval(self, stream, classifier):
@@ -252,7 +259,7 @@ class EvaluatePrequential(BaseEvaluator):
         Notes
         -----
         The classifier parameter should be an extension from the BaseClassifier. In 
-        the future, when BaseRegressor is created, it could be an axtension from that 
+        the future, when BaseRegressor is created, it could be an extension from that
         class as well.
         
         """
@@ -283,7 +290,7 @@ class EvaluatePrequential(BaseEvaluator):
     def __train_and_test(self, stream=None, classifier=None):
         """ __train_and_test 
         
-        Method to control the prequential evaluation, as described in the class' 
+        Method to control the prequential evaluation, as described in the class'
         main documentation.
         
         Parameters
@@ -303,7 +310,7 @@ class EvaluatePrequential(BaseEvaluator):
         Notes
         -----
         The classifier parameter should be an extension from the BaseClassifier. In 
-        the future, when BaseRegressor is created, it could be an axtension from that 
+        the future, when BaseRegressor is created, it could be an extension from that
         class as well.
         
         """
@@ -313,7 +320,6 @@ class EvaluatePrequential(BaseEvaluator):
         self.classifier = classifier
         self.stream = stream
         self.__reset_globals()
-        prediction = None
         logging.info('Prequential Evaluation')
         logging.info('Generating %s targets.', str(self.stream.get_num_targets()))
 
@@ -326,11 +332,11 @@ class EvaluatePrequential(BaseEvaluator):
             self._init_file()
 
         first_run = True
-        if (self.pretrain_size > 0):
-            logging.info('Pretraining on %s samples.', str(self.pretrain_size))
+        if self.pretrain_size > 0:
+            logging.info('Pre-training on %s samples.', str(self.pretrain_size))
             X, y = self.stream.next_instance(self.pretrain_size)
             for i in range(self.n_classifiers):
-                if self.task_type != 'regression':
+                if self.task_type != EvaluatePrequential.REGRESSION:
                     self.classifier[i].partial_fit(X=X, y=y, classes=self.stream.get_classes())
                 else:
                     self.classifier[i].partial_fit(X=X, y=y)
@@ -338,26 +344,17 @@ class EvaluatePrequential(BaseEvaluator):
             first_run = False
 
         else:
-            logging.info('No pretrain.')
-            """
-            X, y = self.stream.next_instance()
-            for i in range(self.n_classifiers):
-                if self.task_type != 'regression':
-                    self.classifier[i].partial_fit(X, y, self.stream.get_classes())
-                else:
-                    self.classifier[i].partial_fit(X, y)
-            """
-            first_run = False
+            logging.info('No pre-training.')
 
-        before_count = 0
+        update_count = 0
         logging.info('Evaluating...')
         while ((self.global_sample_count < self.max_instances) & (end_time - init_time < self.max_time)
-                   & (self.stream.has_more_instances())):
+               & (self.stream.has_more_instances())):
             try:
                 X, y = self.stream.next_instance(self.batch_size)
 
                 if X is not None and y is not None:
-                    prediction = [[] for n in range(self.n_classifiers)]
+                    prediction = [[] for _ in range(self.n_classifiers)]
                     for i in range(self.n_classifiers):
                         prediction[i].extend(self.classifier[i].predict(X))
                     self.global_sample_count += self.batch_size
@@ -376,7 +373,7 @@ class EvaluatePrequential(BaseEvaluator):
 
                     if first_run:
                         for i in range(self.n_classifiers):
-                            if self.task_type != 'regression':
+                            if self.task_type != EvaluatePrequential.REGRESSION:
                                 self.classifier[i].partial_fit(X, y, self.stream.get_classes())
                             else:
                                 self.classifier[i].partial_fit(X, y)
@@ -385,10 +382,10 @@ class EvaluatePrequential(BaseEvaluator):
                         for i in range(self.n_classifiers):
                             self.classifier[i].partial_fit(X, y)
 
-                    if ((self.global_sample_count % self.n_wait) == 0 | (
-                        self.global_sample_count >= self.max_instances) |
-                        (self.global_sample_count / self.n_wait > before_count + 1)):
-                        before_count += 1
+                    if ((self.global_sample_count % self.n_wait) == 0 |
+                            (self.global_sample_count >= self.max_instances) |
+                            (self.global_sample_count / self.n_wait > update_count + 1)):
+                        update_count += 1
                         if prediction is not None:
                             self._update_metrics()
 
@@ -396,43 +393,47 @@ class EvaluatePrequential(BaseEvaluator):
             except BaseException as exc:
                 print(exc)
                 if exc is KeyboardInterrupt:
-                    if self.show_scatter_points:
-                        self._update_metrics()
-                    else:
-                        self._update_metrics()
+                    self._update_metrics()
                 break
 
-        if (end_time - init_time > self.max_time):
-            logging.info('\nTime limit reached. Evaluation stopped.')
-            logging.info('Evaluation time: %s s', str(self.max_time))
+        if end_time - init_time > self.max_time:
+            logging.info('Time limit reached. Evaluation stopped.')
+            logging.info('Evaluation time: {} s'.format(self.max_time))
         else:
-            logging.info('\nEvaluation time: %s s', str(round(end_time - init_time, 3)))
-        logging.info('Total instances: %s', str(self.global_sample_count))
+            logging.info('Evaluation time: {:.3f} s'.format(end_time - init_time))
+        logging.info('Total instances: {}'.format(self.global_sample_count))
+        logging.info('Global performance:')
         for i in range(self.n_classifiers):
             if 'performance' in self.plot_options:
-                logging.info('Classifier %s - Global accuracy: %s', str(i), str(round(self.global_classification_metrics[i].get_performance(), 3)))
+                logging.info('Learner {} - Accuracy     : {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_performance()))
             if 'kappa' in self.plot_options:
-                logging.info('Classifier %s - Global kappa: %s', str(i), str(round(self.global_classification_metrics[i].get_kappa(), 3)))
+                logging.info('Learner {} - Kappa        : {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_kappa()))
             if 'kappa_t' in self.plot_options:
-                logging.info('Classifier %s - Global kappa T: %s', str(i), str(round(self.global_classification_metrics[i].get_kappa_t(), 3)))
+                logging.info('Learner {} - Kappa T      : {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_kappa_t()))
             if 'kappa_m' in self.plot_options:
-                logging.info('Classifier %s - Global kappa M: %s', str(i), str(round(self.global_classification_metrics[i].get_kappa_m(), 3)))
-            if 'scatter' in self.plot_options:
-                pass
+                logging.info('Learner {} - Kappa M      : {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_kappa_m()))
             if 'hamming_score' in self.plot_options:
-                logging.info('Classifier %s - Global hamming score: %s', str(i), str(round(self.global_classification_metrics[i].get_hamming_score(), 3)))
+                logging.info('Learner {} - Hamming score: {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_hamming_score()))
             if 'hamming_loss' in self.plot_options:
-                logging.info('Classifier %s - Global hamming loss: %s', str(i), str(round(self.global_classification_metrics[i].get_hamming_loss(), 3)))
+                logging.info('Learner {} - Hamming loss : {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_hamming_loss()))
             if 'exact_match' in self.plot_options:
-                logging.info('Classifier %s - Global exact matches: %s', str(i), str(round(self.global_classification_metrics[i].get_exact_match(), 3)))
+                logging.info('Learner {} - Exact matches: {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_exact_match()))
             if 'j_index' in self.plot_options:
-                logging.info('Classifier %s - Global j index: %s', str(i), str(round(self.global_classification_metrics[i].get_j_index(), 3)))
+                logging.info('Learner {} - j index      : {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_j_index()))
             if 'mean_square_error' in self.plot_options:
-                logging.info('Classifier %s - Global MSE: %s', str(i), str(round(self.global_classification_metrics[i].get_mean_square_error(), 6)))
+                logging.info('Learner {} - MSE          : {:.3f}'.format(
+                    i, self.global_classification_metrics[i].get_mean_square_error()))
             if 'mean_absolute_error' in self.plot_options:
-                logging.info('Classifier %s - Global MAE: %s', str(i), str(round(self.global_classification_metrics[i].get_average_error(), 6)))
-            if 'true_vs_predicts' in self.plot_options:
-                pass
+                logging.info('Learner {} - MAE          : {:3f}'.format(
+                    i, self.global_classification_metrics[i].get_average_error()))
 
         return self.classifier
 
@@ -517,50 +518,48 @@ class EvaluatePrequential(BaseEvaluator):
 
         """
         if self.output_file is not None:
+            # Note: Must follow order set in _init_file()
             line = str(current_x)
-            if 'performance' in self.plot_options:
+            if EvaluatePrequential.PERFORMANCE in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_performance(), 3))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_performance(), 3))
-            if 'kappa' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_performance(),
+                                                    self.partial_classification_metrics[i].get_performance())
+            if EvaluatePrequential.KAPPA in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_kappa(), 3))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_kappa(), 3))
-            if 'kappa_t' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_kappa(),
+                                                    self.partial_classification_metrics[i].get_kappa())
+            if EvaluatePrequential.KAPPA_T in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_kappa_t(), 3))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_kappa_t(), 3))
-            if 'kappa_m' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_kappa_t(),
+                                                    self.partial_classification_metrics[i].get_kappa_t())
+            if EvaluatePrequential.KAPPA_M in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_kappa_m(), 3))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_kappa_m(), 3))
-            if 'scatter' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_kappa_m(),
+                                                    self.partial_classification_metrics[i].get_kappa_m())
+            if EvaluatePrequential.HAMMING_SCORE in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(new_points_dict['scatter'][i][0]) + ',' + str(new_points_dict['scatter'][i][1])
-            if 'hamming_score' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_hamming_score(),
+                                                    self.partial_classification_metrics[i].get_hamming_score())
+            if EvaluatePrequential.HAMMING_LOSS in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_hamming_score() ,3))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_hamming_score(), 3))
-            if 'hamming_loss' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_hamming_loss(),
+                                                    self.partial_classification_metrics[i].get_hamming_loss())
+            if EvaluatePrequential.EXACT_MATCH in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_hamming_loss() ,3))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_hamming_loss(), 3))
-            if 'exact_match' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_exact_match(),
+                                                    self.partial_classification_metrics[i].get_exact_match())
+            if EvaluatePrequential.J_INDEX in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_exact_match() ,3))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_exact_match(), 3))
-            if 'j_index' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_j_index(),
+                                                    self.partial_classification_metrics[i].get_j_index())
+            if EvaluatePrequential.MSE in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_j_index() ,3))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_j_index(), 3))
-            if 'mean_square_error' in self.plot_options:
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_mean_square_error(),
+                                                    self.partial_classification_metrics[i].get_mean_square_error())
+            if EvaluatePrequential.MAE in self.plot_options:
                 for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_mean_square_error(), 6))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_mean_square_error(), 6))
-            if 'mean_absolute_error' in self.plot_options:
-                for i in range(self.n_classifiers):
-                    line += ',' + str(round(self.global_classification_metrics[i].get_average_error(), 6))
-                    line += ',' + str(round(self.partial_classification_metrics[i].get_average_error(), 6))
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_error(),
+                                                    self.partial_classification_metrics[i].get_average_error())
             with open(self.output_file, 'a') as f:
                 f.write('\n' + line)
 
@@ -577,17 +576,17 @@ class EvaluatePrequential(BaseEvaluator):
         self.global_classification_metrics = []
         self.partial_classification_metrics = []
 
-        if self.task_type in ['classification']:
+        if self.task_type == EvaluatePrequential.CLASSIFICATION:
             for i in range(self.n_classifiers):
                 self.global_classification_metrics.append(ClassificationMeasurements())
                 self.partial_classification_metrics.append(WindowClassificationMeasurements(window_size=self.n_wait))
 
-        elif self.task_type in ['multi_output']:
+        elif self.task_type == EvaluatePrequential.MULTI_OUTPUT:
             for i in range(self.n_classifiers):
                 self.global_classification_metrics.append(MultiOutputMeasurements())
                 self.partial_classification_metrics.append(WindowMultiOutputMeasurements(window_size=self.n_wait))
 
-        elif self.task_type in ['regression']:
+        elif self.task_type == EvaluatePrequential.REGRESSION:
             for i in range(self.n_classifiers):
                 self.global_classification_metrics.append(RegressionMeasurements())
                 self.partial_classification_metrics.append(WindowRegressionMeasurements(window_size=self.n_wait))
@@ -619,14 +618,6 @@ class EvaluatePrequential(BaseEvaluator):
             new_points_dict['kappa_m'] = [[self.global_classification_metrics[i].get_kappa_m(),
                                            self.partial_classification_metrics[i].get_kappa_m()]
                                           for i in range(self.n_classifiers)]
-
-        if 'scatter' in self.plot_options:
-            true, pred = [], []
-            for i in range(self.n_classifiers):
-                t, p = self.global_classification_metrics[i].get_last()
-                true.append(t)
-                pred.append(p)
-            new_points_dict['scatter'] = [[true[i], pred[i]] for i in range(self.n_classifiers)]
 
         if 'hamming_score' in self.plot_options:
             new_points_dict['hamming_score'] = [[self.global_classification_metrics[i].get_hamming_score(),
@@ -677,16 +668,16 @@ class EvaluatePrequential(BaseEvaluator):
         Parameters
         ----------
         n_wait: int 
-            The number of samples to process before each holddout set test.
+            The number of samples between tests.
 
         dataset_name: string
-            The dataset name, will be part of the plot name.
+            The dataset name.
 
         """
-        self.visualizer = EvaluationVisualizer(n_wait=n_wait, dataset_name=dataset_name,
+        self.visualizer = EvaluationVisualizer(task_type=self.task_type, n_wait=n_wait, dataset_name=dataset_name,
                                                plots=self.plot_options, n_learners=self.n_classifiers)
 
-    def set_params(self, dict):
+    def set_params(self, parameter_dict):
         """ set_params
 
         This function allows the users to change some of the evaluator's parameters, 
@@ -695,13 +686,12 @@ class EvaluatePrequential(BaseEvaluator):
 
         Parameters
         ----------
-        dict: Dictionary
+        parameter_dict: Dictionary
             A dictionary where the keys are the names of attributes the user 
             wants to change, and the values are the new values of those attributes.
 
         """
-        params_list = dict_to_tuple_list(dict)
-        for name, value in params_list:
+        for name, value in parameter_dict.items():
             if name == 'n_wait':
                 self.n_wait = value
             elif name == 'max_instances':
@@ -714,7 +704,6 @@ class EvaluatePrequential(BaseEvaluator):
                 self.batch_size = value
             elif name == 'pretrain_size':
                 self.pretrain_size = value
-
 
     def get_info(self):
         return 'Prequential Evaluator: n_wait: ' + str(self.n_wait) + \

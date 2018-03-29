@@ -2,9 +2,8 @@ __author__ = 'Guilherme Matsumoto'
 
 import warnings
 from skmultiflow.visualization.base_listener import BaseListener
-import numpy as np
+from matplotlib.rcsetup import cycler
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 
 
 class EvaluationVisualizer(BaseListener):
@@ -59,22 +58,19 @@ class EvaluationVisualizer(BaseListener):
     
     """
 
-    COLOR_MAP = ['#0000FF', '#FF0000', '#00CC01', '#2F2F2F', '#8900CC', '#0099CC', '#ACE600', '#D9007E', '#FFCCCC',
-                 '#5E6600', '#FFFF00', '#999999', '#FF6000', '#00FF00', '#FF00FF', '#00FFFF', '#FFFF0F', '#F0CC01',
-                 '#9BC6ED', '#915200', '#0000FF', '#FF0000', '#00CC01', '#2F2F2F', '#8900CC', '#0099CC', '#ACE600',
-                 '#D9007E', '#FFCCCC', '#5E6600', '#FFFF00', '#999999', '#FF6000', '#00FF00', '#FF00FF', '#00FFFF',
-                 '#FFFF0F', '#F0CC01', '#9BC6ED', '#915200']
-
-    def __init__(self, n_wait = 200, dataset_name = 'Unnamed graph', plots=None, n_learners=1):
+    def __init__(self, task_type=None, n_wait=200, dataset_name='Unnamed graph', plots=None, n_learners=1):
         super().__init__()
-        #default values
+
+        # Default values
         self.X = None
         self.scatter_x = None
+        self._is_legend_set = False
+        self._draw_cnt = 0
 
         self.temp = []
 
-        self.true_labels = None
-        self.predictions = None
+        self.true_values = None
+        self.pred_values = None
 
         self.partial_performance = None
         self.global_performance = None
@@ -87,11 +83,6 @@ class EvaluationVisualizer(BaseListener):
 
         self.global_kappa_m = None
         self.partial_kappa_m = None
-
-        self.scatter_true_labels = None
-        self.scatter_predicts = None
-        self.scatter_true_labels_colors = None
-        self.scatter_predicts_colors = None
 
         self.global_hamming_score = None
         self.partial_hamming_score = None
@@ -114,12 +105,13 @@ class EvaluationVisualizer(BaseListener):
         self.regression_true = None
         self.regression_pred = None
 
-        #configs
+        # Configuration
         self.n_wait = None
         self.dataset_name = None
         self.n_learners = None
+        self.num_plots = 0
 
-        #lines
+        # Lines
         self.line_global_performance = None
         self.line_partial_performance = None
 
@@ -131,9 +123,6 @@ class EvaluationVisualizer(BaseListener):
 
         self.line_global_kappa_m = None
         self.line_partial_kappa_m = None
-
-        self.line_scatter_predicts = None
-        self.line_scatter_true_labels = None
 
         self.line_global_hamming_score = None
         self.line_partial_hamming_score = None
@@ -153,13 +142,10 @@ class EvaluationVisualizer(BaseListener):
         self.line_global_mae = None
         self.line_partial_mae = None
 
-        self.line_regression_true = None
-        self.line_regression_pred = None
+        self.line_true = None
+        self.line_pred = None
 
-        #show configs
-        self.num_plots = 0
-
-        #subplot default
+        # Subplot default
         self.subplot_performance = None
         self.subplot_kappa = None
         self.subplot_kappa_t = None
@@ -173,6 +159,14 @@ class EvaluationVisualizer(BaseListener):
         self.subplot_mae = None
         self.subplot_true_vs_predicts = None
 
+        if task_type is None:
+            raise ValueError('Task type for visualizer object is undefined.')
+        else:
+            if task_type in ['classification', 'regression', 'multi_output']:
+                self.task_type = task_type
+            else:
+                raise ValueError('Invalid task type: {}'.format(task_type))
+
         if plots is not None:
             if len(plots) < 1:
                 raise ValueError('No plots were given.')
@@ -181,7 +175,7 @@ class EvaluationVisualizer(BaseListener):
         else:
             raise ValueError('No plots were given.')
 
-    def on_new_train_step(self, train_step, dict):
+    def on_new_train_step(self, train_step, metrics_dict):
         """ on_new_train_step
         
         This is the listener main function, which gives it the ability to 
@@ -194,10 +188,9 @@ class EvaluationVisualizer(BaseListener):
         train_step: int
             The number of samples processed to this moment.
         
-        dict: dictionary
-            A dictionary containing tuples, where the first element is the 
-            string that identifies one of the plot's subplot names, and the 
-            second element is its numerical value.
+        metrics_dict: dictionary
+            A dictionary containing metric measurements, where the key is
+            the metric name and the value its corresponding measurement.
             
         Raises
         ------
@@ -205,15 +198,14 @@ class EvaluationVisualizer(BaseListener):
         is raised.
          
         """
-        if (train_step % self.n_wait == 0):
+        if train_step % self.n_wait == 0:
             try:
-                self.draw(train_step, dict)
+                self.draw(train_step, metrics_dict)
             except BaseException as exc:
-                raise ValueError('Wrong data format.')
+                raise ValueError('Failed when trying to draw plot. ', exc)
 
     def on_new_scatter_data(self, X, y, prediction):
         pass
-
 
     def __configure(self, n_wait, dataset_name, plots, n_learners):
         """ __configure
@@ -223,11 +215,10 @@ class EvaluationVisualizer(BaseListener):
         plotting points.
         
         Basic structures needed to keep track of plot values (for each subplot) 
-        are: lists of values and matplotlib's line objects (not necessary for 
-        scatter type subplots).
+        are: lists of values and matplotlib's line objects.
         
         The __configure function will also initialize each subplot with the 
-        correct name, will setup the axis and create legends for all lines. 
+        correct name and setup the axis.
         
         The subplot size will self adjust to each screen size, so that data can 
         be better viewed in different contexts.
@@ -250,6 +241,18 @@ class EvaluationVisualizer(BaseListener):
             The number of learners to compare.
          
         """
+        font_size_small = 8
+        font_size_medium = 10
+        font_size_large = 12
+
+        plt.rc('font', size=font_size_small)  # controls default text sizes
+        plt.rc('axes', titlesize=font_size_medium)  # font size of the axes title
+        plt.rc('axes', labelsize=font_size_small)  # font size of the x and y labels
+        plt.rc('xtick', labelsize=font_size_small)  # font size of the tick labels
+        plt.rc('ytick', labelsize=font_size_small)  # font size of the tick labels
+        plt.rc('legend', fontsize=font_size_small)  # legend font size
+        plt.rc('figure', titlesize=font_size_large)  # font size of the figure title
+
         warnings.filterwarnings("ignore", ".*GUI is implemented.*")
         warnings.filterwarnings("ignore", ".*left==right.*")
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
@@ -261,311 +264,317 @@ class EvaluationVisualizer(BaseListener):
         self.X = []
 
         plt.ion()
-        self.fig = plt.figure(figsize=(16, 8))
+        self.fig = plt.figure(figsize=(9, 5))
         self.fig.suptitle(dataset_name)
         self.num_plots = len(self.plots)
-        base = 11 + self.num_plots * 100
+        base = 11 + self.num_plots * 100  # 3-digit integer describing the position of the subplot.
         self.fig.canvas.set_window_title('scikit-multiflow')
 
         if 'performance' in self.plots:
-            self.partial_performance = [[] for i in range(self.n_learners)]
-            self.global_performance = [[] for i in range(self.n_learners)]
+            self.partial_performance = [[] for _ in range(self.n_learners)]
+            self.global_performance = [[] for _ in range(self.n_learners)]
 
             self.subplot_performance = self.fig.add_subplot(base)
-            #self.subplot_performance.set_title('Classifier\'s accuracy')
+            self.subplot_performance.set_title('Accuracy')
             self.subplot_performance.set_ylabel('Performance ratio')
-            self.subplot_performance.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_performance = [None for i in range(self.n_learners)]
-            self.line_global_performance = [None for i in range(self.n_learners)]
+            self.line_partial_performance = [None for _ in range(self.n_learners)]
+            self.line_global_performance = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_performance[i], = self.subplot_performance.plot(self.X, self.partial_performance[i],
-                                                                               label='Classifier '+str(i)+' (last ' + str(
-                                                                                   self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_performance[i], = self.subplot_performance.plot(self.X, self.global_performance[i],
-                                                                              label='Classifier '+str(i))
+                self.line_partial_performance[i], = self.subplot_performance.plot(
+                    self.X,
+                    self.partial_performance[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_performance[i], = self.subplot_performance.plot(
+                    self.X, self.global_performance[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_performance[i])
                 handle.append(self.line_global_performance[i])
 
-            self.subplot_performance.legend(handles=handle)
-            self.subplot_performance.set_ylim([0, 1])
-
+            self._set_fig_legend(handle)
+            self.subplot_performance.set_ylim(0, 1)
 
         if 'kappa' in self.plots:
-            self.partial_kappa = [[] for i in range(self.n_learners)]
-            self.global_kappa = [[] for i in range(self.n_learners)]
+            self.partial_kappa = [[] for _ in range(self.n_learners)]
+            self.global_kappa = [[] for _ in range(self.n_learners)]
 
             self.subplot_kappa = self.fig.add_subplot(base)
-            self.subplot_kappa.set_title('Classifier\'s Kappa')
+            self.subplot_kappa.set_title('Kappa')
             self.subplot_kappa.set_ylabel('Kappa statistic')
-            self.subplot_kappa.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_kappa = [None for i in range(self.n_learners)]
-            self.line_global_kappa = [None for i in range(self.n_learners)]
+            self.line_partial_kappa = [None for _ in range(self.n_learners)]
+            self.line_global_kappa = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_kappa[i], = self.subplot_kappa.plot(self.X, self.partial_kappa[i],
-                                                                   label='Classifier '+str(i)+' - Sliding window Kappa (last '
-                                                                         + str(self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_kappa[i], = self.subplot_kappa.plot(self.X, self.global_kappa[i], label='Classifier '+str(i)+' - Global kappa')
+                self.line_partial_kappa[i], = self.subplot_kappa.plot(
+                    self.X, self.partial_kappa[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_kappa[i], = self.subplot_kappa.plot(
+                    self.X, self.global_kappa[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_kappa[i])
                 handle.append(self.line_global_kappa[i])
 
-            self.subplot_kappa.legend(handles=handle)
-            self.subplot_kappa.set_ylim([-1, 1])
+            self._set_fig_legend(handle)
+            self.subplot_kappa.set_ylim(-1, 1)
 
         if 'kappa_t' in self.plots:
-            self.partial_kappa_t = [[] for i in range(self.n_learners)]
-            self.global_kappa_t = [[] for i in range(self.n_learners)]
+            self.partial_kappa_t = [[] for _ in range(self.n_learners)]
+            self.global_kappa_t = [[] for _ in range(self.n_learners)]
 
             self.subplot_kappa_t = self.fig.add_subplot(base)
-            self.subplot_kappa_t.set_title('Classifier\'s Kappa T')
+            self.subplot_kappa_t.set_title('Kappa T')
             self.subplot_kappa_t.set_ylabel('Kappa T statistic')
-            self.subplot_kappa_t.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_kappa_t = [None for i in range(self.n_learners)]
-            self.line_global_kappa_t = [None for i in range(self.n_learners)]
+            self.line_partial_kappa_t = [None for _ in range(self.n_learners)]
+            self.line_global_kappa_t = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_kappa_t[i], = self.subplot_kappa_t.plot(self.X, self.partial_kappa_t[i],
-                                                                       label='Classifier '+str(i)+' - Sliding window Kappa T (last '
-                                                                             + str(self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_kappa_t[i], = self.subplot_kappa_t.plot(self.X, self.global_kappa_t[i], label='Classifier '+str(i)+' - Global kappa T')
+                self.line_partial_kappa_t[i], = self.subplot_kappa_t.plot(
+                    self.X, self.partial_kappa_t[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_kappa_t[i], = self.subplot_kappa_t.plot(
+                    self.X, self.global_kappa_t[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_kappa_t[i])
                 handle.append(self.line_global_kappa_t[i])
 
-            self.subplot_kappa_t.legend(handles=handle)
-            self.subplot_kappa_t.set_ylim([-1, 1])
+            self._set_fig_legend(handle)
+            self.subplot_kappa_t.set_ylim(-1, 1)
 
         if 'kappa_m' in self.plots:
-            self.partial_kappa_m = [[] for i in range(self.n_learners)]
-            self.global_kappa_m = [[] for i in range(self.n_learners)]
+            self.partial_kappa_m = [[] for _ in range(self.n_learners)]
+            self.global_kappa_m = [[] for _ in range(self.n_learners)]
 
             self.subplot_kappa_m = self.fig.add_subplot(base)
-            self.subplot_kappa_m.set_title('Classifier\'s Kappa M')
+            self.subplot_kappa_m.set_title('Kappa M')
             self.subplot_kappa_m.set_ylabel('Kappa M statistic')
-            self.subplot_kappa_m.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_kappa_m = [None for i in range(self.n_learners)]
-            self.line_global_kappa_m = [None for i in range(self.n_learners)]
+            self.line_partial_kappa_m = [None for _ in range(self.n_learners)]
+            self.line_global_kappa_m = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_kappa_m[i], = self.subplot_kappa_m.plot(self.X, self.partial_kappa_m[i],
-                                                                       label='Classifier '+str(i)+' - Sliding window kappa M (last '
-                                                                             + str(self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_kappa_m[i], = self.subplot_kappa_m.plot(self.X, self.global_kappa_m[i], label='Classifier '+str(i)+' - Global kappa M')
+                self.line_partial_kappa_m[i], = self.subplot_kappa_m.plot(
+                    self.X, self.partial_kappa_m[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_kappa_m[i], = self.subplot_kappa_m.plot(
+                    self.X, self.global_kappa_m[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_kappa_m[i])
                 handle.append(self.line_global_kappa_m[i])
 
-            self.subplot_kappa_m.legend(handles=handle)
-            self.subplot_kappa_m.set_ylim([-1, 1])
-
-        if 'scatter' in self.plots:
-            self.scatter_predicts = [[] for i in range(self.n_learners)]
-            self.scatter_true_labels = []
-            self.scatter_x = []
-            self.subplot_scatter_points = self.fig.add_subplot(base)
-            base += 1
-
-            self.subplot_scatter_points.set_title('Predicts and true labels')
-            self.subplot_scatter_points.set_ylabel('Class labels')
-            self.subplot_scatter_points.set_xlabel('Sample analyzed')
-            self.scatter_true_labels_colors = []
-            self.scatter_predicts_colors = [[] for i in range(self.n_learners)]
+            self._set_fig_legend(handle)
+            self.subplot_kappa_m.set_ylim(-1, 1)
 
         if 'hamming_score' in self.plots:
-            self.global_hamming_score = [[] for i in range(self.n_learners)]
-            self.partial_hamming_score = [[] for i in range(self.n_learners)]
+            self.global_hamming_score = [[] for _ in range(self.n_learners)]
+            self.partial_hamming_score = [[] for _ in range(self.n_learners)]
 
             self.subplot_hamming_score = self.fig.add_subplot(base)
-            self.subplot_hamming_score.set_title('Classifier\'s hamming score')
+            self.subplot_hamming_score.set_title('Hamming score')
             self.subplot_hamming_score.set_ylabel('Hamming score')
-            self.subplot_hamming_score.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_hamming_score = [None for i in range(self.n_learners)]
-            self.line_global_hamming_score = [None for i in range(self.n_learners)]
+            self.line_partial_hamming_score = [None for _ in range(self.n_learners)]
+            self.line_global_hamming_score = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_hamming_score[i], = self.subplot_hamming_score.plot(self.X, self.partial_hamming_score[i],
-                                                                                      label='Classifier '+str(i)+' - Partial Hamming score (last ' + str(
-                                                                                   self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_hamming_score[i], = self.subplot_hamming_score.plot(self.X, self.global_hamming_score[i],
-                                                                              label='Classifier '+str(i)+' - Global Hamming score')
+                self.line_partial_hamming_score[i], = self.subplot_hamming_score.plot(
+                    self.X, self.partial_hamming_score[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_hamming_score[i], = self.subplot_hamming_score.plot(
+                    self.X, self.global_hamming_score[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_hamming_score[i])
                 handle.append(self.line_global_hamming_score[i])
 
-            self.subplot_hamming_score.legend(handles=handle)
-            self.subplot_hamming_score.set_ylim([0, 1])
+            self._set_fig_legend(handle)
+            self.subplot_hamming_score.set_ylim(0, 1)
 
         if 'hamming_loss' in self.plots:
-            self.global_hamming_loss = [[] for i in range(self.n_learners)]
-            self.partial_hamming_loss = [[] for i in range(self.n_learners)]
+            self.global_hamming_loss = [[] for _ in range(self.n_learners)]
+            self.partial_hamming_loss = [[] for _ in range(self.n_learners)]
 
             self.subplot_hamming_loss = self.fig.add_subplot(base)
-            self.subplot_hamming_loss.set_title('Classifier\'s hamming loss')
+            self.subplot_hamming_loss.set_title('Hamming loss')
             self.subplot_hamming_loss.set_ylabel('Hamming loss')
-            self.subplot_hamming_loss.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_hamming_loss = [None for i in range(self.n_learners)]
-            self.line_global_hamming_loss = [None for i in range(self.n_learners)]
+            self.line_partial_hamming_loss = [None for _ in range(self.n_learners)]
+            self.line_global_hamming_loss = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_hamming_loss[i], = self.subplot_hamming_loss.plot(self.X, self.partial_hamming_loss[i],
-                                                                               label='Classifier '+str(i)+' - Partial Hamming loss (last ' + str(
-                                                                                   self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_hamming_loss[i], = self.subplot_hamming_loss.plot(self.X, self.global_hamming_loss[i],
-                                                                              label='Classifier '+str(i)+' - Global Hamming loss')
+                self.line_partial_hamming_loss[i], = self.subplot_hamming_loss.plot(
+                    self.X, self.partial_hamming_loss[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_hamming_loss[i], = self.subplot_hamming_loss.plot(
+                    self.X, self.global_hamming_loss[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_hamming_loss[i])
                 handle.append(self.line_global_hamming_loss[i])
 
-            self.subplot_hamming_loss.legend(handles=handle)
-            self.subplot_hamming_loss.set_ylim([0, 1])
+            self._set_fig_legend(handle)
+            self.subplot_hamming_loss.set_ylim(0, 1)
 
         if 'exact_match' in self.plots:
-            self.global_exact_match = [[] for i in range(self.n_learners)]
-            self.partial_exact_match = [[] for i in range(self.n_learners)]
+            self.global_exact_match = [[] for _ in range(self.n_learners)]
+            self.partial_exact_match = [[] for _ in range(self.n_learners)]
 
             self.subplot_exact_match = self.fig.add_subplot(base)
-            self.subplot_exact_match.set_title('Classifier\'s exact matches')
+            self.subplot_exact_match.set_title('Exact matches')
             self.subplot_exact_match.set_ylabel('Exact matches')
-            self.subplot_exact_match.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_exact_match = [None for i in range(self.n_learners)]
-            self.line_global_exact_match = [None for i in range(self.n_learners)]
+            self.line_partial_exact_match = [None for _ in range(self.n_learners)]
+            self.line_global_exact_match = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_exact_match[i], = self.subplot_exact_match.plot(self.X, self.partial_exact_match[i],
-                                                                               label='Classifier '+str(i)+' - Partial exact matches (last ' + str(
-                                                                                   self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_exact_match[i], = self.subplot_exact_match.plot(self.X, self.global_exact_match[i],
-                                                                              label='Classifier '+str(i)+' - Global exact matches')
+                self.line_partial_exact_match[i], = self.subplot_exact_match.plot(
+                    self.X, self.partial_exact_match[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_exact_match[i], = self.subplot_exact_match.plot(
+                    self.X, self.global_exact_match[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_exact_match[i])
                 handle.append(self.line_global_exact_match[i])
 
-            self.subplot_exact_match.legend(handles=handle)
-            self.subplot_exact_match.set_ylim([0, 1])
+            self._set_fig_legend(handle)
+            self.subplot_exact_match.set_ylim(0, 1)
 
         if 'j_index' in self.plots:
-            self.global_j_index = [[] for i in range(self.n_learners)]
-            self.partial_j_index = [[] for i in range(self.n_learners)]
+            self.global_j_index = [[] for _ in range(self.n_learners)]
+            self.partial_j_index = [[] for _ in range(self.n_learners)]
 
             self.subplot_j_index = self.fig.add_subplot(base)
-            self.subplot_j_index.set_title('Classifier\'s J index')
+            self.subplot_j_index.set_title('J index')
             self.subplot_j_index.set_ylabel('J index')
-            self.subplot_j_index.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_j_index = [None for i in range(self.n_learners)]
-            self.line_global_j_index = [None for i in range(self.n_learners)]
+            self.line_partial_j_index = [None for _ in range(self.n_learners)]
+            self.line_global_j_index = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_j_index[i], = self.subplot_j_index.plot(self.X, self.partial_j_index[i],
-                                                                               label='Classifier '+str(i)+' - Partial j index (last ' + str(
-                                                                                   self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_j_index[i], = self.subplot_j_index.plot(self.X, self.global_j_index[i],
-                                                                              label='Classifier '+str(i)+' - Global j index')
+                self.line_partial_j_index[i], = self.subplot_j_index.plot(
+                    self.X, self.partial_j_index[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_j_index[i], = self.subplot_j_index.plot(
+                    self.X, self.global_j_index[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_j_index[i])
                 handle.append(self.line_global_j_index[i])
 
-            self.subplot_j_index.legend(handles=handle)
-            self.subplot_j_index.set_ylim([0, 1])
+            self._set_fig_legend(handle)
+            self.subplot_j_index.set_ylim(0, 1)
 
         if 'mean_square_error' in self.plots:
-            self.global_mse = [[] for i in range(self.n_learners)]
-            self.partial_mse = [[] for i in range(self.n_learners)]
+            self.global_mse = [[] for _ in range(self.n_learners)]
+            self.partial_mse = [[] for _ in range(self.n_learners)]
 
             self.subplot_mse = self.fig.add_subplot(base)
-            self.subplot_mse.set_title('Regressor\'s MSE')
+            self.subplot_mse.set_title('Mean Squared Error')
             self.subplot_mse.set_ylabel('MSE')
-            self.subplot_mse.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_mse = [None for i in range(self.n_learners)]
-            self.line_global_mse = [None for i in range(self.n_learners)]
+            self.line_partial_mse = [None for _ in range(self.n_learners)]
+            self.line_global_mse = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_mse[i], = self.subplot_mse.plot(self.X, self.partial_mse[i],
-                                                                       label='Classifier '+str(i)+' - Partial MSE (last ' + str(
-                                                                           self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_mse[i], = self.subplot_mse.plot(self.X, self.global_mse[i],
-                                                                      label='Classifier '+str(i)+' - Global MSE')
+                self.line_partial_mse[i], = self.subplot_mse.plot(
+                    self.X, self.partial_mse[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_mse[i], = self.subplot_mse.plot(
+                    self.X, self.global_mse[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_mse[i])
                 handle.append(self.line_global_mse[i])
 
-            self.subplot_mse.legend(handles=handle)
-            self.subplot_mse.set_ylim([0, 1])
+            self._set_fig_legend(handle)
+            self.subplot_mse.set_ylim(0, 1)
 
         if 'mean_absolute_error' in self.plots:
-            self.global_mae = [[] for i in range(self.n_learners)]
-            self.partial_mae = [[] for i in range(self.n_learners)]
+            self.global_mae = [[] for _ in range(self.n_learners)]
+            self.partial_mae = [[] for _ in range(self.n_learners)]
 
             self.subplot_mae = self.fig.add_subplot(base)
-            self.subplot_mae.set_title('Regressor\'s MAE')
+            self.subplot_mae.set_title('Mean Absolute Error')
             self.subplot_mae.set_ylabel('MAE')
-            self.subplot_mae.set_xlabel('Samples analyzed')
             base += 1
 
-            self.line_partial_mae = [None for i in range(self.n_learners)]
-            self.line_global_mae = [None for i in range(self.n_learners)]
+            self.line_partial_mae = [None for _ in range(self.n_learners)]
+            self.line_global_mae = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_mae[i], = self.subplot_mae.plot(self.X, self.partial_mae[i],
-                                                               label='Classifier '+str(i)+' - Partial MAE (last ' + str(
-                                                                   self.n_wait) + ' samples)', linestyle='--')
-                self.line_global_mae[i], = self.subplot_mae.plot(self.X, self.global_mae[i],
-                                                               label='Classifier '+str(i)+' - Global MAE')
+                self.line_partial_mae[i], = self.subplot_mae.plot(
+                    self.X, self.partial_mae[i],
+                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                self.line_global_mae[i], = self.subplot_mae.plot(
+                    self.X, self.global_mae[i],
+                    label='Learner {}'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_mae[i])
                 handle.append(self.line_global_mae[i])
 
-            self.subplot_mae.legend(handles=handle)
-            self.subplot_mae.set_ylim([0, 1])
+            self._set_fig_legend(handle)
+            self.subplot_mae.set_ylim(0, 1)
 
         if 'true_vs_predicts' in self.plots:
-            self.regression_true = []
-            self.regression_pred = [[] for i in range(self.n_learners)]
+            self.true_values = []
+            self.pred_values = [[] for _ in range(self.n_learners)]
 
             self.subplot_true_vs_predicts = self.fig.add_subplot(base)
-            self.subplot_true_vs_predicts.set_title('Regressor\'s True Labels vs Predictions')
+            self.subplot_true_vs_predicts.set_title('True vs Predicted')
             self.subplot_true_vs_predicts.set_ylabel('y')
-            self.subplot_true_vs_predicts.set_xlabel('Samples analyzed')
+            self.subplot_true_vs_predicts.set_prop_cycle(cycler('color', ['c', 'm', 'y', 'k']))
             base += 1
 
-            self.line_regression_true, = self.subplot_true_vs_predicts.plot(self.X, self.regression_true,
-                                                                            label='True y')
-            handle = [self.line_regression_true]
+            if self.task_type == 'classification':
+                self.line_true, = self.subplot_true_vs_predicts.step(self.X, self.true_values,
+                                                                     label='True value')
+            else:
+                self.line_true, = self.subplot_true_vs_predicts.plot(self.X, self.true_values,
+                                                                     label='True value')
+            handle = [self.line_true]
 
-            self.line_regression_pred = [None for i in range(self.n_learners)]
+            self.line_pred = [None for _ in range(self.n_learners)]
 
             for i in range(self.n_learners):
-                self.line_regression_pred[i], = self.subplot_true_vs_predicts.plot(self.X, self.regression_pred[i],label='Regressor '+str(i)+' - Predicted y', linestyle='dotted')
-                handle.append(self.line_regression_pred[i])
+                if self.task_type == 'classification':
+                    self.line_pred[i], = self.subplot_true_vs_predicts.step(self.X, self.pred_values[i],
+                                                                            label='Learner {}'.format(i),
+                                                                            linestyle='dotted')
+                else:
+                    self.line_pred[i], = self.subplot_true_vs_predicts.plot(self.X, self.pred_values[i],
+                                                                            label='Learner {}'.format(i),
+                                                                            linestyle='dotted')
+                handle.append(self.line_pred[i])
 
             self.subplot_true_vs_predicts.legend(handles=handle)
-            self.subplot_true_vs_predicts.set_ylim([0,1])
+            self.subplot_true_vs_predicts.set_ylim(0, 1)
 
+        plt.xlabel('Samples')
         self.fig.subplots_adjust(hspace=.5)
+        self.fig.tight_layout(rect=[0, .04, 1, 0.98], pad=2.6, w_pad=0.5, h_pad=1.0)
 
-        self.fig.tight_layout(pad=2.6, w_pad=0.5, h_pad=1.0)
+    def _set_fig_legend(self, handles=None):
+        if not self._is_legend_set:
+            self.fig.legend(handles=handles, ncol=self.n_learners, bbox_to_anchor=(0.02, 0.0), loc="lower left")
+            self._is_legend_set = True
 
-    def draw(self, train_step, dict):
+    def draw(self, train_step, metrics_dict):
         """ draw
         
         Updates and redraws the plot.
@@ -575,7 +584,7 @@ class EvaluationVisualizer(BaseListener):
         train_step: int
             The number of samples processed to this moment.
         
-        dict: dictionary
+        metrics_dict: dictionary
             A dictionary containing tuples, where the first element is the 
             string that identifies one of the plot's subplot names, and the 
             second element is its numerical value.
@@ -587,254 +596,294 @@ class EvaluationVisualizer(BaseListener):
             self.temp[i].remove()
         self.temp = []
 
+        xy_pos_default = (1.01, .90)  # Default xy position for metric annotations
+
         if 'performance' in self.plots:
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_performance.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_performance[i].append(dict['performance'][i][0])
-                self.partial_performance[i].append(dict['performance'][i][1])
+                self.global_performance[i].append(metrics_dict['performance'][i][0])
+                self.partial_performance[i].append(metrics_dict['performance'][i][1])
                 self.line_global_performance[i].set_data(self.X, self.global_performance[i])
                 self.line_partial_performance[i].set_data(self.X, self.partial_performance[i])
 
-                self.temp.append(self.subplot_performance.annotate('Clf '+str(i)+' - Global: ' + str(round(dict['performance'][i][0], 3)),
-                                                               xy=(train_step, dict['performance'][i][0]), xytext=(8, 0),
-                                                               textcoords='offset points'))
-                self.temp.append(self.subplot_performance.annotate('Clf '+str(i)+' - Partial: ' + str(round(dict['performance'][i][1], 3)),
-                                                               xy=(train_step, dict['performance'][i][1]),
-                                                               xytext=(8, 0), textcoords='offset points'))
+                self.temp.append(self.subplot_performance.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                metrics_dict['performance'][i][0],
+                                                                metrics_dict['performance'][i][1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
 
-            self.subplot_performance.set_ylim([0, 1])
-            self.subplot_performance.set_xlim([0, 1.2 * np.max(self.X)])
-
+            self.subplot_performance.set_xlim(0, self.X[-1])
+            self.subplot_performance.set_ylim(0, 1)
 
         if 'kappa' in self.plots:
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_kappa.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_kappa[i].append(dict['kappa'][i][0])
-                self.partial_kappa[i].append(dict['kappa'][i][1])
+                self.global_kappa[i].append(metrics_dict['kappa'][i][0])
+                self.partial_kappa[i].append(metrics_dict['kappa'][i][1])
                 self.line_global_kappa[i].set_data(self.X, self.global_kappa[i])
                 self.line_partial_kappa[i].set_data(self.X, self.partial_kappa[i])
 
-                self.temp.append(self.subplot_kappa.annotate('Clf '+str(i)+' - Global kappa: ' + str(round(dict['kappa'][i][0], 3)),
-                                                             xy=(train_step, dict['kappa'][i][0]), xytext=(8, 0),
-                                                             textcoords='offset points'))
-                self.temp.append(self.subplot_kappa.annotate('Clf '+str(i)+' - Sliding window Kappa: ' + str(round(dict['kappa'][i][1], 3)),
-                                                             xy=(train_step, dict['kappa'][i][1]), xytext=(8, 0),
-                                                             textcoords='offset points'))
+                self.temp.append(self.subplot_kappa.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_kappa[i][-1],
+                                                                self.partial_kappa[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points', annotation_clip=False))
+                shift_y += shift_y
 
-            self.subplot_kappa.set_xlim([0, 1.2 * np.max(self.X)])
-            self.subplot_kappa.set_ylim([-1, 1])
-
+            self.subplot_kappa.set_xlim(0, self.X[-1])
+            self.subplot_kappa.set_ylim(0, 1)
 
         if 'kappa_t' in self.plots:
             minimum = -1.
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_kappa_t.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_kappa_t[i].append(dict['kappa_t'][i][0])
-                self.partial_kappa_t[i].append(dict['kappa_t'][i][1])
+                self.global_kappa_t[i].append(metrics_dict['kappa_t'][i][0])
+                self.partial_kappa_t[i].append(metrics_dict['kappa_t'][i][1])
                 self.line_global_kappa_t[i].set_data(self.X, self.global_kappa_t[i])
                 self.line_partial_kappa_t[i].set_data(self.X, self.partial_kappa_t[i])
 
-                self.temp.append(self.subplot_kappa_t.annotate('Clf '+str(i)+' - Global Kappa T: ' + str(round(dict['kappa_t'][i][0], 3)),
-                                                             xy=(train_step, dict['kappa_t'][i][0]), xytext=(8, 0),
-                                                             textcoords='offset points'))
-                self.temp.append(self.subplot_kappa_t.annotate('Clf '+str(i)+' - Sliding window Kappa T: ' + str(round(dict['kappa_t'][i][1], 3)),
-                                                             xy=(train_step, dict['kappa_t'][i][1]), xytext=(8, 0),
-                                                             textcoords='offset points'))
+                self.temp.append(self.subplot_kappa_t.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_kappa_t[i][-1],
+                                                                self.partial_kappa_t[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
                 minimum = min(min(minimum, min(self.global_kappa_t[i])), min(minimum, min(self.partial_kappa_t[i])))
 
-            self.subplot_kappa_t.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_kappa_t.set_xlim(0, self.X[-1])
             self.subplot_kappa_t.set_ylim([minimum, 1.])
-
 
         if 'kappa_m' in self.plots:
             minimum = -1.
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_kappa_m.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_kappa_m[i].append(dict['kappa_m'][i][0])
-                self.partial_kappa_m[i].append(dict['kappa_m'][i][1])
+                self.global_kappa_m[i].append(metrics_dict['kappa_m'][i][0])
+                self.partial_kappa_m[i].append(metrics_dict['kappa_m'][i][1])
                 self.line_global_kappa_m[i].set_data(self.X, self.global_kappa_m[i])
                 self.line_partial_kappa_m[i].set_data(self.X, self.partial_kappa_m[i])
 
-                self.temp.append(self.subplot_kappa_m.annotate('Clf '+str(i)+' - Global kappa M: ' + str(round(dict['kappa_m'][i][0], 3)),
-                                                               xy=(train_step, dict['kappa_m'][i][0]), xytext=(8, 0),
-                                                               textcoords='offset points'))
-                self.temp.append(self.subplot_kappa_m.annotate('Clf '+str(i)+' - Sliding window Kappa M: ' + str(round(dict['kappa_m'][i][1], 3)),
-                                                               xy=(train_step, dict['kappa_m'][i][1]), xytext=(8, 0),
-                                                               textcoords='offset points'))
+                self.temp.append(self.subplot_kappa_m.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_kappa_m[i][-1],
+                                                                self.partial_kappa_m[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
                 minimum = min(min(minimum, min(self.global_kappa_m[i])), min(minimum, min(self.partial_kappa_m[i])))
 
-            self.subplot_kappa_m.set_xlim([0, 1.2 * np.max(self.X)])
-            self.subplot_kappa_m.set_ylim([minimum, 1.])
-
-        if 'scatter' in self.plots:
-            self.scatter_x.append(train_step)
-            self.scatter_true_labels.append(dict['scatter'][0][0])
-
-            for i in range(self.n_learners):
-                self.scatter_predicts[i].append(dict['scatter'][i][1])
-                if dict['scatter'][0][0] == dict['scatter'][i][1]:
-                    self.scatter_predicts_colors[i].append(self.COLOR_MAP[i%len(self.COLOR_MAP)])
-                else:
-                    self.scatter_predicts_colors[i].append(self.COLOR_MAP[i%len(self.COLOR_MAP)])
-
-            self.scatter_true_labels_colors.append('g')
-
-            aux_one = [item for sublist in self.scatter_predicts for item in sublist]
-            classes = list(set().union(aux_one, self.scatter_true_labels))
-            self.subplot_scatter_points.set_xlim(np.min(self.scatter_x), 1.2 * np.max(self.scatter_x))
-            self.subplot_scatter_points.set_ylim(np.min(classes) - 1, np.max(classes) + 1)
-
-            scat_true = self.subplot_scatter_points.scatter(self.scatter_x, self.scatter_true_labels, s=6,
-                                                                label='True labels', c=self.scatter_true_labels_colors)
-            for i in range(self.n_learners):
-                scat_pred = self.subplot_scatter_points.scatter(self.scatter_x, self.scatter_predicts[i], s=6,
-                                                                label='Predicts', c=self.scatter_predicts_colors[i])
-
-            legend = []
-            colour = []
-            for i in range(self.n_learners):
-                colour.append(self.COLOR_MAP[i%len(self.COLOR_MAP)])
-                legend.append('Clf '+str(i)+' Prediction')
-            colour.append('g')
-            legend.append('True label')
-            recs = []
-            for i in range(0, len(colour)):
-                recs.append(mpatches.Circle((0, 0), 1, fc=colour[i]))
-            self.subplot_scatter_points.legend(recs, legend, loc=4)
+            self.subplot_kappa_m.set_xlim(0, self.X[-1])
+            self.subplot_kappa_m.set_ylim(minimum, 1.)
 
         if 'hamming_score' in self.plots:
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_hamming_score.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_hamming_score[i].append(dict['hamming_score'][i][0])
-                self.partial_hamming_score[i].append(dict['hamming_score'][i][1])
+                self.global_hamming_score[i].append(metrics_dict['hamming_score'][i][0])
+                self.partial_hamming_score[i].append(metrics_dict['hamming_score'][i][1])
                 self.line_global_hamming_score[i].set_data(self.X, self.global_hamming_score[i])
                 self.line_partial_hamming_score[i].set_data(self.X, self.partial_hamming_score[i])
 
-                self.temp.append(self.subplot_hamming_score.annotate('Clf '+str(i)+' - Global: ' + str(round(dict['hamming_score'][i][0], 3)),
-                                                                   xy=(train_step, dict['hamming_score'][i][0]), xytext=(8, 0),
-                                                                   textcoords='offset points'))
-                self.temp.append(self.subplot_hamming_score.annotate('Clf '+str(i)+' - Partial: ' + str(round(dict['hamming_score'][i][1], 3)),
-                                                                   xy=(train_step, dict['hamming_score'][i][1]),
-                                                                   xytext=(8, 0), textcoords='offset points'))
+                self.temp.append(self.subplot_hamming_score.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_hamming_score[i][-1],
+                                                                self.partial_hamming_score[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
 
-            self.subplot_hamming_score.set_ylim([0, 1])
-            self.subplot_hamming_score.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_hamming_score.set_xlim(0, self.X[-1])
+            self.subplot_hamming_score.set_ylim(0, 1)
 
         if 'hamming_loss' in self.plots:
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_hamming_loss.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_hamming_loss[i].append(dict['hamming_loss'][i][0])
-                self.partial_hamming_loss[i].append(dict['hamming_loss'][i][1])
+                self.global_hamming_loss[i].append(metrics_dict['hamming_loss'][i][0])
+                self.partial_hamming_loss[i].append(metrics_dict['hamming_loss'][i][1])
                 self.line_global_hamming_loss[i].set_data(self.X, self.global_hamming_loss[i])
                 self.line_partial_hamming_loss[i].set_data(self.X, self.partial_hamming_loss[i])
 
-                self.temp.append(self.subplot_hamming_loss.annotate('Clf '+str(i)+' - Global: ' + str(round(dict['hamming_loss'][i][0], 3)),
-                                                                   xy=(train_step, dict['hamming_loss'][i][0]), xytext=(8, 0),
-                                                                   textcoords='offset points'))
-                self.temp.append(self.subplot_hamming_loss.annotate('Clf '+str(i)+' - Partial: ' + str(round(dict['hamming_loss'][i][1], 3)),
-                                                                   xy=(train_step, dict['hamming_loss'][i][1]),
-                                                                   xytext=(8, 0), textcoords='offset points'))
+                self.temp.append(self.subplot_hamming_loss.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_hamming_loss[i][-1],
+                                                                self.partial_hamming_loss[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
 
-            self.subplot_hamming_loss.set_ylim([0, 1])
-            self.subplot_hamming_loss.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_hamming_loss.set_xlim(0, self.X[-1])
+            self.subplot_hamming_loss.set_ylim(0, 1)
 
         if 'exact_match' in self.plots:
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_exact_match.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_exact_match[i].append(dict['exact_match'][i][0])
-                self.partial_exact_match[i].append(dict['exact_match'][i][1])
+                self.global_exact_match[i].append(metrics_dict['exact_match'][i][0])
+                self.partial_exact_match[i].append(metrics_dict['exact_match'][i][1])
                 self.line_global_exact_match[i].set_data(self.X, self.global_exact_match[i])
                 self.line_partial_exact_match[i].set_data(self.X, self.partial_exact_match[i])
 
-                self.temp.append(self.subplot_exact_match.annotate('Clf '+str(i)+' - Global: ' + str(round(dict['exact_match'][i][0], 3)),
-                                                                   xy=(train_step, dict['exact_match'][i][0]), xytext=(8, 0),
-                                                                   textcoords='offset points'))
-                self.temp.append(self.subplot_exact_match.annotate('Clf '+str(i)+' - Partial: ' + str(round(dict['exact_match'][i][1], 3)),
-                                                                   xy=(train_step, dict['exact_match'][i][1]),
-                                                                   xytext=(8, 0), textcoords='offset points'))
+                self.temp.append(self.subplot_exact_match.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_exact_match[i][-1],
+                                                                self.partial_exact_match[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
 
-            self.subplot_exact_match.set_ylim([0, 1])
-            self.subplot_exact_match.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_exact_match.set_xlim(0, self.X[-1])
+            self.subplot_exact_match.set_ylim(0, 1)
 
         if 'j_index' in self.plots:
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_j_index.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_j_index[i].append(dict['j_index'][i][0])
-                self.partial_j_index[i].append(dict['j_index'][i][1])
+                self.global_j_index[i].append(metrics_dict['j_index'][i][0])
+                self.partial_j_index[i].append(metrics_dict['j_index'][i][1])
                 self.line_global_j_index[i].set_data(self.X, self.global_j_index[i])
                 self.line_partial_j_index[i].set_data(self.X, self.partial_j_index[i])
 
-                self.temp.append(self.subplot_j_index.annotate('Clf '+str(i)+' - Global: ' + str(round(dict['j_index'][i][0], 3)),
-                                                                   xy=(train_step, dict['j_index'][i][0]), xytext=(8, 0),
-                                                                   textcoords='offset points'))
-                self.temp.append(self.subplot_j_index.annotate('Clf '+str(i)+' - Partial: ' + str(round(dict['j_index'][i][1], 3)),
-                                                                   xy=(train_step, dict['j_index'][i][1]),
-                                                                   xytext=(8, 0), textcoords='offset points'))
+                self.temp.append(self.subplot_j_index.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_j_index[i][-1],
+                                                                self.partial_j_index[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
 
-            self.subplot_j_index.set_ylim([0, 1])
-            self.subplot_j_index.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_j_index.set_xlim(0, self.X[-1])
+            self.subplot_j_index.set_ylim(0, 1)
 
         if 'mean_square_error' in self.plots:
-            minimum = 0
+            minimum = -1
             maximum = 0
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_mse.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_mse[i].append(dict['mean_square_error'][i][0])
-                self.partial_mse[i].append(dict['mean_square_error'][i][1])
+                self.global_mse[i].append(metrics_dict['mean_square_error'][i][0])
+                self.partial_mse[i].append(metrics_dict['mean_square_error'][i][1])
                 self.line_global_mse[i].set_data(self.X, self.global_mse[i])
                 self.line_partial_mse[i].set_data(self.X, self.partial_mse[i])
 
-                self.temp.append(self.subplot_mse.annotate('Clf '+str(i)+' - Global: ' + str(round(dict['mean_square_error'][i][0], 6)),
-                                                               xy=(train_step, dict['mean_square_error'][i][0]), xytext=(8, 0),
-                                                               textcoords='offset points'))
-                self.temp.append(self.subplot_mse.annotate('Clf '+str(i)+' - Partial: ' + str(round(dict['mean_square_error'][i][1], 6)),
-                                                               xy=(train_step, dict['mean_square_error'][i][1]),
-                                                               xytext=(8, 0), textcoords='offset points'))
-                minimum = min([min(self.global_mse[i]), min(self.partial_mse[i]), minimum])
+                self.temp.append(self.subplot_mse.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_mse[i][-1],
+                                                                self.partial_mse[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
+                # minimum = min([min(self.global_mse[i]), min(self.partial_mse[i]), minimum])
                 maximum = max([max(self.global_mse[i]), max(self.partial_mse[i]), maximum])
 
-            self.subplot_mse.set_ylim([minimum - 1.2*minimum, maximum + 1.2*maximum])
-            self.subplot_mse.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_mse.set_xlim(0, self.X[-1])
+            self.subplot_mse.set_ylim(minimum, 1.2*maximum)
 
         if 'mean_absolute_error' in self.plots:
-            minimum = 0
+            minimum = -1
             maximum = 0
+            shift_y = 10  # y axis shift for plot annotations
+            xy_pos = xy_pos_default
+            self.temp.append(self.subplot_mae.annotate(
+                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
-                self.global_mae[i].append(dict['mean_absolute_error'][i][0])
-                self.partial_mae[i].append(dict['mean_absolute_error'][i][1])
+                self.global_mae[i].append(metrics_dict['mean_absolute_error'][i][0])
+                self.partial_mae[i].append(metrics_dict['mean_absolute_error'][i][1])
                 self.line_global_mae[i].set_data(self.X, self.global_mae[i])
                 self.line_partial_mae[i].set_data(self.X, self.partial_mae[i])
 
-                self.temp.append(self.subplot_mae.annotate('Clf '+str(i)+' - Global: ' + str(round(dict['mean_absolute_error'][i][0], 6)),
-                                                           xy=(train_step, dict['mean_absolute_error'][i][0]), xytext=(8, 0),
-                                                           textcoords='offset points'))
-                self.temp.append(self.subplot_mae.annotate('Clf '+str(i)+' - Partial: ' + str(round(dict['mean_absolute_error'][i][1], 6)),
-                                                           xy=(train_step, dict['mean_absolute_error'][i][1]),
-                                                           xytext=(8, 0), textcoords='offset points'))
-                minimum = min([min(self.global_mae[i]), min(self.partial_mae[i]), minimum])
+                self.temp.append(self.subplot_mae.annotate(
+                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
+                                                                self.global_mae[i][-1],
+                                                                self.partial_mae[i][-1]),
+                    xy=xy_pos, xycoords='axes fraction',
+                    xytext=(0, -shift_y),
+                    textcoords='offset points'))
+                shift_y += shift_y
+                # minimum = min([min(self.global_mae[i]), min(self.partial_mae[i]), minimum])
                 maximum = max([max(self.global_mae[i]), max(self.partial_mae[i]), maximum])
 
-            self.subplot_mae.set_ylim([minimum - 1.2*minimum, maximum + 1.2*maximum])
-            self.subplot_mae.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_mae.set_xlim(0, self.X[-1])
+            self.subplot_mae.set_ylim(minimum, 1.2*maximum)
 
         if 'true_vs_predicts' in self.plots:
-            self.regression_true.append(dict['true_vs_predicts'][0][0])
-            self.line_regression_true.set_data(self.X, self.regression_true)
+            self.true_values.append(metrics_dict['true_vs_predicts'][0][0])
+            self.line_true.set_data(self.X, self.true_values)
             minimum = 0
             maximum = 0
             for i in range(self.n_learners):
-                self.regression_pred[i].append(dict['true_vs_predicts'][i][1])
-                scat_pred = self.subplot_true_vs_predicts.scatter(self.X, self.regression_pred[i], s=6,
-                                                                label='Clf '+str(i)+' - Predictions', c=self.COLOR_MAP[i%len(self.COLOR_MAP)])
-                minimum = min([min(self.regression_pred[i]), min(self.regression_true), minimum])
-                maximum = max([max(self.regression_pred[i]), max(self.regression_true), maximum])
+                self.pred_values[i].append(metrics_dict['true_vs_predicts'][i][1])
+                self.line_pred[i].set_data(self.X, self.pred_values[i])
+                minimum = min([min(self.pred_values[i]), min(self.true_values), minimum])
+                maximum = max([max(self.pred_values[i]), max(self.true_values), maximum])
 
-            self.subplot_true_vs_predicts.set_ylim([minimum - 1., maximum + 1.])
-            self.subplot_true_vs_predicts.set_xlim([0, 1.2 * np.max(self.X)])
+            self.subplot_true_vs_predicts.set_xlim(0, self.X[-1])
+            self.subplot_true_vs_predicts.set_ylim(minimum - 1, maximum + 1)
 
-        plt.draw()
-        plt.pause(0.0001)
+            self.subplot_true_vs_predicts.legend(loc=2, bbox_to_anchor=(1.01, 1.))
 
+        if self._draw_cnt == 4:
+            plt.subplots_adjust(right=0.72)   # Adjust subplots to include metrics
+            self.fig.canvas.draw_idle()
+            plt.pause(1e-9)
+            self._draw_cnt = 0
+        else:
+            self._draw_cnt += 1
 
     def draw_scatter_points(self, X, y, predict):
         pass
 
-    def hold(self):
+    @staticmethod
+    def hold():
         plt.show(block=True)
 
     def get_info(self):
         pass
+
 
 if __name__ == "__main__":
     ev = EvaluationVisualizer()
