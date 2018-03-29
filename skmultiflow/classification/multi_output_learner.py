@@ -68,7 +68,7 @@ class MultiOutputLearner(BaseClassifier) :
     h = None
     L = -1
 
-    def __init__(self, h=linear_model.SGDClassifier(n_iter=100)):
+    def __init__(self, h=linear_model.SGDClassifier(max_iter=100)):
         super().__init__()
         self.hop = h
         self.h = None
