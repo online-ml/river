@@ -374,9 +374,10 @@ class HAT(HoeffdingTree):
                     dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
 
             dist_sum = sum(dist.values())  # sum all values in dictionary
+            normalization_factor = dist_sum * self.get_error_estimation() * self.get_error_estimation()
 
-            if dist_sum * self.get_error_estimation() * self.get_error_estimation() > 0.0:
-                normalize_values_in_dict(dist_sum * self.get_error_estimation() * self.get_error_estimation(), dist)
+            if normalization_factor > 0.0:
+                normalize_values_in_dict(dist, normalization_factor)
 
             return dist
 

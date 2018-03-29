@@ -4,6 +4,7 @@ import skmultiflow.evaluation.metrics.metrics as metrics
 import numpy as np
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.core.utils.data_structures import FastBuffer, FastComplexBuffer, ConfusionMatrix, MOLConfusionMatrix
+from skmultiflow.core.utils.validation import check_weights
 
 
 class ClassificationMeasurements(BaseObject):
@@ -59,7 +60,7 @@ class ClassificationMeasurements(BaseObject):
         self.correct_no_change = 0
         self.confusion_matrix.restart(self.n_targets)
 
-    def add_result(self, sample, prediction):
+    def add_result(self, sample, prediction, weight=1.0):
         """ add_result
         
         Updates its statistics with the results of a prediction.
@@ -73,13 +74,17 @@ class ClassificationMeasurements(BaseObject):
             The classifier's prediction
          
         """
+        check_weights(weight)
+
         true_y = self._get_target_index(sample, True)
         pred = self._get_target_index(prediction, True)
         self.confusion_matrix.update(true_y, pred)
-        self.sample_count += 1
+        self.sample_count += weight
 
-        self.majority_classifier = (self.majority_classifier + 1) if (self.get_majority_class() == sample) else self.majority_classifier
-        self.correct_no_change = (self.correct_no_change + 1) if (self.last_true_label == sample) else self.correct_no_change
+        if self.get_majority_class() == sample:
+            self.majority_classifier = self.majority_classifier + weight
+        if self.last_true_label == sample:
+            self.correct_no_change = self.correct_no_change + weight
 
         self.last_true_label = sample
         self.last_prediction = prediction
@@ -124,11 +129,14 @@ class ClassificationMeasurements(BaseObject):
             Returns the performance.
         
         """
-        sum = 0
-        n, l = self.confusion_matrix.shape()
+        sum_value = 0.0
+        n, _ = self.confusion_matrix.shape()
         for i in range(n):
-            sum += self.confusion_matrix.value_at(i, i)
-        return sum / self.sample_count
+            sum_value += self.confusion_matrix.value_at(i, i)
+        try:
+            return sum_value / self.sample_count
+        except ZeroDivisionError:
+            return 0.0
 
     def get_incorrectly_classified_ratio(self):
         return 1.0 - self.get_performance()
@@ -410,11 +418,14 @@ class WindowClassificationMeasurements(BaseObject):
             Returns the window/local performance.
 
         """
-        sum = 0
-        n, l = self.confusion_matrix.shape()
+        sum_value = 0.0
+        n, _ = self.confusion_matrix.shape()
         for i in range(n):
-            sum += self.confusion_matrix.value_at(i, i)
-        return sum / self.true_labels.get_current_size()
+            sum_value += self.confusion_matrix.value_at(i, i)
+        try:
+            return sum_value / self.true_labels.get_current_size()
+        except ZeroDivisionError:
+            return 0.0
 
     def get_incorrectly_classified_ratio(self):
         return 1.0 - self.get_performance()
@@ -675,7 +686,10 @@ class MultiOutputMeasurements(BaseObject):
             The hamming score.
         
         """
-        return self.confusion_matrix.get_sum_main_diagonal() / (self.sample_count * self.n_targets)
+        try:
+            return self.confusion_matrix.get_sum_main_diagonal() / (self.sample_count * self.n_targets)
+        except ZeroDivisionError:
+            return 0.0
 
     def get_exact_match(self):
         """ get_exact_match

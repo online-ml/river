@@ -56,7 +56,7 @@ class HoeffdingTree(BaseClassifier):
         If True, disable poor attributes.
     no_preprune: boolean (default=False)
         If True, disable pre-pruning.
-    leaf_prediction: string (default='mc')
+    leaf_prediction: string (default='nba')
         | Prediction mechanism used at leafs.
         | 'mc' - Majority Class
         | 'nb' - Naive Bayes
@@ -519,8 +519,7 @@ class HoeffdingTree(BaseClassifier):
             """ ActiveLearningNode class constructor. """
             super().__init__(initial_class_observations)
             self._weight_seen_at_last_split_evaluation = self.get_weight_seen()
-            self._is_initialized = False
-            self._attribute_observers = []
+            self._attribute_observers = {}
 
         def learn_from_instance(self, X, y, weight, ht):
             """Update the node with the provided instance.
@@ -537,17 +536,15 @@ class HoeffdingTree(BaseClassifier):
                 Hoeffding Tree to update.
 
             """
-            if not self._is_initialized:
-                self._attribute_observers = [None] * len(X)
-                self._is_initialized = True
             try:
                 self._observed_class_distribution[y] += weight
             except KeyError:
                 self._observed_class_distribution[y] = weight
 
             for i in range(len(X)):
-                obs = self._attribute_observers[i]
-                if obs is None:
+                try:
+                    obs = self._attribute_observers[i]
+                except KeyError:
                     if i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
@@ -611,7 +608,7 @@ class HoeffdingTree(BaseClassifier):
                 null_split = AttributeSplitSuggestion(None, [{}],
                                                       criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
                 best_suggestions.append(null_split)
-            for i, obs in enumerate(self._attribute_observers):
+            for i, obs in self._attribute_observers.items():
                 best_suggestion = obs.get_best_evaluated_split_suggestion(criterion, pre_split_dist,
                                                                           i, ht.binary_split)
                 if best_suggestion is not None:
@@ -627,7 +624,7 @@ class HoeffdingTree(BaseClassifier):
                 Attribute index.
 
             """
-            if att_idx < len(self._attribute_observers) and att_idx > 0:
+            if att_idx in self._attribute_observers:
                 self._attribute_observers[att_idx] = NullAttributeClassObserver()
 
     class LearningNodeNB(ActiveLearningNode):
@@ -752,7 +749,7 @@ class HoeffdingTree(BaseClassifier):
                  stop_mem_management=False,
                  remove_poor_atts=False,
                  no_preprune=False,
-                 leaf_prediction='mc',
+                 leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None):
         """HoeffdingTree class constructor."""
@@ -875,8 +872,8 @@ class HoeffdingTree(BaseClassifier):
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction != MAJORITY_CLASS and leaf_prediction != NAIVE_BAYES \
                 and leaf_prediction != NAIVE_BAYES_ADAPTIVE:
-            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, MAJORITY_CLASS))
-            self._leaf_prediction = MAJORITY_CLASS
+            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, NAIVE_BAYES_ADAPTIVE))
+            self._leaf_prediction = NAIVE_BAYES_ADAPTIVE
         else:
             self._leaf_prediction = leaf_prediction
 
@@ -896,7 +893,7 @@ class HoeffdingTree(BaseClassifier):
     def nominal_attributes(self, nominal_attributes):
         if nominal_attributes is None:
             nominal_attributes = []
-            logger.info("No Nominal attributes have been defined, will consider all attributes as numerical")
+            logger.debug("No Nominal attributes have been defined, will consider all attributes as numerical")
         self._nominal_attributes = nominal_attributes
 
     def __sizeof__(self):
