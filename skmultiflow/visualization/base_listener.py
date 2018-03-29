@@ -24,7 +24,7 @@ class BaseListener(BaseObject, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def on_new_train_step(self, performance_point, train_step):
+    def on_new_train_step(self, current_sample_id, metrics_dict):
         """ on new_train_step
         
         At each relevant update (usually at each n_wait samples) this function 
@@ -32,12 +32,11 @@ class BaseListener(BaseObject, metaclass=ABCMeta):
         
         Parameters
         ----------
-        performance_point: int
-            The number of samples analyzed.
+        current_sample_id: int
+            The current sample id.
         
-        train_step: dictionary
-            A dictionary containing all subplots to update as keys and as values 
-            their new values.
+        metrics_dict: dictionary
+            A dictionary containing metric values for to current sample.
          
         """
         raise NotImplementedError
