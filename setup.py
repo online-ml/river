@@ -1,7 +1,12 @@
-import os, sys
+import sys
 from setuptools import setup, find_packages
 from distutils.core import Extension
 from distutils.sysconfig import get_python_inc
+from os.path import basename
+from os.path import splitext
+from os.path import join
+from os.path import dirname
+from glob import glob
 
 
 """
@@ -25,8 +30,10 @@ URL = ''
 LICENSE = '3-Clause BSD'
 VERSION = '0.1.0'
 
+
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    return open(join(dirname(__file__), fname)).read()
+
 
 with open('requirements.txt') as fid:
     INSTALL_REQUIRES = [l.strip() for l in fid.readlines() if l]
@@ -45,15 +52,20 @@ if __name__ == "__main__":
                             libraries=[],
                             library_dirs=[],
                             extra_compile_args=['-O3'],
-                            sources=['skmultiflow/classification/lazy/libNearestNeighbors/nearestNeighbor.cpp'])
+                            sources=['src/skmultiflow/classification/lazy/libNearestNeighbors/nearestNeighbor.cpp'])
 
     setup(name=DISTNAME,
           version=VERSION,
+          license=LICENSE,
           maintainer=MAINTAINER,
           maintainer_email=MAINTAINER_EMAIL,
           description=DESCRIPTION,
           long_description=read('README.md'),
-          packages=find_packages(exclude=['docs', 'tests', '*.tests']),
+          packages=find_packages('src', exclude=['docs', 'tests', '*.tests', 'test_*']),
+          package_dir={'': 'src'},
+          py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
+          include_package_data=True,
+          zip_safe=False,
           ext_modules=[nnExtension],
           install_requires=INSTALL_REQUIRES
           )
