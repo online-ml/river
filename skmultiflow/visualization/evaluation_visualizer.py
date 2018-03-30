@@ -868,7 +868,7 @@ class EvaluationVisualizer(BaseListener):
 
         if self._draw_cnt == 4:
             plt.subplots_adjust(right=0.72)   # Adjust subplots to include metrics
-            self.fig.canvas.draw_idle()
+            self.fig.canvas.draw()
             plt.pause(1e-9)
             self._draw_cnt = 0
         else:
