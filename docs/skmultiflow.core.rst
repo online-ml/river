@@ -1,13 +1,5 @@
-skmultiflow\.core package
-=========================
-
-Subpackages
------------
-
-.. toctree::
-
-    skmultiflow.core.instances
-    skmultiflow.core.utils
+skmultiflow.core package
+========================
 
 Submodules
 ----------

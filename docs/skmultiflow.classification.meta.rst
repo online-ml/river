@@ -1,11 +1,12 @@
-skmultiflow\.classification\.meta package
-=========================================
+skmultiflow.classification.meta package
+=======================================
 
 Submodules
 ----------
 
 .. toctree::
 
+   skmultiflow.classification.meta.adaptive_random_forests
    skmultiflow.classification.meta.leverage_bagging
    skmultiflow.classification.meta.oza_bagging
    skmultiflow.classification.meta.oza_bagging_adwin

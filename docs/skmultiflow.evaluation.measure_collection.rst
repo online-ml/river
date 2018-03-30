@@ -1,5 +1,5 @@
-skmultiflow\.evaluation\.measure\_collection module
-===================================================
+skmultiflow.evaluation.measure\_collection module
+=================================================
 
 .. automodule:: skmultiflow.evaluation.measure_collection
     :members:

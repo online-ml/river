@@ -1,5 +1,5 @@
-skmultiflow\.filtering\.base\_transform module
-==============================================
+skmultiflow.filtering.base\_transform module
+============================================
 
 .. automodule:: skmultiflow.filtering.base_transform
     :members:

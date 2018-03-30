@@ -1,5 +1,5 @@
-skmultiflow\.core\.instances package
-====================================
+skmultiflow.core.instances package
+==================================
 
 Submodules
 ----------

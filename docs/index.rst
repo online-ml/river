@@ -15,14 +15,14 @@ A multi-output/multi-label and stream data framework. Inspired by `MOA <https://
 `MEKA <http://meka.sourceforge.net/>`_ , following `scikit-learn <http://scikit-learn.org/stable/>`_ philosophy.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    Homepage <https://scikit-multiflow.github.io/>
    Installation <https://scikit-multiflow.github.io//installation/>
    Quick-Start Guide <https://scikit-multiflow.github.io//quick-start-guide/>
    Contributing <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>
-   API <skmultiflow>
+   API <api>
    Github Repository <https://github.com/scikit-multiflow/scikit-multiflow>
 
 

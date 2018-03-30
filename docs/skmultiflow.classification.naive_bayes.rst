@@ -1,5 +1,5 @@
-skmultiflow\.classification\.naive\_bayes module
-================================================
+skmultiflow.classification.naive\_bayes module
+==============================================
 
 .. automodule:: skmultiflow.classification.naive_bayes
     :members:

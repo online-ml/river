@@ -37,10 +37,10 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
         y: Array-like
             An array-like with the labels of all samples in X.
             
-        classes: Array-like
+        classes: Array-like, optional
             Contains all labels that may appear in samples. Applicability varies depending on the algorithm.
 
-        weight: Array-like
+        weight: Array-like, optional
             Instance weight. If not provided, uniform weights are assumed.
             Applicability varies depending on the algorithm.
             
@@ -65,11 +65,10 @@ class BaseClassifier(BaseObject, metaclass=ABCMeta):
         y: Array-like
             An array-like with the labels of all samples in X.
             
-        classes: Array-like
+        classes: Array-like, optional
             Contains all labels that may appear in samples. Applicability varies depending on the algorithm.
-            Optional parameter except during the first partial_fit call, when it's obligatory.
 
-        weight: Array-like
+        weight: Array-like, optional
             Instance weight. If not provided, uniform weights are assumed.
             Applicability varies depending on the algorithm.
         

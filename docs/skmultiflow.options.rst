@@ -1,5 +1,5 @@
-skmultiflow\.options package
-============================
+skmultiflow.options package
+===========================
 
 Submodules
 ----------

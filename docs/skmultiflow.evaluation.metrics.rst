@@ -1,5 +1,5 @@
-skmultiflow\.evaluation\.metrics package
-========================================
+skmultiflow.evaluation.metrics package
+======================================
 
 Submodules
 ----------

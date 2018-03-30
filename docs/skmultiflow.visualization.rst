@@ -1,5 +1,5 @@
-skmultiflow\.visualization package
-==================================
+skmultiflow.visualization package
+=================================
 
 Submodules
 ----------

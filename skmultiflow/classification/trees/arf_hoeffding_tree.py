@@ -11,45 +11,60 @@ class ARFHoeffdingTree(HoeffdingTree):
     __________
     max_byte_size: int, optional (default=33554432)
         Maximum memory consumed by the tree.
+
     memory_estimate_period: int, optional (default=2000000)
         Number of instances between memory consumption checks.
+
     grace_period: int, optional (default=50)
         Number of instances a leaf should observe between split attempts.
+
     split_criterion: string, optional (default='info_gain')
-        / Split criterion to use.
-        / 'gini' - Gini
-        / 'info_gain' - Information Gain
+        Split criterion to use.
+
+        - 'gini' - Gini
+        - 'info_gain' - Information Gain
+
     split_confidence: float, optional (default=0.01)
         Allowed error in split decision, a value closer to 0 takes longer to decide.
+
     tie_threshold: float, optional (default=0.05)
         Threshold below which a split will be forced to break ties.
+
     binary_split: bool, optional (default=False)
         If True, only allow binary splits.
+
     stop_mem_management: bool, optional (default=False)
         If True, stop growing as soon as memory limit is hit.
+
     remove_poor_atts: bool, optional (default=False)
         If True, disable poor attributes.
+
     no_preprune: bool, optional (default=False)
         If True, disable pre-pruning.
+
     leaf_prediction: string, optional (default='nba')
-        / Prediction mechanism used at leafs.
-        / 'mc' - Majority Class
-        / 'nb' - Naive Bayes
-        / 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leafs.
+
+        - 'mc' - Majority Class
+        - 'nb' - Naive Bayes
+        - 'nba' - Naive Bayes Adaptive
+
     nb_threshold: int, optional (default=0)
         Number of instances a leaf should observe before allowing Naive Bayes.
+
     nominal_attributes: list, optional
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
-    random_state: int, RandomState or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used by `np.random`.
+
+    random_state: int, RandomState instance or None, optional (default=None)
+            If int, random_state is the seed used by the random number generator;
+            If RandomState instance, random_state is the random number generator;
+            If None, the random number generator is the RandomState instance used by `np.random`.
 
     Notes
     _____
     This is the base model for the Adaptive Random Forest ensemble learner
     (See skmultiflow.classification.meta.adaptive_random_forests).
-    This Hoeffding Tree includes a subspace size parameter, which defines the number of randomly selected features to
+    This Hoeffding Tree includes a max_features parameter, which defines the number of randomly selected features to
     be considered at each split.
 
     """
@@ -59,14 +74,15 @@ class ARFHoeffdingTree(HoeffdingTree):
         Parameters
         ----------
         initial_class_observations: dict (class_value, weight) or None
-            Initial class observations
+            Initial class observations.
+
         max_features: int
             Number of attributes per subset for each node split.
+
         random_state: int, RandomState instance or None, optional (default=None)
             If int, random_state is the seed used by the random number generator;
             If RandomState instance, random_state is the random number generator;
-            If None, the random number generator is the RandomState instance used
-            by `np.random`.
+            If None, the random number generator is the RandomState instance used by `np.random`.
 
         """
         def __init__(self, initial_class_observations, max_features, random_state=None):
@@ -121,14 +137,15 @@ class ARFHoeffdingTree(HoeffdingTree):
         Parameters
         ----------
         initial_class_observations: dict (class_value, weight) or None
-            Initial class observations
+            Initial class observations.
+
         max_features: int
             Number of attributes per subset for each node split.
+
         random_state: int, RandomState instance or None, optional (default=None)
             If int, random_state is the seed used by the random number generator;
             If RandomState instance, random_state is the random number generator;
-            If None, the random number generator is the RandomState instance used
-            by `np.random`.
+            If None, the random number generator is the RandomState instance used by `np.random`.
 
         """
         def __init__(self, initial_class_observations, max_features, random_state):
@@ -162,14 +179,15 @@ class ARFHoeffdingTree(HoeffdingTree):
         Parameters
         ----------
         initial_class_observations: dict (class_value, weight) or None
-            Initial class observations
+            Initial class observations.
+
         max_features: int
             Number of attributes per subset for each node split.
+
         random_state: int, RandomState instance or None, optional (default=None)
             If int, random_state is the seed used by the random number generator;
             If RandomState instance, random_state is the random number generator;
-            If None, the random number generator is the RandomState instance used
-            by `np.random`.
+            If None, the random number generator is the RandomState instance used by `np.random`.
 
         """
         def __init__(self, initial_class_observations, max_features, random_state):

@@ -1,12 +1,5 @@
-skmultiflow\.classification\.lazy package
-=========================================
-
-Subpackages
------------
-
-.. toctree::
-
-    skmultiflow.classification.lazy.neighbors
+skmultiflow.classification.lazy package
+=======================================
 
 Submodules
 ----------

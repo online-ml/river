@@ -1,7 +1,7 @@
-skmultiflow.core.utils.statistics module
+skmultiflow.core.utils.validation module
 ========================================
 
-.. automodule:: skmultiflow.core.utils.statistics
+.. automodule:: skmultiflow.core.utils.validation
     :members:
     :undoc-members:
     :show-inheritance:

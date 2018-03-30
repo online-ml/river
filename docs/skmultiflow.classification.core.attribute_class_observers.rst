@@ -1,5 +1,5 @@
-skmultiflow\.classification\.core\.attribute\_class\_observers package
-======================================================================
+skmultiflow.classification.core.attribute\_class\_observers package
+===================================================================
 
 Submodules
 ----------

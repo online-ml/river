@@ -16,72 +16,94 @@ class AdaptiveRandomForest(BaseClassifier):
         Parameters
         ----------
         nb_ensemble: int, optional (default=10)
-            Number of trees oin the ensemble
+            Number of trees oin the ensemble.
+
         max_features : int, float, string or None, optional (default="auto")
-            / Max number of attributes for each node split.
-            / If int, then consider ```max_features``` features at each split.
-            / If float, then ```max_features``` is a percentage and ```int(max_features * n_features)```
+            Max number of attributes for each node split.
+
+            - If int, then consider ``max_features`` features at each split.
+            - If float, then ``max_features`` is a percentage and ``int(max_features * n_features)``
               features are considered at each split.
-            / If "auto", then `max_features=sqrt(n_features)`.
-            / If "sqrt", then `max_features=sqrt(n_features)` (same as "auto").
-            / If "log2", then `max_features=log2(n_features)`.
-            / If None, then `max_features=n_features`.
+            - If "auto", then ``max_features=sqrt(n_features)``.
+            - If "sqrt", then ``max_features=sqrt(n_features)`` (same as "auto").
+            - If "log2", then ``max_features=log2(n_features)``.
+            - If None, then ``max_features=n_features``.
         disable_weighted_vote: bool, optional (default=False)
             Weighted vote option.
+
         lambda_value: int, optional (default=6)
             The lambda value for bagging (lambda=6 corresponds to Leverage Bagging).
+
         performance_metric: string, optional (default="acc")
-            / Metric used to track trees performance within the ensemble.
-            / 'acc' - Accuracy
-            / 'kappa' - Accuracy
+            Metric used to track trees performance within the ensemble.
+
+            - 'acc' - Accuracy
+            - 'kappa' - Accuracy
         drift_detection_method: BaseDriftDetector or None,, optional (default=ADWIN(0.001))
             Drift Detection method. Set to None to disable Drift detection.
+
         warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
             Warning Detection method. Set to None to disable warning detection.
+
         max_byte_size: int, optional (default=33554432)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             Maximum memory consumed by the tree.
+
         memory_estimate_period: int, optional (default=2000000)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             Number of instances between memory consumption checks.
+
         grace_period: int, optional (default=50)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             Number of instances a leaf should observe between split attempts.
+
         split_criterion: string, optional (default='info_gain')
-            (Adaptive Random Forest Hoeffding Tree parameter)
-            / Split criterion to use.
-            / 'gini' - Gini
-            / 'info_gain' - Information Gain
+            (`ARFHoeffdingTree` parameter)
+            Split criterion to use.
+
+            - 'gini' - Gini
+            - 'info_gain' - Information Gain
+
         split_confidence: float, optional (default=0.01)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             Allowed error in split decision, a value closer to 0 takes longer to decide.
+
         tie_threshold: float, optional (default=0.05)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             Threshold below which a split will be forced to break ties.
+
         binary_split: bool, optional (default=False)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             If True, only allow binary splits.
+
         stop_mem_management: bool, optional (default=False)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             If True, stop growing as soon as memory limit is hit.
+
         remove_poor_atts: bool, optional (default=False)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             If True, disable poor attributes.
+
         no_preprune: bool, optional (default=False)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             If True, disable pre-pruning.
+
         leaf_prediction: string, optional (default='nba')
-            (Adaptive Random Forest Hoeffding Tree parameter)
-            / Prediction mechanism used at leafs.
-            / 'mc' - Majority Class
-            / 'nb' - Naive Bayes
-            / 'nba' - Naive Bayes Adaptive
+            (`ARFHoeffdingTree` parameter)
+            Prediction mechanism used at leafs.
+
+            - 'mc' - Majority Class
+            - 'nb' - Naive Bayes
+            - 'nba' - Naive Bayes Adaptive
+
         nb_threshold: int, optional (default=0)
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             Number of instances a leaf should observe before allowing Naive Bayes.
+
         nominal_attributes: list, optional
-            (Adaptive Random Forest Hoeffding Tree parameter)
+            (`ARFHoeffdingTree` parameter)
             List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+
         random_state: int, RandomState instance or None, optional (default=None)
             If int, random_state is the seed used by the random number generator;
             If RandomState instance, random_state is the random number generator;
@@ -324,15 +346,15 @@ class ARFBaseLearner(BaseObject):
     Parameters
     ----------
     index_original: int
-        Tree index within the ensemble
+        Tree index within the ensemble.
     classifier: ARFHoeffdingTree
-        Tree classifier
+        Tree classifier.
     instances_seen: int
-        Number of instances seen by the tree
+        Number of instances seen by the tree.
     drift_detection_method: BaseDriftDetector
-        Drift Detection method
+        Drift Detection method.
     warning_detection_method: BaseDriftDetector
-        Warning Detection method
+        Warning Detection method.
     is_background_learner: bool
         True if the tree is a background learner.
 

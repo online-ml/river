@@ -1,5 +1,5 @@
-skmultiflow\.core\.pipeline module
-==================================
+skmultiflow.core.pipeline module
+================================
 
 .. automodule:: skmultiflow.core.pipeline
     :members:

@@ -1,5 +1,5 @@
-skmultiflow\.core\.base\_object module
-======================================
+skmultiflow.core.base\_object module
+====================================
 
 .. automodule:: skmultiflow.core.base_object
     :members:

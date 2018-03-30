@@ -1,5 +1,5 @@
-skmultiflow\.classification\.perceptron module
-==============================================
+skmultiflow.classification.perceptron module
+============================================
 
 .. automodule:: skmultiflow.classification.perceptron
     :members:

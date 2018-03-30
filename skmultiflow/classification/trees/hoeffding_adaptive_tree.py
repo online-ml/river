@@ -30,65 +30,80 @@ class HAT(HoeffdingTree):
     ----------
     max_byte_size: int (default=33554432)
         Maximum memory consumed by the tree.
+
     memory_estimate_period: int (default=1000000)
         Number of instances between memory consumption checks.
+
     grace_period: int (default=200)
         Number of instances a leaf should observe between split attempts.
+
     split_criterion: string (default='info_gain')
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
+        Split criterion to use.
+
+        - 'gini' - Gini
+        - 'info_gain' - Information Gain
+
     split_confidence: float (default=0.0000001)
         Allowed error in split decision, a value closer to 0 takes longer to decide.
+
     tie_threshold: float (default=0.05)
         Threshold below which a split will be forced to break ties.
+
     binary_split: boolean (default=False)
         If True, only allow binary splits.
+
     stop_mem_management: boolean (default=False)
         If True, stop growing as soon as memory limit is hit.
+
     remove_poor_atts: boolean (default=False)
         If True, disable poor attributes.
+
     no_preprune: boolean (default=False)
         If True, disable pre-pruning.
+
     leaf_prediction: string (default='nba')
-        | Prediction mechanism used at leafs.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leafs.
+
+        - 'mc' - Majority Class
+        - 'nb' - Naive Bayes
+        - 'nba' - Naive Bayes Adaptive
+
     nb_threshold: int (default=0)
         Number of instances a leaf should observe before allowing Naive Bayes.
+
     nominal_attributes: list, optional
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
 
     Notes
     -----
-    The Hoeffding Adaptive Tree [1]_ uses ADWIN to monitor performance of branches on the tree and to replace them with
-    new branches when their accuracy decreases if the new branches are more accurate.
+    The Hoeffding Adaptive Tree [1]_ uses ADWIN [2]_ to monitor performance of branches on the tree and to replace them
+    with new branches when their accuracy decreases if the new branches are more accurate.
 
     References
     ----------
-    .. [1] Albert Bifet, Ricard Gavaldà. Adaptive Learning from Evolving Data Streams.
-       IDA 2009
+    .. [1] Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."\
+    In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin, Heidelberg, 2009.
+    .. [2] Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive windowing."\
+    In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial\
+    and Applied Mathematics, 2007.
 
      Examples
     --------
-    .. code-block:: python
-       from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
-       from skmultiflow.data.file_stream import FileStream
-       from skmultiflow.options.file_option import FileOption
-       from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-       # Setup the File Stream
-       opt = FileOption("FILE", "OPT_NAME", "/skmultiflow/datasets/covtype.csv", "CSV", False)
-       stream = FileStream(opt, -1, 1)
-       stream.prepare_for_use()
-
-       classifier = HAT()
-       eval = EvaluatePrequential(pretrain_size=200, max_instances=50000, batch_size=1, n_wait=200, max_time=1000,
-                                  output_file=None, task_type='classification', show_plot=True,
-                                  plot_options=['kappa', 'kappa_t', 'performance'])
-
-       eval.eval(stream=stream, classifier=classifier)
-
+    >>> from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+    >>> # Setup the File Stream
+    >>> opt = FileOption("FILE", "OPT_NAME", "/skmultiflow/datasets/covtype.csv", "CSV", False)
+    >>> stream = FileStream(opt, -1, 1)
+    >>> stream.prepare_for_use()
+    >>>
+    >>> classifier = HAT()
+    >>> eval = EvaluatePrequential(pretrain_size=200, max_instances=50000, batch_size=1, n_wait=200, max_time=1000,
+    >>>                            output_file=None, task_type='classification', show_plot=True,
+    >>>                            plot_options=['kappa', 'kappa_t', 'performance'])
+    >>>
+    >>> eval.eval(stream=stream, classifier=classifier)
     """
 
     class NewNode(metaclass=ABCMeta):

@@ -1,5 +1,5 @@
-skmultiflow\.filtering\.base\_filters module
-============================================
+skmultiflow.filtering.base\_filters module
+==========================================
 
 .. automodule:: skmultiflow.filtering.base_filters
     :members:

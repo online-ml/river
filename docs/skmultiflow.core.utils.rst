@@ -1,5 +1,5 @@
-skmultiflow\.core\.utils package
-================================
+skmultiflow.core.utils package
+==============================
 
 Submodules
 ----------
@@ -11,6 +11,7 @@ Submodules
    skmultiflow.core.utils.pseudo_random_processes
    skmultiflow.core.utils.statistics
    skmultiflow.core.utils.utils
+   skmultiflow.core.utils.validation
 
 Module contents
 ---------------

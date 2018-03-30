@@ -1,5 +1,5 @@
-skmultiflow\.classification\.core\.driftdetection package
-=========================================================
+skmultiflow.classification.core.driftdetection package
+======================================================
 
 Submodules
 ----------
