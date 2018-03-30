@@ -16,8 +16,10 @@ Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourcef
 * Albert BIFET
 
 ### Contributors
-
 * Guilherme KURIKE MATSUMOTO
+
+### Python version
+`scikit-multiflow` **only** supports Python 3.x
 
 ### matplotlib backend considerations
 * You may need to change your matplotlib backend, because not all backends work
@@ -33,6 +35,22 @@ In the matplotlibrc file you will need to change the line:
     backend     : another backend that works on your machine
     ```  
 * The Qt5Agg backend should work with most machines, but a change may be needed.
+
+#### Jupyter Notebooks
+In order to display plots from `scikit-multiflow` within a [Jupyter Notebook]() we need to define the proper mathplotlib
+backend to use. This is done via a magic command at the beginning of the Notebook:
+
+```python
+%matplotlib notebook
+```
+
+[JupyterLab](http://jupyterlab.readthedocs.io/en/stable/) is the next-generation user interface for Jupyter, currently
+in beta it can display plots with some caveats. If you use JupyterLab then the current solution is to use the
+[jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) extension
+
+```python
+%matplotlib ipympl
+```
 
 ### License
 * 3-Clause BSD License
