@@ -1,5 +1,5 @@
-skmultiflow\.evaluation\.base\_evaluator module
-===============================================
+skmultiflow.evaluation.base\_evaluator module
+=============================================
 
 .. automodule:: skmultiflow.evaluation.base_evaluator
     :members:

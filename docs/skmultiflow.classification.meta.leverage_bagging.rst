@@ -1,5 +1,5 @@
-skmultiflow\.classification\.meta\.leverage\_bagging module
-===========================================================
+skmultiflow.classification.meta.leverage\_bagging module
+========================================================
 
 .. automodule:: skmultiflow.classification.meta.leverage_bagging
     :members:

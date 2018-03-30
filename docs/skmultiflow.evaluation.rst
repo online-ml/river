@@ -1,12 +1,5 @@
-skmultiflow\.evaluation package
-===============================
-
-Subpackages
------------
-
-.. toctree::
-
-    skmultiflow.evaluation.metrics
+skmultiflow.evaluation package
+==============================
 
 Submodules
 ----------

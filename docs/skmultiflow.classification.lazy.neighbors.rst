@@ -1,5 +1,5 @@
-skmultiflow\.classification\.lazy\.neighbors package
-====================================================
+skmultiflow.classification.lazy.neighbors package
+=================================================
 
 Submodules
 ----------

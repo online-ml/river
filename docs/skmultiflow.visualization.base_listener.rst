@@ -1,5 +1,5 @@
-skmultiflow\.visualization\.base\_listener module
-=================================================
+skmultiflow.visualization.base\_listener module
+===============================================
 
 .. automodule:: skmultiflow.visualization.base_listener
     :members:

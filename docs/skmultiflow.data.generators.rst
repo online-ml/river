@@ -1,5 +1,5 @@
-skmultiflow\.data\.generators package
-=====================================
+skmultiflow.data.generators package
+===================================
 
 Submodules
 ----------

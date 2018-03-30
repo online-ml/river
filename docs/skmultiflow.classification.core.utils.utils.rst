@@ -1,5 +1,5 @@
-skmultiflow\.classification\.core\.utils\.utils module
-======================================================
+skmultiflow.classification.core.utils.utils module
+==================================================
 
 .. automodule:: skmultiflow.classification.core.utils.utils
     :members:

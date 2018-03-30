@@ -1,5 +1,5 @@
-skmultiflow\.classification\.base module
-========================================
+skmultiflow.classification.base module
+======================================
 
 .. automodule:: skmultiflow.classification.base
     :members:

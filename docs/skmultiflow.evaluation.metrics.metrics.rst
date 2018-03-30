@@ -1,5 +1,5 @@
-skmultiflow\.evaluation\.metrics\.metrics module
-================================================
+skmultiflow.evaluation.metrics.metrics module
+=============================================
 
 .. automodule:: skmultiflow.evaluation.metrics.metrics
     :members:

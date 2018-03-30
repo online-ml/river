@@ -1,15 +1,5 @@
-skmultiflow\.classification package
-===================================
-
-Subpackages
------------
-
-.. toctree::
-
-    skmultiflow.classification.core
-    skmultiflow.classification.lazy
-    skmultiflow.classification.meta
-    skmultiflow.classification.trees
+skmultiflow.classification package
+==================================
 
 Submodules
 ----------

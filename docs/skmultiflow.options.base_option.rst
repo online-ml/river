@@ -1,5 +1,5 @@
-skmultiflow\.options\.base\_option module
-=========================================
+skmultiflow.options.base\_option module
+=======================================
 
 .. automodule:: skmultiflow.options.base_option
     :members:

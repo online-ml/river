@@ -1,5 +1,5 @@
-skmultiflow\.classification\.core\.split\_criteria package
-==========================================================
+skmultiflow.classification.core.split\_criteria package
+=======================================================
 
 Submodules
 ----------

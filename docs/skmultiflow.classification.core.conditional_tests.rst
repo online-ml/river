@@ -1,5 +1,5 @@
-skmultiflow\.classification\.core\.conditional\_tests package
-=============================================================
+skmultiflow.classification.core.conditional\_tests package
+==========================================================
 
 Submodules
 ----------

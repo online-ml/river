@@ -1,5 +1,5 @@
-skmultiflow\.filtering package
-==============================
+skmultiflow.filtering package
+=============================
 
 Submodules
 ----------

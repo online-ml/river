@@ -1,5 +1,5 @@
-skmultiflow\.evaluation\.evaluate\_prequential module
-=====================================================
+skmultiflow.evaluation.evaluate\_prequential module
+===================================================
 
 .. automodule:: skmultiflow.evaluation.evaluate_prequential
     :members:

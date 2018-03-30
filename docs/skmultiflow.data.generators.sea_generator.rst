@@ -1,5 +1,5 @@
-skmultiflow\.data\.generators\.sea\_generator module
-====================================================
+skmultiflow.data.generators.sea\_generator module
+=================================================
 
 .. automodule:: skmultiflow.data.generators.sea_generator
     :members:

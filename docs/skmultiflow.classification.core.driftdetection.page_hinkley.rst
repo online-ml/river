@@ -1,5 +1,5 @@
-skmultiflow\.classification\.core\.driftdetection\.page\_hinkley module
-=======================================================================
+skmultiflow.classification.core.driftdetection.page\_hinkley module
+===================================================================
 
 .. automodule:: skmultiflow.classification.core.driftdetection.page_hinkley
     :members:

@@ -1,5 +1,5 @@
-skmultiflow\.filtering\.one\_hot\_to\_categorical module
-========================================================
+skmultiflow.filtering.one\_hot\_to\_categorical module
+======================================================
 
 .. automodule:: skmultiflow.filtering.one_hot_to_categorical
     :members:

@@ -1,5 +1,5 @@
-skmultiflow\.demos package
-==========================
+skmultiflow.demos package
+=========================
 
 Module contents
 ---------------

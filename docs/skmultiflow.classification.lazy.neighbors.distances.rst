@@ -1,5 +1,5 @@
-skmultiflow\.classification\.lazy\.neighbors\.distances module
-==============================================================
+skmultiflow.classification.lazy.neighbors.distances module
+==========================================================
 
 .. automodule:: skmultiflow.classification.lazy.neighbors.distances
     :members:

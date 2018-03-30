@@ -1,5 +1,5 @@
-skmultiflow\.data\.synth module
-===============================
+skmultiflow.data.synth module
+=============================
 
 .. automodule:: skmultiflow.data.synth
     :members:

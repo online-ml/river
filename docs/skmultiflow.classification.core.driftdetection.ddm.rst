@@ -1,5 +1,5 @@
-skmultiflow\.classification\.core\.driftdetection\.ddm module
-=============================================================
+skmultiflow.classification.core.driftdetection.ddm module
+=========================================================
 
 .. automodule:: skmultiflow.classification.core.driftdetection.ddm
     :members:

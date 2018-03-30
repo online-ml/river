@@ -1,5 +1,5 @@
-skmultiflow\.classification\.lazy\.knn module
-=============================================
+skmultiflow.classification.lazy.knn module
+==========================================
 
 .. automodule:: skmultiflow.classification.lazy.knn
     :members:

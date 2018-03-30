@@ -1,5 +1,5 @@
-skmultiflow\.classification\.lazy\.neighbors\.kdtree module
-===========================================================
+skmultiflow.classification.lazy.neighbors.kdtree module
+=======================================================
 
 .. automodule:: skmultiflow.classification.lazy.neighbors.kdtree
     :members:

@@ -1,5 +1,5 @@
-skmultiflow\.classification\.meta\.oza\_bagging module
-======================================================
+skmultiflow.classification.meta.oza\_bagging module
+===================================================
 
 .. automodule:: skmultiflow.classification.meta.oza_bagging
     :members:

@@ -1,12 +1,5 @@
-skmultiflow\.data package
-=========================
-
-Subpackages
------------
-
-.. toctree::
-
-    skmultiflow.data.generators
+skmultiflow.data package
+========================
 
 Submodules
 ----------

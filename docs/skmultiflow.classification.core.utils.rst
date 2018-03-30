@@ -1,5 +1,5 @@
-skmultiflow\.classification\.core\.utils package
-================================================
+skmultiflow.classification.core.utils package
+=============================================
 
 Submodules
 ----------
