@@ -46,7 +46,7 @@ backend to use. This is done via a magic command at the beginning of the Noteboo
 
 [JupyterLab](http://jupyterlab.readthedocs.io/en/stable/) is the next-generation user interface for Jupyter, currently
 in beta it can display plots with some caveats. If you use JupyterLab then the current solution is to use the
-[jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) extension
+[jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) extension:
 
 ```python
 %matplotlib ipympl
