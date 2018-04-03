@@ -1,6 +1,5 @@
 __author__ = 'Guilherme Matsumoto'
 
-from skmultiflow.core.utils.utils import dict_to_list
 from skmultiflow.core.base_object import BaseObject
 from sklearn.utils import tosequence
 
@@ -40,12 +39,12 @@ class Pipeline(BaseObject):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.classification import KNNAdwin
-    >>> from src.skmultiflow import Pipeline
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import EvaluatePrequential
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow import OneHotToCategorical
+    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.filtering.one_hot_to_categorical import OneHotToCategorical
     >>> # Setting up the stream
     >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     >>> stream = FileStream(opt, -1, 1)
