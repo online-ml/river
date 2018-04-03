@@ -194,11 +194,8 @@ class AdaptiveRandomForest(BaseClassifier):
     
     def partial_fit(self, X, y, classes=None, weight=1.0):
         if y is not None:
-            weight = check_weights(weight)
             row_cnt, _ = get_dimensions(X)
-            wrow_cnt, _ = get_dimensions(weight)
-            if row_cnt != wrow_cnt:
-                weight = [weight] * row_cnt
+            weight = check_weights(weight, expand_length=row_cnt)
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
