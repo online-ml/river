@@ -4,7 +4,6 @@ import logging
 import warnings
 from skmultiflow.evaluation.base_evaluator import BaseEvaluator
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
-from skmultiflow.core.utils.utils import dict_to_tuple_list
 from skmultiflow.evaluation.measure_collection import WindowClassificationMeasurements, ClassificationMeasurements, \
     MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
 from timeit import default_timer as timer
@@ -85,10 +84,10 @@ class EvaluatePrequential(BaseEvaluator):
     --------
     >>> # The first example demonstrates how to use the evaluator to evaluate one learner
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-    >>> from src.skmultiflow import Pipeline
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow import EvaluatePrequential
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
     >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     >>> stream = FileStream(opt, -1, 1)
@@ -106,11 +105,11 @@ class EvaluatePrequential(BaseEvaluator):
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluatePrequential
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-    >>> from src.skmultiflow.classification import KNNAdwin
-    >>> from src.skmultiflow import Pipeline
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow import EvaluatePrequential
+    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
     >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     >>> stream = FileStream(opt, -1, 1)
