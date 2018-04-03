@@ -6,7 +6,6 @@ from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import BaseEvaluator
 from skmultiflow.evaluation.measure_collection import ClassificationMeasurements, WindowClassificationMeasurements, \
     RegressionMeasurements, WindowRegressionMeasurements, MultiOutputMeasurements, WindowMultiOutputMeasurements
-from skmultiflow.core.utils.utils import dict_to_tuple_list
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 
 
@@ -691,8 +690,7 @@ class EvaluateHoldout(BaseEvaluator):
             wants to change, and the values are the new values of those attributes.
              
         """
-        params_list = dict_to_tuple_list(dict)
-        for name, value in params_list:
+        for name, value in dict.items():
             if name == 'n_wait':
                 self.n_wait = value
             elif name == 'max_instances':

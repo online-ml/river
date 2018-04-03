@@ -89,10 +89,10 @@ class HAT(HoeffdingTree):
 
      Examples
     --------
-    >>> from src.skmultiflow.classification import HAT
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow import EvaluatePrequential
+    >>> from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
     >>> opt = FileOption("FILE", "OPT_NAME", "/skmultiflow/datasets/covtype.csv", "CSV", False)
     >>> stream = FileStream(opt, -1, 1)
@@ -195,7 +195,7 @@ class HAT(HoeffdingTree):
             class_prediction = 0
 
             if self.filter_instance_to_leaf(X, parent, parent_branch).node is not None:
-                class_prediction = get_max_value_index(
+                class_prediction = get_max_value_key(
                     self.filter_instance_to_leaf(X, parent, parent_branch).node.get_class_votes(X, hat))
 
             bl_correct = (true_class == class_prediction)
@@ -342,7 +342,7 @@ class HAT(HoeffdingTree):
 
             tmp = self.get_class_votes(X, hat)
 
-            class_prediction = get_max_value_index(tmp)
+            class_prediction = get_max_value_key(tmp)
 
             bl_correct = (true_class == class_prediction)
 
