@@ -77,7 +77,7 @@ class MultiOutputLearner(BaseClassifier) :
     def __configure(self):
         self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
-    def fit(self, X, Y, classes=None, weight=None):
+    def fit(self, X, y, classes=None, weight=None):
         """ fit
 
         Fit the N classifiers, one for each classification task.
@@ -87,7 +87,7 @@ class MultiOutputLearner(BaseClassifier) :
         X : Numpy.ndarray of shape (n_samples, n_features)
             The array of samples used to fit the model.
 
-        Y: Array-like
+        y: Array-like
             An array-like with the labels of all samples in X.
 
         classes: Not used.
@@ -100,26 +100,26 @@ class MultiOutputLearner(BaseClassifier) :
             self
 
         """
-        N,L = Y.shape
+        N,L = y.shape
         self.L = L
         self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
         for j in range(self.L):
-            self.h[j].fit(X, Y[:, j])
+            self.h[j].fit(X, y[:, j])
         return self
 
     def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Partially fit each of the classifiers on the X matrix and the 
-        corresponding Y matrix.
+        corresponding y matrix.
 
         Parameters
         ----------
         X : Numpy.ndarray of shape (n_samples, n_features)
             The array of samples used to fit the model.
 
-        Y: Numpy.ndarray of shape (n_samples, n_labels)
+        y: Numpy.ndarray of shape (n_samples, n_labels)
             An array-like with the labels of all samples in X.
 
         classes: Array-like
