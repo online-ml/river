@@ -1,7 +1,6 @@
 __author__ = 'Guilherme Matsumoto'
 
 from skmultiflow.core.base_object import BaseObject
-from skmultiflow.core.utils.utils import dict_to_tuple_list
 from timeit import default_timer as timer
 import logging
 
@@ -100,8 +99,7 @@ class EvaluateStreamGenerationSpeed(BaseObject):
             wants to change, and the values are the new values of those attributes.
 
         """
-        params_list = dict_to_tuple_list(dict)
-        for name, value in params_list:
+        for name, value in dict.items():
             if name == 'num_samples':
                 self.num_samples = value
             elif name == 'max_time':
