@@ -1,11 +1,8 @@
-__author__ = 'Jesse Read'
-
 import copy as cp
-from numpy import *
+import numpy as np
 from sklearn import linear_model
 from skmultiflow.classification.base import BaseClassifier
 from skmultiflow.evaluation.metrics.metrics import *
-
 
 class MultiOutputLearner(BaseClassifier) :
     """ MultiOutputLearner
@@ -17,9 +14,10 @@ class MultiOutputLearner(BaseClassifier) :
     for each output, and will distribute each instance to each model
     for individual learning and classification. 
     
-    Use this classifier to make single output predictors capable of learning 
-    a multi output problem, by applying them individually to each output.
-    
+    Use this meta learner to make single output predictors capable of learning 
+    a multi output problem, by applying them individually to each output. In 
+    the classification context, this is the "binary relevance" classifier.
+
     Parameters
     ----------
     h: classifier (extension of the BaseClassifier)
@@ -171,7 +169,7 @@ class MultiOutputLearner(BaseClassifier) :
             All the predictions for the samples in X.
         '''
         N,D = X.shape
-        Y = zeros((N,self.L))
+        Y = np.zeros((N,self.L))
         for j in range(self.L):
             Y[:,j] = self.h[j].predict(X)
         return Y
@@ -224,12 +222,13 @@ def demo():
     X,Y = make_logical()
     N,L = Y.shape
 
-    h = MultiOutputLearner(linear_model.SGDClassifier(n_iter=100))
+    h = MultiOutputLearner(linear_model.SGDClassifier(max_iter=1000))
     h.fit(X, Y)
 
     p = h.predict(X)
     ham = hamming_score(Y, p)
     print(ham)
+
     # Test
     print(h.predict(X))
     print("vs")
