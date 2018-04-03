@@ -1,11 +1,8 @@
-__author__ = 'Jesse Read'
-
 import copy as cp
-from numpy import *
+import numpy as np
 from sklearn import linear_model
 from skmultiflow.classification.base import BaseClassifier
 from skmultiflow.evaluation.metrics.metrics import *
-
 
 class MultiOutputLearner(BaseClassifier) :
     """ MultiOutputLearner
@@ -17,9 +14,10 @@ class MultiOutputLearner(BaseClassifier) :
     for each output, and will distribute each instance to each model
     for individual learning and classification. 
     
-    Use this classifier to make single output predictors capable of learning 
-    a multi output problem, by applying them individually to each output.
-    
+    Use this meta learner to make single output predictors capable of learning 
+    a multi output problem, by applying them individually to each output. In 
+    the classification context, this is the "binary relevance" classifier.
+
     Parameters
     ----------
     h: classifier (extension of the BaseClassifier)
@@ -77,7 +75,7 @@ class MultiOutputLearner(BaseClassifier) :
     def __configure(self):
         self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
-    def fit(self, X, Y, classes=None, weight=None):
+    def fit(self, X, y, classes=None, weight=None):
         """ fit
 
         Fit the N classifiers, one for each classification task.
@@ -87,7 +85,7 @@ class MultiOutputLearner(BaseClassifier) :
         X : Numpy.ndarray of shape (n_samples, n_features)
             The array of samples used to fit the model.
 
-        Y: Array-like
+        y: Array-like
             An array-like with the labels of all samples in X.
 
         classes: Not used.
@@ -100,26 +98,26 @@ class MultiOutputLearner(BaseClassifier) :
             self
 
         """
-        N,L = Y.shape
+        N,L = y.shape
         self.L = L
         self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
 
         for j in range(self.L):
-            self.h[j].fit(X, Y[:, j])
+            self.h[j].fit(X, y[:, j])
         return self
 
     def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
 
         Partially fit each of the classifiers on the X matrix and the 
-        corresponding Y matrix.
+        corresponding y matrix.
 
         Parameters
         ----------
         X : Numpy.ndarray of shape (n_samples, n_features)
             The array of samples used to fit the model.
 
-        Y: Numpy.ndarray of shape (n_samples, n_labels)
+        y: Numpy.ndarray of shape (n_samples, n_labels)
             An array-like with the labels of all samples in X.
 
         classes: Array-like
@@ -171,7 +169,7 @@ class MultiOutputLearner(BaseClassifier) :
             All the predictions for the samples in X.
         '''
         N,D = X.shape
-        Y = zeros((N,self.L))
+        Y = np.zeros((N,self.L))
         for j in range(self.L):
             Y[:,j] = self.h[j].predict(X)
         return Y
@@ -224,12 +222,13 @@ def demo():
     X,Y = make_logical()
     N,L = Y.shape
 
-    h = MultiOutputLearner(linear_model.SGDClassifier(n_iter=100))
+    h = MultiOutputLearner(linear_model.SGDClassifier(max_iter=1000))
     h.fit(X, Y)
 
     p = h.predict(X)
     ham = hamming_score(Y, p)
     print(ham)
+
     # Test
     print(h.predict(X))
     print("vs")
