@@ -3,12 +3,11 @@ __author__ = 'Guilherme Matsumoto'
 from skmultiflow.data.base_instance_stream import BaseInstanceStream
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
-from timeit import default_timer as timer
 
 
 class WaveformGenerator(BaseInstanceStream, BaseObject):
     """ WaveformGenerator
-    
+
     Generates instances with 21 numeric attributes and 3 targets, based 
     on a random differentiation of some base waveforms. Supports noise 
     addition, but in this case the generator will have 40 attribute 
@@ -24,7 +23,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.data import WaveformGenerator
+    >>> from skmultiflow.data.generators.waveform_generator import WaveformGenerator
     >>> # Setting up the stream
     >>> stream = WaveformGenerator(seed=774, add_noise=True)
     >>> stream.prepare_for_use()
@@ -115,12 +114,13 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
 
         self.instance_length = 100000
         self.num_attributes = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.add_noise else self.NUM_BASE_ATTRIBUTES
+        if self.add_noise:
+            self.num_numerical_attributes = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE
         self.num_classes = self.NUM_CLASSES
         self.attributes_header = []
         self.classes_header = ["class"]
         for i in range(self.num_attributes):
-            self.attributes_header.append("att" + str(i))
-
+            self.attributes_header.append("att_num_" + str(i))
 
     def prepare_for_use(self):
         self.restart()
@@ -131,7 +131,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
     def has_more_instances(self):
         return True
 
-    def next_instance(self, batch_size = 1):
+    def next_instance(self, batch_size=1):
         """ next_instance
         
         An instance is generated based on the parameters passed. If noise 
@@ -164,7 +164,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
         else:
             data = np.zeros([batch_size, self.NUM_BASE_ATTRIBUTES + 1])
 
-        for j in range (batch_size):
+        for j in range(batch_size):
             self.instance_index += 1
             waveform = np.random.randint(0, self.NUM_CLASSES)
             choice_a = 1 if (waveform == 2) else 0
@@ -173,19 +173,19 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
             multiplier_b = 1.0 - multiplier_a
 
             for i in range(self.NUM_BASE_ATTRIBUTES):
-                data[j,i] = multiplier_a*self.H_FUNCTION[choice_a][i] \
+                data[j, i] = multiplier_a*self.H_FUNCTION[choice_a][i] \
                             + multiplier_b*self.H_FUNCTION[choice_b][i] \
                             + np.random.normal()
 
             if self.has_noise():
-                for i in range(self.NUM_BASE_ATTRIBUTES,self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    data[j,i] = np.random.normal()
+                for i in range(self.NUM_BASE_ATTRIBUTES, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
+                    data[j, i] = np.random.normal()
 
             data[j, data[j].size-1] = waveform
-            self.current_instance_x = data[j, :self.num_attributes]
-            self.current_instance_y = data[j, self.num_attributes:]
+        self.current_instance_x = data[:, :self.num_attributes]
+        self.current_instance_y = np.ravel(data[:, self.num_attributes:])
 
-        return (data[:, :self.num_attributes], np.ravel(data[:, self.num_attributes:]))
+        return self.current_instance_x, self.current_instance_y
 
     def is_restartable(self):
         return True
@@ -223,7 +223,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
         return self.classes_header
 
     def get_last_instance(self):
-        return (self.current_instance_x, self.current_instance_y)
+        return self.current_instance_x, self.current_instance_y
 
     def get_plot_name(self):
         return "Waveform Generator - " + str(self.num_classes) + " class labels"
@@ -244,22 +244,3 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
 
     def get_num_targeting_tasks(self):
         return 1
-
-def demo():
-    wfg = WaveformGenerator()
-    wfg.prepare_for_use()
-    print(wfg.get_class_type())
-    i = 0
-    start = timer()
-    oi = np.zeros([4])
-    oi.put(0, 3)
-    oi.put(2, 1.3)
-    oi.put(3, 9)
-    oi.put(1, 4.5)
-    print(oi)
-    print(oi[3])
-    end = timer()
-    print("Generation time: " + str(end-start))
-
-if __name__ == '__main__':
-    demo()
