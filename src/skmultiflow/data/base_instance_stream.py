@@ -72,10 +72,6 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def has_more_mini_batch(self):
-        raise NotImplementedError
-
-    @abstractmethod
     def get_num_nominal_attributes(self):
         """ get_num_nominal_attributes
         

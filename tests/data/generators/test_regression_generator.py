@@ -33,8 +33,6 @@ def test_regression_generator():
 
     assert stream.has_more_instances() is True
 
-    assert stream.has_more_mini_batch() is None
-
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances

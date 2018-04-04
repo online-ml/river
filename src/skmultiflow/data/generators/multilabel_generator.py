@@ -176,9 +176,6 @@ class MultilabelGenerator(BaseInstanceStream):
         self.current_instance_x = None
         self.current_instance_y = None
 
-    def has_more_mini_batch(self):
-        pass
-
     def get_num_nominal_attributes(self):
         return self.num_nominal_attributes
 

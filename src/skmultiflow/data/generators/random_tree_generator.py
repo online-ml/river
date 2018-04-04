@@ -402,9 +402,6 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
         self.instance_random.seed(self.random_instance_seed)
         self.generate_random_tree()
 
-    def has_more_mini_batch(self):
-        return True
-
     def get_num_nominal_attributes(self):
         return self.num_nominal_attributes
 

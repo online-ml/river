@@ -17,7 +17,7 @@ def test_multilabel_generator():
     expected_classes = [0, 1]
     assert stream.get_classes() == expected_classes
 
-    expected_header = ['label_0', 'label_1', 'label_2', 'label_3',]
+    expected_header = ['label_0', 'label_1', 'label_2', 'label_3']
     assert stream.get_classes_header() == expected_header
 
     assert stream.get_num_attributes() == 20
@@ -33,8 +33,6 @@ def test_multilabel_generator():
     assert stream.get_plot_name() == 'Multilabel Generator'
 
     assert stream.has_more_instances() is True
-
-    assert stream.has_more_mini_batch() is None
 
     assert stream.is_restartable() is True
 
