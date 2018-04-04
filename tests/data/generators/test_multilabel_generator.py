@@ -1,6 +1,7 @@
 import numpy as np
 from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
 
+
 def test_multilabel_generator():
     stream = MultilabelGenerator(n_samples=100, n_features=20, n_targets=4, n_labels=4, random_state=0)
     stream.prepare_for_use()
