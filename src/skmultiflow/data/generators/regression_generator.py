@@ -1,8 +1,8 @@
 __author__ = 'Guilherme Matsumoto'
 
-import numpy as np
 from skmultiflow.data.base_instance_stream import BaseInstanceStream
 from sklearn.datasets import make_regression
+from skmultiflow.core.utils.validation import check_random_state
 
 
 class RegressionGenerator(BaseInstanceStream):
@@ -27,57 +27,87 @@ class RegressionGenerator(BaseInstanceStream):
     
     n_targets: int (Default: 1)
         Number of targeting tasks to generate.
+
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
     
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.data import RegressionGenerator
+    >>> from skmultiflow.data.generators.regression_generator import RegressionGenerator
     >>> # Setting up the stream
-    >>> stream = RegressionGenerator(n_samples=40000, n_features=10, n_targets=4, n_informative=6)
+    >>> stream = RegressionGenerator(n_samples=100, n_features=20, n_targets=4, n_informative=6, random_state=0)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_instance()
-    (array([[ 0.08847145,  0.54167032, -0.26639876,  0.16901383, -1.23675074,  0.2191299,  0.37675925,  
-    1.08785428,  1.34738876,  1.75185625]]), array([[ 43.5869813 ,  20.17934387, -89.84100678,  99.71772926]]))
+    (array([[ 0.16422776,  0.56729028, -0.76149221,  0.38728048, -1.69810582,
+          0.85792392, -0.2226751 , -0.98551074,  1.46657872,  1.64813493,
+          0.03863055,  1.14110187, -1.6567151 , -0.29183736, -1.02250684,
+         -1.47183501, -1.61647419,  0.85255194, -2.25556423, -0.35343175]]),
+         array([[-227.21175382, -208.69356686, -430.10330937, -439.69284148]]))
     >>> # Retrieving 10 samples
     >>> stream.next_instance(10)
-    (array([[ 1.00067062,  0.21315385,  0.71619444, -1.07405979, -0.44566047,
-         0.21042344, -0.12013223,  1.52176296, -0.54644817, -0.22761552],
-       [-0.11595306, -0.09317076,  1.6024751 ,  0.40429975, -1.45060292,
-         1.21409322,  0.28001195,  1.24693445, -1.34851791, -1.49512122],
-       [ 0.88309146,  1.90792011, -0.18723735,  0.6161133 , -1.49582992,
-         1.81954813, -0.90094923,  1.03586027,  0.11026183,  1.12514587],
-       [ 0.75196922,  0.64277909, -0.89305047,  0.52819719, -0.38798905,
-         0.35649152, -1.57671827,  1.16010305,  0.58344281,  1.0759902 ],
-       [ 0.88576633,  0.7858232 , -0.26126212, -1.10802188, -0.89619512,
-        -0.44915036, -0.11700449,  0.54494865, -0.91151171,  1.50259135],
-       [ 0.20054457, -0.84940252,  0.40505224,  0.23804963, -0.37821232,
-         0.38167094, -0.45447389, -0.20675609, -0.22947645, -0.5346733 ],
-       [-0.78212843,  0.15420883, -0.27916141,  1.56364308, -0.11299342,
-         1.03975364,  0.22823241,  0.00348303, -0.25840339,  1.31217362],
-       [-0.16351539,  0.60941347, -0.20294223,  0.66026152,  0.05045567,
-         0.22316186,  0.93197562,  1.32542373, -0.04543523,  2.44725885],
-       [-0.50325537, -1.22869527,  1.43718402, -2.05933559,  0.46698075,
-         1.66436076,  0.31205451, -1.02400179, -0.23611307, -0.43686569],
-       [ 1.10504135,  0.45413326,  1.09731459,  2.01807386,  1.61785921,
-        -0.3835003 ,  0.88883791, -1.09485607,  0.07325024,  0.31294406]]), array([[ -47.6385461 ,  -43.88370836,   58.56857132,  -57.56014259],
-       [  62.66644355, -119.4593376 ,   -7.46088743,  -78.88993459],
-       [  42.96563939, -143.34991562,  -71.16390347,  -56.31677899],
-       [ -17.30988744, -108.13263269,  -49.21158065,  -63.32182558],
-       [ -87.45441879, -158.18131269,  -62.08270835, -116.75603504],
-       [  11.89772626,  -50.86442522,   10.1538106 ,  -41.19856008],
-       [ 112.33174356,  -11.03547029,  -54.04449607,   23.16505909],
-       [ 106.53060383,   76.43868354,    0.4905551 ,   85.87867079],
-       [-177.64080457,   33.09515266,   73.51070668,  -45.71507071],
-       [ 352.84278173,  362.40102842,  332.56626222,  241.00957637]]))
+    (array([[-0.30309825,  0.44103291,  0.41287082, -0.14456682,  0.3595044 ,
+         -0.1983989 ,  0.17879287, -0.40594173, -1.14761094,  1.38526155,
+         -0.93788023,  0.0941923 ,  0.43310795,  0.28912051,  1.06458514,
+          0.7243685 ,  0.24078751, -0.35811408, -0.36159928, -0.7994224 ],
+        [ 1.04297759,  0.41409135, -0.94893281,  0.16464381,  1.04008625,
+          0.13191176, -0.50723446, -0.32656098,  0.76877064, -0.52261942,
+          0.38909397, -1.98056559,  1.17104106, -0.03926799,  1.47376482,
+         -0.00820988,  1.04156839, -0.42132759,  0.88518754,  0.15466883],
+        [-0.83912419, -1.01177408,  0.75746833, -0.6432576 ,  1.58776152,
+         -0.01005647,  0.08496814, -0.0451133 , -1.04059923,  0.85053068,
+         -0.14876615,  1.23800694,  0.0960042 ,  1.86668315,  0.99675964,
+          0.07912172, -1.37305354, -0.31560312, -1.13359283, -1.60643969],
+        [ 0.9508337 ,  0.55929898,  1.30718385, -1.64134861,  1.39053397,
+         -0.46744101, -1.06369559, -0.33868219,  0.85910419,  1.05417791,
+         -0.49579549, -0.86015338,  1.21657771,  0.67755703,  0.06606026,
+          2.03476254,  0.57275137, -0.80962658, -0.15503581, -0.43109634],
+        [-0.80149689, -0.64718143,  1.99795608, -0.96460642,  1.32646164,
+         -0.85654931,  0.47224715,  0.93639854,  2.59442459,  0.27117018,
+         -0.76211451, -1.5415874 , -0.88778014, -1.42191987, -0.21252304,
+         -0.52564059, -0.1753164 , -0.40403229,  0.05989468,  0.9304085 ],
+        [-0.21120598, -0.12040664, -1.74418776,  0.87569568, -0.46931074,
+          1.66060756, -1.47931598,  1.02122474, -2.8022028 ,  2.45122972,
+         -0.48024204, -1.41660348, -0.52325094, -0.44876701,  1.94709864,
+          0.70869527, -0.7214313 , -1.18842442, -1.36516288, -0.33210228],
+        [ 0.49949823, -0.06205313,  1.76992139, -0.03093626, -1.1046166 ,
+         -0.16821422,  1.25916713,  0.26902407,  1.32435875,  1.26741165,
+         -0.56643985,  0.3779101 , -0.30769128,  2.52636824, -0.79550055,
+          0.52491786, -1.49567952, -0.17220079,  1.57886519,  0.70411102],
+        [ 0.8640523 , -2.23960406, -0.5854312 , -0.91307922, -0.22260568,
+         -0.26164545,  0.40149906,  0.93674246, -0.20289684, -2.36958691,
+          0.24211796, -0.18224478, -0.88872026, -1.27968917, -0.88897136,
+          1.41232771,  0.06485611, -0.10988278, -1.68121822,  1.22487056],
+        [ 0.61645931,  0.53659652,  0.08595197, -1.96273201, -0.89636972,
+          0.75194659,  0.40469546,  0.87096178, -1.19498681,  1.29614987,
+         -1.13900819,  0.56298972, -1.21440138, -0.45408036,  0.64796779,
+         -0.87797062,  0.8805112 , -0.50040967,  1.58482053,  0.19145087],
+        [ 1.30184623, -0.62808756,  1.13689136,  1.02017271, -0.11054066,
+          0.09772497, -0.48102712, -1.04525337, -0.39944903,  0.68981816,
+          0.28634369,  0.58295368,  0.60884383, -0.1359497 ,  1.53637705,
+          1.21114529, -1.06001582,  0.37005589, -0.69204985,  2.3039167 ]]),
+          array([[  31.59103587,   19.35028127,   33.49418263,   22.27335009],
+          [ 153.04501993,  245.02067196,  338.82484458,  365.47183945],
+          [  43.14398252,   47.75322041,    1.17298222,   44.35274394],
+          [  93.58627672,  -65.01446316,   79.20394868,   46.55266948],
+          [  -9.74401621, -137.01970244, -144.66863494, -123.09407564],
+          [ -51.78237536,  103.64689371,  -37.00451143,  -15.08925677],
+          [ -32.06049627, -127.04540624,  -21.14164295,  -80.71667   ],
+          [-121.50880042, -197.05839429, -278.61694828, -291.47192161],
+          [ -72.53226633, -280.00028587,  -44.57428097, -166.31003398],
+          [  41.74351609,  220.43038917,  151.95222469,  182.65729147]]))
+
     >>> stream.estimated_remaining_instances()
-    39989
+    89
     >>> stream.has_more_instances()
     True
     
     """
 
-    def __init__(self, n_samples=40000, n_features=100, n_informative=10, n_targets=1):
+    def __init__(self, n_samples=40000, n_features=100, n_informative=10, n_targets=1, random_state=None):
         super().__init__()
         self.X = None
         self.y = None
@@ -85,9 +115,13 @@ class RegressionGenerator(BaseInstanceStream):
         self.num_features = 0
         self.num_target_tasks = 0
         self.num_informative = 0
+        self.num_numerical_attributes = 0
+        self.num_nominal_attributes = 0
+        self.num_values_per_nominal_att = 0
         self.instance_index = 0
         self.current_instance_y = None
         self.current_instance_x = None
+        self.random_state = check_random_state(random_state)
         self.__configure(n_samples, n_features, n_informative, n_targets)
 
     def __configure(self, n_samples, n_features, n_informative, n_targets):
@@ -113,19 +147,22 @@ class RegressionGenerator(BaseInstanceStream):
             Number of targeting tasks to generate.
         
         """
-        self.X, self.y = make_regression(n_samples=n_samples, n_features=n_features,
-                                         n_informative=n_informative, n_targets=n_targets)
+        self.X, self.y = make_regression(n_samples=n_samples, n_features=n_features, n_informative=n_informative,
+                                         n_targets=n_targets, random_state=self.random_state)
         self.y.resize((self.y.size, n_targets))
         self.num_samples = n_samples
         self.num_features = n_features
         self.num_target_tasks = n_targets
         self.num_informative = n_informative
+        self.num_numerical_attributes = n_features
+        self.class_header = ["target_" + str(i) for i in range(self.num_target_tasks)]
+        self.attributes_header = ["att_num_" + str(i) for i in range(self.num_numerical_attributes)]
 
     def estimated_remaining_instances(self):
-        return (self.num_samples - self.instance_index)
+        return self.num_samples - self.instance_index
 
     def has_more_instances(self):
-        return (self.num_samples - self.instance_index > 0)
+        return self.num_samples - self.instance_index > 0
 
     def next_instance(self, batch_size=1):
         """ next_instance
@@ -155,25 +192,27 @@ class RegressionGenerator(BaseInstanceStream):
         except IndexError:
             self.current_instance_x = None
             self.current_instance_y = None
-        return (self.current_instance_x, self.current_instance_y)
+        return self.current_instance_x, self.current_instance_y
 
     def is_restartable(self):
         return True
 
     def restart(self):
-        pass
+        self.instance_index = 0
+        self.current_instance_x = None
+        self.current_instance_y = None
 
     def has_more_mini_batch(self):
         pass
 
     def get_num_nominal_attributes(self):
-        pass
+        return self.num_nominal_attributes
 
     def get_num_numerical_attributes(self):
-        pass
+        return self.num_numerical_attributes
 
     def get_num_values_per_nominal_attribute(self):
-        pass
+        return self.num_values_per_nominal_att
 
     def get_num_attributes(self):
         return self.num_features
@@ -182,10 +221,10 @@ class RegressionGenerator(BaseInstanceStream):
         return self.num_target_tasks
 
     def get_attributes_header(self):
-        pass
+        return self.attributes_header
 
     def get_classes_header(self):
-        pass
+        return self.class_header
 
     def get_last_instance(self):
         return self.current_instance_x, self.current_instance_y
@@ -194,10 +233,10 @@ class RegressionGenerator(BaseInstanceStream):
         pass
 
     def get_plot_name(self):
-        return 'Regression dataset'
+        return 'Regression Generator'
 
     def get_classes(self):
-        return np.unique(self.y)
+        return None
 
     def get_class_type(self):
         return 'stream'
