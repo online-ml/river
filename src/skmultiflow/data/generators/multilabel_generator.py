@@ -3,6 +3,7 @@ __author__ = 'Guilherme Matsumoto'
 import numpy as np
 from skmultiflow.data.base_instance_stream import BaseInstanceStream
 from sklearn.datasets import make_multilabel_classification
+from skmultiflow.core.utils.validation import check_random_state
 
 
 class MultilabelGenerator(BaseInstanceStream):
@@ -26,46 +27,62 @@ class MultilabelGenerator(BaseInstanceStream):
         
     n_labels: int (Default: 2)
         Number of labels to generate.
+
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
         
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow import MultilabelGenerator
+    >>> from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
     >>> # Setting up the stream
-    >>> stream = MultilabelGenerator(n_samples=40000, n_features=10, n_targets=4, n_labels=4)
+    >>> stream = MultilabelGenerator(n_samples=100, n_features=20, n_targets=4, n_labels=4, random_state=0)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_instance()
-    (array([[ 7.,  2.,  7.,  5.,  3.,  2.,  6.,  8.,  3.,  6.]]), array([[1, 1, 1, 1]]))
+    (array([[3., 0., 1., 3., 6., 2., 5., 0., 5., 6., 3., 5., 1., 2., 0., 3.,
+         3., 2., 2., 1.]]), array([[0, 1, 1, 1]]))
     >>> # Retrieving 10 samples
     >>> stream.next_instance(10)
-    (array([[  2.,   2.,   5.,   2.,   5.,   5.,   4.,   2.,   3.,   5.],
-       [  2.,   1.,   5.,   5.,   1.,   1.,   7.,  10.,   5.,   4.],
-       [  6.,   5.,  11.,   6.,  11.,   0.,   4.,   6.,   0.,   1.],
-       [  9.,   6.,   4.,   4.,   3.,   9.,   6.,   8.,   9.,   0.],
-       [  5.,   3.,   5.,   2.,   5.,   3.,   4.,  10.,   5.,   1.],
-       [ 12.,   8.,   9.,   9.,   2.,   5.,   8.,   8.,   4.,   2.],
-       [  9.,   8.,   3.,   3.,   4.,   5.,   8.,  11.,   3.,   2.],
-       [  5.,   5.,   3.,   0.,   7.,   4.,   7.,   8.,   9.,   0.],
-       [  4.,   2.,  11.,   4.,   7.,   2.,   4.,   4.,   3.,   4.],
-       [  5.,   0.,  10.,   6.,   6.,   6.,   5.,   4.,  11.,   3.]]), array([[0, 1, 1, 1],
-       [1, 1, 1, 1],
-       [1, 0, 0, 0],
-       [0, 0, 1, 1],
-       [1, 1, 1, 1],
-       [1, 0, 1, 1],
-       [1, 0, 1, 0],
-       [0, 1, 1, 1],
-       [1, 1, 1, 1],
-       [0, 1, 1, 1]]))
+    (array([[4., 0., 2., 6., 2., 2., 1., 1., 3., 1., 3., 0., 1., 4., 0., 1.,
+         2., 2., 1., 1.],
+        [2., 2., 1., 6., 4., 0., 3., 1., 2., 4., 2., 2., 1., 2., 2., 1.,
+         3., 2., 1., 1.],
+        [7., 3., 3., 5., 6., 1., 4., 3., 3., 1., 1., 1., 1., 1., 1., 1.,
+         3., 2., 1., 8.],
+        [1., 5., 1., 3., 4., 2., 2., 0., 4., 3., 2., 2., 2., 2., 3., 1.,
+         5., 0., 2., 0.],
+        [7., 3., 2., 7., 4., 6., 2., 1., 4., 1., 1., 0., 1., 0., 1., 0.,
+         1., 1., 1., 4.],
+        [0., 2., 1., 1., 6., 3., 4., 2., 5., 3., 0., 3., 0., 1., 3., 0.,
+         3., 3., 2., 3.],
+        [5., 1., 2., 3., 4., 1., 0., 3., 3., 3., 8., 0., 0., 2., 0., 0.,
+         0., 2., 1., 1.],
+        [2., 5., 6., 0., 5., 2., 5., 2., 5., 4., 1., 1., 4., 1., 1., 0.,
+         1., 8., 3., 4.],
+        [2., 4., 6., 2., 3., 8., 2., 2., 3., 3., 5., 1., 0., 0., 1., 4.,
+         0., 1., 0., 3.],
+        [4., 2., 2., 2., 6., 5., 3., 3., 6., 1., 1., 0., 2., 2., 1., 2.,
+         3., 5., 1., 5.]]), array([[1, 1, 1, 1],
+        [0, 1, 1, 0],
+        [0, 1, 0, 1],
+        [1, 0, 1, 0],
+        [0, 1, 0, 1],
+        [1, 0, 1, 1],
+        [0, 1, 0, 0],
+        [1, 1, 1, 0],
+        [0, 1, 0, 0],
+        [1, 1, 1, 1]]))
     >>> stream.estimated_remaining_instances()
-    39989
+    89
     >>> stream.has_more_instances()
     True
 
     """
 
-    def __init__(self, n_samples=40000, n_features=20, n_targets=5, n_labels=2):
+    def __init__(self, n_samples=40000, n_features=20, n_targets=5, n_labels=2, random_state=None):
         super().__init__()
         self.X = None
         self.y = None
@@ -73,9 +90,13 @@ class MultilabelGenerator(BaseInstanceStream):
         self.num_features = 0
         self.num_target_tasks = 0
         self.num_labels = 0
+        self.num_numerical_attributes = 0
+        self.num_nominal_attributes = 0
+        self.num_values_per_nominal_att = 0
         self.instance_index = 0
         self.current_instance_y = None
         self.current_instance_x = None
+        self.random_state = check_random_state(random_state)
         self.__configure(n_samples, n_features, n_targets, n_labels)
 
     def __configure(self, n_samples, n_features, n_targets, n_labels):
@@ -100,17 +121,19 @@ class MultilabelGenerator(BaseInstanceStream):
             Number of labels to generate.
 
         """
-        self.X, self.y = make_multilabel_classification(n_samples=n_samples, n_features=n_features, n_classes=n_targets, n_labels=n_labels)
+        self.X, self.y = make_multilabel_classification(n_samples=n_samples, n_features=n_features, n_classes=n_targets,
+                                                        n_labels=n_labels, random_state=self.random_state)
         self.num_samples = n_samples
         self.num_features = n_features
         self.num_target_tasks = n_targets
         self.num_labels = n_labels
+        self.num_numerical_attributes = n_features
 
     def estimated_remaining_instances(self):
-        return (self.num_samples - self.instance_index)
+        return self.num_samples - self.instance_index
 
     def has_more_instances(self):
-        return (self.num_samples - self.instance_index > 0)
+        return self.num_samples - self.instance_index > 0
 
     def next_instance(self, batch_size=1):
         """ next_instance
@@ -132,8 +155,8 @@ class MultilabelGenerator(BaseInstanceStream):
         """
         self.instance_index += batch_size
         try:
-            self.current_instance_x = self.X[self.instance_index - batch_size:self.instance_index,:]
-            self.current_instance_y = self.y[self.instance_index - batch_size:self.instance_index,:]
+            self.current_instance_x = self.X[self.instance_index - batch_size:self.instance_index, :]
+            self.current_instance_y = self.y[self.instance_index - batch_size:self.instance_index, :]
             if self.num_target_tasks < 2:
                 self.current_instance_y = self.current_instance_y.flatten()
 
@@ -141,25 +164,27 @@ class MultilabelGenerator(BaseInstanceStream):
             self.current_instance_x = None
             self.current_instance_y = None
 
-        return (self.current_instance_x, self.current_instance_y)
+        return self.current_instance_x, self.current_instance_y
 
     def is_restartable(self):
         return True
 
     def restart(self):
-        pass
+        self.instance_index = 0
+        self.current_instance_x = None
+        self.current_instance_y = None
 
     def has_more_mini_batch(self):
         pass
 
     def get_num_nominal_attributes(self):
-        pass
+        return self.num_nominal_attributes
 
     def get_num_numerical_attributes(self):
-        pass
+        return self.num_numerical_attributes
 
     def get_num_values_per_nominal_attribute(self):
-        pass
+        return self.num_values_per_nominal_att
 
     def get_num_attributes(self):
         return self.num_features
@@ -180,10 +205,10 @@ class MultilabelGenerator(BaseInstanceStream):
         pass
 
     def get_plot_name(self):
-        return 'Multilabel dataset'
+        return 'Multilabel Generator'
 
     def get_classes(self):
-        return np.unique(self.y)
+        return np.unique(self.y).tolist()
 
     def get_class_type(self):
         return 'stream'
