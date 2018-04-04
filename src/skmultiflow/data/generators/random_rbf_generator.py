@@ -178,9 +178,6 @@ class RandomRBFGenerator(BaseInstanceStream, BaseObject):
         self.generate_centroids()
         self.instance_random.seed(self.instance_seed)
 
-    def has_more_mini_batch(self):
-        return True
-
     def get_num_nominal_attributes(self):
         return self.num_nominal_attributes
 

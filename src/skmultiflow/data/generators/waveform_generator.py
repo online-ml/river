@@ -195,9 +195,6 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
         self.instance_index = 0
         pass
 
-    def has_more_mini_batch(self):
-        return True
-
     def has_noise(self):
         return self.add_noise
 

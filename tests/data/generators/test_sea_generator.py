@@ -30,8 +30,6 @@ def test_sea_generator():
 
     assert stream.has_more_instances() is True
 
-    assert stream.has_more_mini_batch() is True
-
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances

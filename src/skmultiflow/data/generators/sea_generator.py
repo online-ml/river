@@ -200,9 +200,6 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         self.instance_random.seed(self.instance_seed)
         self.next_class_should_be_zero = False
 
-    def has_more_mini_batch(self):
-        return True
-
     def get_num_nominal_attributes(self):
         return self.num_nominal_attributes
 

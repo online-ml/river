@@ -193,9 +193,6 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
     def get_num_attributes(self):
         return self.num_attributes
 
-    def has_more_mini_batch(self):
-        pass
-
     def get_num_nominal_attributes(self):
         return self.num_nominal_attributes
 
