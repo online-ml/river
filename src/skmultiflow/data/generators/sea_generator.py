@@ -58,7 +58,7 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.data.generators.sea_generator import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(classification_function = 2, instance_seed = 112, balance_classes = False, 
     ... noise_percentage = 0.28)
@@ -85,14 +85,14 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
     True
     
     """
-    def __init__(self, classification_function = 0, instance_seed = 42, balance_classes = False, noise_percentage = 0.0):
+    def __init__(self, classification_function=0, instance_seed=42, balance_classes=False, noise_percentage=0.0):
         super().__init__()
 
-        #classification functions to use
+        # Classification functions to use
         self.classification_functions = [self.classification_function_zero, self.classification_function_one,
                                          self.classification_function_two, self.classification_function_three]
 
-        #default values
+        # Default values
         self.num_numerical_attributes = 3
         self.num_nominal_attributes = 0
         self.num_values_per_nominal_att = 0
@@ -111,7 +111,6 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
 
         self.__configure(classification_function, instance_seed, balance_classes, noise_percentage)
 
-
     def __configure(self, classification_function, instance_seed, balance_classes, noise_percentage):
         self.classification_function_index = classification_function
         self.instance_seed = instance_seed
@@ -124,8 +123,7 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         self.class_header = ["class"]
         self.attributes_header = []
         for i in range(self.num_numerical_attributes):
-            self.attributes_header.append("NumAtt" + str(i))
-
+            self.attributes_header.append("att_num_" + str(i))
 
     def estimated_remaining_instances(self):
         return -1
@@ -133,7 +131,7 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
     def has_more_instances(self):
         return True
 
-    def next_instance(self, batch_size = 1):
+    def next_instance(self, batch_size=1):
         """ next_instance
         
         The sample generation works as follows: The three attributes are 
@@ -161,7 +159,7 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         """
         data = np.zeros([batch_size, self.num_numerical_attributes + 1])
 
-        for j in range (batch_size):
+        for j in range(batch_size):
             att1 = att2 = att3 = 0.0
             group = 0
             desired_class_found = False
@@ -174,11 +172,12 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
                 if not self.balance_classes:
                     desired_class_found = True
                 else:
-                    if ((self.next_class_should_be_zero & (group == 0)) | ((not self.next_class_should_be_zero) & (group == 1))):
+                    if (self.next_class_should_be_zero and (group == 0)) or \
+                            ((not self.next_class_should_be_zero) and (group == 1)):
                         desired_class_found = True
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
-            if ((0.01 + self.instance_random.rand() <= self.noise_percentage)):
+            if 0.01 + self.instance_random.rand() <= self.noise_percentage:
                 group = 1 if (group == 0) else 0
 
             data[j, 0] = att1
@@ -186,10 +185,10 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
             data[j, 2] = att3
             data[j, 3] = group
 
-            self.current_instance_x = data[j, :self.num_numerical_attributes]
-            self.current_instance_y = data[j, self.num_numerical_attributes:]
+        self.current_instance_x = data[:, :self.num_numerical_attributes]
+        self.current_instance_y = data[:, self.num_numerical_attributes:].flatten()
 
-        return (data[:, :self.num_numerical_attributes], data[:, self.num_numerical_attributes:].flatten())
+        return self.current_instance_x, self.current_instance_y
 
     def prepare_for_use(self):
         self.restart()
@@ -226,9 +225,10 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         return self.class_header
 
     def get_last_instance(self):
-        return (self.current_instance_x, self.current_instance_y)
+        return self.current_instance_x, self.current_instance_y
 
-    def classification_function_zero(self, att1, att2, att3):
+    @staticmethod
+    def classification_function_zero(att1, att2, att3):
         """ classification_function_zero
         
         Decides the sample class label based on the sum of att1 and att2, 
@@ -253,7 +253,8 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         """
         return 0 if (att1 + att2 <= 8) else 1
 
-    def classification_function_one(self, att1, att2, att3):
+    @staticmethod
+    def classification_function_one(att1, att2, att3):
         """ classification_function_one
 
         Decides the sample class label based on the sum of att1 and att2, 
@@ -278,7 +279,8 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         """
         return 0 if (att1 + att2 <= 9) else 1
 
-    def classification_function_two(self, att1, att2, att3):
+    @staticmethod
+    def classification_function_two(att1, att2, att3):
         """ classification_function_two
 
         Decides the sample class label based on the sum of att1 and att2, 
@@ -303,7 +305,8 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         """
         return 0 if (att1 + att2 <= 7) else 1
 
-    def classification_function_three(self, att1, att2, att3):
+    @staticmethod
+    def classification_function_three(att1, att2, att3):
         """ classification_function_three
 
         Decides the sample class label based on the sum of att1 and att2, 
@@ -351,10 +354,3 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
         while new_function == self.classification_function_index:
             new_function = self.instance_random.randint(4)
         self.classification_function_index = new_function
-
-if __name__ == "__main__":
-    sg = SEAGenerator(classification_function=3, noise_percentage=0.2)
-
-    X, y = sg.next_instance(10)
-    print(X)
-    print(y)
