@@ -128,6 +128,8 @@ class MultilabelGenerator(BaseInstanceStream):
         self.num_target_tasks = n_targets
         self.num_labels = n_labels
         self.num_numerical_attributes = n_features
+        self.class_header = ["label_" + str(i) for i in range(self.num_labels)]
+        self.attributes_header = ["att_num_" + str(i) for i in range(self.num_numerical_attributes)]
 
     def estimated_remaining_instances(self):
         return self.num_samples - self.instance_index
@@ -193,10 +195,10 @@ class MultilabelGenerator(BaseInstanceStream):
         return self.num_target_tasks
 
     def get_attributes_header(self):
-        pass
+        return self.attributes_header
 
     def get_classes_header(self):
-        pass
+        return self.class_header
 
     def get_last_instance(self):
         return self.current_instance_x, self.current_instance_y
