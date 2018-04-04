@@ -3,11 +3,12 @@ __author__ = 'Guilherme Matsumoto'
 from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
 
+
 class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
     """ BaseInstanceStream
     
     The abstract class setting up the minimum requirements of a stream, 
-    so that it can work along the other modules in the scikit-multiflow 
+    so that it can work along the other modules in the scikit-multiflow
     framework.
     
     Raises
@@ -39,7 +40,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def next_instance(self, batch_size = 1):
+    def next_instance(self, batch_size=1):
         """ next_instance
         
         Generates or returns some amount of samples.
