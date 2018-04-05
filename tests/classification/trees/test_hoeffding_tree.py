@@ -40,6 +40,6 @@ def test_hoeffding_tree():
     assert learner.get_info() == expected_info
 
     expected_model_1 = 'Leaf = Class 1.0 | {0.0: 1384.0, 1.0: 1720.0, 2.0: 1005.0, 3.0: 891.0}\n'
-    expected_model_2 = 'Leaf = Class 1.0 | {0.0: 1384.0, 1.0: 1720.0, 2.0: 1005.0, 3.0: 891.0}\n'
+    expected_model_2 = 'Leaf = Class 1.0 | {1.0: 1720.0, 2.0: 1005.0, 0.0: 1384.0, 3.0: 891.0}\n'
     assert (learner.get_model_description() == expected_model_1) \
            or (learner.get_model_description() == expected_model_2)
