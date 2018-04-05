@@ -43,14 +43,14 @@ def test_regression_generator(test_path):
     y_expected = data['y']
 
     X, y = stream.next_instance()
-    assert np.alltrue(X[0] == X_expected[0])
-    assert np.alltrue(y[0] == y_expected[0])
+    assert np.allclose(X[0], X_expected[0])
+    assert np.allclose(y[0], y_expected[0])
 
     X, y = stream.get_last_instance()
-    assert np.alltrue(X[0] == X_expected[0])
-    assert np.alltrue(y[0] == y_expected[0])
+    assert np.allclose(X[0], X_expected[0])
+    assert np.allclose(y[0], y_expected[0])
 
     stream.restart()
     X, y = stream.next_instance(10)
-    assert np.alltrue(X == X_expected)
-    assert np.alltrue(y == y_expected)
+    assert np.allclose(X, X_expected)
+    assert np.allclose(y, y_expected)
