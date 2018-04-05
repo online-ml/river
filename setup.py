@@ -67,5 +67,7 @@ if __name__ == "__main__":
           include_package_data=True,
           zip_safe=False,
           ext_modules=[nnExtension],
-          install_requires=INSTALL_REQUIRES
+          install_requires=INSTALL_REQUIRES,
+          setup_requires=['pytest-runner'],
+          tests_require=['pytest'],
           )
