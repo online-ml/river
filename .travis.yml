@@ -2,9 +2,7 @@ language: python
 python:
   - "3.4"
   - "3.5"
-  - "3.5-dev"  # 3.5 development branch
   - "3.6"
-  - "3.6-dev"  # 3.6 development branch
 # command to install dependencies
 install:
   - pip install --upgrade pip setuptools wheel
