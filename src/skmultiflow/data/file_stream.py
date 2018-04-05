@@ -5,13 +5,14 @@ from skmultiflow.core.base_object import BaseObject
 import pandas as pd
 import numpy as np
 
+
 class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
     """ FileStream
     
     A stream generated from the entries of a file. For the moment only 
     csv files are supported, but the idea is to support any file format, 
     as long as there is a function that correctly reads, interprets, and 
-    returns a pandas' Dataframe or numpy.ndarray with the data.
+    returns a pandas' DataFrame or numpy.ndarray with the data.
     
     The stream is able to provide, as requested, a number of samples, in 
     a way that old samples cannot be accessed in a later time. This is done 
@@ -32,36 +33,39 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
     Examples
     --------
     >>> # Imports
-    >>> import numpy as np
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow.classification import KNN
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.data.file_stream import FileStream
     >>> # Setup the stream
-    >>> file_option = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'csv', False)
-    >>> file_stream = FileStream(file_option, -1, 1)
-    >>> file_stream.prepare_for_use()
-    >>> # Setup the classifier
-    >>> clf = KNN(k=8, max_window_size=1000, leaf_size=4)
-    >>> # Initial partial_fit of at least k=8 samples
-    >>> X, y = file_stream.next_instance(8)
-    >>> clf.partial_fit(X, y, classes=file_stream.get_classes())
-    >>> # Loop the stream, partially fitting and predicting
-    >>> predictions = []
-    >>> true_labels = []
-    >>> for i in range(2000):
-    ...     X, y = file_stream.next_instance()
-    ...     predictions.extend(clf.predict(X))
-    ...     true_labels.extend(y)
-    ...     clf.partial_fit(X, y)
-    >>> corrects = (np.asarray(predictions) == np.asarray(true_labels)).sum()
-    >>> print("The classifier's performance: ", str(round(corrects/2000, 3)))
-    
+    >>> file_option = FileOption('FILE', 'sea', 'skmultiflow/datasets/sea_stream.csv', 'csv', False)
+    >>> stream = FileStream(file_option)
+    >>> stream.prepare_for_use()
+    >>> # Retrieving one sample
+    >>> stream.next_instance()
+    (array([[0.080429, 8.397187, 7.074928]]), array([0]))
+    >>> # Retrieving 10 samples
+    >>> stream.next_instance(10)
+    (array([[1.42074 , 7.504724, 6.764101],
+        [0.960543, 5.168416, 8.298959],
+        [3.367279, 6.797711, 4.857875],
+        [9.265933, 8.548432, 2.460325],
+        [7.295862, 2.373183, 3.427656],
+        [9.289001, 3.280215, 3.154171],
+        [0.279599, 7.340643, 3.729721],
+        [4.387696, 1.97443 , 6.447183],
+        [2.933823, 7.150514, 2.566901],
+        [4.303049, 1.471813, 9.078151]]),
+        array([0, 0, 1, 1, 1, 1, 0, 0, 1, 0]))
+    >>> stream.estimated_remaining_instances()
+    39989
+    >>> stream.has_more_instances()
+    True
+
     """
 
     def __init__(self, file_opt, targets_index=-1, num_target_tasks=1):
         super().__init__()
         # default values
-        if file_opt.file_type in ['CSV', 'csv', 'Csv', 'cSv', 'csV', 'CSv', 'CsV', 'cSV']:
+        if str(file_opt.file_type).lower() == 'csv':
             self.read_function = pd.read_csv
         else:
             raise ValueError('Unsupported format: ', file_opt.file_type)
@@ -103,27 +107,19 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         called after the stream initialization.
         
         """
+        self._load_data()
         self.restart()
 
-
-    def restart(self):
-        """ restart
-        
-        Restarts the stream's sample feeding, while keeping all of its 
-        parameters.
-        
-        It basically server the purpose of reinitializing the stream to 
-        its initial state.
-        
-        """
-        self.instance_index = 0
+    def _load_data(self):
         try:
             instance_aux = self.read_function(self.file_name)
             self.instance_length = len(instance_aux.index)
             self.num_attributes = len(instance_aux.columns) - 1
+            self.num_numerical_attributes = self.num_attributes
             labels = instance_aux.columns.values.tolist()
 
-            if ((self.target_index + self.num_target_tasks == len(labels)) or (self.target_index + self.num_target_tasks == 0)):
+            if (self.target_index + self.num_target_tasks == len(labels)) \
+                    or (self.target_index + self.num_target_tasks == 0):
                 self.y = instance_aux.iloc[:, self.target_index:].as_matrix()
                 y_labels = labels[self.target_index:]
                 self.classes_header = labels[self.target_index:]
@@ -140,13 +136,27 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
             self.num_classes = len(np.unique(self.y))
 
         except IOError:
-            print("CSV file reading failed. Please verify the file format.")
+            print("{} file reading failed.".format(self.file_name))
         pass
+
+    def restart(self):
+        """ restart
+        
+        Restarts the stream's sample feeding, while keeping all of its 
+        parameters.
+        
+        It basically server the purpose of reinitializing the stream to 
+        its initial state.
+        
+        """
+        self.instance_index = 0
+        self.current_instance_x = None
+        self.current_instance_y = None
 
     def is_restartable(self):
         return True
 
-    def next_instance(self, batch_size = 1):
+    def next_instance(self, batch_size=1):
         """ next_instance
         
         If there is enough instances to supply at least batch_size samples, those 
@@ -160,7 +170,7 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         Returns
         -------
         tuple or tuple list
-            Returns the next batch_size instances in a pandas.dataframe partition. 
+            Returns the next batch_size instances.
             For general purposes the return can be treated as a numpy.ndarray.
         
         """
@@ -175,13 +185,13 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         except IndexError:
             self.current_instance_x = None
             self.current_instance_y = None
-        return (self.current_instance_x, self.current_instance_y)
+        return self.current_instance_x, self.current_instance_y
 
     def has_more_instances(self):
-        return ((self.instance_length - self.instance_index) > 0)
+        return (self.instance_length - self.instance_index) > 0
 
     def estimated_remaining_instances(self):
-        return (self.instance_length - self.instance_index)
+        return self.instance_length - self.instance_index
 
     def print_df(self):
         print(self.X)
@@ -203,7 +213,7 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         return self.num_values_per_nominal_att
 
     def get_num_targets(self):
-        return self.num_classes
+        return self.num_target_tasks
 
     def get_attributes_header(self):
         return self.attributes_header
@@ -212,18 +222,18 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         return self.classes_header
 
     def get_last_instance(self):
-        return (self.current_instance_x, self.current_instance_y)
+        return self.current_instance_x, self.current_instance_y
 
     def get_plot_name(self):
         aux = self.file_name.split("/")
         if aux[len(aux)-1] == '':
             aux.pop(len(aux)-1)
-        return "File Stream: " + aux[len(aux)-1] + " - " + str(self.num_classes) + " class labels" \
-            if self.num_target_tasks == 1 else "File Stream: " + aux[len(aux)-1] + " - " + \
-                                                       str(self.num_target_tasks) + " classification tasks"
+        return "{} - {} class labels".format(aux[len(aux)-1], self.num_classes) \
+            if self.num_target_tasks == 1 \
+            else "{} - {} classification tasks".format(aux[len(aux)-1], self.num_target_tasks)
 
     def get_classes(self):
-        c = np.unique(self.y)
+        c = np.unique(self.y).tolist()
         return c
 
     def get_info(self):
