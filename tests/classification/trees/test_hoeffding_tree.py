@@ -39,5 +39,7 @@ def test_hoeffding_tree():
                     '- no_pre_prune: False - leaf_prediction: nba - nb_threshold: 0 - nominal_attributes: [] - '
     assert learner.get_info() == expected_info
 
-    expected_model = 'Leaf = Class 1.0 | {0.0: 1384.0, 1.0: 1720.0, 2.0: 1005.0, 3.0: 891.0}\n'
-    assert learner.get_model_description() == expected_model
+    expected_model_1 = 'Leaf = Class 1.0 | {0.0: 1384.0, 1.0: 1720.0, 2.0: 1005.0, 3.0: 891.0}\n'
+    expected_model_2 = 'Leaf = Class 1.0 | {0.0: 1384.0, 1.0: 1720.0, 2.0: 1005.0, 3.0: 891.0}\n'
+    assert (learner.get_model_description() == expected_model_1) \
+           or (learner.get_model_description() == expected_model_2)
