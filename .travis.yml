@@ -7,8 +7,8 @@ python:
   - "3.6-dev"  # 3.6 development branch
 # command to install dependencies
 install:
-  - python -m pip install -U pip
-  - pip install -U numpy
+  - pip install --upgrade pip setuptools wheel
+  - pip install --only-binary=numpy,scipy numpy scipy
   - pip install -U .
 # command to run tests
 script:
