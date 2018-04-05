@@ -1,8 +1,9 @@
+import os
 import numpy as np
 from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
 
 
-def test_random_tree_generator():
+def test_random_tree_generator(test_path):
     stream = RandomTreeGenerator(tree_seed=23, instance_seed=12, n_classes=2, n_nominal_attributes=2,
                                  n_numerical_attributes=5, n_values_per_nominal=5, max_depth=6, min_leaf_depth=3,
                                  fraction_leaves_per_level=0.15)
@@ -37,7 +38,8 @@ def test_random_tree_generator():
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    data = np.load('random_tree_stream.npz')
+    test_file = os.path.join(test_path, 'random_tree_stream.npz')
+    data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']
 

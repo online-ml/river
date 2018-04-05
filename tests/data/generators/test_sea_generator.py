@@ -1,8 +1,9 @@
+import os
 import numpy as np
 from skmultiflow.data.generators.sea_generator import SEAGenerator
 
 
-def test_sea_generator():
+def test_sea_generator(test_path):
     stream = SEAGenerator(classification_function=2, instance_seed=112, balance_classes=False, noise_percentage=0.28)
     stream.prepare_for_use()
 
@@ -33,7 +34,8 @@ def test_sea_generator():
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    data = np.load('sea_stream.npz')
+    test_file = os.path.join(test_path, 'sea_stream.npz')
+    data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']
 
