@@ -1,12 +1,10 @@
 language: python
 python:
-  - "3.3"
   - "3.4"
   - "3.5"
   - "3.5-dev"  # 3.5 development branch
   - "3.6"
   - "3.6-dev"  # 3.6 development branch
-  - "3.7-dev"  # 3.7 development branch
 # command to install dependencies
 install:
   - python -m pip install -U pip
@@ -14,4 +12,4 @@ install:
   - pip install -U .
 # command to run tests
 script:
-  - pytest setup.py test
+  - python setup.py test
