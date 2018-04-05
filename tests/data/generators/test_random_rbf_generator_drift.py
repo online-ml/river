@@ -1,8 +1,9 @@
+import os
 import numpy as np
 from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
 
 
-def test_random_rbf_generator_drift():
+def test_random_rbf_generator_drift(test_path):
     stream = RandomRBFGeneratorDrift(model_seed=99, instance_seed=50, num_classes=4, num_att=10, num_centroids=50,
                                      change_speed=0.87, num_drift_centroids=50)
     stream.prepare_for_use()
@@ -35,7 +36,8 @@ def test_random_rbf_generator_drift():
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    data = np.load('random_rbf_drift_stream.npz')
+    test_file = os.path.join(test_path, 'random_rbf_drift_stream.npz')
+    data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']
 

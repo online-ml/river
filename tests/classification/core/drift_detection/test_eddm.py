@@ -1,15 +1,17 @@
+import os
 import numpy as np
 from skmultiflow.classification.core.driftdetection.eddm import EDDM
 
 
-def test_eddm():
+def test_eddm(test_path):
     """
     EDDM drift detection test.
     The first half of the stream contains a sequence corresponding to a normal distribution of integers from 0 to 1.
     From index 999 to 1999 the sequence is a normal distribution of integers from 0 to 7.
     """
     eddm = EDDM()
-    data_stream = np.load('drift_stream.npy')
+    test_file = os.path.join(test_path, 'drift_stream.npy')
+    data_stream = np.load(test_file)
     expected_indices = [51, 129, 291, 337, 396, 456, 523, 581, 675, 730, 851]
     detected_indices = []
 

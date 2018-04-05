@@ -1,8 +1,9 @@
+import os
 import numpy as np
 from skmultiflow.data.generators.regression_generator import RegressionGenerator
 
 
-def test_regression_generator():
+def test_regression_generator(test_path):
     stream = RegressionGenerator(n_samples=100, n_features=20, n_targets=4, n_informative=6, random_state=0)
     stream.prepare_for_use()
 
@@ -36,7 +37,8 @@ def test_regression_generator():
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    data = np.load('regression_stream.npz')
+    test_file = os.path.join(test_path, 'regression_stream.npz')
+    data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']
 

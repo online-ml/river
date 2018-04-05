@@ -1,8 +1,9 @@
+import os
 import numpy as np
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 
 
-def test_waveform_generator():
+def test_waveform_generator(test_path):
     stream = WaveformGenerator(seed=23, add_noise=False)
     stream.prepare_for_use()
 
@@ -37,7 +38,8 @@ def test_waveform_generator():
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    data = np.load('waveform_stream.npz')
+    test_file = os.path.join(test_path, 'waveform_stream.npz')
+    data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']
 
@@ -94,7 +96,8 @@ def test_waveform_generator():
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    data = np.load('waveform_noise_stream.npz')
+    test_file = os.path.join(test_path, 'waveform_noise_stream.npz')
+    data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']
 
