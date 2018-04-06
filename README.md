@@ -1,4 +1,4 @@
-![logo](docs/_static/images/skmultiflow-logo-wide.png?raw=true "Title")
+<img src="docs/_static/images/skmultiflow-logo-wide.png" height="50"/>
 
 [![Build Status](https://travis-ci.org/scikit-multiflow/scikit-multiflow.svg?branch=master)](https://travis-ci.org/scikit-multiflow/scikit-multiflow)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Django.svg)
