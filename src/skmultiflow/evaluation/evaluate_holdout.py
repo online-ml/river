@@ -7,6 +7,16 @@ from skmultiflow.evaluation.measure_collection import ClassificationMeasurements
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 
 
+TASK_PLOT_OPTIONS = { 
+                    'classification': ['performance', 'kappa'],
+                    'regressing': ['mean_square_error', 'true_vs_predict'],
+                    'multi_output': ['hamming_score', 'exact_match', 'j_index']
+                    }
+
+PLOT_TYPES = ['performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 'exact_match', 'j_index',
+              'mean_square_error', 'mean_absolute_error', 'true_vs_predicts', 'kappa_t', 'kappa_m']
+                      
+
 class EvaluateHoldout(BaseEvaluator):
     """ EvaluateHoldout
     
@@ -136,11 +146,6 @@ class EvaluateHoldout(BaseEvaluator):
                  batch_size=1, pretrain_size=200, test_size=20000, task_type='classification', show_plot=False,
                  plot_options=None, dynamic_test_set=False):
 
-        PLOT_TYPES = ['performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 'exact_match', 'j_index',
-                      'mean_square_error', 'mean_absolute_error', 'true_vs_predicts', 'kappa_t', 'kappa_m']
-        TASK_TYPES = ['classification', 'regression', 'multi_output']
-
-        super().__init__()
         self.n_wait = n_wait
         self.max_instances = max_instances
         self.max_time = max_time
@@ -161,22 +166,17 @@ class EvaluateHoldout(BaseEvaluator):
 
         # plotting configs
         self.task_type = task_type.lower()
-        if self.task_type not in TASK_TYPES:
+        if self.task_type not in TASK_PLOT_OPTIONS:
             raise ValueError('Task type not supported.')
         self.show_plot = show_plot
         self.plot_options = None
         if plot_options is None:
-            if self.task_type == 'classification':
-                self.plot_options = ['performance', 'kappa']
-            elif self.task_type == 'regression':
-                self.plot_options = ['mean_square_error', 'true_vs_predict']
-            elif self.task_type == 'multi_output':
-                self.plot_options = ['hamming_score', 'exact_match', 'j_index']
-        elif plot_options is not None:
-            self.plot_options = [x.lower() for x in plot_options]
-        for i in range(len(self.plot_options)):
-            if self.plot_options[i] not in PLOT_TYPES:
-                raise ValueError(str(self.plot_options[i]) + ': Plot type not supported.')
+            self.plot_options = TASK_PLOT_OPTIONS[self.task_type]
+        else:
+            self.plot_options = list(map(str.lower, plot_options))
+        for plot_option in self.plot_options:
+            if plot_option not in PLOT_TYPES:
+                raise ValueError(str(plot_option) + ': Plot type not supported.')
 
         # metrics
         self.global_classification_metrics = None
@@ -674,7 +674,7 @@ class EvaluateHoldout(BaseEvaluator):
 
         self.__update_plot(self.global_sample_count, new_points_dict)
 
-    def set_params(self, dict):
+    def set_params(self, parameter_dict):
         """ set_params
         
         This function allows the users to change some of the evaluator's parameters, 
@@ -688,7 +688,7 @@ class EvaluateHoldout(BaseEvaluator):
             wants to change, and the values are the new values of those attributes.
              
         """
-        for name, value in dict.items():
+        for name, value in parameter_dict.items():
             if name == 'n_wait':
                 self.n_wait = value
             elif name == 'max_instances':
