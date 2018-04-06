@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 
@@ -42,7 +40,7 @@ class DDM(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from src.skmultiflow.classification import DDM
+    >>> from skmultiflow.classification.core.driftdetection.ddm import DDM
     >>> ddm = DDM()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -115,10 +113,10 @@ class DDM(BaseDriftDetector):
         self.in_warning_zone = False
         self.delay = 0
 
-        if (self.sample_count < self.min_instances):
+        if self.sample_count < self.min_instances:
             pass
 
-        if (self.miss_prob + self.miss_std <= self.miss_prob_sd_min):
+        if self.miss_prob + self.miss_std <= self.miss_prob_sd_min:
             self.miss_prob_min = self.miss_prob
             self.miss_sd_min = self.miss_std
             self.miss_prob_sd_min = self.miss_prob + self.miss_std

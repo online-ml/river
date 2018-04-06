@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 from abc import ABCMeta, abstractmethod
 
 

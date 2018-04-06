@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.file_stream import FileStream

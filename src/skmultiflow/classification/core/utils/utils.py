@@ -1,6 +1,3 @@
-__author__ = 'Jacob Montiel'
-
-
 def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_observers: dict):
     if observed_class_distribution == {}:
         # No observed class distributions, all classes equal

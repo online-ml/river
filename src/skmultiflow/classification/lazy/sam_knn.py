@@ -1,5 +1,3 @@
-__author__ = 'vlosing'
-
 import numpy as np
 import libNearestNeighbor
 import logging
@@ -11,11 +9,7 @@ from skmultiflow.core.utils.utils import get_dimensions
 
 
 class SAMKNN(BaseClassifier):
-    """ SAMKNN
-    
-    Self Adjusting Memory (SAM) coupled with the k Nearest Neighbor classifier. 
-    Described for the first time in Losing, Hammer and Wersing's 'KNN Classifier 
-    with Self Adjusting Memory for Heterogeneous Concept Drift.
+    """ SAMKNN - Self Adjusting Memory (SAM) coupled with the k Nearest Neighbor classifier.
 
     Parameters
     ----------
@@ -51,10 +45,10 @@ class SAMKNN(BaseClassifier):
     
     Examples
     --------
-    >>> from src.skmultiflow.classification import SAMKNN
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow import EvaluatePrequential
+    >>> from skmultiflow.classification.lazy.sam_knn import SAMKNN
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
     >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/movingSquares.csv", "CSV", False)
     >>> stream = FileStream(opt, -1, 1)
@@ -69,13 +63,24 @@ class SAMKNN(BaseClassifier):
     
     Notes
     -----
+    The Self Adjusting Memory (SAM) [1]_ model builds an ensemble with models targeting current
+    or former concepts. SAM is built using two memories: STM for the current concept, and
+    the LTM to retain information about past concepts. A cleaning process is in charge of
+     controlling the size of the STM while keeping the information in the LTM consistent
+    with the STM.
+
     This modules uses the libNearestNeighbor, a C++ library used to speed up some of 
     the algorithm's computations. When invoking the library's functions it's important 
-    to pass the right argument type. Although most of this framework's functionalities 
+    to pass the right argument type. Although most of this framework's functionality
     will work with python standard types, the C++ library will work with 8-bit labels, 
     which is already done by the SAMKNN class, but may be absent in custom classes that 
     use SAMKNN static methods, or other custom functions that use the C++ library.
-    
+
+    References
+    ----------
+    .. [1] Losing, Viktor, Barbara Hammer, and Heiko Wersing. "Knn classifier with self adjusting memory for
+       heterogeneous concept drift." In Data Mining (ICDM), 2016 IEEE 16th International Conference on,
+       pp. 291-300. IEEE, 2016.
     """
 
     def __init__(self, n_neighbors=5, knnWeights='distance', maxSize=5000, LTMSizeProportion = 0.4, minSTMSize=50, STMSizeAdaption='maxACCApprox', useLTM=True):
@@ -109,7 +114,6 @@ class SAMKNN(BaseClassifier):
         self.STMPredHistory = deque([])
         self.CMPredHistory = deque([])
 
-
         self.trainStepCount = 0
         self.STMSizes = []
         self.LTMSizes = []
@@ -125,7 +129,6 @@ class SAMKNN(BaseClassifier):
     def get_distances(sample, samples):
         """Calculate distances from sample to all samples."""
         return libNearestNeighbor.get1ToNDistances(sample, samples)
-
 
     def cluster_down(self, samples, labels):
         """Performs classwise kMeans++ clustering for given samples with corresponding labels. The number of samples is halved per class."""
@@ -228,7 +231,6 @@ class SAMKNN(BaseClassifier):
         self._STMSamples = np.vstack([self._STMSamples, x])
         self._STMLabels = np.append(self._STMLabels, y)
         STMShortened = self.sizeCheckFct()
-
 
         self._LTMSamples, self._LTMLabels = self.clean_samples(self._LTMSamples, self._LTMLabels, onlyLast=True)
 

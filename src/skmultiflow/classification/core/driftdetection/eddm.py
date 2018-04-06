@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 
@@ -38,7 +36,7 @@ class EDDM(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from src.skmultiflow.classification import EDDM
+    >>> from skmultiflow.classification.core.driftdetection.eddm import EDDM
     >>> eddm = EDDM()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -138,17 +136,18 @@ class EDDM(BaseDriftDetector):
                     self.m_m2s_max = m2s
             else:
                 p = m2s / self.m_m2s_max
-                if (self.m_n > self.FDDM_MIN_NUM_INSTANCES) and (self.m_num_errors > self.m_min_num_errors) and (
-                    p < self.FDDM_OUTCONTROL):
+                if (self.m_n > self.FDDM_MIN_NUM_INSTANCES) and \
+                        (self.m_num_errors > self.m_min_num_errors) and \
+                        (p < self.FDDM_OUTCONTROL):
                     self.in_concept_change = True
 
-                elif (self.m_n > self.FDDM_MIN_NUM_INSTANCES) and (self.m_num_errors > self.m_min_num_errors) and (
-                    p < self.FDDM_WARNING):
+                elif (self.m_n > self.FDDM_MIN_NUM_INSTANCES) and \
+                        (self.m_num_errors > self.m_min_num_errors) and \
+                        (p < self.FDDM_WARNING):
                     self.in_warning_zone = True
 
                 else:
                     self.in_warning_zone = False
-
 
     def get_info(self):
         return 'EDDM: min_num_errors: ' + str(self.m_min_num_errors) + \

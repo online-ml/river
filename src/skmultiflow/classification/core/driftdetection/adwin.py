@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 from skmultiflow.core.base_object import BaseObject
@@ -34,7 +32,7 @@ class ADWIN(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from src.skmultiflow.classification import ADWIN
+    >>> from skmultiflow.classification.core.driftdetection.adwin import ADWIN
     >>> adwin = ADWIN()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)

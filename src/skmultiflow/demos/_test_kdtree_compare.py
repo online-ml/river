@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import warnings
 import numpy as np
 from scipy import spatial

@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from skmultiflow.data.base_instance_stream import BaseInstanceStream
 from sklearn.datasets import make_multilabel_classification

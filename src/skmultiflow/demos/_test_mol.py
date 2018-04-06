@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import logging
 from timeit import default_timer as timer
 

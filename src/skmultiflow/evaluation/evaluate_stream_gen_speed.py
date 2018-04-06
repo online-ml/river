@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.core.base_object import BaseObject
 from timeit import default_timer as timer
 import logging
@@ -26,8 +24,8 @@ class EvaluateStreamGenerationSpeed(BaseObject):
     
     Examples
     --------
-    >>> from src.skmultiflow.data import RandomRBFGeneratorDrift
-    >>> from src.skmultiflow import EvaluateStreamGenerationSpeed
+    >>> from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
+    >>> from skmultiflow.evaluation.evaluate_stream_gen_speed import EvaluateStreamGenerationSpeed
     >>> stream = RandomRBFGeneratorDrift(change_speed=0.2)
     >>> stream.prepare_for_use()
     >>> eval = EvaluateStreamGenerationSpeed(100000, float("inf"), None, 5)

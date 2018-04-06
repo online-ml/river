@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.data.base_instance_stream import BaseInstanceStream
 from skmultiflow.core.base_object import BaseObject
 import numpy as np

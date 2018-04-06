@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from skmultiflow.classification.lazy.sam_knn import SAMKNN
 from skmultiflow.data.file_stream import FileStream

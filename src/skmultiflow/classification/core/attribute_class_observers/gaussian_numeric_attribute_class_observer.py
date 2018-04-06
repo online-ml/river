@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 from skmultiflow.classification.core.attribute_class_observers.attribute_class_observer import AttributeClassObserver
 from skmultiflow.core.gaussian_estimator import GaussianEstimator
 from skmultiflow.classification.core.conditional_tests.numeric_attribute_binary_test import NumericAttributeBinaryTest

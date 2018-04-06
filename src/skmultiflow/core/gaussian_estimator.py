@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 from math import pi, sqrt, isinf, exp
 from skmultiflow.core.utils.statistics import normal_probability
 

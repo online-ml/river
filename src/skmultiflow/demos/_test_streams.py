@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.data.file_stream import FileStream
 from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
 from skmultiflow.data.generators.sea_generator import SEAGenerator

@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.file_stream import FileStream

@@ -1,9 +1,7 @@
-__author__ = 'Alessandro Longobardi'
-
 import logging
 import random
 from abc import ABCMeta, abstractmethod
-from skmultiflow.core.utils.utils import *
+from skmultiflow.core.utils.utils import get_dimensions, get_max_value_key, normalize_values_in_dict
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.classification.core.utils.utils import do_naive_bayes_prediction
 from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree

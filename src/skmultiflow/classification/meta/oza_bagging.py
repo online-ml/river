@@ -1,10 +1,8 @@
-__author__ = 'Guilherme Matsumoto'
-
 import copy as cp
-import numpy as np
 from skmultiflow.classification.base import BaseClassifier
 from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
 from skmultiflow.core.utils.utils import *
+
 
 class OzaBagging(BaseClassifier):
     """ OzaBagging Classifier
@@ -57,9 +55,9 @@ class OzaBagging(BaseClassifier):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.classification import OzaBagging
-    >>> from src.skmultiflow.classification import KNN
-    >>> from src.skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.classification.meta.oza_bagging import OzaBagging
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.generators.sea_generator import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
     >>> stream.prepare_for_use()
@@ -257,11 +255,9 @@ class OzaBagging(BaseClassifier):
             aux.append([x / total_sum[i] for x in probs[i]])
         return aux
 
-
     def score(self, X, y):
         raise NotImplementedError
 
     def get_info(self):
         return 'OzaBagging Classifier: h: ' + str(self.h) + \
                ' - ensemble_length: ' + str(self.ensemble_length)
-

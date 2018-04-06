@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import sys
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
@@ -32,10 +30,10 @@ class FastBuffer(BaseObject):
     --------
     >>> # In the following example we keep track of the last 1000 predictions 
     >>> # and true labels
-    >>> from src.skmultiflow import FastBuffer
-    >>> from src.skmultiflow.classification import KNN
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import FileOption
+    >>> from skmultiflow.core.utils.data_structures import FastBuffer
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
     >>> file_option = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     >>> file_stream = FileStream(file_option, -1, 1)
     >>> file_stream.prepare_for_use()

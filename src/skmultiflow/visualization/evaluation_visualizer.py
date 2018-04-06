@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import warnings
 from skmultiflow.visualization.base_listener import BaseListener
 from matplotlib.rcsetup import cycler

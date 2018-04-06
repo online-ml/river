@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.data.generators.random_rbf_generator import RandomRBFGenerator
 from skmultiflow.core.base_object import BaseObject
 import numpy as np

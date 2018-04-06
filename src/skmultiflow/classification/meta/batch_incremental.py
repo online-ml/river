@@ -1,11 +1,7 @@
-# Author: Jesse Read
-
-import numpy as np
 import copy as cp
-
 from skmultiflow.classification.base import BaseClassifier
-
 from sklearn.tree import DecisionTreeClassifier
+
 
 class BatchIncremental(BaseClassifier):
     """ Batch Incremental.

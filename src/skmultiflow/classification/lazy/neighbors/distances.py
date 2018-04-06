@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import math
 import numpy as np
 

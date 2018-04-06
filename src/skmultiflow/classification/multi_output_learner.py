@@ -1,8 +1,8 @@
 import copy as cp
-import numpy as np
 from sklearn import linear_model
 from skmultiflow.classification.base import BaseClassifier
 from skmultiflow.evaluation.metrics.metrics import *
+
 
 class MultiOutputLearner(BaseClassifier) :
     """ MultiOutputLearner
@@ -27,11 +27,10 @@ class MultiOutputLearner(BaseClassifier) :
     Examples
     --------
     # Imports
-    >>> from src.skmultiflow.classification import MultiOutputLearner
-    >>> from src.skmultiflow import Pipeline
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import *
-    >>> from src.skmultiflow import FileOption
+    >>> from skmultiflow.classification.multi_output_learner import MultiOutputLearner
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
     >>> from sklearn.linear_model.perceptron import Perceptron
     >>> # Setup the file stream
     >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/music.csv", "CSV", False)

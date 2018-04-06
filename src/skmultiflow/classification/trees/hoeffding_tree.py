@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 import sys
 import logging
 import textwrap

@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
 
 from skmultiflow.core.pipeline import Pipeline

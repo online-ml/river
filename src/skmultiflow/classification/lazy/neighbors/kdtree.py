@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 import copy as cp
 from skmultiflow.core.base_object import BaseObject
