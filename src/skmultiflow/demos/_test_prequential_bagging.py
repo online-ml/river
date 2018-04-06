@@ -3,6 +3,7 @@ __author__= 'Guilherme Matsumoto'
 from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
 from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.classification.meta.oza_bagging_adwin import OzaBaggingAdwin
+from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
@@ -34,14 +35,15 @@ def demo(output_file=None, instances=40000):
 
     # Setup the classifier
     #classifier = OzaBaggingAdwin(h=KNN(k=8, max_window_size=2000, leaf_size=30, categorical_list=None))
-    classifier = LeverageBagging(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=1)
+    #classifier = LeverageBagging(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=1)
+    classifier = LeverageBagging(h=HoeffdingTree(), ensemble_length=2)
 
     # Setup the pipeline
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
     eval = EvaluatePrequential(pretrain_size=2000, max_instances=instances, batch_size=1, n_wait=200, max_time=1000,
-                               output_file=output_file, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
+                               output_file=output_file, task_type='classification', show_plot=False, plot_options=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
     eval.eval(stream=stream, classifier=pipe)
