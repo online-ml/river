@@ -15,9 +15,10 @@ def demo():
     """
     adwin = ADWIN()
     size = 2000
+    change_start = 999
+    np.random.seed(1)
     data_stream = np.random.randint(2, size=size)
-    for i in range(999, size):
-        data_stream[i] = np.random.randint(8)
+    data_stream[change_start:] = np.random.randint(8, size=size-change_start)
 
     for i in range(size):
         adwin.add_element(data_stream[i])
