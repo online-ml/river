@@ -84,6 +84,9 @@ class EvaluateHoldout(BaseEvaluator):
         Whether to change the test set at each test or to use always the same. 
         If True it will always change the test set, otherwise it will use one 
         test set for all tests.
+
+    restart_stream: bool, optional (default=True)
+        If True, the stream is restarted once the evaluation is complete.
         
     Raises
     ------
@@ -144,7 +147,7 @@ class EvaluateHoldout(BaseEvaluator):
 
     def __init__(self, n_wait=10000, max_instances=100000, max_time=float("inf"), output_file=None,
                  batch_size=1, pretrain_size=200, test_size=20000, task_type='classification', show_plot=False,
-                 plot_options=None, dynamic_test_set=False):
+                 plot_options=None, dynamic_test_set=False, restart_stream=True):
 
         self.n_wait = n_wait
         self.max_instances = max_instances
@@ -160,6 +163,7 @@ class EvaluateHoldout(BaseEvaluator):
         self.y_test = None
         self.dynamic_test_set = dynamic_test_set
         self.n_classifiers = 0
+        self.restart_stream = restart_stream
 
         if self.test_size < 0:
             raise ValueError('test_size has to be greater than 0.')
@@ -230,14 +234,14 @@ class EvaluateHoldout(BaseEvaluator):
         self.__reset_globals()
         self.classifier = classifier if self.n_classifiers > 1 else [classifier]
         self.stream = stream
-        self.classifier = self.__periodic_holdout(stream, self.classifier)
+        self.classifier = self.__periodic_holdout()
 
         if self.show_plot:
             self.visualizer.hold()
 
         return self.classifier
 
-    def __periodic_holdout(self, stream=None, classifier=None):
+    def __periodic_holdout(self):
         """ __periodic_holdout
         
         Executes the periodic holdout evaluation, as described in the class' main 
@@ -267,10 +271,6 @@ class EvaluateHoldout(BaseEvaluator):
         logging.basicConfig(format='%(message)s', level=logging.INFO)
         init_time = timer()
         end_time = timer()
-        if classifier is not None:
-            self.classifier = classifier
-        if stream is not None:
-            self.stream = stream
         self.__reset_globals()
         prediction = None
         logging.info('Holdout Evaluation')
@@ -440,6 +440,10 @@ class EvaluateHoldout(BaseEvaluator):
                 logging.info('Classifier %s - Global MAE: %s', str(i), str(round(self.global_classification_metrics[i].get_average_error(), 6)))
             if 'true_vs_predicts' in self.plot_options:
                 pass
+
+        if self.restart_stream:
+            self.stream.restart()
+
         return self.classifier
 
     def partial_fit(self, X, y, classes=None, weight=None):
