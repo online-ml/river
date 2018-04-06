@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import warnings, logging
 import numpy as np
 from skmultiflow.classification.meta.leverage_bagging import LeverageBagging

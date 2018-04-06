@@ -1,7 +1,6 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.classification.base import BaseClassifier
 from sklearn.naive_bayes import MultinomialNB
+
 
 class NaiveBayes(BaseClassifier):
     """ NaiveBayes

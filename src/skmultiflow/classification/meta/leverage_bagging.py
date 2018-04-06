@@ -1,6 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
-import numpy as np
 import copy as cp
 from skmultiflow.classification.base import BaseClassifier
 from skmultiflow.classification.lazy.knn import KNN
@@ -78,9 +75,9 @@ class LeverageBagging(BaseClassifier):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.classification import LeverageBagging
-    >>> from src.skmultiflow.classification import KNN
-    >>> from src.skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.generators.sea_generator import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
     >>> stream.prepare_for_use()

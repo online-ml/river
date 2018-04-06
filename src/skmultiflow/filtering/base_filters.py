@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from scipy import stats
 from skmultiflow.filtering.base_transform import BaseTransform
@@ -43,9 +41,9 @@ class MissingValuesCleaner(BaseTransform):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import MissingValuesCleaner
+    >>> from skmultiflow .options.file_option import FileOption
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.filtering.base_filters import MissingValuesCleaner
     >>> # Setting up a stream
     >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'csv', False)
     >>> stream = FileStream(opt, -1, 1)

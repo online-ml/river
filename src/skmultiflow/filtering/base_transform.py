@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.core.base_object import BaseObject
 from abc import ABCMeta, abstractmethod
 
@@ -91,6 +89,3 @@ class BaseTransform(BaseObject, metaclass=ABCMeta):
 
         """
         raise NotImplementedError
-
-
-

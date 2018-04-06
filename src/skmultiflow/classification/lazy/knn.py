@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from skmultiflow.classification.base import BaseClassifier
 from skmultiflow.classification.lazy.neighbors.distances import euclidean_distance, mixed_distance
@@ -69,9 +67,9 @@ class KNN(BaseClassifier):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.classification import KNN
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import FileOption
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
     >>> # Setting up the stream
     >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/sea_big.csv', 'csv', False)
     >>> stream = FileStream(opt, -1, 1)

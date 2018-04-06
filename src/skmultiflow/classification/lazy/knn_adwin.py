@@ -1,7 +1,4 @@
-__author__ = 'Guilherme Matsumoto'
-
 import sys
-import numpy as np
 from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.core.utils.data_structures import InstanceWindow
@@ -53,10 +50,10 @@ class KNNAdwin(KNN):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.classification import KNNAdwin
-    >>> from src.skmultiflow.classification import KNN
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import FileOption
+    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
     >>> # Setting up the stream
     >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'csv', False)
     >>> stream = FileStream(opt, -1, 1)
@@ -105,7 +102,6 @@ class KNNAdwin(KNN):
         """
         self.adwin = ADWIN()
         return super().reset()
-
 
     def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
@@ -157,4 +153,3 @@ class KNNAdwin(KNN):
                     for i in range(self.window._num_samples, self.adwin._width, -1):
                         self.window.delete_element()
         return self
-

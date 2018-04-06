@@ -1,5 +1,3 @@
-__author__ = 'Anderson Carlos Ferreira da Silva'
-
 from skmultiflow.classification.trees.hoeffding_tree import *
 from skmultiflow.core.utils.validation import check_random_state
 

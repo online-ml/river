@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import skmultiflow.evaluation.metrics.metrics as metrics
 import numpy as np
 from skmultiflow.core.base_object import BaseObject

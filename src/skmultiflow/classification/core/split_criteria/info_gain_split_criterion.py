@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 from skmultiflow.classification.core.split_criteria.split_criterion import SplitCriterion
 import numpy as np
 

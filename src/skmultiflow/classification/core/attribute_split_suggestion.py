@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 class AttributeSplitSuggestion(object):
     def __init__(self, split_test, resulting_class_distributions, merit):
         self.split_test = split_test

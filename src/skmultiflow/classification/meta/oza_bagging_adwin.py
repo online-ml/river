@@ -1,6 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
-import numpy as np
 import copy as cp
 from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
 from skmultiflow.classification.base import BaseClassifier
@@ -50,9 +47,9 @@ class OzaBaggingAdwin(BaseClassifier):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow.classification import OzaBaggingAdwin
-    >>> from src.skmultiflow.classification import KNN
-    >>> from src.skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.classification.meta.oza_bagging_adwin import OzaBaggingAdwin
+    >>> from skmultiflow.classification.lazy.knn import KNN
+    >>> from skmultiflow.data.generators.sea_generator import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
     >>> stream.prepare_for_use()
@@ -204,7 +201,6 @@ class OzaBaggingAdwin(BaseClassifier):
                     self.ensemble.append(cp.deepcopy(self.h))
                     self.adwin_ensemble.append(ADWIN())
                     self.ensemble_length += 1
-
 
     def predict(self, X):
         """ predict

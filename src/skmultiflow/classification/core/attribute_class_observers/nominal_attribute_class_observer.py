@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 from skmultiflow.classification.core.attribute_class_observers.attribute_class_observer import AttributeClassObserver
 from skmultiflow.classification.core.attribute_split_suggestion import AttributeSplitSuggestion
 from skmultiflow.classification.core.conditional_tests.nominal_attribute_binary_test import NominalAttributeBinaryTest

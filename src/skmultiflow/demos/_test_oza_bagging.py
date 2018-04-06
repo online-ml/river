@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import logging, warnings
 import numpy as np
 from skmultiflow.classification.meta.oza_bagging import OzaBagging

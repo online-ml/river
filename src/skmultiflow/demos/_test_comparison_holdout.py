@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from sklearn.linear_model.stochastic_gradient import SGDClassifier
 from skmultiflow.core.pipeline import Pipeline

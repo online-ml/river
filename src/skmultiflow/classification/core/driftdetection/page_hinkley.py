@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
 
 
@@ -29,7 +27,7 @@ class PageHinkley(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from src.skmultiflow.classification import PageHinkley
+    >>> from skmultiflow.classification.core.driftdetection.page_hinkley import PageHinkley
     >>> ph = PageHinkley()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -95,12 +93,11 @@ class PageHinkley(BaseDriftDetector):
 
         self.delay = 0
 
-        if (self.sample_count < self.min_instances):
+        if self.sample_count < self.min_instances:
             return None
 
         if self.sum > self._lambda:
             self.in_concept_change = True
-
 
     def get_info(self):
         return 'PageHinkley: min_num_instances: ' + str(self.min_instances) + \

@@ -1,5 +1,3 @@
-__author__ = 'Anderson Carlos Ferreira da Silva'
-
 from copy import deepcopy
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector

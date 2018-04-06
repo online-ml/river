@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import warnings
 import logging
 from timeit import default_timer as timer
@@ -97,10 +95,10 @@ class EvaluateHoldout(BaseEvaluator):
     --------
     >>> # The first example demonstrates how to use the evaluator to evaluate one learner
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-    >>> from src.skmultiflow import Pipeline
-    >>> from src.skmultiflow.data import FileStream
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow import EvaluateHoldout
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
     >>> # Setup the File Stream
     >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
     >>> stream = FileStream(opt, -1, 1)
@@ -118,10 +116,10 @@ class EvaluateHoldout(BaseEvaluator):
     
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluateHoldout
-    >>> from src.skmultiflow.data import WaveformGenerator
+    >>> from skmultiflow.data.generators.waveform_generator import WaveformGenerator
     >>> from sklearn.linear_model.stochastic_gradient import SGDClassifier
-    >>> from src.skmultiflow import EvaluateHoldout
-    >>> from src.skmultiflow.classification import KNNAdwin
+    >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
+    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
     >>> stream = WaveformGenerator()
     >>> stream.prepare_for_use()
     >>> clf_one = SGDClassifier()

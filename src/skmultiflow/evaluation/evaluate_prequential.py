@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import logging
 import warnings
 from skmultiflow.evaluation.base_evaluator import BaseEvaluator

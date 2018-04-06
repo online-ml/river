@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from abc import ABCMeta, abstractmethod
 
 

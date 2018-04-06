@@ -1,7 +1,6 @@
-__author__ = 'Jacob Montiel'
-
 from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
+
 
 class BaseClassifier(BaseObject, metaclass=ABCMeta):
     """ BaseClassifier

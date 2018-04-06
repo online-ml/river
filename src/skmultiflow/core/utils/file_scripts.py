@@ -1,6 +1,5 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.core.base_object import BaseObject
+
 
 def clean_header(base_file, new_file=None, ignore_char='#'):
     """ clean_header
@@ -42,13 +41,11 @@ def clean_header(base_file, new_file=None, ignore_char='#'):
     with open(base_file, 'r') as in_file:
         with open(nf, 'w+') as out_file:
             for line in in_file:
-                if (line[0] == ignore_char):
+                if line[0] == ignore_char:
                     pass
                 else:
                     out_file.write(line)
 
-def arff_sparse_to_csv(arff_file, csv_output):
-    raise NotImplementedError
 
 class RemoveHeader(BaseObject):
     """ RemoveHeader
@@ -76,7 +73,7 @@ class RemoveHeader(BaseObject):
     
     """
 
-    def __init__(self, base_file, new_file = None, ignore_char = '#'):
+    def __init__(self, base_file, new_file=None, ignore_char='#'):
         super().__init__()
         # default values
         self.base_file = None
@@ -100,7 +97,6 @@ class RemoveHeader(BaseObject):
             base_path += '_no_header'
             self.new_file = base_path + '.' + file_type if file_type is not None else base_path
 
-
     def get_info(self):
         return 'Remove Header: base_file: ' + self.base_file + \
                '  -  new_file: ' + self.new_file + \
@@ -113,15 +109,7 @@ class RemoveHeader(BaseObject):
         with open(self.base_file, 'r') as in_file:
             with open(self.new_file, 'w+') as out_file:
                 for line in in_file:
-                    if (line[0] == self.ignore_char):
+                    if line[0] == self.ignore_char:
                         pass
                     else:
                         out_file.write(line)
-
-
-if __name__ == '__main__':
-    remover = RemoveHeader('~/Desktop/PRE/scikit-multiflow/n10.csv', None, '#')
-    print('base: ' + remover.base_file)
-    print('new: ' + remover.new_file)
-    remover.clean_file()
-    print('done')

@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 
 
@@ -27,7 +25,7 @@ def hamming_score(true_labels, predicts):
     
     Examples
     --------
-    >>> from src.skmultiflow import hamming_score
+    >>> from skmultiflow.evaluation.metrics.metrics import hamming_score
     >>> true_labels = [[0,1,0,1],[0,0,0,1],[1,1,0,1],[1,1,1,1]]
     >>> predictions = [[0,1,0,1],[0,1,1,0],[0,1,0,1],[1,1,1,1]]
     >>> hamming_score(true_labels, predictions)
@@ -66,7 +64,7 @@ def j_index(true_labels, predicts):
     
     Examples
     --------
-    >>> from src.skmultiflow import j_index
+    >>> from skmultiflow.evaluation.metrics.metrics import j_index
     >>> true_labels = [[0,1,0,1],[0,0,0,1],[1,1,0,1],[1,1,1,1]]
     >>> predictions = [[0,1,0,1],[0,1,1,0],[0,1,0,1],[1,1,1,1]]
     >>> j_index(true_labels, predictions)
@@ -111,7 +109,7 @@ def exact_match(true_labels, predicts):
     
     Examples
     --------
-    >>> from src.skmultiflow import exact_match
+    >>> from skmultiflow.evaluation.metrics.metrics import exact_match
     >>> true_labels = [[0,1,0,1],[0,0,0,1],[1,1,0,1],[1,1,1,1]]
     >>> predictions = [[0,1,0,1],[0,1,1,0],[0,1,0,1],[1,1,1,1]]
     >>> exact_match(true_labels, predictions)

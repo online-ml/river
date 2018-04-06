@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import numpy as np
 from skmultiflow.filtering.base_transform import BaseTransform
 from skmultiflow.core.utils.utils import get_dimensions

@@ -1,7 +1,6 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.classification.base import BaseClassifier
 from sklearn.linear_model.perceptron import Perceptron
+
 
 class PerceptronMask(BaseClassifier):
     """ PerceptronMask
@@ -17,7 +16,7 @@ class PerceptronMask(BaseClassifier):
         super().__init__()
         self.classifier = Perceptron(n_iter=50)
 
-    def fit(self, X, y, classes = None, weight=None):
+    def fit(self, X, y, classes=None, weight=None):
         """ fit
 
         Calls the Perceptron fit function from sklearn.
@@ -87,7 +86,6 @@ class PerceptronMask(BaseClassifier):
 
         """
         return self.classifier.predict(X)
-
 
     def predict_proba(self, X):
         """ predict_proba

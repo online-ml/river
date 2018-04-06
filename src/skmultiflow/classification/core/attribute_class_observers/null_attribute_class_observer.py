@@ -1,6 +1,5 @@
-__author__ = 'Jacob Montiel'
-
 from skmultiflow.classification.core.attribute_class_observers.attribute_class_observer import AttributeClassObserver
+
 
 class NullAttributeClassObserver(AttributeClassObserver):
     """ NullAttributeClassObserver

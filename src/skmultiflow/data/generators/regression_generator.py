@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.data.base_instance_stream import BaseInstanceStream
 from sklearn.datasets import make_regression
 from skmultiflow.core.utils.validation import check_random_state

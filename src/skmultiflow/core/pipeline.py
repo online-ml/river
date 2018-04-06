@@ -1,7 +1,6 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.core.base_object import BaseObject
 from sklearn.utils import tosequence
+
 
 class Pipeline(BaseObject):
     """ Pipeline
@@ -64,7 +63,7 @@ class Pipeline(BaseObject):
     """
 
     def __init__(self, steps):
-        #default values
+        # Default values
         super().__init__()
         self.steps = tosequence(steps)
         self.active = False
@@ -263,15 +262,13 @@ class Pipeline(BaseObject):
             if t is None:
                 continue
             else:
-                if (not (hasattr(t, "fit") or hasattr(t, "fit_transform"))
-                    or not hasattr(t, "transform")):
+                if not (hasattr(t, "fit") or hasattr(t, "fit_transform")) or not hasattr(t, "transform"):
                     self.active = False
                     raise TypeError("All intermediate steps, including an evaluator, "
                                     "should implement fit and transform.")
 
         if classifier is not None and not hasattr(classifier, "partial_fit"):
             self.active = False
-
 
     def named_steps(self):
         """ named_steps

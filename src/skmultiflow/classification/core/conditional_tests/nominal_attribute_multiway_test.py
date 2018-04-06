@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 from skmultiflow.classification.core.conditional_tests.instance_conditional_test import InstanceConditionalTest
 
 

@@ -1,6 +1,5 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.options.base_option import BaseOption
+
 
 class FileOption(BaseOption):
     """ FileOption
@@ -27,8 +26,8 @@ class FileOption(BaseOption):
     Examples
     --------
     >>> # Imports
-    >>> from src.skmultiflow import FileOption
-    >>> from src.skmultiflow.data import FileStream
+    >>> from skmultiflow.options.file_option import FileOption
+    >>> from skmultiflow.data.file_stream import FileStream
     >>> # Create the file option
     >>> option = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     >>> # Using the file option to create a file stream
@@ -45,7 +44,7 @@ class FileOption(BaseOption):
     
     """
 
-    def __init__(self, option_type = None, option_name = None, option_value = None, file_extension = None, is_out = False):
+    def __init__(self, option_type=None, option_name=None, option_value=None, file_extension=None, is_out=False):
         super().__init__()
         self.option_name = option_name
         self.option_value = option_value

@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 from skmultiflow.demos import _test_prequential
 from skmultiflow.core.utils.file_scripts import clean_header
 import logging

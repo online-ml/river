@@ -1,5 +1,3 @@
-__author__ = 'Guilherme Matsumoto'
-
 import warnings, logging
 from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.classification.lazy.knn_adwin import KNNAdwin

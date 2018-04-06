@@ -1,5 +1,3 @@
-__author__ = 'Jacob Montiel'
-
 from skmultiflow.classification.core.split_criteria.split_criterion import SplitCriterion
 
 
@@ -15,7 +13,8 @@ class GiniSplitCriterion(SplitCriterion):
             gini += (dist_weights[i] / total_weight) * self.compute_gini(post_split_dist[i], dist_weights[i])
         return 1.0 - gini
 
-    def compute_gini(self, dist, dist_sum_of_weights):
+    @staticmethod
+    def compute_gini(dist, dist_sum_of_weights):
         gini = 1.0
         if dist_sum_of_weights != 0.0:
             for _, val in dist.items():
