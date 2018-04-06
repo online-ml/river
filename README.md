@@ -1,5 +1,7 @@
 ![logo](docs/_static/images/skmultiflow-logo-wide.png?raw=true "Title")
 
+[![Build Status](https://travis-ci.org/scikit-multiflow/scikit-multiflow.svg?branch=master)](https://travis-ci.org/scikit-multiflow/scikit-multiflow)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Django.svg)
 
 A multi-output/multi-label and stream data framework.
 Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourceforge.net/),
@@ -14,12 +16,6 @@ Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourcef
 * Jacob MONTIEL
 * Jesse READ
 * Albert BIFET
-
-### Contributors
-* Guilherme KURIKE MATSUMOTO
-
-### Python version
-`scikit-multiflow` **only** supports Python 3.x
 
 ### matplotlib backend considerations
 * You may need to change your matplotlib backend, because not all backends work
