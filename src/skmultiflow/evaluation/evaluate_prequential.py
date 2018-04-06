@@ -61,6 +61,9 @@ class EvaluatePrequential(BaseEvaluator):
         wants: 'performance', 'kappa', 'hamming_score', 'hamming_loss',
         'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
         'true_vs_predicts', 'kappa_t', 'kappa_m']
+
+    restart_stream: bool, optional (default=True)
+        If True, the stream is restarted once the evaluation is complete.
         
     Raises
     ------
@@ -129,7 +132,7 @@ class EvaluatePrequential(BaseEvaluator):
 
     def __init__(self, n_wait=200, max_instances=100000, max_time=float("inf"), output_file=None,
                  batch_size=1, pretrain_size=200, task_type='classification', show_plot=False,
-                 plot_options=None):
+                 plot_options=None, restart_stream=True):
 
         super().__init__()
         self.n_wait = n_wait
@@ -142,6 +145,7 @@ class EvaluatePrequential(BaseEvaluator):
         self.output_file = output_file
         self.visualizer = None
         self.n_classifiers = 0
+        self.restart_stream = restart_stream
 
         # Metrics
         self.global_classification_metrics = None
@@ -277,14 +281,14 @@ class EvaluatePrequential(BaseEvaluator):
         self.__reset_globals()
         self.classifier = classifier if self.n_classifiers > 1 else [classifier]
         self.stream = stream
-        self.classifier = self.__train_and_test(stream, self.classifier)
+        self.classifier = self.__train_and_test()
 
         if self.show_plot:
             self.visualizer.hold()
 
         return self.classifier
 
-    def __train_and_test(self, stream=None, classifier=None):
+    def __train_and_test(self):
         """ __train_and_test 
         
         Method to control the prequential evaluation, as described in the class'
@@ -292,12 +296,15 @@ class EvaluatePrequential(BaseEvaluator):
         
         Parameters
         ----------
-        stream: A stream (an extension from BaseInstanceStream) 
+        stream: BaseInstanceStream
             The stream from which to draw the samples. 
         
         classifier: A learner (an extension from BaseClassifier) or a list of learners.
             The learner or learners on which to train the model and measure the 
             performance metrics.
+
+        restart_stream: bool, optional (default=True)
+            If True, the stream is restarted once evaluation is complete.
              
         Returns
         -------
@@ -314,8 +321,6 @@ class EvaluatePrequential(BaseEvaluator):
         logging.basicConfig(format='%(message)s', level=logging.INFO)
         init_time = timer()
         end_time = timer()
-        self.classifier = classifier
-        self.stream = stream
         self.__reset_globals()
         logging.info('Prequential Evaluation')
         logging.info('Generating %s targets.', str(self.stream.get_num_targets()))
@@ -431,6 +436,9 @@ class EvaluatePrequential(BaseEvaluator):
             if 'mean_absolute_error' in self.plot_options:
                 logging.info('Learner {} - MAE          : {:3f}'.format(
                     i, self.global_classification_metrics[i].get_average_error()))
+
+        if self.restart_stream:
+            self.stream.restart()
 
         return self.classifier
 
