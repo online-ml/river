@@ -1,6 +1,5 @@
 import warnings
 import logging
-from string import lower
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import BaseEvaluator
 from skmultiflow.evaluation.measure_collection import ClassificationMeasurements, WindowClassificationMeasurements, \
@@ -174,7 +173,7 @@ class EvaluateHoldout(BaseEvaluator):
         if plot_options is None:
             self.plot_options = TASK_PLOT_OPTIONS[self.task_type]
         else:
-            self.plot_options = map(lower, plot_options)
+            self.plot_options = list(map(str.lower, plot_options))
         for plot_option in self.plot_options:
             if plot_option not in PLOT_TYPES:
                 raise ValueError(str(plot_option) + ': Plot type not supported.')
@@ -675,7 +674,7 @@ class EvaluateHoldout(BaseEvaluator):
 
         self.__update_plot(self.global_sample_count, new_points_dict)
 
-    def set_params(self, dict):
+    def set_params(self, parameter_dict):
         """ set_params
         
         This function allows the users to change some of the evaluator's parameters, 
@@ -689,7 +688,7 @@ class EvaluateHoldout(BaseEvaluator):
             wants to change, and the values are the new values of those attributes.
              
         """
-        for name, value in dict.items():
+        for name, value in parameter_dict.items():
             if name == 'n_wait':
                 self.n_wait = value
             elif name == 'max_instances':

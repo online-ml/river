@@ -131,7 +131,7 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
         return 'evaluator'
 
     @abstractmethod
-    def set_params(self, **kwargs):
+    def set_params(self, parameter_dict):
         """ set_params
         
         Pass parameter names and values through a dictionary so that their 
@@ -139,7 +139,7 @@ class BaseEvaluator(BaseObject, metaclass=ABCMeta):
         
         Parameters
         ----------
-        kwargs: dictionary
+        parameter_dict: dictionary
             A dictionary where the keys are parameters' names and the values 
             are the new values for those parameters.
          
