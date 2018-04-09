@@ -1,10 +1,10 @@
 import logging
-import random
 from abc import ABCMeta, abstractmethod
 from skmultiflow.core.utils.utils import get_dimensions, get_max_value_key, normalize_values_in_dict
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.classification.core.utils.utils import do_naive_bayes_prediction
 from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
+from skmultiflow.core.utils.validation import check_random_state
 import math
 import numpy as np
 
@@ -145,7 +145,7 @@ class HAT(HoeffdingTree):
             self._alternate_tree = None
             self.error_change = False
             self._random_seed = 1
-            self._classifier_random = random.seed(self._random_seed)
+            self._classifier_random = check_random_state(self._random_seed)
 
         # Override SplitNode
         def calc_byte_size_including_subtree(self):
@@ -303,7 +303,7 @@ class HAT(HoeffdingTree):
             self.estimationErrorWeight = ADWIN()
             self.ErrorChange = False
             self._randomSeed = 1
-            self._classifierRandom = random.seed(self._randomSeed)
+            self._classifier_random = check_random_state(self._randomSeed)
 
         def calc_byte_size(self):
             byte_size = self.__sizeof__()
@@ -334,9 +334,9 @@ class HAT(HoeffdingTree):
         def learn_from_instance(self, X, y, weight, hat, parent, parent_branch):
             true_class = y
 
-            k = np.random.poisson(1.0, self._classifierRandom)
-            if k > 0:
-                weight = weight * k
+            k = self._classifier_random.poisson(1.0)
+            # if k > 0:
+                # weight = weight * k
 
             tmp = self.get_class_votes(X, hat)
 
