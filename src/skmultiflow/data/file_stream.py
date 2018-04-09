@@ -112,8 +112,6 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
         try:
             instance_aux = self.read_function(self.file_name)
             self.instance_length = len(instance_aux.index)
-            self.num_attributes = len(instance_aux.columns) - 1
-            self.num_numerical_attributes = self.num_attributes
             labels = instance_aux.columns.values.tolist()
 
             if (self.target_index + self.num_target_tasks == len(labels)) \
@@ -130,6 +128,8 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
                 self.attributes_header.extend(labels[self.target_index + self.num_target_tasks:])
 
             self.X = instance_aux.drop(y_labels, axis=1).as_matrix()
+            self.num_attributes = self.X.shape[1]
+            self.num_numerical_attributes = self.num_attributes
 
             self.num_classes = len(np.unique(self.y))
 
