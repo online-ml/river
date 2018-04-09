@@ -49,7 +49,7 @@ def demo(output_file=None, instances=40000):
                                output_file=output_file, task_type='multi_output', show_plot=True, plot_options=['hamming_score', 'j_index', 'exact_match'])
 
     # Evaluate
-    eval.eval(stream=stream, classifier=pipe)
+    eval.eval(stream=stream, model=pipe)
 
 if __name__ == '__main__':
     demo('log_mol1.csv', 50000)

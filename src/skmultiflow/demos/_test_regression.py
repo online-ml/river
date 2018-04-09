@@ -47,7 +47,7 @@ def demo(output_file=None, instances=40000):
                                plot_options=['true_vs_predicts'])
 
     # Evaluate
-    eval.eval(stream=stream, classifier=pipe)
+    eval.eval(stream=stream, model=pipe)
 
 if __name__ == '__main__':
     demo('log1.csv', 40000)

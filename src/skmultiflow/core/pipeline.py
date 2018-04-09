@@ -58,7 +58,7 @@ class Pipeline(BaseObject):
     >>> # Setup the evaluator
     >>> eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_samples=500000)
     >>> # Evaluate
-    >>> eval.eval(stream=stream, classifier=pipe)
+    >>> eval.eval(stream=stream, model=pipe)
     
     """
 

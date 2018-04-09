@@ -53,7 +53,7 @@ def demo(output_file=None, instances=50000):
                                plot_options=['performance'])
 
     # Evaluate
-    eval.eval(stream=stream, classifier=classifier)
+    eval.eval(stream=stream, model=classifier)
 
 
 

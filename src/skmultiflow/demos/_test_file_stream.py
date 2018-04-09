@@ -21,7 +21,7 @@ def demo():
 
     T_init = 100
     eval = EvaluatePrequential(pretrain_size=T_init, output_file='output.csv', max_samples=10000, batch_size=1, n_wait=1000, task_type='classification', show_plot=True, plot_options=['performance'])
-    eval.eval(stream=stream, classifier=h)
+    eval.eval(stream=stream, model=h)
 
 if __name__ == '__main__':
     demo()

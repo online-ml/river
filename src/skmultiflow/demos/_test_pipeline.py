@@ -44,7 +44,7 @@ def demo():
     eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_samples=100000)
 
     # Evaluate
-    eval.eval(stream=stream, classifier=pipe)
+    eval.eval(stream=stream, model=pipe)
 
 if __name__ == '__main__':
     demo()
