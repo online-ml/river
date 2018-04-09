@@ -38,10 +38,10 @@ def demo(output_file=None, instances=40000):
     classifier = [clf_one, clf_two]
 
     # Setup the evaluator
-    evaluator = EvaluateHoldout(pretrain_size=2000, test_size=2000, dynamic_test_set=True, max_instances=instances,
-                           batch_size=1, n_wait=5000, max_time=1000,
-                           output_file=output_file, task_type='classification', show_plot=True,
-                           plot_options=['kappa'])
+    evaluator = EvaluateHoldout(pretrain_size=2000, test_size=2000, dynamic_test_set=True, max_samples=instances,
+                                batch_size=1, n_wait=5000, max_time=1000,
+                                output_file=output_file, task_type='classification', show_plot=True,
+                                plot_options=['kappa'])
 
     # Evaluate
     evaluator.eval(stream=stream, classifier=classifier)

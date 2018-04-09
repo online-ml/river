@@ -56,7 +56,7 @@ class Pipeline(BaseObject):
     >>> # Setup the pipeline
     >>> pipe = Pipeline([('transform', transform), ('passive_aggressive', classifier)])
     >>> # Setup the evaluator
-    >>> eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=500000)
+    >>> eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_samples=500000)
     >>> # Evaluate
     >>> eval.eval(stream=stream, classifier=pipe)
     

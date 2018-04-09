@@ -56,7 +56,7 @@ class SAMKNN(BaseClassifier):
     >>> # Setup the classifier
     >>> classifier = SAMKNN(n_neighbors=5, knnWeights='distance', maxSize=1000, STMSizeAdaption='maxACCApprox', useLTM=False)
     >>> # Setup the evaluator
-    >>> eval = EvaluatePrequential(pretrain_size=0, max_instances=200000, batch_size=1, n_wait=100, max_time=1000,
+    >>> eval = EvaluatePrequential(pretrain_size=0, max_samples=200000, batch_size=1, n_wait=100, max_time=1000,
     ... output_file=None, task_type='classification', show_plot=True, plot_options=['performance', 'kappa_t'])
     >>> # Evaluate
     >>> eval.eval(stream=stream, classifier=classifier)
