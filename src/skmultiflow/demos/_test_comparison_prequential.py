@@ -57,7 +57,7 @@ def demo(instances=2000):
                                task_type='classification', show_plot=True, plot_options=['performance', 'kappa_t'])
 
     # Evaluate
-    eval.eval(stream=stream, classifier=classifier)
+    eval.eval(stream=stream, model=classifier)
 
 if __name__ == '__main__':
     demo(instances=1000)

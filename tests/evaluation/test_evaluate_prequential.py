@@ -26,7 +26,7 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
                                     output_file=output_file)
 
     # Evaluate
-    result = evaluator.eval(stream=stream, classifier=learner)
+    result = evaluator.eval(stream=stream, model=learner)
 
     result_learner = result[0]
 

@@ -102,7 +102,7 @@ class EvaluatePrequential(BaseEvaluator):
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
     ... output_file=None, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
     >>> # Evaluate
-    >>> evaluator.eval(stream=stream, classifier=pipe)
+    >>> evaluator.eval(stream=stream, model=pipe)
     
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluatePrequential
@@ -127,7 +127,7 @@ class EvaluatePrequential(BaseEvaluator):
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
     ... output_file=None, task_type='classification', show_plot=True, plot_options=['kappa', 'kappa_t', 'performance'])
     >>> # Evaluate
-    >>> evaluator.eval(stream=stream, classifier=classifier)
+    >>> evaluator.eval(stream=stream, model=classifier)
     
     """
 
@@ -189,7 +189,7 @@ class EvaluatePrequential(BaseEvaluator):
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
     def _init_file(self):
-        # Note: 'TRUE_VS_PREDICTS' or other informative values shall not be logged into the results file since they do
+        # Note: 'TRUE_VS_PREDICTS' or other informative data shall not be logged into the results file since they do
         # not represent actual performance.
         with open(self.output_file, 'w+') as f:
             f.write("# TEST CONFIGURATION BEGIN")
@@ -238,7 +238,7 @@ class EvaluatePrequential(BaseEvaluator):
                     header += ',global_mae_{},sliding_mae_{}'.format(i, i)
             f.write(header)
 
-    def eval(self, stream, classifier):
+    def eval(self, stream, model):
         """ eval 
         
         Evaluates a learner or set of learners by feeding them with the stream 
@@ -249,7 +249,7 @@ class EvaluatePrequential(BaseEvaluator):
         stream: A stream (an extension from BaseInstanceStream) 
             The stream from which to draw the samples. 
         
-        classifier: A learner (an extension from BaseClassifier) or a list of learners.
+        model: A learner (an extension from BaseClassifier) or a list of learners.
             The learner or learners on which to train the model and measure the 
             performance metrics.
             
@@ -266,10 +266,10 @@ class EvaluatePrequential(BaseEvaluator):
         
         """
         # First off we need to verify if this is a simple evaluation task or a comparison between learners task.
-        if isinstance(classifier, type([])):
-            self.n_models = len(classifier)
+        if isinstance(model, type([])):
+            self.n_models = len(model)
         else:
-            if hasattr(classifier, 'predict'):
+            if hasattr(model, 'predict'):
                 self.n_models = 1
             else:
                 return None
@@ -280,7 +280,7 @@ class EvaluatePrequential(BaseEvaluator):
             self.__start_plot(self.n_wait, stream.get_plot_name())
 
         self.__reset_globals()
-        self.model = classifier if self.n_models > 1 else [classifier]
+        self.model = model if self.n_models > 1 else [model]
         self.stream = stream
         self.model = self._train_and_test()
 

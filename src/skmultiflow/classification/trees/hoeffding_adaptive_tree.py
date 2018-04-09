@@ -101,7 +101,7 @@ class HAT(HoeffdingTree):
     >>>                            output_file=None, task_type='classification', show_plot=True,
     >>>                            plot_options=['kappa', 'kappa_t', 'performance'])
     >>>
-    >>> eval.eval(stream=stream, classifier=classifier)
+    >>> eval.eval(stream=stream, model=classifier)
     """
 
     class NewNode(metaclass=ABCMeta):

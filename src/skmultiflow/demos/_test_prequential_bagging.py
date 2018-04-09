@@ -44,7 +44,7 @@ def demo(output_file=None, instances=40000):
                                output_file=output_file, task_type='classification', show_plot=False, plot_options=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
-    eval.eval(stream=stream, classifier=pipe)
+    eval.eval(stream=stream, model=pipe)
 
 if __name__ == '__main__':
     demo('log1.csv', 20000)

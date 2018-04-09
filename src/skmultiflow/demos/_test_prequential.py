@@ -60,7 +60,7 @@ def demo(output_file=None, instances=40000):
                                plot_options=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
-    eval.eval(stream=stream, classifier=pipe)
+    eval.eval(stream=stream, model=pipe)
 
 if __name__ == '__main__':
     demo('log_test_prequential.csv', 20000)
