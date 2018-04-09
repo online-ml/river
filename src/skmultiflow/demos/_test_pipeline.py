@@ -41,7 +41,7 @@ def demo():
     pipe = Pipeline([('Hoeffding Tree', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_instances=100000)
+    eval = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_samples=100000)
 
     # Evaluate
     eval.eval(stream=stream, classifier=pipe)

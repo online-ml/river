@@ -42,7 +42,7 @@ def demo(output_file=None, instances=40000):
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(pretrain_size=1, max_instances=instances, batch_size=1, n_wait=1, max_time=1000,
+    eval = EvaluatePrequential(pretrain_size=1, max_samples=instances, batch_size=1, n_wait=1, max_time=1000,
                                output_file=output_file, task_type='regression', show_plot=True,
                                plot_options=['true_vs_predicts'])
 
