@@ -210,7 +210,7 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
     def get_num_values_per_nominal_attribute(self):
         return self.num_values_per_nominal_att
 
-    def get_num_targets(self):
+    def get_num_classes(self):
         return self.num_target_tasks
 
     def get_attributes_header(self):
@@ -239,5 +239,5 @@ class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
                '  -  num_classes: ' + str(self.num_classes) + \
                '  -  num_classification_tasks: ' + str(self.num_target_tasks)
 
-    def get_num_targeting_tasks(self):
+    def get_num_outputs(self):
         return self.num_target_tasks
