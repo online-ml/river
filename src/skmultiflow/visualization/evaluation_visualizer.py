@@ -27,8 +27,8 @@ class EvaluationVisualizer(BaseListener):
     
     Parameters
     ----------
-    n_wait: int (Default: 200)
-        The interval between each plot point.
+    n_sliding: int
+        The number of samples in the sliding window to track recent performance.
     
     dataset_name: string (Default: 'Unnamed graph')
         The title of the plot. Algorithmically it's not important.
@@ -56,7 +56,7 @@ class EvaluationVisualizer(BaseListener):
     
     """
 
-    def __init__(self, task_type=None, n_wait=200, dataset_name='Unnamed graph', plots=None, n_learners=1):
+    def __init__(self, task_type=None, n_sliding=0, dataset_name='Unnamed graph', plots=None, n_learners=1):
         super().__init__()
 
         # Default values
@@ -104,7 +104,7 @@ class EvaluationVisualizer(BaseListener):
         self.regression_pred = None
 
         # Configuration
-        self.n_wait = None
+        self.n_sliding = None
         self.dataset_name = None
         self.n_learners = None
         self.num_plots = 0
@@ -169,7 +169,7 @@ class EvaluationVisualizer(BaseListener):
             if len(plots) < 1:
                 raise ValueError('No plots were given.')
             else:
-                self.__configure(n_wait, dataset_name, plots, n_learners)
+                self.__configure(n_sliding, dataset_name, plots, n_learners)
         else:
             raise ValueError('No plots were given.')
 
@@ -196,16 +196,15 @@ class EvaluationVisualizer(BaseListener):
         is raised.
          
         """
-        if train_step % self.n_wait == 0:
-            try:
-                self.draw(train_step, metrics_dict)
-            except BaseException as exc:
-                raise ValueError('Failed when trying to draw plot. ', exc)
+        try:
+            self.draw(train_step, metrics_dict)
+        except BaseException as exc:
+            raise ValueError('Failed when trying to draw plot. ', exc)
 
     def on_new_scatter_data(self, X, y, prediction):
         pass
 
-    def __configure(self, n_wait, dataset_name, plots, n_learners):
+    def __configure(self, n_sliding, dataset_name, plots, n_learners):
         """ __configure
         
         This function will verify which subplots it should create. For each one 
@@ -223,8 +222,8 @@ class EvaluationVisualizer(BaseListener):
         
         Parameters
         ----------
-        n_wait: int (Default: 200)
-            The interval between each plot point.
+        n_sliding: int
+            The number of samples in the sliding window to track recent performance.
     
         dataset_name: string (Default: 'Unnamed graph')
             The title of the plot. Algorithmically it's not important.
@@ -255,7 +254,7 @@ class EvaluationVisualizer(BaseListener):
         warnings.filterwarnings("ignore", ".*left==right.*")
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
-        self.n_wait = n_wait
+        self.n_sliding = n_sliding
         self.dataset_name = dataset_name
         self.plots = plots
         self.n_learners = n_learners
@@ -285,10 +284,10 @@ class EvaluationVisualizer(BaseListener):
                 self.line_partial_performance[i], = self.subplot_performance.plot(
                     self.X,
                     self.partial_performance[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_performance[i], = self.subplot_performance.plot(
                     self.X, self.global_performance[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_performance[i])
                 handle.append(self.line_global_performance[i])
 
@@ -311,10 +310,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_kappa[i], = self.subplot_kappa.plot(
                     self.X, self.partial_kappa[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_kappa[i], = self.subplot_kappa.plot(
                     self.X, self.global_kappa[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_kappa[i])
                 handle.append(self.line_global_kappa[i])
 
@@ -337,10 +336,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_kappa_t[i], = self.subplot_kappa_t.plot(
                     self.X, self.partial_kappa_t[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_kappa_t[i], = self.subplot_kappa_t.plot(
                     self.X, self.global_kappa_t[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_kappa_t[i])
                 handle.append(self.line_global_kappa_t[i])
 
@@ -363,10 +362,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_kappa_m[i], = self.subplot_kappa_m.plot(
                     self.X, self.partial_kappa_m[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_kappa_m[i], = self.subplot_kappa_m.plot(
                     self.X, self.global_kappa_m[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_kappa_m[i])
                 handle.append(self.line_global_kappa_m[i])
 
@@ -389,10 +388,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_hamming_score[i], = self.subplot_hamming_score.plot(
                     self.X, self.partial_hamming_score[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_hamming_score[i], = self.subplot_hamming_score.plot(
                     self.X, self.global_hamming_score[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_hamming_score[i])
                 handle.append(self.line_global_hamming_score[i])
 
@@ -415,10 +414,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_hamming_loss[i], = self.subplot_hamming_loss.plot(
                     self.X, self.partial_hamming_loss[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_hamming_loss[i], = self.subplot_hamming_loss.plot(
                     self.X, self.global_hamming_loss[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_hamming_loss[i])
                 handle.append(self.line_global_hamming_loss[i])
 
@@ -441,10 +440,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_exact_match[i], = self.subplot_exact_match.plot(
                     self.X, self.partial_exact_match[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_exact_match[i], = self.subplot_exact_match.plot(
                     self.X, self.global_exact_match[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_exact_match[i])
                 handle.append(self.line_global_exact_match[i])
 
@@ -467,10 +466,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_j_index[i], = self.subplot_j_index.plot(
                     self.X, self.partial_j_index[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_j_index[i], = self.subplot_j_index.plot(
                     self.X, self.global_j_index[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_j_index[i])
                 handle.append(self.line_global_j_index[i])
 
@@ -493,10 +492,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_mse[i], = self.subplot_mse.plot(
                     self.X, self.partial_mse[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_mse[i], = self.subplot_mse.plot(
                     self.X, self.global_mse[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_mse[i])
                 handle.append(self.line_global_mse[i])
 
@@ -519,10 +518,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_mae[i], = self.subplot_mae.plot(
                     self.X, self.partial_mae[i],
-                    label='Learner {}  (last {} samples)'.format(i, self.n_wait))
+                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
                 self.line_global_mae[i], = self.subplot_mae.plot(
                     self.X, self.global_mae[i],
-                    label='Learner {}'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(i), linestyle='dotted')
                 handle.append(self.line_partial_mae[i])
                 handle.append(self.line_global_mae[i])
 
@@ -552,11 +551,11 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 if self.task_type == 'classification':
                     self.line_pred[i], = self.subplot_true_vs_predicts.step(self.X, self.pred_values[i],
-                                                                            label='Learner {}'.format(i),
+                                                                            label='Model {} (global)'.format(i),
                                                                             linestyle='dotted')
                 else:
                     self.line_pred[i], = self.subplot_true_vs_predicts.plot(self.X, self.pred_values[i],
-                                                                            label='Learner {}'.format(i),
+                                                                            label='Model {} (global)'.format(i),
                                                                             linestyle='dotted')
                 handle.append(self.line_pred[i])
 
@@ -600,7 +599,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_performance.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_performance[i].append(metrics_dict['performance'][i][0])
@@ -624,7 +623,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_kappa.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_kappa[i].append(metrics_dict['kappa'][i][0])
@@ -649,7 +648,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_kappa_t.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_kappa_t[i].append(metrics_dict['kappa_t'][i][0])
@@ -675,7 +674,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_kappa_m.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_kappa_m[i].append(metrics_dict['kappa_m'][i][0])
@@ -700,7 +699,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_hamming_score.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_hamming_score[i].append(metrics_dict['hamming_score'][i][0])
@@ -724,7 +723,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_hamming_loss.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_hamming_loss[i].append(metrics_dict['hamming_loss'][i][0])
@@ -748,7 +747,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_exact_match.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_exact_match[i].append(metrics_dict['exact_match'][i][0])
@@ -772,7 +771,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_j_index.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_j_index[i].append(metrics_dict['j_index'][i][0])
@@ -798,7 +797,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_mse.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_mse[i].append(metrics_dict['mean_square_error'][i][0])
@@ -826,7 +825,7 @@ class EvaluationVisualizer(BaseListener):
             shift_y = 10  # y axis shift for plot annotations
             xy_pos = xy_pos_default
             self.temp.append(self.subplot_mae.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Learner', 'Global', 'Sliding'),
+                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
                 xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_mae[i].append(metrics_dict['mean_absolute_error'][i][0])

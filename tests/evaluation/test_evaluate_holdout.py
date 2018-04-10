@@ -18,24 +18,26 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
     learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
 
     # Setup evaluator
-    n_samples = 1000
-    plot_options = ['kappa', 'kappa_t', 'performance']
-    output_file = os.path.join(tmpdir, "holdout_summary.csv")
-    evaluator = EvaluateHoldout(max_samples=n_samples,
+    n_wait = 200
+    max_samples = 1000
+    metrics = ['kappa', 'kappa_t', 'performance']
+    output_file = os.path.join(str(tmpdir), "holdout_summary.csv")
+    evaluator = EvaluateHoldout(n_wait=n_wait,
+                                max_samples=max_samples,
                                 test_size=50,
-                                plot_options=plot_options,
+                                metrics=metrics,
                                 output_file=output_file)
 
     # Evaluate
-    result = evaluator.eval(stream=stream, classifier=learner)
-
+    result = evaluator.eval(stream=stream, model=learner)
     result_learner = result[0]
-
-    expected_file = os.path.join(test_path, 'holdout_summary.csv')
 
     assert isinstance(result_learner, HoeffdingTree)
 
     assert learner.get_model_measurements == result_learner.get_model_measurements
+
+    expected_file = os.path.join(test_path, 'holdout_summary.csv')
+    compare_files(output_file, expected_file)
 
 
 def compare_files(test, expected):

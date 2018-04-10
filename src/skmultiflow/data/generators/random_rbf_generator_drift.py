@@ -185,5 +185,5 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator, BaseObject):
                ' - change_speed: ' + str(self.change_speed) + \
                ' - num_drift_centroids: ' + str(self.num_drift_centroids)
 
-    def get_num_targeting_tasks(self):
+    def get_num_outputs(self):
         return 1

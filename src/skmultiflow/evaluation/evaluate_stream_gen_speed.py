@@ -98,7 +98,7 @@ class EvaluateStreamGenerationSpeed(BaseObject):
 
         """
         for name, value in dict.items():
-            if name == 'num_samples':
+            if name == 'n_samples':
                 self.num_samples = value
             elif name == 'max_time':
                 self.max_time = value
@@ -111,7 +111,7 @@ class EvaluateStreamGenerationSpeed(BaseObject):
         return 'estimator'
 
     def get_info(self):
-        return 'EvaluateStreamGenerationSpeed: num_samples: ' + str(self.num_samples) + \
+        return 'EvaluateStreamGenerationSpeed: n_samples: ' + str(self.num_samples) + \
                ' - max_time: ' + (str(self.max_time)) + \
                ' - output_file: ' + (self.output_file if self.output_file is not None else 'None') + \
                ' - batch_size: ' + str(self.batch_size)

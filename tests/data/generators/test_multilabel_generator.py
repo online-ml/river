@@ -27,7 +27,7 @@ def test_multilabel_generator(test_path):
 
     assert stream.get_num_numerical_attributes() == 20
 
-    assert stream.get_num_targets() == 4
+    assert stream.get_num_classes() == 4
 
     assert stream.get_num_values_per_nominal_attribute() == 0
 

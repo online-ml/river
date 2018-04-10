@@ -46,7 +46,7 @@ def demo(output_file=None, instances=40000):
 
     # Setup the evaluator
     eval = EvaluatePrequential(pretrain_size=5000, max_samples=instances - 10000, batch_size=1, n_wait=200, max_time=1000,
-                               output_file=output_file, task_type='multi_output', show_plot=True, plot_options=['hamming_score', 'j_index', 'exact_match'])
+                               output_file=output_file, task_type='multi_output', show_plot=True, metrics=['hamming_score', 'j_index', 'exact_match'])
 
     # Evaluate
     eval.eval(stream=stream, model=pipe)

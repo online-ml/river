@@ -208,7 +208,7 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
     def get_num_attributes(self):
         return self.num_numerical_attributes + self.num_nominal_attributes * self.num_values_per_nominal_att
 
-    def get_num_targets(self):
+    def get_num_classes(self):
         return self.num_classes
 
     def get_attributes_header(self):
@@ -237,5 +237,5 @@ class WaveformGenerator(BaseInstanceStream, BaseObject):
                '  -  add_noise: ' + add_noise + \
                '  -  random_seed: ' + str(self.random_seed)
 
-    def get_num_targeting_tasks(self):
+    def get_num_outputs(self):
         return 1

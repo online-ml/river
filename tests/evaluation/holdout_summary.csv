@@ -1,9 +1,10 @@
-# SETUP BEGIN
+# TEST CONFIGURATION BEGIN
 # RandomTreeGenerator: tree_seed: 23 - instance_seed: 12 - n_classes: 4 - n_nominal_attributes: 2 - n_numerical_attributes: 5 - n_values_per_nominal_attribute: 5 - max_depth: 6 - min_leaf_depth: 3 - fraction_leaves_per_level: 0.15
-# EvaluateHoldout: n_wait: 200 - max_samples: 1000 - max_time: inf - output_file: holdout_summary.csv - batch_size: 1 - pretrain_size: 200 - test_size: 50 - task_type: classification - show_plotFalse - plot_options: ['kappa', 'kappa_t', 'performance'] - dynamic_test_set: False
-# SETUP END
-x_count,global_performance_0,sliding_window_performance_0,global_kappa_0,sliding_window_kappa_0,global_kappa_t_0,sliding_window_kappa_t_0
-200,0.48,0.48,0.272,0.272,0.278,0.278
-400,0.49,0.49,0.281,0.281,0.282,0.282
-600,0.48,0.48,0.265,0.265,0.264,0.264
-800,0.475,0.475,0.257,0.257,0.255,0.255
+# Holdout Evaluator: n_wait: 200 - max_samples: 1000 - max_time: inf - output_file: holdout_summary.csv - batch_size: 1 - task_type: classification - show_plot: False - metrics: ['kappa', 'kappa_t', 'performance'] - test_size: 50 - dynamic_test_set: False
+# TEST CONFIGURATION END
+id,global_performance_0,sliding_performance_0,global_kappa_0,sliding_kappa_0,global_kappa_t_0,sliding_kappa_t_0
+250,0.300000,0.300000,0.025070,0.025070,0.146341,0.146341
+450,0.320000,0.340000,0.061551,0.097374,0.160494,0.175000
+650,0.326667,0.340000,0.068953,0.083842,0.165289,0.175000
+850,0.335000,0.360000,0.080094,0.113573,0.173913,0.200000
+1000,0.328000,0.300000,0.071002,0.034749,0.164179,0.125000
