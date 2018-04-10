@@ -412,7 +412,7 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
     def get_num_attributes(self):
         return self.num_numerical_attributes + self.num_nominal_attributes * self.num_values_per_nominal_att
 
-    def get_num_targets(self):
+    def get_num_classes(self):
         return self.num_classes
 
     def get_attributes_header(self):
@@ -444,7 +444,7 @@ class RandomTreeGenerator(BaseInstanceStream, BaseObject):
                ' - min_leaf_depth: ' + str(self.min_leaf_depth) + \
                ' - fraction_leaves_per_level: ' + str(self.fraction_of_leaves_per_level)
 
-    def get_num_targeting_tasks(self):
+    def get_num_outputs(self):
         return 1
 
 

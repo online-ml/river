@@ -24,7 +24,7 @@ def test_random_rbf_generator(test_path):
 
     assert stream.get_num_numerical_attributes() == 10
 
-    assert stream.get_num_targets() == 4
+    assert stream.get_num_classes() == 4
 
     assert stream.get_num_values_per_nominal_attribute() == 0
 

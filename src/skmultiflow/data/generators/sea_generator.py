@@ -210,7 +210,7 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
     def get_num_attributes(self):
         return self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)
 
-    def get_num_targets(self):
+    def get_num_classes(self):
         return self.num_classes
 
     def get_attributes_header(self):
@@ -341,7 +341,7 @@ class SEAGenerator(BaseInstanceStream, BaseObject):
                ' - balance_classes: ' + ('True' if self.balance_classes else 'False') + \
                ' - noise_percentage: ' + str(self.noise_percentage)
 
-    def get_num_targeting_tasks(self):
+    def get_num_outputs(self):
         return 1
 
     def generate_drift(self):

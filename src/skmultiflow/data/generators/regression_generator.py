@@ -212,7 +212,7 @@ class RegressionGenerator(BaseInstanceStream):
     def get_num_attributes(self):
         return self.num_features
 
-    def get_num_targets(self):
+    def get_num_classes(self):
         return self.num_target_tasks
 
     def get_attributes_header(self):
@@ -242,5 +242,5 @@ class RegressionGenerator(BaseInstanceStream):
                ' - n_informative: ' + str(self.num_informative) + \
                ' - n_targets: ' + str(self.num_target_tasks)
 
-    def get_num_targeting_tasks(self):
+    def get_num_outputs(self):
         return self.num_target_tasks

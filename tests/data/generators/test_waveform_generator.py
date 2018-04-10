@@ -27,7 +27,7 @@ def test_waveform_generator(test_path):
 
     assert stream.get_num_numerical_attributes() == 21
 
-    assert stream.get_num_targets() == 3
+    assert stream.get_num_classes() == 3
 
     assert stream.get_num_values_per_nominal_attribute() == 0
 
@@ -85,7 +85,7 @@ def test_waveform_generator(test_path):
 
     assert stream.get_num_numerical_attributes() == 40
 
-    assert stream.get_num_targets() == 3
+    assert stream.get_num_classes() == 3
 
     assert stream.get_num_values_per_nominal_attribute() == 0
 

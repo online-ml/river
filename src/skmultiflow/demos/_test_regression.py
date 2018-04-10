@@ -44,7 +44,7 @@ def demo(output_file=None, instances=40000):
     # Setup the evaluator
     eval = EvaluatePrequential(pretrain_size=1, max_samples=instances, batch_size=1, n_wait=1, max_time=1000,
                                output_file=output_file, task_type='regression', show_plot=True,
-                               plot_options=['true_vs_predicts'])
+                               metrics=['true_vs_predicts'])
 
     # Evaluate
     eval.eval(stream=stream, model=pipe)

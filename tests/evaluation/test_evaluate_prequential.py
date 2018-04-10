@@ -19,23 +19,21 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
 
     # Setup evaluator
     max_samples = 1000
-    plot_options = ['kappa', 'kappa_t', 'performance']
-    output_file = os.path.join(tmpdir, "prequential_summary.csv")
+    metrics = ['kappa', 'kappa_t', 'performance']
+    output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
     evaluator = EvaluatePrequential(max_samples=max_samples,
-                                    plot_options=plot_options,
+                                    metrics=metrics,
                                     output_file=output_file)
 
     # Evaluate
     result = evaluator.eval(stream=stream, model=learner)
-
     result_learner = result[0]
-
-    expected_file = os.path.join(test_path, 'prequential_summary.csv')
 
     assert isinstance(result_learner, HoeffdingTree)
 
     assert learner.get_model_measurements == result_learner.get_model_measurements
 
+    expected_file = os.path.join(test_path, 'prequential_summary.csv')
     compare_files(output_file, expected_file)
 
 

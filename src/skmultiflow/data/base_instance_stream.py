@@ -116,7 +116,7 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def get_num_targets(self):
+    def get_num_classes(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -183,5 +183,5 @@ class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def get_num_targeting_tasks(self):
+    def get_num_outputs(self):
         raise NotImplementedError

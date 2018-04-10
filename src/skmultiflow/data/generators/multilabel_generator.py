@@ -84,10 +84,10 @@ class MultilabelGenerator(BaseInstanceStream):
         super().__init__()
         self.X = None
         self.y = None
-        self.num_samples = 0
-        self.num_features = 0
-        self.num_target_tasks = 0
-        self.num_labels = 0
+        self.n_samples = 0
+        self.n_features = 0
+        self.n_classes = 0
+        self.n_outputs = 0
         self.num_numerical_attributes = 0
         self.num_nominal_attributes = 0
         self.num_values_per_nominal_att = 0
@@ -97,7 +97,7 @@ class MultilabelGenerator(BaseInstanceStream):
         self.random_state = check_random_state(random_state)
         self.__configure(n_samples, n_features, n_targets, n_labels)
 
-    def __configure(self, n_samples, n_features, n_targets, n_labels):
+    def __configure(self, n_samples, n_features, n_targets, n_outputs):
         """ __configure
 
         Uses the make_multilabel_classification function from scikit-learn 
@@ -115,25 +115,25 @@ class MultilabelGenerator(BaseInstanceStream):
         n_targets: int
             Number of targeting tasks to generate.
         
-        n_labels: int
-            Number of labels to generate.
+        n_outputs: int
+            Number of outputs to generate.
 
         """
         self.X, self.y = make_multilabel_classification(n_samples=n_samples, n_features=n_features, n_classes=n_targets,
-                                                        n_labels=n_labels, random_state=self.random_state)
-        self.num_samples = n_samples
-        self.num_features = n_features
-        self.num_target_tasks = n_targets
-        self.num_labels = n_labels
+                                                        n_labels=n_outputs, random_state=self.random_state)
+        self.n_samples = n_samples
+        self.n_features = n_features
+        self.n_classes = n_targets
+        self.n_outputs = n_outputs
         self.num_numerical_attributes = n_features
-        self.class_header = ["label_" + str(i) for i in range(self.num_labels)]
+        self.class_header = ["label_" + str(i) for i in range(self.n_outputs)]
         self.attributes_header = ["att_num_" + str(i) for i in range(self.num_numerical_attributes)]
 
     def estimated_remaining_instances(self):
-        return self.num_samples - self.instance_index
+        return self.n_samples - self.instance_index
 
     def has_more_instances(self):
-        return self.num_samples - self.instance_index > 0
+        return self.n_samples - self.instance_index > 0
 
     def next_instance(self, batch_size=1):
         """ next_instance
@@ -157,7 +157,7 @@ class MultilabelGenerator(BaseInstanceStream):
         try:
             self.current_instance_x = self.X[self.instance_index - batch_size:self.instance_index, :]
             self.current_instance_y = self.y[self.instance_index - batch_size:self.instance_index, :]
-            if self.num_target_tasks < 2:
+            if self.n_classes < 2:
                 self.current_instance_y = self.current_instance_y.flatten()
 
         except IndexError:
@@ -184,10 +184,10 @@ class MultilabelGenerator(BaseInstanceStream):
         return self.num_values_per_nominal_att
 
     def get_num_attributes(self):
-        return self.num_features
+        return self.n_features
 
-    def get_num_targets(self):
-        return self.num_target_tasks
+    def get_num_classes(self):
+        return self.n_classes
 
     def get_attributes_header(self):
         return self.attributes_header
@@ -211,10 +211,10 @@ class MultilabelGenerator(BaseInstanceStream):
         return 'stream'
 
     def get_info(self):
-        return 'MultilabelGenerator: n_samples: ' + str(self.num_samples) + \
-               ' - n_features: ' + str(self.num_features) + \
-               ' - n_targets: ' + str(self.num_target_tasks) + \
-               ' - n_labels:' + str(self.num_labels)
+        return 'MultilabelGenerator: n_samples: ' + str(self.n_samples) + \
+               ' - n_features: ' + str(self.n_features) + \
+               ' - n_targets: ' + str(self.n_classes) + \
+               ' - n_labels:' + str(self.n_outputs)
 
-    def get_num_targeting_tasks(self):
-        return self.num_target_tasks
+    def get_num_outputs(self):
+        return self.n_outputs

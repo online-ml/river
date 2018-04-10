@@ -41,7 +41,7 @@ def demo(output_file=None, instances=40000):
 
     # Setup the evaluator
     eval = EvaluatePrequential(pretrain_size=2000, max_samples=instances, batch_size=1, n_wait=200, max_time=1000,
-                               output_file=output_file, task_type='classification', show_plot=False, plot_options=['kappa', 'kappa_t', 'performance'])
+                               output_file=output_file, task_type='classification', show_plot=False, metrics=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
     eval.eval(stream=stream, model=pipe)
