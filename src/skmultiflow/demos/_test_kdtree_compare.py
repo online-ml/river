@@ -6,7 +6,7 @@ from sklearn import neighbors as ng
 from timeit import default_timer as timer
 from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.filtering.one_hot_to_categorical import OneHotToCategorical
+from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
 
 
 def demo():

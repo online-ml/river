@@ -1,11 +1,11 @@
 import numpy as np
 from scipy import stats
-from skmultiflow.filtering.base_transform import BaseTransform
+from skmultiflow.transform.base_transform import StreamTransform
 from skmultiflow.core.utils.data_structures import FastBuffer
 from skmultiflow.core.utils.utils import get_dimensions
 
 
-class MissingValuesCleaner(BaseTransform):
+class MissingValuesCleaner(StreamTransform):
     """ MissingValuesCleaner
     
     This is a transform object. It provides a simple way to replace missing 
@@ -43,7 +43,7 @@ class MissingValuesCleaner(BaseTransform):
     >>> import numpy as np
     >>> from skmultiflow .options.file_option import FileOption
     >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.filtering.base_filters import MissingValuesCleaner
+    >>> from skmultiflow.transform.missing_values_cleaner import MissingValuesCleaner
     >>> # Setting up a stream
     >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'csv', False)
     >>> stream = FileStream(opt, -1, 1)

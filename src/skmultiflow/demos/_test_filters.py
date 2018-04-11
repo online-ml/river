@@ -1,7 +1,7 @@
 import numpy as np
 from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.filtering.base_filters import MissingValuesCleaner
+from skmultiflow.transform.missing_values_cleaner import MissingValuesCleaner
 
 
 def demo():

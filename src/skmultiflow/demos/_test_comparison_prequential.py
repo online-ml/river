@@ -5,7 +5,7 @@ from skmultiflow.classification.lazy.knn_adwin import KNNAdwin, KNN
 from sklearn.linear_model.stochastic_gradient import SGDClassifier
 from skmultiflow.data.generators.sea_generator import SEAGenerator
 from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.filtering.one_hot_to_categorical import OneHotToCategorical
+from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
 from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
 
 

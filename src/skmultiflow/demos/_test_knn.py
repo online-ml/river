@@ -1,7 +1,7 @@
 from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.data.file_stream import FileStream
 from skmultiflow.options.file_option import FileOption
-from skmultiflow.filtering.one_hot_to_categorical import OneHotToCategorical
+from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
 from skmultiflow.core.pipeline import Pipeline
 from sklearn.neighbors.classification import KNeighborsClassifier
 from timeit import default_timer as timer
