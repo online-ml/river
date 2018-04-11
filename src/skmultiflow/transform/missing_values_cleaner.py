@@ -51,7 +51,7 @@ class MissingValuesCleaner(StreamTransform):
     >>> # Setting up the filter to substitute values -47 by the median of the 
     >>> # last 10 samples
     >>> filter = MissingValuesCleaner(-47, 'median', 10)
-    >>> X, y = stream.next_instance(10)
+    >>> X, y = stream.next_sample(10)
     >>> X[9, 0] = -47
     >>> # We will use this list to keep track of values
     >>> list = []

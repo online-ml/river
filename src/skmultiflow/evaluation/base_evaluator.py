@@ -189,12 +189,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     def _check_configuration(self):
         # Check stream to infer task type
         if isinstance(self.stream, Stream):
-            if self.stream.get_num_outputs() == 1:
+            if self.stream.get_n_outputs() == 1:
                 self._output_type = self.SINGLE_OUTPUT
-            elif self.stream.get_num_outputs() > 1:
+            elif self.stream.get_n_outputs() > 1:
                 self._output_type = self.MULTI_OUTPUT
             else:
-                raise ValueError('Unexpected number of outputs in stream: {}.'.format(self.stream.get_num_classes()))
+                raise ValueError('Unexpected number of outputs in stream: {}.'.format(self.stream.get_n_classes()))
 
         # Metrics configuration
         self.metrics = [x.lower() for x in self.metrics]

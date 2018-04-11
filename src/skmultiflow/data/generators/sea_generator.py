@@ -1,9 +1,9 @@
-from skmultiflow.data.base_stream import Stream
-from skmultiflow.core.base_object import BaseObject
 import numpy as np
+from skmultiflow.data.base_stream import Stream
+from skmultiflow.core.utils.validation import check_random_state
 
 
-class SEAGenerator(Stream, BaseObject):
+class SEAGenerator(Stream):
     """ SEAGenerator
     
     This generator is an implementation of the data stream with abrupt 
@@ -34,7 +34,7 @@ class SEAGenerator(Stream, BaseObject):
         Which of the four classification functions to use for the generation. 
         This value can vary from 0 to 3, and the thresholds are, 8, 9, 7 and 9.5.
          
-    instance_seed: int (Default: 42)
+    sample_seed: int (Default: None)
         The seed used to initialize the random generator, which is an instance 
         of numpy's random.
         
@@ -58,14 +58,14 @@ class SEAGenerator(Stream, BaseObject):
     >>> # Imports
     >>> from skmultiflow.data.generators.sea_generator import SEAGenerator
     >>> # Setting up the stream
-    >>> stream = SEAGenerator(classification_function = 2, instance_seed = 112, balance_classes = False, 
+    >>> stream = SEAGenerator(classification_function = 2, sample_seed = 112, balance_classes = False,
     ... noise_percentage = 0.28)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
-    >>> stream.next_instance()
+    >>> stream.next_sample()
     (array([[ 3.75057129,  6.4030462 ,  9.50016579]]), array([ 0.]))
     >>> # Retrieving 10 samples
-    >>> stream.next_instance(10)
+    >>> stream.next_sample(10)
     (array([[ 7.76929659,  8.32745763,  0.5480574 ],
        [ 8.85351458,  7.22346511,  0.02556032],
        [ 3.43419851,  0.94759888,  3.94642589],
@@ -77,60 +77,48 @@ class SEAGenerator(Stream, BaseObject):
        [ 6.8373245 ,  7.21957381,  2.14152091],
        [ 0.75216155,  6.10890702,  4.25630425]]), array([ 1.,  1.,  1.,  1.,  1.,  0.,  0.,  1.,  1.,  1.]))
     >>> # Generators will have infinite remaining instances, so it returns -1
-    >>> stream.estimated_remaining_instances()
+    >>> stream.n_remaining_samples()
     -1
-    >>> stream.has_more_instances()
+    >>> stream.has_more_samples()
     True
     
     """
-    def __init__(self, classification_function=0, instance_seed=42, balance_classes=False, noise_percentage=0.0):
+    def __init__(self, classification_function=0, sample_seed=None, balance_classes=False, noise_percentage=0.0):
         super().__init__()
 
         # Classification functions to use
         self.classification_functions = [self.classification_function_zero, self.classification_function_one,
                                          self.classification_function_two, self.classification_function_three]
 
-        # Default values
-        self.num_numerical_attributes = 3
-        self.num_nominal_attributes = 0
-        self.num_values_per_nominal_att = 0
-        self.num_classes = 2
-        self.current_instance_x = None
-        self.current_instance_y = None
-        self.classification_function_index = None
-        self.instance_seed = None
-        self.balance_classes = None
-        self.noise_percentage = None
-        self.instance_random = None
-        self.next_class_should_be_zero = False
-
-        self.class_header = None
-        self.attributes_header = None
-
-        self.__configure(classification_function, instance_seed, balance_classes, noise_percentage)
-
-    def __configure(self, classification_function, instance_seed, balance_classes, noise_percentage):
-        self.classification_function_index = classification_function
-        self.instance_seed = instance_seed
+        self.classification_function_idx = classification_function
+        self.sample_seed = sample_seed
         self.balance_classes = balance_classes
         self.noise_percentage = noise_percentage
-        self.instance_random = np.random
-        self.instance_random.seed(self.instance_seed)
+        self.n_num_features = 3
+        self.n_classes = 2
+        self.sample_random = None
         self.next_class_should_be_zero = False
 
-        self.class_header = ["class"]
-        self.attributes_header = []
-        for i in range(self.num_numerical_attributes):
-            self.attributes_header.append("att_num_" + str(i))
+        self.__configure()
 
-    def estimated_remaining_instances(self):
+    def __configure(self):
+        self.sample_random = None
+        self.sample_random = check_random_state(self.sample_seed)
+        self.next_class_should_be_zero = False
+
+        self.outputs_labels = ["class"]
+        self.features_labels = []
+        for i in range(self.n_num_features):
+            self.features_labels.append("att_num_" + str(i))
+
+    def n_remaining_samples(self):
         return -1
 
-    def has_more_instances(self):
+    def has_more_samples(self):
         return True
 
-    def next_instance(self, batch_size=1):
-        """ next_instance
+    def next_sample(self, batch_size=1):
+        """ next_sample
         
         The sample generation works as follows: The three attributes are 
         generated with the random generator, initialized with the seed passed 
@@ -155,17 +143,17 @@ class SEAGenerator(Stream, BaseObject):
             the batch_size samples that were requested.
          
         """
-        data = np.zeros([batch_size, self.num_numerical_attributes + 1])
+        data = np.zeros([batch_size, self.n_num_features + 1])
 
         for j in range(batch_size):
             att1 = att2 = att3 = 0.0
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                att1 = 10*self.instance_random.rand()
-                att2 = 10*self.instance_random.rand()
-                att3 = 10*self.instance_random.rand()
-                group = self.classification_functions[self.classification_function_index](att1, att2, att3)
+                att1 = 10*self.sample_random.rand()
+                att2 = 10*self.sample_random.rand()
+                att3 = 10*self.sample_random.rand()
+                group = self.classification_functions[self.classification_function_idx](att1, att2, att3)
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -175,7 +163,7 @@ class SEAGenerator(Stream, BaseObject):
                         desired_class_found = True
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
-            if 0.01 + self.instance_random.rand() <= self.noise_percentage:
+            if 0.01 + self.sample_random.rand() <= self.noise_percentage:
                 group = 1 if (group == 0) else 0
 
             data[j, 0] = att1
@@ -183,10 +171,10 @@ class SEAGenerator(Stream, BaseObject):
             data[j, 2] = att3
             data[j, 3] = group
 
-        self.current_instance_x = data[:, :self.num_numerical_attributes]
-        self.current_instance_y = data[:, self.num_numerical_attributes:].flatten()
+        self.current_sample_x = data[:, :self.n_num_features]
+        self.current_sample_y = data[:, self.n_num_features:].flatten()
 
-        return self.current_instance_x, self.current_instance_y
+        return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
         self.restart()
@@ -195,32 +183,29 @@ class SEAGenerator(Stream, BaseObject):
         return True
 
     def restart(self):
-        self.instance_random.seed(self.instance_seed)
+        self.sample_random.seed(self.sample_seed)
         self.next_class_should_be_zero = False
 
-    def get_num_nominal_attributes(self):
-        return self.num_nominal_attributes
+    def get_n_cat_features(self):
+        return self.n_cat_features
 
-    def get_num_numerical_attributes(self):
-        return self.num_numerical_attributes
+    def get_n_num_features(self):
+        return self.n_num_features
 
-    def get_num_values_per_nominal_attribute(self):
-        return self.num_values_per_nominal_att
+    def get_n_features(self):
+        return self.n_num_features
 
-    def get_num_attributes(self):
-        return self.num_numerical_attributes + (self.num_nominal_attributes * self.num_values_per_nominal_att)
+    def get_n_classes(self):
+        return self.n_classes
 
-    def get_num_classes(self):
-        return self.num_classes
+    def get_features_labels(self):
+        return self.features_labels
 
-    def get_attributes_header(self):
-        return self.attributes_header
+    def get_output_labels(self):
+        return self.outputs_labels
 
-    def get_classes_header(self):
-        return self.class_header
-
-    def get_last_instance(self):
-        return self.current_instance_x, self.current_instance_y
+    def get_last_sample(self):
+        return self.current_sample_x, self.current_sample_y
 
     @staticmethod
     def classification_function_zero(att1, att2, att3):
@@ -327,25 +312,22 @@ class SEAGenerator(Stream, BaseObject):
         return 0 if (att1 + att2 <= 9.5) else 1
 
     def get_plot_name(self):
-        return "SEA Generator - " + str(self.num_classes) + " class labels"
+        return "SEA Generator - " + str(self.n_classes) + " class labels"
 
     def get_classes(self):
-        c = []
-        for i in range(self.num_classes):
-            c.append(i)
-        return c
+        return [i for i in range(self.n_classes)]
 
     def get_info(self):
-        return 'SEAGenerator: classification_function: ' + str(self.classification_function_index) + \
-               ' - instance_seed: ' + str(self.instance_seed) + \
+        return 'SEAGenerator: classification_function: ' + str(self.classification_function_idx) + \
+               ' - sample_seed: ' + str(self.sample_seed) + \
                ' - balance_classes: ' + ('True' if self.balance_classes else 'False') + \
                ' - noise_percentage: ' + str(self.noise_percentage)
 
-    def get_num_outputs(self):
+    def get_n_outputs(self):
         return 1
 
     def generate_drift(self):
-        new_function = self.instance_random.randint(4)
-        while new_function == self.classification_function_index:
-            new_function = self.instance_random.randint(4)
-        self.classification_function_index = new_function
+        new_function = self.sample_random.randint(4)
+        while new_function == self.classification_function_idx:
+            new_function = self.sample_random.randint(4)
+        self.classification_function_idx = new_function

@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def random_index_based_on_weights(weights, rand):
+def random_index_based_on_weights(weights, random_state):
     """ random_index_based_on_weights
     
     Generates a random index, based on index weights and a random 
@@ -12,7 +12,7 @@ def random_index_based_on_weights(weights, rand):
     weights: list
         The weights of the centroid's indexes.
         
-    rand: numpy.random
+    random_state: numpy.random
         A random generator.
     
     Returns
@@ -22,7 +22,7 @@ def random_index_based_on_weights(weights, rand):
     
     """
     prob_sum = np.sum(weights)
-    val = rand.rand() * prob_sum
+    val = random_state.rand() * prob_sum
     index = 0
     sum_value = 0.0
     while (sum_value <= val) & (index < len(weights)):

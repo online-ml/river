@@ -4,7 +4,7 @@ from skmultiflow.core.base import StreamModel
 from skmultiflow.evaluation.metrics.metrics import *
 
 
-class MultiOutputLearner(StreamModel) :
+class MultiOutputLearner(StreamModel):
     """ MultiOutputLearner
     
     A Multi-Output Learner learns to predict multiple outputs for each
@@ -41,15 +41,15 @@ class MultiOutputLearner(StreamModel) :
     >>> # Setup the pipeline
     >>> pipe = Pipeline([('classifier', classifier)])
     >>> # Pre training the classifier with 150 samples
-    >>> X, y = stream.next_instance(150)
+    >>> X, y = stream.next_sample(150)
     >>> pipe = pipe.partial_fit(X, y, classes=stream.get_classes())
     >>> # Keeping track of sample count, true labels and predictions to later 
     >>> # compute the classifier's hamming score
     >>> count = 0
     >>> true_labels = []
     >>> predicts = []
-    >>> while stream.has_more_instances():
-    ...     X, y = stream.next_instance()
+    >>> while stream.has_more_samples():
+    ...     X, y = stream.next_sample()
     ...     p = pipe.predict(X)
     ...     pipe = pipe.partial_fit(X, y)
     ...     predicts.extend(p)

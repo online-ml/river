@@ -1,9 +1,9 @@
-from skmultiflow.data.base_stream import Stream
-from skmultiflow.core.base_object import BaseObject
 import numpy as np
+from skmultiflow.data.base_stream import Stream
+from skmultiflow.core.utils.validation import check_random_state
 
 
-class WaveformGenerator(Stream, BaseObject):
+class WaveformGenerator(Stream):
     """ WaveformGenerator
 
     Generates instances with 21 numeric attributes and 3 targets, based 
@@ -26,7 +26,7 @@ class WaveformGenerator(Stream, BaseObject):
     >>> stream = WaveformGenerator(seed=774, add_noise=True)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
-    >>> stream.next_instance()
+    >>> stream.next_sample()
     (array([[ -3.87277692e-03,   5.35892351e-01,  -6.07354638e-02,
           1.70731601e+00,   5.34361689e-01,  -1.77051944e-01,
           1.14121806e+00,   1.35608518e-01,   1.41239266e+00,
@@ -42,7 +42,7 @@ class WaveformGenerator(Stream, BaseObject):
          -5.08874759e-01,   4.16279862e-01,  -4.26805543e-01,
           9.94596567e-01]]), array([ 2.]))
     >>> # Retrieving 2 samples
-    >>> stream.next_instance(2)
+    >>> stream.next_sample(2)
     (array([[ -6.72385828e-01,   1.51039782e+00,   5.64599422e-01,
           2.77481410e+00,   2.27653785e+00,   4.40016488e+00,
           3.87856303e+00,   4.90321750e+00,   4.40651078e+00,
@@ -72,9 +72,9 @@ class WaveformGenerator(Stream, BaseObject):
          -7.10479419e-01,   4.60132194e-01,  -5.63210805e-02,
          -1.56883271e-01]]), array([ 1.,  1.]))
     >>> # Generators will have infinite remaining instances, so it returns -1
-    >>> stream.estimated_remaining_instances()
+    >>> stream.n_remaining_samples()
     -1
-    >>> stream.has_more_instances()
+    >>> stream.has_more_samples()
     True
         
     """
@@ -86,51 +86,38 @@ class WaveformGenerator(Stream, BaseObject):
                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],
                            [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])
 
-    def __init__(self, seed=23, add_noise=False):
+    def __init__(self, seed=None, add_noise=False):
         super().__init__()
-        # default values
-        self.random_seed = 1
-        self.add_noise = False
-        self.num_numerical_attributes = self.NUM_BASE_ATTRIBUTES
-        self.num_classes = self.NUM_CLASSES
-        self.num_nominal_attributes = 0
-        self.num_values_per_nominal_att = 0
-        self.attributes_header = None
-        self.classes_header = None
-        self.current_instance_x = None
-        self.current_instance_y = None
-        self.instance_length = 0
-        self.num_attributes = 0
-        self.instance_index = 0
+        self.seed = seed
+        self.random_state = None
+        self.add_noise = add_noise
+        self.n_num_features = self.NUM_BASE_ATTRIBUTES
+        self.n_classes = self.NUM_CLASSES
+        self.n_samples = 0
+        self.n_features = self.n_num_features
 
-        self.__configure(seed, add_noise)
-        pass
+        self.__configure()
 
-    def __configure(self, seed, add_noise):
-        self.random_seed = seed if seed is not None else 23
-        self.add_noise = add_noise if add_noise is not None else False
-
-        self.instance_length = 100000
-        self.num_attributes = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.add_noise else self.NUM_BASE_ATTRIBUTES
+    def __configure(self):
+        self.n_samples = 100000
+        self.n_features = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.add_noise else self.NUM_BASE_ATTRIBUTES
         if self.add_noise:
-            self.num_numerical_attributes = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE
-        self.num_classes = self.NUM_CLASSES
-        self.attributes_header = []
-        self.classes_header = ["class"]
-        for i in range(self.num_attributes):
-            self.attributes_header.append("att_num_" + str(i))
+            self.n_num_features = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE
+        self.n_classes = self.NUM_CLASSES
+        self.features_labels = ["att_num_" + str(i) for i in range(self.n_features)]
+        self.outputs_labels = ["class"]
 
     def prepare_for_use(self):
         self.restart()
 
-    def estimated_remaining_instances(self):
+    def n_remaining_samples(self):
         return -1
 
-    def has_more_instances(self):
+    def has_more_samples(self):
         return True
 
-    def next_instance(self, batch_size=1):
-        """ next_instance
+    def next_sample(self, batch_size=1):
+        """ next_sample
         
         An instance is generated based on the parameters passed. If noise 
         is included the total number of attributes will be 40, if it's not 
@@ -163,79 +150,73 @@ class WaveformGenerator(Stream, BaseObject):
             data = np.zeros([batch_size, self.NUM_BASE_ATTRIBUTES + 1])
 
         for j in range(batch_size):
-            self.instance_index += 1
-            waveform = np.random.randint(0, self.NUM_CLASSES)
+            self.sample_idx += 1
+            waveform = self.random_state.randint(0, self.NUM_CLASSES)
             choice_a = 1 if (waveform == 2) else 0
             choice_b = 1 if (waveform == 0) else 2
-            multiplier_a = np.random.rand()
+            multiplier_a = self.random_state.rand()
             multiplier_b = 1.0 - multiplier_a
 
             for i in range(self.NUM_BASE_ATTRIBUTES):
                 data[j, i] = multiplier_a*self.H_FUNCTION[choice_a][i] \
                             + multiplier_b*self.H_FUNCTION[choice_b][i] \
-                            + np.random.normal()
+                            + self.random_state.normal()
 
             if self.has_noise():
                 for i in range(self.NUM_BASE_ATTRIBUTES, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    data[j, i] = np.random.normal()
+                    data[j, i] = self.random_state.normal()
 
             data[j, data[j].size-1] = waveform
-        self.current_instance_x = data[:, :self.num_attributes]
-        self.current_instance_y = np.ravel(data[:, self.num_attributes:])
+        self.current_sample_x = data[:, :self.n_features]
+        self.current_sample_y = np.ravel(data[:, self.n_features:])
 
-        return self.current_instance_x, self.current_instance_y
+        return self.current_sample_x, self.current_sample_y
 
     def is_restartable(self):
         return True
 
     def restart(self):
-        np.random.seed(self.random_seed)
-        self.instance_index = 0
-        pass
+        self.random_state = None
+        self.random_state = check_random_state(self.seed)
+        self.sample_idx = 0
 
     def has_noise(self):
         return self.add_noise
 
-    def get_num_nominal_attributes(self):
-        return self.num_nominal_attributes
+    def get_n_cat_features(self):
+        return self.n_cat_features
 
-    def get_num_numerical_attributes(self):
-        return self.num_numerical_attributes
+    def get_n_num_features(self):
+        return self.n_num_features
 
-    def get_num_values_per_nominal_attribute(self):
-        return self.num_values_per_nominal_att
+    def get_n_features(self):
+        return self.n_num_features
 
-    def get_num_attributes(self):
-        return self.num_numerical_attributes + self.num_nominal_attributes * self.num_values_per_nominal_att
+    def get_n_classes(self):
+        return self.n_classes
 
-    def get_num_classes(self):
-        return self.num_classes
+    def get_features_labels(self):
+        return self.features_labels
 
-    def get_attributes_header(self):
-        return self.attributes_header
+    def get_output_labels(self):
+        return self.outputs_labels
 
-    def get_classes_header(self):
-        return self.classes_header
-
-    def get_last_instance(self):
-        return self.current_instance_x, self.current_instance_y
+    def get_last_sample(self):
+        return self.current_sample_x, self.current_sample_y
 
     def get_plot_name(self):
-        return "Waveform Generator - " + str(self.num_classes) + " class labels"
+        return "Waveform Generator - " + str(self.n_classes) + " class labels"
 
     def get_classes(self):
-        c = []
-        for i in range(self.num_classes):
-            c.append(i)
-        return c
+        return [i for i in range(self.n_classes)]
 
     def get_info(self):
         add_noise = 'True' if self.add_noise else 'False'
-        return 'Waveform Generator: num_classes: ' + str(self.num_classes) + \
-               '  -  num_numerical_attributes: ' + str(self.num_numerical_attributes) + \
-               '  -  num_nominal_attributes: ' + str(self.num_nominal_attributes) + \
+        return 'Waveform Generator: n_classes: ' + str(self.n_classes) + \
+               '  -  n_num_features: ' + str(self.n_num_features) + \
+               '  -  n_cat_features: ' + str(self.n_cat_features) + \
                '  -  add_noise: ' + add_noise + \
-               '  -  random_seed: ' + str(self.random_seed)
+               '  -  sample_seed: ' + str(self.seed)
 
-    def get_num_outputs(self):
+    def get_n_outputs(self):
         return 1

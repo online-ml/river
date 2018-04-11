@@ -23,7 +23,7 @@ def demo():
 
     filter = MissingValuesCleaner(-47, 'median', 10)
 
-    X, y = stream.next_instance(10)
+    X, y = stream.next_sample(10)
 
     X[9, 0] = -47
 

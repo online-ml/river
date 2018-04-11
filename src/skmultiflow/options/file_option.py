@@ -35,7 +35,7 @@ class FileOption(Option):
     >>> # Prepare the stream
     >>> stream.prepare_for_use()
     >>> # Stream is ready to use
-    >>> stream.next_instance()
+    >>> stream.next_sample()
     (array([[2596,   51,    3,  258,    0,  510,  221,  232,  148, 6279,    1,
            0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
            0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,

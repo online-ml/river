@@ -8,7 +8,7 @@ class FileStream(base_stream.Stream, BaseObject):
     """ FileStream
     
     A stream generated from the entries of a file. For the moment only 
-    csv files are supported, but the idea is to support any file format, 
+    csv files are supported, but the idea is to support different formats,
     as long as there is a function that correctly reads, interprets, and 
     returns a pandas' DataFrame or numpy.ndarray with the data.
     
@@ -38,10 +38,10 @@ class FileStream(base_stream.Stream, BaseObject):
     >>> stream = FileStream(file_option)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
-    >>> stream.next_instance()
+    >>> stream.next_sample()
     (array([[0.080429, 8.397187, 7.074928]]), array([0]))
     >>> # Retrieving 10 samples
-    >>> stream.next_instance(10)
+    >>> stream.next_sample(10)
     (array([[1.42074 , 7.504724, 6.764101],
         [0.960543, 5.168416, 8.298959],
         [3.367279, 6.797711, 4.857875],
@@ -53,50 +53,30 @@ class FileStream(base_stream.Stream, BaseObject):
         [2.933823, 7.150514, 2.566901],
         [4.303049, 1.471813, 9.078151]]),
         array([0, 0, 1, 1, 1, 1, 0, 0, 1, 0]))
-    >>> stream.estimated_remaining_instances()
+    >>> stream.n_remaining_samples()
     39989
-    >>> stream.has_more_instances()
+    >>> stream.has_more_samples()
     True
 
     """
 
-    def __init__(self, file_opt, targets_index=-1, num_target_tasks=1):
+    def __init__(self, file_opt, targets_index=-1, num_target_tasks=1, cat_features_idx=None):
         super().__init__()
-        # default values
+        self.file_name = ''
+        self.X = None
+        self.y = None
+        self.cat_features_idx = [] if cat_features_idx is None else cat_features_idx
+        self.num_target_tasks = num_target_tasks
+        self.target_index = targets_index
+
+        self.__configure(file_opt)
+
+    def __configure(self, file_opt):
         if str(file_opt.file_type).lower() == 'csv':
             self.read_function = pd.read_csv
         else:
             raise ValueError('Unsupported format: ', file_opt.file_type)
-        self.file_name = None
-        self.instance_index = 0
-        self.instance_length = 0
-        self.X = None
-        self.y = None
-        self.current_instance_x = None
-        self.current_instance_y = None
-        self.num_target_tasks = 1
-        self.target_index = -1
-        self.num_numerical_attributes = 0
-        self.num_nominal_attributes = 0
-        self.num_values_per_nominal_att = 0
-        self.attributes_header = None
-        self.classes_header = None
-        self.instances = None
-        self.num_attributes = 0
-        self.num_classes = 0
-
-        self.__configure(file_opt, targets_index, num_target_tasks)
-
-    def __configure(self, file_opt, targets_index, num_target_tasks):
         self.file_name = file_opt.get_file_name()
-        self.target_index = targets_index
-        self.instances = None
-        self.instance_length = 0
-        self.current_instance_x = None
-        self.current_instance_y = None
-        self.num_target_tasks = num_target_tasks
-        self.X = None
-        self.y = None
 
     def prepare_for_use(self):
         """ prepare_for_use
@@ -110,28 +90,36 @@ class FileStream(base_stream.Stream, BaseObject):
 
     def _load_data(self):
         try:
-            instance_aux = self.read_function(self.file_name)
-            self.instance_length = len(instance_aux.index)
-            labels = instance_aux.columns.values.tolist()
+            raw_data = self.read_function(self.file_name)
 
-            if (self.target_index + self.num_target_tasks == len(labels)) \
-                    or (self.target_index + self.num_target_tasks == 0):
-                self.y = instance_aux.iloc[:, self.target_index:].as_matrix()
-                y_labels = labels[self.target_index:]
-                self.classes_header = labels[self.target_index:]
-                self.attributes_header = labels[:self.target_index]
+            if any(raw_data.dtypes == 'object'):
+                raise ValueError('File contains text data.')
+            rows, cols = raw_data.shape
+            self.n_samples = rows
+            labels = raw_data.columns.values.tolist()
+
+            if (self.target_index + self.num_target_tasks) == cols or (self.target_index + self.num_target_tasks) == 0:
+                # Take everything to the right of target_index
+                self.y = raw_data.iloc[:, self.target_index:].as_matrix()
+                self.outputs_labels = raw_data.iloc[:, self.target_index:].columns.values.tolist()
             else:
-                self.y = instance_aux.iloc[:, self.target_index:self.target_index+self.num_target_tasks].as_matrix()
-                y_labels = labels[self.target_index:self.target_index+self.num_target_tasks]
-                self.classes_header = labels[self.num_target_tasks:self.target_index+self.num_target_tasks]
-                self.attributes_header = labels[:self.target_index]
-                self.attributes_header.extend(labels[self.target_index + self.num_target_tasks:])
+                # Take only num_target_tasks columns to the right of target_index, use the rest as features
+                self.y = raw_data.iloc[:, self.target_index:self.target_index+self.num_target_tasks].as_matrix()
+                self.outputs_labels = labels[self.target_index:self.target_index+self.num_target_tasks]
 
-            self.X = instance_aux.drop(y_labels, axis=1).as_matrix()
-            self.num_attributes = self.X.shape[1]
-            self.num_numerical_attributes = self.num_attributes
+            self.X = raw_data.drop(self.outputs_labels, axis=1).as_matrix()
+            self.features_labels = raw_data.drop(self.outputs_labels, axis=1).columns.values.tolist()
 
-            self.num_classes = len(np.unique(self.y))
+            _, self.n_features = self.X.shape
+            if self.cat_features_idx:
+                if max(self.cat_features_idx) < self.n_features:
+                    self.n_cat_features = len(self.cat_features_idx)
+                else:
+                    raise IndexError('Categorical feature index in {} '
+                                     'exceeds n_features {}'.format(self.cat_features_idx, self.n_features))
+            self.n_num_features = self.n_features - self.n_cat_features
+
+            self.n_classes = len(np.unique(self.y))
 
         except IOError:
             print("{} file reading failed.".format(self.file_name))
@@ -147,15 +135,15 @@ class FileStream(base_stream.Stream, BaseObject):
         its initial state.
         
         """
-        self.instance_index = 0
-        self.current_instance_x = None
-        self.current_instance_y = None
+        self.sample_idx = 0
+        self.current_sample_x = None
+        self.current_sample_y = None
 
     def is_restartable(self):
         return True
 
-    def next_instance(self, batch_size=1):
-        """ next_instance
+    def next_sample(self, batch_size=1):
+        """ next_sample
         
         If there is enough instances to supply at least batch_size samples, those 
         are returned. If there aren't a tuple of (None, None) is returned.
@@ -172,61 +160,55 @@ class FileStream(base_stream.Stream, BaseObject):
             For general purposes the return can be treated as a numpy.ndarray.
         
         """
-        self.instance_index += batch_size
+        self.sample_idx += batch_size
         try:
 
-            self.current_instance_x = self.X[self.instance_index - batch_size:self.instance_index, :]
-            self.current_instance_y = self.y[self.instance_index - batch_size:self.instance_index, :]
+            self.current_sample_x = self.X[self.sample_idx - batch_size:self.sample_idx, :]
+            self.current_sample_y = self.y[self.sample_idx - batch_size:self.sample_idx, :]
             if self.num_target_tasks < 2:
-                self.current_instance_y = self.current_instance_y.flatten()
+                self.current_sample_y = self.current_sample_y.flatten()
 
         except IndexError:
-            self.current_instance_x = None
-            self.current_instance_y = None
-        return self.current_instance_x, self.current_instance_y
+            self.current_sample_x = None
+            self.current_sample_y = None
+        return self.current_sample_x, self.current_sample_y
 
-    def has_more_instances(self):
-        return (self.instance_length - self.instance_index) > 0
+    def has_more_samples(self):
+        return (self.n_samples - self.sample_idx) > 0
 
-    def estimated_remaining_instances(self):
-        return self.instance_length - self.instance_index
+    def n_remaining_samples(self):
+        return self.n_samples - self.sample_idx
 
     def print_df(self):
         print(self.X)
         print(self.y)
 
-    def get_instances_length(self):
-        return self.instance_length
+    def get_n_features(self):
+        return self.n_features
 
-    def get_num_attributes(self):
-        return self.num_attributes
+    def get_n_cat_features(self):
+        return self.n_cat_features
 
-    def get_num_nominal_attributes(self):
-        return self.num_nominal_attributes
+    def get_n_num_features(self):
+        return self.n_num_features
 
-    def get_num_numerical_attributes(self):
-        return self.num_numerical_attributes
-
-    def get_num_values_per_nominal_attribute(self):
-        return self.num_values_per_nominal_att
-
-    def get_num_classes(self):
+    def get_n_classes(self):
         return self.num_target_tasks
 
-    def get_attributes_header(self):
-        return self.attributes_header
+    def get_features_labels(self):
+        return self.features_labels
 
-    def get_classes_header(self):
-        return self.classes_header
+    def get_output_labels(self):
+        return self.outputs_labels
 
-    def get_last_instance(self):
-        return self.current_instance_x, self.current_instance_y
+    def get_last_sample(self):
+        return self.current_sample_x, self.current_sample_y
 
     def get_plot_name(self):
         aux = self.file_name.split("/")
         if aux[len(aux)-1] == '':
             aux.pop(len(aux)-1)
-        return "{} - {} class labels".format(aux[len(aux)-1], self.num_classes) \
+        return "{} - {} class labels".format(aux[len(aux)-1], self.n_classes) \
             if self.num_target_tasks == 1 \
             else "{} - {} classification tasks".format(aux[len(aux)-1], self.num_target_tasks)
 
@@ -236,8 +218,8 @@ class FileStream(base_stream.Stream, BaseObject):
 
     def get_info(self):
         return 'File Stream: file_name: ' + str(self.file_name) + \
-               '  -  num_classes: ' + str(self.num_classes) + \
+               '  -  n_classes: ' + str(self.n_classes) + \
                '  -  num_classification_tasks: ' + str(self.num_target_tasks)
 
-    def get_num_outputs(self):
+    def get_n_outputs(self):
         return self.num_target_tasks

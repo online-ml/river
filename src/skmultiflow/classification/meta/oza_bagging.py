@@ -67,10 +67,10 @@ class OzaBagging(StreamModel):
     >>> sample_count = 0
     >>> corrects = 0
     >>> # Pre training the classifier with 200 samples
-    >>> X, y = stream.next_instance(200)
+    >>> X, y = stream.next_sample(200)
     >>> clf = clf.partial_fit(X, y, classes=stream.get_classes())
     >>> for i in range(2000):
-    ...     X, y = stream.next_instance()
+    ...     X, y = stream.next_sample()
     ...     pred = clf.predict(X)
     ...     clf = clf.partial_fit(X, y)
     ...     if pred is not None:

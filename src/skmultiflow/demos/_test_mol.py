@@ -38,7 +38,7 @@ def demo():
 
     pretrain_size = 150
     logging.info('Pre training on %s samples', str(pretrain_size))
-    X, y = stream.next_instance(pretrain_size)
+    X, y = stream.next_sample(pretrain_size)
     #classifier.fit(X, y)
     pipe.partial_fit(X, y, classes=stream.get_classes())
     count = 0
@@ -46,8 +46,8 @@ def demo():
     predicts = []
     init_time = timer()
     logging.info('Evaluating...')
-    while stream.has_more_instances():
-        X, y = stream.next_instance()
+    while stream.has_more_samples():
+        X, y = stream.next_sample()
         #p = classifier.predict(X)
         p = pipe.predict(X)
         predicts.extend(p)

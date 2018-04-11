@@ -216,16 +216,16 @@ class EvaluatePrequential(StreamEvaluator):
         init_time = timer()
         end_time = timer()
         logging.info('Prequential Evaluation')
-        logging.info('Evaluating %s outputs.', str(self.stream.get_num_outputs()))
+        logging.info('Evaluating %s outputs.', str(self.stream.get_n_outputs()))
 
-        n_samples = self.stream.estimated_remaining_instances()
+        n_samples = self.stream.n_remaining_samples()
         if n_samples == -1 or n_samples > self.max_samples:
             n_samples = self.max_samples
 
         first_run = True
         if self.pretrain_size > 0:
             logging.info('Pre-training on %s samples.', str(self.pretrain_size))
-            X, y = self.stream.next_instance(self.pretrain_size)
+            X, y = self.stream.next_sample(self.pretrain_size)
             for i in range(self.n_models):
                 if self._task_type != EvaluatePrequential.REGRESSION:
                     self.model[i].partial_fit(X=X, y=y, classes=self.stream.get_classes())
@@ -239,9 +239,9 @@ class EvaluatePrequential(StreamEvaluator):
         update_count = 0
         logging.info('Evaluating...')
         while ((self.global_sample_count < self.max_samples) & (end_time - init_time < self.max_time)
-               & (self.stream.has_more_instances())):
+               & (self.stream.has_more_samples())):
             try:
-                X, y = self.stream.next_instance(self.batch_size)
+                X, y = self.stream.next_sample(self.batch_size)
 
                 if X is not None and y is not None:
                     # Test

@@ -25,7 +25,7 @@ def demo(instances=2000):
     opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
     #opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_big.csv", "CSV", False)
     stream = FileStream(opt, -1, 1)
-    #stream = SEAGenerator(classification_function=2, instance_seed=53432, balance_classes=False)
+    #stream = SEAGenerator(classification_function=2, sample_seed=53432, balance_classes=False)
     stream.prepare_for_use()
     # Setup the classifier
     clf = SGDClassifier()
