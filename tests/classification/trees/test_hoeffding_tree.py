@@ -5,12 +5,12 @@ from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
 
 
 def test_hoeffding_tree():
-    stream = RandomTreeGenerator(tree_seed=23, instance_seed=12, n_classes=4, n_nominal_attributes=2,
-                                 n_numerical_attributes=5, n_values_per_nominal=5, max_depth=6, min_leaf_depth=3,
+    stream = RandomTreeGenerator(tree_seed=23, instance_seed=12, n_classes=4, n_cat_features=2,
+                                 n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
                                  fraction_leaves_per_level=0.15)
     stream.prepare_for_use()
 
-    nominal_attr_idx = [x for x in range(15, len(stream.get_attributes_header()))]
+    nominal_attr_idx = [x for x in range(15, len(stream.get_features_labels()))]
     learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
 
     cnt = 0
@@ -19,7 +19,7 @@ def test_hoeffding_tree():
     wait_samples = 100
 
     while cnt < max_samples:
-        X, y = stream.next_instance()
+        X, y = stream.next_sample()
         # Test every n samples
         if cnt % wait_samples == 0:
             predictions.append(learner.predict(X)[0])

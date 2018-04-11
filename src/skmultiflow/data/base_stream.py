@@ -3,9 +3,7 @@ from skmultiflow.core.base_object import BaseObject
 
 
 class Stream(BaseObject, metaclass=ABCMeta):
-    """ BaseInstanceStream
-    
-    The abstract class setting up the minimum requirements of a stream, 
+    """ The abstract class setting up the minimum requirements of a stream,
     so that it can work along the other modules in the scikit-multiflow
     framework.
     
@@ -14,31 +12,39 @@ class Stream(BaseObject, metaclass=ABCMeta):
     NotImplementedError: This is an abstract class.
     
     """
+    def __init__(self):
+        self.n_samples = 0
+        self.n_classes = 0
+        self.n_outputs = 0
+        self.n_features = 0
+        self.n_num_features = 0
+        self.n_cat_features = 0
+        self.cat_features_idx = []
+        self.features_labels = None
+        self.outputs_labels = None
+        self.current_sample_x = None
+        self.current_sample_y = None
+        self.sample_idx = 0
 
     @abstractmethod
-    def estimated_remaining_instances(self):
-        """ estimated_remaining_instances
-        
-        Returns the estimated number of remaining instances. Returns -1 
-        if it's infinite (generators' case)
+    def n_remaining_samples(self):
+        """ Returns the estimated number of remaining samples.
         
         Returns
         -------
         int
-            Remaining number of instances.
+            Remaining number of samples. -1 if infinite (e.g. generator)
         
         """
         raise NotImplementedError
 
     @abstractmethod
-    def has_more_instances(self):
+    def has_more_samples(self):
         raise NotImplementedError
 
     @abstractmethod
-    def next_instance(self, batch_size=1):
-        """ next_instance
-        
-        Generates or returns some amount of samples.
+    def next_sample(self, batch_size=1):
+        """ Generates or returns next `batch_size` samples in the stream.
         
         Parameters
         ----------
@@ -49,86 +55,89 @@ class Stream(BaseObject, metaclass=ABCMeta):
         -------
         tuple or tuple list
             A numpy.ndarray of shape (batch_size, n_features) and an array-like of size 
-            n_classification_tasks, representing the next batch_size samples.
-        
+            n_outputs, representing the next batch_size samples.
+
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_last_sample(self):
+        """ Retrieves last `batch_size` samples in the stream.
+
+        Returns
+        -------
+        tuple or tuple list
+            A numpy.ndarray of shape (batch_size, n_features) and an array-like of size
+            n_outputs, representing the next batch_size samples.
+
         """
         raise NotImplementedError
 
     @abstractmethod
     def is_restartable(self):
+        """ Determine if the stream is restartable. """
         raise NotImplementedError
 
     @abstractmethod
     def restart(self):
-        """ restart
-        
-        Restart the stream's configurations.
-        
-        """
+        """  Restart the stream. """
         raise NotImplementedError
 
     @abstractmethod
-    def get_num_nominal_attributes(self):
-        """ get_num_nominal_attributes
-        
-        Returns
-        -------
-        int
-            The number of nominal attributes given by the stream.
-        
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_num_numerical_attributes(self):
-        """ get_num_numerical_attributes
+    def get_n_features(self):
+        """ Retrieve the number of features.
 
         Returns
         -------
         int
-            The number of numerical attributes given by the stream.
+            The total number of features.
 
         """
         raise NotImplementedError
 
     @abstractmethod
-    def get_num_values_per_nominal_attribute(self):
-        """ get_num_values_per_nominal_attribute
+    def get_n_cat_features(self):
+        """ Retrieve the number of nominal features.
+        
+        Returns
+        -------
+        int
+            The number of nominal features in the stream.
+        
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_n_num_features(self):
+        """ Retrieve the number of numerical atfeaturestributes.
 
         Returns
         -------
         int
-            The number of possible values for each nominal attribute.
+            The number of numerical features in the stream.
 
         """
         raise NotImplementedError
 
     @abstractmethod
-    def get_num_attributes(self):
-        """ get_num_attributes
-
-        Returns
-        -------
-        int
-            The total number of attributes.
-
-        """
+    def get_n_classes(self):
         raise NotImplementedError
 
     @abstractmethod
-    def get_num_classes(self):
+    def get_classes(self):
+        """ Get all classes in the stream. """
         raise NotImplementedError
 
     @abstractmethod
-    def get_attributes_header(self):
+    def get_n_outputs(self):
         raise NotImplementedError
 
     @abstractmethod
-    def get_classes_header(self):
+    def get_features_labels(self):
         raise NotImplementedError
 
     @abstractmethod
-    def get_last_instance(self):
+    def get_output_labels(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -163,25 +172,5 @@ class Stream(BaseObject, metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def get_classes(self):
-        """ get_classes
-        
-        Get all classes that can be generated, either by random generation 
-        or by reading a file. In the latter, the classes can be interpreted 
-        as a np.unique(y) where y is the labels matrix.
-        
-        :return: 
-        """
-        raise NotImplementedError
-
     def get_class_type(self):
         return 'stream'
-
-    @abstractmethod
-    def get_info(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_num_outputs(self):
-        raise NotImplementedError

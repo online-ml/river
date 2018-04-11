@@ -61,13 +61,13 @@ class KNNAdwin(KNN):
     >>> # Setting up the KNNAdwin classifier
     >>> knn_adwin = KNNAdwin(k=8, leaf_size=40, max_window_size=2000)
     >>> # Pre training the classifier with 200 samples
-    >>> X, y = stream.next_instance(200)
+    >>> X, y = stream.next_sample(200)
     >>> knn_adwin = knn_adwin.partial_fit(X, y)
     >>> # Keeping track of sample count and correct prediction count
     >>> n_samples = 0
     >>> corrects = 0
     >>> while n_samples < 5000:
-    ...     X, y = stream.next_instance()
+    ...     X, y = stream.next_sample()
     ...     pred = knn_adwin.predict(X)
     ...     if y[0] == pred[0]:
     ...         corrects += 1

@@ -72,14 +72,14 @@ class KNN(StreamModel):
     >>> stream = FileStream(opt, -1, 1)
     >>> stream.prepare_for_use()
     >>> # Pre training the classifier with 200 samples
-    >>> X, y = stream.next_instance(200)
+    >>> X, y = stream.next_sample(200)
     >>> knn = KNN(k=8, max_window_size=2000, leaf_size=40)
     >>> knn.partial_fit(X, y)
     >>> # Preparing the processing of 5000 samples and correct prediction count
     >>> n_samples = 0
     >>> corrects = 0
     >>> while n_samples < 5000:
-    ...     X, y = stream.next_instance()
+    ...     X, y = stream.next_sample()
     ...     my_pred = knn.predict(X)
     ...     if y[0] == my_pred[0]:
     ...         corrects += 1

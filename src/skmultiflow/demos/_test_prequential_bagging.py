@@ -28,7 +28,7 @@ def demo(output_file=None, instances=40000):
     # Setup the File Stream
     # opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_big.csv", "CSV", False)
     # stream = FileStream(opt, -1, 1)
-    stream = SEAGenerator(classification_function=2,instance_seed=755437,noise_percentage=0.0)
+    stream = SEAGenerator(classification_function=2, sample_seed=755437, noise_percentage=0.0)
     stream.prepare_for_use()
 
     # Setup the classifier

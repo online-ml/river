@@ -22,7 +22,7 @@ def demo():
     stream = FileStream(opt, -1, 1)
     stream.prepare_for_use()
     train = 200
-    X, y = stream.next_instance(train)
+    X, y = stream.next_sample(train)
     #t = OneHotToCategorical([[10, 11, 12, 13],
     #                         [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
     #                          36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
@@ -48,7 +48,7 @@ def demo():
     compare_corrects = 0
 
     while n_samples < max_samples:
-        X, y = stream.next_instance()
+        X, y = stream.next_sample()
         #my_pred = pipe.predict(X)
         my_pred = knn.predict(X)
         #compare_pred = pipe2.predict(X)

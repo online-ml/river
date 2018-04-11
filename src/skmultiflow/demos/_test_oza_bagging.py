@@ -28,14 +28,14 @@ def demo():
     train_size = 8
     first = True
     if train_size > 0:
-        X, y = stream.next_instance(train_size)
+        X, y = stream.next_sample(train_size)
         clf.partial_fit(X, y, classes=stream.get_classes())
         first = False
 
     while sample_count < max_samples:
         if sample_count % (max_samples/20) == 0:
             logging.info('%s%%', str((sample_count//(max_samples/20)*5)))
-        X, y = stream.next_instance()
+        X, y = stream.next_sample()
         my_pred = clf.predict(X)
 
         if first:

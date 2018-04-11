@@ -4,36 +4,34 @@ from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerato
 
 
 def test_random_tree_generator(test_path):
-    stream = RandomTreeGenerator(tree_seed=23, instance_seed=12, n_classes=2, n_nominal_attributes=2,
-                                 n_numerical_attributes=5, n_values_per_nominal=5, max_depth=6, min_leaf_depth=3,
+    stream = RandomTreeGenerator(tree_seed=23, instance_seed=12, n_classes=2, n_cat_features=2,
+                                 n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
                                  fraction_leaves_per_level=0.15)
     stream.prepare_for_use()
 
-    assert stream.estimated_remaining_instances() == -1
+    assert stream.n_remaining_samples() == -1
 
     expected_header = ['att_num_0', 'att_num_1', 'att_num_2', 'att_num_3', 'att_num_4',
                        'att_nom_0_val0', 'att_nom_0_val1', 'att_nom_0_val2', 'att_nom_0_val3', 'att_nom_0_val4',
                        'att_nom_1_val0', 'att_nom_1_val1', 'att_nom_1_val2', 'att_nom_1_val3', 'att_nom_1_val4']
-    assert stream.get_attributes_header() == expected_header
+    assert stream.get_features_labels() == expected_header
 
     expected_classes = [0, 1]
     assert stream.get_classes() == expected_classes
 
-    assert stream.get_classes_header() == ['class']
+    assert stream.get_output_labels() == ['class']
 
-    assert stream.get_num_attributes() == 15
+    assert stream.get_n_features() == 15
 
-    assert stream.get_num_nominal_attributes() == 2
+    assert stream.get_n_cat_features() == 2
 
-    assert stream.get_num_numerical_attributes() == 5
+    assert stream.get_n_num_features() == 5
 
-    assert stream.get_num_classes() == 2
-
-    assert stream.get_num_values_per_nominal_attribute() == 5
+    assert stream.get_n_classes() == 2
 
     assert stream.get_plot_name() == 'Random Tree Generator - 2 class labels'
 
-    assert stream.has_more_instances() is True
+    assert stream.has_more_samples() is True
 
     assert stream.is_restartable() is True
 
@@ -43,15 +41,15 @@ def test_random_tree_generator(test_path):
     X_expected = data['X']
     y_expected = data['y']
 
-    X, y = stream.next_instance()
+    X, y = stream.next_sample()
     assert np.alltrue(X[0] == X_expected[0])
     assert np.alltrue(y[0] == y_expected[0])
 
-    X, y = stream.get_last_instance()
+    X, y = stream.get_last_sample()
     assert np.alltrue(X[0] == X_expected[0])
     assert np.alltrue(y[0] == y_expected[0])
 
     stream.restart()
-    X, y = stream.next_instance(10)
+    X, y = stream.next_sample(10)
     assert np.alltrue(X == X_expected)
     assert np.alltrue(y == y_expected)

@@ -9,7 +9,7 @@ class RegressionGenerator(Stream):
     This generator creates a stream of samples for a regression problem. It 
     uses the make_regression function from scikit-learn, which creates a 
     batch setting regression problem. These samples are then sequentially 
-    fed by the next_instance function.
+    fed by the next_sample function.
     
     Parameters
     ----------
@@ -24,7 +24,7 @@ class RegressionGenerator(Stream):
         that influence the class label.
     
     n_targets: int (Default: 1)
-        Number of targeting tasks to generate.
+        Number of targets (outputs) to generate.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -39,14 +39,14 @@ class RegressionGenerator(Stream):
     >>> stream = RegressionGenerator(n_samples=100, n_features=20, n_targets=4, n_informative=6, random_state=0)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
-    >>> stream.next_instance()
+    >>> stream.next_sample()
     (array([[ 0.16422776,  0.56729028, -0.76149221,  0.38728048, -1.69810582,
           0.85792392, -0.2226751 , -0.98551074,  1.46657872,  1.64813493,
           0.03863055,  1.14110187, -1.6567151 , -0.29183736, -1.02250684,
          -1.47183501, -1.61647419,  0.85255194, -2.25556423, -0.35343175]]),
          array([[-227.21175382, -208.69356686, -430.10330937, -439.69284148]]))
     >>> # Retrieving 10 samples
-    >>> stream.next_instance(10)
+    >>> stream.next_sample(10)
     (array([[-0.30309825,  0.44103291,  0.41287082, -0.14456682,  0.3595044 ,
          -0.1983989 ,  0.17879287, -0.40594173, -1.14761094,  1.38526155,
          -0.93788023,  0.0941923 ,  0.43310795,  0.28912051,  1.06458514,
@@ -98,9 +98,9 @@ class RegressionGenerator(Stream):
           [ -72.53226633, -280.00028587,  -44.57428097, -166.31003398],
           [  41.74351609,  220.43038917,  151.95222469,  182.65729147]]))
 
-    >>> stream.estimated_remaining_instances()
+    >>> stream.n_remaining_samples()
     89
-    >>> stream.has_more_instances()
+    >>> stream.has_more_samples()
     True
     
     """
@@ -109,61 +109,40 @@ class RegressionGenerator(Stream):
         super().__init__()
         self.X = None
         self.y = None
-        self.num_samples = 0
-        self.num_features = 0
-        self.num_target_tasks = 0
-        self.num_informative = 0
-        self.num_numerical_attributes = 0
-        self.num_nominal_attributes = 0
-        self.num_values_per_nominal_att = 0
-        self.instance_index = 0
-        self.current_instance_y = None
-        self.current_instance_x = None
+        self.n_samples = n_samples
+        self.n_features = n_features
+        self.n_outputs = n_targets
+        self.n_informative = n_informative
+        self.n_num_features = n_features
         self.random_state = check_random_state(random_state)
-        self.__configure(n_samples, n_features, n_informative, n_targets)
+        self.__configure()
 
-    def __configure(self, n_samples, n_features, n_informative, n_targets):
+    def __configure(self):
         """ __configure
         
         Uses the make_regression function from scikit-learn to generate a 
         regression problem. This problem will be kept in memory and provided 
         as demanded.
         
-        Parameters
-        ----------
-        n_samples: int
-            Total amount of samples to generate.
-        
-        n_features: int
-            Number of features to generate.
-            
-        n_informative: int
-            Number of relevant features, in other words, the number of features 
-            that influence the class label.
-        
-        n_targets: int
-            Number of targeting tasks to generate.
-        
         """
-        self.X, self.y = make_regression(n_samples=n_samples, n_features=n_features, n_informative=n_informative,
-                                         n_targets=n_targets, random_state=self.random_state)
-        self.y.resize((self.y.size, n_targets))
-        self.num_samples = n_samples
-        self.num_features = n_features
-        self.num_target_tasks = n_targets
-        self.num_informative = n_informative
-        self.num_numerical_attributes = n_features
-        self.class_header = ["target_" + str(i) for i in range(self.num_target_tasks)]
-        self.attributes_header = ["att_num_" + str(i) for i in range(self.num_numerical_attributes)]
+        self.X, self.y = make_regression(n_samples=self.n_samples,
+                                         n_features=self.n_features,
+                                         n_informative=self.n_informative,
+                                         n_targets=self.n_outputs,
+                                         random_state=self.random_state)
+        self.y.resize((self.y.size, self.n_outputs))
 
-    def estimated_remaining_instances(self):
-        return self.num_samples - self.instance_index
+        self.class_header = ["target_" + str(i) for i in range(self.n_outputs)]
+        self.attributes_header = ["att_num_" + str(i) for i in range(self.n_num_features)]
 
-    def has_more_instances(self):
-        return self.num_samples - self.instance_index > 0
+    def n_remaining_samples(self):
+        return self.n_samples - self.sample_idx
 
-    def next_instance(self, batch_size=1):
-        """ next_instance
+    def has_more_samples(self):
+        return self.n_samples - self.sample_idx > 0
+
+    def next_sample(self, batch_size=1):
+        """ next_sample
         
         Returns batch_size samples from the generated regression problem.
         
@@ -179,50 +158,47 @@ class RegressionGenerator(Stream):
             the batch_size samples that were requested.
         
         """
-        self.instance_index += batch_size
+        self.sample_idx += batch_size
         try:
 
-            self.current_instance_x = self.X[self.instance_index - batch_size:self.instance_index, :]
-            self.current_instance_y = self.y[self.instance_index - batch_size:self.instance_index, :]
-            if self.num_target_tasks < 2:
-                self.current_instance_y = self.current_instance_y.flatten()
+            self.current_sample_x = self.X[self.sample_idx - batch_size:self.sample_idx, :]
+            self.current_sample_y = self.y[self.sample_idx - batch_size:self.sample_idx, :]
+            if self.n_outputs < 2:
+                self.current_sample_y = self.current_sample_y.flatten()
 
         except IndexError:
-            self.current_instance_x = None
-            self.current_instance_y = None
-        return self.current_instance_x, self.current_instance_y
+            self.current_sample_x = None
+            self.current_sample_y = None
+        return self.current_sample_x, self.current_sample_y
 
     def is_restartable(self):
         return True
 
     def restart(self):
-        self.instance_index = 0
-        self.current_instance_x = None
-        self.current_instance_y = None
+        self.sample_idx = 0
+        self.current_sample_x = None
+        self.current_sample_y = None
 
-    def get_num_nominal_attributes(self):
-        return self.num_nominal_attributes
+    def get_n_cat_features(self):
+        return self.n_cat_features
 
-    def get_num_numerical_attributes(self):
-        return self.num_numerical_attributes
+    def get_n_num_features(self):
+        return self.n_num_features
 
-    def get_num_values_per_nominal_attribute(self):
-        return self.num_values_per_nominal_att
+    def get_n_features(self):
+        return self.n_features
 
-    def get_num_attributes(self):
-        return self.num_features
+    def get_n_classes(self):
+        return self.n_outputs
 
-    def get_num_classes(self):
-        return self.num_target_tasks
-
-    def get_attributes_header(self):
+    def get_features_labels(self):
         return self.attributes_header
 
-    def get_classes_header(self):
+    def get_output_labels(self):
         return self.class_header
 
-    def get_last_instance(self):
-        return self.current_instance_x, self.current_instance_y
+    def get_last_sample(self):
+        return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
         pass
@@ -237,10 +213,10 @@ class RegressionGenerator(Stream):
         return 'stream'
 
     def get_info(self):
-        return 'RegressionGenerator: n_samples: ' + str(self.num_samples) + \
-               ' - n_features: ' + str(self.num_features) + \
-               ' - n_informative: ' + str(self.num_informative) + \
-               ' - n_targets: ' + str(self.num_target_tasks)
+        return 'RegressionGenerator: n_samples: ' + str(self.n_samples) + \
+               ' - n_features: ' + str(self.n_features) + \
+               ' - n_informative: ' + str(self.n_informative) + \
+               ' - n_targets: ' + str(self.n_outputs)
 
-    def get_num_outputs(self):
-        return self.num_target_tasks
+    def get_n_outputs(self):
+        return self.n_outputs

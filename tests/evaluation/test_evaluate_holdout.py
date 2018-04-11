@@ -8,13 +8,13 @@ from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
 
 def test_evaluate_holdout_classifier(tmpdir, test_path):
     # Setup file stream
-    stream = RandomTreeGenerator(tree_seed=23, instance_seed=12, n_classes=4, n_nominal_attributes=2,
-                                 n_numerical_attributes=5, n_values_per_nominal=5, max_depth=6, min_leaf_depth=3,
+    stream = RandomTreeGenerator(tree_seed=23, instance_seed=12, n_classes=4, n_cat_features=2,
+                                 n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
                                  fraction_leaves_per_level=0.15)
     stream.prepare_for_use()
 
     # Setup learner
-    nominal_attr_idx = [x for x in range(15, len(stream.get_attributes_header()))]
+    nominal_attr_idx = [x for x in range(15, len(stream.get_features_labels()))]
     learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
 
     # Setup evaluator

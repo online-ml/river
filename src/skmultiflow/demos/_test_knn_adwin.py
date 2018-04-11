@@ -25,8 +25,8 @@ def demo():
     #warnings.filterwarnings("ignore", ".*Passing 1d.*")
     opt = FileOption('FILE', 'OPT_NAME', '../datasets/sea_big.csv', 'csv', False)
     stream = FileStream(opt, -1, 1)
-    #stream = RandomRBFGeneratorDrift(change_speed=41.00, num_centroids=50, model_seed=32523423, instance_seed=5435,
-    #                                 num_classes=2, num_att=10, num_drift_centroids=50)
+    #stream = RandomRBFGeneratorDrift(change_speed=41.00, n_centroids=50, model_random_state=32523423, sample_seed=5435,
+    #                                 n_classes=2, num_att=10, num_drift_centroids=50)
     stream.prepare_for_use()
     t = OneHotToCategorical([[10, 11, 12, 13],
                             [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
@@ -44,7 +44,7 @@ def demo():
     first = True
     train = 200
     if train > 0:
-        X, y = stream.next_instance(train)
+        X, y = stream.next_sample(train)
         #pipe.partial_fit(X, y, classes=stream.get_classes())
         #pipe.partial_fit(X, y, classes=stream.get_classes())
         #pipe2.fit(X, y)
@@ -61,7 +61,7 @@ def demo():
     while n_samples < max_samples:
         if n_samples % (max_samples/20) == 0:
             logging.info('%s%%', str((n_samples//(max_samples/20)*5)))
-        X, y = stream.next_instance()
+        X, y = stream.next_sample()
         #my_pred = pipe.predict(X)
         my_pred = knn.predict(X)
         #my_pred = [1]

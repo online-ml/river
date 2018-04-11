@@ -68,11 +68,11 @@ class EvaluateStreamGenerationSpeed(BaseObject):
         true_percentage_index = 0
         logging.info('Measure generation speed of %s samples', str(self.num_samples))
         logging.info('Evaluating...')
-        stream_local_max = float("inf") if (stream.estimated_remaining_instances() == -1) \
-            else stream.estimated_remaining_instances()
+        stream_local_max = float("inf") if (stream.n_remaining_samples() == -1) \
+            else stream.n_remaining_samples()
         while ((timer() - init_time <= self.max_time) & (sample_count+self.batch_size <= self.num_samples)
                & (sample_count+self.batch_size <= stream_local_max)):
-            sample = stream.next_instance(self.batch_size)
+            sample = stream.next_sample(self.batch_size)
             sample_count += self.batch_size
             while (float(sample_count) + self.batch_size >= (((true_percentage_index+1)*self.num_samples)/20)):
                 true_percentage_index += 1

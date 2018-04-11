@@ -39,12 +39,12 @@ class FastBuffer(BaseObject):
     >>> file_stream.prepare_for_use()
     >>> clf = KNN(k=8, max_window_size=2000, leaf_size=40)
     >>> # Initially we need to partial_fit at least k=8 samples
-    >>> X, y = file_stream.next_instance(8)
+    >>> X, y = file_stream.next_sample(8)
     >>> clf = clf.partial_fit(X, y, classes=file_stream.get_classes())
     >>> predictions_buffer = FastBuffer(1000)
     >>> true_labels_buffer = FastBuffer(1000)
     >>> for i in range(2000):
-    ...     X, y = file_stream.next_instance()
+    ...     X, y = file_stream.next_sample()
     ...     true_label_popped = true_labels_buffer.add_element(y)
     ...     prediction_popped = predictions_buffer.add_element(clf.predict(X))
     ...     clf = clf.partial_fit(X, y)
@@ -593,7 +593,7 @@ class MOLConfusionMatrix(BaseObject):
     """ MOLConfusionMatrix
     
     This structure constitutes a confusion matrix, or an error matrix. It is 
-    represented by a matrix of shape (n_targets, n_labels, n_labels). It 
+    represented by a matrix of shape (n_outputs, n_labels, n_labels). It
     basically works as an individual ConfusionMatrix for each of the 
     classification tasks in a multi label environment. Thus, n_labels is 
     always 2 (binary).
@@ -620,7 +620,7 @@ class MOLConfusionMatrix(BaseObject):
         
     Notes
     -----
-    This structure starts with n_targets classification tasks. As the entries 
+    This structure starts with n_outputs classification tasks. As the entries
     arrive, if new labels are identified, the matrix may reshape itself to 
     accommodate all labels.
         
@@ -862,7 +862,7 @@ class MOLConfusionMatrix(BaseObject):
             return None
 
     def get_info(self):
-        return 'MOLConfusionMatrix: n_targets: ' + str(self.n_targets) + \
+        return 'MOLConfusionMatrix: n_outputs: ' + str(self.n_targets) + \
                ' - total_sum: ' + str(self.get_total_sum()) + \
                ' - total_discordance: ' + str(self.get_total_discordance()) + \
                ' - dtype: ' + str(self.dtype)
