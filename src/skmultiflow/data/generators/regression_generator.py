@@ -1,4 +1,4 @@
-from skmultiflow.data.base_instance_stream import Stream
+from skmultiflow.data.base_stream import Stream
 from sklearn.datasets import make_regression
 from skmultiflow.core.utils.validation import check_random_state
 

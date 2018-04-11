@@ -1,10 +1,10 @@
-from skmultiflow.data import base_instance_stream
+from skmultiflow.data import base_stream
 from skmultiflow.core.base_object import BaseObject
 import pandas as pd
 import numpy as np
 
 
-class FileStream(base_instance_stream.Stream, BaseObject):
+class FileStream(base_stream.Stream, BaseObject):
     """ FileStream
     
     A stream generated from the entries of a file. For the moment only 
