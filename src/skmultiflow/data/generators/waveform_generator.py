@@ -1,4 +1,4 @@
-from skmultiflow.data.base_instance_stream import Stream
+from skmultiflow.data.base_stream import Stream
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
 

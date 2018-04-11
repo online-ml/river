@@ -3,7 +3,7 @@ import warnings
 import logging
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
-from skmultiflow.data.base_instance_stream import Stream
+from skmultiflow.data.base_stream import Stream
 
 
 class EvaluateHoldout(StreamEvaluator):
