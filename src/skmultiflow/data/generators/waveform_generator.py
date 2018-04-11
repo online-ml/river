@@ -1,9 +1,9 @@
-from skmultiflow.data.base_instance_stream import BaseInstanceStream
+from skmultiflow.data.base_instance_stream import Stream
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
 
 
-class WaveformGenerator(BaseInstanceStream, BaseObject):
+class WaveformGenerator(Stream, BaseObject):
     """ WaveformGenerator
 
     Generates instances with 21 numeric attributes and 3 targets, based 

@@ -3,7 +3,7 @@ import warnings
 import logging
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
-from skmultiflow.data.base_instance_stream import BaseInstanceStream
+from skmultiflow.data.base_instance_stream import Stream
 
 
 class EvaluateHoldout(StreamEvaluator):
@@ -190,7 +190,7 @@ class EvaluateHoldout(StreamEvaluator):
                 raise NotImplementedError('{} does not have a predict() method.'.format(model))
 
         self.model = model if self.n_models > 1 else [model]
-        if isinstance(stream, BaseInstanceStream):
+        if isinstance(stream, Stream):
             self.stream = stream
         else:
             raise ValueError('{} is not a valid stream type.'.format(stream))

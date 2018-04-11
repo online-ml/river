@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
 
 
-class BaseInstanceStream(BaseObject, metaclass=ABCMeta):
+class Stream(BaseObject, metaclass=ABCMeta):
     """ BaseInstanceStream
     
     The abstract class setting up the minimum requirements of a stream, 

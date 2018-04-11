@@ -1,10 +1,10 @@
 import numpy as np
-from skmultiflow.data.base_instance_stream import BaseInstanceStream
+from skmultiflow.data.base_instance_stream import Stream
 from sklearn.datasets import make_multilabel_classification
 from skmultiflow.core.utils.validation import check_random_state
 
 
-class MultilabelGenerator(BaseInstanceStream):
+class MultilabelGenerator(Stream):
     """ MultilabelGenerator
 
     This generator creates a stream of samples for a multilabel problem. 

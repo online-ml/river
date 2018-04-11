@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 
-class FileStream(base_instance_stream.BaseInstanceStream, BaseObject):
+class FileStream(base_instance_stream.Stream, BaseObject):
     """ FileStream
     
     A stream generated from the entries of a file. For the moment only 
