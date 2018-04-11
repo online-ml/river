@@ -1,10 +1,10 @@
 import copy as cp
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
 from skmultiflow.core.utils.utils import *
 
 
-class OzaBagging(BaseClassifier):
+class OzaBagging(StreamModel):
     """ OzaBagging Classifier
     
     Oza Bagging is an ensemble learning method first introduced by Oza and 

@@ -4,11 +4,11 @@ import logging
 import copy as cp
 from sklearn.cluster import KMeans
 from collections import deque
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from skmultiflow.core.utils.utils import get_dimensions
 
 
-class SAMKNN(BaseClassifier):
+class SAMKNN(StreamModel):
     """ SAMKNN - Self Adjusting Memory (SAM) coupled with the k Nearest Neighbor classifier.
 
     Parameters

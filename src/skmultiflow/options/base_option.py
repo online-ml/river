@@ -5,8 +5,7 @@ from skmultiflow.core.base_object import BaseObject
 class BaseOption(BaseObject, metaclass=ABCMeta):
     """ BaseOption
     
-    The abstract class that defines the constraints for all option 
-    classes in this framework.
+    The abstract class that defines the constraints for all option classes in this framework.
     
     Raises
     ------

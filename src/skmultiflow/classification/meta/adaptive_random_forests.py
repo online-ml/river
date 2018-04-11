@@ -8,7 +8,7 @@ from skmultiflow.evaluation.measure_collection import ClassificationMeasurements
 from skmultiflow.core.utils.validation import check_random_state, check_weights
 
 
-class AdaptiveRandomForest(BaseClassifier):
+class AdaptiveRandomForest(StreamModel):
     """Adaptive Random Forest (ARF).
 
         Parameters

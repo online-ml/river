@@ -1,9 +1,9 @@
 import copy as cp
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from sklearn.tree import DecisionTreeClassifier
 
 
-class BatchIncremental(BaseClassifier):
+class BatchIncremental(StreamModel):
     """ Batch Incremental.
 
     This is a wrapper that allows the application of any batch model to a 

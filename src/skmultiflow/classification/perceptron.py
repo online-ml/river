@@ -1,8 +1,8 @@
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from sklearn.linear_model.perceptron import Perceptron
 
 
-class PerceptronMask(BaseClassifier):
+class PerceptronMask(StreamModel):
     """ PerceptronMask
 
     A mask for scikit-learn's Perceptron classifier.

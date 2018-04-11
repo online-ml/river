@@ -1,10 +1,10 @@
 import copy as cp
 from sklearn import linear_model
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from skmultiflow.evaluation.metrics.metrics import *
 
 
-class MultiOutputLearner(BaseClassifier) :
+class MultiOutputLearner(StreamModel) :
     """ MultiOutputLearner
     
     A Multi-Output Learner learns to predict multiple outputs for each

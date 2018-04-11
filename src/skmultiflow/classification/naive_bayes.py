@@ -1,8 +1,8 @@
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from sklearn.naive_bayes import MultinomialNB
 
 
-class NaiveBayes(BaseClassifier):
+class NaiveBayes(StreamModel):
     """ NaiveBayes
     
     A mask for scikit-learn's Naive Bayes classifier.
