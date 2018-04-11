@@ -1,9 +1,9 @@
 import numpy as np
-from skmultiflow.filtering.base_transform import BaseTransform
+from skmultiflow.transform.base_transform import StreamTransform
 from skmultiflow.core.utils.utils import get_dimensions
 
 
-class OneHotToCategorical(BaseTransform):
+class OneHotToCategorical(StreamTransform):
     """ OneHotToCategorical
     
     Transform that receives a features matrix, with some features coded as 

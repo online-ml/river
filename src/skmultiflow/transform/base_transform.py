@@ -2,7 +2,7 @@ from skmultiflow.core.base_object import BaseObject
 from abc import ABCMeta, abstractmethod
 
 
-class BaseTransform(BaseObject, metaclass=ABCMeta):
+class StreamTransform(BaseObject, metaclass=ABCMeta):
     """ BaseTransform
     
     Abstract class that explicits the constraints to all Transform objects 
@@ -62,7 +62,7 @@ class BaseTransform(BaseObject, metaclass=ABCMeta):
         
         Returns
         -------
-        BaseTransform
+        StreamTransform
             The partially fitted model.
         
         """
@@ -84,7 +84,7 @@ class BaseTransform(BaseObject, metaclass=ABCMeta):
 
         Returns
         -------
-        BaseTransform
+        StreamTransform
             The partially fitted model.
 
         """
