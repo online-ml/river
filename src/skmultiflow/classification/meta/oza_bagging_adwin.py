@@ -1,11 +1,11 @@
 import copy as cp
 from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.core.utils.utils import *
 
 
-class OzaBaggingAdwin(BaseClassifier):
+class OzaBaggingAdwin(StreamModel):
     """ OzaBagging Classifier with ADWIN change detector
     
     This online ensemble learner method is an improvement from the Online 

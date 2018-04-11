@@ -4,7 +4,7 @@ import textwrap
 from abc import ABCMeta
 from operator import attrgetter
 from skmultiflow.core.utils.utils import *
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from skmultiflow.classification.core.attribute_class_observers.gaussian_numeric_attribute_class_observer \
     import GaussianNumericAttributeClassObserver
 from skmultiflow.classification.core.attribute_class_observers.nominal_attribute_class_observer \
@@ -27,7 +27,7 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 
-class HoeffdingTree(BaseClassifier):
+class HoeffdingTree(StreamModel):
     """Hoeffding Tree or VFDT.
 
     Parameters

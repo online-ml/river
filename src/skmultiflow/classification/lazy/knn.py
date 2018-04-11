@@ -1,13 +1,10 @@
-import numpy as np
-from skmultiflow.classification.base import BaseClassifier
-from skmultiflow.classification.lazy.neighbors.distances import euclidean_distance, mixed_distance
+from skmultiflow.core.base import StreamModel
 from skmultiflow.core.utils.data_structures import InstanceWindow
-from skmultiflow.classification.lazy.neighbors.kdtree import KDTree
 import sklearn.neighbors as sk
 from skmultiflow.core.utils.utils import *
 
 
-class KNN(BaseClassifier):
+class KNN(StreamModel):
     """ K-Nearest Neighbors Classifier
     
     This is a non-parametric classification method. The output of this

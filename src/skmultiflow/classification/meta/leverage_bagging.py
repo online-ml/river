@@ -1,11 +1,11 @@
 import copy as cp
-from skmultiflow.classification.base import BaseClassifier
+from skmultiflow.core.base import StreamModel
 from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.classification.core.driftdetection.adwin import ADWIN
 from skmultiflow.core.utils.utils import *
 
 
-class LeverageBagging(BaseClassifier):
+class LeverageBagging(StreamModel):
     """ Leverage Bagging Classifier
     
     An ensemble method, which represents an improvement from the online Oza 
