@@ -1,7 +1,7 @@
-from skmultiflow.options.base_option import BaseOption
+from skmultiflow.options.base_option import Option
 
 
-class FileOption(BaseOption):
+class FileOption(Option):
     """ FileOption
     
     This class keeps information about a file.
