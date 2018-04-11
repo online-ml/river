@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
-from skmultiflow.data.base_instance_stream import BaseInstanceStream
+from skmultiflow.data.base_instance_stream import Stream
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 from skmultiflow.evaluation.measure_collection import WindowClassificationMeasurements, ClassificationMeasurements, \
     MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
@@ -188,7 +188,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
     def _check_configuration(self):
         # Check stream to infer task type
-        if isinstance(self.stream, BaseInstanceStream):
+        if isinstance(self.stream, Stream):
             if self.stream.get_num_outputs() == 1:
                 self._output_type = self.SINGLE_OUTPUT
             elif self.stream.get_num_outputs() > 1:

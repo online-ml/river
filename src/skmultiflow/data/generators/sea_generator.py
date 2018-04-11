@@ -1,9 +1,9 @@
-from skmultiflow.data.base_instance_stream import BaseInstanceStream
+from skmultiflow.data.base_instance_stream import Stream
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
 
 
-class SEAGenerator(BaseInstanceStream, BaseObject):
+class SEAGenerator(Stream, BaseObject):
     """ SEAGenerator
     
     This generator is an implementation of the data stream with abrupt 
