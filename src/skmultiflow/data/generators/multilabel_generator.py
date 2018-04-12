@@ -20,23 +20,27 @@ class MultilabelGenerator(Stream):
     n_features: int (Default: 100)
         Number of features to generate.
 
-    n_classes: int (Default: 1)
-        Number of targeting classes to generate.
+    n_targets: int (Default: 1)
+        Number of targets to generate.
         
-    n_outputs: int (Default: 2)
-        Number of outputs (labels) to generate.
+    n_labels: int (Default: 2)
+        Average number of labels per instance.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
+
+    Notes
+    -----
+    This is a wrapper for scikit-lean's `make_multilabel_classification`
         
     Examples
     --------
     >>> # Imports
     >>> from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
     >>> # Setting up the stream
-    >>> stream = MultilabelGenerator(n_samples=100, n_features=20, n_classes=4, n_outputs=4, random_state=0)
+    >>> stream = MultilabelGenerator(n_samples=100, n_features=20, n_targets=4, n_labels=4, random_state=0)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
@@ -80,14 +84,14 @@ class MultilabelGenerator(Stream):
 
     """
 
-    def __init__(self, n_samples=40000, n_features=20, n_classes=5, n_outputs=2, random_state=None):
+    def __init__(self, n_samples=40000, n_features=20, n_targets=5, n_labels=2, random_state=None):
         super().__init__()
         self.X = None
         self.y = None
         self.n_samples = n_samples
         self.n_features = n_features
-        self.n_classes = n_classes
-        self.n_outputs = n_outputs
+        self.n_targets = n_targets
+        self.n_labels = n_labels
         self.n_num_features = n_features
         self.random_state = check_random_state(random_state)
         self.__configure()
@@ -103,10 +107,10 @@ class MultilabelGenerator(Stream):
         """
         self.X, self.y = make_multilabel_classification(n_samples=self.n_samples,
                                                         n_features=self.n_features,
-                                                        n_classes=self.n_classes,
-                                                        n_labels=self.n_outputs,
+                                                        n_classes=self.n_targets,
+                                                        n_labels=self.n_labels,
                                                         random_state=self.random_state)
-        self.outputs_labels = ["label_" + str(i) for i in range(self.n_outputs)]
+        self.outputs_labels = ["target_" + str(i) for i in range(self.n_targets)]
         self.features_labels = ["att_num_" + str(i) for i in range(self.n_num_features)]
 
     def n_remaining_samples(self):
@@ -137,7 +141,7 @@ class MultilabelGenerator(Stream):
         try:
             self.current_sample_x = self.X[self.sample_idx - batch_size:self.sample_idx, :]
             self.current_sample_y = self.y[self.sample_idx - batch_size:self.sample_idx, :]
-            if self.n_classes < 2:
+            if self.n_targets < 2:
                 self.current_sample_y = self.current_sample_y.flatten()
 
         except IndexError:
@@ -163,26 +167,29 @@ class MultilabelGenerator(Stream):
     def get_n_features(self):
         return self.n_features
 
-    def get_n_classes(self):
-        return self.n_classes
+    def get_n_targets(self):
+        return self.n_targets
 
-    def get_features_labels(self):
+    def get_feature_names(self):
         return self.features_labels
 
-    def get_output_labels(self):
+    def get_target_names(self):
         return self.outputs_labels
 
-    def get_last_sample(self):
+    def last_sample(self):
         return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
         pass
 
-    def get_plot_name(self):
-        return 'Multilabel Generator'
+    def get_name(self):
+        return 'Multilabel Generator - {} targets'.format(self.n_targets)
 
-    def get_classes(self):
-        return np.unique(self.y).tolist()
+    def get_targets(self):
+        if self.n_targets == 1:
+            return np.unique(self.y).tolist()
+        else:
+            return [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
 
     def get_class_type(self):
         return 'stream'
@@ -190,8 +197,5 @@ class MultilabelGenerator(Stream):
     def get_info(self):
         return 'MultilabelGenerator: n_samples: ' + str(self.n_samples) + \
                ' - n_features: ' + str(self.n_features) + \
-               ' - n_classes: ' + str(self.n_classes) + \
-               ' - n_labels:' + str(self.n_outputs)
-
-    def get_n_outputs(self):
-        return self.n_outputs
+               ' - n_targets: ' + str(self.n_targets) + \
+               ' - n_labels:' + str(self.n_labels)

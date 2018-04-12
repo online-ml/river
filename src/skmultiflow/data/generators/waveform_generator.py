@@ -93,6 +93,7 @@ class WaveformGenerator(Stream):
         self.add_noise = add_noise
         self.n_num_features = self.NUM_BASE_ATTRIBUTES
         self.n_classes = self.NUM_CLASSES
+        self.n_targets = 1
         self.n_samples = 0
         self.n_features = self.n_num_features
 
@@ -192,22 +193,22 @@ class WaveformGenerator(Stream):
     def get_n_features(self):
         return self.n_num_features
 
-    def get_n_classes(self):
-        return self.n_classes
+    def get_n_targets(self):
+        return self.n_targets
 
-    def get_features_labels(self):
+    def get_feature_names(self):
         return self.features_labels
 
-    def get_output_labels(self):
+    def get_target_names(self):
         return self.outputs_labels
 
-    def get_last_sample(self):
+    def last_sample(self):
         return self.current_sample_x, self.current_sample_y
 
-    def get_plot_name(self):
-        return "Waveform Generator - " + str(self.n_classes) + " class labels"
+    def get_name(self):
+        return "Waveform Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
-    def get_classes(self):
+    def get_targets(self):
         return [i for i in range(self.n_classes)]
 
     def get_info(self):
@@ -217,6 +218,3 @@ class WaveformGenerator(Stream):
                '  -  n_cat_features: ' + str(self.n_cat_features) + \
                '  -  add_noise: ' + add_noise + \
                '  -  sample_seed: ' + str(self.seed)
-
-    def get_n_outputs(self):
-        return 1

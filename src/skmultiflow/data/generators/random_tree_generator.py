@@ -8,7 +8,7 @@ class RandomTreeGenerator(Stream):
        
     This generator is built based on its description in Domingo and Hulten's 
     'Knowledge Discovery and Data Mining'. The generator is based on a random 
-    tree that splits attributes at random and sets labels to its leafs.
+    tree that splits features at random and sets labels to its leafs.
     
     The tree structure is composed on Node objects, which can be either inner 
     nodes or leaf nodes. The choice comes as a function fo the parameters 
@@ -29,13 +29,14 @@ class RandomTreeGenerator(Stream):
         The number of classes to generate.
     
     n_cat_features: int (Default: 5)
-        The number of nominal attributes to generate.
+        The number of categorical features to generate. Categorical features are binary encoded, the actual number of
+        categorical features is `n_cat_features`x`n_categories_per_cat_feature`
     
     n_num_features: int (Default: 5)
-        The number of numerical attributes to generate.
+        The number of numerical features to generate.
     
     n_categories_per_cat_feature: int (Default: 5)
-        The number of values to generate per nominal attribute.
+        The number of values to generate per categorical feature.
     
     max_tree_depth: int (Default: 5)
         The maximum depth of the tree concept.
@@ -108,6 +109,7 @@ class RandomTreeGenerator(Stream):
         self.tree_seed = tree_seed
         self.instance_seed = instance_seed
         self.n_classes = n_classes
+        self.n_targets = 1
         self.n_num_features = n_num_features
         self.n_cat_features = n_cat_features
         self.n_categories_per_cat_feature = n_categories_per_cat_feature
@@ -161,11 +163,11 @@ class RandomTreeGenerator(Stream):
                                   random_state):
         """ generate_random_tree_node
         
-        Creates a node, choosing at random the splitting attribute and the 
+        Creates a node, choosing at random the splitting feature and the
         split value. Fill the features with random feature values, and then 
-        recursively generates its children. If the split attribute is a 
-        numerical attribute there are going to be two children nodes, one
-        for samples where the value for the split attribute is smaller than 
+        recursively generates its children. If the split feature is a
+        numerical feature there are going to be two children nodes, one
+        for samples where the value for the split feature is smaller than
         the split value, and one for the other case.
         
         Once the recursion passes the leaf minimum depth, it probabilistic 
@@ -386,22 +388,22 @@ class RandomTreeGenerator(Stream):
     def get_n_features(self):
         return self.n_num_features + self.n_cat_features * self.n_categories_per_cat_feature
 
-    def get_n_classes(self):
-        return self.n_classes
+    def get_n_targets(self):
+        return self.n_targets
 
-    def get_features_labels(self):
+    def get_feature_names(self):
         return self.features_labels
 
-    def get_output_labels(self):
+    def get_target_names(self):
         return self.outputs_labels
 
-    def get_last_sample(self):
+    def last_sample(self):
         return self.current_sample_x, self.current_sample_y
 
-    def get_plot_name(self):
-        return "Random Tree Generator - " + str(self.n_classes) + " class labels"
+    def get_name(self):
+        return "Random Tree Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
-    def get_classes(self):
+    def get_targets(self):
         return [i for i in range(self.n_classes)]
 
     def get_info(self):
@@ -414,9 +416,6 @@ class RandomTreeGenerator(Stream):
                ' - max_depth: ' + str(self.max_tree_depth) + \
                ' - min_leaf_depth: ' + str(self.min_leaf_depth) + \
                ' - fraction_leaves_per_level: ' + str(self.fraction_of_leaves_per_level)
-
-    def get_n_outputs(self):
-        return 1
 
 
 class Node:

@@ -93,6 +93,7 @@ class RandomRBFGenerator(Stream):
         self.instance_seed = instance_seed
         self.instance_random_state = check_random_state(instance_seed)
         self.n_classes = n_classes
+        self.n_targets = 1
         self.n_num_features = n_features
         self.n_centroids = n_centroids
         self.centroids = None
@@ -143,7 +144,7 @@ class RandomRBFGenerator(Stream):
                 data[j, i] = centroid_aux.centre[i] + att_vals[i]*scale
             data[j, self.n_num_features] = centroid_aux.class_label
         self.current_sample_x = data[:, :self.n_num_features]
-        self.current_sample_y = data[:, self.n_num_features:]
+        self.current_sample_y = data[:, self.n_num_features:].flatten()
         return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
@@ -166,22 +167,22 @@ class RandomRBFGenerator(Stream):
     def get_n_features(self):
         return self.n_num_features
 
-    def get_n_classes(self):
-        return self.n_classes
+    def get_n_targets(self):
+        return self.n_targets
 
-    def get_features_labels(self):
+    def get_feature_names(self):
         return self.features_labels
 
-    def get_output_labels(self):
+    def get_target_names(self):
         return self.outputs_header
 
-    def get_last_sample(self):
+    def last_sample(self):
         return self.current_sample_x, self.current_sample_y
 
-    def get_plot_name(self):
-        return "Random RBF Generator - {} class labels".format(self.n_classes)
+    def get_name(self):
+        return "Random RBF Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
-    def get_classes(self):
+    def get_targets(self):
         return [i for i in range(self.n_classes)]
 
     def generate_centroids(self):
@@ -211,16 +212,9 @@ class RandomRBFGenerator(Stream):
                ' - num_att: ' + str(self.n_num_features) + \
                ' - n_centroids: ' + str(self.n_centroids)
 
-    def get_n_outputs(self):
-        return 1
-
 
 class Centroid:
-    """ Centroid
-    
-    Class that stores a centroid's attributes. No further methods.
-    
-    """
+    """ Class that stores a centroid's attributes. """
     def __init__(self):
         self.centre = None
         self.class_label = None

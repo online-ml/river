@@ -96,6 +96,7 @@ class SEAGenerator(Stream):
         self.noise_percentage = noise_percentage
         self.n_num_features = 3
         self.n_classes = 2
+        self.n_targets = 1
         self.sample_random = None
         self.next_class_should_be_zero = False
 
@@ -195,16 +196,16 @@ class SEAGenerator(Stream):
     def get_n_features(self):
         return self.n_num_features
 
-    def get_n_classes(self):
-        return self.n_classes
+    def get_n_targets(self):
+        return self.n_targets
 
-    def get_features_labels(self):
+    def get_feature_names(self):
         return self.features_labels
 
-    def get_output_labels(self):
+    def get_target_names(self):
         return self.outputs_labels
 
-    def get_last_sample(self):
+    def last_sample(self):
         return self.current_sample_x, self.current_sample_y
 
     @staticmethod
@@ -311,10 +312,10 @@ class SEAGenerator(Stream):
         """
         return 0 if (att1 + att2 <= 9.5) else 1
 
-    def get_plot_name(self):
-        return "SEA Generator - " + str(self.n_classes) + " class labels"
+    def get_name(self):
+        return "SEA Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
-    def get_classes(self):
+    def get_targets(self):
         return [i for i in range(self.n_classes)]
 
     def get_info(self):
@@ -322,9 +323,6 @@ class SEAGenerator(Stream):
                ' - sample_seed: ' + str(self.sample_seed) + \
                ' - balance_classes: ' + ('True' if self.balance_classes else 'False') + \
                ' - noise_percentage: ' + str(self.noise_percentage)
-
-    def get_n_outputs(self):
-        return 1
 
     def generate_drift(self):
         new_function = self.sample_random.randint(4)

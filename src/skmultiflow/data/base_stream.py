@@ -14,8 +14,7 @@ class Stream(BaseObject, metaclass=ABCMeta):
     """
     def __init__(self):
         self.n_samples = 0
-        self.n_classes = 0
-        self.n_outputs = 0
+        self.n_targets = 0
         self.n_features = 0
         self.n_num_features = 0
         self.n_cat_features = 0
@@ -55,20 +54,20 @@ class Stream(BaseObject, metaclass=ABCMeta):
         -------
         tuple or tuple list
             A numpy.ndarray of shape (batch_size, n_features) and an array-like of size 
-            n_outputs, representing the next batch_size samples.
+            n_targets, representing the next batch_size samples.
 
         """
         raise NotImplementedError
 
     @abstractmethod
-    def get_last_sample(self):
+    def last_sample(self):
         """ Retrieves last `batch_size` samples in the stream.
 
         Returns
         -------
         tuple or tuple list
-            A numpy.ndarray of shape (batch_size, n_features) and an array-like of size
-            n_outputs, representing the next batch_size samples.
+            A numpy.ndarray of shape (batch_size, n_features) and an array-like of shape
+            (batch_size, n_targets), representing the next batch_size samples.
 
         """
         raise NotImplementedError
@@ -120,24 +119,20 @@ class Stream(BaseObject, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def get_n_classes(self):
+    def get_n_targets(self):
         raise NotImplementedError
 
     @abstractmethod
-    def get_classes(self):
+    def get_targets(self):
         """ Get all classes in the stream. """
         raise NotImplementedError
 
     @abstractmethod
-    def get_n_outputs(self):
+    def get_feature_names(self):
         raise NotImplementedError
 
     @abstractmethod
-    def get_features_labels(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_output_labels(self):
+    def get_target_names(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -156,8 +151,8 @@ class Stream(BaseObject, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def get_plot_name(self):
-        """ get_plot_name
+    def get_name(self):
+        """ get_name
         
         Gets the name of the plot, which is a string that will appear 
         in evaluation methods, to represent the stream.

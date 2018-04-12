@@ -42,7 +42,7 @@ class MultiOutputLearner(StreamModel):
     >>> pipe = Pipeline([('classifier', classifier)])
     >>> # Pre training the classifier with 150 samples
     >>> X, y = stream.next_sample(150)
-    >>> pipe = pipe.partial_fit(X, y, classes=stream.get_classes())
+    >>> pipe = pipe.partial_fit(X, y, classes=stream.get_targets())
     >>> # Keeping track of sample count, true labels and predictions to later 
     >>> # compute the classifier's hamming score
     >>> count = 0

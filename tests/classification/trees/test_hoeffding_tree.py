@@ -10,7 +10,7 @@ def test_hoeffding_tree():
                                  fraction_leaves_per_level=0.15)
     stream.prepare_for_use()
 
-    nominal_attr_idx = [x for x in range(15, len(stream.get_features_labels()))]
+    nominal_attr_idx = [x for x in range(5, stream.n_features)]
     learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
 
     cnt = 0

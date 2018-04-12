@@ -20,7 +20,7 @@ def demo():
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
     stream = SEAGenerator(1, noise_percentage=6.7)
     stream.prepare_for_use()
-    #print(stream.get_classes())
+    #print(stream.get_targets())
     clf = OzaBagging(h=KNNAdwin(k=8,max_window_size=2000,leaf_size=30), ensemble_length=2)
     sample_count = 0
     correctly_classified = 0
@@ -29,7 +29,7 @@ def demo():
     first = True
     if train_size > 0:
         X, y = stream.next_sample(train_size)
-        clf.partial_fit(X, y, classes=stream.get_classes())
+        clf.partial_fit(X, y, classes=stream.get_targets())
         first = False
 
     while sample_count < max_samples:
@@ -39,7 +39,7 @@ def demo():
         my_pred = clf.predict(X)
 
         if first:
-            clf.partial_fit(X, y, classes=stream.get_classes())
+            clf.partial_fit(X, y, classes=stream.get_targets())
             first = False
         else:
             clf.partial_fit(X, y)
