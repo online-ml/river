@@ -88,7 +88,7 @@ class LeverageBagging(StreamModel):
     >>> corrects = 0
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
-    >>> clf = clf.partial_fit(X, y, classes=stream.get_classes())
+    >>> clf = clf.partial_fit(X, y, classes=stream.get_targets())
     >>> for i in range(2000):
     ...     X, y = stream.next_sample()
     ...     pred = clf.predict(X)

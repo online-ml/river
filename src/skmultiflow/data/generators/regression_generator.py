@@ -30,6 +30,10 @@ class RegressionGenerator(Stream):
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
+
+    Notes
+    -----
+    This is a wrapper for scikit-lean's `make_regression`
     
     Examples
     --------
@@ -111,7 +115,7 @@ class RegressionGenerator(Stream):
         self.y = None
         self.n_samples = n_samples
         self.n_features = n_features
-        self.n_outputs = n_targets
+        self.n_targets = n_targets
         self.n_informative = n_informative
         self.n_num_features = n_features
         self.random_state = check_random_state(random_state)
@@ -128,11 +132,11 @@ class RegressionGenerator(Stream):
         self.X, self.y = make_regression(n_samples=self.n_samples,
                                          n_features=self.n_features,
                                          n_informative=self.n_informative,
-                                         n_targets=self.n_outputs,
+                                         n_targets=self.n_targets,
                                          random_state=self.random_state)
-        self.y.resize((self.y.size, self.n_outputs))
+        self.y.resize((self.y.size, self.n_targets))
 
-        self.class_header = ["target_" + str(i) for i in range(self.n_outputs)]
+        self.class_header = ["target_" + str(i) for i in range(self.n_targets)]
         self.attributes_header = ["att_num_" + str(i) for i in range(self.n_num_features)]
 
     def n_remaining_samples(self):
@@ -163,7 +167,7 @@ class RegressionGenerator(Stream):
 
             self.current_sample_x = self.X[self.sample_idx - batch_size:self.sample_idx, :]
             self.current_sample_y = self.y[self.sample_idx - batch_size:self.sample_idx, :]
-            if self.n_outputs < 2:
+            if self.n_targets < 2:
                 self.current_sample_y = self.current_sample_y.flatten()
 
         except IndexError:
@@ -188,26 +192,26 @@ class RegressionGenerator(Stream):
     def get_n_features(self):
         return self.n_features
 
-    def get_n_classes(self):
-        return self.n_outputs
+    def get_n_targets(self):
+        return self.n_targets
 
-    def get_features_labels(self):
+    def get_feature_names(self):
         return self.attributes_header
 
-    def get_output_labels(self):
+    def get_target_names(self):
         return self.class_header
 
-    def get_last_sample(self):
+    def last_sample(self):
         return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
         pass
 
-    def get_plot_name(self):
-        return 'Regression Generator'
+    def get_name(self):
+        return "Regression Generator - {} target(s)".format(self.n_targets)
 
-    def get_classes(self):
-        return None
+    def get_targets(self):
+        return [float] * self.n_targets
 
     def get_class_type(self):
         return 'stream'
@@ -216,7 +220,4 @@ class RegressionGenerator(Stream):
         return 'RegressionGenerator: n_samples: ' + str(self.n_samples) + \
                ' - n_features: ' + str(self.n_features) + \
                ' - n_informative: ' + str(self.n_informative) + \
-               ' - n_targets: ' + str(self.n_outputs)
-
-    def get_n_outputs(self):
-        return self.n_outputs
+               ' - n_targets: ' + str(self.n_targets)

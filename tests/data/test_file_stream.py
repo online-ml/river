@@ -12,13 +12,13 @@ def test_file_stream(test_path, package_path):
 
     assert stream.n_remaining_samples() == 40000
 
-    expected_header = ['attrib1', 'attrib2', 'attrib3']
-    assert stream.get_features_labels() == expected_header
+    expected_names = ['attrib1', 'attrib2', 'attrib3']
+    assert stream.get_feature_names() == expected_names
 
-    expected_classes = [0, 1]
-    assert stream.get_classes() == expected_classes
+    expected_targets = [0, 1]
+    assert stream.get_targets() == expected_targets
 
-    assert stream.get_output_labels() == ['class']
+    assert stream.get_target_names() == ['class']
 
     assert stream.get_n_features() == 3
 
@@ -26,9 +26,9 @@ def test_file_stream(test_path, package_path):
 
     assert stream.get_n_num_features() == 3
 
-    assert stream.get_n_classes() == 1
+    assert stream.get_n_targets() == 1
 
-    assert stream.get_plot_name() == 'sea_stream.csv - 2 class labels'
+    assert stream.get_name() == 'sea_stream.csv - 1 target(s), 2 classes'
 
     assert stream.has_more_samples() is True
 
@@ -44,7 +44,7 @@ def test_file_stream(test_path, package_path):
     assert np.alltrue(X[0] == X_expected[0])
     assert np.alltrue(y[0] == y_expected[0])
 
-    X, y = stream.get_last_sample()
+    X, y = stream.last_sample()
     assert np.alltrue(X[0] == X_expected[0])
     assert np.alltrue(y[0] == y_expected[0])
 
@@ -52,3 +52,7 @@ def test_file_stream(test_path, package_path):
     X, y = stream.next_sample(10)
     assert np.alltrue(X == X_expected)
     assert np.alltrue(y == y_expected)
+
+    assert stream.get_n_targets() == np.array(y).ndim
+
+    assert stream.get_n_features() == X.shape[1]

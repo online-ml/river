@@ -22,11 +22,11 @@ class FileStream(base_stream.Stream, BaseObject):
         Holds the options relative to the file to be read. For a detailed 
         documentation please refer to: skmultiflow.options.file_option.
         
-    targets_index: int
-        The index from which the targets (labels) start.
+    target_idx: int
+        The index from which the targets start.
         
-    num_target_tasks: int
-        The number of targeting tasks.
+    n_targets: int
+        The number of targets.
         
     Examples
     --------
@@ -59,15 +59,19 @@ class FileStream(base_stream.Stream, BaseObject):
     True
 
     """
+    CLASSIFICATION = 'classification'
+    REGRESSION = 'regression'
 
-    def __init__(self, file_opt, targets_index=-1, num_target_tasks=1, cat_features_idx=None):
+    def __init__(self, file_opt, target_idx=-1, n_targets=1, cat_features_idx=None):
         super().__init__()
         self.file_name = ''
         self.X = None
         self.y = None
         self.cat_features_idx = [] if cat_features_idx is None else cat_features_idx
-        self.num_target_tasks = num_target_tasks
-        self.target_index = targets_index
+        self.n_targets = n_targets
+        self.target_idx = target_idx
+        self.task_type = None
+        self.n_classes = 0
 
         self.__configure(file_opt)
 
@@ -98,14 +102,14 @@ class FileStream(base_stream.Stream, BaseObject):
             self.n_samples = rows
             labels = raw_data.columns.values.tolist()
 
-            if (self.target_index + self.num_target_tasks) == cols or (self.target_index + self.num_target_tasks) == 0:
-                # Take everything to the right of target_index
-                self.y = raw_data.iloc[:, self.target_index:].as_matrix()
-                self.outputs_labels = raw_data.iloc[:, self.target_index:].columns.values.tolist()
+            if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
+                # Take everything to the right of target_idx
+                self.y = raw_data.iloc[:, self.target_idx:].as_matrix()
+                self.outputs_labels = raw_data.iloc[:, self.target_idx:].columns.values.tolist()
             else:
-                # Take only num_target_tasks columns to the right of target_index, use the rest as features
-                self.y = raw_data.iloc[:, self.target_index:self.target_index+self.num_target_tasks].as_matrix()
-                self.outputs_labels = labels[self.target_index:self.target_index+self.num_target_tasks]
+                # Take only n_targets columns to the right of target_idx, use the rest as features
+                self.y = raw_data.iloc[:, self.target_idx:self.target_idx + self.n_targets].as_matrix()
+                self.outputs_labels = labels[self.target_idx:self.target_idx + self.n_targets]
 
             self.X = raw_data.drop(self.outputs_labels, axis=1).as_matrix()
             self.features_labels = raw_data.drop(self.outputs_labels, axis=1).columns.values.tolist()
@@ -119,7 +123,11 @@ class FileStream(base_stream.Stream, BaseObject):
                                      'exceeds n_features {}'.format(self.cat_features_idx, self.n_features))
             self.n_num_features = self.n_features - self.n_cat_features
 
-            self.n_classes = len(np.unique(self.y))
+            if self.y.dtype == np.integer:
+                self.task_type = self.CLASSIFICATION
+                self.n_classes = len(np.unique(self.y))
+            else:
+                self.task_type = self.REGRESSION
 
         except IOError:
             print("{} file reading failed.".format(self.file_name))
@@ -165,7 +173,7 @@ class FileStream(base_stream.Stream, BaseObject):
 
             self.current_sample_x = self.X[self.sample_idx - batch_size:self.sample_idx, :]
             self.current_sample_y = self.y[self.sample_idx - batch_size:self.sample_idx, :]
-            if self.num_target_tasks < 2:
+            if self.n_targets < 2:
                 self.current_sample_y = self.current_sample_y.flatten()
 
         except IndexError:
@@ -192,34 +200,37 @@ class FileStream(base_stream.Stream, BaseObject):
     def get_n_num_features(self):
         return self.n_num_features
 
-    def get_n_classes(self):
-        return self.num_target_tasks
+    def get_n_targets(self):
+        return self.n_targets
 
-    def get_features_labels(self):
+    def get_feature_names(self):
         return self.features_labels
 
-    def get_output_labels(self):
+    def get_target_names(self):
         return self.outputs_labels
 
-    def get_last_sample(self):
+    def last_sample(self):
         return self.current_sample_x, self.current_sample_y
 
-    def get_plot_name(self):
+    def get_name(self):
         aux = self.file_name.split("/")
         if aux[len(aux)-1] == '':
             aux.pop(len(aux)-1)
-        return "{} - {} class labels".format(aux[len(aux)-1], self.n_classes) \
-            if self.num_target_tasks == 1 \
-            else "{} - {} classification tasks".format(aux[len(aux)-1], self.num_target_tasks)
+        if self.task_type == self.CLASSIFICATION:
+            return "{} - {} target(s), {} classes".format(aux[len(aux)-1], self.n_targets, self.n_classes)
+        elif self.task_type == self.REGRESSION:
+            return "{} - {} target(s)".format(aux[len(aux)-1], self.n_targets)
 
-    def get_classes(self):
-        c = np.unique(self.y).tolist()
-        return c
+    def get_targets(self):
+        if self.task_type == 'classification':
+            if self.n_targets == 1:
+                return np.unique(self.y).tolist()
+            else:
+                return [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
+        elif self.task_type == self.REGRESSION:
+            return [float] * self.n_targets
 
     def get_info(self):
         return 'File Stream: file_name: ' + str(self.file_name) + \
                '  -  n_classes: ' + str(self.n_classes) + \
-               '  -  num_classification_tasks: ' + str(self.num_target_tasks)
-
-    def get_n_outputs(self):
-        return self.num_target_tasks
+               '  -  num_classification_tasks: ' + str(self.n_targets)

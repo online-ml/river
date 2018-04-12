@@ -14,7 +14,7 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
     stream.prepare_for_use()
 
     # Setup learner
-    nominal_attr_idx = [x for x in range(15, len(stream.get_features_labels()))]
+    nominal_attr_idx = [x for x in range(15, len(stream.get_feature_names()))]
     learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
 
     # Setup evaluator

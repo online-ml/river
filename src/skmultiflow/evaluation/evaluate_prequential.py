@@ -216,7 +216,7 @@ class EvaluatePrequential(StreamEvaluator):
         init_time = timer()
         end_time = timer()
         logging.info('Prequential Evaluation')
-        logging.info('Evaluating %s outputs.', str(self.stream.get_n_outputs()))
+        logging.info('Evaluating %s target(s).', str(self.stream.get_n_targets()))
 
         n_samples = self.stream.n_remaining_samples()
         if n_samples == -1 or n_samples > self.max_samples:
@@ -228,7 +228,7 @@ class EvaluatePrequential(StreamEvaluator):
             X, y = self.stream.next_sample(self.pretrain_size)
             for i in range(self.n_models):
                 if self._task_type != EvaluatePrequential.REGRESSION:
-                    self.model[i].partial_fit(X=X, y=y, classes=self.stream.get_classes())
+                    self.model[i].partial_fit(X=X, y=y, classes=self.stream.get_targets())
                 else:
                     self.model[i].partial_fit(X=X, y=y)
             self.global_sample_count += self.pretrain_size
@@ -261,7 +261,7 @@ class EvaluatePrequential(StreamEvaluator):
                     if first_run:
                         for i in range(self.n_models):
                             if self._task_type != EvaluatePrequential.REGRESSION:
-                                self.model[i].partial_fit(X, y, self.stream.get_classes())
+                                self.model[i].partial_fit(X, y, self.stream.get_targets())
                             else:
                                 self.model[i].partial_fit(X, y)
                         first_run = False
@@ -288,7 +288,7 @@ class EvaluatePrequential(StreamEvaluator):
             logging.info('Evaluation time: {} s'.format(self.max_time))
         else:
             logging.info('Evaluation time: {:.3f} s'.format(end_time - init_time))
-        logging.info('Total instances: {}'.format(self.global_sample_count))
+        logging.info('Total samples: {}'.format(self.global_sample_count))
         logging.info('Global performance:')
         for i in range(self.n_models):
             if 'performance' in self.metrics:
