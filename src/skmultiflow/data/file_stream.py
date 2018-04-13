@@ -21,12 +21,14 @@ class FileStream(Stream):
     filepath:
         Path to the data file
         
-    target_idx: int
-        The index from which the targets start.
+    target_idx: int, optional (default=-1)
+        The column index from which the targets start.
         
-    n_targets: int
+    n_targets: int, optional (default=1)
         The number of targets.
-        
+
+    cat_features_idx: list, optional (default=None)
+        A list of indices corresponding to the location of categorical features.
     Examples
     --------
     >>> # Imports
