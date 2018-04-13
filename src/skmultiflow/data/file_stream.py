@@ -233,5 +233,4 @@ class FileStream(Stream):
 
     def get_info(self):
         return 'File Stream: filename: ' + str(self.basename) + \
-               '  -  n_classes: ' + str(self.n_classes) + \
-               '  -  num_classification_tasks: ' + str(self.n_targets)
+               '  -  n_targets: ' + str(self.n_targets)
