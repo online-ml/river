@@ -40,7 +40,7 @@ class EvaluatePrequential(StreamEvaluator):
     max_time: float (Default: float("inf"))
         The maximum duration of the simulation (in seconds).
 
-    metrics: list, optional (Default: ['performance'])
+    metrics: list, optional (Default: ['performance', 'kappa'])
         The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
         and/or logged into the output file. Valid options are 'performance', 'kappa', 'kappa_t', 'kappa_m',
         'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
@@ -131,7 +131,7 @@ class EvaluatePrequential(StreamEvaluator):
         self.output_file = output_file
         self.show_plot = show_plot
         if metrics is None:
-            self.metrics = ['performance']
+            self.metrics = [self.PERFORMANCE, self.KAPPA]
         else:
             self.metrics = metrics
         self.restart_stream = restart_stream

@@ -331,7 +331,6 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             shift = -self.batch_size   # Adjust index due to training after testing
         self._update_outputs(self.global_sample_count + shift, new_points_dict)
 
-
     def _update_outputs(self, current_x, new_points_dict):
         """ Update outputs of the evaluation. """
         self._update_file(current_x)
@@ -344,47 +343,43 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             with open(self.output_file, 'w+') as f:
                 f.write("# TEST CONFIGURATION BEGIN")
                 if hasattr(self.stream, 'get_info'):
-                    f.write("\n# " + self.stream.get_info())
-                if self.n_models <= 1:
-                    if hasattr(self.model, 'get_info'):
-                        f.write("\n# " + self.model.get_info())
-                else:
-                    for i in range(self.n_models):
-                        if hasattr(self.model[i], 'get_info'):
-                            f.write("\n# " + self.model[i].get_info())
-                f.write("\n# " + self.get_info())
+                    f.write("\n# {}".format(self.stream.get_info()))
+                for i in range(self.n_models):
+                    if hasattr(self.model[i], 'get_info'):
+                        f.write("\n# [{}] {}".format(i, self.model[i].get_info()))
+                f.write("\n# {}".format(self.get_info()))
                 f.write("\n# TEST CONFIGURATION END")
                 header = '\nid'
                 if self.PERFORMANCE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_performance_{},sliding_performance_{}'.format(i, i)
+                        header += ',global_performance_[{}],sliding_performance_[{}]'.format(i, i)
                 if self.KAPPA in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_{},sliding_kappa_{}'.format(i, i)
+                        header += ',global_kappa_[{}],sliding_kappa_[{}]'.format(i, i)
                 if self.KAPPA_T in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_t_{},sliding_kappa_t_{}'.format(i, i)
+                        header += ',global_kappa_t_[{}],sliding_kappa_t_[{}]'.format(i, i)
                 if self.KAPPA_M in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_m_{},sliding_kappa_m_{}'.format(i, i)
+                        header += ',global_kappa_m_[{}],sliding_kappa_m_[{}]'.format(i, i)
                 if self.HAMMING_SCORE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_hamming_score_{},sliding_hamming_score_{}'.format(i, i)
+                        header += ',global_hamming_score_[{}],sliding_hamming_score_[{}]'.format(i, i)
                 if self.HAMMING_LOSS in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_hamming_loss_{},sliding_hamming_loss_{}'.format(i, i)
+                        header += ',global_hamming_loss_[{}],sliding_hamming_loss_[{}]'.format(i, i)
                 if self.EXACT_MATCH in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_exact_match_{},sliding_exact_match_{}'.format(i, i)
+                        header += ',global_exact_match_[{}],sliding_exact_match_[{}]'.format(i, i)
                 if self.J_INDEX in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_j_index_{},sliding_j_index_{}'.format(i, i)
+                        header += ',global_j_index_[{}],sliding_j_index_[{}]'.format(i, i)
                 if self.MSE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_mse_{},sliding_mse_{}'.format(i, i)
+                        header += ',global_mse_[{}],sliding_mse_[{}]'.format(i, i)
                 if self.MAE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_mae_{},sliding_mae_{}'.format(i, i)
+                        header += ',global_mae_[{}],sliding_mae_[{}]'.format(i, i)
                 f.write(header)
 
     def _update_file(self, current_x, ):

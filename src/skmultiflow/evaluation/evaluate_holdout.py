@@ -134,7 +134,7 @@ class EvaluateHoldout(StreamEvaluator):
         self.output_file = output_file
         self.show_plot = show_plot
         if metrics is None:
-            self.metrics = ['performance']
+            self.metrics = [self.PERFORMANCE, self.KAPPA]
         else:
             self.metrics = metrics
         self.restart_stream = restart_stream
