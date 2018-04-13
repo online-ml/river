@@ -6,7 +6,6 @@ from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
 from sklearn.linear_model.stochastic_gradient import SGDClassifier
 
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.file_stream import FileStream
 
 
@@ -16,14 +15,14 @@ def demo():
     h = HoeffdingTree()
 
     # Setup Stream
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_stream.csv", "CSV", False)
-    stream = FileStream(opt, -1, 1)
+    stream = FileStream("../datasets/sea_stream.csv", -1, 1)
     stream.prepare_for_use()
 
-    T_init = 100
-    evaluator = EvaluatePrequential(pretrain_size=T_init, output_file='output.csv', max_samples=10000, batch_size=1,
-                               n_wait=1000, show_plot=True, metrics=['performance'])
+    pretrain = 100
+    evaluator = EvaluatePrequential(pretrain_size=pretrain, output_file='output.csv', max_samples=10000, batch_size=1,
+                                    n_wait=1000, show_plot=True, metrics=['performance'])
     evaluator.eval(stream=stream, model=h)
+
 
 if __name__ == '__main__':
     demo()

@@ -1,5 +1,4 @@
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
 from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
 from skmultiflow.data.generators.random_rbf_generator import RandomRBFGenerator
@@ -15,21 +14,21 @@ def demo():
     
     """
     # Setup the stream
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
-    stream = FileStream(opt, -1, 1)
+    # stream = FileStream("../datasets/covtype.csv", -1, 1)
     stream = RandomRBFGeneratorDrift()
     stream.prepare_for_use()
 
     # Test with RandomTreeGenerator
-    #opt_list = [['-c', '2'], ['-o', '0'], ['-u', '5'], ['-v', '4']]
-    #stream = RandomTreeGenerator(opt_list)
-    #stream.prepare_for_use()
+    # opt_list = [['-c', '2'], ['-o', '0'], ['-u', '5'], ['-v', '4']]
+    # stream = RandomTreeGenerator(opt_list)
+    # stream.prepare_for_use()
 
     # Setup the evaluator
-    eval = EvaluateStreamGenerationSpeed(100000, float("inf"), None, 5)
+    evaluator = EvaluateStreamGenerationSpeed(100000, float("inf"), None, 5)
 
     # Evaluate
-    eval.eval(stream)
+    evaluator.eval(stream)
+
 
 if __name__ == '__main__':
     demo()

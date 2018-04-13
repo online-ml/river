@@ -4,7 +4,6 @@ from sklearn.linear_model.perceptron import Perceptron
 from skmultiflow.classification.perceptron import PerceptronMask
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
 
@@ -27,16 +26,15 @@ def demo(output_file=None, instances=40000):
          
     """
     # Setup the File Stream
-    #opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
-    #stream = FileStream(opt, -1, 1)
+    # stream = FileStream("../datasets/covtype.csv", -1, 1)
     stream = WaveformGenerator()
     stream.prepare_for_use()
 
     # Setup the classifier
     classifier = SGDClassifier()
-    #classifier = PassiveAggressiveClassifier()
-    #classifier = SGDRegressor()
-    #classifier = PerceptronMask()
+    # classifier = PassiveAggressiveClassifier()
+    # classifier = SGDRegressor()
+    # classifier = PerceptronMask()
 
     # Setup the pipeline
     pipe = Pipeline([('Classifier', classifier)])

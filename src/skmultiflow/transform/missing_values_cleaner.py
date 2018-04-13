@@ -41,29 +41,27 @@ class MissingValuesCleaner(StreamTransform):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow .options.file_option import FileOption
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.transform.missing_values_cleaner import MissingValuesCleaner
     >>> # Setting up a stream
-    >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'csv', False)
-    >>> stream = FileStream(opt, -1, 1)
+    >>> stream = FileStream('skmultiflow/datasets/covtype.csv', -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setting up the filter to substitute values -47 by the median of the 
     >>> # last 10 samples
-    >>> filter = MissingValuesCleaner(-47, 'median', 10)
+    >>> cleaner = MissingValuesCleaner(-47, 'median', 10)
     >>> X, y = stream.next_sample(10)
     >>> X[9, 0] = -47
     >>> # We will use this list to keep track of values
     >>> list = []
     >>> # Iterate over the first 9 samples, to build a sample window
     >>> for i in range(9):
-    ...     X_transf = filter.partial_fit_transform([X[i].tolist()])
-    ...     list.append(X_transf[0][0])
-    ...     print(X_transf)
+    >>>     X_transf = cleaner.partial_fit_transform([X[i].tolist()])
+    >>>     list.append(X_transf[0][0])
+    >>>     print(X_transf)
     >>>
     >>> # Transform last sample. The first feature should be replaced by the list's 
     >>> # median value
-    >>> X_transf = filter.partial_fit_transform([X[9].tolist()])
+    >>> X_transf = cleaner.partial_fit_transform([X[9].tolist()])
     >>> print(X_transf)
     >>> np.median(list)
     
@@ -71,7 +69,7 @@ class MissingValuesCleaner(StreamTransform):
 
     def __init__(self, missing_value=np.nan, strategy='zero', window_size=200, new_value=1):
         super().__init__()
-        #default_values
+        # dDefault_values
         self.missing_value = np.nan
         self.strategy = 'zero'
         self.window_size = 200
@@ -192,15 +190,12 @@ class MissingValuesCleaner(StreamTransform):
         
         """
         X = np.asarray(X)
-        if self.strategy in ['mean', 'meadian', 'mode']:
+        if self.strategy in ['mean', 'median', 'mode']:
             self.window.add_element(X)
         return self
-
 
     def get_info(self):
         return 'MissingValueCleaner: missing_value: ' + str(self.missing_value) + \
                ' - strategy: ' + self.strategy + \
                ' - window_size: ' + str(self.window_size) + \
                ' - new_value: ' + str(self.new_value)
-
-

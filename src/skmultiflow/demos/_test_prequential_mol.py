@@ -5,7 +5,6 @@ from skmultiflow.classification.perceptron import PerceptronMask
 from skmultiflow.classification.multi_output_learner import MultiOutputLearner
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
@@ -27,29 +26,28 @@ def demo(output_file=None, instances=40000):
 
     """
     # Setup the File Stream
-    #opt = FileOption("FILE", "OPT_NAME", "../datasets/music.csv", "CSV", False)
-    #stream = FileStream(opt, 0, 6)
+    # stream = FileStream("../datasets/music.csv", 0, 6)
     stream = MultilabelGenerator(n_samples=instances)
-    #stream = WaveformGenerator()
+    # stream = WaveformGenerator()
     stream.prepare_for_use()
-
 
     # Setup the classifier
     classifier = MultiOutputLearner(SGDClassifier(n_iter=100))
-    #classifier = SGDClassifier()
-    #classifier = PassiveAggressiveClassifier()
-    #classifier = SGDRegressor()
-    #classifier = PerceptronMask()
+    # classifier = SGDClassifier()
+    # classifier = PassiveAggressiveClassifier()
+    # classifier = SGDRegressor()
+    # classifier = PerceptronMask()
 
     # Setup the pipeline
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(pretrain_size=5000, max_samples=instances - 10000, batch_size=1, n_wait=200, max_time=1000,
+    evaluator = EvaluatePrequential(pretrain_size=5000, max_samples=instances - 10000, batch_size=1, n_wait=200, max_time=1000,
                                output_file=output_file, show_plot=True, metrics=['hamming_score', 'j_index', 'exact_match'])
 
     # Evaluate
-    eval.eval(stream=stream, model=pipe)
+    evaluator.eval(stream=stream, model=pipe)
+
 
 if __name__ == '__main__':
     demo('log_mol1.csv', 50000)

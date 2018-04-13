@@ -66,10 +66,8 @@ class KNN(StreamModel):
     >>> # Imports
     >>> from skmultiflow.classification.lazy.knn import KNN
     >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.options.file_option import FileOption
     >>> # Setting up the stream
-    >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/sea_big.csv', 'csv', False)
-    >>> stream = FileStream(opt, -1, 1)
+    >>> stream = FileStream('skmultiflow/datasets/sea_big.csv', -1, 1)
     >>> stream.prepare_for_use()
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)

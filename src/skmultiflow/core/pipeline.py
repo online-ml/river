@@ -42,11 +42,9 @@ class Pipeline(BaseObject):
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-    >>> from skmultiflow.options.file_option import FileOption
     >>> from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
     >>> # Setting up the stream
-    >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
-    >>> stream = FileStream(opt, -1, 1)
+    >>> stream = FileStream("skmultiflow/datasets/covtype.csv", -1, 1)
     >>> stream.prepare_for_use()
     >>> transform = OneHotToCategorical([[10, 11, 12, 13],
     ... [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,

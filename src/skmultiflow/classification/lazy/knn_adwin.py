@@ -53,10 +53,8 @@ class KNNAdwin(KNN):
     >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
     >>> from skmultiflow.classification.lazy.knn import KNN
     >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.options.file_option import FileOption
     >>> # Setting up the stream
-    >>> opt = FileOption('FILE', 'OPT_NAME', 'skmultiflow/datasets/covtype.csv', 'csv', False)
-    >>> stream = FileStream(opt, -1, 1)
+    >>> stream = FileStream('skmultiflow/datasets/covtype.csv', -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setting up the KNNAdwin classifier
     >>> knn_adwin = KNNAdwin(k=8, leaf_size=40, max_window_size=2000)

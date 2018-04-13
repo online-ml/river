@@ -30,11 +30,9 @@ class MultiOutputLearner(StreamModel):
     >>> from skmultiflow.classification.multi_output_learner import MultiOutputLearner
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.options.file_option import FileOption
     >>> from sklearn.linear_model.perceptron import Perceptron
     >>> # Setup the file stream
-    >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/music.csv", "CSV", False)
-    >>> stream = FileStream(opt, 0, 6)
+    >>> stream = FileStream("skmultiflow/datasets/music.csv", 0, 6)
     >>> stream.prepare_for_use()
     >>> # Setup the MultiOutputLearner using sklearn Perceptrons
     >>> classifier = MultiOutputLearner(h=Perceptron())

@@ -3,7 +3,6 @@ from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
@@ -18,8 +17,7 @@ def demo():
      
     """
     # # Setup the stream
-    # opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
-    # stream = FileStream(opt, -1, 1)
+    # stream = FileStream("../datasets/covtype.csv", -1, 1)
     # stream.prepare_for_use()
     # # If used for Hoeffding Trees then need to pass indices for Nominal attributes
 
