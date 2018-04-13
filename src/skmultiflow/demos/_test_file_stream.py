@@ -9,6 +9,7 @@ from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.file_stream import FileStream
 
+
 def demo(): 
 
     # The classifier we will use (other options: SAMKNN, LeverageBagging, SGD)
@@ -20,8 +21,9 @@ def demo():
     stream.prepare_for_use()
 
     T_init = 100
-    eval = EvaluatePrequential(pretrain_size=T_init, output_file='output.csv', max_samples=10000, batch_size=1, n_wait=1000, task_type='classification', show_plot=True, metrics=['performance'])
-    eval.eval(stream=stream, model=h)
+    evaluator = EvaluatePrequential(pretrain_size=T_init, output_file='output.csv', max_samples=10000, batch_size=1,
+                               n_wait=1000, show_plot=True, metrics=['performance'])
+    evaluator.eval(stream=stream, model=h)
 
 if __name__ == '__main__':
     demo()

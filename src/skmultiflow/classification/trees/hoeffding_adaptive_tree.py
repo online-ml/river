@@ -98,8 +98,7 @@ class HAT(HoeffdingTree):
     >>>
     >>> classifier = HAT()
     >>> eval = EvaluatePrequential(pretrain_size=200, max_samples=50000, batch_size=1, n_wait=200, max_time=1000,
-    >>>                            output_file=None, task_type='classification', show_plot=True,
-    >>>                            metrics=['kappa', 'kappa_t', 'performance'])
+    >>>                            output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
     >>>
     >>> eval.eval(stream=stream, model=classifier)
 

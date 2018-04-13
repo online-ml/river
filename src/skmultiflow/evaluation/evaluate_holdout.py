@@ -39,15 +39,8 @@ class EvaluateHoldout(StreamEvaluator):
     batch_size: int (Default: 1)
         The number of samples to pass at a time to the model(s).
 
-    pretrain_size: int (Default: 200)
-        The number of samples to use to train the model before starting the evaluation. Used to enforce a 'warm' start.
-
     max_time: float (Default: float("inf"))
         The maximum duration of the simulation (in seconds).
-
-    task_type: string (Default: 'classification')
-        The type of task to execute. Can be one of the following: 'classification', 
-        'regression' or 'multi_output'.
     
     metrics: list, optional (Default: ['performance'])
         The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
@@ -98,9 +91,9 @@ class EvaluateHoldout(StreamEvaluator):
     >>> # Setup the pipeline
     >>> pipe = Pipeline([('Classifier', classifier)])
     >>> # Setup the evaluator
-    >>> evaluator = EvaluateHoldout(pretrain_size=200, max_samples=100000, batch_size=1, n_wait=10000, max_time=1000,
-    ... output_file=None, task_type='classification', show_plot=True, metrics=['kappa', 'performance'],
-    ... test_size=5000, dynamic_test_set=True)
+    >>> evaluator = EvaluateHoldout(max_samples=100000, batch_size=1, n_wait=10000, max_time=1000,
+    >>>                             output_file=None, show_plot=True, metrics=['kappa', 'performance'],
+    >>>                             test_size=5000, dynamic_test_set=True)
     >>> # Evaluate
     >>> evaluator.eval(stream=stream, model=pipe)
     
@@ -115,9 +108,9 @@ class EvaluateHoldout(StreamEvaluator):
     >>> clf_one = SGDClassifier()
     >>> clf_two = KNNAdwin(k=8,max_window_size=2000)
     >>> classifier = [clf_one, clf_two]
-    >>> evaluator = EvaluateHoldout(pretrain_size=200, test_size=5000, dynamic_test_set=True, max_samples=100000,
-    ... batch_size=1, n_wait=10000, max_time=1000, output_file=None, task_type='classification', 
-    ... show_plot=True, metrics=['kappa', 'performance'])
+    >>> evaluator = EvaluateHoldout(test_size=5000, dynamic_test_set=True, max_samples=100000, batch_size=1,
+    >>>                             n_wait=10000, max_time=1000, output_file=None, show_plot=True,
+    >>>                             metrics=['kappa', 'performance'])
     >>> evaluator.eval(stream=stream, model=classifier)
     
     """
@@ -126,11 +119,9 @@ class EvaluateHoldout(StreamEvaluator):
                  n_wait=10000,
                  max_samples=100000,
                  batch_size=1,
-                 pretrain_size=200,
                  max_time=float("inf"),
                  metrics=None,
                  output_file=None,
-                 task_type='classification',
                  show_plot=False,
                  restart_stream=True,
                  test_size=5000,

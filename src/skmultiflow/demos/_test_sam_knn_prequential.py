@@ -49,8 +49,7 @@ def demo(output_file=None, instances=50000):
 
     # Setup the evaluator
     eval = EvaluatePrequential(pretrain_size=0, max_samples=instances, batch_size=1, n_wait=100, max_time=1000,
-                               output_file=output_file, task_type='classification', show_plot=True,
-                               metrics=['performance'])
+                               output_file=output_file, show_plot=True, metrics=['performance'])
 
     # Evaluate
     eval.eval(stream=stream, model=classifier)
