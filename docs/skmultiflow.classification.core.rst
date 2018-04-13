@@ -1,6 +1,17 @@
 skmultiflow.classification.core package
 =======================================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    skmultiflow.classification.core.attribute_class_observers
+    skmultiflow.classification.core.conditional_tests
+    skmultiflow.classification.core.driftdetection
+    skmultiflow.classification.core.split_criteria
+    skmultiflow.classification.core.utils
+
 Submodules
 ----------
 

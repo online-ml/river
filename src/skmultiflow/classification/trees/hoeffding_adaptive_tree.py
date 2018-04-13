@@ -80,12 +80,12 @@ class HAT(HoeffdingTree):
     References
     ----------
     .. [1] Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."\
-    In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin, Heidelberg, 2009.
+       In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin, Heidelberg, 2009.
     .. [2] Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive windowing."\
-    In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial\
-    and Applied Mathematics, 2007.
+       In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial\
+       and Applied Mathematics, 2007.
 
-     Examples
+    Examples
     --------
     >>> from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
     >>> from skmultiflow.data.file_stream import FileStream
@@ -102,6 +102,7 @@ class HAT(HoeffdingTree):
     >>>                            metrics=['kappa', 'kappa_t', 'performance'])
     >>>
     >>> eval.eval(stream=stream, model=classifier)
+
     """
 
     class NewNode(metaclass=ABCMeta):

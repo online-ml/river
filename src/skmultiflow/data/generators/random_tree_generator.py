@@ -200,7 +200,7 @@ class RandomTreeGenerator(Stream):
         
         Returns
         -------
-        Node
+        random_tree_generator.Node
             Returns the node, either a inner node or a leaf node.
         
         Notes

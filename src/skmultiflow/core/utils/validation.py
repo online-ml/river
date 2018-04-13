@@ -6,6 +6,7 @@ import numpy as np
 
 def check_random_state(seed):
     """Turn seed into a np.random.RandomState instance.
+
     Parameters
     ----------
     seed : None | int | instance of RandomState
@@ -13,9 +14,11 @@ def check_random_state(seed):
         If seed is an int, return a new RandomState instance seeded with seed.
         If seed is already a RandomState instance, return it.
         Otherwise raise ValueError.
+
     Notes
     -----
     Code from sklearn
+
     """
     if seed is None or seed is np.random:
         return np.random.mtrand._rand
@@ -28,6 +31,7 @@ def check_random_state(seed):
 
 def check_weights(weight, expand_length=1):
     """Check if weights are valid
+
     Parameters
     ----------
     weight : int, float, list, np.ndarray
@@ -37,6 +41,7 @@ def check_weights(weight, expand_length=1):
     expand_length : int, optional (default=1)
         If the value passed is larger than 1 and weight is a single value, then the weight is replicated n times inside
         an np.array. If weight is not a single value, raises an error
+
     """
     if isinstance(weight, (int, float, np.integer, np.float)):
         if expand_length >= 1:

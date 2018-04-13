@@ -215,6 +215,7 @@ class HoeffdingTree(StreamModel):
             """Calculate node's promise.
 
             Returns
+            -------
             int
                 A small value indicates that the node has seen more samples of a given class than the other classes.
 
@@ -317,7 +318,7 @@ class HoeffdingTree(StreamModel):
 
             Returns
             -------
-            Node or None
+            HoeffdingTree.Node or None
                 Child node.
 
             """
@@ -1016,7 +1017,7 @@ class HoeffdingTree(StreamModel):
             self.estimate_model_byte_size()
 
     def get_votes_for_instance(self, X):
-        """Get class votes for a single instance.
+        """ Get class votes for a single instance.
 
         Parameters
         ----------
@@ -1024,8 +1025,8 @@ class HoeffdingTree(StreamModel):
             Instance attributes.
 
         Returns
-            -------
-            dict (class_value, weight)
+        -------
+        dict (class_value, weight)
 
         """
         if self._tree_root is not None:

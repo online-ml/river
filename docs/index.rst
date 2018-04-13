@@ -22,7 +22,7 @@ A multi-output/multi-label and stream data framework. Inspired by `MOA <https://
    Installation <https://scikit-multiflow.github.io//installation/>
    Quick-Start Guide <https://scikit-multiflow.github.io//quick-start-guide/>
    Contributing <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>
-   API <api>
+   Documentation <modules>
    Github Repository <https://github.com/scikit-multiflow/scikit-multiflow>
 
 
