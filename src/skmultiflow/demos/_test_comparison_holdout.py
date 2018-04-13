@@ -22,8 +22,7 @@ def demo(output_file=None, instances=40000):
     
     """
     # Setup the File Stream
-    # opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
-    # stream = FileStream(opt, -1, 1)
+    # stream = FileStream("../datasets/covtype.csv", -1, 1)
     stream = WaveformGenerator()
     stream.prepare_for_use()
 

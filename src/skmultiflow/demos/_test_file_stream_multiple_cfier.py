@@ -1,27 +1,22 @@
-import time
-import numpy as np
-
 from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.classification.lazy.sam_knn import SAMKNN
 from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
 from sklearn.linear_model.stochastic_gradient import SGDClassifier
 
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.file_stream import FileStream
 
 
-def demo_parameterized(h, dset="sea_stream.csv", show_plot=True): 
+def demo_parameterized(h, filename="sea_stream.csv", show_plot=True):
     # Setup Stream
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/"+dset, "CSV", False)
-    stream = FileStream(opt, -1, 1)
+    stream = FileStream("../datasets/" + filename, -1, 1)
     stream.prepare_for_use()
 
     # For each classifier, e...
-    T_init = 100
-    eval = EvaluatePrequential(pretrain_size=T_init, output_file='output.csv', max_samples=10000, batch_size=1,
-                               n_wait=1000, show_plot=show_plot, metrics=['performance'])
-    eval.eval(stream=stream, model=h)
+    pretrain = 100
+    evaluator = EvaluatePrequential(pretrain_size=pretrain, output_file='output.csv', max_samples=10000, batch_size=1,
+                                    n_wait=1000, show_plot=show_plot, metrics=['performance'])
+    evaluator.eval(stream=stream, model=h)
 
 
 def demo():

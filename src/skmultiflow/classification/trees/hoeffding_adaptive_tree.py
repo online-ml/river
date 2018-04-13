@@ -89,11 +89,9 @@ class HAT(HoeffdingTree):
     --------
     >>> from skmultiflow.classification.trees.hoeffding_adaptive_tree import HAT
     >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.options.file_option import FileOption
     >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
-    >>> opt = FileOption("FILE", "OPT_NAME", "/skmultiflow/datasets/covtype.csv", "CSV", False)
-    >>> stream = FileStream(opt, -1, 1)
+    >>> stream = FileStream("/skmultiflow/datasets/covtype.csv", -1, 1)
     >>> stream.prepare_for_use()
     >>>
     >>> classifier = HAT()

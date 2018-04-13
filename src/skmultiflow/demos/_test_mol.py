@@ -5,7 +5,6 @@ from skmultiflow.classification.multi_output_learner import MultiOutputLearner
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
 from skmultiflow.evaluation.metrics.metrics import *
-from skmultiflow.options.file_option import FileOption
 from sklearn.linear_model.perceptron import Perceptron
 
 
@@ -24,13 +23,12 @@ def demo():
     logging.basicConfig(format='%(message)s', level=logging.INFO)
 
     # Setup the file stream
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/music.csv", "CSV", False)
-    stream = FileStream(opt, 0, 6)
+    stream = FileStream("../datasets/music.csv", 0, 6)
     stream.prepare_for_use()
 
     # Setup the classifier, by default it uses Logistic Regression
-    #classifier = MultiOutputLearner()
-    #classifier = MultiOutputLearner(h=SGDClassifier(n_iter=100))
+    # classifier = MultiOutputLearner()
+    # classifier = MultiOutputLearner(h=SGDClassifier(n_iter=100))
     classifier = MultiOutputLearner(h=Perceptron())
 
     # Setup the pipeline
@@ -39,7 +37,7 @@ def demo():
     pretrain_size = 150
     logging.info('Pre training on %s samples', str(pretrain_size))
     X, y = stream.next_sample(pretrain_size)
-    #classifier.fit(X, y)
+    # classifier.fit(X, y)
     pipe.partial_fit(X, y, classes=stream.get_targets())
     count = 0
     true_labels = []
@@ -48,7 +46,7 @@ def demo():
     logging.info('Evaluating...')
     while stream.has_more_samples():
         X, y = stream.next_sample()
-        #p = classifier.predict(X)
+        # p = classifier.predict(X)
         p = pipe.predict(X)
         predicts.extend(p)
         true_labels.extend(y)
@@ -57,6 +55,7 @@ def demo():
     logging.info('Evaluation time: %s s', str(timer() - init_time))
     logging.info('Total samples analyzed: %s', str(count))
     logging.info('The classifier\'s static Hamming score    : %0.3f' % perf)
+
 
 if __name__ == '__main__':
     demo()

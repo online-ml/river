@@ -1,10 +1,10 @@
-from skmultiflow.data import base_stream
-from skmultiflow.core.base_object import BaseObject
+import os
 import pandas as pd
 import numpy as np
+from skmultiflow.data.base_stream import Stream
 
 
-class FileStream(base_stream.Stream, BaseObject):
+class FileStream(Stream):
     """ FileStream
     
     A stream generated from the entries of a file. For the moment only 
@@ -18,9 +18,8 @@ class FileStream(base_stream.Stream, BaseObject):
     
     Parameters
     ----------
-    file_opt: FileOption object
-        Holds the options relative to the file to be read. For a detailed 
-        documentation please refer to: skmultiflow.options.file_option.
+    filepath:
+        Path to the data file
         
     target_idx: int
         The index from which the targets start.
@@ -31,11 +30,9 @@ class FileStream(base_stream.Stream, BaseObject):
     Examples
     --------
     >>> # Imports
-    >>> from skmultiflow.options.file_option import FileOption
     >>> from skmultiflow.data.file_stream import FileStream
     >>> # Setup the stream
-    >>> file_option = FileOption('FILE', 'sea', 'skmultiflow/datasets/sea_stream.csv', 'csv', False)
-    >>> stream = FileStream(file_option)
+    >>> stream = FileStream('skmultiflow/datasets/sea_stream.csv')
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
@@ -62,9 +59,9 @@ class FileStream(base_stream.Stream, BaseObject):
     CLASSIFICATION = 'classification'
     REGRESSION = 'regression'
 
-    def __init__(self, file_opt, target_idx=-1, n_targets=1, cat_features_idx=None):
+    def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features_idx=None):
         super().__init__()
-        self.file_name = ''
+        self.filename = ''
         self.X = None
         self.y = None
         self.cat_features_idx = [] if cat_features_idx is None else cat_features_idx
@@ -72,15 +69,20 @@ class FileStream(base_stream.Stream, BaseObject):
         self.target_idx = target_idx
         self.task_type = None
         self.n_classes = 0
+        self.filepath = filepath
+        self.filename = ''
+        self.basename = ''
 
-        self.__configure(file_opt)
+        self.__configure()
 
-    def __configure(self, file_opt):
-        if str(file_opt.file_type).lower() == 'csv':
+    def __configure(self):
+        self.basename = os.path.basename(self.filepath)
+        filename, extension = os.path.splitext(self.basename)
+        if extension.lower() == '.csv':
             self.read_function = pd.read_csv
         else:
-            raise ValueError('Unsupported format: ', file_opt.file_type)
-        self.file_name = file_opt.get_file_name()
+            raise ValueError('Unsupported format: ', extension)
+        self.filename = filename
 
     def prepare_for_use(self):
         """ prepare_for_use
@@ -94,7 +96,7 @@ class FileStream(base_stream.Stream, BaseObject):
 
     def _load_data(self):
         try:
-            raw_data = self.read_function(self.file_name)
+            raw_data = self.read_function(self.filepath)
 
             if any(raw_data.dtypes == 'object'):
                 raise ValueError('File contains text data.')
@@ -130,7 +132,7 @@ class FileStream(base_stream.Stream, BaseObject):
                 self.task_type = self.REGRESSION
 
         except IOError:
-            print("{} file reading failed.".format(self.file_name))
+            print("{} file reading failed.".format(self.filepath))
         pass
 
     def restart(self):
@@ -213,13 +215,10 @@ class FileStream(base_stream.Stream, BaseObject):
         return self.current_sample_x, self.current_sample_y
 
     def get_name(self):
-        aux = self.file_name.split("/")
-        if aux[len(aux)-1] == '':
-            aux.pop(len(aux)-1)
         if self.task_type == self.CLASSIFICATION:
-            return "{} - {} target(s), {} classes".format(aux[len(aux)-1], self.n_targets, self.n_classes)
+            return "{} - {} target(s), {} classes".format(self.basename, self.n_targets, self.n_classes)
         elif self.task_type == self.REGRESSION:
-            return "{} - {} target(s)".format(aux[len(aux)-1], self.n_targets)
+            return "{} - {} target(s)".format(self.basename, self.n_targets)
 
     def get_targets(self):
         if self.task_type == 'classification':
@@ -231,6 +230,6 @@ class FileStream(base_stream.Stream, BaseObject):
             return [float] * self.n_targets
 
     def get_info(self):
-        return 'File Stream: file_name: ' + str(self.file_name) + \
+        return 'File Stream: filename: ' + str(self.basename) + \
                '  -  n_classes: ' + str(self.n_classes) + \
                '  -  num_classification_tasks: ' + str(self.n_targets)

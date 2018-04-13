@@ -7,7 +7,6 @@ from skmultiflow.classification.lazy.knn import KNN
 from skmultiflow.classification.meta.oza_bagging_adwin import OzaBaggingAdwin
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
@@ -37,29 +36,29 @@ def demo(output_file=None, instances=40000):
     
     """
     # Setup the File Stream
-    #opt = FileOption("FILE", "OPT_NAME", "../datasets/covtype.csv", "CSV", False)
-    opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_big.csv", "CSV", False)
-    stream = FileStream(opt, -1, 1)
-    #stream = WaveformGenerator()
+    stream = FileStream("../datasets/sea_big.csv", -1, 1)
+    # stream = WaveformGenerator()
     stream.prepare_for_use()
 
     # Setup the classifier
-    #classifier = SGDClassifier()
+    # classifier = SGDClassifier()
     # classifier = KNNAdwin(k=8, max_window_size=2000,leaf_size=40, categorical_list=None)
-    #classifier = OzaBaggingAdwin(h=KNN(k=8, max_window_size=2000, leaf_size=30, categorical_list=None))
+    # classifier = OzaBaggingAdwin(h=KNN(k=8, max_window_size=2000, leaf_size=30, categorical_list=None))
     classifier = PassiveAggressiveClassifier()
-    #classifier = SGDRegressor()
-    #classifier = PerceptronMask()
+    # classifier = SGDRegressor()
+    # classifier = PerceptronMask()
 
     # Setup the pipeline
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(pretrain_size=200, max_samples=instances, batch_size=1, n_wait=100, max_time=1000,
-                               output_file=output_file, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
+    evaluator = EvaluatePrequential(pretrain_size=200, max_samples=instances, batch_size=1, n_wait=100, max_time=1000,
+                                    output_file=output_file, show_plot=True,
+                                    metrics=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
-    eval.eval(stream=stream, model=pipe)
+    evaluator.eval(stream=stream, model=pipe)
+
 
 if __name__ == '__main__':
     demo('log_test_prequential.csv', 20000)

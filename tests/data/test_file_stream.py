@@ -1,13 +1,11 @@
 import os
 import numpy as np
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.options.file_option import FileOption
 
 
 def test_file_stream(test_path, package_path):
     test_file = os.path.join(package_path, 'src/skmultiflow/datasets/sea_stream.csv')
-    file_option = FileOption('FILE', 'sea', test_file, 'csv', False)
-    stream = FileStream(file_option)
+    stream = FileStream(test_file)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == 40000

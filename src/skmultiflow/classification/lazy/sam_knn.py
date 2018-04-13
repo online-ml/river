@@ -47,11 +47,9 @@ class SAMKNN(StreamModel):
     --------
     >>> from skmultiflow.classification.lazy.sam_knn import SAMKNN
     >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.options.file_option import FileOption
     >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
-    >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/movingSquares.csv", "CSV", False)
-    >>> stream = FileStream(opt, -1, 1)
+    >>> stream = FileStream("skmultiflow/datasets/movingSquares.csv", -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setup the classifier
     >>> classifier = SAMKNN(n_neighbors=5, knnWeights='distance', maxSize=1000, STMSizeAdaption='maxACCApprox', useLTM=False)

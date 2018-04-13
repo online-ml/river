@@ -80,11 +80,9 @@ class EvaluateHoldout(StreamEvaluator):
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.options.file_option import FileOption
     >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
     >>> # Setup the File Stream
-    >>> opt = FileOption("FILE", "OPT_NAME", "skmultiflow/datasets/covtype.csv", "CSV", False)
-    >>> stream = FileStream(opt, -1, 1)
+    >>> stream = FileStream("skmultiflow/datasets/covtype.csv", -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setup the classifier
     >>> classifier = PassiveAggressiveClassifier()

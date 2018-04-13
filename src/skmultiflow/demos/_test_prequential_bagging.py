@@ -5,7 +5,6 @@ from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.generators.sea_generator import SEAGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
@@ -26,8 +25,7 @@ def demo(output_file=None, instances=40000):
     
     """
     # Setup the File Stream
-    # opt = FileOption("FILE", "OPT_NAME", "../datasets/sea_big.csv", "CSV", False)
-    # stream = FileStream(opt, -1, 1)
+    # stream = FileStream("../datasets/sea_big.csv", -1, 1)
     stream = SEAGenerator(classification_function=2, sample_seed=755437, noise_percentage=0.0)
     stream.prepare_for_use()
 
