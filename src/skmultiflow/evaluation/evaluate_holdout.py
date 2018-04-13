@@ -452,10 +452,9 @@ class EvaluateHoldout(StreamEvaluator):
                 self.test_size = value
 
     def get_info(self):
+        filename = "None"
         if self.output_file is not None:
             path, filename = os.path.split(self.output_file)
-        else:
-            filename = "None"
         return 'Holdout Evaluator: n_wait: ' + str(self.n_wait) + \
                ' - max_samples: ' + str(self.max_samples) + \
                ' - max_time: ' + str(self.max_time) + \
