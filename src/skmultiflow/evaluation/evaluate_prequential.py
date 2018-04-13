@@ -83,7 +83,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
     ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
     >>> # Evaluate
-    >>> evaluator.eval(stream=stream, model=pipe)
+    >>> evaluator.evaluate(stream=stream, model=pipe)
     
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluatePrequential
@@ -106,7 +106,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
     ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
     >>> # Evaluate
-    >>> evaluator.eval(stream=stream, model=classifier)
+    >>> evaluator.evaluate(stream=stream, model=classifier)
     
     """
 
@@ -140,8 +140,8 @@ class EvaluatePrequential(StreamEvaluator):
         warnings.filterwarnings("ignore", ".*invalid value encountered in true_divide.*")
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
-    def eval(self, stream, model):
-        """ eval 
+    def evaluate(self, stream, model):
+        """ evaluate
         
         Evaluates a learner or set of learners by feeding them with the stream 
         samples.

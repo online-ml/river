@@ -16,7 +16,7 @@ def demo_parameterized(h, filename="sea_stream.csv", show_plot=True):
     pretrain = 100
     evaluator = EvaluatePrequential(pretrain_size=pretrain, output_file='output.csv', max_samples=10000, batch_size=1,
                                     n_wait=1000, show_plot=show_plot, metrics=['performance'])
-    evaluator.eval(stream=stream, model=h)
+    evaluator.evaluate(stream=stream, model=h)
 
 
 def demo():

@@ -54,10 +54,10 @@ class SAMKNN(StreamModel):
     >>> # Setup the classifier
     >>> classifier = SAMKNN(n_neighbors=5, knnWeights='distance', maxSize=1000, STMSizeAdaption='maxACCApprox', useLTM=False)
     >>> # Setup the evaluator
-    >>> eval = EvaluatePrequential(pretrain_size=0, max_samples=200000, batch_size=1, n_wait=100, max_time=1000,
-    >>>                            output_file=None, show_plot=True, metrics=['performance', 'kappa_t'])
+    >>> evaluator = EvaluatePrequential(pretrain_size=0, max_samples=200000, batch_size=1, n_wait=100, max_time=1000,
+    >>>                                 output_file=None, show_plot=True, metrics=['performance', 'kappa_t'])
     >>> # Evaluate
-    >>> eval.eval(stream=stream, model=classifier)
+    >>> evaluator.evaluate(stream=stream, model=classifier)
 
     Notes
     -----

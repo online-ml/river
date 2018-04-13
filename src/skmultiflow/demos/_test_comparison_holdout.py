@@ -41,7 +41,8 @@ def demo(output_file=None, instances=40000):
                                 max_time=1000, output_file=output_file, show_plot=True, metrics=['kappa'])
 
     # Evaluate
-    evaluator.eval(stream=stream, model=classifier)
+    evaluator.evaluate(stream=stream, model=classifier)
+
 
 if __name__ == '__main__':
     demo(output_file='teste_2.csv', instances=100000)

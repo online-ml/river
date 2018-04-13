@@ -38,11 +38,13 @@ def demo(output_file=None, instances=40000):
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(pretrain_size=2000, max_samples=instances, batch_size=1, n_wait=200, max_time=1000,
-                               output_file=output_file, show_plot=False, metrics=['kappa', 'kappa_t', 'performance'])
+    evaluator = EvaluatePrequential(pretrain_size=2000, max_samples=instances, batch_size=1, n_wait=200, max_time=1000,
+                                    output_file=output_file, show_plot=False,
+                                    metrics=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
-    eval.eval(stream=stream, model=pipe)
+    evaluator.evaluate(stream=stream, model=pipe)
+
 
 if __name__ == '__main__':
     demo('log1.csv', 20000)

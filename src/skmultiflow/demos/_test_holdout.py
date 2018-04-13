@@ -45,7 +45,7 @@ def demo(output_file=None, instances=40000):
                                 metrics=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
-    evaluator.eval(stream=stream, model=pipe)
+    evaluator.evaluate(stream=stream, model=pipe)
 
 
 if __name__ == '__main__':
