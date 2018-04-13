@@ -96,8 +96,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self.global_sample_count = 0
 
     @abstractmethod
-    def eval(self, stream, classifier):
-        """ eval
+    def evaluate(self, stream, classifier):
+        """ evaluate
         
         This function evaluates the classifier, using the class parameters, and 
         by feeding it with instances coming from the stream parameter.

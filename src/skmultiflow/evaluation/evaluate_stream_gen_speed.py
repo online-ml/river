@@ -28,8 +28,8 @@ class EvaluateStreamGenerationSpeed(BaseObject):
     >>> from skmultiflow.evaluation.evaluate_stream_gen_speed import EvaluateStreamGenerationSpeed
     >>> stream = RandomRBFGeneratorDrift(change_speed=0.2)
     >>> stream.prepare_for_use()
-    >>> eval = EvaluateStreamGenerationSpeed(100000, float("inf"), None, 5)
-    >>> stream = eval.eval(stream)
+    >>> evaluator = EvaluateStreamGenerationSpeed(100000, float("inf"), None, 5)
+    >>> stream = evaluator.evaluate(stream)
     Evaluation time: 110.064
     Generated 100000 samples
     Samples/second = 908.56
@@ -42,8 +42,8 @@ class EvaluateStreamGenerationSpeed(BaseObject):
         self.output_file = output_file
         self.batch_size = batch_size
 
-    def eval(self, stream):
-        """ eval
+    def evaluate(self, stream):
+        """ evaluate
         
         This function will evaluate the stream passed as parameter.
         
@@ -72,9 +72,9 @@ class EvaluateStreamGenerationSpeed(BaseObject):
             else stream.n_remaining_samples()
         while ((timer() - init_time <= self.max_time) & (sample_count+self.batch_size <= self.num_samples)
                & (sample_count+self.batch_size <= stream_local_max)):
-            sample = stream.next_sample(self.batch_size)
+            stream.next_sample(self.batch_size)
             sample_count += self.batch_size
-            while (float(sample_count) + self.batch_size >= (((true_percentage_index+1)*self.num_samples)/20)):
+            while float(sample_count) + self.batch_size >= (((true_percentage_index + 1) * self.num_samples) / 20):
                 true_percentage_index += 1
                 logging.info('%s%%', str(true_percentage_index*5))
         end_time = timer()
@@ -82,8 +82,7 @@ class EvaluateStreamGenerationSpeed(BaseObject):
         logging.info('Generated %s samples', str(sample_count))
         logging.info('Samples/second = %s', str(round(sample_count/(end_time-init_time), 3)))
 
-
-    def set_params(self, dict):
+    def set_params(self, parameter_dict):
         """ set_params
 
         This function allows the users to change some of the evaluator's parameters, 
@@ -92,12 +91,12 @@ class EvaluateStreamGenerationSpeed(BaseObject):
         
         Parameters
         ----------
-        dict: Dictionary
+        parameter_dict: Dictionary
             A dictionary where the keys are the names of attributes the user 
             wants to change, and the values are the new values of those attributes.
 
         """
-        for name, value in dict.items():
+        for name, value in parameter_dict.items():
             if name == 'n_samples':
                 self.num_samples = value
             elif name == 'max_time':
@@ -116,8 +115,8 @@ class EvaluateStreamGenerationSpeed(BaseObject):
                ' - output_file: ' + (self.output_file if self.output_file is not None else 'None') + \
                ' - batch_size: ' + str(self.batch_size)
 
+
 if __name__ == '__main__':
     msg = EvaluateStreamGenerationSpeed()
     print(msg.get_class_type())
     pass
-

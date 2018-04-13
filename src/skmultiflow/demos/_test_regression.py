@@ -26,25 +26,26 @@ def demo(output_file=None, instances=40000):
 
     """
     # Setup the File Stream
-    #stream = FileStream("../datasets/covtype.csv", -1, 1)
-    #stream = WaveformGenerator()
-    #stream.prepare_for_use()
+    # stream = FileStream("../datasets/covtype.csv", -1, 1)
+    # stream = WaveformGenerator()
+    # stream.prepare_for_use()
     stream = RegressionGenerator(n_samples=40000)
     # Setup the classifier
-    #classifier = SGDClassifier()
-    #classifier = PassiveAggressiveClassifier()
+    # classifier = SGDClassifier()
+    # classifier = PassiveAggressiveClassifier()
     classifier = SGDRegressor()
-    #classifier = PerceptronMask()
+    # classifier = PerceptronMask()
 
     # Setup the pipeline
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    eval = EvaluatePrequential(pretrain_size=1, max_samples=instances, batch_size=1, n_wait=1, max_time=1000,
-                               output_file=output_file, show_plot=True, metrics=['true_vs_predicts'])
+    evaluator = EvaluatePrequential(pretrain_size=1, max_samples=instances, batch_size=1, n_wait=1, max_time=1000,
+                                    output_file=output_file, show_plot=True, metrics=['true_vs_predicts'])
 
     # Evaluate
-    eval.eval(stream=stream, model=pipe)
+    evaluator.evaluate(stream=stream, model=pipe)
+
 
 if __name__ == '__main__':
     demo('log1.csv', 40000)

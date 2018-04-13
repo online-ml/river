@@ -50,7 +50,7 @@ def demo(output_file=None, instances=50000):
                                     output_file=output_file, show_plot=True, metrics=['performance'])
 
     # Evaluate
-    evaluator.eval(stream=stream, model=classifier)
+    evaluator.evaluate(stream=stream, model=classifier)
 
 
 if __name__ == '__main__':

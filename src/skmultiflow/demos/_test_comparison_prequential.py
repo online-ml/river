@@ -51,10 +51,10 @@ def demo(instances=2000):
 
     # Setup the evaluator
     evaluator = EvaluatePrequential(pretrain_size=2000, output_file='teste.csv', max_samples=instances, batch_size=1,
-                               n_wait=200, max_time=1000, show_plot=True, metrics=['performance', 'kappa_t'])
+                                    n_wait=200, max_time=1000, show_plot=True, metrics=['performance', 'kappa_t'])
 
     # Evaluate
-    evaluator.eval(stream=stream, model=classifier)
+    evaluator.evaluate(stream=stream, model=classifier)
 
 
 if __name__ == '__main__':

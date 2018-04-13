@@ -93,7 +93,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>>                             output_file=None, show_plot=True, metrics=['kappa', 'performance'],
     >>>                             test_size=5000, dynamic_test_set=True)
     >>> # Evaluate
-    >>> evaluator.eval(stream=stream, model=pipe)
+    >>> evaluator.evaluate(stream=stream, model=pipe)
     
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluateHoldout
@@ -109,7 +109,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>> evaluator = EvaluateHoldout(test_size=5000, dynamic_test_set=True, max_samples=100000, batch_size=1,
     >>>                             n_wait=10000, max_time=1000, output_file=None, show_plot=True,
     >>>                             metrics=['kappa', 'performance'])
-    >>> evaluator.eval(stream=stream, model=classifier)
+    >>> evaluator.evaluate(stream=stream, model=classifier)
     
     """
 
@@ -149,8 +149,8 @@ class EvaluateHoldout(StreamEvaluator):
         warnings.filterwarnings("ignore", ".*invalid value encountered in true_divide.*")
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
-    def eval(self, stream, model):
-        """ eval
+    def evaluate(self, stream, model):
+        """ evaluate
         
         Parameters
         ---------
