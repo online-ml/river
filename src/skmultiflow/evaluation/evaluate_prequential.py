@@ -83,7 +83,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>> pipe = Pipeline([('Classifier', classifier)])
     >>> # Setup the evaluator
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
-    ... output_file=None, task_type='classification', show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
+    ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
     >>> # Evaluate
     >>> evaluator.eval(stream=stream, model=pipe)
     
@@ -108,7 +108,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>> classifier = [pipe, clf_two]
     >>> # Setup the evaluator
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
-    ... output_file=None, task_type='classification', show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
+    ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
     >>> # Evaluate
     >>> evaluator.eval(stream=stream, model=classifier)
     
@@ -122,7 +122,6 @@ class EvaluatePrequential(StreamEvaluator):
                  max_time=float("inf"),
                  metrics=None,
                  output_file=None,
-                 task_type='classification',
                  show_plot=False,
                  restart_stream=True):
 

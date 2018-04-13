@@ -42,11 +42,13 @@ def demo(output_file=None, instances=40000):
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    eval = EvaluateHoldout(pretrain_size=10000, test_size=2000, dynamic_test_set=True, max_samples=instances, batch_size=1, n_wait=15000, max_time=1000,
-                           output_file=output_file, task_type='classification', show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
+    evaluator = EvaluateHoldout(test_size=2000, dynamic_test_set=True, max_samples=instances, batch_size=1,
+                                n_wait=15000, max_time=1000, output_file=output_file, show_plot=True,
+                                metrics=['kappa', 'kappa_t', 'performance'])
 
     # Evaluate
-    eval.eval(stream=stream, model=pipe)
+    evaluator.eval(stream=stream, model=pipe)
+
 
 if __name__ == '__main__':
     demo('log1.csv', 400000)

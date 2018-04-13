@@ -10,6 +10,7 @@ from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 from skmultiflow.options.file_option import FileOption
 from skmultiflow.data.file_stream import FileStream
 
+
 def demo_parameterized(h, dset="sea_stream.csv", show_plot=True): 
     # Setup Stream
     opt = FileOption("FILE", "OPT_NAME", "../datasets/"+dset, "CSV", False)
@@ -18,8 +19,10 @@ def demo_parameterized(h, dset="sea_stream.csv", show_plot=True):
 
     # For each classifier, e...
     T_init = 100
-    eval = EvaluatePrequential(pretrain_size=T_init, output_file='output.csv', max_samples=10000, batch_size=1, n_wait=1000, task_type='classification', show_plot=show_plot, metrics=['performance'])
+    eval = EvaluatePrequential(pretrain_size=T_init, output_file='output.csv', max_samples=10000, batch_size=1,
+                               n_wait=1000, show_plot=show_plot, metrics=['performance'])
     eval.eval(stream=stream, model=h)
+
 
 def demo():
 
@@ -35,7 +38,6 @@ def demo():
     # Demo 3 -- should not give "'NoneType' object is not iterable" error
     demo_parameterized(h, "covtype.csv", False)
 
+
 if __name__ == '__main__':
     demo()
-
-
