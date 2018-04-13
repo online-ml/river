@@ -7,6 +7,7 @@ Submodules
 .. toctree::
 
    skmultiflow.classification.meta.adaptive_random_forests
+   skmultiflow.classification.meta.batch_incremental
    skmultiflow.classification.meta.leverage_bagging
    skmultiflow.classification.meta.oza_bagging
    skmultiflow.classification.meta.oza_bagging_adwin

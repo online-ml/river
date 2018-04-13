@@ -60,13 +60,13 @@ class SAMKNN(StreamModel):
     ... output_file=None, task_type='classification', show_plot=True, metrics=['performance', 'kappa_t'])
     >>> # Evaluate
     >>> eval.eval(stream=stream, model=classifier)
-    
+
     Notes
     -----
     The Self Adjusting Memory (SAM) [1]_ model builds an ensemble with models targeting current
     or former concepts. SAM is built using two memories: STM for the current concept, and
     the LTM to retain information about past concepts. A cleaning process is in charge of
-     controlling the size of the STM while keeping the information in the LTM consistent
+    controlling the size of the STM while keeping the information in the LTM consistent
     with the STM.
 
     This modules uses the libNearestNeighbor, a C++ library used to speed up some of 
@@ -81,6 +81,7 @@ class SAMKNN(StreamModel):
     .. [1] Losing, Viktor, Barbara Hammer, and Heiko Wersing. "Knn classifier with self adjusting memory for
        heterogeneous concept drift." In Data Mining (ICDM), 2016 IEEE 16th International Conference on,
        pp. 291-300. IEEE, 2016.
+
     """
 
     def __init__(self, n_neighbors=5, knnWeights='distance', maxSize=5000, LTMSizeProportion = 0.4, minSTMSize=50, STMSizeAdaption='maxACCApprox', useLTM=True):
