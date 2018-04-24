@@ -7,7 +7,6 @@ Welcome to scikit-multiflow's documentation!
 ============================================
 
 .. image:: _static/images/skmultiflow-logo-wide.png
-   :scale: 100 %
    :alt: scikit-multiflow-logo
    :align: center
 
