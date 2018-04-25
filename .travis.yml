@@ -7,6 +7,7 @@ python:
 install:
   - pip install --upgrade pip setuptools wheel
   - pip install --only-binary=numpy,scipy numpy scipy
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install 'pandas<0.21'; fi
   - pip install -U .
 # command to run tests
 script:
