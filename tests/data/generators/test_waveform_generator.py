@@ -4,7 +4,7 @@ from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 
 
 def test_waveform_generator(test_path):
-    stream = WaveformGenerator(seed=23, add_noise=False)
+    stream = WaveformGenerator(seed=23, has_noise=False)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
@@ -14,20 +14,20 @@ def test_waveform_generator(test_path):
                        'att_num_10', 'att_num_11', 'att_num_12', 'att_num_13', 'att_num_14',
                        'att_num_15', 'att_num_16', 'att_num_17', 'att_num_18', 'att_num_19',
                        'att_num_20']
-    assert stream.get_feature_names() == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = [0, 1, 2]
-    assert stream.get_targets() == expected_targets
+    assert stream.targets == expected_targets
 
-    assert stream.get_target_names() == ['class']
+    assert stream.target_names == ['class']
 
-    assert stream.get_n_features() == 21
+    assert stream.n_features == 21
 
-    assert stream.get_n_cat_features() == 0
+    assert stream.n_cat_features == 0
 
-    assert stream.get_n_num_features() == 21
+    assert stream.n_num_features == 21
 
-    assert stream.get_n_targets() == 1
+    assert stream.n_targets == 1
 
     assert stream.get_name() == 'Waveform Generator - 1 target, 3 classes'
 
@@ -54,14 +54,14 @@ def test_waveform_generator(test_path):
     assert np.alltrue(X == X_expected)
     assert np.alltrue(y == y_expected)
 
-    assert stream.get_n_targets() == np.array(y).ndim
+    assert stream.n_targets == np.array(y).ndim
 
-    assert stream.get_n_features() == X.shape[1]
+    assert stream.n_features == X.shape[1]
 
 
 def test_waveform_generator_noise(test_path):
     # Noise test
-    stream = WaveformGenerator(seed=23, add_noise=True)
+    stream = WaveformGenerator(seed=23, has_noise=True)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
@@ -75,20 +75,20 @@ def test_waveform_generator_noise(test_path):
                        'att_num_30', 'att_num_31', 'att_num_32', 'att_num_33', 'att_num_34',
                        'att_num_35', 'att_num_36', 'att_num_37', 'att_num_38', 'att_num_39',
                        ]
-    assert stream.get_feature_names() == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = [0, 1, 2]
-    assert stream.get_targets() == expected_targets
+    assert stream.targets == expected_targets
 
-    assert stream.get_target_names() == ['class']
+    assert stream.target_names == ['class']
 
-    assert stream.get_n_features() == 40
+    assert stream.n_features == 40
 
-    assert stream.get_n_cat_features() == 0
+    assert stream.n_cat_features == 0
 
-    assert stream.get_n_num_features() == 40
+    assert stream.n_num_features == 40
 
-    assert stream.get_n_targets() == 1
+    assert stream.n_targets == 1
 
     assert stream.get_name() == 'Waveform Generator - 1 target, 3 classes'
 
@@ -115,6 +115,6 @@ def test_waveform_generator_noise(test_path):
     assert np.alltrue(X == X_expected)
     assert np.alltrue(y == y_expected)
 
-    assert stream.get_n_targets() == np.array(y).ndim
+    assert stream.n_targets == np.array(y).ndim
 
-    assert stream.get_n_features() == X.shape[1]
+    assert stream.n_features == X.shape[1]
