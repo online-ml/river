@@ -4,7 +4,7 @@ from skmultiflow.data.generators.led_generator import LEDGenerator
 
 
 def test_led_generator(test_path):
-    stream = LEDGenerator(seed=112, noise_percentage=0.28, add_noise=True)
+    stream = LEDGenerator(random_state=112, noise_percentage=0.28, add_noise=True)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1

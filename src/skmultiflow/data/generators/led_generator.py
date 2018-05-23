@@ -14,8 +14,10 @@ class LEDGenerator(Stream):
 
        Parameters
        ----------
-       seed: int
-           random_state for random generation of instances (Default: None)
+       random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
 
        noise_percentage: float (Default: 0.0)
            The probability that noise will happen in the generation. At each
@@ -31,7 +33,7 @@ class LEDGenerator(Stream):
        >>> # Imports
        >>> from skmultiflow.data.generators.led_generator import LEDGenerator
        >>> # Setting up the stream
-       >>> stream = LEDGenerator(seed = 112, noise_percentage = 0.28, add_noise= True)
+       >>> stream = LEDGenerator(random_state = 112, noise_percentage = 0.28, add_noise= True)
        >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
@@ -82,9 +84,9 @@ class LEDGenerator(Stream):
                                    [1, 1, 1, 1, 1, 1, 1],
                                    [1, 1, 1, 1, 0, 1, 1]])
 
-    def __init__(self, seed=None, noise_percentage=0.0, add_noise=False):
+    def __init__(self, random_state=None, noise_percentage=0.0, add_noise=False):
         super().__init__()
-        self._original_seed = seed
+        self._original_random_state = random_state
         self.random_state = None
         self.noise_percentage = noise_percentage
         self.n_features = self._NUM_BASE_ATTRIBUTES
@@ -95,7 +97,7 @@ class LEDGenerator(Stream):
         self.__configure()
 
     def __configure(self):
-        self.random_state = check_random_state(self._original_seed)
+        self.random_state = check_random_state(self._original_random_state)
         self.n_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.has_noise() else self._NUM_BASE_ATTRIBUTES
         self.n_cat_features = self.n_features
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_cat_features)]
@@ -103,7 +105,7 @@ class LEDGenerator(Stream):
         self.targets = [i for i in range(self.n_targets)]
 
     def prepare_for_use(self):
-        self.random_state = check_random_state(self._original_seed)
+        self.random_state = check_random_state(self._original_random_state)
 
     def n_remaining_samples(self):
         return -1
@@ -162,8 +164,6 @@ class LEDGenerator(Stream):
 
     def get_name(self):
         return "Led Generator - {} target".format(self.n_targets)
-
-
 
     def get_info(self):
         return '  - n_num_features: ' + str(self.n_num_features) + \

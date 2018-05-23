@@ -15,8 +15,10 @@ class LEDGeneratorDrift(LEDGenerator):
 
        Parameters
        ----------
-       seed: int
-           random_state for random generation of instances (Default: None)
+       random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
 
        noise_percentage: float (Default: 0.0)
            The probability that noise will happen in the generation. At each
@@ -35,7 +37,7 @@ class LEDGeneratorDrift(LEDGenerator):
        >>> # Imports
        >>> from skmultiflow.data.generators.led_generator_drift import LEDGeneratorDrift
        >>> # Setting up the stream
-       >>> stream = LEDGeneratorDrift(seed = 112, noise_percentage = 0.28, add_noise= True, n_drift_features=4)
+       >>> stream = LEDGeneratorDrift(random_state = 112, noise_percentage = 0.28, add_noise= True, n_drift_features=4)
        >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
@@ -76,8 +78,8 @@ class LEDGeneratorDrift(LEDGenerator):
     _numberAttribute = np.zeros((24,), dtype=int)
     _NUM_IRRELEVANT_ATTRIBUTES = 17
 
-    def __init__(self, seed=None, noise_percentage=0.0, add_noise=False, n_drift_features=0):
-        super().__init__(seed=seed, noise_percentage=noise_percentage, add_noise=add_noise)
+    def __init__(self, random_state=None, noise_percentage=0.0, add_noise=False, n_drift_features=0):
+        super().__init__(random_state=random_state, noise_percentage=noise_percentage, add_noise=add_noise)
         self.n_drift_features = n_drift_features
 
         self.__configure()

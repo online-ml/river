@@ -23,9 +23,10 @@ class MIXEDGenerator(Stream):
         Which of the four classification functions to use for the generation.
         The value can vary from 0 to 1.
 
-    seed: int (Default: None)
-        The seed used to initialize the random generator, which is an instance
-        of numpy's random.
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
 
     balance_classes: bool (Default: False)
         Whether to balance classes or not. If balanced, the class distribution
@@ -38,12 +39,12 @@ class MIXEDGenerator(Stream):
 
    """
 
-    def __init__(self, classification_function=0, seed=None, balance_classes=False):
+    def __init__(self, classification_function=0, random_state=None, balance_classes=False):
         super().__init__()
 
         # Classification functions to use
         self.classification_functions = [self.classification_function_zero, self.classification_function_one]
-        self._original_seed = seed
+        self._original_random_state = random_state
         self.classification_function_idx = classification_function
         self.random_state = None
         self.balance_classes = balance_classes
@@ -56,7 +57,7 @@ class MIXEDGenerator(Stream):
 
     def __configure(self):
 
-        self.random_state = check_random_state(self._original_seed)
+        self.random_state = check_random_state(self._original_random_state)
         self.next_class_should_be_zero = False
         self.target_names = ["class"]
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
@@ -91,7 +92,7 @@ class MIXEDGenerator(Stream):
             >>> # Imports
             >>> from skmultiflow.data.generators.mixed_generator import MIXEDGenerator
             >>> # Setting up the stream
-            >>> stream = MIXEDGenerator(classification_function = 1, seed= 112, balance_classes = False)
+            >>> stream = MIXEDGenerator(classification_function = 1, random_state= 112, balance_classes = False)
             >>> stream.prepare_for_use()
             >>> # Retrieving one sample
             >>> stream.next_sample()
@@ -150,7 +151,7 @@ class MIXEDGenerator(Stream):
 
     def prepare_for_use(self):
         self.random_state = None
-        self.random_state = check_random_state(self._original_seed)
+        self.random_state = check_random_state(self._original_random_state)
         self.next_class_should_be_zero = False
 
     @staticmethod

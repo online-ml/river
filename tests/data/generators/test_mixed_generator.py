@@ -4,7 +4,7 @@ from skmultiflow.data.generators.mixed_generator import MIXEDGenerator
 
 
 def test_mixed_generator(test_path):
-    stream = MIXEDGenerator(classification_function=1, seed=112, balance_classes=False)
+    stream = MIXEDGenerator(classification_function=1, random_state=112, balance_classes=False)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
