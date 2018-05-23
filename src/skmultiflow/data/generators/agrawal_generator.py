@@ -21,7 +21,7 @@ class AGRAWALGenerator(Stream):
         Whether to balance classes or not. If balanced, the class distribution
         will converge to a uniform distribution.
 
-    perturbation: float (Default: 0.0)
+    perturbation: float (Default: 0.0) (0.0..1.0)
         The probability that noise will happen in the generation. At each
         new sample generated, the sample with will perturbed by the amount of
         perturbation.
@@ -64,6 +64,80 @@ class AGRAWALGenerator(Stream):
         self.target_header = ["target_0"]
         self.feature_header = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue", "hyears", "loan"]
         self.classes = [i for i in range(self.n_classes)]
+
+    @property
+    def classification_function_idx(self):
+        """ Retrieve the index of the current classification function.
+
+        Returns
+        -------
+        int
+            index of the classification function [0,1,2]
+        """
+        return self._classification_function_idx
+
+    @classification_function_idx.setter
+    def classification_function_idx(self, classification_function_idx):
+        """ Set the index of the current classification function.
+
+        Parameters
+        ----------
+        classification_function_idx: int (0..9)
+        """
+        if classification_function_idx in range(10):
+            self._classification_function_idx = classification_function_idx
+        else:
+            raise ValueError("classification_function_idx takes only these values: 0..9")
+
+    @property
+    def balance_classes(self):
+        """ Retrieve the value of the option: Balance classes
+
+        Returns
+        -------
+        Boolean
+            True is the classes are balanced
+        """
+        return self._balance_classes
+
+    @balance_classes.setter
+    def balance_classes(self, balance_classes):
+        """ Set the value of the option: Balance classes.
+
+        Parameters
+        ----------
+        balance_classes: Boolean
+
+        """
+        if isinstance(balance_classes, bool):
+            self._balance_classes = balance_classes
+        else:
+            raise ValueError("balance_classes should be boolean")
+
+    @property
+    def perturbation(self):
+        """ Retrieve the value of the option: Noise percentage
+
+        Returns
+        -------
+        Boolean
+            True is the classes are balanced
+        """
+        return self._perturbation
+
+    @perturbation.setter
+    def perturbation(self, perturbation):
+        """ Set the value of the option: Balance classes.
+
+        Parameters
+        ----------
+        perturbation: float (0.0..1.0)
+
+        """
+        if (0.0 <= perturbation) and (perturbation <= 1.0):
+            self._perturbation = perturbation
+        else:
+            raise ValueError("noise percentage should be in [0.0..1.0]")
 
     def prepare_for_use(self):
         self.random_state = check_random_state(self._original_random_state)

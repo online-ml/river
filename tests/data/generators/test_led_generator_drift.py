@@ -4,7 +4,7 @@ from skmultiflow.data.generators.led_generator_drift import LEDGeneratorDrift
 
 
 def test_led_generator_drift(test_path):
-    stream = LEDGeneratorDrift(random_state=112, noise_percentage=0.28, add_noise=True, n_drift_features=4)
+    stream = LEDGeneratorDrift(random_state=112, noise_percentage=0.28, has_noise=True, n_drift_features=4)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
@@ -18,12 +18,12 @@ def test_led_generator_drift(test_path):
                       'att_num_18', 'att_num_19', 'att_num_20',
                       'att_num_21', 'att_num_22', 'att_num_23']
 
-    assert stream.feature_names == expected_names
+    assert stream.feature_header == expected_names
 
     expected_targets = []
-    assert stream.targets == expected_targets
+    assert stream.classes == expected_targets
 
-    assert stream.target_names == ['class']
+    assert stream.target_header is None
 
     assert stream.n_features == 24
 

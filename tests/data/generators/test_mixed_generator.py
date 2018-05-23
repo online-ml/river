@@ -11,18 +11,18 @@ def test_mixed_generator(test_path):
 
     expected_names = ['att_num_0', 'att_num_1', 'att_num_2', 'att_num_3']
 
-    assert stream.feature_names == expected_names
+    assert stream.feature_header == expected_names
 
     expected_targets = [0, 1]
-    assert stream.targets == expected_targets
+    assert stream.classes == expected_targets
 
-    assert stream.target_names == ['class']
+    assert stream.target_header == ['target_0']
 
     assert stream.n_features == 4
 
-    assert stream.n_cat_features == 0
+    assert stream.n_cat_features == 2
 
-    assert stream.n_num_features == 0
+    assert stream.n_num_features == 2
 
     assert stream.n_targets == 1
 

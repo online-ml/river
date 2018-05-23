@@ -26,7 +26,7 @@ class LEDGeneratorDrift(LEDGenerator):
            probability is equal or less than the noise_percentage, the selected data  will
            be switched
 
-       add_noise: bool (Default: False)
+       has_noise: bool (Default: False)
            Adds 17 non relevant attributes to the stream.
 
        n_drift_features : int (Default : False)
@@ -37,7 +37,7 @@ class LEDGeneratorDrift(LEDGenerator):
        >>> # Imports
        >>> from skmultiflow.data.generators.led_generator_drift import LEDGeneratorDrift
        >>> # Setting up the stream
-       >>> stream = LEDGeneratorDrift(random_state = 112, noise_percentage = 0.28, add_noise= True, n_drift_features=4)
+       >>> stream = LEDGeneratorDrift(random_state = 112, noise_percentage = 0.28, has_noise= True, n_drift_features=4)
        >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
@@ -78,8 +78,8 @@ class LEDGeneratorDrift(LEDGenerator):
     _numberAttribute = np.zeros((24,), dtype=int)
     _NUM_IRRELEVANT_ATTRIBUTES = 17
 
-    def __init__(self, random_state=None, noise_percentage=0.0, add_noise=False, n_drift_features=0):
-        super().__init__(random_state=random_state, noise_percentage=noise_percentage, add_noise=add_noise)
+    def __init__(self, random_state=None, noise_percentage=0.0, has_noise=False, n_drift_features=0):
+        super().__init__(random_state=random_state, noise_percentage=noise_percentage, has_noise=has_noise)
         self.n_drift_features = n_drift_features
 
         self.__configure()
@@ -89,7 +89,7 @@ class LEDGeneratorDrift(LEDGenerator):
         for i in range(self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
             self._numberAttribute[i] = i
 
-        if self.has_noise() and self.n_drift_features > 0:
+        if self.has_noise and self.n_drift_features > 0:
             random_int = self.random_state.randint(7)
             offset = self.random_state.randint(self._NUM_IRRELEVANT_ATTRIBUTES)
             for i in range(self.n_drift_features):
@@ -120,23 +120,21 @@ class LEDGeneratorDrift(LEDGenerator):
             for the batch_size samples that were requested.
 
         """
-        data = np.zeros([batch_size, self.n_cat_features + 1])
+        data = np.zeros([batch_size, self.n_features + 1])
 
         for j in range(batch_size):
-
+            self.sample_idx += 1
             selected = self.random_state.randint(10)
-
             for i in range(self._NUM_BASE_ATTRIBUTES):
                 if (0.01 + self.random_state.rand()) <= self.noise_percentage:
                     data[j, self._numberAttribute[i]] = 1 if (self._ORIGINAL_INSTANCES[selected, i] == 0) else 0
                 else:
                     data[j, self._numberAttribute[i]] = self._ORIGINAL_INSTANCES[selected, i]
-
-            if self.has_noise():
+            if self.has_noise:
                 for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
                     data[j, self._numberAttribute[i]] = self.random_state.randint(2)
 
-        self.current_sample_x = data[:, :self.n_cat_features]
+        self.current_sample_x = data[:, :self.n_features]
         return self.current_sample_x
 
     def get_name(self):
@@ -145,7 +143,7 @@ class LEDGeneratorDrift(LEDGenerator):
     def get_info(self):
         return '  -  n_num_features: ' + str(self.n_num_features) + \
                '  -  n_cat_features: ' + str(self.n_cat_features) + \
-               '  -  add_noise: ' + str('True' if self.has_noise() else 'False') + \
+               '  -  has_noise: ' + str(self.has_noise) + \
                '  -  noise_percentage: ' + str(self.noise_percentage) + \
                '  -  n_drift_features: ' + str(self.n_drift_features) + \
                '  -  random_state: ' + str(self.random_state)

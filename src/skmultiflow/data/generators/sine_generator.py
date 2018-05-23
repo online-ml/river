@@ -49,7 +49,7 @@ class SineGenerator(Stream):
         Whether to balance classes or not. If balanced, the class distribution
         will converge to a uniform distribution.
 
-    add_noise: bool (Default: False)
+    has_noise: bool (Default: False)
         Adds 2 non relevant attributes to the stream.
 
     Notes
@@ -63,7 +63,7 @@ class SineGenerator(Stream):
     >>> from skmultiflow.data.generators.sine_generator import SineGenerator
     >>> # Setting up the stream
     >>> stream = SineGenerator(classification_function = 2, random_state = 112, balance_classes = False,
-    ... add_noise = True)
+    ... has_noise = True)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
@@ -88,7 +88,7 @@ class SineGenerator(Stream):
     _NUM_BASE_ATTRIBUTES = 2
     _TOTAL_ATTRIBUTES_INCLUDING_NOISE = 4
 
-    def __init__(self, classification_function=0, random_state=None, balance_classes=False, add_noise=False):
+    def __init__(self, classification_function=0, random_state=None, balance_classes=False, has_noise=False):
         super().__init__()
 
         # Classification functions to use
@@ -96,7 +96,7 @@ class SineGenerator(Stream):
                                          self.classification_function_two, self.classification_function_three]
         self.classification_function_idx = classification_function
         self._original_random_state = random_state
-        self.add_noise = add_noise
+        self.has_noise = has_noise
         self.balance_classes = balance_classes
         self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = 2
@@ -107,7 +107,7 @@ class SineGenerator(Stream):
         self.__configure()
 
     def __configure(self):
-        if self.add_noise:
+        if self.has_noise:
             self.n_num_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE
         self.n_features = self.n_num_features
         self.target_header = ["target_0"]
@@ -164,7 +164,7 @@ class SineGenerator(Stream):
             raise ValueError("balance_classes should be boolean")
 
     @property
-    def add_noise(self):
+    def has_noise(self):
         """ Retrieve the value of the option: add noise.
 
         Returns
@@ -172,10 +172,10 @@ class SineGenerator(Stream):
         Boolean
             True is the classes are balanced
         """
-        return self._add_noise
+        return self._has_noise
 
-    @add_noise.setter
-    def add_noise(self, add_noise):
+    @has_noise.setter
+    def has_noise(self, has_noise):
         """ Set the value of the option: add noise.
 
         Parameters
@@ -183,8 +183,8 @@ class SineGenerator(Stream):
         add_noise: Boolean
 
         """
-        if isinstance(add_noise, bool):
-            self._add_noise = add_noise
+        if isinstance(has_noise, bool):
+            self._has_noise = has_noise
         else:
             raise ValueError("has_noise should be boolean")
 
@@ -201,7 +201,7 @@ class SineGenerator(Stream):
         by the user. Then, the classification function decides whether to
         classify the instance as class 0 or class 1. The next step is to
         verify if the classes should be balanced, and if so, balance the
-        classes. The last step is to add noise, if the add_noise is True.
+        classes. The last step is to add noise, if the has_noise is True.
 
         The generated sample will have 2 relevant features, and an additional
         two noise features if option chosen, and 1 label (it has one classification task).
@@ -242,7 +242,7 @@ class SineGenerator(Stream):
             data[j, 0] = att1
             data[j, 1] = att2
 
-            if self.add_noise:
+            if self.has_noise:
                 for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
                     data[j, i] = self.random_state.rand()
                 data[j, 4] = group
@@ -361,7 +361,7 @@ class SineGenerator(Stream):
 
     def get_info(self):
         return 'SineGenerator: classification_function: ' + str(self.classification_function_idx) + \
-               ' - seed: ' + str(self._original_random_state) + \
+               ' - random_state: ' + str(self._original_random_state) + \
                ' - balance_classes: ' + str(self.balance_classes) + \
-               ' - add_noise: ' + str(self.add_noise)
+               ' - has_noise: ' + str(self.has_noise)
 

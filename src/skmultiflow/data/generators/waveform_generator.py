@@ -110,7 +110,6 @@ class WaveformGenerator(Stream):
         self.target_header = ["target_0"]
         self.classes = [i for i in range(self.n_classes)]
 
-
     @property
     def has_noise(self):
         """ Retrieve the value of the option: add noise.
@@ -135,7 +134,6 @@ class WaveformGenerator(Stream):
             self._has_noise = has_noise
         else:
             raise ValueError("has_noise should be boolean")
-
 
     def prepare_for_use(self):
         self.random_state = check_random_state(self._original_random_state)
@@ -202,5 +200,5 @@ class WaveformGenerator(Stream):
         return 'Waveform Generator: n_classes: ' + str(self.n_classes) + \
                '  -  n_num_features: ' + str(self.n_num_features) + \
                '  -  n_cat_features: ' + str(self.n_cat_features) + \
-               '  -  add_noise: ' + add_noise + \
-               '  -  sample_seed: ' + str(self._original_random_state)
+               '  -  has_noise: ' + str(self.has_noise) + \
+               '  -  random_state: ' + str(self._original_random_state)

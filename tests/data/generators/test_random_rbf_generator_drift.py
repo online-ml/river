@@ -12,12 +12,12 @@ def test_random_rbf_generator_drift(test_path):
 
     expected_names = ['att_num_0', 'att_num_1', 'att_num_2', 'att_num_3', 'att_num_4',
                        'att_num_5', 'att_num_6', 'att_num_7', 'att_num_8', 'att_num_9']
-    assert stream.feature_names == expected_names
+    assert stream.feature_header == expected_names
 
     expected_targets = [0, 1, 2, 3]
-    assert stream.targets == expected_targets
+    assert stream.classes == expected_targets
 
-    assert stream.target_names == ['class']
+    assert stream.target_header == ['target_0']
 
     assert stream.n_features == 10
 

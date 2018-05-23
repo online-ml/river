@@ -25,7 +25,7 @@ class LEDGenerator(Stream):
            probability is equal or less than the noise_percentage, the selected data  will
            be switched
 
-       add_noise: bool (Default: False)
+       has_noise: bool (Default: False)
            Adds 17 non relevant attributes to the stream.
 
        Examples
@@ -33,7 +33,7 @@ class LEDGenerator(Stream):
        >>> # Imports
        >>> from skmultiflow.data.generators.led_generator import LEDGenerator
        >>> # Setting up the stream
-       >>> stream = LEDGenerator(random_state = 112, noise_percentage = 0.28, add_noise= True)
+       >>> stream = LEDGenerator(random_state = 112, noise_percentage = 0.28, has_noise= True)
        >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
@@ -84,34 +84,77 @@ class LEDGenerator(Stream):
                                    [1, 1, 1, 1, 1, 1, 1],
                                    [1, 1, 1, 1, 0, 1, 1]])
 
-    def __init__(self, random_state=None, noise_percentage=0.0, add_noise=False):
+    def __init__(self, random_state=None, noise_percentage=0.0, has_noise=False):
         super().__init__()
         self._original_random_state = random_state
         self.random_state = None
         self.noise_percentage = noise_percentage
-        self.n_features = self._NUM_BASE_ATTRIBUTES
-        self.n_cat_features = self.n_features
-        self.add_noise = add_noise
+        self.n_cat_features = self._NUM_BASE_ATTRIBUTES
+        self.n_features = self.n_cat_features
+        self.has_noise = has_noise
         self.n_targets = 0
-        self.random_state = None
         self.__configure()
 
     def __configure(self):
         self.random_state = check_random_state(self._original_random_state)
-        self.n_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.has_noise() else self._NUM_BASE_ATTRIBUTES
-        self.n_cat_features = self.n_features
-        self.feature_names = ["att_num_" + str(i) for i in range(self.n_cat_features)]
-        self.target_names = ["class"]
-        self.targets = [i for i in range(self.n_targets)]
+        self.n_cat_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.has_noise else self._NUM_BASE_ATTRIBUTES
+        self.n_features = self.n_cat_features
+        self.feature_header = ["att_num_" + str(i) for i in range(self.n_cat_features)]
+        self.classes = [i for i in range(self.n_targets)]
+
+    @property
+    def noise_percentage(self):
+        """ Retrieve the value of the option: Noise percentage
+
+        Returns
+        -------
+        Boolean
+            True is the classes are balanced
+        """
+        return self._noise_percentage
+
+    @noise_percentage.setter
+    def noise_percentage(self, noise_percentage):
+        """ Set the value of the option: Balance classes.
+
+        Parameters
+        ----------
+        noise_percentage: float (0.0..1.0)
+
+        """
+        if (0.0 <= noise_percentage) and (noise_percentage <= 1.0):
+            self._noise_percentage = noise_percentage
+        else:
+            raise ValueError("noise percentage should be in [0.0..1.0]")
+
+    @property
+    def has_noise(self):
+        """ Retrieve the value of the option: add noise.
+
+        Returns
+        -------
+        Boolean
+            True is the classes are balanced
+        """
+        return self._has_noise
+
+    @has_noise.setter
+    def has_noise(self, has_noise):
+        """ Set the value of the option: add noise.
+
+        Parameters
+        ----------
+        has_noise: Boolean
+
+        """
+        if isinstance(has_noise, bool):
+            self._has_noise = has_noise
+        else:
+            raise ValueError("has_noise should be boolean")
 
     def prepare_for_use(self):
         self.random_state = check_random_state(self._original_random_state)
-
-    def n_remaining_samples(self):
-        return -1
-
-    def has_more_samples(self):
-        return True
+        self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
 
@@ -136,9 +179,10 @@ class LEDGenerator(Stream):
 
         """
 
-        data = np.zeros([batch_size, self.n_cat_features + 1])
+        data = np.zeros([batch_size, self.n_features + 1])
 
         for j in range(batch_size):
+            self.sample_idx += 1
             selected = self.random_state.randint(10)
 
             for i in range(self._NUM_BASE_ATTRIBUTES):
@@ -148,25 +192,21 @@ class LEDGenerator(Stream):
                 else:
                     data[j, i] = self._ORIGINAL_INSTANCES[selected, i]
 
-            if self.has_noise():
+            if self.has_noise:
                 for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
                     data[j, i] = self.random_state.randint(2)
 
-        self.current_sample_x = data[:, :self.n_cat_features]
+        self.current_sample_x = data[:, :self.n_features]
         return self.current_sample_x
 
     def restart(self):
-        self.random_state = None
         self.prepare_for_use()
-
-    def has_noise(self):
-        return self.add_noise
 
     def get_name(self):
         return "Led Generator - {} target".format(self.n_targets)
 
     def get_info(self):
-        return '  - n_num_features: ' + str(self.n_num_features) + \
-               '  - add_noise: ' + str('True' if self.has_noise() else 'False') + \
+        return '  - n_cat_features: ' + str(self.n_cat_features) + \
+               '  - has_noise: ' + str(self.has_noise) + \
                '  - noise_percentage: ' + str(self.noise_percentage) + \
                '  - random_state: ' + str(self.random_state)

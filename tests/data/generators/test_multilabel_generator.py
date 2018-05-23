@@ -14,14 +14,14 @@ def test_multilabel_generator(test_path):
                        'att_num_10', 'att_num_11', 'att_num_12', 'att_num_13', 'att_num_14',
                        'att_num_15', 'att_num_16', 'att_num_17', 'att_num_18', 'att_num_19']
 
-    assert stream.feature_names == expected_names
+    assert stream.feature_header == expected_names
 
     expected_targets = [[0, 1], [0, 1], [0, 1], [0, 1]]
-    assert stream.targets == expected_targets
+    assert stream.classes == expected_targets
 
     expected_names = ['target_0', 'target_1', 'target_2', 'target_3']
 
-    assert stream.target_names == expected_names
+    assert stream.target_header == expected_names
 
     assert stream.n_features == 20
 
