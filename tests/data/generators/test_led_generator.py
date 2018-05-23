@@ -4,7 +4,7 @@ from skmultiflow.data.generators.led_generator import LEDGenerator
 
 
 def test_led_generator(test_path):
-    stream = LEDGenerator(random_state=112, noise_percentage=0.28, add_noise=True)
+    stream = LEDGenerator(seed=112, noise_percentage=0.28, add_noise=True)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
@@ -18,20 +18,20 @@ def test_led_generator(test_path):
                       'att_num_18', 'att_num_19', 'att_num_20',
                       'att_num_21', 'att_num_22', 'att_num_23']
 
-    assert stream.get_feature_names() == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = []
-    assert stream.get_targets() == expected_targets
+    assert stream.targets == expected_targets
 
-    assert stream.get_target_names() == ['class']
+    assert stream.target_names == ['class']
 
-    assert stream.get_n_features() == 24
+    assert stream.n_features == 24
 
-    assert stream.get_n_cat_features() == 0
+    assert stream.n_cat_features == stream.n_features
 
-    assert stream.get_n_num_features() == 0
+    assert stream.n_num_features == 0
 
-    assert stream.get_n_targets() == 0
+    assert stream.n_targets == 0
 
     assert stream.get_name() == 'Led Generator - 0 target'
 
@@ -54,4 +54,4 @@ def test_led_generator(test_path):
     X = stream.next_sample(10)
     assert np.alltrue(X == X_expected)
 
-    assert stream.get_n_features() == X.shape[1]
+    assert stream.n_features == X.shape[1]

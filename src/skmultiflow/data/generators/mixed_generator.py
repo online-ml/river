@@ -23,7 +23,7 @@ class MIXEDGenerator(Stream):
         Which of the four classification functions to use for the generation.
         The value can vary from 0 to 1.
 
-    random_state: int (Default: None)
+    seed: int (Default: None)
         The seed used to initialize the random generator, which is an instance
         of numpy's random.
 
@@ -38,35 +38,29 @@ class MIXEDGenerator(Stream):
 
    """
 
-    def __init__(self, classification_function=0, random_state=None, balance_classes=False):
+    def __init__(self, classification_function=0, seed=None, balance_classes=False):
         super().__init__()
 
         # Classification functions to use
         self.classification_functions = [self.classification_function_zero, self.classification_function_one]
-
+        self._original_seed = seed
         self.classification_function_idx = classification_function
-        self.random_state = random_state
+        self.random_state = None
         self.balance_classes = balance_classes
         self.n_features = 4
         self.n_classes = 2
         self.n_targets = 1
-        self.sample_random = None
         self.next_class_should_be_zero = False
 
         self.__configure()
 
     def __configure(self):
-        self.sample_random = None
-        self.sample_random = check_random_state(self.random_state)
+
+        self.random_state = check_random_state(self._original_seed)
         self.next_class_should_be_zero = False
-        self.outputs_labels = ["class"]
-        self.features_labels = ["att_num_" + str(i) for i in range(self.n_features)]
-
-    def n_remaining_samples(self):
-        return -1
-
-    def has_more_samples(self):
-        return True
+        self.target_names = ["class"]
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
+        self.targets = [i for i in range(self.n_classes)]
 
     def next_sample(self, batch_size=1):
 
@@ -97,7 +91,7 @@ class MIXEDGenerator(Stream):
             >>> # Imports
             >>> from skmultiflow.data.generators.mixed_generator import MIXEDGenerator
             >>> # Setting up the stream
-            >>> stream = MIXEDGenerator(classification_function = 1, random_state = 112, balance_classes = False)
+            >>> stream = MIXEDGenerator(classification_function = 1, seed= 112, balance_classes = False)
             >>> stream.prepare_for_use()
             >>> # Retrieving one sample
             >>> stream.next_sample()
@@ -128,10 +122,10 @@ class MIXEDGenerator(Stream):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                v = 0 if self.sample_random.rand() < 0.5 else 1
-                w = 0 if self.sample_random.rand() < 0.5 else 1
-                x = self.sample_random.rand()
-                y = self.sample_random.rand()
+                v = 0 if self.random_state.rand() < 0.5 else 1
+                w = 0 if self.random_state.rand() < 0.5 else 1
+                x = self.random_state.rand()
+                y = self.random_state.rand()
 
                 group = self.classification_functions[self.classification_function_idx](v, w, x, y)
 
@@ -155,35 +149,9 @@ class MIXEDGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
-        self.restart()
-
-    def is_restartable(self):
-        return True
-
-    def restart(self):
-        self.sample_random.seed(self.random_state)
+        self.random_state = None
+        self.random_state = check_random_state(self._original_seed)
         self.next_class_should_be_zero = False
-
-    def get_n_cat_features(self):
-        return self.n_cat_features
-
-    def get_n_num_features(self):
-        return self.n_num_features
-
-    def get_n_features(self):
-        return self.n_features
-
-    def get_n_targets(self):
-        return self.n_targets
-
-    def get_feature_names(self):
-        return self.features_labels
-
-    def get_target_names(self):
-        return self.outputs_labels
-
-    def last_sample(self):
-        return self.current_sample_x, self.current_sample_y
 
     @staticmethod
     def classification_function_zero(v, w, x, y):
@@ -248,16 +216,13 @@ class MIXEDGenerator(Stream):
     def get_name(self):
         return "Mixed Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
-    def get_targets(self):
-        return [i for i in range(self.n_classes)]
-
     def get_info(self):
         return 'MixedGenerator: classification_function: ' + str(self.classification_function_idx) + \
                ' - random_state: ' + str(self.random_state) + \
                ' - balance_classes: ' + ('True' if self.balance_classes else 'False')
 
     def generate_drift(self):
-        new_function = self.sample_random.randint(3)
+        new_function = self.random_state.randint(3)
         while new_function == self.classification_function_idx:
-            new_function = self.sample_random.randint(3)
+            new_function = self.random_state.randint(3)
         self.classification_function_idx = new_function

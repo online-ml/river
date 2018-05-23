@@ -19,7 +19,7 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
     model_seed: int (Default: None)
         The seed to be used by the model random generator.
         
-    instance_seed: int (Default: None)
+    seed: int (Default: None)
         The seed to be used by the instance random generator.
         
     n_classes: int (Default: 2)
@@ -42,7 +42,7 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
     >>> # Imports
     >>> from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
     >>> # Setting up the stream
-    >>> stream = RandomRBFGeneratorDrift(model_seed=99, sample_seed = 50, n_classes = 4, n_features = 10,
+    >>> stream = RandomRBFGeneratorDrift(model_seed=99, seed = 50, n_classes = 4, n_features = 10,
     ... n_centroids = 50, change_speed=0.87, num_drift_centroids=50)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
@@ -167,17 +167,9 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
 
             self.centroid_speed.append(rand_speed)
 
-    def prepare_for_use(self):
-        self.restart()
-
-    def restart(self):
-        self.generate_centroids()
-        self.instance_random_state = None
-        self.instance_random_state = check_random_state(self.instance_seed)
-
     def get_info(self):
         return 'RandomRBFGenerator: model_random_state: ' + str(self.model_seed) + \
-               ' - sample_seed: ' + str(self.instance_seed) + \
+               ' - sample_seed: ' + str(self._original_seed) + \
                ' - n_classes: ' + str(self.n_classes) + \
                ' - num_att: ' + str(self.n_num_features) + \
                ' - n_centroids: ' + str(self.n_centroids) + \

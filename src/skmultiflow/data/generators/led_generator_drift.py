@@ -15,7 +15,7 @@ class LEDGeneratorDrift(LEDGenerator):
 
        Parameters
        ----------
-       random_state: int
+       seed: int
            random_state for random generation of instances (Default: None)
 
        noise_percentage: float (Default: 0.0)
@@ -35,7 +35,7 @@ class LEDGeneratorDrift(LEDGenerator):
        >>> # Imports
        >>> from skmultiflow.data.generators.led_generator_drift import LEDGeneratorDrift
        >>> # Setting up the stream
-       >>> stream = LEDGeneratorDrift(random_state = 112, noise_percentage = 0.28, add_noise= True, n_drift_features=4)
+       >>> stream = LEDGeneratorDrift(seed = 112, noise_percentage = 0.28, add_noise= True, n_drift_features=4)
        >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
@@ -73,28 +73,28 @@ class LEDGeneratorDrift(LEDGenerator):
 
     """
 
-    numberAttribute = np.zeros((24,), dtype=int)
-    NUM_IRRELEVANT_ATTRIBUTES = 17
+    _numberAttribute = np.zeros((24,), dtype=int)
+    _NUM_IRRELEVANT_ATTRIBUTES = 17
 
-    def __init__(self, random_state=None, noise_percentage=0.0, add_noise=False, n_drift_features=0):
-        super().__init__(random_state=random_state, noise_percentage=noise_percentage, add_noise=add_noise)
+    def __init__(self, seed=None, noise_percentage=0.0, add_noise=False, n_drift_features=0):
+        super().__init__(seed=seed, noise_percentage=noise_percentage, add_noise=add_noise)
         self.n_drift_features = n_drift_features
 
         self.__configure()
 
     def __configure(self):
 
-        for i in range(self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-            self.numberAttribute[i] = i
+        for i in range(self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
+            self._numberAttribute[i] = i
 
         if self.has_noise() and self.n_drift_features > 0:
-            random_int = self.sample_random.randint(7)
-            offset = self.sample_random.randint(self.NUM_IRRELEVANT_ATTRIBUTES)
+            random_int = self.random_state.randint(7)
+            offset = self.random_state.randint(self._NUM_IRRELEVANT_ATTRIBUTES)
             for i in range(self.n_drift_features):
                 value1 = (i + random_int) % 7
-                value2 = 7 + (i + offset) % self.NUM_IRRELEVANT_ATTRIBUTES
-                self.numberAttribute[value1] = value2
-                self.numberAttribute[value2] = value1
+                value2 = 7 + (i + offset) % self._NUM_IRRELEVANT_ATTRIBUTES
+                self._numberAttribute[value1] = value2
+                self._numberAttribute[value2] = value1
 
     def next_sample(self, batch_size=1):
 
@@ -118,23 +118,23 @@ class LEDGeneratorDrift(LEDGenerator):
             for the batch_size samples that were requested.
 
         """
-        data = np.zeros([batch_size, self.n_features + 1])
+        data = np.zeros([batch_size, self.n_cat_features + 1])
 
         for j in range(batch_size):
 
-            selected = self.sample_random.randint(10)
+            selected = self.random_state.randint(10)
 
-            for i in range(self.NUM_BASE_ATTRIBUTES):
-                if (0.01 + self.sample_random.rand()) <= self.noise_percentage:
-                    data[j, self.numberAttribute[i]] = 1 if (self.ORIGINAL_INSTANCES[selected, i] == 0) else 0
+            for i in range(self._NUM_BASE_ATTRIBUTES):
+                if (0.01 + self.random_state.rand()) <= self.noise_percentage:
+                    data[j, self._numberAttribute[i]] = 1 if (self._ORIGINAL_INSTANCES[selected, i] == 0) else 0
                 else:
-                    data[j, self.numberAttribute[i]] = self.ORIGINAL_INSTANCES[selected, i]
+                    data[j, self._numberAttribute[i]] = self._ORIGINAL_INSTANCES[selected, i]
 
             if self.has_noise():
-                for i in range(self.NUM_BASE_ATTRIBUTES, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    data[j, self.numberAttribute[i]] = self.sample_random.randint(2)
+                for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
+                    data[j, self._numberAttribute[i]] = self.random_state.randint(2)
 
-        self.current_sample_x = data[:, :self.n_features]
+        self.current_sample_x = data[:, :self.n_cat_features]
         return self.current_sample_x
 
     def get_name(self):

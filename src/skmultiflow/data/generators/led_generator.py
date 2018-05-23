@@ -14,7 +14,7 @@ class LEDGenerator(Stream):
 
        Parameters
        ----------
-       random_state: int
+       seed: int
            random_state for random generation of instances (Default: None)
 
        noise_percentage: float (Default: 0.0)
@@ -31,7 +31,7 @@ class LEDGenerator(Stream):
        >>> # Imports
        >>> from skmultiflow.data.generators.led_generator import LEDGenerator
        >>> # Setting up the stream
-       >>> stream = LEDGenerator(random_state = 112, noise_percentage = 0.28, add_noise= True)
+       >>> stream = LEDGenerator(seed = 112, noise_percentage = 0.28, add_noise= True)
        >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
@@ -69,9 +69,9 @@ class LEDGenerator(Stream):
 
 
     """
-    NUM_BASE_ATTRIBUTES = 7
-    TOTAL_ATTRIBUTES_INCLUDING_NOISE = 24
-    ORIGINAL_INSTANCES = np.array([[1, 1, 1, 0, 1, 1, 1],
+    _NUM_BASE_ATTRIBUTES = 7
+    _TOTAL_ATTRIBUTES_INCLUDING_NOISE = 24
+    _ORIGINAL_INSTANCES = np.array([[1, 1, 1, 0, 1, 1, 1],
                                    [0, 0, 1, 0, 0, 1, 0],
                                    [1, 0, 1, 1, 1, 0, 1],
                                    [1, 0, 1, 1, 0, 1, 1],
@@ -82,24 +82,28 @@ class LEDGenerator(Stream):
                                    [1, 1, 1, 1, 1, 1, 1],
                                    [1, 1, 1, 1, 0, 1, 1]])
 
-    def __init__(self, random_state=None, noise_percentage=0.0, add_noise=False):
+    def __init__(self, seed=None, noise_percentage=0.0, add_noise=False):
         super().__init__()
-        self.random_state = random_state
+        self._original_seed = seed
+        self.random_state = None
         self.noise_percentage = noise_percentage
-        self.n_features = self.NUM_BASE_ATTRIBUTES
+        self.n_features = self._NUM_BASE_ATTRIBUTES
+        self.n_cat_features = self.n_features
         self.add_noise = add_noise
         self.n_targets = 0
-        self.sample_random = None
+        self.random_state = None
         self.__configure()
 
     def __configure(self):
-        self.sample_random = check_random_state(self.random_state)
-        self.n_features = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.has_noise() else self.NUM_BASE_ATTRIBUTES
-        self.features_labels = ["att_num_" + str(i) for i in range(self.n_features)]
-        self.outputs_labels = ["class"]
+        self.random_state = check_random_state(self._original_seed)
+        self.n_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.has_noise() else self._NUM_BASE_ATTRIBUTES
+        self.n_cat_features = self.n_features
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_cat_features)]
+        self.target_names = ["class"]
+        self.targets = [i for i in range(self.n_targets)]
 
     def prepare_for_use(self):
-        self.restart()
+        self.random_state = check_random_state(self._original_seed)
 
     def n_remaining_samples(self):
         return -1
@@ -130,61 +134,36 @@ class LEDGenerator(Stream):
 
         """
 
-        data = np.zeros([batch_size, self.n_features + 1])
+        data = np.zeros([batch_size, self.n_cat_features + 1])
 
         for j in range(batch_size):
-            selected = self.sample_random.randint(10)
+            selected = self.random_state.randint(10)
 
-            for i in range(self.NUM_BASE_ATTRIBUTES):
+            for i in range(self._NUM_BASE_ATTRIBUTES):
 
-                if (0.01 + self.sample_random.rand()) <= self.noise_percentage:
-                    data[j, i] = 1 if (self.ORIGINAL_INSTANCES[selected, i] == 0) else 0
+                if (0.01 + self.random_state.rand()) <= self.noise_percentage:
+                    data[j, i] = 1 if (self._ORIGINAL_INSTANCES[selected, i] == 0) else 0
                 else:
-                    data[j, i] = self.ORIGINAL_INSTANCES[selected, i]
+                    data[j, i] = self._ORIGINAL_INSTANCES[selected, i]
 
             if self.has_noise():
-                for i in range(self.NUM_BASE_ATTRIBUTES, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    data[j, i] = self.sample_random.randint(2)
+                for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
+                    data[j, i] = self.random_state.randint(2)
 
-        self.current_sample_x = data[:, :self.n_features]
+        self.current_sample_x = data[:, :self.n_cat_features]
         return self.current_sample_x
 
-    def is_restartable(self):
-        return True
-
     def restart(self):
-        self.sample_random = None
-        self.sample_random = check_random_state(self.random_state)
+        self.random_state = None
+        self.prepare_for_use()
 
     def has_noise(self):
         return self.add_noise
 
-    def get_n_cat_features(self):
-        return self.n_cat_features
-
-    def get_n_num_features(self):
-        return self.n_num_features
-
-    def get_n_features(self):
-        return self.n_features
-
-    def get_n_targets(self):
-        return self.n_targets
-
-    def get_feature_names(self):
-        return self.features_labels
-
-    def get_target_names(self):
-        return self.outputs_labels
-
     def get_name(self):
         return "Led Generator - {} target".format(self.n_targets)
 
-    def get_targets(self):
-        return [i for i in range(self.n_targets)]
 
-    def last_sample(self):
-        return self.current_sample_x
 
     def get_info(self):
         return '  - n_num_features: ' + str(self.n_num_features) + \
