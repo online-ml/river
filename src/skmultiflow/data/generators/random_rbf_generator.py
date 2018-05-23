@@ -21,11 +21,15 @@ class RandomRBFGenerator(Stream):
     
     Parameters
     ---------
-    model_seed: int (Default: None)
-        The seed to be used by the model random generator.
-        
-    instance_seed: int (Default: None)
-        The seed to be used by the instance random generator.
+    model_random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`..
+
+    instance_random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`..
         
     n_classes: int (Default: 2)
         The number of class labels to generate.
