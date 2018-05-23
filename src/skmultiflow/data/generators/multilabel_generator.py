@@ -84,16 +84,17 @@ class MultilabelGenerator(Stream):
 
     """
 
-    def __init__(self, n_samples=40000, n_features=20, n_targets=5, n_labels=2, random_state=None):
+    def __init__(self, n_samples=40000, n_features=20, n_targets=5, n_labels=2, seed=None):
         super().__init__()
         self.X = None
         self.y = None
+        self._original_seed = seed
         self.n_samples = n_samples
         self.n_features = n_features
         self.n_targets = n_targets
         self.n_labels = n_labels
         self.n_num_features = n_features
-        self.random_state = check_random_state(random_state)
+        self.random_state = check_random_state(self._original_seed)
         self.__configure()
 
     def __configure(self):
@@ -110,14 +111,9 @@ class MultilabelGenerator(Stream):
                                                         n_classes=self.n_targets,
                                                         n_labels=self.n_labels,
                                                         random_state=self.random_state)
-        self.outputs_labels = ["target_" + str(i) for i in range(self.n_targets)]
-        self.features_labels = ["att_num_" + str(i) for i in range(self.n_num_features)]
-
-    def n_remaining_samples(self):
-        return self.n_samples - self.sample_idx
-
-    def has_more_samples(self):
-        return self.n_samples - self.sample_idx > 0
+        self.target_names = ["target_" + str(i) for i in range(self.n_targets)]
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_num_features)]
+        self.targets = np.unique(self.y).tolist() if self.n_targets == 1 else [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
 
     def next_sample(self, batch_size=1):
         """ next_sample
@@ -158,41 +154,17 @@ class MultilabelGenerator(Stream):
         self.current_sample_x = None
         self.current_sample_y = None
 
-    def get_n_cat_features(self):
-        return self.n_cat_features
-
-    def get_n_num_features(self):
-        return self.n_num_features
-
-    def get_n_features(self):
-        return self.n_features
-
-    def get_n_targets(self):
-        return self.n_targets
-
-    def get_feature_names(self):
-        return self.features_labels
-
-    def get_target_names(self):
-        return self.outputs_labels
-
-    def last_sample(self):
-        return self.current_sample_x, self.current_sample_y
-
     def prepare_for_use(self):
         pass
 
     def get_name(self):
         return 'Multilabel Generator - {} targets'.format(self.n_targets)
 
-    def get_targets(self):
-        if self.n_targets == 1:
-            return np.unique(self.y).tolist()
-        else:
-            return [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
-
     def get_class_type(self):
         return 'stream'
+
+    def n_remaining_samples(self):
+        return self.n_samples - self.sample_idx
 
     def get_info(self):
         return 'MultilabelGenerator: n_samples: ' + str(self.n_samples) + \

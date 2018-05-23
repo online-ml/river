@@ -12,20 +12,20 @@ def test_random_rbf_generator_drift(test_path):
 
     expected_names = ['att_num_0', 'att_num_1', 'att_num_2', 'att_num_3', 'att_num_4',
                        'att_num_5', 'att_num_6', 'att_num_7', 'att_num_8', 'att_num_9']
-    assert stream.get_feature_names() == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = [0, 1, 2, 3]
-    assert stream.get_targets() == expected_targets
+    assert stream.targets == expected_targets
 
-    assert stream.get_target_names() == ['class']
+    assert stream.target_names == ['class']
 
-    assert stream.get_n_features() == 10
+    assert stream.n_features == 10
 
-    assert stream.get_n_cat_features() == 0
+    assert stream.n_cat_features == 0
 
-    assert stream.get_n_num_features() == 10
+    assert stream.n_num_features == 10
 
-    assert stream.get_n_targets() == 1
+    assert stream.n_targets == 1
 
     assert stream.get_name() == 'Random RBF Generator with drift - 1 target, 4 classes'
 
@@ -52,6 +52,6 @@ def test_random_rbf_generator_drift(test_path):
     assert np.alltrue(X == X_expected)
     assert np.alltrue(y == y_expected)
 
-    assert stream.get_n_targets() == np.array(y).ndim
+    assert stream.n_targets == np.array(y).ndim
 
-    assert stream.get_n_features() == X.shape[1]
+    assert stream.n_features == X.shape[1]

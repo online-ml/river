@@ -4,7 +4,7 @@ from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
 
 
 def test_multilabel_generator(test_path):
-    stream = MultilabelGenerator(n_samples=100, n_features=20, n_targets=4, n_labels=4, random_state=0)
+    stream = MultilabelGenerator(n_samples=100, n_features=20, n_targets=4, n_labels=4, seed=0)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == 100
@@ -13,21 +13,23 @@ def test_multilabel_generator(test_path):
                        'att_num_5', 'att_num_6', 'att_num_7', 'att_num_8', 'att_num_9',
                        'att_num_10', 'att_num_11', 'att_num_12', 'att_num_13', 'att_num_14',
                        'att_num_15', 'att_num_16', 'att_num_17', 'att_num_18', 'att_num_19']
-    assert stream.get_feature_names() == expected_names
+
+    assert stream.feature_names == expected_names
 
     expected_targets = [[0, 1], [0, 1], [0, 1], [0, 1]]
-    assert stream.get_targets() == expected_targets
+    assert stream.targets == expected_targets
 
     expected_names = ['target_0', 'target_1', 'target_2', 'target_3']
-    assert stream.get_target_names() == expected_names
 
-    assert stream.get_n_features() == 20
+    assert stream.target_names == expected_names
 
-    assert stream.get_n_cat_features() == 0
+    assert stream.n_features == 20
 
-    assert stream.get_n_num_features() == 20
+    assert stream.n_cat_features == 0
 
-    assert stream.get_n_targets() == 4
+    assert stream.n_num_features == stream.n_features
+
+    assert stream.n_targets == 4
 
     assert stream.get_name() == 'Multilabel Generator - 4 targets'
 
@@ -54,6 +56,6 @@ def test_multilabel_generator(test_path):
     assert np.alltrue(X == X_expected)
     assert np.alltrue(y == y_expected)
 
-    assert stream.get_n_targets() == y.shape[1]
+    assert stream.n_targets == y.shape[1]
 
-    assert stream.get_n_features() == X.shape[1]
+    assert stream.n_features == X.shape[1]
