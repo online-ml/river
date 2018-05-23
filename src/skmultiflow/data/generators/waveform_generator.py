@@ -14,7 +14,7 @@ class WaveformGenerator(Stream):
     Parameters
     ----------
     seed: int
-        Seed for random generation of instances (Default: 23)
+        Seed for random generation of instances (Default: None)
     add_noise: bool
         Add noise (Default: False)
         
@@ -23,7 +23,7 @@ class WaveformGenerator(Stream):
     >>> # Imports
     >>> from skmultiflow.data.generators.waveform_generator import WaveformGenerator
     >>> # Setting up the stream
-    >>> stream = WaveformGenerator(seed=774, add_noise=True)
+    >>> stream = WaveformGenerator(seed=774, has_noise=True)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
@@ -79,43 +79,38 @@ class WaveformGenerator(Stream):
         
     """
     
-    NUM_CLASSES = 3
-    NUM_BASE_ATTRIBUTES = 21
-    TOTAL_ATTRIBUTES_INCLUDING_NOISE = 40
-    H_FUNCTION = np.array([[0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],
-                           [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])
+    _NUM_CLASSES = 3
+    _NUM_BASE_ATTRIBUTES = 21
+    _TOTAL_ATTRIBUTES_INCLUDING_NOISE = 40
+    _H_FUNCTION = np.array([[0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],
+                            [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])
 
-    def __init__(self, seed=None, add_noise=False):
+    def __init__(self, seed=None, has_noise=False):
         super().__init__()
-        self.seed = seed
+
+        self._original_seed = seed
         self.random_state = None
-        self.add_noise = add_noise
-        self.n_num_features = self.NUM_BASE_ATTRIBUTES
-        self.n_classes = self.NUM_CLASSES
+        self.has_noise = has_noise
+        self.n_num_features = self._NUM_BASE_ATTRIBUTES
+        self.n_classes = self._NUM_CLASSES
         self.n_targets = 1
         self.n_samples = 0
-        self.n_features = self.n_num_features
 
         self.__configure()
 
     def __configure(self):
         self.n_samples = 100000
-        self.n_features = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.add_noise else self.NUM_BASE_ATTRIBUTES
-        if self.add_noise:
-            self.n_num_features = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE
-        self.n_classes = self.NUM_CLASSES
-        self.features_labels = ["att_num_" + str(i) for i in range(self.n_features)]
-        self.outputs_labels = ["class"]
+        if self.has_noise:
+            self.n_num_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE
+        self.n_features = self.n_num_features
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
+        self.target_names = ["class"]
+        self.targets = [i for i in range(self.n_classes)]
 
     def prepare_for_use(self):
-        self.restart()
-
-    def n_remaining_samples(self):
-        return -1
-
-    def has_more_samples(self):
-        return True
+        self.random_state = check_random_state(self._original_seed)
+        self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
         """ next_sample
@@ -145,76 +140,38 @@ class WaveformGenerator(Stream):
             for the batch_size samples that were requested.
         
         """
-        if self.has_noise():
-            data = np.zeros([batch_size, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE + 1])
-        else:
-            data = np.zeros([batch_size, self.NUM_BASE_ATTRIBUTES + 1])
+        data = np.zeros([batch_size, self.n_features + 1])
 
         for j in range(batch_size):
             self.sample_idx += 1
-            waveform = self.random_state.randint(0, self.NUM_CLASSES)
-            choice_a = 1 if (waveform == 2) else 0
-            choice_b = 1 if (waveform == 0) else 2
+            group = self.random_state.randint(0, self.n_classes)
+            choice_a = 1 if (group == 2) else 0
+            choice_b = 1 if (group == 0) else 2
             multiplier_a = self.random_state.rand()
             multiplier_b = 1.0 - multiplier_a
 
-            for i in range(self.NUM_BASE_ATTRIBUTES):
-                data[j, i] = multiplier_a*self.H_FUNCTION[choice_a][i] \
-                            + multiplier_b*self.H_FUNCTION[choice_b][i] \
+            for i in range(self._NUM_BASE_ATTRIBUTES):
+                data[j, i] = multiplier_a*self._H_FUNCTION[choice_a][i] \
+                            + multiplier_b*self._H_FUNCTION[choice_b][i] \
                             + self.random_state.normal()
 
-            if self.has_noise():
-                for i in range(self.NUM_BASE_ATTRIBUTES, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
+            if self.has_noise:
+                for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
                     data[j, i] = self.random_state.normal()
 
-            data[j, data[j].size-1] = waveform
+            data[j, data[j].size-1] = group
         self.current_sample_x = data[:, :self.n_features]
         self.current_sample_y = np.ravel(data[:, self.n_features:])
 
         return self.current_sample_x, self.current_sample_y
 
-    def is_restartable(self):
-        return True
-
-    def restart(self):
-        self.random_state = None
-        self.random_state = check_random_state(self.seed)
-        self.sample_idx = 0
-
-    def has_noise(self):
-        return self.add_noise
-
-    def get_n_cat_features(self):
-        return self.n_cat_features
-
-    def get_n_num_features(self):
-        return self.n_num_features
-
-    def get_n_features(self):
-        return self.n_num_features
-
-    def get_n_targets(self):
-        return self.n_targets
-
-    def get_feature_names(self):
-        return self.features_labels
-
-    def get_target_names(self):
-        return self.outputs_labels
-
-    def last_sample(self):
-        return self.current_sample_x, self.current_sample_y
-
     def get_name(self):
         return "Waveform Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
-    def get_targets(self):
-        return [i for i in range(self.n_classes)]
-
     def get_info(self):
-        add_noise = 'True' if self.add_noise else 'False'
+        add_noise = 'True' if self.has_noise else 'False'
         return 'Waveform Generator: n_classes: ' + str(self.n_classes) + \
                '  -  n_num_features: ' + str(self.n_num_features) + \
                '  -  n_cat_features: ' + str(self.n_cat_features) + \
                '  -  add_noise: ' + add_noise + \
-               '  -  sample_seed: ' + str(self.seed)
+               '  -  sample_seed: ' + str(self._original_seed)

@@ -24,21 +24,195 @@ class Stream(BaseObject, metaclass=ABCMeta):
         self.current_sample_x = None
         self.current_sample_y = None
         self.sample_idx = 0
+        self.feature_names = []
+        self.target_names = []
 
-    @abstractmethod
-    def n_remaining_samples(self):
-        """ Returns the estimated number of remaining samples.
-        
+    @property
+    def n_features(self):
+        """ Retrieve the number of features.
+
         Returns
         -------
         int
-            Remaining number of samples. -1 if infinite (e.g. generator)
-        
+            The total number of features.
+
         """
-        raise NotImplementedError
+        return self._n_features
+
+    @n_features.setter
+    def n_features(self, n_features):
+        """ Set the number of features
+
+        """
+        self._n_features = n_features
+
+    @property
+    def n_cat_features(self):
+        """ Retrieve the number of integer features.
+
+        Returns
+        -------
+        int
+            The number of integer features in the stream.
+
+        """
+        return self._n_cat_features
+
+    @n_cat_features.setter
+    def n_cat_features(self, n_cat_features):
+        """ Set the number of integer features
+
+        Parameters
+        ----------
+        n_cat_features: int
+        """
+        self._n_cat_features = n_cat_features
+
+    @property
+    def n_num_features(self):
+        """ Retrieve the number of numerical features.
+
+        Returns
+        -------
+        int
+            The number of numerical features in the stream.
+
+        """
+        return self._n_num_features
+
+    @n_num_features.setter
+    def n_num_features(self, n_num_features):
+        """ Set the number of numerical features
+
+        Parameters
+        ----------
+        n_num_features: int
+
+        """
+        self._n_num_features = n_num_features
+
+    @property
+    def n_targets(self):
+        """ Retrieve the number of targets
+
+        Returns
+        -------
+        int
+            the number of targets in the stream.
+        """
+        return self._n_targets
+
+    @n_targets.setter
+    def n_targets(self, n_targets):
+        """ Set the number of targets.
+
+        Parameters
+        ----------
+        n_targets: int
+        """
+        self._n_targets = n_targets
+
+    @property
+    def targets(self):
+        """ Retrieve all classes in the stream for each target.
+
+        Returns
+        -------
+        list
+            list of lists of all classes for each target
+        """
+        return self._targets
+
+    @targets.setter
+    def targets(self, targets):
+        """ Set the list for all classes in the stream.
+
+        Parameters
+        ----------
+        targets
+        """
+        self._targets = targets
+
+    @property
+    def feature_names(self):
+        """ Retrieve the names of the features.
+
+        Returns
+        -------
+        list
+            names of the features
+        """
+        return self._feature_names
+
+    @feature_names.setter
+    def feature_names(self, feature_names):
+        """ Set the name of the features in the stream.
+
+        Parameters
+        ----------
+        feature_names: list
+        """
+        self._feature_names = feature_names
+
+    @property
+    def target_names(self):
+        """ Retrieve the names of the targets.
+
+        Returns
+        -------
+        list
+            the names of the targets in the stream.
+        """
+        return self._target_names
+
+    @target_names.setter
+    def target_names(self, target_names):
+        """ Set the names of the targets in the stream.
+
+        Parameters
+        ----------
+        target_names: list
+
+        """
+        self._target_names = target_names
+
+    @property
+    def random_state(self):
+        """ Retrieve the random state of the stream.
+
+        Returns
+        -------
+        RandomState
+        """
+        return self._random_state
+
+    @random_state.setter
+    def random_state(self, random_state):
+        """ Set the random state of the stream
+
+        Parameters
+        ----------
+        random_state
+
+        Returns
+        -------
+
+        """
+        self._random_state = random_state
 
     @abstractmethod
-    def has_more_samples(self):
+    def prepare_for_use(self):
+        """ prepare_for_use
+
+        Prepare the stream for use. Can be the reading of a file, or
+        the generation of a function, or anything necessary for the
+        stream to work after its initialization.
+
+        Notes
+        -----
+        Every time a stream is created this function has to be called.
+
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -59,7 +233,6 @@ class Stream(BaseObject, metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def last_sample(self):
         """ Retrieves last `batch_size` samples in the stream.
 
@@ -70,85 +243,29 @@ class Stream(BaseObject, metaclass=ABCMeta):
             (batch_size, n_targets), representing the next batch_size samples.
 
         """
-        raise NotImplementedError
+        return self.current_sample_x, self.current_sample_y
 
-    @abstractmethod
     def is_restartable(self):
         """ Determine if the stream is restartable. """
-        raise NotImplementedError
+        return True
 
-    @abstractmethod
     def restart(self):
         """  Restart the stream. """
-        raise NotImplementedError
+        self.prepare_for_use()
 
-    @abstractmethod
-    def get_n_features(self):
-        """ Retrieve the number of features.
-
-        Returns
-        -------
-        int
-            The total number of features.
-
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_n_cat_features(self):
-        """ Retrieve the number of nominal features.
-        
-        Returns
-        -------
-        int
-            The number of nominal features in the stream.
-        
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_n_num_features(self):
-        """ Retrieve the number of numerical atfeaturestributes.
+    def n_remaining_samples(self):
+        """ Returns the estimated number of remaining samples.
 
         Returns
         -------
         int
-            The number of numerical features in the stream.
+            Remaining number of samples. -1 if infinite (e.g. generator)
 
         """
-        raise NotImplementedError
+        return -1
 
-    @abstractmethod
-    def get_n_targets(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_targets(self):
-        """ Get all classes in the stream. """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_feature_names(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_target_names(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def prepare_for_use(self):
-        """ prepare_for_use
-        
-        Prepare the stream for use. Can be the reading of a file, or 
-        the generation of a function, or anything necessary for the 
-        stream to work after its initialization.
-        
-        Notes
-        -----
-        Every time a stream is created this function has to be called.
-        
-        """
-        raise NotImplementedError
+    def has_more_samples(self):
+        return True
 
     @abstractmethod
     def get_name(self):
