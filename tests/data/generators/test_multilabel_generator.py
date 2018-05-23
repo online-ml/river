@@ -4,7 +4,7 @@ from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
 
 
 def test_multilabel_generator(test_path):
-    stream = MultilabelGenerator(n_samples=100, n_features=20, n_targets=4, n_labels=4, seed=0)
+    stream = MultilabelGenerator(n_samples=100, n_features=20, n_targets=4, n_labels=4, random_state=0)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == 100

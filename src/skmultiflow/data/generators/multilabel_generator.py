@@ -84,17 +84,16 @@ class MultilabelGenerator(Stream):
 
     """
 
-    def __init__(self, n_samples=40000, n_features=20, n_targets=5, n_labels=2, seed=None):
+    def __init__(self, n_samples=40000, n_features=20, n_targets=5, n_labels=2, random_state=None):
         super().__init__()
         self.X = None
         self.y = None
-        self._original_seed = seed
         self.n_samples = n_samples
         self.n_features = n_features
         self.n_targets = n_targets
         self.n_labels = n_labels
         self.n_num_features = n_features
-        self.random_state = check_random_state(self._original_seed)
+        self.random_state = check_random_state(random_state)
         self.__configure()
 
     def __configure(self):
