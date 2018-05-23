@@ -15,18 +15,18 @@ def test_regression_generator(test_path):
                        'att_num_15', 'att_num_16', 'att_num_17', 'att_num_18', 'att_num_19']
     assert stream.get_feature_names() == expected_names
 
-    assert stream.get_targets() == [float] * stream.get_n_targets()
+    assert stream.classes == [float] * stream.n_targets
 
     expected_names = ['target_0', 'target_1', 'target_2', 'target_3']
     assert stream.get_target_names() == expected_names
 
-    assert stream.get_n_features() == 20
+    assert stream.n_features == 20
 
-    assert stream.get_n_cat_features() == 0
+    assert stream.n_cat_features == 0
 
-    assert stream.get_n_num_features() == 20
+    assert stream.n_num_features == 20
 
-    assert stream.get_n_targets() == 4
+    assert stream.n_targets == 4
 
     assert stream.get_name() == 'Regression Generator - 4 target(s)'
 
@@ -53,6 +53,6 @@ def test_regression_generator(test_path):
     assert np.allclose(X, X_expected)
     assert np.allclose(y, y_expected)
 
-    assert stream.get_n_targets() == y.shape[1]
+    assert stream.n_targets == y.shape[1]
 
-    assert stream.get_n_features() == X.shape[1]
+    assert stream.n_features == X.shape[1]

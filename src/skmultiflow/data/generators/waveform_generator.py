@@ -6,16 +6,19 @@ from skmultiflow.core.utils.validation import check_random_state
 class WaveformGenerator(Stream):
     """ WaveformGenerator
 
-    Generates instances with 21 numeric attributes and 3 targets, based 
+    Generates instances with 21 numeric attributes and 3 classes, based
     on a random differentiation of some base waveforms. Supports noise 
     addition, but in this case the generator will have 40 attribute 
     instances
      
     Parameters
     ----------
-    seed: int
-        Seed for random generation of instances (Default: None)
-    add_noise: bool
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
+
+    has_noise: bool
         Add noise (Default: False)
         
     Examples
@@ -23,7 +26,7 @@ class WaveformGenerator(Stream):
     >>> # Imports
     >>> from skmultiflow.data.generators.waveform_generator import WaveformGenerator
     >>> # Setting up the stream
-    >>> stream = WaveformGenerator(seed=774, has_noise=True)
+    >>> stream = WaveformGenerator(random_state=774, has_noise=True)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
@@ -86,30 +89,56 @@ class WaveformGenerator(Stream):
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],
                             [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])
 
-    def __init__(self, seed=None, has_noise=False):
+    def __init__(self, random_state=None, has_noise=False):
         super().__init__()
 
-        self._original_seed = seed
+        self._original_random_state = random_state
         self.random_state = None
         self.has_noise = has_noise
         self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = self._NUM_CLASSES
         self.n_targets = 1
-        self.n_samples = 0
 
         self.__configure()
 
     def __configure(self):
-        self.n_samples = 100000
+
         if self.has_noise:
             self.n_num_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE
         self.n_features = self.n_num_features
-        self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
-        self.target_names = ["class"]
-        self.targets = [i for i in range(self.n_classes)]
+        self.feature_header = ["att_num_" + str(i) for i in range(self.n_features)]
+        self.target_header = ["target_0"]
+        self.classes = [i for i in range(self.n_classes)]
+
+
+    @property
+    def has_noise(self):
+        """ Retrieve the value of the option: add noise.
+
+        Returns
+        -------
+        Boolean
+            True is the classes are balanced
+        """
+        return self._has_noise
+
+    @has_noise.setter
+    def has_noise(self, has_noise):
+        """ Set the value of the option: add noise.
+
+        Parameters
+        ----------
+        has_noise: Boolean
+
+        """
+        if isinstance(has_noise, bool):
+            self._has_noise = has_noise
+        else:
+            raise ValueError("has_noise should be boolean")
+
 
     def prepare_for_use(self):
-        self.random_state = check_random_state(self._original_seed)
+        self.random_state = check_random_state(self._original_random_state)
         self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
@@ -174,4 +203,4 @@ class WaveformGenerator(Stream):
                '  -  n_num_features: ' + str(self.n_num_features) + \
                '  -  n_cat_features: ' + str(self.n_cat_features) + \
                '  -  add_noise: ' + add_noise + \
-               '  -  sample_seed: ' + str(self._original_seed)
+               '  -  sample_seed: ' + str(self._original_random_state)

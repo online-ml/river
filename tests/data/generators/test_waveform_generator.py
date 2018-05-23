@@ -4,7 +4,7 @@ from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 
 
 def test_waveform_generator(test_path):
-    stream = WaveformGenerator(seed=23, has_noise=False)
+    stream = WaveformGenerator(random_state=23, has_noise=False)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
@@ -14,12 +14,12 @@ def test_waveform_generator(test_path):
                        'att_num_10', 'att_num_11', 'att_num_12', 'att_num_13', 'att_num_14',
                        'att_num_15', 'att_num_16', 'att_num_17', 'att_num_18', 'att_num_19',
                        'att_num_20']
-    assert stream.feature_names == expected_names
+    assert stream.feature_header == expected_names
 
     expected_targets = [0, 1, 2]
-    assert stream.targets == expected_targets
+    assert stream.classes == expected_targets
 
-    assert stream.target_names == ['class']
+    assert stream.target_header == ['target_0']
 
     assert stream.n_features == 21
 
@@ -61,7 +61,7 @@ def test_waveform_generator(test_path):
 
 def test_waveform_generator_noise(test_path):
     # Noise test
-    stream = WaveformGenerator(seed=23, has_noise=True)
+    stream = WaveformGenerator(random_state=23, has_noise=True)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
@@ -75,12 +75,12 @@ def test_waveform_generator_noise(test_path):
                        'att_num_30', 'att_num_31', 'att_num_32', 'att_num_33', 'att_num_34',
                        'att_num_35', 'att_num_36', 'att_num_37', 'att_num_38', 'att_num_39',
                        ]
-    assert stream.feature_names == expected_names
+    assert stream.feature_header == expected_names
 
     expected_targets = [0, 1, 2]
-    assert stream.targets == expected_targets
+    assert stream.classes == expected_targets
 
-    assert stream.target_names == ['class']
+    assert stream.target_header == ['target_0']
 
     assert stream.n_features == 40
 

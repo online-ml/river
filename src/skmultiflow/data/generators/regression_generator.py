@@ -24,7 +24,7 @@ class RegressionGenerator(Stream):
         that influence the class label.
     
     n_targets: int (Default: 1)
-        Number of targets (outputs) to generate.
+        Number of classes (outputs) to generate.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -118,6 +118,7 @@ class RegressionGenerator(Stream):
         self.n_targets = n_targets
         self.n_informative = n_informative
         self.n_num_features = n_features
+        self.n_features = n_features
         self.random_state = check_random_state(random_state)
         self.__configure()
 
@@ -138,6 +139,10 @@ class RegressionGenerator(Stream):
 
         self.class_header = ["target_" + str(i) for i in range(self.n_targets)]
         self.attributes_header = ["att_num_" + str(i) for i in range(self.n_num_features)]
+        self.classes = [float] * self.n_targets
+
+    def prepare_for_use(self):
+        pass
 
     def n_remaining_samples(self):
         return self.n_samples - self.sample_idx
@@ -175,25 +180,10 @@ class RegressionGenerator(Stream):
             self.current_sample_y = None
         return self.current_sample_x, self.current_sample_y
 
-    def is_restartable(self):
-        return True
-
     def restart(self):
         self.sample_idx = 0
         self.current_sample_x = None
         self.current_sample_y = None
-
-    def get_n_cat_features(self):
-        return self.n_cat_features
-
-    def get_n_num_features(self):
-        return self.n_num_features
-
-    def get_n_features(self):
-        return self.n_features
-
-    def get_n_targets(self):
-        return self.n_targets
 
     def get_feature_names(self):
         return self.attributes_header
@@ -201,20 +191,8 @@ class RegressionGenerator(Stream):
     def get_target_names(self):
         return self.class_header
 
-    def last_sample(self):
-        return self.current_sample_x, self.current_sample_y
-
-    def prepare_for_use(self):
-        pass
-
     def get_name(self):
         return "Regression Generator - {} target(s)".format(self.n_targets)
-
-    def get_targets(self):
-        return [float] * self.n_targets
-
-    def get_class_type(self):
-        return 'stream'
 
     def get_info(self):
         return 'RegressionGenerator: n_samples: ' + str(self.n_samples) + \
