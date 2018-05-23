@@ -19,13 +19,11 @@ class Stream(BaseObject, metaclass=ABCMeta):
         self.n_num_features = 0
         self.n_cat_features = 0
         self.cat_features_idx = []
-        self.features_labels = None
-        self.outputs_labels = None
         self.current_sample_x = None
         self.current_sample_y = None
         self.sample_idx = 0
-        self.feature_names = []
-        self.target_names = []
+        self.feature_header = None
+        self.target_header = None
 
     @property
     def n_features(self):
@@ -93,18 +91,18 @@ class Stream(BaseObject, metaclass=ABCMeta):
 
     @property
     def n_targets(self):
-        """ Retrieve the number of targets
+        """ Retrieve the number of classes
 
         Returns
         -------
         int
-            the number of targets in the stream.
+            the number of classes in the stream.
         """
         return self._n_targets
 
     @n_targets.setter
     def n_targets(self, n_targets):
-        """ Set the number of targets.
+        """ Set the number of classes.
 
         Parameters
         ----------
@@ -113,7 +111,7 @@ class Stream(BaseObject, metaclass=ABCMeta):
         self._n_targets = n_targets
 
     @property
-    def targets(self):
+    def classes(self):
         """ Retrieve all classes in the stream for each target.
 
         Returns
@@ -121,20 +119,20 @@ class Stream(BaseObject, metaclass=ABCMeta):
         list
             list of lists of all classes for each target
         """
-        return self._targets
+        return self._classes
 
-    @targets.setter
-    def targets(self, targets):
+    @classes.setter
+    def classes(self, classes):
         """ Set the list for all classes in the stream.
 
         Parameters
         ----------
-        targets
+        classes
         """
-        self._targets = targets
+        self._classes = classes
 
     @property
-    def feature_names(self):
+    def feature_header(self):
         """ Retrieve the names of the features.
 
         Returns
@@ -142,39 +140,39 @@ class Stream(BaseObject, metaclass=ABCMeta):
         list
             names of the features
         """
-        return self._feature_names
+        return self._feature_header
 
-    @feature_names.setter
-    def feature_names(self, feature_names):
+    @feature_header.setter
+    def feature_header(self, feature_header):
         """ Set the name of the features in the stream.
 
         Parameters
         ----------
-        feature_names: list
+        feature_header: list
         """
-        self._feature_names = feature_names
+        self._feature_header = feature_header
 
     @property
-    def target_names(self):
-        """ Retrieve the names of the targets.
+    def target_header(self):
+        """ Retrieve the names of the classes.
 
         Returns
         -------
         list
-            the names of the targets in the stream.
+            the names of the classes in the stream.
         """
-        return self._target_names
+        return self._target_header
 
-    @target_names.setter
-    def target_names(self, target_names):
-        """ Set the names of the targets in the stream.
+    @target_header.setter
+    def target_header(self, target_header):
+        """ Set the names of the classes in the stream.
 
         Parameters
         ----------
-        target_names: list
+        target_header: list
 
         """
-        self._target_names = target_names
+        self._target_header = target_header
 
     @property
     def random_state(self):

@@ -40,9 +40,10 @@ class SineGenerator(Stream):
         Which of the four classification functions to use for the generation.
         The value can vary from 0 to 3.
 
-    sample_seed: int (Default: None)
-        The seed used to initialize the random generator, which is an instance
-        of numpy's random.
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
 
     balance_classes: bool (Default: False)
         Whether to balance classes or not. If balanced, the class distribution
@@ -61,7 +62,7 @@ class SineGenerator(Stream):
     >>> # Imports
     >>> from skmultiflow.data.generators.sine_generator import SineGenerator
     >>> # Setting up the stream
-    >>> stream = SineGenerator(classification_function = 2, sample_seed = 112, balance_classes = False,
+    >>> stream = SineGenerator(classification_function = 2, random_state = 112, balance_classes = False,
     ... add_noise = True)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
@@ -84,41 +85,113 @@ class SineGenerator(Stream):
     True
 
     """
-    NUM_BASE_ATTRIBUTES = 2
-    TOTAL_ATTRIBUTES_INCLUDING_NOISE = 4
+    _NUM_BASE_ATTRIBUTES = 2
+    _TOTAL_ATTRIBUTES_INCLUDING_NOISE = 4
 
-    def __init__(self, classification_function=0, sample_seed=None, balance_classes=False, add_noise=False):
+    def __init__(self, classification_function=0, random_state=None, balance_classes=False, add_noise=False):
         super().__init__()
 
         # Classification functions to use
-        self.classification_functions = [self.classification_function_zero, self.classification_function_one,
+        self._classification_functions = [self.classification_function_zero, self.classification_function_one,
                                          self.classification_function_two, self.classification_function_three]
         self.classification_function_idx = classification_function
-        self.sample_seed = sample_seed
+        self._original_random_state = random_state
         self.add_noise = add_noise
         self.balance_classes = balance_classes
-        self.n_num_features = self.NUM_BASE_ATTRIBUTES
+        self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = 2
         self.n_targets = 1
-        self.sample_random = None
+        self.random_state = None
         self.next_class_should_be_zero = False
 
         self.__configure()
 
     def __configure(self):
-        self.sample_random = None
-        self.sample_random = check_random_state(self.sample_seed)
-        self.next_class_should_be_zero = False
         if self.add_noise:
-            self.n_num_features = self.TOTAL_ATTRIBUTES_INCLUDING_NOISE
-        self.outputs_labels = ["class"]
-        self.features_labels = ["att_num_" + str(i) for i in range(self.n_num_features)]
+            self.n_num_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE
+        self.n_features = self.n_num_features
+        self.target_header = ["target_0"]
+        self.feature_header = ["att_num_" + str(i) for i in range(self.n_features)]
+        self.classes = [i for i in range(self.n_classes)]
 
-    def n_remaining_samples(self):
-        return -1
+    @property
+    def classification_function_idx(self):
+        """ Retrieve the index of the current classification function.
 
-    def has_more_samples(self):
-        return True
+        Returns
+        -------
+        int
+            index of the classification function [0,1,2,3]
+        """
+        return self._classification_function_idx
+
+    @classification_function_idx.setter
+    def classification_function_idx(self, classification_function_idx):
+        """ Set the index of the current classification function.
+
+        Parameters
+        ----------
+        classification_function_idx: int (0,1,2,3)
+        """
+        if classification_function_idx in range(4):
+            self._classification_function_idx = classification_function_idx
+        else:
+            raise ValueError("classification_function_idx takes only these values: 0, 1, 2, 3")
+
+    @property
+    def balance_classes(self):
+        """ Retrieve the value of the option: Balance classes
+
+        Returns
+        -------
+        Boolean
+            True is the classes are balanced
+        """
+        return self._balance_classes
+
+    @balance_classes.setter
+    def balance_classes(self, balance_classes):
+        """ Set the value of the option: Balance classes.
+
+        Parameters
+        ----------
+        balance_classes: Boolean
+
+        """
+        if isinstance(balance_classes, bool):
+            self._balance_classes = balance_classes
+        else:
+            raise ValueError("balance_classes should be boolean")
+
+    @property
+    def add_noise(self):
+        """ Retrieve the value of the option: add noise.
+
+        Returns
+        -------
+        Boolean
+            True is the classes are balanced
+        """
+        return self._add_noise
+
+    @add_noise.setter
+    def add_noise(self, add_noise):
+        """ Set the value of the option: add noise.
+
+        Parameters
+        ----------
+        add_noise: Boolean
+
+        """
+        if isinstance(add_noise, bool):
+            self._add_noise = add_noise
+        else:
+            raise ValueError("has_noise should be boolean")
+
+    def prepare_for_use(self):
+        self.random_state = check_random_state(self._original_random_state)
+        self.next_class_should_be_zero = False
+        self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
         """ next_sample
@@ -146,16 +219,17 @@ class SineGenerator(Stream):
 
         """
 
-        data = np.zeros([batch_size, self.n_num_features + 1])
+        data = np.zeros([batch_size, self.n_features + 1])
 
         for j in range(batch_size):
+            self.sample_idx += 1
             att1 = att2 = 0.0
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                att1 = self.sample_random.rand()
-                att2 = self.sample_random.rand()
-                group = self.classification_functions[self.classification_function_idx](att1, att2)
+                att1 = self.random_state.rand()
+                att2 = self.random_state.rand()
+                group = self._classification_functions[self.classification_function_idx](att1, att2)
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -168,51 +242,26 @@ class SineGenerator(Stream):
             data[j, 0] = att1
             data[j, 1] = att2
 
-            if self.has_noise():
-                for i in range(self.NUM_BASE_ATTRIBUTES, self.TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    data[j, i] = self.sample_random.rand()
+            if self.add_noise:
+                for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
+                    data[j, i] = self.random_state.rand()
                 data[j, 4] = group
             else:
                 data[j, 2] = group
 
-        self.current_sample_x = data[:, :self.n_num_features]
-        self.current_sample_y = data[:, self.n_num_features:].flatten()
+        self.current_sample_x = data[:, :self.n_features]
+        self.current_sample_y = data[:, self.n_features:].flatten()
 
         return self.current_sample_x, self.current_sample_y
 
-    def prepare_for_use(self):
-        self.restart()
-
-    def is_restartable(self):
-        return True
+    def generate_drift(self):
+        new_function = self.random_state.randint(4)
+        while new_function == self.classification_function_idx:
+            new_function = self.random_state.randint(4)
+        self.classification_function_idx = new_function
 
     def restart(self):
-        self.sample_random.seed(self.sample_seed)
-        self.next_class_should_be_zero = False
-
-    def has_noise(self):
-        return self.add_noise
-
-    def get_n_cat_features(self):
-        return self.n_cat_features
-
-    def get_n_num_features(self):
-        return self.n_num_features
-
-    def get_n_features(self):
-        return self.n_num_features
-
-    def get_n_targets(self):
-        return self.n_targets
-
-    def get_feature_names(self):
-        return self.features_labels
-
-    def get_target_names(self):
-        return self.outputs_labels
-
-    def last_sample(self):
-        return self.current_sample_x, self.current_sample_y
+        self.prepare_for_use()
 
     @staticmethod
     def classification_function_zero(att1, att2):
@@ -310,17 +359,9 @@ class SineGenerator(Stream):
     def get_name(self):
         return "Sine Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
-    def get_targets(self):
-        return [i for i in range(self.n_classes)]
-
     def get_info(self):
         return 'SineGenerator: classification_function: ' + str(self.classification_function_idx) + \
-               ' - sample_seed: ' + str(self.sample_seed) + \
-               ' - balance_classes: ' + ('True' if self.balance_classes else 'False') + \
-               ' - add_noise: ' + str(self.has_noise())
+               ' - seed: ' + str(self._original_random_state) + \
+               ' - balance_classes: ' + str(self.balance_classes) + \
+               ' - add_noise: ' + str(self.add_noise)
 
-    def generate_drift(self):
-        new_function = self.sample_random.randint(4)
-        while new_function == self.classification_function_idx:
-            new_function = self.sample_random.randint(4)
-        self.classification_function_idx = new_function
