@@ -41,7 +41,7 @@ class RandomRBFGenerator(Stream):
     >>> # Imports
     >>> from skmultiflow.data.generators.random_rbf_generator import RandomRBFGenerator
     >>> # Setting up the stream
-    >>> stream = RandomRBFGenerator(model_seed=99, instance_seed=50, n_classes=4, n_features=10, n_centroids=50)
+    >>> stream = RandomRBFGenerator(model_random_state=99, instance_random_state=50, n_classes=4, n_features=10, n_centroids=50)
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
@@ -86,11 +86,11 @@ class RandomRBFGenerator(Stream):
     
     """
 
-    def __init__(self, model_seed=None, instance_seed=None, n_classes=2, n_features=10, n_centroids=50):
+    def __init__(self, model_random_state=None, instance_random_state=None, n_classes=2, n_features=10, n_centroids=50):
         super().__init__()
-        self._original_seed = instance_seed
-        self.model_seed = model_seed
-        self.instance_random_state = self.random_state = check_random_state(self._original_seed)
+        self._original_instance_random_state = instance_random_state
+        self._original_model_random_state = model_random_state
+        self.instance_random_state = self.random_state = check_random_state(self._original_instance_random_state)
         self.n_classes = n_classes
         self.n_targets = 1
         self.n_features = n_features
@@ -145,7 +145,7 @@ class RandomRBFGenerator(Stream):
 
     def prepare_for_use(self):
         self.generate_centroids()
-        self.instance_random_state = check_random_state(self._original_seed)
+        self.instance_random_state = check_random_state(self._original_instance_random_state)
 
     def get_name(self):
         return "Random RBF Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
@@ -157,7 +157,7 @@ class RandomRBFGenerator(Stream):
         a label, a standard deviation and a weight. 
         
         """
-        model_random_state = check_random_state(self.model_seed)
+        model_random_state = check_random_state(self._original_model_random_state)
         self.centroids = []
         self.centroid_weights = []
         for i in range(self.n_centroids):
@@ -171,8 +171,8 @@ class RandomRBFGenerator(Stream):
             self.centroid_weights.append(model_random_state.rand())
 
     def get_info(self):
-        return 'RandomRBFGenerator: model_seed: ' + str(self.model_seed) + \
-               ' - sample_seed: ' + str(self._original_seed) + \
+        return 'RandomRBFGenerator: model_seed: ' + str(self._original_model_random_state) + \
+               ' - sample_seed: ' + str(self._original_instance_random_state) + \
                ' - n_classes: ' + str(self.n_classes) + \
                ' - num_att: ' + str(self.n_num_features) + \
                ' - n_centroids: ' + str(self.n_centroids)

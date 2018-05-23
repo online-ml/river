@@ -4,7 +4,7 @@ from skmultiflow.data.generators.random_rbf_generator import RandomRBFGenerator
 
 
 def test_random_rbf_generator(test_path):
-    stream = RandomRBFGenerator(model_seed=99, instance_seed=50, n_classes=4, n_features=10, n_centroids=50)
+    stream = RandomRBFGenerator(model_random_state=99, instance_random_state=50, n_classes=4, n_features=10, n_centroids=50)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
