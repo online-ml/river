@@ -305,5 +305,5 @@ class STAGGERGenerator(Stream):
 
     def get_info(self):
         return 'SineGenerator: classification_function: ' + str(self.classification_function_idx) + \
-               ' - seed: ' + str(self._original_random_state) + \
+               ' - random_state: ' + str(self._original_random_state) + \
                ' - balance_classes: ' + str(self.balance_classes)

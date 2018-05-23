@@ -17,7 +17,7 @@ def test_hyper_plane_generator(test_path):
         expected_names.append("att_num_" + str(i))
     assert stream.feature_header == expected_names
 
-    assert stream.get_targets() == [0, 1]
+    assert stream.classes == [0, 1]
 
     assert stream.target_header == ["target_0"]
 

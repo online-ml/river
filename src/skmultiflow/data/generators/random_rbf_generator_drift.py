@@ -174,7 +174,7 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
 
     def get_info(self):
         return 'RandomRBFGenerator: model_random_state: ' + str(self._original_model_random_state) + \
-               ' - sample_seed: ' + str(self._original_instance_random_state) + \
+               ' - instance_random_state: ' + str(self._original_instance_random_state) + \
                ' - n_classes: ' + str(self.n_classes) + \
                ' - num_att: ' + str(self.n_num_features) + \
                ' - n_centroids: ' + str(self.n_centroids) + \
