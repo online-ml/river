@@ -130,7 +130,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         y: Array-like
             An array-like containing the class labels of all samples in X.
         
-        classes: list
+        target_values: list
             A list containing all class labels of the classification problem.
 
         weight: Array-like

@@ -29,7 +29,7 @@ class MIXEDGenerator(Stream):
         If None, the random number generator is the RandomState instance used by `np.random`.
 
     balance_classes: bool (Default: False)
-        Whether to balance classes or not. If balanced, the class distribution
+        Whether to balance target_values or not. If balanced, the class distribution
         will converge to a uniform distribution.
 
         the batch_size samples that were requested.
@@ -84,14 +84,15 @@ class MIXEDGenerator(Stream):
         self.n_classes = 2
         self.n_targets = 1
         self.next_class_should_be_zero = False
+        self.name = "Mixed Generator"
 
         self.__configure()
 
     def __configure(self):
 
-        self.target_header = ["target_0"]
-        self.feature_header = ["att_num_" + str(i) for i in range(self.n_features)]
-        self.classes = [i for i in range(self.n_classes)]
+        self.target_names = ["target_0"]
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
+        self.target_values = [i for i in range(self.n_classes)]
 
     @property
     def classification_function_idx(self):
@@ -115,22 +116,22 @@ class MIXEDGenerator(Stream):
         if classification_function_idx in range(2):
             self._classification_function_idx = classification_function_idx
         else:
-            raise ValueError("classification_function_idx takes only these values: 0..1")
+            raise ValueError("classification_function_idx takes only these values: 0, 1, and {} was passed".format(classification_function_idx))
 
     @property
     def balance_classes(self):
-        """ Retrieve the value of the option: Balance classes
+        """ Retrieve the value of the option: Balance target_values
 
         Returns
         -------
         Boolean
-            True is the classes are balanced
+            True is the target_values are balanced
         """
         return self._balance_classes
 
     @balance_classes.setter
     def balance_classes(self, balance_classes):
-        """ Set the value of the option: Balance classes.
+        """ Set the value of the option: Balance target_values.
 
         Parameters
         ----------
@@ -140,7 +141,7 @@ class MIXEDGenerator(Stream):
         if isinstance(balance_classes, bool):
             self._balance_classes = balance_classes
         else:
-            raise ValueError("balance_classes should be boolean")
+            raise ValueError("balance_classes should be boolean, {} was passed".format(balance_classes))
 
     def next_sample(self, batch_size=1):
 
@@ -151,8 +152,8 @@ class MIXEDGenerator(Stream):
         passed by the user. The boolean attributes are either 0 or 1
         based on the comparison of the random generator and 0.5 ,
         the classification function decides whether to classify the instance
-        as class 0 or class 1. The next step is to verify if the classes should
-        be balanced, and if so, balance the classes.
+        as class 0 or class 1. The next step is to verify if the target_values should
+        be balanced, and if so, balance the target_values.
 
         The generated sample will have 4 relevant features and 1 label (it has one classification task).
 
@@ -266,9 +267,6 @@ class MIXEDGenerator(Stream):
         """
         z = att_3 < 0.5 + 0.3 * np.sin(3 * np.pi * att_2)
         return 1 if (att_0 == 1 and att_1 == 1) or (att_0 == 1 and z) or (att_1 == 1 and z) else 0
-
-    def get_name(self):
-        return "Mixed Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
     def get_info(self):
         return 'MixedGenerator: classification_function: ' + str(self.classification_function_idx) + \

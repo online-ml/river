@@ -29,7 +29,7 @@ def test_random_tree_generator(test_path):
 
     assert stream.get_n_targets() == 1
 
-    assert stream.get_name() == 'Random Tree Generator - 1 target, 2 classes'
+    assert stream.get_name() == 'Random Tree Generator - 1 target, 2 target_values'
 
     assert stream.has_more_samples() is True
 

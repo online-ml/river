@@ -92,8 +92,11 @@ class MultilabelGenerator(Stream):
         self.n_features = n_features
         self.n_targets = n_targets
         self.n_labels = n_labels
+        self.n_classes = 2
         self.n_num_features = n_features
         self.random_state = check_random_state(random_state)
+        self.name = "Multilabel Generator"
+
         self.__configure()
 
     def __configure(self):
@@ -110,9 +113,9 @@ class MultilabelGenerator(Stream):
                                                         n_classes=self.n_targets,
                                                         n_labels=self.n_labels,
                                                         random_state=self.random_state)
-        self.target_header = ["target_" + str(i) for i in range(self.n_targets)]
-        self.feature_header = ["att_num_" + str(i) for i in range(self.n_num_features)]
-        self.classes = np.unique(self.y).tolist() if self.n_targets == 1 else [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
+        self.target_names = ["target_" + str(i) for i in range(self.n_targets)]
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_num_features)]
+        self.target_values = np.unique(self.y).tolist() if self.n_targets == 1 else [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
 
     def next_sample(self, batch_size=1):
         """ next_sample
@@ -152,9 +155,6 @@ class MultilabelGenerator(Stream):
 
     def prepare_for_use(self):
         pass
-
-    def get_name(self):
-        return 'Multilabel Generator - {} targets'.format(self.n_targets)
 
     def n_remaining_samples(self):
         return self.n_samples - self.sample_idx

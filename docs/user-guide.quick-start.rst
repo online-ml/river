@@ -13,7 +13,7 @@ In this example, we will use a data stream to train a :class:`HoeffdingTree` cla
 
 1. Create a stream
 
-   The :class:`WaveformGenerator` generates by default samples with 21 numeric attributes and 3 classes, based on a random differentiation of some base waveforms:
+   The :class:`WaveformGenerator` generates by default samples with 21 numeric attributes and 3 target_values, based on a random differentiation of some base waveforms:
 
    .. code-block:: python
 

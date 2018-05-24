@@ -81,6 +81,7 @@ class LEDGeneratorDrift(LEDGenerator):
     def __init__(self, random_state=None, noise_percentage=0.0, has_noise=False, n_drift_features=0):
         super().__init__(random_state=random_state, noise_percentage=noise_percentage, has_noise=has_noise)
         self.n_drift_features = n_drift_features
+        self.name = "Led Generator with drift"
 
         self.__configure()
 
@@ -138,7 +139,7 @@ class LEDGeneratorDrift(LEDGenerator):
         return self.current_sample_x
 
     def get_name(self):
-        return "Led Generator with drift - {} target".format(self.n_targets)
+        return "Led Generator with drift - {} features".format(self.n_features)
 
     def get_info(self):
         return '  -  n_num_features: ' + str(self.n_num_features) + \

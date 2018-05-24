@@ -18,12 +18,15 @@ class Stream(BaseObject, metaclass=ABCMeta):
         self.n_features = 0
         self.n_num_features = 0
         self.n_cat_features = 0
+        self.n_classes = 0
         self.cat_features_idx = []
         self.current_sample_x = None
         self.current_sample_y = None
         self.sample_idx = 0
-        self.feature_header = None
-        self.target_header = None
+        self.feature_names = None
+        self.target_names = None
+        self.target_values = None
+        self.name = None
 
     @property
     def n_features(self):
@@ -91,18 +94,18 @@ class Stream(BaseObject, metaclass=ABCMeta):
 
     @property
     def n_targets(self):
-        """ Retrieve the number of classes
+        """ Retrieve the number of target_values
 
         Returns
         -------
         int
-            the number of classes in the stream.
+            the number of target_values in the stream.
         """
         return self._n_targets
 
     @n_targets.setter
     def n_targets(self, n_targets):
-        """ Set the number of classes.
+        """ Set the number of target_values.
 
         Parameters
         ----------
@@ -111,28 +114,28 @@ class Stream(BaseObject, metaclass=ABCMeta):
         self._n_targets = n_targets
 
     @property
-    def classes(self):
-        """ Retrieve all classes in the stream for each target.
+    def target_values(self):
+        """ Retrieve all target_values in the stream for each target.
 
         Returns
         -------
         list
-            list of lists of all classes for each target
+            list of lists of all target_values for each target
         """
-        return self._classes
+        return self._target_values
 
-    @classes.setter
-    def classes(self, classes):
-        """ Set the list for all classes in the stream.
+    @target_values.setter
+    def target_values(self, target_values):
+        """ Set the list for all target_values in the stream.
 
         Parameters
         ----------
-        classes
+        target_values
         """
-        self._classes = classes
+        self._target_values = target_values
 
     @property
-    def feature_header(self):
+    def feature_names(self):
         """ Retrieve the names of the features.
 
         Returns
@@ -140,39 +143,39 @@ class Stream(BaseObject, metaclass=ABCMeta):
         list
             names of the features
         """
-        return self._feature_header
+        return self._feature_names
 
-    @feature_header.setter
-    def feature_header(self, feature_header):
+    @feature_names.setter
+    def feature_names(self, feature_names):
         """ Set the name of the features in the stream.
 
         Parameters
         ----------
-        feature_header: list
+        feature_names: list
         """
-        self._feature_header = feature_header
+        self._feature_names = feature_names
 
     @property
-    def target_header(self):
-        """ Retrieve the names of the classes.
+    def target_names(self):
+        """ Retrieve the names of the target_values.
 
         Returns
         -------
         list
-            the names of the classes in the stream.
+            the names of the target_values in the stream.
         """
-        return self._target_header
+        return self._target_names
 
-    @target_header.setter
-    def target_header(self, target_header):
-        """ Set the names of the classes in the stream.
+    @target_names.setter
+    def target_names(self, target_names):
+        """ Set the names of the target_values in the stream.
 
         Parameters
         ----------
-        target_header: list
+        target_names: list
 
         """
-        self._target_header = target_header
+        self._target_names = target_names
 
     @property
     def random_state(self):
@@ -265,7 +268,6 @@ class Stream(BaseObject, metaclass=ABCMeta):
     def has_more_samples(self):
         return True
 
-    @abstractmethod
     def get_name(self):
         """ get_name
         
@@ -280,7 +282,8 @@ class Stream(BaseObject, metaclass=ABCMeta):
             A string representing the plot name.
         
         """
-        raise NotImplementedError
+        return self.name + " - {} targets, {} classes, {} features".format(self.n_targets,
+                                                                             self.n_classes, self.n_features)
 
     def get_class_type(self):
         return 'stream'

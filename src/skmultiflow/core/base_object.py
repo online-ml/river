@@ -4,8 +4,8 @@ from abc import ABCMeta, abstractmethod
 class BaseObject(metaclass=ABCMeta):
     """ BaseObject
     
-    The most basic object, from which classes in scikit-multiflow 
-    derive from. It guarantees that all classes have at least the 
+    The most basic object, from which target_values in scikit-multiflow
+    derive from. It guarantees that all target_values have at least the
     two basic functions described in this base class.
     
     """

@@ -15,7 +15,7 @@ def test_regression_generator(test_path):
                        'att_num_15', 'att_num_16', 'att_num_17', 'att_num_18', 'att_num_19']
     assert stream.get_feature_names() == expected_names
 
-    assert stream.classes == [float] * stream.n_targets
+    assert stream.target_values == [float] * stream.n_targets
 
     expected_names = ['target_0', 'target_1', 'target_2', 'target_3']
     assert stream.get_target_names() == expected_names
@@ -28,7 +28,7 @@ def test_regression_generator(test_path):
 
     assert stream.n_targets == 4
 
-    assert stream.get_name() == 'Regression Generator - 4 target(s)'
+    assert stream.get_name() == 'Regression Generator - 4 targets, 20 features'
 
     assert stream.has_more_samples() is True
 

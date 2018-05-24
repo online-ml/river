@@ -93,14 +93,15 @@ class LEDGenerator(Stream):
         self.n_features = self.n_cat_features
         self.has_noise = has_noise
         self.n_targets = 0
+        self.name = "Led Generator"
         self.__configure()
 
     def __configure(self):
         self.random_state = check_random_state(self._original_random_state)
         self.n_cat_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.has_noise else self._NUM_BASE_ATTRIBUTES
         self.n_features = self.n_cat_features
-        self.feature_header = ["att_num_" + str(i) for i in range(self.n_cat_features)]
-        self.classes = [i for i in range(self.n_targets)]
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_cat_features)]
+        self.target_values = [i for i in range(self.n_targets)]
 
     @property
     def noise_percentage(self):
@@ -109,13 +110,13 @@ class LEDGenerator(Stream):
         Returns
         -------
         Boolean
-            True is the classes are balanced
+            True is the target_values are balanced
         """
         return self._noise_percentage
 
     @noise_percentage.setter
     def noise_percentage(self, noise_percentage):
-        """ Set the value of the option: Balance classes.
+        """ Set the value of the option: Balance target_values.
 
         Parameters
         ----------
@@ -125,7 +126,7 @@ class LEDGenerator(Stream):
         if (0.0 <= noise_percentage) and (noise_percentage <= 1.0):
             self._noise_percentage = noise_percentage
         else:
-            raise ValueError("noise percentage should be in [0.0..1.0]")
+            raise ValueError("noise percentage should be in [0.0..1.0], and {} was passed".format(noise_percentage))
 
     @property
     def has_noise(self):
@@ -134,7 +135,7 @@ class LEDGenerator(Stream):
         Returns
         -------
         Boolean
-            True is the classes are balanced
+            True is the target_values are balanced
         """
         return self._has_noise
 
@@ -150,7 +151,7 @@ class LEDGenerator(Stream):
         if isinstance(has_noise, bool):
             self._has_noise = has_noise
         else:
-            raise ValueError("has_noise should be boolean")
+            raise ValueError("has_noise should be boolean, and {} was passed".format(has_noise))
 
     def prepare_for_use(self):
         self.random_state = check_random_state(self._original_random_state)
@@ -203,7 +204,7 @@ class LEDGenerator(Stream):
         self.prepare_for_use()
 
     def get_name(self):
-        return "Led Generator - {} target".format(self.n_targets)
+        return "Led Generator - {} features".format(self.n_features)
 
     def get_info(self):
         return '  - n_cat_features: ' + str(self.n_cat_features) + \

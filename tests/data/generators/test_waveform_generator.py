@@ -14,12 +14,12 @@ def test_waveform_generator(test_path):
                        'att_num_10', 'att_num_11', 'att_num_12', 'att_num_13', 'att_num_14',
                        'att_num_15', 'att_num_16', 'att_num_17', 'att_num_18', 'att_num_19',
                        'att_num_20']
-    assert stream.feature_header == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = [0, 1, 2]
-    assert stream.classes == expected_targets
+    assert stream.target_values == expected_targets
 
-    assert stream.target_header == ['target_0']
+    assert stream.target_names == ['target_0']
 
     assert stream.n_features == 21
 
@@ -29,7 +29,7 @@ def test_waveform_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Waveform Generator - 1 target, 3 classes'
+    assert stream.get_name() == 'Waveform Generator - 1 targets, 3 classes, 21 features'
 
     assert stream.has_more_samples() is True
 
@@ -75,12 +75,12 @@ def test_waveform_generator_noise(test_path):
                        'att_num_30', 'att_num_31', 'att_num_32', 'att_num_33', 'att_num_34',
                        'att_num_35', 'att_num_36', 'att_num_37', 'att_num_38', 'att_num_39',
                        ]
-    assert stream.feature_header == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = [0, 1, 2]
-    assert stream.classes == expected_targets
+    assert stream.target_values == expected_targets
 
-    assert stream.target_header == ['target_0']
+    assert stream.target_names == ['target_0']
 
     assert stream.n_features == 40
 
@@ -90,7 +90,7 @@ def test_waveform_generator_noise(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Waveform Generator - 1 target, 3 classes'
+    assert stream.get_name() == 'Waveform Generator - 1 targets, 3 classes, 40 features'
 
     assert stream.has_more_samples() is True
 

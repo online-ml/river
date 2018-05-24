@@ -26,7 +26,7 @@ class RandomTreeGenerator(Stream):
         Seed for random generation of instances.
     
     n_classes: int (Default: 2)
-        The number of classes to generate.
+        The number of target_values to generate.
     
     n_cat_features: int (Default: 5)
         The number of categorical features to generate. Categorical features are binary encoded, the actual number of
@@ -401,7 +401,7 @@ class RandomTreeGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def get_name(self):
-        return "Random Tree Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
+        return "Random Tree Generator - {} target, {} target_values".format(self.n_targets, self.n_classes)
 
     def get_targets(self):
         return [i for i in range(self.n_classes)]

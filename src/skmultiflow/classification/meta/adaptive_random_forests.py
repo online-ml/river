@@ -229,7 +229,7 @@ class AdaptiveRandomForest(StreamModel):
         for i in range(r):
             votes = self.get_votes_for_instance(X[i])
             if votes == {}:
-                # Ensemble is empty, all classes equal, default to zero
+                # Ensemble is empty, all target_values equal, default to zero
                 predictions.append(0)
             else:
                 predictions.append(max(votes, key=votes.get))

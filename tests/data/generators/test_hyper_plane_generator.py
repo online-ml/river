@@ -15,11 +15,11 @@ def test_hyper_plane_generator(test_path):
     expected_names = []
     for i in range(n_features):
         expected_names.append("att_num_" + str(i))
-    assert stream.feature_header == expected_names
+    assert stream.feature_names == expected_names
 
-    assert stream.classes == [0, 1]
+    assert stream.target_values == [0, 1]
 
-    assert stream.target_header == ["target_0"]
+    assert stream.target_names == ["target_0"]
 
     assert stream.n_features == n_features
 
@@ -27,7 +27,7 @@ def test_hyper_plane_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Hyperplane Generator - 1 target, 2 classes, {} features'.format(n_features)
+    assert stream.get_name() == 'Hyperplane Generator - 1 targets, 2 classes, 10 features'
 
     assert stream.has_more_samples() is True
 

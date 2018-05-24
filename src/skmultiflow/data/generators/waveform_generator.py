@@ -6,7 +6,7 @@ from skmultiflow.core.utils.validation import check_random_state
 class WaveformGenerator(Stream):
     """ WaveformGenerator
 
-    Generates instances with 21 numeric attributes and 3 classes, based
+    Generates instances with 21 numeric attributes and 3 target_values, based
     on a random differentiation of some base waveforms. Supports noise 
     addition, but in this case the generator will have 40 attribute 
     instances
@@ -98,6 +98,7 @@ class WaveformGenerator(Stream):
         self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = self._NUM_CLASSES
         self.n_targets = 1
+        self.name = "Waveform Generator"
 
         self.__configure()
 
@@ -106,9 +107,9 @@ class WaveformGenerator(Stream):
         if self.has_noise:
             self.n_num_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE
         self.n_features = self.n_num_features
-        self.feature_header = ["att_num_" + str(i) for i in range(self.n_features)]
-        self.target_header = ["target_0"]
-        self.classes = [i for i in range(self.n_classes)]
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
+        self.target_names = ["target_0"]
+        self.target_values = [i for i in range(self.n_classes)]
 
     @property
     def has_noise(self):
@@ -117,7 +118,7 @@ class WaveformGenerator(Stream):
         Returns
         -------
         Boolean
-            True is the classes are balanced
+            True is the target_values are balanced
         """
         return self._has_noise
 
@@ -133,7 +134,7 @@ class WaveformGenerator(Stream):
         if isinstance(has_noise, bool):
             self._has_noise = has_noise
         else:
-            raise ValueError("has_noise should be boolean")
+            raise ValueError("has_noise should be boolean, {} was passed".format(has_noise))
 
     def prepare_for_use(self):
         self.random_state = check_random_state(self._original_random_state)
@@ -191,9 +192,6 @@ class WaveformGenerator(Stream):
         self.current_sample_y = np.ravel(data[:, self.n_features:])
 
         return self.current_sample_x, self.current_sample_y
-
-    def get_name(self):
-        return "Waveform Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
     def get_info(self):
         add_noise = 'True' if self.has_noise else 'False'

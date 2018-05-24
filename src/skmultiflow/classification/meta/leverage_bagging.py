@@ -59,7 +59,7 @@ class LeverageBagging(StreamModel):
     NotImplementedError: A few of the functions described here are not 
     implemented since they have no application in this context.
     
-    ValueError: A ValueError is raised if the 'classes' parameter is 
+    ValueError: A ValueError is raised if the 'target_values' parameter is
     not passed in the first partial_fit call.
     
     Notes
@@ -88,7 +88,7 @@ class LeverageBagging(StreamModel):
     >>> corrects = 0
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
-    >>> clf = clf.partial_fit(X, y, classes=stream.get_targets())
+    >>> clf = clf.partial_fit(X, y, target_values=stream.get_targets())
     >>> for i in range(2000):
     ...     X, y = stream.next_sample()
     ...     pred = clf.predict(X)
@@ -168,9 +168,9 @@ class LeverageBagging(StreamModel):
         
         Raises
         ------
-        ValueError: A ValueError is raised if the 'classes' parameter is not 
+        ValueError: A ValueError is raised if the 'target_values' parameter is not
         passed in the first partial_fit call, or if they are passed in further 
-        calls but differ from the initial classes list passed.
+        calls but differ from the initial target_values list passed.
         
         Returns
         -------
@@ -179,7 +179,7 @@ class LeverageBagging(StreamModel):
         
         """
         if classes is None and self.classes is None:
-            raise ValueError("The first partial_fit call should pass all the classes.")
+            raise ValueError("The first partial_fit call should pass all the target_values.")
         if classes is not None and self.classes is None:
             self.classes = classes
         elif classes is not None and self.classes is not None:
@@ -187,7 +187,7 @@ class LeverageBagging(StreamModel):
                 pass
             else:
                 raise ValueError(
-                    "The classes passed to the partial_fit function differ from those passed in an earlier moment.")
+                    "The target_values passed to the partial_fit function differ from those passed in an earlier moment.")
 
         r, c = get_dimensions(X)
         for i in range(r):
@@ -333,7 +333,7 @@ class LeverageBagging(StreamModel):
 
         Raises
         ------
-        ValueError: A ValueError is raised if the number of classes in the h 
+        ValueError: A ValueError is raised if the number of target_values in the h
         learner differs from that of the ensemble learner.
 
         Returns
@@ -341,7 +341,7 @@ class LeverageBagging(StreamModel):
         numpy.ndarray
             An array of shape (n_samples, n_features), in which each outer entry is 
             associated with the X entry of the same index. And where the list in 
-            index [i] contains len(self.classes) elements, each of which represents 
+            index [i] contains len(self.target_values) elements, each of which represents
             the probability that the i-th sample of X belongs to a certain label.
 
         """
@@ -354,7 +354,7 @@ class LeverageBagging(StreamModel):
                 partial_probs = self.ensemble[i].predict_proba(X)
                 if len(partial_probs[0]) != len(self.classes):
                     raise ValueError(
-                        "The number of classes is different in the bagging algorithm and in the chosen learning "
+                        "The number of target_values is different in the bagging algorithm and in the chosen learning "
                         "algorithm.")
 
                 if len(probs) < 1:
@@ -391,7 +391,7 @@ class LeverageBagging(StreamModel):
         list
             A list of lists, in which each outer entry is associated with 
             the X entry of the same index. And where the list in index [i] 
-            contains len(self.classes) elements, each of which represents 
+            contains len(self.target_values) elements, each of which represents
             the probability that the i-th sample of X belongs to a certain 
             label.
 

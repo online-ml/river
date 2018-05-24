@@ -18,7 +18,7 @@ class AGRAWALGenerator(Stream):
         If None, the random number generator is the RandomState instance used by `np.random`.
 
     balance_classes: bool (Default: False)
-        Whether to balance classes or not. If balanced, the class distribution
+        Whether to balance target_values or not. If balanced, the class distribution
         will converge to a uniform distribution.
 
     perturbation: float (Default: 0.0) (0.0..1.0)
@@ -57,13 +57,14 @@ class AGRAWALGenerator(Stream):
         self.n_targets = 1
         self.random_state = None
         self._next_class_should_be_zero = False
+        self.name = "AGRAWAL Generator"
 
         self.__configure()
 
     def __configure(self):
-        self.target_header = ["target_0"]
-        self.feature_header = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue", "hyears", "loan"]
-        self.classes = [i for i in range(self.n_classes)]
+        self.target_names = ["target_0"]
+        self.feature_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue", "hyears", "loan"]
+        self.target_values = [i for i in range(self.n_classes)]
 
     @property
     def classification_function_idx(self):
@@ -87,22 +88,22 @@ class AGRAWALGenerator(Stream):
         if classification_function_idx in range(10):
             self._classification_function_idx = classification_function_idx
         else:
-            raise ValueError("classification_function_idx takes only these values: 0..9")
+            raise ValueError("classification_function_idx takes only these values: [0, 9], and {} was passed".format(classification_function_idx))
 
     @property
     def balance_classes(self):
-        """ Retrieve the value of the option: Balance classes
+        """ Retrieve the value of the option: Balance target_values
 
         Returns
         -------
         Boolean
-            True is the classes are balanced
+            True is the target_values are balanced
         """
         return self._balance_classes
 
     @balance_classes.setter
     def balance_classes(self, balance_classes):
-        """ Set the value of the option: Balance classes.
+        """ Set the value of the option: Balance target_values.
 
         Parameters
         ----------
@@ -112,7 +113,7 @@ class AGRAWALGenerator(Stream):
         if isinstance(balance_classes, bool):
             self._balance_classes = balance_classes
         else:
-            raise ValueError("balance_classes should be boolean")
+            raise ValueError("balance_classes should be boolean, and {} was passed".format(balance_classes))
 
     @property
     def perturbation(self):
@@ -121,13 +122,13 @@ class AGRAWALGenerator(Stream):
         Returns
         -------
         Boolean
-            True is the classes are balanced
+            True is the target_values are balanced
         """
         return self._perturbation
 
     @perturbation.setter
     def perturbation(self, perturbation):
-        """ Set the value of the option: Balance classes.
+        """ Set the value of the option: Balance target_values.
 
         Parameters
         ----------
@@ -137,7 +138,7 @@ class AGRAWALGenerator(Stream):
         if (0.0 <= perturbation) and (perturbation <= 1.0):
             self._perturbation = perturbation
         else:
-            raise ValueError("noise percentage should be in [0.0..1.0]")
+            raise ValueError("noise percentage should be in [0.0..1.0], and {} was passed".format(perturbation))
 
     def prepare_for_use(self):
         self.random_state = check_random_state(self._original_random_state)
@@ -151,8 +152,8 @@ class AGRAWALGenerator(Stream):
         generated with the random generator, initialized with the seed passed
         by the user. Then, the classification function decides, as a function
         of all the attributes, whether to classify the instance as class 0 or
-        class 1. The next step is to verify if the classes should be balanced,
-        and if so, balance the classes. The last step is to add noise, if the
+        class 1. The next step is to verify if the target_values should be balanced,
+        and if so, balance the target_values. The last step is to add noise, if the
         noise percentage is higher than 0.0.
 
         The generated sample will have 9 features and 1 label (it has one
@@ -209,7 +210,7 @@ class AGRAWALGenerator(Stream):
                 loan = self.perturb_value(loan, 0, 500000)
 
             for i in range(9):
-                data[j, i] = eval(self.feature_header[i])
+                data[j, i] = eval(self.feature_names[i])
             data[j, 9] = group
 
         self.current_sample_x = data[:, :self.n_features]
@@ -701,9 +702,6 @@ class AGRAWALGenerator(Stream):
             equity = hvalue * (hyears - 20) / 10
         disposable = (2 * (salary + commission) / 3 - 5000 * elevel + equity / 5 - 10000)
         return 0 if disposable > 1 else 1
-
-    def get_name(self):
-        return "AGRAWAL Generator - {} target, {} classes".format(self.n_targets, self.n_classes)
 
     def get_info(self):
         return 'AGRAWAL Generator: classification_function: ' + str(self.classification_function_idx) + \

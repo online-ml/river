@@ -218,7 +218,7 @@ class FileStream(Stream):
 
     def get_name(self):
         if self.task_type == self.CLASSIFICATION:
-            return "{} - {} target(s), {} classes".format(self.basename, self.n_targets, self.n_classes)
+            return "{} - {} target(s), {} target_values".format(self.basename, self.n_targets, self.n_classes)
         elif self.task_type == self.REGRESSION:
             return "{} - {} target(s)".format(self.basename, self.n_targets)
 

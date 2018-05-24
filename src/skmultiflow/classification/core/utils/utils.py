@@ -1,6 +1,6 @@
 def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_observers: dict):
     if observed_class_distribution == {}:
-        # No observed class distributions, all classes equal
+        # No observed class distributions, all target_values equal
         return {0: 0.0}
     votes = {}
     observed_class_sum = sum(observed_class_distribution.values())
