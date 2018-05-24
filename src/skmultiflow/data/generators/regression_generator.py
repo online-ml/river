@@ -24,7 +24,7 @@ class RegressionGenerator(Stream):
         that influence the class label.
     
     n_targets: int (Default: 1)
-        Number of classes (outputs) to generate.
+        Number of target_values (outputs) to generate.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -120,6 +120,7 @@ class RegressionGenerator(Stream):
         self.n_num_features = n_features
         self.n_features = n_features
         self.random_state = check_random_state(random_state)
+        self.name = "Regression Generator"
         self.__configure()
 
     def __configure(self):
@@ -139,7 +140,7 @@ class RegressionGenerator(Stream):
 
         self.class_header = ["target_" + str(i) for i in range(self.n_targets)]
         self.attributes_header = ["att_num_" + str(i) for i in range(self.n_num_features)]
-        self.classes = [float] * self.n_targets
+        self.target_values = [float] * self.n_targets
 
     def prepare_for_use(self):
         pass
@@ -192,7 +193,7 @@ class RegressionGenerator(Stream):
         return self.class_header
 
     def get_name(self):
-        return "Regression Generator - {} target(s)".format(self.n_targets)
+        return "Regression Generator - {} targets, {} features".format(self.n_targets, self.n_features)
 
     def get_info(self):
         return 'RegressionGenerator: n_samples: ' + str(self.n_samples) + \

@@ -49,13 +49,14 @@ class HyperplaneGenerator(Stream):
         self._next_class_should_be_zero = False
         self._weights = np.zeros(self.n_features)
         self._sigma = np.zeros(self.n_features)
+        self.name = "Hyperplane Generator"
 
         self.__configure()
 
     def __configure(self):
-        self.target_header = ["target_0"]
-        self.feature_header = ["att_num_" + str(i) for i in range(self.n_features)]
-        self.classes = [i for i in range(self.n_classes)]
+        self.target_names = ["target_0"]
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
+        self.target_values = [i for i in range(self.n_classes)]
 
     def prepare_for_use(self):
         self.random_state = check_random_state(self._original_random_state)
@@ -116,10 +117,6 @@ class HyperplaneGenerator(Stream):
             self._weights[i] += float(float(self._sigma[i]) * float(self.mag_change))
             if (0.01 + self.random_state.rand()) <= self.sigma_percentage:
                 self._sigma[i] *= -1
-
-    def get_name(self):
-        return "Hyperplane Generator - {} target, {} classes, {} features".format(self.n_targets, self.n_classes,
-                                                                                  self.n_features)
 
     def get_info(self):
         return 'HyperplaneGenerator: - random_state: ' + str(self._original_random_state) + \

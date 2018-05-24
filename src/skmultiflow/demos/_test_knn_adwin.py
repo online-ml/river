@@ -43,8 +43,8 @@ def demo():
     train = 200
     if train > 0:
         X, y = stream.next_sample(train)
-        # pipe.partial_fit(X, y, classes=stream.get_targets())
-        # pipe.partial_fit(X, y, classes=stream.get_targets())
+        # pipe.partial_fit(X, y, target_values=stream.get_targets())
+        # pipe.partial_fit(X, y, target_values=stream.get_targets())
         # pipe2.fit(X, y)
 
         knn.partial_fit(X, y, classes=stream.get_targets())
@@ -63,8 +63,8 @@ def demo():
         my_pred = knn.predict(X)
         # my_pred = [1]
         if first:
-            # pipe.partial_fit(X, y, classes=stream.get_targets())
-            # pipe.partial_fit(X, y, classes=stream.get_targets())
+            # pipe.partial_fit(X, y, target_values=stream.get_targets())
+            # pipe.partial_fit(X, y, target_values=stream.get_targets())
             knn.partial_fit(X, y, classes=stream.get_targets())
             first = False
         else:

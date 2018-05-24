@@ -18,12 +18,12 @@ def test_led_generator(test_path):
                       'att_num_18', 'att_num_19', 'att_num_20',
                       'att_num_21', 'att_num_22', 'att_num_23']
 
-    assert stream.feature_header == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = []
-    assert stream.classes == expected_targets
+    assert stream.target_values == expected_targets
 
-    assert stream.target_header is None
+    assert stream.target_names is None
 
     assert stream.n_features == 24
 
@@ -33,7 +33,7 @@ def test_led_generator(test_path):
 
     assert stream.n_targets == 0
 
-    assert stream.get_name() == 'Led Generator - 0 target'
+    assert stream.get_name() == 'Led Generator - 24 features'
 
     assert stream.has_more_samples() is True
 

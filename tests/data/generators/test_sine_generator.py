@@ -10,12 +10,12 @@ def test_sine_generator(test_path):
     assert stream.n_remaining_samples() == -1
 
     expected_names = ['att_num_0', 'att_num_1', 'att_num_2', 'att_num_3']
-    assert stream.feature_header == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = [0, 1]
-    assert stream.classes == expected_targets
+    assert stream.target_values == expected_targets
 
-    assert stream.target_header == ['target_0']
+    assert stream.target_names == ['target_0']
 
     assert stream.n_features == 4
 
@@ -25,7 +25,7 @@ def test_sine_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Sine Generator - 1 target, 2 classes'
+    assert stream.get_name() == 'Sine Generator - 1 targets, 2 classes, 4 features'
 
     assert stream.has_more_samples() is True
 

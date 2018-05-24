@@ -99,7 +99,7 @@ class StreamModel(BaseObject, metaclass=ABCMeta):
         Returns
         -------
         An array of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the same
-        index. And where the list in index [i] contains len(self.classes) elements, each of which represents the
+        index. And where the list in index [i] contains len(self.target_values) elements, each of which represents the
         probability that the i-th sample of X belongs to a certain label.
         
         """

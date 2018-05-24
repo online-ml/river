@@ -229,7 +229,7 @@ class EvaluateHoldout(StreamEvaluator):
         #     X, y = self.stream.next_sample(self.pretrain_size)
         #     for i in range(self.n_models):
         #         if self._task_type != EvaluateHoldout.REGRESSION:
-        #             self.model[i].partial_fit(X=X, y=y, classes=self.stream.get_targets())
+        #             self.model[i].partial_fit(X=X, y=y, target_values=self.stream.get_targets())
         #         else:
         #             self.model[i].partial_fit(X=X, y=y)
         #     self.global_sample_count += self.pretrain_size
@@ -368,7 +368,7 @@ class EvaluateHoldout(StreamEvaluator):
             An array-like containing the classification targets for all samples in X.
             
         classes: list
-            Stores all the classes that may be encountered during the classification task.
+            Stores all the target_values that may be encountered during the classification task.
 
         weight: Array-like
             Instance weight. If not provided, uniform weights are assumed.

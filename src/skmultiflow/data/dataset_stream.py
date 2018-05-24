@@ -176,7 +176,7 @@ class DatasetStream(Stream):
 
     def get_name(self):
         if self.task_type == self.CLASSIFICATION:
-            return "{} target(s), {} classes".format(self.n_targets, self.n_classes)
+            return "{} target(s), {} target_values".format(self.n_targets, self.n_classes)
         elif self.task_type == self.REGRESSION:
             return "{} target(s)".format(self.n_targets)
 

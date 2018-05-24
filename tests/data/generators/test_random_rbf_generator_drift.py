@@ -4,7 +4,7 @@ from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGene
 
 
 def test_random_rbf_generator_drift(test_path):
-    stream = RandomRBFGeneratorDrift(model_random_state=99, instance_random_state=50, n_classes=4, n_features=10, n_centroids=50,
+    stream = RandomRBFGeneratorDrift(model_random_state=99, sample_random_state=50, n_classes=4, n_features=10, n_centroids=50,
                                      change_speed=0.87, num_drift_centroids=50)
     stream.prepare_for_use()
 
@@ -12,12 +12,12 @@ def test_random_rbf_generator_drift(test_path):
 
     expected_names = ['att_num_0', 'att_num_1', 'att_num_2', 'att_num_3', 'att_num_4',
                        'att_num_5', 'att_num_6', 'att_num_7', 'att_num_8', 'att_num_9']
-    assert stream.feature_header == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = [0, 1, 2, 3]
-    assert stream.classes == expected_targets
+    assert stream.target_values == expected_targets
 
-    assert stream.target_header == ['target_0']
+    assert stream.target_names == ['target_0']
 
     assert stream.n_features == 10
 
@@ -27,7 +27,7 @@ def test_random_rbf_generator_drift(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Random RBF Generator with drift - 1 target, 4 classes'
+    assert stream.get_name() == 'Random RBF Generator with drift - 1 targets, 4 classes, 10 features'
 
     assert stream.has_more_samples() is True
 

@@ -10,12 +10,12 @@ def test_agrawal_generator(test_path):
     assert stream.n_remaining_samples() == -1
 
     expected_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue", "hyears", "loan"]
-    assert stream.feature_header == expected_names
+    assert stream.feature_names == expected_names
 
     expected_targets = [0, 1]
-    assert stream.classes == expected_targets
+    assert stream.target_values == expected_targets
 
-    assert stream.target_header == ['target_0']
+    assert stream.target_names == ['target_0']
 
     assert stream.n_features == 9
 
@@ -23,7 +23,7 @@ def test_agrawal_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'AGRAWAL Generator - 1 target, 2 classes'
+    assert stream.get_name() == 'AGRAWAL Generator - 1 targets, 2 classes, 9 features'
 
     assert stream.has_more_samples() is True
 

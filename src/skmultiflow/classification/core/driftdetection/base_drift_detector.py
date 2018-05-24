@@ -11,7 +11,7 @@ class BaseDriftDetector(BaseObject, metaclass=ABCMeta):
     
     Raises
     ------
-    NotImplementedError. All child classes should implement the 
+    NotImplementedError. All child target_values should implement the
     get_info function.
     
     """
