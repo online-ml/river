@@ -268,7 +268,7 @@ class Stream(BaseObject, metaclass=ABCMeta):
     def has_more_samples(self):
         return True
 
-    def get_name(self):
+    def get_data_info(self):
         """ get_name
         
         Gets the name of the plot, which is a string that will appear 

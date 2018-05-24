@@ -217,7 +217,7 @@ class EvaluateHoldout(StreamEvaluator):
         init_time = timer()
         end_time = timer()
         logging.info('Holdout Evaluation')
-        logging.info('Evaluating %s target(s).', str(self.stream.get_n_targets()))
+        logging.info('Evaluating %s target(s).', str(self.stream.n_targets))
 
         n_samples = self.stream.n_remaining_samples()
         if n_samples == -1 or n_samples > self.max_samples:
@@ -263,7 +263,7 @@ class EvaluateHoldout(StreamEvaluator):
                     if first_run:
                         for i in range(self.n_models):
                             if self._task_type != EvaluateHoldout.REGRESSION:
-                                self.model[i].partial_fit(X, y, self.stream.get_targets())
+                                self.model[i].partial_fit(X, y, self.stream.target_values)
                             else:
                                 self.model[i].partial_fit(X, y)
                         first_run = False

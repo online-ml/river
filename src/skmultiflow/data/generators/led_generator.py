@@ -203,7 +203,7 @@ class LEDGenerator(Stream):
     def restart(self):
         self.prepare_for_use()
 
-    def get_name(self):
+    def get_data_info(self):
         return "Led Generator - {} features".format(self.n_features)
 
     def get_info(self):

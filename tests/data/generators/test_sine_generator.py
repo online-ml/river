@@ -25,7 +25,7 @@ def test_sine_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Sine Generator - 1 targets, 2 classes, 4 features'
+    assert stream.get_data_info() == 'Sine Generator - 1 targets, 2 classes, 4 features'
 
     assert stream.has_more_samples() is True
 

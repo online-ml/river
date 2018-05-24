@@ -33,7 +33,7 @@ def test_led_generator_drift(test_path):
 
     assert stream.n_targets == 0
 
-    assert stream.get_name() == 'Led Generator with drift - 24 features'
+    assert stream.get_data_info() == 'Led Generator with drift - 24 features'
 
     assert stream.has_more_samples() is True
 

@@ -46,8 +46,8 @@ class DatasetStream(Stream):
 
     def __configure(self):
         if not (self.datatype == type(pd.DataFrame())) and not(self.datatype == type(np.array([]))):
-            raise ValueError('Unsupported format:', type(self.raw_data), ' Supported formats: Pandas '
-                                                                         'DataFrame and numpy array')
+            raise ValueError('Raw data should be Pands DataFrame or Numpy Array, and {} object was '
+                             'passed'.format(type(self.raw_data)))
         else:
             self.raw_data = pd.DataFrame(self.raw_data)
 
@@ -60,7 +60,9 @@ class DatasetStream(Stream):
         """
         self._load_data()
         del self.raw_data
-        self.restart()
+        self.sample_idx = 0
+        self.current_sample_x = None
+        self.current_sample_y = None
 
     def _load_data(self):
 
@@ -71,14 +73,14 @@ class DatasetStream(Stream):
         if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
             # Take everything to the right of target_idx
             self.y = self.raw_data.iloc[:, self.target_idx:].as_matrix()
-            self.outputs_labels = self.raw_data.iloc[:, self.target_idx:].columns.values.tolist()
+            self.target_names = self.raw_data.iloc[:, self.target_idx:].columns.values.tolist()
         else:
             # Take only n_targets columns to the right of target_idx, use the rest as features
             self.y = self.raw_data.iloc[:, self.target_idx:self.target_idx + self.n_targets].as_matrix()
-            self.outputs_labels = labels[self.target_idx:self.target_idx + self.n_targets]
+            self.target_names = labels[self.target_idx:self.target_idx + self.n_targets]
 
-        self.X = self.raw_data.drop(self.outputs_labels, axis=1).as_matrix()
-        self.features_labels = self.raw_data.drop(self.outputs_labels, axis=1).columns.values.tolist()
+        self.X = self.raw_data.drop(self.target_names, axis=1).as_matrix()
+        self.feature_names = self.raw_data.drop(self.target_names, axis=1).columns.values.tolist()
 
         _, self.n_features = self.X.shape
         if self.cat_features_idx:
@@ -94,6 +96,7 @@ class DatasetStream(Stream):
             self.n_classes = len(np.unique(self.y))
         else:
             self.task_type = self.REGRESSION
+        self.target_values = self.get_target_values()
 
     def restart(self):
         """ restart
@@ -108,9 +111,6 @@ class DatasetStream(Stream):
         self.sample_idx = 0
         self.current_sample_x = None
         self.current_sample_y = None
-
-    def is_restartable(self):
-        return True
 
     def next_sample(self, batch_size=1):
         """ next_sample
@@ -153,34 +153,13 @@ class DatasetStream(Stream):
         print(self.X)
         print(self.y)
 
-    def get_n_features(self):
-        return self.n_features
-
-    def get_n_cat_features(self):
-        return self.n_cat_features
-
-    def get_n_num_features(self):
-        return self.n_num_features
-
-    def get_n_targets(self):
-        return self.n_targets
-
-    def get_feature_names(self):
-        return self.features_labels
-
-    def get_target_names(self):
-        return self.outputs_labels
-
-    def last_sample(self):
-        return self.current_sample_x, self.current_sample_y
-
-    def get_name(self):
+    def get_data_info(self):
         if self.task_type == self.CLASSIFICATION:
             return "{} target(s), {} target_values".format(self.n_targets, self.n_classes)
         elif self.task_type == self.REGRESSION:
             return "{} target(s)".format(self.n_targets)
 
-    def get_targets(self):
+    def get_target_values(self):
         if self.task_type == 'classification':
             if self.n_targets == 1:
                 return np.unique(self.y).tolist()

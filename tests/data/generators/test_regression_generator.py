@@ -28,7 +28,7 @@ def test_regression_generator(test_path):
 
     assert stream.n_targets == 4
 
-    assert stream.get_name() == 'Regression Generator - 4 targets, 20 features'
+    assert stream.get_data_info() == 'Regression Generator - 4 targets, 20 features'
 
     assert stream.has_more_samples() is True
 
