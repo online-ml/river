@@ -26,7 +26,7 @@ def test_random_rbf_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Random RBF Generator - 1 targets, 4 classes, 10 features'
+    assert stream.get_data_info() == 'Random RBF Generator - 1 targets, 4 classes, 10 features'
 
     assert stream.has_more_samples() is True
 

@@ -189,12 +189,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     def _check_configuration(self):
         # Check stream to infer task type
         if isinstance(self.stream, Stream):
-            if self.stream.get_n_targets() == 1:
+            if self.stream.n_targets == 1:
                 self._output_type = self.SINGLE_OUTPUT
-            elif self.stream.get_n_targets() > 1:
+            elif self.stream.n_targets > 1:
                 self._output_type = self.MULTI_OUTPUT
             else:
-                raise ValueError('Unexpected number of outputs in stream: {}.'.format(self.stream.get_n_targets()))
+                raise ValueError('Unexpected number of outputs in stream: {}.'.format(self.stream.n_targets))
 
         # Metrics configuration
         self.metrics = [x.lower() for x in self.metrics]
@@ -436,7 +436,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         if self.show_plot:
             self.visualizer = EvaluationVisualizer(task_type=self._task_type,
                                                    n_sliding=self.n_sliding,
-                                                   dataset_name=self.stream.get_name(),
+                                                   dataset_name=self.stream.get_data_info(),
                                                    plots=self.metrics,
                                                    n_learners=self.n_models)
 

@@ -31,7 +31,7 @@ def test_multilabel_generator(test_path):
 
     assert stream.n_targets == 4
 
-    assert stream.get_name() == 'Multilabel Generator - 4 targets, 2 classes, 20 features'
+    assert stream.get_data_info() == 'Multilabel Generator - 4 targets, 2 classes, 20 features'
 
     assert stream.has_more_samples() is True
 

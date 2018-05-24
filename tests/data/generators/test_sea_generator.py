@@ -25,7 +25,7 @@ def test_sea_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'SEA Generator - 1 targets, 2 classes, 3 features'
+    assert stream.get_data_info() == 'SEA Generator - 1 targets, 2 classes, 3 features'
 
     assert stream.has_more_samples() is True
 

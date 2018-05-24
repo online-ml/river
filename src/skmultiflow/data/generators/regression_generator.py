@@ -192,7 +192,7 @@ class RegressionGenerator(Stream):
     def get_target_names(self):
         return self.class_header
 
-    def get_name(self):
+    def get_data_info(self):
         return "Regression Generator - {} targets, {} features".format(self.n_targets, self.n_features)
 
     def get_info(self):

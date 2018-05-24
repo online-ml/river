@@ -29,7 +29,7 @@ def test_waveform_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Waveform Generator - 1 targets, 3 classes, 21 features'
+    assert stream.get_data_info() == 'Waveform Generator - 1 targets, 3 classes, 21 features'
 
     assert stream.has_more_samples() is True
 
@@ -90,7 +90,7 @@ def test_waveform_generator_noise(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_name() == 'Waveform Generator - 1 targets, 3 classes, 40 features'
+    assert stream.get_data_info() == 'Waveform Generator - 1 targets, 3 classes, 40 features'
 
     assert stream.has_more_samples() is True
 

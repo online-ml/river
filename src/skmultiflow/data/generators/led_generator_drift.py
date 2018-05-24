@@ -138,7 +138,7 @@ class LEDGeneratorDrift(LEDGenerator):
         self.current_sample_x = data[:, :self.n_features]
         return self.current_sample_x
 
-    def get_name(self):
+    def get_data_info(self):
         return "Led Generator with drift - {} features".format(self.n_features)
 
     def get_info(self):
