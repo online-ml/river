@@ -266,6 +266,14 @@ class Stream(BaseObject, metaclass=ABCMeta):
         return -1
 
     def has_more_samples(self):
+        """
+        Checks if stream has more samples.
+
+        Returns
+        -------
+        Boolean
+            True if stream has more samples.
+        """
         return True
 
     def get_data_info(self):

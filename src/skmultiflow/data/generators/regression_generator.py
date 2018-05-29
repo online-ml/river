@@ -29,7 +29,8 @@ class RegressionGenerator(Stream):
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used by `np.random`.
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
 
     Notes
     -----
@@ -138,17 +139,29 @@ class RegressionGenerator(Stream):
                                          random_state=self.random_state)
         self.y.resize((self.y.size, self.n_targets))
 
-        self.class_header = ["target_" + str(i) for i in range(self.n_targets)]
-        self.attributes_header = ["att_num_" + str(i) for i in range(self.n_num_features)]
+        self.target_names = ["target_" + str(i) for i in range(self.n_targets)]
+        self.feature_names = ["att_num_" + str(i) for i in range(self.n_num_features)]
         self.target_values = [float] * self.n_targets
 
     def prepare_for_use(self):
         pass
 
     def n_remaining_samples(self):
+        """
+        Returns
+        -------
+        int
+            Number of samples remaining.
+        """
         return self.n_samples - self.sample_idx
 
     def has_more_samples(self):
+        """
+        Returns
+        -------
+        Boolean
+            True if stream has more samples.
+        """
         return self.n_samples - self.sample_idx > 0
 
     def next_sample(self, batch_size=1):
@@ -182,15 +195,13 @@ class RegressionGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def restart(self):
+        """
+        Restart the stream to the initial state.
+
+        """
         self.sample_idx = 0
         self.current_sample_x = None
         self.current_sample_y = None
-
-    def get_feature_names(self):
-        return self.attributes_header
-
-    def get_target_names(self):
-        return self.class_header
 
     def get_data_info(self):
         return "Regression Generator - {} targets, {} features".format(self.n_targets, self.n_features)

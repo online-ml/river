@@ -304,7 +304,7 @@ class HoeffdingTree(StreamModel):
                 The node to insert.
 
             """
-            if self._split_test.max_branches() >= 0 and index >= self._split_test.max_branches():
+            if (self._split_test.max_branches() >= 0) and (index >= self._split_test.max_branches()):
                 raise IndexError
             self._children[index] = node
 
@@ -414,7 +414,7 @@ class HoeffdingTree(StreamModel):
 
             """
             byte_size = self.__sizeof__()
-            for child in self._children:
+            for child in self._children.values():
                 if child is not None:
                     byte_size += child.calc_byte_size_including_subtree()
             return byte_size
@@ -498,8 +498,6 @@ class HoeffdingTree(StreamModel):
                 Hoeffding Tree to update.
 
             """
-            if y > len(self._observed_class_distribution) - 1:
-                return
             try:
                 self._observed_class_distribution[y] += weight
             except KeyError:
@@ -667,7 +665,7 @@ class HoeffdingTree(StreamModel):
 
             Parameters
             ----------
-            att_idx: int
+            att_index: int
                 Attribute index.
 
             """
@@ -943,7 +941,7 @@ class HoeffdingTree(StreamModel):
 
         Tasks performed before training:
 
-        * Verify instance weight. iI not provided, uniform weights (1.0) are assumed.
+        * Verify instance weight. if not provided, uniform weights (1.0) are assumed.
         * If more than one instance is passed, loop through X and pass instances one at a time.
         * Update weight seen by model.
 

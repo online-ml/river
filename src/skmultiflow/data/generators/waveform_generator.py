@@ -16,10 +16,11 @@ class WaveformGenerator(Stream):
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used by `np.random`.
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
 
     has_noise: bool
-        Add noise (Default: False)
+        if True additional 19 insignificant will be added. (Default: False)
         
     Examples
     --------
@@ -118,7 +119,7 @@ class WaveformGenerator(Stream):
         Returns
         -------
         Boolean
-            True is the target_values are balanced
+            True is the noise is added.
         """
         return self._has_noise
 
@@ -137,6 +138,10 @@ class WaveformGenerator(Stream):
             raise ValueError("has_noise should be boolean, {} was passed".format(has_noise))
 
     def prepare_for_use(self):
+        """
+        Should be called before generating the samples.
+
+        """
         self.random_state = check_random_state(self._original_random_state)
         self.sample_idx = 0
 
@@ -144,7 +149,7 @@ class WaveformGenerator(Stream):
         """ next_sample
         
         An instance is generated based on the parameters passed. If noise 
-        is included the total number of attributes will be 40, if it's not 
+        is included the total number of features will be 40, if it's not
         included there will be 21 attributes. In both cases there is one 
         classification task, which chooses one between three labels.
         
@@ -153,7 +158,7 @@ class WaveformGenerator(Stream):
         For each attribute, the actual value generated will be a a combination 
         of the hard coded functions, with the multipliers and a random value.
         
-        Furthermore, if noise is added the attributes from 21 to 40 will be 
+        Furthermore, if noise is added the features from 21 to 40 will be
         replaced with a random normal value.
         
         Parameters
@@ -194,7 +199,6 @@ class WaveformGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def get_info(self):
-        add_noise = 'True' if self.has_noise else 'False'
         return 'Waveform Generator: n_classes: ' + str(self.n_classes) + \
                '  -  n_num_features: ' + str(self.n_num_features) + \
                '  -  n_cat_features: ' + str(self.n_cat_features) + \

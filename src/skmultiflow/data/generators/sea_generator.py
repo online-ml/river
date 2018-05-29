@@ -37,22 +37,20 @@ class SEAGenerator(Stream):
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used by `np.random`.
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
         
     balance_classes: bool (Default: False)
-        Whether to balance target_values or not. If balanced, the class distribution
-        will converge to a uniform distribution.
+        Whether to balance target_values or not. If balanced, the class
+        distribution will converge to a uniform distribution.
+        From 0.0 to 1.0.
         
     noise_percentage: float (Default: 0.0)
         The probability that noise will happen in the generation. At each 
         new sample generated, a random probability is generated, and if that 
         probability is higher than the noise_percentage, the chosen label will 
         be switched.
-        
-    Notes
-    -----
-    Concept drift is not yet available, since the support class that adds 
-    the drift is not yet implemented.
+        From 0.0 to 1.0.
     
     Examples
     --------
@@ -137,18 +135,18 @@ class SEAGenerator(Stream):
 
     @property
     def balance_classes(self):
-        """ Retrieve the value of the option: Balance target_values
+        """ Retrieve the value of the option: Balance classes.
 
         Returns
         -------
         Boolean
-            True is the target_values are balanced
+            True is the classes are balanced
         """
         return self._balance_classes
 
     @balance_classes.setter
     def balance_classes(self, balance_classes):
-        """ Set the value of the option: Balance target_values.
+        """ Set the value of the option: Balance classes.
 
         Parameters
         ----------
@@ -162,18 +160,18 @@ class SEAGenerator(Stream):
 
     @property
     def noise_percentage(self):
-        """ Retrieve the value of the option: Noise percentage
+        """ Retrieve the value of the value of Noise percentage
 
         Returns
         -------
-        Boolean
-            True is the target_values are balanced
+        float
+            percentage of the noise
         """
         return self._noise_percentage
 
     @noise_percentage.setter
     def noise_percentage(self, noise_percentage):
-        """ Set the value of the option: Balance target_values.
+        """ Set the value of the value of noise percentage.
 
         Parameters
         ----------
@@ -186,6 +184,10 @@ class SEAGenerator(Stream):
             raise ValueError("noise percentage should be in [0.0..1.0], {} was passed".format(noise_percentage))
 
     def prepare_for_use(self):
+        """
+        Sould be called before generating the samples.
+
+        """
         self.random_state = check_random_state(self._original_random_state)
         self.next_class_should_be_zero = False
         self.sample_idx = 0
@@ -197,8 +199,8 @@ class SEAGenerator(Stream):
         generated with the random generator, initialized with the seed passed 
         by the user. Then, the classification function decides, as a function 
         of the two relevant attributes, whether to classify the instance as 
-        class 0 or class 1. The next step is to verify if the target_values should
-        be balanced, and if so, balance the target_values. The last step is to add
+        class 0 or class 1. The next step is to verify if the classes should
+        be balanced, and if so, balance the classes. The last step is to add
         noise, if the noise percentage is higher than 0.0.
         
         The generated sample will have 3 features, where only the two first 
@@ -251,13 +253,14 @@ class SEAGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def generate_drift(self):
+        """
+        Generate drift by switching the classification function randomly.
+
+        """
         new_function = self.random_state.randint(4)
         while new_function == self.classification_function_idx:
             new_function = self.random_state.randint(4)
         self.classification_function_idx = new_function
-
-    def restart(self):
-        self.prepare_for_use()
 
     @staticmethod
     def classification_function_zero(att1, att2, att3):
@@ -366,5 +369,5 @@ class SEAGenerator(Stream):
     def get_info(self):
         return 'SEAGenerator: classification_function: ' + str(self.classification_function_idx) + \
                ' - random_state: ' + str(self._original_random_state) + \
-               ' - balance_classes: ' + ('True' if self.balance_classes else 'False') + \
+               ' - balance_classes: ' + self.balance_classes + \
                ' - noise_percentage: ' + str(self.noise_percentage)
