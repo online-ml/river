@@ -8,13 +8,14 @@ class MIXEDGenerator(Stream):
     """ MIXEDGenerator
 
     This generator is an implementation of the data stream with abrupt
-    concept drift, boolean noise-free examples as described in Gama, Joao, et al. "Learning
-    with drift detection." Advances in artificial intelligence–SBIA 2004. Springer
-    Berlin Heidelberg, 2004. 286-295"
+    concept drift, boolean noise-free examples as described in
+    Gama, Joao, et al. "Learning with drift detection." Advances in
+    artificial intelligence–SBIA 2004. Springer Berlin Heidelberg,
+    2004. 286-295"
 
     It has four relevant attributes,two boolean attributes v,w
     and two numeric attributes from [0; 1]. The examples are classified positive
-    if two of three conditions are satisfied: v,w, y &lt; 0,5 + 0,3 sin(3 * PI * x).
+    if two of three conditions are satisfied: :math:`v,w, y < 0,5 + 0,3 sin(3 \pi  x)`.
     After each context change the classification is reversed."
 
     Parameters
@@ -26,7 +27,8 @@ class MIXEDGenerator(Stream):
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used by `np.random`.
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
 
     balance_classes: bool (Default: False)
         Whether to balance target_values or not. If balanced, the class distribution
@@ -61,10 +63,6 @@ class MIXEDGenerator(Stream):
     >>> stream.has_more_samples()
     True
 
-    Notes
-    -----
-    Concept drift is not yet available, since the support class that adds
-    the drift is not yet implemented.
 
    """
 

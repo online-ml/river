@@ -5,9 +5,10 @@ from skmultiflow.core.utils.validation import check_random_state
 
 
 class MultilabelGenerator(Stream):
+
     """ MultilabelGenerator
 
-    This generator creates a stream of samples for a multilabel problem. 
+    This generator creates a stream of samples for a multilabel problem.
     It uses the make_multilabel_classification function from scikit-learn, 
     which creates a batch setting multilabel classification problem. These 
     samples are then sequentially fed by the next_sample function.
@@ -29,7 +30,8 @@ class MultilabelGenerator(Stream):
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used by `np.random`.
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
 
     Notes
     -----

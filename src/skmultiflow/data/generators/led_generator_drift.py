@@ -2,16 +2,13 @@ import numpy as np
 from skmultiflow.data.generators.led_generator import LEDGenerator
 
 
-
 class LEDGeneratorDrift(LEDGenerator):
 
     """ LEDGeneratorDrift
 
-       Generates instances with 7 numeric attributes  Supports noise
-       addition, but in this case the generator will have 24 attribute
-       instances.
-       The goal is to predict the digit displayed on a seven-segment
-       LED display with drift,
+       This class is an extension from the LEDGenerator. It functions
+       as the parent class, except that drift can be introduced in objects
+       of this class.
 
        Parameters
        ----------
