@@ -151,6 +151,10 @@ class MultilabelGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def restart(self):
+        """
+        Restarts the stream
+
+        """
         self.sample_idx = 0
         self.current_sample_x = None
         self.current_sample_y = None
@@ -159,6 +163,12 @@ class MultilabelGenerator(Stream):
         pass
 
     def n_remaining_samples(self):
+        """
+        Returns
+        -------
+        int
+            Number of remaining samples.
+        """
         return self.n_samples - self.sample_idx
 
     def get_info(self):

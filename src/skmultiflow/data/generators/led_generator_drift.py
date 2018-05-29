@@ -26,7 +26,7 @@ class LEDGeneratorDrift(LEDGenerator):
     has_noise: bool (Default: False)
         Adds 17 non relevant attributes to the stream.
 
-    n_drift_features : int (Default : False)
+    n_drift_features : int (Default : 0)
         The number of attributes that have drift
 
     Examples
@@ -66,9 +66,9 @@ class LEDGeneratorDrift(LEDGenerator):
 
        >>> # Generators will have infinite remaining instances, so it returns -1
        >>> stream.n_remaining_samples()
-      -1
+        -1
        >>> stream.has_more_samples()
-      True
+        True
 
     """
 

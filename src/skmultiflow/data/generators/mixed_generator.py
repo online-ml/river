@@ -9,9 +9,7 @@ class MIXEDGenerator(Stream):
 
     This generator is an implementation of the data stream with abrupt
     concept drift, boolean noise-free examples as described in
-    Gama, Joao, et al. "Learning with drift detection." Advances in
-    artificial intelligence–SBIA 2004. Springer Berlin Heidelberg,
-    2004. 286-295"
+    Gama, Joao, et al [1]_.
 
     It has four relevant attributes,two boolean attributes v,w
     and two numeric attributes from [0; 1]. The examples are classified positive
@@ -34,7 +32,12 @@ class MIXEDGenerator(Stream):
         Whether to balance target_values or not. If balanced, the class distribution
         will converge to a uniform distribution.
 
-        the batch_size samples that were requested.
+    References
+    ----------
+    .. [1] Gama, Joao, et al. "Learning with drift detection." Advances in
+       artificial intelligence–SBIA 2004. Springer Berlin Heidelberg,
+       2004. 286-295"
+
     Examples
     --------
     >>> # Imports
@@ -150,10 +153,11 @@ class MIXEDGenerator(Stream):
         passed by the user. The boolean attributes are either 0 or 1
         based on the comparison of the random generator and 0.5 ,
         the classification function decides whether to classify the instance
-        as class 0 or class 1. The next step is to verify if the target_values should
-        be balanced, and if so, balance the target_values.
+        as class 0 or class 1. The next step is to verify if the classes should
+        be balanced, and if so, balance the classes.
 
-        The generated sample will have 4 relevant features and 1 label (it has one classification task).
+        The generated sample will have 4 relevant features and 1 label (it has
+        one classification task).
 
         Parameters
         ----------
@@ -207,24 +211,24 @@ class MIXEDGenerator(Stream):
         self.sample_idx = 0
 
     @staticmethod
-    def classification_function_zero(att_0, att_1, att_2, att_3):
+    def classification_function_zero(v, w, x, y):
         """ classification_function_zero
 
         Decides the sample class label as negative  if the two boolean attributes
-        are True or one of them is True and y is less than  0.5 + 0.3 * np.sin(3 * np.pi * att_2)
+        are True or one of them is True and  :math:`y  <  0.5 + 0.3  sin(3  \pi  x)`.
 
         Parameters
         ----------
-        att_0: boolean
+        v: boolean
             First boolean attribute.
 
-        att_1: boolean
+        w: boolean
             Second boolean attribute.
 
-        att_2: float
+        x: float
             Third numeric attribute
 
-        att_3: float
+        y: float
             Third numeric attribute
 
         Returns
@@ -233,28 +237,28 @@ class MIXEDGenerator(Stream):
             Returns the sample class label, either 0 or 1.
 
         """
-        z = att_3 < 0.5 + 0.3 * np.sin(3 * np.pi * att_2)
-        return 0 if (att_0 == 1 and att_1 == 1) or (att_0 == 1 and z) or (att_1 == 1 and z) else 1
+        z = y < 0.5 + 0.3 * np.sin(3 * np.pi * x)
+        return 0 if (v == 1 and w == 1) or (v == 1 and z) or (w == 1 and z) else 1
 
     @staticmethod
-    def classification_function_one(att_0, att_1, att_2, att_3):
+    def classification_function_one(v, w, x, y):
         """ classification_function_one
 
         Decides the sample class label as positive  if the two boolean attributes
-        are True or one of them is True and y is less than  0.5 + 0.3 * np.sin(3 * np.pi * att_2)
+        are True or one of them is True and :math:`y < 0.5 + 0.3  sin(3  \pi  x)`.
 
         Parameters
         ----------
-        att_0: boolean
+        v: boolean
         First boolean attribute.
 
-        att_1: boolean
+        w: boolean
             Second boolean attribute.
 
-        att_2: float
+        x: float
         Third numeric attribute
 
-        att_3: float
+        y: float
             Third numeric attribute
 
         Returns
@@ -263,8 +267,8 @@ class MIXEDGenerator(Stream):
             Returns the sample class label, either 0 or 1.
 
         """
-        z = att_3 < 0.5 + 0.3 * np.sin(3 * np.pi * att_2)
-        return 1 if (att_0 == 1 and att_1 == 1) or (att_0 == 1 and z) or (att_1 == 1 and z) else 0
+        z = y < 0.5 + 0.3 * np.sin(3 * np.pi * x)
+        return 1 if (v == 1 and w == 1) or (v == 1 and z) or (w == 1 and z) else 0
 
     def get_info(self):
         return 'MixedGenerator: classification_function: ' + str(self.classification_function_idx) + \
@@ -272,6 +276,10 @@ class MIXEDGenerator(Stream):
                ' - balance_classes: ' + str(self.balance_classes)
 
     def generate_drift(self):
+        """
+        Generate drift by switching the classification function randomly.
+
+        """
         new_function = self.random_state.randint(3)
         while new_function == self.classification_function_idx:
             new_function = self.random_state.randint(3)
