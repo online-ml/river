@@ -13,12 +13,12 @@ def test_regression_generator(test_path):
                        'att_num_5', 'att_num_6', 'att_num_7', 'att_num_8', 'att_num_9',
                        'att_num_10', 'att_num_11', 'att_num_12', 'att_num_13', 'att_num_14',
                        'att_num_15', 'att_num_16', 'att_num_17', 'att_num_18', 'att_num_19']
-    assert stream.get_feature_names() == expected_names
+    assert stream.feature_names == expected_names
 
     assert stream.target_values == [float] * stream.n_targets
 
     expected_names = ['target_0', 'target_1', 'target_2', 'target_3']
-    assert stream.get_target_names() == expected_names
+    assert stream.target_names == expected_names
 
     assert stream.n_features == 20
 

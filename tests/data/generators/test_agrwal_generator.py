@@ -19,7 +19,9 @@ def test_agrawal_generator(test_path):
 
     assert stream.n_features == 9
 
-    assert stream.n_cat_features == 0
+    assert stream.n_cat_features == 3
+
+    assert  stream.n_num_features == 6
 
     assert stream.n_targets == 1
 

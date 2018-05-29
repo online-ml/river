@@ -6,36 +6,41 @@ from skmultiflow.core.utils.validation import check_random_state
 class AGRAWALGenerator(Stream):
     """ AGRAWAL stream generator
 
+    The generator was introduced by Agrawal et al in [1]_, and was common source
+    of data for early work on scaling up decision tree learners.
+    The generator produces a stream containing nine features, six numeric and
+    three categorical.
+    There are ten functions defined for generating binary class labels from the
+    features. Presumably these determine whether the loan should be approved.
+    The features and functions are listed in the original paper [1]_.
+
     Parameters
     ----------
     classification_function: int (Default=0)
         Which of the four classification functions to use for the generation.
-        The value can vary from 0 to 3.
+        The value can vary from 0 to 9.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used by `np.random`.
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
 
     balance_classes: bool (Default: False)
-        Whether to balance target_values or not. If balanced, the class distribution
-        will converge to a uniform distribution.
+        Whether to balance target_values or not. If balanced, the class
+        distribution will converge to a uniform distribution.
 
-    perturbation: float (Default: 0.0) (0.0..1.0)
+    perturbation: float (Default: 0.0)
         The probability that noise will happen in the generation. At each
         new sample generated, the sample with will perturbed by the amount of
         perturbation.
-
-    Notes
-    -----
-    The stream generator for Agrawal datasets for classification problems is
-    based on the generator described in the paper: [1]
+        Values go from 0.0 to 1.0.
 
     References
     ---------
-    .. [1]  Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami. "Database
-    Mining: A Performance Perspective", IEEE Transactions on Knowledge and
-    Data Engineering, 5(6), December 1993.
+    .. [1] Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami. "Database
+       Mining: A Performance Perspective", IEEE Transactions on Knowledge and
+       Data Engineering, 5(6), December 1993.
 
     """
     def __init__(self, classification_function=0, random_state=None, balance_classes=False, perturbation=0.0):
@@ -51,8 +56,9 @@ class AGRAWALGenerator(Stream):
         self._original_random_state = random_state
         self.balance_classes = balance_classes
         self.perturbation = perturbation
-        self.n_num_features = 9
-        self.n_features = self.n_num_features
+        self.n_num_features = 6
+        self.n_cat_features = 3
+        self.n_features = self.n_num_features + self.n_cat_features
         self.n_classes = 2
         self.n_targets = 1
         self.random_state = None
@@ -73,7 +79,7 @@ class AGRAWALGenerator(Stream):
         Returns
         -------
         int
-            index of the classification function [0,1,2]
+            index of the classification function, from 0 to 9
         """
         return self._classification_function_idx
 
@@ -83,27 +89,29 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        classification_function_idx: int (0..9)
+        classification_function_idx: int
+            from 0 to 9
         """
         if classification_function_idx in range(10):
             self._classification_function_idx = classification_function_idx
         else:
-            raise ValueError("classification_function_idx takes only these values: [0, 9], and {} was passed".format(classification_function_idx))
+            raise ValueError("classification_function_idx takes values from 0 to 9,"
+                             " and {} was passed".format(classification_function_idx))
 
     @property
     def balance_classes(self):
-        """ Retrieve the value of the option: Balance target_values
+        """ Retrieve the value of the option: Balance classes
 
         Returns
         -------
         Boolean
-            True is the target_values are balanced
+            True is the classes are balanced
         """
         return self._balance_classes
 
     @balance_classes.setter
     def balance_classes(self, balance_classes):
-        """ Set the value of the option: Balance target_values.
+        """ Set the value of the option: Balance classes.
 
         Parameters
         ----------
@@ -121,18 +129,19 @@ class AGRAWALGenerator(Stream):
 
         Returns
         -------
-        Boolean
-            True is the target_values are balanced
+        float
+
         """
         return self._perturbation
 
     @perturbation.setter
     def perturbation(self, perturbation):
-        """ Set the value of the option: Balance target_values.
+        """ Set the value of the option: Perturbation.
 
         Parameters
         ----------
-        perturbation: float (0.0..1.0)
+        perturbation: float
+            from 0.0 to 1.0.
 
         """
         if (0.0 <= perturbation) and (perturbation <= 1.0):
@@ -141,6 +150,10 @@ class AGRAWALGenerator(Stream):
             raise ValueError("noise percentage should be in [0.0..1.0], and {} was passed".format(perturbation))
 
     def prepare_for_use(self):
+        """
+        Should be called before generating the samples.
+
+        """
         self.random_state = check_random_state(self._original_random_state)
         self._next_class_should_be_zero = False
         self.sample_idx = 0
@@ -148,13 +161,13 @@ class AGRAWALGenerator(Stream):
     def next_sample(self, batch_size=1):
         """ next_sample
 
-        The sample generation works as follows: The 9 attributes are
-        generated with the random generator, initialized with the seed passed
-        by the user. Then, the classification function decides, as a function
-        of all the attributes, whether to classify the instance as class 0 or
-        class 1. The next step is to verify if the target_values should be balanced,
-        and if so, balance the target_values. The last step is to add noise, if the
-        noise percentage is higher than 0.0.
+        The sample generation works as follows: The 9 features are generated
+        with the random generator, initialized with the seed passed by the
+        user. Then, the classification function decides, as a function of all
+        the attributes, whether to classify the instance as class 0 or class
+        1. The next step is to verify if the classes should be balanced, and
+        if so, balance the classes. The last step is to add noise, if the noise
+        percentage is higher than 0.0.
 
         The generated sample will have 9 features and 1 label (it has one
         classification task).
@@ -219,6 +232,21 @@ class AGRAWALGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def perturb_value(self, val, val_min, val_max, val_range=None):
+        """
+        Perturbates the values of the features after prediction the class
+        if the perturbation is higher than 0.0.
+        Parameters
+        ----------
+        val
+        val_min
+        val_max
+        val_range
+
+        Returns
+        -------
+        val
+            The value after perturbation.
+        """
         if val_range is None:
             val_range = val_max - val_min
         val += val_range * (2 * (self.random_state.rand() - 0.5)) * self.perturbation
@@ -229,6 +257,10 @@ class AGRAWALGenerator(Stream):
         return val
 
     def generate_drift(self):
+        """
+        Generate drift by switching the classification function randomly.
+
+        """
         new_function = self.random_state.randint(10)
         while new_function == self.classification_function_idx:
             new_function = self.random_state.randint(10)
@@ -708,4 +740,3 @@ class AGRAWALGenerator(Stream):
                ' - random_state: ' + str(self._original_random_state) + \
                ' - balance_classes: ' + str(self.balance_classes) + \
                ' - perturbation: ' + str(self.perturbation)
-
