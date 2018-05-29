@@ -150,7 +150,7 @@ class LEDGenerator(Stream):
         Returns
         -------
         Boolean
-            True is the target_values are balanced
+            True is the noise is added.
         """
         return self._has_noise
 
