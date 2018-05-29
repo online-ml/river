@@ -6,30 +6,46 @@ from skmultiflow.core.utils.validation import check_random_state
 class LEDGenerator(Stream):
     """ LEDGenerator
 
-       Generates instances with 7 numeric attributes  Supports noise
-       addition, but in this case the generator will have 24 attribute
-       instances.
-       The goal is to predict the digit displayed on a seven-segment
-       LED display,
+    This data source originates from the CART book [1]_. An implementation
+    in C was donated to the UCI [2]_ machine learning repository by David Aha.
+    The goal is to predict the digit displayed on a seven-segment LED display,
+    where each attribute has a 10% chance of being inverted. It has an optimal
+    Bayes classification rate of 74%. The particular configuration of the
+    generator used for experiments ( LED ) produces 24 binary attributes,
+    17 of which are irrelevant.
 
-       Parameters
-       ----------
-       random_state: int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used by `np.random`.
+    Parameters
+    ----------
+    random_state: int, RandomState instance or None, optional (default=None)
+       If int, random_state is the seed used by the random number generator;
+       If RandomState instance, random_state is the random number generator;
+       If None, the random number generator is the RandomState instance used
+       by `np.random`.
 
-       noise_percentage: float (Default: 0.0)
-           The probability that noise will happen in the generation. At each
-           new sample generated, a random probability is generated, and if that
-           probability is equal or less than the noise_percentage, the selected data  will
-           be switched
+    noise_percentage: float (Default: 0.0)
+      The probability that noise will happen in the generation. At each
+      new sample generated, a random probability is generated, and if that
+      probability is equal or less than the noise_percentage, the selected
+      data  will be switched
 
-       has_noise: bool (Default: False)
-           Adds 17 non relevant attributes to the stream.
+    has_noise: bool (Default: False)
+       Adds 17 non relevant attributes to the stream.
 
-       Examples
-       --------
+    References
+    ----------
+
+    .. [1] Leo Breiman, Jerome Friedman, R. Olshen, and Charles J. Stone.
+           Classification and Regression Trees. Wadsworth and Brooks,
+           Monterey, CA,1984.
+
+    .. [2] A. Asuncion and D. J. Newman. UCI Machine Learning Repository
+          [http://www.ics.uci.edu/∼mlearn/mlrepository.html].
+          University of California, Irvine, School of Information and
+          Computer Sciences,2007.
+
+
+    Examples
+    --------
        >>> # Imports
        >>> from skmultiflow.data.generators.led_generator import LEDGenerator
        >>> # Setting up the stream
@@ -63,11 +79,10 @@ class LEDGenerator(Stream):
        [1., 1., 1., 0., 0., 1., 1., 0., 0., 0., 0., 0., 1., 0., 0., 0.,
         1., 1., 0., 0., 0., 0., 1., 0.]])
 
-       >>> # Generators will have infinite remaining instances, so it returns -1
-       >>> stream.n_remaining_samples()
-      -1
-       >>> stream.has_more_samples()
-      True
+     >>> stream.n_remaining_samples()
+     -1
+     >>> stream.has_more_samples()
+     True
 
 
     """
