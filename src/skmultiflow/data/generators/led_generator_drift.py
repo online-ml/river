@@ -2,38 +2,35 @@ import numpy as np
 from skmultiflow.data.generators.led_generator import LEDGenerator
 
 
-
 class LEDGeneratorDrift(LEDGenerator):
 
     """ LEDGeneratorDrift
 
-       Generates instances with 7 numeric attributes  Supports noise
-       addition, but in this case the generator will have 24 attribute
-       instances.
-       The goal is to predict the digit displayed on a seven-segment
-       LED display with drift,
+    This class is an extension from the LEDGenerator. It functions
+    as the parent class, except that drift can be introduced in objects
+    of this class.
 
-       Parameters
-       ----------
-       random_state: int, RandomState instance or None, optional (default=None)
+    Parameters
+    ----------
+    random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
 
-       noise_percentage: float (Default: 0.0)
-           The probability that noise will happen in the generation. At each
-           new sample generated, a random probability is generated, and if that
-           probability is equal or less than the noise_percentage, the selected data  will
-           be switched
+    noise_percentage: float (Default: 0.0)
+        The probability that noise will happen in the generation. At each
+        new sample generated, a random probability is generated, and if that
+        probability is equal or less than the noise_percentage, the selected data  will
+        be switched
 
-       has_noise: bool (Default: False)
-           Adds 17 non relevant attributes to the stream.
+    has_noise: bool (Default: False)
+        Adds 17 non relevant attributes to the stream.
 
-       n_drift_features : int (Default : False)
-           The number of attributes that have drift
+    n_drift_features : int (Default : False)
+        The number of attributes that have drift
 
-        Examples
-       --------
+    Examples
+    --------
        >>> # Imports
        >>> from skmultiflow.data.generators.led_generator_drift import LEDGeneratorDrift
        >>> # Setting up the stream
