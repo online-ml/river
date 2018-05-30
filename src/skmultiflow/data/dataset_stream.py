@@ -27,8 +27,8 @@ class DatasetStream(Stream):
         A list of indices corresponding to the location of categorical features.
     """
 
-    CLASSIFICATION = 'classification'
-    REGRESSION = 'regression'
+    _CLASSIFICATION = 'classification'
+    _REGRESSION = 'regression'
 
     def __init__(self, raw_data, target_idx=-1, n_targets=1, cat_features_idx=None):
         super().__init__()
@@ -39,17 +39,123 @@ class DatasetStream(Stream):
         self.target_idx = target_idx
         self.task_type = None
         self.n_classes = 0
-        self.datatype = type(raw_data)
+        self.data_type = type(raw_data)
         self.raw_data = raw_data
 
         self.__configure()
 
     def __configure(self):
-        if not (self.datatype == type(pd.DataFrame())) and not(self.datatype == type(np.array([]))):
+        pass
+
+    @property
+    def raw_data(self):
+        """
+        Return the data set used to generate the stream.
+
+        Returns
+        -------
+        DataFrame:
+            raw_data
+        """
+        return self._raw_data
+
+    @raw_data.setter
+    def raw_data(self, raw_data):
+        """
+        Sets the data set used to generate the stream.
+
+        Parameters
+        ----------
+        raw_data: DataFrame or np.ndarray
+
+        """
+
+        if not (self.data_type == type(pd.DataFrame())) and not(self.data_type == type(np.array([]))):
             raise ValueError('Raw data should be Pands DataFrame or Numpy Array, and {} object was '
                              'passed'.format(type(self.raw_data)))
         else:
-            self.raw_data = pd.DataFrame(self.raw_data)
+            self._raw_data = pd.DataFrame(raw_data)
+
+    @raw_data.deleter
+    def raw_data(self):
+        """
+            Deletes raw_data
+        """
+        del self._raw_data
+
+    @property
+    def target_idx(self):
+        """
+        Get the number of the column where Y begins.
+
+        Returns
+        -------
+        int:
+            The number of the column where Y begins.
+        """
+        return self._target_idx
+
+    @target_idx.setter
+    def target_idx(self, target_idx):
+        """
+        Sets the number of the column where Y begins.
+
+        Parameters
+        ----------
+        target_idx: int
+        """
+
+        self._target_idx = target_idx
+
+    @property
+    def n_targets(self):
+        """
+         Get the number of targets.
+
+        Returns
+        -------
+        int:
+            The number of targets.
+        """
+        return self._n_targets
+
+    @n_targets.setter
+    def n_targets(self, n_targets):
+        """
+        Sets the number of targets.
+
+        Parameters
+        ----------
+        n_targets: int
+        """
+
+        self._n_targets = n_targets
+
+    @property
+    def cat_features_idx(self):
+        """
+        Get the list of the categorical features index.
+
+        Returns
+        -------
+        list:
+            List of categorical features index.
+
+        """
+        return self._cat_features_idx
+
+    @cat_features_idx.setter
+    def cat_features_idx(self, cat_features_idx):
+        """
+        Sets the list of the categorical features index.
+
+        Parameters
+        ----------
+        cat_features_idx:
+            List of categorical features index.
+        """
+
+        self._cat_features_idx = cat_features_idx
 
     def prepare_for_use(self):
         """ prepare_for_use
@@ -92,11 +198,11 @@ class DatasetStream(Stream):
         self.n_num_features = self.n_features - self.n_cat_features
 
         if self.y.dtype == np.integer:
-            self.task_type = self.CLASSIFICATION
+            self.task_type = self._CLASSIFICATION
             self.n_classes = len(np.unique(self.y))
         else:
-            self.task_type = self.REGRESSION
-        self.target_values = self.get_target_values()
+            self.task_type = self._REGRESSION
+        self.target_values = self._get_target_values()
 
     def restart(self):
         """ restart
@@ -144,28 +250,47 @@ class DatasetStream(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def has_more_samples(self):
+        """ Returns the estimated number of remaining samples.
+
+        Returns
+        -------
+        int
+            Remaining number of samples.
+        """
         return (self.n_samples - self.sample_idx) > 0
 
     def n_remaining_samples(self):
+        """
+        Checks if stream has more samples.
+
+        Returns
+        -------
+        Boolean
+            True if stream has more samples.
+        """
         return self.n_samples - self.sample_idx
 
     def print_df(self):
+        """
+        Prints all the samples in the stream.
+
+        """
         print(self.X)
         print(self.y)
 
     def get_data_info(self):
-        if self.task_type == self.CLASSIFICATION:
+        if self.task_type == self._CLASSIFICATION:
             return "{} target(s), {} target_values".format(self.n_targets, self.n_classes)
-        elif self.task_type == self.REGRESSION:
+        elif self.task_type == self._REGRESSION:
             return "{} target(s)".format(self.n_targets)
 
-    def get_target_values(self):
+    def _get_target_values(self):
         if self.task_type == 'classification':
             if self.n_targets == 1:
                 return np.unique(self.y).tolist()
             else:
                 return [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
-        elif self.task_type == self.REGRESSION:
+        elif self.task_type == self._REGRESSION:
             return [float] * self.n_targets
 
     def get_info(self):

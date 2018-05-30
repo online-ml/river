@@ -276,8 +276,7 @@ class SineGenerator(Stream):
     def classification_function_zero(att1, att2):
         """ classification_function_zero
 
-        Decides the sample class label based on the sine of att2 and the
-        threshold value of att1.
+        Decides the sample class label based on SINE1 function.
 
 
         Parameters
@@ -300,8 +299,7 @@ class SineGenerator(Stream):
     def classification_function_one(att1, att2):
         """ classification_function_one
 
-        Decides the sample class label based on the att1 and the threshold
-        value of sine att2.
+        Decides the sample class label based on reversed SINE1 function.
 
         Parameters
         ----------
@@ -323,8 +321,7 @@ class SineGenerator(Stream):
     def classification_function_two(att1, att2):
         """ classification_function_two
 
-        Decides the sample class label based on 0.5+0.3*np.sin(3*np.pi*att2)
-        and the threshold value of att1.
+        Decides the sample class label based on SINE2 function.
 
         Parameters
         ----------
@@ -346,8 +343,7 @@ class SineGenerator(Stream):
     def classification_function_three(att1, att2):
         """ classification_function_three
 
-        Decides the sample class label based on the att1 and the threshold
-        value of sine 0.5+0.3*np.sin(3*np.pi*att2).
+        Decides the sample class label based on reversed SINE2 function.
 
         Parameters
         ----------

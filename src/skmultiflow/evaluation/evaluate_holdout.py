@@ -228,7 +228,7 @@ class EvaluateHoldout(StreamEvaluator):
         #     logging.info('Pre-training on %s samples.', str(self.pretrain_size))
         #     X, y = self.stream.next_sample(self.pretrain_size)
         #     for i in range(self.n_models):
-        #         if self._task_type != EvaluateHoldout.REGRESSION:
+        #         if self._task_type != EvaluateHoldout._REGRESSION:
         #             self.model[i].partial_fit(X=X, y=y, target_values=self.stream.get_targets())
         #         else:
         #             self.model[i].partial_fit(X=X, y=y)

@@ -58,8 +58,8 @@ class FileStream(Stream):
     True
 
     """
-    CLASSIFICATION = 'classification'
-    REGRESSION = 'regression'
+    _CLASSIFICATION = 'classification'
+    _REGRESSION = 'regression'
 
     def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features_idx=None):
         super().__init__()
@@ -85,6 +85,80 @@ class FileStream(Stream):
         else:
             raise ValueError('Unsupported format: ', extension)
         self.filename = filename
+
+    @property
+    def target_idx(self):
+        """
+        Get the number of the column where Y begins.
+
+        Returns
+        -------
+        int:
+            The number of the column where Y begins.
+        """
+        return self._target_idx
+
+    @target_idx.setter
+    def target_idx(self, target_idx):
+        """
+        Sets the number of the column where Y begins.
+
+        Parameters
+        ----------
+        target_idx: int
+        """
+
+        self._target_idx = target_idx
+
+    @property
+    def n_targets(self):
+        """
+         Get the number of targets.
+
+        Returns
+        -------
+        int:
+            The number of targets.
+        """
+        return self._n_targets
+
+    @n_targets.setter
+    def n_targets(self, n_targets):
+        """
+        Sets the number of targets.
+
+        Parameters
+        ----------
+        n_targets: int
+        """
+
+        self._n_targets = n_targets
+
+    @property
+    def cat_features_idx(self):
+        """
+        Get the list of the categorical features index.
+
+        Returns
+        -------
+        list:
+            List of categorical features index.
+
+        """
+        return self._cat_features_idx
+
+    @cat_features_idx.setter
+    def cat_features_idx(self, cat_features_idx):
+        """
+        Sets the list of the categorical features index.
+
+        Parameters
+        ----------
+        cat_features_idx:
+            List of categorical features index.
+        """
+
+        self._cat_features_idx = cat_features_idx
 
     def prepare_for_use(self):
         """ prepare_for_use
@@ -130,10 +204,10 @@ class FileStream(Stream):
             self.n_num_features = self.n_features - self.n_cat_features
 
             if self.y.dtype == np.integer:
-                self.task_type = self.CLASSIFICATION
+                self.task_type = self._CLASSIFICATION
                 self.n_classes = len(np.unique(self.y))
             else:
-                self.task_type = self.REGRESSION
+                self.task_type = self._REGRESSION
             self.target_values = self.get_target_values()
         except IOError:
             print("{} file reading failed.".format(self.filepath))
@@ -152,9 +226,6 @@ class FileStream(Stream):
         self.sample_idx = 0
         self.current_sample_x = None
         self.current_sample_y = None
-
-    def is_restartable(self):
-        return True
 
     def next_sample(self, batch_size=1):
         """ next_sample
@@ -188,19 +259,38 @@ class FileStream(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def has_more_samples(self):
+        """ Returns the estimated number of remaining samples.
+
+        Returns
+        -------
+        int
+            Remaining number of samples.
+        """
         return (self.n_samples - self.sample_idx) > 0
 
     def n_remaining_samples(self):
+        """
+        Checks if stream has more samples.
+
+        Returns
+        -------
+        Boolean
+            True if stream has more samples.
+        """
         return self.n_samples - self.sample_idx
 
     def print_df(self):
+        """
+        Prints all the samples in the stream.
+
+        """
         print(self.X)
         print(self.y)
 
     def get_data_info(self):
-        if self.task_type == self.CLASSIFICATION:
+        if self.task_type == self._CLASSIFICATION:
             return "{} - {} target(s), {} target_values".format(self.basename, self.n_targets, self.n_classes)
-        elif self.task_type == self.REGRESSION:
+        elif self.task_type == self._REGRESSION:
             return "{} - {} target(s)".format(self.basename, self.n_targets)
 
     def get_target_values(self):
@@ -209,7 +299,7 @@ class FileStream(Stream):
                 return np.unique(self.y).tolist()
             else:
                 return [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
-        elif self.task_type == self.REGRESSION:
+        elif self.task_type == self._REGRESSION:
             return [float] * self.n_targets
 
     def get_info(self):
