@@ -233,7 +233,7 @@ class AGRAWALGenerator(Stream):
 
     def perturb_value(self, val, val_min, val_max, val_range=None):
         """
-        Perturbates the values of the features after prediction the class
+        Perturbs the values of the features after prediction the class
         if the perturbation is higher than 0.0.
         Parameters
         ----------
@@ -548,7 +548,7 @@ class AGRAWALGenerator(Stream):
         loan: float
             ninth numeric attribute.
 
-       Returns
+        Returns
         -------
         int
             Returns the sample class label, either 0 or 1.

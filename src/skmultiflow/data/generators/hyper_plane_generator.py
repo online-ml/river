@@ -79,6 +79,100 @@ class HyperplaneGenerator(Stream):
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
         self.target_values = [i for i in range(self.n_classes)]
 
+    @property
+    def n_drift_features(self):
+        """ Retrieve the number of drift features.
+
+        Returns
+        -------
+        int
+            The total number of drift features.
+
+        """
+        return self._n_drift_features
+
+    @n_drift_features.setter
+    def n_drift_features(self, n_drift_features):
+        """ Set the number of drift features
+
+        """
+        self._n_drift_features = n_drift_features
+
+    @property
+    def noise_percentage(self):
+        """ Retrieve the value of the value of Noise percentage
+
+        Returns
+        -------
+        float
+            percentage of the noise
+        """
+        return self._noise_percentage
+
+    @noise_percentage.setter
+    def noise_percentage(self, noise_percentage):
+        """ Set the value of the value of noise percentage.
+
+        Parameters
+        ----------
+        noise_percentage: float (0.0..1.0)
+
+        """
+        if (0.0 <= noise_percentage) and (noise_percentage <= 1.0):
+            self._noise_percentage = noise_percentage
+        else:
+            raise ValueError("noise percentage should be in [0.0..1.0], {} was passed".format(noise_percentage))
+
+    @property
+    def mag_change(self):
+        """ Retrieve the value of the value of magnitude of change.
+
+        Returns
+        -------
+        float
+            magnitude of change
+        """
+        return self._mag_change
+
+    @mag_change.setter
+    def mag_change(self, mag_change):
+        """ Set the value of the value of magnitude of change
+
+        Parameters
+        ----------
+        mag_change: float (0.0..1.0)
+
+        """
+        if (0.0 <= mag_change) and (mag_change <= 1.0):
+            self._mag_change = mag_change
+        else:
+            raise ValueError("noise percentage should be in [0.0..1.0], {} was passed".format(mag_change))
+
+    @property
+    def sigma_percentage(self):
+        """ Retrieve the value of the value of sigma percentage
+
+        Returns
+        -------
+        float
+            percentage of the sigma
+        """
+        return self._sigma_percentage
+
+    @sigma_percentage.setter
+    def sigma_percentage(self, sigma_percentage):
+        """ Set the value of the value of noise percentage.
+
+        Parameters
+        ----------
+        sigma_percentage: float (0.0..1.0)
+
+        """
+        if (0.0 <= sigma_percentage) and (sigma_percentage <= 1.0):
+            self._sigma_percentage = sigma_percentage
+        else:
+            raise ValueError("sigma percentage should be in [0.0..1.0], {} was passed".format(sigma_percentage))
+
     def prepare_for_use(self):
         """
         Should be called before generating the samples.
@@ -131,16 +225,16 @@ class HyperplaneGenerator(Stream):
 
             data[j, -1] = group
 
-        self.generate_drift()
+        self._generate_drift()
 
         self.current_sample_x = data[:, :self.n_features]
         self.current_sample_y = data[:, self.n_features:].flatten()
 
         return self.current_sample_x, self.current_sample_y
 
-    def generate_drift(self):
+    def _generate_drift(self):
         """
-        Generate drift in the dataset.
+        Generate drift in the stream.
 
         """
         for i in range(self.n_drift_features):

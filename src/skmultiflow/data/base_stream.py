@@ -101,7 +101,7 @@ class Stream(BaseObject, metaclass=ABCMeta):
         int
             the number of target_values in the stream.
         """
-        return self._n_targets
+        return self._target_idx
 
     @n_targets.setter
     def n_targets(self, n_targets):
@@ -111,7 +111,7 @@ class Stream(BaseObject, metaclass=ABCMeta):
         ----------
         n_targets: int
         """
-        self._n_targets = n_targets
+        self._target_idx = n_targets
 
     @property
     def target_values(self):
@@ -247,7 +247,12 @@ class Stream(BaseObject, metaclass=ABCMeta):
         return self.current_sample_x, self.current_sample_y
 
     def is_restartable(self):
-        """ Determine if the stream is restartable. """
+        """ Determine if the stream is restartable.
+         Returns
+         -------
+         Boolean
+            True if stream is restartable.
+         """
         return True
 
     def restart(self):
