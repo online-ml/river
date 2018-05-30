@@ -49,7 +49,10 @@ class HyperplaneGenerator(Stream):
         Percentage of probability that the direction of change is reversed.
         From 0.0 to 1.0.
 
-
+    References
+    ----------
+    .. [1] G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
+       In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
 
     """
 

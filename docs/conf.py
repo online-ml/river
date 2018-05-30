@@ -34,11 +34,12 @@ sys.path.insert(0, os.path.abspath('..'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.githubpages',
-    'sphinx.ext.mathjax']
+              'sphinx.ext.autosummary',
+              'sphinx.ext.todo',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.napoleon',
+              'sphinx.ext.githubpages',
+              'sphinx.ext.mathjax']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -84,6 +85,8 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
+autosummary_generate = True
+
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -101,7 +104,11 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {'collapse_navigation': False,
+                      'navigation_depth': 3}
+
+# A list of ignored prefixes for module index sorting.
+modindex_common_prefix = ['skmultiflow.']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -232,7 +239,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'scikit-multiflow', 'scikit-multiflow Documentation',
-     author, 'scikit-multiflow', 'One line description of project.',
+     author, 'scikit-multiflow', 'A multi-output/multi-label and stream data framework.',
      'Miscellaneous'),
 ]
 
