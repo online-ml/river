@@ -3,8 +3,8 @@ import numpy as np
 from skmultiflow.data.base_stream import Stream
 
 
-class DatasetStream(Stream):
-    """ DatasetStream
+class DataStream(Stream):
+    """ DataStream
 
     A stream generated from the entries of a dataset ( numpy array or pandas
     DataFrame).
@@ -13,10 +13,19 @@ class DatasetStream(Stream):
     a way that old samples cannot be accessed in a later time. This is done
     so that a stream context can be correctly simulated.
 
+    DataStream takes the whole data set are separates the X and Y or takes X and Y
+    separately.
+    For the first case target_idx and n_targets need to be provided, in the next
+    case they are not needed.
+
     Parameters
     ----------
-    raw_data:
-        The dataset.
+    data: np.ndarray or pd.DataFrame (Default=None)
+        The features' columns and targets' columns or the feature columns
+        only if they are passed separately.
+    y: np.ndarray or pd.DataFrame, optional (Default=None)
+        The targets' columns.
+
     target_idx: int, optional (default=-1)
         The column index from which the targets start.
 
@@ -29,59 +38,132 @@ class DatasetStream(Stream):
 
     _CLASSIFICATION = 'classification'
     _REGRESSION = 'regression'
+    _flag = False
 
-    def __init__(self, raw_data, target_idx=-1, n_targets=1, cat_features_idx=None):
+    def __init__(self, data=None, y=None, target_idx=-1, n_targets=1, cat_features_idx=None):
         super().__init__()
         self.X = None
-        self.y = None
+        self.y = y
         self.cat_features_idx = [] if cat_features_idx is None else cat_features_idx
         self.n_targets = n_targets
         self.target_idx = target_idx
         self.task_type = None
         self.n_classes = 0
-        self.data_type = type(raw_data)
-        self.raw_data = raw_data
-
+        self.data = data
         self.__configure()
 
     def __configure(self):
-        pass
+        if self._flag:
+            self.y = pd.DataFrame(self.y)
+            if self.y.shape[0] != self.data.shape[0]:
+                raise ValueError("X and y should have the same number of rows")
+            else:
+                self.X = self.data
+                self.target_idx = -self.y.shape[1]
+                self.n_targets = self.y.shape[1]
+
 
     @property
-    def raw_data(self):
+    def y(self):
+        """
+        Return the targets' columns.
+
+        Returns
+        -------
+        np.ndarray:
+            the targets' columns
+        """
+        return self._y
+
+    @y.setter
+    def y(self, y):
+        """
+        Sets the targets' columns
+
+        Parameters
+        ----------
+        y: pd.DataFrame or np.ndarray
+            the targets' columns
+
+        """
+        if y is not None and not self._flag:
+            self._flag = True
+        if not self._flag:
+            self._y = y
+        elif isinstance(y, np.ndarray) or isinstance(y, pd.DataFrame):
+            self._y = y
+        else:
+            raise ValueError("np.ndarray or pd.DataFrame y object expected, and {} was passed".format(type(y)))
+
+    @property
+    def X(self):
+        """
+        Return the features' columns.
+
+        Returns
+        -------
+        np.ndarray:
+            the features' columns
+        """
+        return self._X
+
+    @X.setter
+    def X(self, X):
+        """
+        Sets the features' columns.
+
+        Parameters
+        ----------
+        X: pd.DataFrame or np.ndarray
+            the features' columns.
+        """
+
+        if isinstance(X, np.ndarray) or isinstance(X, pd.DataFrame):
+            self._X = X
+        elif not self._flag:
+            self._X = X
+        else:
+            raise ValueError("np.ndarray or pd.DataFrame X object expected, and {} was passed".format(type(X)))
+
+
+    @property
+    def data(self):
         """
         Return the data set used to generate the stream.
 
         Returns
         -------
-        DataFrame:
-            raw_data
+        pd.DataFrame:
+            Data set.
         """
-        return self._raw_data
+        return self._data
 
-    @raw_data.setter
-    def raw_data(self, raw_data):
+    @data.setter
+    def data(self, data):
         """
         Sets the data set used to generate the stream.
 
         Parameters
         ----------
-        raw_data: DataFrame or np.ndarray
+        data: DataFrame or np.ndarray
+            the data set
 
         """
 
-        if not (self.data_type == type(pd.DataFrame())) and not(self.data_type == type(np.array([]))):
-            raise ValueError('Raw data should be Pands DataFrame or Numpy Array, and {} object was '
-                             'passed'.format(type(self.raw_data)))
+        if isinstance(data, pd.DataFrame):
+            self._data = data
+        elif isinstance(data, np.ndarray):
+            self._data = pd.DataFrame(data)
         else:
-            self._raw_data = pd.DataFrame(raw_data)
+            raise ValueError("np.ndarray or pd.DataFrame data object expected, and {} was passed".format(type(data)))
 
-    @raw_data.deleter
-    def raw_data(self):
+
+    @data.deleter
+    def data(self):
         """
-            Deletes raw_data
+            Deletes data
         """
-        del self._raw_data
+        del self._data
 
     @property
     def target_idx(self):
@@ -164,29 +246,59 @@ class DatasetStream(Stream):
         called after the stream initialization.
 
         """
-        self._load_data()
-        del self.raw_data
+        if self._flag:
+            self._load_X_y()
+        else:
+            self._load_data()
+            del self.data
         self.sample_idx = 0
         self.current_sample_x = None
         self.current_sample_y = None
 
+    def _load_X_y(self):
+
+        self.y = pd.DataFrame(self.y)
+
+        self.n_samples, self.n_features = self.X.shape
+        self.feature_names = self.X.columns.values.tolist()
+        self.target_names = self.y.columns.values.tolist()
+
+        self.y = self.y.as_matrix()
+        self.X = self.X.as_matrix()
+
+        if self.cat_features_idx:
+            if max(self.cat_features_idx) < self.n_features:
+                self.n_cat_features = len(self.cat_features_idx)
+            else:
+                raise IndexError('Categorical feature index in {} '
+                                 'exceeds n_features {}'.format(self.cat_features_idx, self.n_features))
+        self.n_num_features = self.n_features - self.n_cat_features
+
+        if self.y.dtype == np.integer:
+            self.task_type = self._CLASSIFICATION
+            self.n_classes = len(np.unique(self.y))
+        else:
+            self.task_type = self._REGRESSION
+
+        self.target_values = self._get_target_values()
+
     def _load_data(self):
 
-        rows, cols = self.raw_data.shape
+        rows, cols = self.data.shape
         self.n_samples = rows
-        labels = self.raw_data.columns.values.tolist()
+        labels = self.data.columns.values.tolist()
 
         if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
             # Take everything to the right of target_idx
-            self.y = self.raw_data.iloc[:, self.target_idx:].as_matrix()
-            self.target_names = self.raw_data.iloc[:, self.target_idx:].columns.values.tolist()
+            self.y = self.data.iloc[:, self.target_idx:].as_matrix()
+            self.target_names = self.data.iloc[:, self.target_idx:].columns.values.tolist()
         else:
             # Take only n_targets columns to the right of target_idx, use the rest as features
-            self.y = self.raw_data.iloc[:, self.target_idx:self.target_idx + self.n_targets].as_matrix()
+            self.y = self.data.iloc[:, self.target_idx:self.target_idx + self.n_targets].as_matrix()
             self.target_names = labels[self.target_idx:self.target_idx + self.n_targets]
 
-        self.X = self.raw_data.drop(self.target_names, axis=1).as_matrix()
-        self.feature_names = self.raw_data.drop(self.target_names, axis=1).columns.values.tolist()
+        self.X = self.data.drop(self.target_names, axis=1).as_matrix()
+        self.feature_names = self.data.drop(self.target_names, axis=1).columns.values.tolist()
 
         _, self.n_features = self.X.shape
         if self.cat_features_idx:
@@ -202,6 +314,7 @@ class DatasetStream(Stream):
             self.n_classes = len(np.unique(self.y))
         else:
             self.task_type = self._REGRESSION
+
         self.target_values = self._get_target_values()
 
     def restart(self):
