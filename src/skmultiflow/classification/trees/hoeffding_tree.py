@@ -1,6 +1,7 @@
 import sys
 import logging
 import textwrap
+import operator
 from abc import ABCMeta
 from operator import attrgetter
 from skmultiflow.core.utils.utils import *
@@ -15,6 +16,7 @@ from skmultiflow.classification.core.attribute_split_suggestion import Attribute
 from skmultiflow.classification.core.split_criteria.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.classification.core.split_criteria.info_gain_split_criterion import InfoGainSplitCriterion
 from skmultiflow.classification.core.utils.utils import do_naive_bayes_prediction
+from skmultiflow.core.utils.utils import normalize_values_in_dict
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
@@ -1052,18 +1054,43 @@ class HoeffdingTree(StreamModel):
         """
         r, _ = get_dimensions(X)
         predictions = []
+        y_proba = self.predict_proba(X)
+        for i in range(r):
+            index, _ = max(enumerate(y_proba[i]), key=operator.itemgetter(1))
+            predictions.append(index)
+        return predictions
+
+    def predict_proba(self, X):
+        """Predicts probabilities of all label of the X instance(s)
+
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            Samples for which we want to predict the labels.
+
+        Returns
+        -------
+        list
+            Predicted the probabilities of all the labels for all instances in X.
+
+        """
+        r, _ = get_dimensions(X)
+        predictions = []
         for i in range(r):
             votes = self.get_votes_for_instance(X[i])
             if votes == {}:
                 # Tree is empty, all target_values equal, default to zero
-                predictions.append(0)
+                predictions.append([0])
             else:
-                predictions.append(max(votes, key=votes.get)
-)
+                normalize_values_in_dict(votes)
+                y_proba = []
+                for j in range(1 + int(max(votes.keys()))):
+                    if j in votes.keys():
+                        y_proba.append(votes[j])
+                    else:
+                        y_proba.append(0)
+                predictions.append(y_proba)
         return predictions
-
-    def predict_proba(self, X):
-        raise NotImplementedError
 
     @property
     def get_model_measurements(self):
