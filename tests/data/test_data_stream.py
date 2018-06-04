@@ -9,7 +9,7 @@ def test_data_stream(test_path, package_path):
     raw_data = pd.read_csv(test_file)
     stream = DataStream(raw_data)
 
-    assert stream._flag == False
+    assert stream._Y_is_defined == False
 
     stream.prepare_for_use()
 
@@ -68,7 +68,7 @@ def test_data_stream_X_y(test_path, package_path):
     X = raw_data.iloc[:, :-1]
     stream = DataStream(X, y)
 
-    assert stream._flag == True
+    assert stream._Y_is_defined == True
 
     stream.prepare_for_use()
 
