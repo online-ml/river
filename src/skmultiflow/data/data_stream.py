@@ -38,9 +38,9 @@ class DataStream(Stream):
 
     _CLASSIFICATION = 'classification'
     _REGRESSION = 'regression'
-    _flag = False
+    _Y_is_defined = False
 
-    def __init__(self, data=None, y=None, target_idx=-1, n_targets=1, cat_features_idx=None):
+    def __init__(self, data, y=None, target_idx=-1, n_targets=1, cat_features_idx=None):
         super().__init__()
         self.X = None
         self.y = y
@@ -53,7 +53,7 @@ class DataStream(Stream):
         self.__configure()
 
     def __configure(self):
-        if self._flag:
+        if self._Y_is_defined:
             self.y = pd.DataFrame(self.y)
             if self.y.shape[0] != self.data.shape[0]:
                 raise ValueError("X and y should have the same number of rows")
@@ -86,11 +86,9 @@ class DataStream(Stream):
             the targets' columns
 
         """
-        if y is not None and not self._flag:
-            self._flag = True
-        if not self._flag:
-            self._y = y
-        elif isinstance(y, np.ndarray) or isinstance(y, pd.DataFrame):
+        if y is not None and not self._Y_is_defined:
+            self._Y_is_defined = True
+        if not self._Y_is_defined or (isinstance(y, np.ndarray) or isinstance(y, pd.DataFrame)):
             self._y = y
         else:
             raise ValueError("np.ndarray or pd.DataFrame y object expected, and {} was passed".format(type(y)))
@@ -118,10 +116,9 @@ class DataStream(Stream):
             the features' columns.
         """
 
-        if isinstance(X, np.ndarray) or isinstance(X, pd.DataFrame):
+        if isinstance(X, np.ndarray) or isinstance(X, pd.DataFrame) or  not self._Y_is_defined:
             self._X = X
-        elif not self._flag:
-            self._X = X
+
         else:
             raise ValueError("np.ndarray or pd.DataFrame X object expected, and {} was passed".format(type(X)))
 
@@ -154,6 +151,8 @@ class DataStream(Stream):
             self._data = data
         elif isinstance(data, np.ndarray):
             self._data = pd.DataFrame(data)
+        elif data is None:
+            raise ValueError("data  must be set , a NoneType is not accepted")
         else:
             raise ValueError("np.ndarray or pd.DataFrame data object expected, and {} was passed".format(type(data)))
 
@@ -246,7 +245,7 @@ class DataStream(Stream):
         called after the stream initialization.
 
         """
-        if self._flag:
+        if self._Y_is_defined:
             self._load_X_y()
         else:
             self._load_data()
