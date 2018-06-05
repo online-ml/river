@@ -369,5 +369,5 @@ class SEAGenerator(Stream):
     def get_info(self):
         return 'SEAGenerator: classification_function: ' + str(self.classification_function_idx) + \
                ' - random_state: ' + str(self._original_random_state) + \
-               ' - balance_classes: ' + str(self.balance_classes) + \
+               ' - balance_classes: ' + self.balance_classes + \
                ' - noise_percentage: ' + str(self.noise_percentage)

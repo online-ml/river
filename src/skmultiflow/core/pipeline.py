@@ -149,7 +149,7 @@ class Pipeline(BaseObject):
             Contains the true class labels for all the samples in X
         
         classes: list, optional
-            A list containing all classes that can show up during subsequent
+            A list containing all target_values that can show up during subsequent
             partial_fit calls. It's optional for all but the first call, when 
             it's obligatory.
             
@@ -169,7 +169,7 @@ class Pipeline(BaseObject):
                 Xt = transform.partial_fit(Xt, y, classes=classes).transform(Xt)
 
         if self._final_estimator is not None:
-            if "classes" in self._final_estimator.partial_fit.__code__.co_varnames:
+            if "target_values" in self._final_estimator.partial_fit.__code__.co_varnames:
                 self._final_estimator.partial_fit(X=Xt, y=y, classes=classes)
             else:
                 self._final_estimator.partial_fit(X=Xt, y=y)

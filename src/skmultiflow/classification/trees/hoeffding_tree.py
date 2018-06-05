@@ -16,7 +16,7 @@ from skmultiflow.classification.core.attribute_split_suggestion import Attribute
 from skmultiflow.classification.core.split_criteria.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.classification.core.split_criteria.info_gain_split_criterion import InfoGainSplitCriterion
 from skmultiflow.classification.core.utils.utils import do_naive_bayes_prediction
-
+from skmultiflow.core.utils.utils import normalize_values_in_dict
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
@@ -1082,14 +1082,13 @@ class HoeffdingTree(StreamModel):
                 # Tree is empty, all target_values equal, default to zero
                 predictions.append([0])
             else:
+                normalize_values_in_dict(votes)
                 y_proba = []
                 for j in range(1 + int(max(votes.keys()))):
                     if j in votes.keys():
                         y_proba.append(votes[j])
                     else:
                         y_proba.append(0)
-                if not all(val == 0 for val in votes.values()):
-                    y_proba = [float(i)/sum(y_proba) for i in y_proba]
                 predictions.append(y_proba)
         return predictions
 
