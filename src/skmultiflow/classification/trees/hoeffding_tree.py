@@ -1078,18 +1078,19 @@ class HoeffdingTree(StreamModel):
         predictions = []
         for i in range(r):
             votes = self.get_votes_for_instance(X[i])
+            print(votes)
             if votes == {}:
                 # Tree is empty, all target_values equal, default to zero
                 predictions.append([0])
             else:
-                if not all( val == 0 for val in votes.values()):
-                    normalize_values_in_dict(votes)
                 y_proba = []
                 for j in range(1 + int(max(votes.keys()))):
                     if j in votes.keys():
                         y_proba.append(votes[j])
                     else:
                         y_proba.append(0)
+                if not all(val == 0 for val in votes.values()):
+                    y_proba = [float(i)/sum(y_proba) for i in y_proba]
                 predictions.append(y_proba)
         return predictions
 
