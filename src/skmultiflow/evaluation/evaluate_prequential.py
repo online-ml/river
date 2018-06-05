@@ -336,7 +336,7 @@ class EvaluatePrequential(StreamEvaluator):
             An array-like containing the classification targets for all samples in X.
 
         classes: list
-            Stores all the target_values that may be encountered during the classification task.
+            Stores all the classes that may be encountered during the classification task.
 
         weight: Array-like
             Instance weight. If not provided, uniform weights are assumed.
