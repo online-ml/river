@@ -26,6 +26,8 @@ def test_br_hoeffding_tree(test_path):
             proba_predictions.append(learner.predict_proba(X)[0])
         cnt += 1
 
+    print(proba_predictions)
+
     expected_predictions = [[0, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 1], [1, 1, 0],
                               [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 0, 0], [0, 1, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1],
                               [1, 1, 1], [0, 1, 1], [1, 1, 1], [1, 0, 0], [0, 1, 0], [1, 0, 1], [1, 0, 1], [1, 1, 1],
