@@ -34,10 +34,13 @@ def test_br_hoeffding_tree(test_path):
                            [1, 0, 1], [1, 1, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1], [1, 0, 0], [1, 1, 1], [1, 0, 1],
                            [1, 1, 1], [1, 0, 1]]
 
-    expected_proba_predictions_file_0 = os.path.join(test_path, 'br_pred_proba_0.npy')
-    expected_proba_predictions_0 = np.load(expected_proba_predictions_file_0)
-    #expected_proba_predictions_file_1 = os.path.join(test_path, 'pred_proba_1.npy')
-    #expected_proba_predictions_1 = np.load(expected_proba_predictions_file_1)
+    test_file = os.path.join(test_path, 'br_ht_pred.npz')
 
-    assert np.alltrue(proba_predictions == expected_proba_predictions_0)
+    data = np.load(test_file)
+    expected_proba_predictions_0 = data["a"]
+    expected_proba_predictions_1 = data["b"]
+
+    assert np.alltrue(proba_predictions == expected_proba_predictions_0) or \
+           np.alltrue(proba_predictions == expected_proba_predictions_1)
+
     assert np.alltrue(predictions == expected_predictions)
