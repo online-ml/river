@@ -5,7 +5,7 @@ from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
 import os
 
 def test_br_hoeffding_tree(test_path):
-    stream = MultilabelGenerator(n_samples=10000, n_features=15, n_targets=3, n_labels=4, random_state=200)
+    stream = MultilabelGenerator(n_samples=10000, n_features=15, n_targets=3, n_labels=4, random_state=112)
 
     stream.prepare_for_use()
 
@@ -26,13 +26,16 @@ def test_br_hoeffding_tree(test_path):
             proba_predictions.append(learner.predict_proba(X)[0])
         cnt += 1
 
-    expected_predictions = [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1],
-                           [1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 1, 0], [1, 0, 1],
-                           [1, 0, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 0, 1], [0, 1, 1], [1, 1, 0], [0, 1, 0],
-                           [1, 1, 1], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 1, 1], [1, 0, 1], [0, 0, 1], [1, 1, 1],
-                           [1, 0, 1], [1, 0, 1], [1, 0, 0], [1, 1, 0], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 0],
-                           [1, 0, 1], [1, 1, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1], [1, 0, 0], [1, 1, 1], [1, 0, 1],
-                           [1, 1, 1], [1, 0, 1]]
+    expected_predictions = [[0, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 1], [1, 1, 0],
+                              [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 0, 0], [0, 1, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1],
+                              [1, 1, 1], [0, 1, 1], [1, 1, 1], [1, 0, 0], [0, 1, 0], [1, 0, 1], [1, 0, 1], [1, 1, 1],
+                              [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0], [0, 1, 1], [1, 1, 1], [0, 1, 1], [1, 1, 1],
+                              [1, 0, 1], [0, 1, 1], [1, 0, 1], [0, 1, 1], [1, 1, 0], [0, 0, 1], [1, 1, 0], [0, 1, 1],
+                              [1, 1, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1], [0, 1, 1], [0, 1, 1], [1, 1, 1],
+                              [1, 1, 1], [1, 1, 1]]
+
+    assert np.alltrue(predictions == expected_predictions)
+
 
     test_file = os.path.join(test_path, 'br_ht_pred.npz')
 
@@ -43,4 +46,3 @@ def test_br_hoeffding_tree(test_path):
     assert np.alltrue(proba_predictions == expected_proba_predictions_0) or \
            np.alltrue(proba_predictions == expected_proba_predictions_1)
 
-    assert np.alltrue(predictions == expected_predictions)

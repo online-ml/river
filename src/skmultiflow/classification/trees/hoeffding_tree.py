@@ -1078,7 +1078,6 @@ class HoeffdingTree(StreamModel):
         predictions = []
         for i in range(r):
             votes = self.get_votes_for_instance(X[i])
-            print(votes)
             if votes == {}:
                 # Tree is empty, all target_values equal, default to zero
                 predictions.append([0])
