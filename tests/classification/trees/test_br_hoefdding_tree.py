@@ -34,9 +34,21 @@ def test_br_hoeffding_tree(test_path):
                             [1, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1], [0, 1, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1],
                             [1, 1, 1]]
 
-    assert np.alltrue(predictions == expected_predictions)
+    expected_predictions_34_35 = [[0, 1, 1], [1, 1, 1], [0, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 1], [1, 1, 0], [1, 1, 1],
+                              [1, 1, 1], [1, 1, 1], [1, 0, 0], [0, 1, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 1, 1],
+                              [0, 1, 1], [1, 1, 1], [1, 0, 0], [0, 1, 0], [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1],
+                              [1, 0, 1], [1, 1, 1], [1, 0, 0], [0, 1, 1], [1, 1, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1],
+                              [0, 1, 1], [1, 0, 1], [0, 1, 1], [1, 1, 0], [0, 0, 1], [1, 1, 1], [0, 1, 1], [1, 1, 1],
+                              [1, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1], [0, 1, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1],
+                              [1, 1, 1]]
+
+    assert np.alltrue(predictions == expected_predictions) or \
+        np.alltrue(predictions == expected_predictions_34_35)
 
     test_file = os.path.join(test_path, 'br_ht_prob.npy')
-    data = np.load(test_file)
+    expected_proba_predictions = np.load(test_file)
+    test_file = os.path.join(test_path, 'br_ht_prob_34_35.npy')
+    expected_proba_predictions_34_35 = np.load(test_file)
 
-    assert np.allclose(proba_predictions, data)
+    assert np.allclose(proba_predictions, expected_proba_predictions) or \
+        np.allclose(proba_predictions, expected_proba_predictions_34_35)
