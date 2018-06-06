@@ -23,29 +23,24 @@ def test_hoeffding_tree(test_path):
     while cnt < max_samples:
         X, y = stream.next_sample()
         # Test every n samples
-        if cnt % wait_samples == 0:
+        if (cnt % wait_samples == 0) and (cnt != 0):
             predictions.append(learner.predict(X)[0])
             proba_predictions.append(learner.predict_proba(X)[0])
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('d', [0.0, 0.0, 1.0, 3.0, 0.0, 0.0, 3.0, 0.0, 1.0, 1.0,
-                                       2.0, 0.0, 2.0, 1.0, 1.0, 2.0, 1.0, 3.0, 0.0, 1.0,
-                                       1.0, 1.0, 1.0, 0.0, 3.0, 1.0, 2.0, 1.0, 1.0, 3.0,
-                                       2.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-                                       2.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 2.0])
+    expected_predictions = array('d', [0.0, 1.0, 3.0, 0.0, 0.0, 3.0, 0.0, 1.0, 1.0, 2.0,
+                                       0.0, 2.0, 1.0, 1.0, 2.0, 1.0, 3.0, 0.0, 1.0, 1.0,
+                                       1.0, 1.0, 0.0, 3.0, 1.0, 2.0, 1.0, 1.0, 3.0, 2.0,
+                                       1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 0.0, 1.0, 2.0,
+                                       0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 2.0])
 
-    test_file = os.path.join(test_path, 'test_hoeffding_tree.npz')
+    test_file = os.path.join(test_path, 'test_hoeffding_tree.npy')
 
     data = np.load(test_file)
-    expected_proba_predictions_0 = data["a"]
-    expected_proba_predictions_1 = data["b"]
 
     assert np.alltrue(predictions == expected_predictions)
-
-    assert np.alltrue(proba_predictions == expected_proba_predictions_0) or \
-           np.alltrue(proba_predictions == expected_proba_predictions_1)
-    assert np.alltrue(predictions == expected_predictions)
+    assert np.allclose(proba_predictions, data)
 
     expected_info = 'HoeffdingTree: max_byte_size: 33554432 - memory_estimate_period: 1000000 - grace_period: 200 ' \
                     '- split_criterion: info_gain - split_confidence: 1e-07 - tie_threshold: 0.05 ' \
