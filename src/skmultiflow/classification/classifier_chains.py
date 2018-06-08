@@ -5,7 +5,13 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 class ClassifierChain() :
     '''
         Classifier Chain
+        ----------------
 
+        TODO: much of this can be shared with Regressor Chains, and thus 
+        probably we should use some kind of base class to inherit here. 
+
+        Note: ScikitLearn also includes 'ClassifierChain'. A difference is 
+        probabilistic extensions are included here. 
     '''
 
     h = None
@@ -21,7 +27,7 @@ class ClassifierChain() :
             order : str
                 None to use default order, 'random' for random order.
         '''
-        self.base_classifier = h
+        self.base_model = h
         self.order = order
 
     def fit(self, X, Y):
@@ -39,7 +45,7 @@ class ClassifierChain() :
         Y = Y[:,self.chain]
 
         # Train
-        self.h = [ copy.deepcopy(self.base_classifier) for j in range(L)]
+        self.h = [ copy.deepcopy(self.base_model) for j in range(L)]
         XY = np.zeros((N, D + L-1))
         XY[:,0:D] = X
         XY[:,D:] = Y[:,0:L-1]
