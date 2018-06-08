@@ -256,9 +256,10 @@ class MCC(ProbabilisticClassifierChain):
 
 def demo():
     import sys
-    from molearn.core.tools import make_XOR_dataset
+    sys.path.append( '../data' )
+    from skmultiflow.data.synth import make_logical
 
-    X,Y = make_XOR_dataset()
+    X,Y = make_logical()
     N,L = Y.shape
 
     print("TRUE: ")
@@ -266,17 +267,17 @@ def demo():
     print("vs")
 
     print("CC")
-    cc = ClassifierChain(SGDClassifier(n_iter=100,loss='log'))
+    cc = ClassifierChain(SGDClassifier(max_iter=100,loss='log'))
     cc.fit(X, Y)
     print(cc.predict(X))
 
     print("RCC")
-    cc = ClassifierChain(SGDClassifier(n_iter=100,loss='log'),order='random')
+    cc = ClassifierChain(SGDClassifier(max_iter=100,loss='log'),order='random')
     cc.fit(X, Y)
     print(cc.predict(X))
 
     print("MCC")
-    mcc = MCC(SGDClassifier(n_iter=100,loss='log'),M=1000)
+    mcc = MCC(SGDClassifier(max_iter=100,loss='log'),M=1000)
     mcc.fit(X, Y)
     Yp = mcc.predict(X, M=50)
     print("with 50 iterations ...")
@@ -286,7 +287,7 @@ def demo():
     print(Yp)
 
     print("PCC")
-    pcc = ProbabilisticClassifierChain(SGDClassifier(n_iter=100,loss='log'))
+    pcc = ProbabilisticClassifierChain(SGDClassifier(max_iter=100,loss='log'))
     pcc.fit(X, Y)
     print(pcc.predict(X))
 
