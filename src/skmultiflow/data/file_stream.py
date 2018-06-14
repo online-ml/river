@@ -184,14 +184,14 @@ class FileStream(Stream):
 
             if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
                 # Take everything to the right of target_idx
-                self.y = raw_data.iloc[:, self.target_idx:].as_matrix()
+                self.y = raw_data.iloc[:, self.target_idx:].values
                 self.target_names = raw_data.iloc[:, self.target_idx:].columns.values.tolist()
             else:
                 # Take only n_targets columns to the right of target_idx, use the rest as features
-                self.y = raw_data.iloc[:, self.target_idx:self.target_idx + self.n_targets].as_matrix()
+                self.y = raw_data.iloc[:, self.target_idx:self.target_idx + self.n_targets].values
                 self.target_names = labels[self.target_idx:self.target_idx + self.n_targets]
 
-            self.X = raw_data.drop(self.target_names, axis=1).as_matrix()
+            self.X = raw_data.drop(self.target_names, axis=1).values
             self.feature_names = raw_data.drop(self.target_names, axis=1).columns.values.tolist()
 
             _, self.n_features = self.X.shape
