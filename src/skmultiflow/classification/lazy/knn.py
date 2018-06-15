@@ -93,7 +93,7 @@ class KNN(StreamModel):
     
     """
 
-    def __init__(self, k=5, max_window_size=1000, leaf_size=30, categorical_list=[]):
+    def __init__(self, k=5, max_window_size=1000, leaf_size=30, categorical_list=None):
         super().__init__()
         self.k = k
         self.max_window_size = max_window_size
@@ -102,7 +102,8 @@ class KNN(StreamModel):
         self.first_fit = True
         self.classes = []
         self.leaf_size = leaf_size
-        self.categorical_list = categorical_list
+        if categorical_list is None:
+            self.categorical_list = []
 
     def fit(self, X, y, classes=None, weight=None):
         """ fit
@@ -136,6 +137,8 @@ class KNN(StreamModel):
         
         """
         r, c = get_dimensions(X)
+        if classes is not None:
+            self.classes = list(set().union(self.classes, classes))
         if self.window is None:
             self.window = InstanceWindow(max_size=self.max_window_size)
 
