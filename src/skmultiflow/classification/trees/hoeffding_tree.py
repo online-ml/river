@@ -1056,7 +1056,7 @@ class HoeffdingTree(StreamModel):
         predictions = []
         y_proba = self.predict_proba(X)
         for i in range(r):
-            index, _ = max(enumerate(y_proba[i]), key=operator.itemgetter(1))
+            index = y_proba[i].index(max(y_proba[i]))
             predictions.append(index)
         return predictions
 
@@ -1077,18 +1077,16 @@ class HoeffdingTree(StreamModel):
         r, _ = get_dimensions(X)
         predictions = []
         for i in range(r):
-            votes = self.get_votes_for_instance(X[i])
+            votes = self.get_votes_for_instance(X[i]).copy()
             if votes == {}:
                 # Tree is empty, all target_values equal, default to zero
                 predictions.append([0])
             else:
-                normalize_values_in_dict(votes)
-                y_proba = []
-                for j in range(1 + int(max(votes.keys()))):
-                    if j in votes.keys():
-                        y_proba.append(votes[j])
-                    else:
-                        y_proba.append(0)
+                if sum(votes.values()) != 0:
+                    normalize_values_in_dict(votes)
+                y_proba = [0] * (int(max(votes.keys())) + 1)
+                for key, value in votes.items():
+                    y_proba[int(key)] = value
                 predictions.append(y_proba)
         return predictions
 

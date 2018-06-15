@@ -7,7 +7,7 @@ from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 from skmultiflow.data.file_stream import FileStream
 
 
-def demo_parameterized(h, filename="sea_stream.csv", show_plot=True):
+def demo_parameterized(h, filename="covtype.csv", show_plot=True):
     # Setup Stream
     stream = FileStream("../datasets/" + filename, -1, 1)
     stream.prepare_for_use()
