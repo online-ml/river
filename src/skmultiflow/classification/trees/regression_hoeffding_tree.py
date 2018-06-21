@@ -167,7 +167,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self.estimate_model_byte_size()
 
-    def predict_proba(self, X):
+    def predict(self, X):
         """Predicts probabilities of all label of the X instance(s)
 
         Parameters
@@ -194,6 +194,9 @@ class RegressionHoeffdingTree(HoeffdingTree):
                 predictions.append(sum_of_values / number_of_examples_seen)
 
         return predictions
+
+    def predict_proba(self, X):
+        pass
 
     def _attempt_to_split(self, node, parent, parent_idx: int):
         """Attempt to split a node.
