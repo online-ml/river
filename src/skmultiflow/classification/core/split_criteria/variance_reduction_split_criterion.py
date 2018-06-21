@@ -5,20 +5,14 @@ class VarianceReductionSplitCriterion(SplitCriterion):
     def get_merit_of_split(self, pre_split_dist, post_split_dist):
         SDR = 0.0
         N = pre_split_dist[0]
-        #print(N)
-        #print("N")
-        #print(pre_split_dist)
-        #print("krifi")
-        #print(pre_split_dist[0])
+
         count = 0
         for i in range(len(post_split_dist)):
             Ni = post_split_dist[i][0]
             if Ni >= 5.0:
                 count += 1
         if count == len(post_split_dist):
-            #print(type(pre_split_dist))
-            #print("krifi")
-            #print(pre_split_dist)
+
             SDR = self.compute_SD(pre_split_dist)
             for i in range(len(post_split_dist)):
                 Ni = post_split_dist[i][0]
