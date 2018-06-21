@@ -198,6 +198,9 @@ class RegressionHoeffdingTree(HoeffdingTree):
     def predict_proba(self, X):
         pass
 
+    def enforce_tracker_limit(self):
+        pass
+
     def _attempt_to_split(self, node, parent, parent_idx: int):
         """Attempt to split a node.
 
@@ -273,4 +276,4 @@ class RegressionHoeffdingTree(HoeffdingTree):
                 else:
                     parent.set_child(parent_idx, new_split)
             # Manage memory
-            #self.enforce_tracker_limit()
+            self.enforce_tracker_limit()
