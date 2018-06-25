@@ -1,29 +1,34 @@
 from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.classification.core.split_criteria.multilabel_info_gain_split_criterion import MutltiLabelInfoGainSplitCriterion
+from skmultiflow.classification.core.split_criteria.multilabel_info_gain_split_criterion \
+    import MutltiLabelInfoGainSplitCriterion
 from operator import attrgetter
 from skmultiflow.core.utils.utils import *
 from skmultiflow.classification.core.attribute_class_observers.gaussian_numeric_attribute_class_observer \
     import GaussianNumericAttributeClassObserver
 from skmultiflow.classification.core.attribute_class_observers.nominal_attribute_class_observer \
     import NominalAttributeClassObserver
-from skmultiflow.classification.core.split_criteria.info_gain_split_criterion import InfoGainSplitCriterion
-from skmultiflow.classification.core.utils.utils import do_naive_bayes_prediction_multilabel
 
 
 MAJORITY_CLASS = 'mc'
-NAIVE_BAYES = 'nb'
-NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
 class MultilabelHF(HoeffdingTree):
 
     class MultilabelInactiveNode(HoeffdingTree.InactiveLearningNode):
 
-        def learn_from_instance(self, X, Y, weight, ht):
+        def __init__(self, initial_class_observations=None, n_observations=None):
+            """ InactiveLearningNode class constructor. """
+            if n_observations is None:
+                self.n_observations = 0
+            else:
+                self.n_observations = n_observations
+            super().__init__(initial_class_observations)
+
+        def learn_from_instance(self, X, y, weight, ht):
             self.n_observations += 1
 
-            for l in range(len(Y)):
-                if Y[l] == 1:
+            for l in range(len(y)):
+                if y[l] == 1:
                     try:
                         self._observed_class_distribution[l] += weight
                     except KeyError:
@@ -36,14 +41,18 @@ class MultilabelHF(HoeffdingTree):
 
     class MultilabelLearningNode(HoeffdingTree.ActiveLearningNode):
 
-        def __init__(self, initial_class_observations):
+        def __init__(self, initial_class_observations, n_observations):
+            if n_observations is None:
+                self.n_observations = 0
+            else:
+                self.n_observations = n_observations
             super().__init__(initial_class_observations)
-            self.n_observations = 0
 
-        def learn_from_instance(self, X, Y, weight, ht):
+
+        def learn_from_instance(self, X, y, weight, ht):
             self.n_observations += 1
-            for l in range(len(Y)):
-                if Y[l] == 1:
+            for l in range(len(y)):
+                if y[l] == 1:
                     try:
                         self._observed_class_distribution[l] += weight
                     except KeyError:
@@ -62,60 +71,26 @@ class MultilabelHF(HoeffdingTree):
                     else:
                         obs = GaussianNumericAttributeClassObserver()
                     self._attribute_observers[i] = obs
-                for l in range(len(Y)):
-                    obs.observe_attribute_class(X[i], l, weight if Y[l] == 1 else 0)
+                for l in range(len(y)):
+                    obs.observe_attribute_class(X[i], l, weight if y[l] == 1 else 0)
 
-    class MultilabelLearningNodeNB(MultilabelLearningNode):
-
-        def __init__(self, initial_class_observations):
-
-            super().__init__(initial_class_observations)
-
-        def get_class_votes(self, X, ht):
-            """Get the votes per class for a given instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes.
-            ht: HoeffdingTree
-                Hoeffding Tree.
+        def get_weight_seen(self):
+            """Calculate the total weight seen by the node.
 
             Returns
             -------
-            dict (class_value, weight)
-                Class votes for the given instance.
+            float
+                Total weight seen.
 
             """
-            if self.get_weight_seen() >= ht.nb_threshold:
-                return do_naive_bayes_prediction_multilabel(X, self._observed_class_distribution,
-                                                            self._attribute_observers, self.n_observations)
-            else:
-                return super().get_class_votes(X, ht)
+            return self.n_observations
 
-        def disable_attribute(self, att_index):
-            """Disable an attribute observer.
-
-            Disabled in Nodes using Naive Bayes, since poor attributes are used in Naive Bayes calculation.
-
-            Parameters
-            ----------
-            att_index: int
-                Attribute index.
-
-            """
-            pass
-
-    def _new_learning_node(self, initial_class_observations=None):
+    def _new_learning_node(self, initial_class_observations=None, n_observations=None):
         """Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
         if self._leaf_prediction == MAJORITY_CLASS:
-            return self.MultilabelLearningNode(initial_class_observations)
-        elif self._leaf_prediction == NAIVE_BAYES:
-            return self.MultilabelLearningNodeNB(initial_class_observations)
-        else:
-            return self.LearningNodeNBAdaptive(initial_class_observations)
+            return self.MultilabelLearningNode(initial_class_observations, n_observations)
 
     def _deactivate_learning_node(self, to_deactivate: MultilabelLearningNode, parent: HoeffdingTree.SplitNode, parent_branch: int):
         """Deactivate a learning node.
@@ -149,7 +124,7 @@ class MultilabelHF(HoeffdingTree):
                  stop_mem_management=False,
                  remove_poor_atts=False,
                  no_preprune=False,
-                 leaf_prediction='nba',
+                 leaf_prediction='mc',
                  nb_threshold=0,
                  nominal_attributes=None):
         super().__init__(max_byte_size,
@@ -166,6 +141,8 @@ class MultilabelHF(HoeffdingTree):
                          nb_threshold,
                          nominal_attributes)
         self.n_labels = 1
+
+
 
     def _attempt_to_split(self, node: MultilabelLearningNode, parent: HoeffdingTree.SplitNode, parent_idx: int):
         """Attempt to split a node.
@@ -191,59 +168,59 @@ class MultilabelHF(HoeffdingTree):
             Parent node's branch index.
 
         """
-        if not node.observed_class_distribution_is_pure():
-            split_criterion = MutltiLabelInfoGainSplitCriterion()
-            best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
-            best_split_suggestions.sort(key=attrgetter('merit'))
-            should_split = False
-            if len(best_split_suggestions) < 2:
-                should_split = len(best_split_suggestions) > 0
+
+        split_criterion = MutltiLabelInfoGainSplitCriterion()
+        best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
+        best_split_suggestions.sort(key=attrgetter('merit'))
+        should_split = False
+        if len(best_split_suggestions) < 2:
+            should_split = len(best_split_suggestions) > 0
+        else:
+            hoeffding_bound = self.compute_hoeffding_bound(np.log2(2), self.split_confidence, node.get_weight_seen())
+            best_suggestion = best_split_suggestions[-1]
+            second_best_suggestion = best_split_suggestions[-2]
+            if (best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
+                    or hoeffding_bound < self.tie_threshold):    # best_suggestion.merit > 1e-10 and \
+                should_split = True
+            if self.remove_poor_atts is not None and self.remove_poor_atts:
+                poor_atts = set()
+                # Scan 1 - add any poor attribute to set
+                for i in range(len(best_split_suggestions)):
+                    if best_split_suggestions[i] is not None:
+                        split_atts = best_split_suggestions[i].split_test.get_atts_test_depends_on()
+                        if len(split_atts) == 1:
+                            if best_suggestion.merit - best_split_suggestions[i].merit > hoeffding_bound:
+                                poor_atts.add(int(split_atts[0]))
+                # Scan 2 - remove good attributes from set
+                for i in range(len(best_split_suggestions)):
+                    if best_split_suggestions[i] is not None:
+                        split_atts = best_split_suggestions[i].split_test.get_atts_test_depends_on()
+                        if len(split_atts) == 1:
+                            if best_suggestion.merit - best_split_suggestions[i].merit < hoeffding_bound:
+                                poor_atts.remove(int(split_atts[0]))
+                for poor_att in poor_atts:
+                    node.disable_attribute(poor_att)
+        if should_split:
+            split_decision = best_split_suggestions[-1]
+            if split_decision.split_test is None:
+                # Preprune - null wins
+                self._deactivate_learning_node(node, parent, parent_idx)
             else:
-                hoeffding_bound = self.compute_hoeffding_bound(split_criterion.get_range_of_merit(
-                    node.get_observed_class_distribution()), self.split_confidence, node.get_weight_seen())
-                best_suggestion = best_split_suggestions[-1]
-                second_best_suggestion = best_split_suggestions[-2]
-                if (best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
-                        or hoeffding_bound < self.tie_threshold):    # best_suggestion.merit > 1e-10 and \
-                    should_split = True
-                if self.remove_poor_atts is not None and self.remove_poor_atts:
-                    poor_atts = set()
-                    # Scan 1 - add any poor attribute to set
-                    for i in range(len(best_split_suggestions)):
-                        if best_split_suggestions[i] is not None:
-                            split_atts = best_split_suggestions[i].split_test.get_atts_test_depends_on()
-                            if len(split_atts) == 1:
-                                if best_suggestion.merit - best_split_suggestions[i].merit > hoeffding_bound:
-                                    poor_atts.add(int(split_atts[0]))
-                    # Scan 2 - remove good attributes from set
-                    for i in range(len(best_split_suggestions)):
-                        if best_split_suggestions[i] is not None:
-                            split_atts = best_split_suggestions[i].split_test.get_atts_test_depends_on()
-                            if len(split_atts) == 1:
-                                if best_suggestion.merit - best_split_suggestions[i].merit < hoeffding_bound:
-                                    poor_atts.remove(int(split_atts[0]))
-                    for poor_att in poor_atts:
-                        node.disable_attribute(poor_att)
-            if should_split:
-                split_decision = best_split_suggestions[-1]
-                if split_decision.split_test is None:
-                    # Preprune - null wins
-                    self._deactivate_learning_node(node, parent, parent_idx)
+                new_split = self.new_split_node(split_decision.split_test,
+                                                node.get_observed_class_distribution())
+                for i in range(split_decision.num_splits()):
+                    new_child = self._new_learning_node(split_decision.resulting_class_distribution_from_split(i),
+                                                        node.n_observations)
+                    new_split.set_child(i, new_child)
+                self._active_leaf_node_cnt -= 1
+                self._decision_node_cnt += 1
+                self._active_leaf_node_cnt += split_decision.num_splits()
+                if parent is None:
+                    self._tree_root = new_split
                 else:
-                    new_split = self.new_split_node(split_decision.split_test,
-                                                    node.get_observed_class_distribution())
-                    for i in range(split_decision.num_splits()):
-                        new_child = self._new_learning_node(split_decision.resulting_class_distribution_from_split(i))
-                        new_split.set_child(i, new_child)
-                    self._active_leaf_node_cnt -= 1
-                    self._decision_node_cnt += 1
-                    self._active_leaf_node_cnt += split_decision.num_splits()
-                    if parent is None:
-                        self._tree_root = new_split
-                    else:
-                        parent.set_child(parent_idx, new_split)
-                # Manage memory
-                self.enforce_tracker_limit()
+                    parent.set_child(parent_idx, new_split)
+            # Manage memory
+            self.enforce_tracker_limit()
 
     def get_n_observations_for_instance(self, X):
 
