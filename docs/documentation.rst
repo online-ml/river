@@ -113,20 +113,20 @@ Lazy learning methods
 
 .. currentmodule:: skmultiflow
 
-Drift Detection: :mod:`skmultiflow.classification.core.driftdetection`
+Drift Detection: :mod:`skmultiflow.drift_detection`
 ======================================================================
 
-.. automodule:: skmultiflow.classification.core.driftdetection
+.. automodule:: skmultiflow.drift_detection
    :no-members:
    :no-inherited-members:
 
 .. autosummary::
    :toctree: _autosummary
 
-   skmultiflow.classification.core.driftdetection.adwin
-   skmultiflow.classification.core.driftdetection.ddm
-   skmultiflow.classification.core.driftdetection.eddm
-   skmultiflow.classification.core.driftdetection.page_hinkley
+   skmultiflow.drift_detection.adwin
+   skmultiflow.drift_detection.ddm
+   skmultiflow.drift_detection.eddm
+   skmultiflow.drift_detection.page_hinkley
 
 .. currentmodule:: skmultiflow
 
