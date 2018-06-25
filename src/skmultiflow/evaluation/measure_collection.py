@@ -1,4 +1,4 @@
-import skmultiflow.evaluation.metrics.metrics as metrics
+from skmultiflow.evaluation.metrics import metrics
 import numpy as np
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.core.utils.data_structures import FastBuffer, FastComplexBuffer, ConfusionMatrix, MOLConfusionMatrix
