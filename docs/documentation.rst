@@ -15,7 +15,7 @@ Data: :mod:`skmultiflow.data`
    :toctree: _autosummary
 
    skmultiflow.data.base_stream
-   skmultiflow.data.dataset_stream
+   skmultiflow.data.data_stream
    skmultiflow.data.file_stream
 
 .. currentmodule:: skmultiflow
@@ -97,7 +97,7 @@ Tree methods
 
 .. currentmodule:: skmultiflow
 
-Nearest Neighbors methods
+Lazy learning methods
 -------------------------
 
 .. automodule:: skmultiflow.classification.lazy
