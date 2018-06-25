@@ -1,5 +1,5 @@
 import numpy as np
-from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
+from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class EDDM(BaseDriftDetector):
@@ -36,7 +36,7 @@ class EDDM(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.classification.core.driftdetection.eddm import EDDM
+    >>> from skmultiflow.drift_detection.eddm import EDDM
     >>> eddm = EDDM()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
