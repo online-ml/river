@@ -262,8 +262,8 @@ class DataStream(Stream):
         self.feature_names = self.X.columns.values.tolist()
         self.target_names = self.y.columns.values.tolist()
 
-        self.y = self.y.as_matrix()
-        self.X = self.X.as_matrix()
+        self.y = self.y.values
+        self.X = self.X.values
 
         if self.cat_features_idx:
             if max(self.cat_features_idx) < self.n_features:
@@ -289,14 +289,14 @@ class DataStream(Stream):
 
         if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
             # Take everything to the right of target_idx
-            self.y = self.data.iloc[:, self.target_idx:].as_matrix()
+            self.y = self.data.iloc[:, self.target_idx:].values
             self.target_names = self.data.iloc[:, self.target_idx:].columns.values.tolist()
         else:
             # Take only n_targets columns to the right of target_idx, use the rest as features
-            self.y = self.data.iloc[:, self.target_idx:self.target_idx + self.n_targets].as_matrix()
+            self.y = self.data.iloc[:, self.target_idx:self.target_idx + self.n_targets].values
             self.target_names = labels[self.target_idx:self.target_idx + self.n_targets]
 
-        self.X = self.data.drop(self.target_names, axis=1).as_matrix()
+        self.X = self.data.drop(self.target_names, axis=1).values
         self.feature_names = self.data.drop(self.target_names, axis=1).columns.values.tolist()
 
         _, self.n_features = self.X.shape
