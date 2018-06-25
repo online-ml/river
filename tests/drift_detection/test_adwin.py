@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from skmultiflow.classification.core.driftdetection.adwin import ADWIN
+from skmultiflow.drift_detection.adwin import ADWIN
 
 
 def test_adwin(test_path):

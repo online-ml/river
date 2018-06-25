@@ -1,7 +1,7 @@
 import copy as cp
 from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
 from skmultiflow.core.base import StreamModel
-from skmultiflow.classification.core.driftdetection.adwin import ADWIN
+from skmultiflow.drift_detection.adwin import ADWIN
 from skmultiflow.core.utils.utils import *
 
 
