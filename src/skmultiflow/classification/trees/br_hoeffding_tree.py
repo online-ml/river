@@ -46,10 +46,10 @@ class BrHoeffdingTree:
 
         self.hoeffding_trees = []
 
-    def fit(self, X, Y, classes=None):
+    def fit(self, X, y, classes=None):
         raise NotImplementedError
 
-    def partial_fit(self, X, Y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, weight=None):
         """Incrementally trains the model. Train samples (instances) are composed of X features and their
         corresponding targets y.
 
@@ -79,7 +79,7 @@ class BrHoeffdingTree:
 
         """
         if len(self.hoeffding_trees) == 0:
-            self.n_labels = len(Y[0])
+            self.n_labels = len(y[0])
             self.hoeffding_trees = [HoeffdingTree(self.max_byte_size,
                                                   self.memory_estimate_period,
                                                   self.grace_period,
@@ -95,7 +95,7 @@ class BrHoeffdingTree:
                                                   self.categorical_features)
                                     for i in range(self.n_labels)]
         for label in range(self.n_labels):
-            self.hoeffding_trees[label].partial_fit(X, Y[:, label], classes, weight)
+            self.hoeffding_trees[label].partial_fit(X, y[:, label], classes, weight)
 
     def predict_proba(self, X):
         """Predicts probabilities of all label of the X instance(s)
