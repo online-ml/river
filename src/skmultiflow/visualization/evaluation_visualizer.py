@@ -56,7 +56,8 @@ class EvaluationVisualizer(BaseListener):
     
     """
 
-    def __init__(self, task_type=None, n_sliding=0, dataset_name='Unnamed graph', plots=None, n_learners=1):
+    def __init__(self, task_type=None, n_sliding=0, dataset_name='Unnamed graph', plots=None, n_learners=1,
+                 learner_name=None):
         super().__init__()
 
         # Default values
@@ -65,7 +66,7 @@ class EvaluationVisualizer(BaseListener):
         self._is_legend_set = False
         self._draw_cnt = 0
 
-        self.temp = []
+        self.text_annotations = []
 
         self.true_values = None
         self.pred_values = None
@@ -107,6 +108,7 @@ class EvaluationVisualizer(BaseListener):
         self.n_sliding = None
         self.dataset_name = None
         self.n_learners = None
+        self.model_names = None
         self.num_plots = 0
 
         # Lines
@@ -165,13 +167,25 @@ class EvaluationVisualizer(BaseListener):
             else:
                 raise ValueError('Invalid task type: {}'.format(task_type))
 
+        if learner_name is None:
+            self.model_names = ['M{}'.format(i) for i in range(n_learners)]
+        else:
+            if isinstance(learner_name, list):
+                if len(learner_name) != n_learners:
+                    raise ValueError("Number of model names {} does not match the number of models {}.".
+                                     format(len(learner_name), n_learners))
+                else:
+                    self.model_names = learner_name
+            else:
+                raise ValueError("model_names must be a list.")
+
         if plots is not None:
             if len(plots) < 1:
-                raise ValueError('No plots were given.')
+                raise ValueError('No metrics were given.')
             else:
                 self.__configure(n_sliding, dataset_name, plots, n_learners)
         else:
-            raise ValueError('No plots were given.')
+            raise ValueError('No metrics were given.')
 
     def on_new_train_step(self, train_step, metrics_dict):
         """ on_new_train_step
@@ -273,7 +287,7 @@ class EvaluationVisualizer(BaseListener):
 
             self.subplot_performance = self.fig.add_subplot(base)
             self.subplot_performance.set_title('Accuracy')
-            self.subplot_performance.set_ylabel('Performance ratio')
+            self.subplot_performance.set_ylabel('Accuracy')
             base += 1
 
             self.line_partial_performance = [None for _ in range(self.n_learners)]
@@ -284,10 +298,10 @@ class EvaluationVisualizer(BaseListener):
                 self.line_partial_performance[i], = self.subplot_performance.plot(
                     self.X,
                     self.partial_performance[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='{}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_performance[i], = self.subplot_performance.plot(
                     self.X, self.global_performance[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='{} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_performance[i])
                 handle.append(self.line_global_performance[i])
 
@@ -310,10 +324,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_kappa[i], = self.subplot_kappa.plot(
                     self.X, self.partial_kappa[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_kappa[i], = self.subplot_kappa.plot(
                     self.X, self.global_kappa[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_kappa[i])
                 handle.append(self.line_global_kappa[i])
 
@@ -336,10 +350,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_kappa_t[i], = self.subplot_kappa_t.plot(
                     self.X, self.partial_kappa_t[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_kappa_t[i], = self.subplot_kappa_t.plot(
                     self.X, self.global_kappa_t[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_kappa_t[i])
                 handle.append(self.line_global_kappa_t[i])
 
@@ -362,10 +376,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_kappa_m[i], = self.subplot_kappa_m.plot(
                     self.X, self.partial_kappa_m[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_kappa_m[i], = self.subplot_kappa_m.plot(
                     self.X, self.global_kappa_m[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_kappa_m[i])
                 handle.append(self.line_global_kappa_m[i])
 
@@ -388,10 +402,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_hamming_score[i], = self.subplot_hamming_score.plot(
                     self.X, self.partial_hamming_score[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_hamming_score[i], = self.subplot_hamming_score.plot(
                     self.X, self.global_hamming_score[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_hamming_score[i])
                 handle.append(self.line_global_hamming_score[i])
 
@@ -414,10 +428,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_hamming_loss[i], = self.subplot_hamming_loss.plot(
                     self.X, self.partial_hamming_loss[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_hamming_loss[i], = self.subplot_hamming_loss.plot(
                     self.X, self.global_hamming_loss[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_hamming_loss[i])
                 handle.append(self.line_global_hamming_loss[i])
 
@@ -440,10 +454,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_exact_match[i], = self.subplot_exact_match.plot(
                     self.X, self.partial_exact_match[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_exact_match[i], = self.subplot_exact_match.plot(
                     self.X, self.global_exact_match[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_exact_match[i])
                 handle.append(self.line_global_exact_match[i])
 
@@ -466,10 +480,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_j_index[i], = self.subplot_j_index.plot(
                     self.X, self.partial_j_index[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_j_index[i], = self.subplot_j_index.plot(
                     self.X, self.global_j_index[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_j_index[i])
                 handle.append(self.line_global_j_index[i])
 
@@ -492,10 +506,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_mse[i], = self.subplot_mse.plot(
                     self.X, self.partial_mse[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_mse[i], = self.subplot_mse.plot(
                     self.X, self.global_mse[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_mse[i])
                 handle.append(self.line_global_mse[i])
 
@@ -518,10 +532,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_partial_mae[i], = self.subplot_mae.plot(
                     self.X, self.partial_mae[i],
-                    label='Model {}  (sliding {} samples)'.format(i, self.n_sliding))
+                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_global_mae[i], = self.subplot_mae.plot(
                     self.X, self.global_mae[i],
-                    label='Model {} (global)'.format(i), linestyle='dotted')
+                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_partial_mae[i])
                 handle.append(self.line_global_mae[i])
 
@@ -551,11 +565,13 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 if self.task_type == 'classification':
                     self.line_pred[i], = self.subplot_true_vs_predicts.step(self.X, self.pred_values[i],
-                                                                            label='Model {} (global)'.format(i),
+                                                                            label='Model {} (global)'.
+                                                                            format(self.model_names[i]),
                                                                             linestyle='dotted')
                 else:
                     self.line_pred[i], = self.subplot_true_vs_predicts.plot(self.X, self.pred_values[i],
-                                                                            label='Model {} (global)'.format(i),
+                                                                            label='Model {} (global)'.
+                                                                            format(self.model_names[i]),
                                                                             linestyle='dotted')
                 handle.append(self.line_pred[i])
 
@@ -589,81 +605,45 @@ class EvaluationVisualizer(BaseListener):
         """
         self.X.append(train_step)
 
-        for i in range(len(self.temp)):
-            self.temp[i].remove()
-        self.temp = []
-
-        xy_pos_default = (1.01, .90)  # Default xy position for metric annotations
+        self._clear_annotations()
 
         if 'performance' in self.plots:
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_performance.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_performance[i].append(metrics_dict['performance'][i][0])
                 self.partial_performance[i].append(metrics_dict['performance'][i][1])
                 self.line_global_performance[i].set_data(self.X, self.global_performance[i])
                 self.line_partial_performance[i].set_data(self.X, self.partial_performance[i])
 
-                self.temp.append(self.subplot_performance.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                metrics_dict['performance'][i][0],
-                                                                metrics_dict['performance'][i][1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_performance, self.model_names[i],
+                                         self.global_performance[i][-1], self.partial_performance[i][-1])
 
             self.subplot_performance.set_xlim(0, self.X[-1])
             self.subplot_performance.set_ylim(0, 1)
 
         if 'kappa' in self.plots:
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_kappa.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_kappa[i].append(metrics_dict['kappa'][i][0])
                 self.partial_kappa[i].append(metrics_dict['kappa'][i][1])
                 self.line_global_kappa[i].set_data(self.X, self.global_kappa[i])
                 self.line_partial_kappa[i].set_data(self.X, self.partial_kappa[i])
 
-                self.temp.append(self.subplot_kappa.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_kappa[i][-1],
-                                                                self.partial_kappa[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points', annotation_clip=False))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_kappa, self.model_names[i],
+                                         self.global_kappa[i][-1], self.partial_kappa[i][-1])
 
             self.subplot_kappa.set_xlim(0, self.X[-1])
             self.subplot_kappa.set_ylim(0, 1)
 
         if 'kappa_t' in self.plots:
             minimum = -1.
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_kappa_t.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_kappa_t[i].append(metrics_dict['kappa_t'][i][0])
                 self.partial_kappa_t[i].append(metrics_dict['kappa_t'][i][1])
                 self.line_global_kappa_t[i].set_data(self.X, self.global_kappa_t[i])
                 self.line_partial_kappa_t[i].set_data(self.X, self.partial_kappa_t[i])
 
-                self.temp.append(self.subplot_kappa_t.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_kappa_t[i][-1],
-                                                                self.partial_kappa_t[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_kappa_t, self.model_names[i],
+                                         self.global_kappa_t[i][-1], self.partial_kappa_t[i][-1])
+
                 minimum = min(min(minimum, min(self.global_kappa_t[i])), min(minimum, min(self.partial_kappa_t[i])))
 
             self.subplot_kappa_t.set_xlim(0, self.X[-1])
@@ -671,122 +651,68 @@ class EvaluationVisualizer(BaseListener):
 
         if 'kappa_m' in self.plots:
             minimum = -1.
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_kappa_m.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_kappa_m[i].append(metrics_dict['kappa_m'][i][0])
                 self.partial_kappa_m[i].append(metrics_dict['kappa_m'][i][1])
                 self.line_global_kappa_m[i].set_data(self.X, self.global_kappa_m[i])
                 self.line_partial_kappa_m[i].set_data(self.X, self.partial_kappa_m[i])
 
-                self.temp.append(self.subplot_kappa_m.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_kappa_m[i][-1],
-                                                                self.partial_kappa_m[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_kappa_m, self.model_names[i],
+                                         self.global_kappa_m[i][-1], self.partial_kappa_m[i][-1])
+
                 minimum = min(min(minimum, min(self.global_kappa_m[i])), min(minimum, min(self.partial_kappa_m[i])))
 
             self.subplot_kappa_m.set_xlim(0, self.X[-1])
             self.subplot_kappa_m.set_ylim(minimum, 1.)
 
         if 'hamming_score' in self.plots:
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_hamming_score.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_hamming_score[i].append(metrics_dict['hamming_score'][i][0])
                 self.partial_hamming_score[i].append(metrics_dict['hamming_score'][i][1])
                 self.line_global_hamming_score[i].set_data(self.X, self.global_hamming_score[i])
                 self.line_partial_hamming_score[i].set_data(self.X, self.partial_hamming_score[i])
 
-                self.temp.append(self.subplot_hamming_score.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_hamming_score[i][-1],
-                                                                self.partial_hamming_score[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_hamming_score, self.model_names[i],
+                                         self.global_hamming_score[i][-1], self.partial_hamming_score[i][-1])
 
             self.subplot_hamming_score.set_xlim(0, self.X[-1])
             self.subplot_hamming_score.set_ylim(0, 1)
 
         if 'hamming_loss' in self.plots:
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_hamming_loss.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_hamming_loss[i].append(metrics_dict['hamming_loss'][i][0])
                 self.partial_hamming_loss[i].append(metrics_dict['hamming_loss'][i][1])
                 self.line_global_hamming_loss[i].set_data(self.X, self.global_hamming_loss[i])
                 self.line_partial_hamming_loss[i].set_data(self.X, self.partial_hamming_loss[i])
 
-                self.temp.append(self.subplot_hamming_loss.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_hamming_loss[i][-1],
-                                                                self.partial_hamming_loss[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_hamming_loss, self.model_names[i],
+                                         self.global_hamming_loss[i][-1], self.partial_hamming_loss[i][-1])
 
             self.subplot_hamming_loss.set_xlim(0, self.X[-1])
             self.subplot_hamming_loss.set_ylim(0, 1)
 
         if 'exact_match' in self.plots:
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_exact_match.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_exact_match[i].append(metrics_dict['exact_match'][i][0])
                 self.partial_exact_match[i].append(metrics_dict['exact_match'][i][1])
                 self.line_global_exact_match[i].set_data(self.X, self.global_exact_match[i])
                 self.line_partial_exact_match[i].set_data(self.X, self.partial_exact_match[i])
 
-                self.temp.append(self.subplot_exact_match.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_exact_match[i][-1],
-                                                                self.partial_exact_match[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_exact_match, self.model_names[i],
+                                         self.global_exact_match[i][-1], self.partial_exact_match[i][-1])
 
             self.subplot_exact_match.set_xlim(0, self.X[-1])
             self.subplot_exact_match.set_ylim(0, 1)
 
         if 'j_index' in self.plots:
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_j_index.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_j_index[i].append(metrics_dict['j_index'][i][0])
                 self.partial_j_index[i].append(metrics_dict['j_index'][i][1])
                 self.line_global_j_index[i].set_data(self.X, self.global_j_index[i])
                 self.line_partial_j_index[i].set_data(self.X, self.partial_j_index[i])
 
-                self.temp.append(self.subplot_j_index.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_j_index[i][-1],
-                                                                self.partial_j_index[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_j_index, self.model_names[i],
+                                         self.global_j_index[i][-1], self.partial_j_index[i][-1])
 
             self.subplot_j_index.set_xlim(0, self.X[-1])
             self.subplot_j_index.set_ylim(0, 1)
@@ -794,25 +720,15 @@ class EvaluationVisualizer(BaseListener):
         if 'mean_square_error' in self.plots:
             minimum = -1
             maximum = 0
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_mse.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_mse[i].append(metrics_dict['mean_square_error'][i][0])
                 self.partial_mse[i].append(metrics_dict['mean_square_error'][i][1])
                 self.line_global_mse[i].set_data(self.X, self.global_mse[i])
                 self.line_partial_mse[i].set_data(self.X, self.partial_mse[i])
 
-                self.temp.append(self.subplot_mse.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_mse[i][-1],
-                                                                self.partial_mse[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_mse, self.model_names[i],
+                                         self.global_mse[i][-1], self.partial_mse[i][-1])
+
                 # minimum = min([min(self.global_mse[i]), min(self.partial_mse[i]), minimum])
                 maximum = max([max(self.global_mse[i]), max(self.partial_mse[i]), maximum])
 
@@ -822,25 +738,15 @@ class EvaluationVisualizer(BaseListener):
         if 'mean_absolute_error' in self.plots:
             minimum = -1
             maximum = 0
-            shift_y = 10  # y axis shift for plot annotations
-            xy_pos = xy_pos_default
-            self.temp.append(self.subplot_mae.annotate(
-                '{: <8} | {: ^14} | {: ^14}'.format('Model', 'Global', 'Sliding'),
-                xy=xy_pos, xycoords='axes fraction'))
             for i in range(self.n_learners):
                 self.global_mae[i].append(metrics_dict['mean_absolute_error'][i][0])
                 self.partial_mae[i].append(metrics_dict['mean_absolute_error'][i][1])
                 self.line_global_mae[i].set_data(self.X, self.global_mae[i])
                 self.line_partial_mae[i].set_data(self.X, self.partial_mae[i])
 
-                self.temp.append(self.subplot_mae.annotate(
-                    '{: ^12d}   {: ^14.3f}   {: ^14.3f}'.format(i,
-                                                                self.global_mae[i][-1],
-                                                                self.partial_mae[i][-1]),
-                    xy=xy_pos, xycoords='axes fraction',
-                    xytext=(0, -shift_y),
-                    textcoords='offset points'))
-                shift_y += shift_y
+                self._update_annotations(i, self.subplot_mae, self.model_names[i],
+                                         self.global_mae[i][-1], self.partial_mae[i][-1])
+
                 # minimum = min([min(self.global_mae[i]), min(self.partial_mae[i]), minimum])
                 maximum = max([max(self.global_mae[i]), max(self.partial_mae[i]), maximum])
 
@@ -870,6 +776,27 @@ class EvaluationVisualizer(BaseListener):
             self._draw_cnt = 0
         else:
             self._draw_cnt += 1
+
+    def _clear_annotations(self):
+        """ Clear annotations, so next frame is correctly rendered. """
+        for i in range(len(self.text_annotations)):
+            self.text_annotations[i].remove()
+        self.text_annotations = []
+
+    def _update_annotations(self, idx, subplot, model_name, global_value, partial_value):
+        xy_pos_default = (1.02, .90)  # Default xy position for metric annotations
+        shift_y = 10 * (idx + 1)  # y axis shift for plot annotations
+        xy_pos = xy_pos_default
+        if idx == 0:
+            self.text_annotations.append(subplot.annotate('{: <12} | {: ^16} | {: ^16}'.
+                                                          format('Model', 'Global', 'Sliding'),
+                                                          xy=xy_pos, xycoords='axes fraction'))
+        self.text_annotations.append(subplot.annotate('{: <10.10s}'.format(model_name[:6]),
+                                                      xy=xy_pos, xycoords='axes fraction',
+                                                      xytext=(0, -shift_y), textcoords='offset points'))
+        self.text_annotations.append(subplot.annotate('{: ^14.4f}   {: ^14.4f}'.format(global_value, partial_value),
+                                                      xy=xy_pos, xycoords='axes fraction',
+                                                      xytext=(50, -shift_y), textcoords='offset points'))
 
     def draw_scatter_points(self, X, y, predict):
         pass
