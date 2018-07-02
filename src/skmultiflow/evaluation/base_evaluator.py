@@ -88,6 +88,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self._task_type = None
         self._output_type = None
         self._valid_configuration = False
+        self.model_names = None
         self.model = None
         self.n_models = 0
         self.stream = None
@@ -186,6 +187,35 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     def get_info(self):
         raise NotImplementedError
 
+    def _init_evaluation(self, stream, model, model_names=None):
+        # First, verify if this is a single evaluation or a comparison between learners.
+        if isinstance(model, list):
+            self.n_models = len(model)
+            for m in model:
+                if not hasattr(m, 'predict'):
+                    raise NotImplementedError('{} does not have a predict() method.'.format(m))
+        else:
+            self.n_models = 1
+            if not hasattr(model, 'predict'):
+                raise NotImplementedError('{} does not have a predict() method.'.format(model))
+
+        self.model = model if isinstance(model, list) else [model]
+        if isinstance(stream, Stream):
+            self.stream = stream
+        else:
+            raise ValueError('{} is not a valid stream type.'.format(stream))
+
+        if model_names is None:
+            self.model_names = ['M{}'.format(i) for i in range(self.n_models)]
+        else:
+            if isinstance(model_names, list):
+                if len(model_names) != self.n_models:
+                    raise ValueError("Number of model names does not match the number of models.")
+                else:
+                    self.model_names = model_names
+            else:
+                raise ValueError("model_names must be a list.")
+
     def _check_configuration(self):
         # Check stream to infer task type
         if isinstance(self.stream, Stream):
@@ -195,6 +225,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 self._output_type = self.MULTI_OUTPUT
             else:
                 raise ValueError('Unexpected number of outputs in stream: {}.'.format(self.stream.n_targets))
+        else:
+            raise ValueError('{} is not a valid stream type.'.format(self.stream))
 
         # Metrics configuration
         self.metrics = [x.lower() for x in self.metrics]
@@ -346,40 +378,50 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     f.write("\n# {}".format(self.stream.get_info()))
                 for i in range(self.n_models):
                     if hasattr(self.model[i], 'get_info'):
-                        f.write("\n# [{}] {}".format(i, self.model[i].get_info()))
+                        f.write("\n# [{}] {}".format(self.model_names[i], self.model[i].get_info()))
                 f.write("\n# {}".format(self.get_info()))
                 f.write("\n# TEST CONFIGURATION END")
                 header = '\nid'
                 if self.PERFORMANCE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_performance_[{}],sliding_performance_[{}]'.format(i, i)
+                        header += ',global_acc_[{}],sliding_acc_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.KAPPA in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_[{}],sliding_kappa_[{}]'.format(i, i)
+                        header += ',global_kappa_[{}],sliding_kappa_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.KAPPA_T in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_t_[{}],sliding_kappa_t_[{}]'.format(i, i)
+                        header += ',global_kappa_t_[{}],sliding_kappa_t_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.KAPPA_M in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_m_[{}],sliding_kappa_m_[{}]'.format(i, i)
+                        header += ',global_kappa_m_[{}],sliding_kappa_m_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.HAMMING_SCORE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_hamming_score_[{}],sliding_hamming_score_[{}]'.format(i, i)
+                        header += ',global_hamming_score_[{}],sliding_hamming_score_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.HAMMING_LOSS in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_hamming_loss_[{}],sliding_hamming_loss_[{}]'.format(i, i)
+                        header += ',global_hamming_loss_[{}],sliding_hamming_loss_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.EXACT_MATCH in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_exact_match_[{}],sliding_exact_match_[{}]'.format(i, i)
+                        header += ',global_exact_match_[{}],sliding_exact_match_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.J_INDEX in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_j_index_[{}],sliding_j_index_[{}]'.format(i, i)
+                        header += ',global_j_index_[{}],sliding_j_index_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.MSE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_mse_[{}],sliding_mse_[{}]'.format(i, i)
+                        header += ',global_mse_[{}],sliding_mse_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 if self.MAE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_mae_[{}],sliding_mae_[{}]'.format(i, i)
+                        header += ',global_mae_[{}],sliding_mae_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
                 f.write(header)
 
     def _update_file(self, current_x, ):
@@ -438,7 +480,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                                                    n_sliding=self.n_sliding,
                                                    dataset_name=self.stream.get_data_info(),
                                                    plots=self.metrics,
-                                                   n_learners=self.n_models)
+                                                   n_learners=self.n_models,
+                                                   learner_name=self.model_names)
 
     def _update_plot(self, current_x, new_points_dict):
         """ Update evaluation plot.

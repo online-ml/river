@@ -3,7 +3,6 @@ import warnings
 import logging
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
-from skmultiflow.data.base_stream import Stream
 
 
 class EvaluateHoldout(StreamEvaluator):
@@ -149,7 +148,7 @@ class EvaluateHoldout(StreamEvaluator):
         warnings.filterwarnings("ignore", ".*invalid value encountered in true_divide.*")
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
-    def evaluate(self, stream, model):
+    def evaluate(self, stream, model, model_names=None):
         """ evaluate
         
         Parameters
@@ -160,6 +159,9 @@ class EvaluateHoldout(StreamEvaluator):
         model: A learner (an extension from BaseClassifier) or a list of learners.
             The learner or learners on which to train the model and measure the 
             performance metrics.
+
+        model_names: list, optional (Default=None)
+            A list with the names of the learners.
             
         Returns
         -------
@@ -168,21 +170,7 @@ class EvaluateHoldout(StreamEvaluator):
         
         """
         # First off we need to verify if this is a simple evaluation task or a comparison between learners task.
-        if isinstance(model, type([])):
-            self.n_models = len(model)
-            for m in model:
-                if not hasattr(m, 'predict'):
-                    raise NotImplementedError('{} does not have a predict() method.'.format(m))
-        else:
-            self.n_models = 1
-            if not hasattr(model, 'predict'):
-                raise NotImplementedError('{} does not have a predict() method.'.format(model))
-
-        self.model = model if self.n_models > 1 else [model]
-        if isinstance(stream, Stream):
-            self.stream = stream
-        else:
-            raise ValueError('{} is not a valid stream type.'.format(stream))
+        self._init_evaluation(model=model, stream=stream, model_names=model_names)
 
         if self._check_configuration():
             self._reset_globals()
@@ -319,35 +307,35 @@ class EvaluateHoldout(StreamEvaluator):
         logging.info('Global performance:')
         for i in range(self.n_models):
             if 'performance' in self.metrics:
-                logging.info('Model {} - Accuracy     : {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_performance()))
+                logging.info('{} - Accuracy     : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_performance()))
             if 'kappa' in self.metrics:
-                logging.info('Model {} - Kappa        : {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_kappa()))
+                logging.info('{} - Kappa        : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_kappa()))
             if 'kappa_t' in self.metrics:
-                logging.info('Model {} - Kappa T      : {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_kappa_t()))
+                logging.info('{} - Kappa T      : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_kappa_t()))
             if 'kappa_m' in self.metrics:
-                logging.info('Model {} - Kappa M      : {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_kappa_m()))
+                logging.info('{} - Kappa M      : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_kappa_m()))
             if 'hamming_score' in self.metrics:
-                logging.info('Model {} - Hamming score: {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_hamming_score()))
+                logging.info('{} - Hamming score: {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_hamming_score()))
             if 'hamming_loss' in self.metrics:
-                logging.info('Model {} - Hamming loss : {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_hamming_loss()))
+                logging.info('{} - Hamming loss : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_hamming_loss()))
             if 'exact_match' in self.metrics:
-                logging.info('Model {} - Exact matches: {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_exact_match()))
+                logging.info('{} - Exact matches: {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_exact_match()))
             if 'j_index' in self.metrics:
-                logging.info('Model {} - j index      : {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_j_index()))
+                logging.info('{} - j index      : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_j_index()))
             if 'mean_square_error' in self.metrics:
-                logging.info('Model {} - MSE          : {:.3f}'.format(
-                    i, self.global_classification_metrics[i].get_mean_square_error()))
+                logging.info('{} - MSE          : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_mean_square_error()))
             if 'mean_absolute_error' in self.metrics:
-                logging.info('Model {} - MAE          : {:3f}'.format(
-                    i, self.global_classification_metrics[i].get_average_error()))
+                logging.info('{} - MAE          : {:3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_average_error()))
 
         if self.restart_stream:
             self.stream.restart()
