@@ -132,5 +132,8 @@ class NaiveBayes(StreamModel):
         """
         return self.classifier.score(X, y)
 
+    def reset(self):
+        self.__init__()
+
     def get_info(self):
-        return 'NaiveBayes: N/A'
+        return 'Multinomial Naive Bayes classifier'
