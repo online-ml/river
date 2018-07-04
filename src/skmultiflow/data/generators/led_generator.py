@@ -124,14 +124,14 @@ class LEDGenerator(Stream):
 
         Returns
         -------
-        Boolean
-            True is the target_values are balanced
+        float
+            The value of the noise percentage
         """
         return self._noise_percentage
 
     @noise_percentage.setter
     def noise_percentage(self, noise_percentage):
-        """ Set the value of the option: Balance target_values.
+        """ Set the value of the option: Noise percentage
 
         Parameters
         ----------

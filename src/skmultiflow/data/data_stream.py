@@ -392,7 +392,7 @@ class DataStream(Stream):
 
     def get_data_info(self):
         if self.task_type == self._CLASSIFICATION:
-            return "{} target(s), {} target_values".format(self.n_targets, self.n_classes)
+            return "{} target(s), {} classes".format(self.n_targets, self.n_classes)
         elif self.task_type == self._REGRESSION:
             return "{} target(s)".format(self.n_targets)
 

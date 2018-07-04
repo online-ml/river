@@ -93,7 +93,7 @@ class NaiveBayes(StreamModel):
         """ predict_proba
         
         Predicts the probability of each sample belonging to each one of the 
-        known target_values.
+        known classes.
         
         Parameters
         ----------

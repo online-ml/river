@@ -27,7 +27,7 @@ class AGRAWALGenerator(Stream):
         by `np.random`.
 
     balance_classes: bool (Default: False)
-        Whether to balance target_values or not. If balanced, the class
+        Whether to balance classes or not. If balanced, the class
         distribution will converge to a uniform distribution.
 
     perturbation: float (Default: 0.0)

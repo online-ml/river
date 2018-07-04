@@ -236,7 +236,7 @@ class KNN(StreamModel):
         numpy.ndarray
             An array of shape (n_samples, n_features), in which each outer entry is 
             associated with the X entry of the same index. And where the list in 
-            index [i] contains len(self.target_values) elements, each of which represents
+            index [i] contains len(self.target_value) elements, each of which represents
             the probability that the i-th sample of X belongs to a certain label.
          
         """

@@ -94,18 +94,18 @@ class Stream(BaseObject, metaclass=ABCMeta):
 
     @property
     def n_targets(self):
-        """ Retrieve the number of target_values
+        """ Retrieve the number of targets
 
         Returns
         -------
         int
-            the number of target_values in the stream.
+            the number of targets in the stream.
         """
         return self._target_idx
 
     @n_targets.setter
     def n_targets(self, n_targets):
-        """ Set the number of target_values.
+        """ Set the number of targets
 
         Parameters
         ----------
@@ -157,18 +157,18 @@ class Stream(BaseObject, metaclass=ABCMeta):
 
     @property
     def target_names(self):
-        """ Retrieve the names of the target_values.
+        """ Retrieve the names of the targets
 
         Returns
         -------
         list
-            the names of the target_values in the stream.
+            the names of the targets in the stream.
         """
         return self._target_names
 
     @target_names.setter
     def target_names(self, target_names):
-        """ Set the names of the target_values in the stream.
+        """ Set the names of the targets in the stream.
 
         Parameters
         ----------

@@ -71,7 +71,7 @@ class SAMKNN(StreamModel):
     the algorithm's computations. When invoking the library's functions it's important 
     to pass the right argument type. Although most of this framework's functionality
     will work with python standard types, the C++ library will work with 8-bit labels, 
-    which is already done by the SAMKNN class, but may be absent in custom target_values that
+    which is already done by the SAMKNN class, but may be absent in custom classes that
     use SAMKNN static methods, or other custom functions that use the C++ library.
 
     References

@@ -191,7 +191,7 @@ class HoeffdingTree(StreamModel):
             Returns
             -------
             boolean
-                True if observed number of target_values is less than 2, False otherwise.
+                True if observed number of classes is less than 2, False otherwise.
 
             """
             count = 0
@@ -219,7 +219,7 @@ class HoeffdingTree(StreamModel):
             Returns
             -------
             int
-                A small value indicates that the node has seen more samples of a given class than the other target_values.
+                A small value indicates that the node has seen more samples of a given class than the other classes.
 
             """
             total_seen = sum(self._observed_class_distribution.values())
@@ -704,7 +704,7 @@ class HoeffdingTree(StreamModel):
 
             """
             if self._observed_class_distribution == {}:
-                # All target_values equal, default to class 0
+                # All classes equal, default to class 0
                 if 0 == y:
                     self._mc_correct_weight += weight
             elif max(self._observed_class_distribution, key=self._observed_class_distribution.get) == y:
@@ -989,7 +989,7 @@ class HoeffdingTree(StreamModel):
             Instance attributes.
         y: array_like
             Classes (targets) for all samples in X.
-        target_values: Not used.
+        classes: Not used.
         weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
 
@@ -1079,7 +1079,7 @@ class HoeffdingTree(StreamModel):
         for i in range(r):
             votes = self.get_votes_for_instance(X[i]).copy()
             if votes == {}:
-                # Tree is empty, all target_values equal, default to zero
+                # Tree is empty, all classes equal, default to zero
                 predictions.append([0])
             else:
                 if sum(votes.values()) != 0:
@@ -1171,7 +1171,7 @@ class HoeffdingTree(StreamModel):
         :math:`\epsilon`: Hoeffding bound.
 
         :math:`R`: Range of a random variable. For a probability the range is 1, and for an information gain the range
-        is log *c*, where *c* is the number of target_values.
+        is log *c*, where *c* is the number of classes.
 
         :math:`\delta`: Confidence. 1 minus the desired probability of choosing the correct attribute at any given node.
 
