@@ -210,7 +210,7 @@ class ARFHoeffdingTree(HoeffdingTree):
 
             """
             if self._observed_class_distribution == {}:
-                # All target_values equal, default to class 0
+                # All classes equal, default to class 0
                 if 0 == y:
                     self._mc_correct_weight += weight
             elif max(self._observed_class_distribution, key=self._observed_class_distribution.get) == y:

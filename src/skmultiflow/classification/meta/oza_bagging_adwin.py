@@ -31,7 +31,7 @@ class OzaBaggingAdwin(StreamModel):
     NotImplementedError: A few of the functions described here are not 
     implemented since they have no application in this context.
     
-    ValueError: A ValueError is raised if the 'target_values' parameter is
+    ValueError: A ValueError is raised if the 'classes' parameter is
     not passed in the first partial_fit call.
     
     Notes
@@ -60,7 +60,7 @@ class OzaBaggingAdwin(StreamModel):
     >>> corrects = 0
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
-    >>> clf = clf.partial_fit(X, y, target_values=stream.get_targets())
+    >>> clf = clf.partial_fit(X, y, classes=stream.get_targets())
     >>> for i in range(2000):
     ...     X, y = stream.next_sample()
     ...     pred = clf.predict(X)
@@ -125,7 +125,7 @@ class OzaBaggingAdwin(StreamModel):
             An array-like of all the class labels for the samples in X.
 
         classes: list 
-            List of all existing target_values. This is an optional parameter, except
+            List of all existing classes. This is an optional parameter, except
             for the first partial_fit call, when it becomes obligatory.
 
         weight: Array-like
@@ -133,9 +133,9 @@ class OzaBaggingAdwin(StreamModel):
 
         Raises
         ------
-        ValueError: A ValueError is raised if the 'target_values' parameter is not
+        ValueError: A ValueError is raised if the 'classes' parameter is not
         passed in the first partial_fit call, or if they are passed in further 
-        calls but differ from the initial target_values list passed.
+        calls but differ from the initial classes list passed.
 
         Returns
         _______
@@ -146,7 +146,7 @@ class OzaBaggingAdwin(StreamModel):
         r, c = get_dimensions(X)
         if self.classes is None:
             if classes is None:
-                raise ValueError("The first partial_fit call should pass all the target_values.")
+                raise ValueError("The first partial_fit call should pass all the classes.")
             else:
                 self.classes = classes
 
@@ -155,7 +155,7 @@ class OzaBaggingAdwin(StreamModel):
                 pass
             else:
                 raise ValueError(
-                    "The target_values passed to the partial_fit function differ from those passed in an earlier moment.")
+                    "The classes passed to the partial_fit function differ from those passed in an earlier moment.")
 
         self.__adjust_ensemble_size()
         change_detected = False
@@ -232,7 +232,7 @@ class OzaBaggingAdwin(StreamModel):
         """ predict_proba
         
         Predicts the probability of each sample belonging to each one of the 
-        known target_values.
+        known classes.
         
         Parameters
         ----------
@@ -241,7 +241,7 @@ class OzaBaggingAdwin(StreamModel):
         
         Raises
         ------
-        ValueError: A ValueError is raised if the number of target_values in the h
+        ValueError: A ValueError is raised if the number of classes in the h
         learner differs from that of the ensemble learner.
         
         Returns
@@ -260,7 +260,7 @@ class OzaBaggingAdwin(StreamModel):
                 partial_probs = self.ensemble[i].predict_proba(X)
                 if len(partial_probs[0]) != len(self.classes):
                     raise ValueError(
-                        "The number of target_values is different in the bagging algorithm and in the chosen learning algorithm.")
+                        "The number of classes is different in the bagging algorithm and in the chosen learning algorithm.")
 
                 if len(probs) < 1:
                     for n in range(r):

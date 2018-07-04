@@ -6,7 +6,7 @@ from skmultiflow.core.utils.validation import check_random_state
 class WaveformGenerator(Stream):
     """ WaveformGenerator
 
-    Generates instances with 21 numeric attributes and 3 target_values, based
+    Generates instances with 21 numeric attributes and 3 classes, based
     on a random differentiation of some base waveforms. Supports noise 
     addition, but in this case the generator will have 40 attribute 
     instances

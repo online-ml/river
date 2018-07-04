@@ -26,7 +26,7 @@ def test_file_stream(test_path, package_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_data_info() == 'sea_stream.csv - 1 target(s), 2 target_values'
+    assert stream.get_data_info() == 'sea_stream.csv - 1 target(s), 2 classes'
 
     assert stream.has_more_samples() is True
 

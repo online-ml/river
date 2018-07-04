@@ -29,7 +29,7 @@ class MIXEDGenerator(Stream):
         by `np.random`.
 
     balance_classes: bool (Default: False)
-        Whether to balance target_values or not. If balanced, the class distribution
+        Whether to balance classes or not. If balanced, the class distribution
         will converge to a uniform distribution.
 
     References
@@ -121,18 +121,18 @@ class MIXEDGenerator(Stream):
 
     @property
     def balance_classes(self):
-        """ Retrieve the value of the option: Balance target_values
+        """ Retrieve the value of the option: Balance classes
 
         Returns
         -------
         Boolean
-            True is the target_values are balanced
+            True is the classes are balanced
         """
         return self._balance_classes
 
     @balance_classes.setter
     def balance_classes(self, balance_classes):
-        """ Set the value of the option: Balance target_values.
+        """ Set the value of the option: Balance classes.
 
         Parameters
         ----------
