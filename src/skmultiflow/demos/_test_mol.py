@@ -38,7 +38,7 @@ def demo():
     logging.info('Pre training on %s samples', str(pretrain_size))
     X, y = stream.next_sample(pretrain_size)
     # classifier.fit(X, y)
-    pipe.partial_fit(X, y, classes=stream.get_targets())
+    pipe.partial_fit(X, y, classes=stream.target_values)
     count = 0
     true_labels = []
     predicts = []

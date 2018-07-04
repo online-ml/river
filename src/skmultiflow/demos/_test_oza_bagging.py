@@ -29,7 +29,7 @@ def demo():
     first = True
     if train_size > 0:
         X, y = stream.next_sample(train_size)
-        clf.partial_fit(X, y, classes=stream.get_targets())
+        clf.partial_fit(X, y, classes=stream.target_values)
         first = False
 
     while sample_count < max_samples:
@@ -39,7 +39,7 @@ def demo():
         my_pred = clf.predict(X)
 
         if first:
-            clf.partial_fit(X, y, classes=stream.get_targets())
+            clf.partial_fit(X, y, classes=stream.target_values)
             first = False
         else:
             clf.partial_fit(X, y)

@@ -19,7 +19,7 @@ def demo():
     """
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
-    stream = SEAGenerator(1, noise_percentage=6.7)
+    stream = SEAGenerator(1, noise_percentage=0.067)
     stream.prepare_for_use()
     clf = LeverageBagging(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=1)
     sample_count = 0
@@ -29,7 +29,7 @@ def demo():
     first = True
     if train_size > 0:
         X, y = stream.next_sample(train_size)
-        clf.partial_fit(X, y, classes=stream.get_targets())
+        clf.partial_fit(X, y, classes=stream.target_values)
         first = False
 
     logging.info('%s%%', 0.0)
@@ -39,7 +39,7 @@ def demo():
         X, y = stream.next_sample(2)
         my_pred = clf.predict(X)
         if first:
-            clf.partial_fit(X, y, classes=stream.get_targets())
+            clf.partial_fit(X, y, classes=stream.target_values)
             first = False
         else:
             clf.partial_fit(X, y)
