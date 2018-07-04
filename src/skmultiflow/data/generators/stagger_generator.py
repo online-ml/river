@@ -91,7 +91,7 @@ class STAGGERGenerator(Stream):
         self.n_features = self.n_cat_features
         self.n_classes = 2
         self.n_targets = 1
-        self.sample_random = None
+        self.random_state = None
         self.next_class_should_be_zero = False
         self.name = "Stagger Generator"
 
@@ -162,7 +162,7 @@ class STAGGERGenerator(Stream):
         Should be called before generating the samples.
 
         """
-        self.sample_random = check_random_state(self._original_random_state)
+        self.random_state = check_random_state(self._original_random_state)
         self.next_class_should_be_zero = False
         self.sample_idx = 0
 
@@ -200,9 +200,9 @@ class STAGGERGenerator(Stream):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                size = self.sample_random.randint(2)
-                color = self.sample_random.randint(2)
-                shape = self.sample_random.randint(2)
+                size = self.random_state.randint(2)
+                color = self.random_state.randint(2)
+                shape = self.random_state.randint(2)
 
                 group = self._classification_functions[self.classification_function_idx](size, color, shape)
 
@@ -229,9 +229,9 @@ class STAGGERGenerator(Stream):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self.sample_random.randint(3)
+        new_function = self.random_state.randint(3)
         while new_function == self.classification_function_idx:
-            new_function = self.sample_random.randint(3)
+            new_function = self.random_state.randint(3)
         self.classification_function_idx = new_function
 
     @staticmethod
