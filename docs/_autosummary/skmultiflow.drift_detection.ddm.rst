@@ -1,7 +1,7 @@
-skmultiflow.data.dataset\_stream
+skmultiflow.drift\_detection.ddm
 ================================
 
-.. automodule:: skmultiflow.data.dataset_stream
+.. automodule:: skmultiflow.drift_detection.ddm
 
    
    
@@ -13,7 +13,7 @@ skmultiflow.data.dataset\_stream
 
    .. autosummary::
    
-      DatasetStream
+      DDM
    
    
 

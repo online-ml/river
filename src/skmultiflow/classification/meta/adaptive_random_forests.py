@@ -1,8 +1,8 @@
 from copy import deepcopy
 from skmultiflow.core.base_object import BaseObject
-from skmultiflow.classification.core.driftdetection.base_drift_detector import BaseDriftDetector
+from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.classification.trees.hoeffding_tree import *
-from skmultiflow.classification.core.driftdetection.adwin import ADWIN
+from skmultiflow.drift_detection.adwin import ADWIN
 from skmultiflow.classification.trees.arf_hoeffding_tree import ARFHoeffdingTree
 from skmultiflow.evaluation.measure_collection import ClassificationMeasurements
 from skmultiflow.core.utils.validation import check_random_state, check_weights

@@ -9,6 +9,7 @@ Subpackages
     skmultiflow.classification
     skmultiflow.core
     skmultiflow.data
+    skmultiflow.drift_detection
     skmultiflow.evaluation
     skmultiflow.options
     skmultiflow.transform
