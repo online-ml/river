@@ -88,9 +88,8 @@ class ConceptDriftStream(Stream):
     def next_sample(self, batch_size=1):
 
         """ next_sample
-        An instance is generated based on the parameters passed. If noise
-        is included the total number of attributes will be 24, if it's not
-        included there will be 7 attributes.
+        An instance is generated based on the parameters passed.
+
         Parameters
         ----------
         batch_size: int
