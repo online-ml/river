@@ -16,9 +16,11 @@ Submodules
 
 .. toctree::
 
+   skmultiflow.classification.classifier_chains
    skmultiflow.classification.multi_output_learner
    skmultiflow.classification.naive_bayes
    skmultiflow.classification.perceptron
+   skmultiflow.classification.regressor_chains
 
 Module contents
 ---------------

@@ -30,7 +30,7 @@ def get_dimensions(X):
     return r, c
 
 
-def normalize_values_in_dict(dictionary, factor=None):
+def normalize_values_in_dict(dictionary, factor=None, inplace=True):
     """ Normalize the values in a dictionary using the given factor.
     For each element in the dictionary, applies ``value/factor``.
 
@@ -40,7 +40,8 @@ def normalize_values_in_dict(dictionary, factor=None):
         Dictionary to normalize.
     factor: float, optional (default=None)
         Normalization factor value. If not set, use the sum of values.
-
+    inplace : bool, default True
+        if True, perform operation in-place
 
     """
     if factor is None:
@@ -49,8 +50,12 @@ def normalize_values_in_dict(dictionary, factor=None):
         raise ValueError('Can not normalize, normalization factor is zero')
     if math.isnan(factor):
         raise ValueError('Can not normalize, normalization factor is NaN')
+    if not inplace:
+        dictionary = dictionary.copy()
     for key, value in dictionary.items():  # loop over the keys, values in the dictionary
         dictionary[key] = value / factor
+
+    return dictionary
 
 
 def get_max_value_key(dictionary):

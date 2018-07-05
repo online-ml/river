@@ -1,7 +1,7 @@
-skmultiflow.data.dataset\_stream module
+skmultiflow.drift\_detection.ddm module
 =======================================
 
-.. automodule:: skmultiflow.data.dataset_stream
+.. automodule:: skmultiflow.drift_detection.ddm
     :members:
     :undoc-members:
     :show-inheritance:
