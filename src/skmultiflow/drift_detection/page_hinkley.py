@@ -34,7 +34,7 @@ class PageHinkley(BaseDriftDetector):
     >>> # Changing the data concept from index 999 to 2000
     >>> for i in range(999, 2000):
     ...     data_stream[i] = np.random.randint(4, high=8)
-    >>> # Adding stream elements to ADWIN and verifying if drift occurred
+    >>> # Adding stream elements to the PageHinkley drift detector and verifying if drift occurred
     >>> for i in range(2000):
     ...     ph.add_element(data_stream[i])
     ...     if ph.detected_change():
