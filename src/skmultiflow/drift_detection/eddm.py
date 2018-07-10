@@ -44,7 +44,7 @@ class EDDM(BaseDriftDetector):
     >>> # increase in error rate
     >>> for i in range(999, 1500):
     ...     data_stream[i] = 0
-    >>> # Adding stream elements to ADWIN and verifying if drift occurred
+    >>> # Adding stream elements to EDDM and verifying if drift occurred
     >>> for i in range(2000):
     ...     eddm.add_element(data_stream[i])
     ...     if eddm.detected_warning_zone():
