@@ -194,7 +194,7 @@ class MultiOutputLearner(StreamModel):
         
         """
         N,D = X.shape
-        P = zeros((N,self.L))
+        P = np.zeros((N,self.L))
         for j in range(self.L):
             P[:,j] = self.h[j].predict_proba(X)[:,1]
         return P

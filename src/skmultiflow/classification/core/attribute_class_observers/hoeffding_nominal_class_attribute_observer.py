@@ -110,7 +110,7 @@ class HoeffdingNominalAttributeClassObserver(AttributeClassObserver):
         self._sum_rest = self._sum_total - self._sum_one
         self._sum_sq_one = current_node._statistics.get(2)
         self._sum_sq_rest = self._sum_sq_total - self._sum_sq_one
-        self._count_one= current_node._statiàystics.get(0)
+        self._count_one= current_node._statistics.get(0)
         self._count_rest = self._count - self._count_one
 
         one_dict = {self._count_one, self._sum_one, self._sum_sq_one}
