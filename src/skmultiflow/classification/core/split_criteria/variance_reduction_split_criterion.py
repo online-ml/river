@@ -2,6 +2,10 @@ from skmultiflow.classification.core.split_criteria.split_criterion import Split
 import numpy as np
 
 class VarianceReductionSplitCriterion(SplitCriterion):
+
+    def __init__(self):
+        super().__init__()
+
     def get_merit_of_split(self, pre_split_dist, post_split_dist):
         SDR = 0.0
         N = pre_split_dist[0]
@@ -18,6 +22,7 @@ class VarianceReductionSplitCriterion(SplitCriterion):
                 Ni = post_split_dist[i][0]
                 SDR -= Ni/N * self.compute_SD(post_split_dist[i])
         return SDR
+
     @staticmethod
     def compute_SD(dist):
 

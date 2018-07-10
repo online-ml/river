@@ -17,6 +17,17 @@ NAIVE_BAYES_ADAPTIVE = 'nba'
 class LcHt(HoeffdingTree):
     """ Label Combination Hoeffding tree
 
+    Label combination transforms the problem from multilabel to multiclass.
+    For each unique combination of labels it assigns a class and procedes
+    with training the hoeffding tree normaly.
+
+    The transformation is done by changing the label set which could be seen
+    as a binary number to an int which will represent the class, and after
+    the prediction the int is converted back to a bnary number which is the
+    predicted labelset.
+
+    The number of labels need to be provided for the transformation to work.
+
     Parameters
     ----------
     max_byte_size: int (default=33554432)
