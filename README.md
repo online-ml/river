@@ -11,12 +11,6 @@ Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourcef
 * [Documentation](https://scikit-multiflow.github.io/scikit-multiflow/)
 * [Users Group](https://groups.google.com/forum/#!forum/scikit-multiflow-users)
 
-### Project leaders
-
-* Jacob MONTIEL
-* Jesse READ
-* Albert BIFET
-
 ### matplotlib backend considerations
 * You may need to change your matplotlib backend, because not all backends work
 in all machines.
@@ -50,3 +44,17 @@ in beta it can display plots with some caveats. If you use JupyterLab then the c
 
 ### License
 * 3-Clause BSD License
+
+### Citing `scikit-multiflow`
+
+If you want to cite `scikit-multiflow` in a publication, please use the following Bibtex entry:
+```bibtex
+@article{skmultiflow,
+    author  = {Montiel, Jacob and Read, Jesse and Bifet, Albert and Abdessalem, Talel },
+    title   = {{Scikit-Multiflow: A Multi-output Streaming Framework}},
+    url     = {https://github.com/scikit-multiflow/scikit-multiflow},
+    journal = {CoRR},
+    volume  = {abs/1807.04662},
+    year    = {2018}
+}
+```
