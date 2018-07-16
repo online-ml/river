@@ -251,8 +251,8 @@ class EvaluatePrequential(StreamEvaluator):
                         for i in range(self.n_models):
                             self.model[i].partial_fit(X, y)
 
-                    if ((self.global_sample_count % self.n_wait) == 0 |
-                            (self.global_sample_count >= self.max_samples) |
+                    if ((self.global_sample_count % self.n_wait) == 0 or
+                            (self.global_sample_count >= self.max_samples) or
                             (self.global_sample_count / self.n_wait > update_count + 1)):
                         if prediction is not None:
                             self._update_metrics()
