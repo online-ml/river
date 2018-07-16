@@ -1,6 +1,6 @@
 import numpy as np
 from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.classification.trees.br_hoeffding_tree import BrHoeffdingTree
+from skmultiflow.classification.multi_output_learner import MultiOutputLearner
 from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
 import os
 
@@ -9,7 +9,7 @@ def test_br_hoeffding_tree(test_path):
 
     stream.prepare_for_use()
 
-    learner = BrHoeffdingTree()
+    learner = MultiOutputLearner(h=HoeffdingTree())
 
     cnt = 0
     max_samples = 5000
