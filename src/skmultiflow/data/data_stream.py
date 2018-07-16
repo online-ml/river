@@ -273,7 +273,7 @@ class DataStream(Stream):
                                  'exceeds n_features {}'.format(self.cat_features_idx, self.n_features))
         self.n_num_features = self.n_features - self.n_cat_features
 
-        if self.y.dtype == np.integer:
+        if np.issubdtype(self.y.dtype, np.integer):
             self.task_type = self._CLASSIFICATION
             self.n_classes = len(np.unique(self.y))
         else:
@@ -308,7 +308,7 @@ class DataStream(Stream):
                                  'exceeds n_features {}'.format(self.cat_features_idx, self.n_features))
         self.n_num_features = self.n_features - self.n_cat_features
 
-        if self.y.dtype == np.integer:
+        if np.issubdtype(self.y.dtype, np.integer):
             self.task_type = self._CLASSIFICATION
             self.n_classes = len(np.unique(self.y))
         else:
