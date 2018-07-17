@@ -34,7 +34,7 @@ class FileStream(Stream):
     >>> # Imports
     >>> from skmultiflow.data.file_stream import FileStream
     >>> # Setup the stream
-    >>> stream = FileStream('skmultiflow/datasets/sea_stream.csv')
+    >>> stream = FileStream('skmultiflow/data/datasets/sea_stream.csv')
     >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
@@ -210,7 +210,7 @@ class FileStream(Stream):
                 self.task_type = self._REGRESSION
             self.target_values = self.get_target_values()
         except IOError:
-            print("{} file reading failed.".format(self.filepath))
+            raise IOError("{} file reading failed.".format(self.filepath))
         pass
 
     def restart(self):

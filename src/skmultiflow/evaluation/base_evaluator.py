@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.data.base_stream import Stream
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
-from skmultiflow.evaluation.measure_collection import WindowClassificationMeasurements, ClassificationMeasurements, \
+from skmultiflow.metrics import WindowClassificationMeasurements, ClassificationMeasurements, \
     MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
 
 

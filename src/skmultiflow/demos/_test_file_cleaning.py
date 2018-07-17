@@ -1,5 +1,5 @@
 from skmultiflow.demos import _test_prequential
-from skmultiflow.core.utils.file_scripts import clean_header
+from skmultiflow.utils.file_scripts import clean_header
 import logging
 
 
@@ -23,4 +23,4 @@ def demo(output_file='testlog.csv'):
     logging.info('File successfully cleaned')
 
 if __name__ == '__main__':
-    demo('log2.csv')
+    demo('test_file_cleaning.csv')

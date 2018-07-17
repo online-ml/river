@@ -1,13 +1,7 @@
-from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
-from skmultiflow.classification.lazy.knn import KNN
-from skmultiflow.classification.meta.oza_bagging_adwin import OzaBaggingAdwin
-from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
-from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.sea_generator import SEAGenerator
-from skmultiflow.data.generators.waveform_generator import WaveformGenerator
-from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+from skmultiflow.trees import HoeffdingTree
+from skmultiflow.meta import LeverageBagging
+from skmultiflow.data import WaveformGenerator
+from skmultiflow.evaluation import EvaluatePrequential
 
 
 def demo(output_file=None, instances=40000):
@@ -26,7 +20,7 @@ def demo(output_file=None, instances=40000):
     
     """
     # Setup the File Stream
-    # stream = FileStream("../datasets/sea_big.csv", -1, 1)
+    # stream = FileStream("../data/datasets/sea_big.csv", -1, 1)
     #stream = SEAGenerator(classification_function=2, noise_percentage=0.0)
     #stream.prepare_for_use()
     stream = WaveformGenerator()
@@ -48,4 +42,4 @@ def demo(output_file=None, instances=40000):
 
 
 if __name__ == '__main__':
-    demo('log1.csv', 20000)
+    demo('test_prequential_bagging.csv', 20000)

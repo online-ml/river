@@ -6,13 +6,19 @@ Subpackages
 
 .. toctree::
 
-    skmultiflow.classification
+    skmultiflow.bayes
     skmultiflow.core
     skmultiflow.data
     skmultiflow.drift_detection
     skmultiflow.evaluation
+    skmultiflow.lazy
+    skmultiflow.meta
+    skmultiflow.metrics
+    skmultiflow.neural_networks
     skmultiflow.options
     skmultiflow.transform
+    skmultiflow.trees
+    skmultiflow.utils
     skmultiflow.visualization
 
 Module contents

@@ -1,9 +1,7 @@
 import warnings, logging
-import numpy as np
-from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
-from skmultiflow.classification.lazy.knn import KNN
-from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
-from skmultiflow.data.generators.sea_generator import SEAGenerator
+from skmultiflow.meta import LeverageBagging
+from skmultiflow.lazy import KNN
+from skmultiflow.data import SEAGenerator
 
 
 def demo():
@@ -53,6 +51,7 @@ def demo():
     print(str(sample_count) + ' samples analyzed.')
     print('My performance: ' + str(correctly_classified / sample_count))
     print(clf.get_info())
+
 
 if __name__ == '__main__':
     demo()

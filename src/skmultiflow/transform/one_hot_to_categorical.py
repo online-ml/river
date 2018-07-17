@@ -1,6 +1,6 @@
 import numpy as np
 from skmultiflow.transform.base_transform import StreamTransform
-from skmultiflow.core.utils.utils import get_dimensions
+from skmultiflow.utils.utils import get_dimensions
 
 
 class OneHotToCategorical(StreamTransform):

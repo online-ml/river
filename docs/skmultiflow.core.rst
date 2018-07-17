@@ -1,14 +1,6 @@
 skmultiflow.core package
 ========================
 
-Subpackages
------------
-
-.. toctree::
-
-    skmultiflow.core.instances
-    skmultiflow.core.utils
-
 Submodules
 ----------
 
@@ -16,7 +8,7 @@ Submodules
 
    skmultiflow.core.base
    skmultiflow.core.base_object
-   skmultiflow.core.gaussian_estimator
+   skmultiflow.core.instance_header
    skmultiflow.core.pipeline
 
 Module contents

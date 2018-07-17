@@ -1,5 +1,0 @@
-## Module
-Visualization tools
-
-### Categories
-...

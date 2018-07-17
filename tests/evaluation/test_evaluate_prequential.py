@@ -1,9 +1,9 @@
 import os
 import filecmp
 import difflib
-from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
-from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+from skmultiflow.data import RandomTreeGenerator
+from skmultiflow.trees import HoeffdingTree
+from skmultiflow.evaluation import EvaluatePrequential
 
 
 def test_evaluate_prequential_classifier(tmpdir, test_path):

@@ -1,10 +1,10 @@
 import logging
 from timeit import default_timer as timer
 
-from skmultiflow.classification.multi_output_learner import MultiOutputLearner
-from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.evaluation.metrics.metrics import *
+from skmultiflow.meta import MultiOutputLearner
+from skmultiflow.core import Pipeline
+from skmultiflow.data import FileStream
+from skmultiflow.metrics import *
 from sklearn.linear_model.perceptron import Perceptron
 
 
@@ -23,7 +23,7 @@ def demo():
     logging.basicConfig(format='%(message)s', level=logging.INFO)
 
     # Setup the file stream
-    stream = FileStream("../datasets/music.csv", 0, 6)
+    stream = FileStream("../data/datasets/music.csv", 0, 6)
     stream.prepare_for_use()
 
     # Setup the classifier, by default it uses Logistic Regression
@@ -38,7 +38,9 @@ def demo():
     logging.info('Pre training on %s samples', str(pretrain_size))
     X, y = stream.next_sample(pretrain_size)
     # classifier.fit(X, y)
-    pipe.partial_fit(X, y, classes=stream.target_values)
+    classes = stream.target_values
+    classes_flat = list(set([item for sublist in classes for item in sublist]))
+    pipe.partial_fit(X, y, classes=classes_flat)
     count = 0
     true_labels = []
     predicts = []

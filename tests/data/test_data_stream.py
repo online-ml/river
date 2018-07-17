@@ -5,7 +5,7 @@ from skmultiflow.data.data_stream import DataStream
 
 
 def test_data_stream(test_path, package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/datasets/sea_stream.csv')
+    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
     raw_data = pd.read_csv(test_file)
     stream = DataStream(raw_data)
 
@@ -38,7 +38,7 @@ def test_data_stream(test_path, package_path):
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    test_file = os.path.join(test_path, 'sea_stream.npz')
+    test_file = os.path.join(test_path, 'sea_stream_file.npz')
     data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']
@@ -62,7 +62,7 @@ def test_data_stream(test_path, package_path):
 
 
 def test_data_stream_X_y(test_path, package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/datasets/sea_stream.csv')
+    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
     raw_data = pd.read_csv(test_file)
     y = raw_data.iloc[:, -1:]
     X = raw_data.iloc[:, :-1]
@@ -97,7 +97,7 @@ def test_data_stream_X_y(test_path, package_path):
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    test_file = os.path.join(test_path, 'sea_stream.npz')
+    test_file = os.path.join(test_path, 'sea_stream_file.npz')
     data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']

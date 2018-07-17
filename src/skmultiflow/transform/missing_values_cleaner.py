@@ -1,8 +1,8 @@
 import numpy as np
 from scipy import stats
 from skmultiflow.transform.base_transform import StreamTransform
-from skmultiflow.core.utils.data_structures import FastBuffer
-from skmultiflow.core.utils.utils import get_dimensions
+from skmultiflow.utils.data_structures import FastBuffer
+from skmultiflow.utils.utils import get_dimensions
 
 
 class MissingValuesCleaner(StreamTransform):
@@ -44,7 +44,7 @@ class MissingValuesCleaner(StreamTransform):
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.transform.missing_values_cleaner import MissingValuesCleaner
     >>> # Setting up a stream
-    >>> stream = FileStream('skmultiflow/datasets/covtype.csv', -1, 1)
+    >>> stream = FileStream('skmultiflow/data/datasets/covtype.csv', -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setting up the filter to substitute values -47 by the median of the 
     >>> # last 10 samples

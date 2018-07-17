@@ -1,8 +1,7 @@
-from skmultiflow.data.generators.waveform_generator import WaveformGenerator
-from sklearn.linear_model.stochastic_gradient import SGDClassifier
-from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
-from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+from skmultiflow.data import WaveformGenerator
+from sklearn.linear_model import SGDClassifier
+from skmultiflow.evaluation import EvaluateHoldout
+from skmultiflow.lazy import KNNAdwin
 
 
 def demo(output_file=None, instances=40000):
@@ -22,7 +21,7 @@ def demo(output_file=None, instances=40000):
     
     """
     # Setup the File Stream
-    # stream = FileStream("../datasets/covtype.csv", -1, 1)
+    # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
     stream = WaveformGenerator()
     stream.prepare_for_use()
 
@@ -45,4 +44,4 @@ def demo(output_file=None, instances=40000):
 
 
 if __name__ == '__main__':
-    demo(output_file='teste_2.csv', instances=100000)
+    demo(output_file='test_comparison_holdout.csv', instances=50000)

@@ -1,13 +1,6 @@
-from sklearn.linear_model.stochastic_gradient import SGDClassifier, SGDRegressor
 from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-from sklearn.linear_model.perceptron import Perceptron
-from skmultiflow.classification.perceptron import PerceptronMask
-from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
-from skmultiflow.classification.lazy.knn import KNN
-from skmultiflow.classification.meta.oza_bagging_adwin import OzaBaggingAdwin
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
 
@@ -36,7 +29,7 @@ def demo(output_file=None, instances=40000):
     
     """
     # Setup the File Stream
-    stream = FileStream("../datasets/sea_big.csv", -1, 1)
+    stream = FileStream("../data/datasets/sea_big.csv", -1, 1)
     # stream = WaveformGenerator()
     stream.prepare_for_use()
 
@@ -61,4 +54,4 @@ def demo(output_file=None, instances=40000):
 
 
 if __name__ == '__main__':
-    demo('log_test_prequential.csv', 20000)
+    demo('test_prequential.csv', 20000)

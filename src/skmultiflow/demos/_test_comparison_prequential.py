@@ -1,11 +1,9 @@
-from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.classification.lazy.knn_adwin import KNNAdwin, KNN
-from sklearn.linear_model.stochastic_gradient import SGDClassifier
-from skmultiflow.data.generators.sea_generator import SEAGenerator
-from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
-from skmultiflow.classification.meta.leverage_bagging import LeverageBagging
+from skmultiflow.evaluation import EvaluatePrequential
+from skmultiflow.data import FileStream
+from skmultiflow.lazy import KNNAdwin
+from sklearn.linear_model import SGDClassifier
+from skmultiflow.core import Pipeline
+from skmultiflow.transform import OneHotToCategorical
 
 
 def demo(instances=2000):
@@ -21,7 +19,7 @@ def demo(instances=2000):
      
     """
     # Stream setup
-    stream = FileStream("../datasets/covtype.csv", -1, 1)
+    stream = FileStream("../data/datasets/covtype.csv", -1, 1)
     # stream = SEAGenerator(classification_function=2, sample_seed=53432, balance_classes=False)
     stream.prepare_for_use()
     # Setup the classifier
@@ -50,12 +48,13 @@ def demo(instances=2000):
     # pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    evaluator = EvaluatePrequential(pretrain_size=2000, output_file='teste.csv', max_samples=instances, batch_size=1,
-                                    n_wait=200, max_time=1000, show_plot=True, metrics=['performance', 'kappa_t'])
+    evaluator = EvaluatePrequential(pretrain_size=2000, output_file='test_comparison_prequential.csv',
+                                    max_samples=instances, batch_size=1, n_wait=200, max_time=1000, show_plot=True,
+                                    metrics=['performance', 'kappa_t'])
 
     # Evaluate
     evaluator.evaluate(stream=stream, model=classifier)
 
 
 if __name__ == '__main__':
-    demo(instances=1000)
+    demo(instances=10000)

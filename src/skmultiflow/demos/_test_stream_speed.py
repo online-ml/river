@@ -1,9 +1,4 @@
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.random_tree_generator import RandomTreeGenerator
-from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
-from skmultiflow.data.generators.random_rbf_generator import RandomRBFGenerator
-from skmultiflow.data.generators.sea_generator import SEAGenerator
-from skmultiflow.data.generators.waveform_generator import WaveformGenerator
+from skmultiflow.data import RandomRBFGeneratorDrift
 from skmultiflow.evaluation.evaluate_stream_gen_speed import EvaluateStreamGenerationSpeed
 
 
@@ -14,7 +9,7 @@ def demo():
     
     """
     # Setup the stream
-    # stream = FileStream("../datasets/covtype.csv", -1, 1)
+    # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
     stream = RandomRBFGeneratorDrift()
     stream.prepare_for_use()
 
@@ -27,7 +22,7 @@ def demo():
     evaluator = EvaluateStreamGenerationSpeed(100000, float("inf"), None, 5)
 
     # Evaluate
-    evaluator.eval(stream)
+    evaluator.evaluate(stream)
 
 
 if __name__ == '__main__':
