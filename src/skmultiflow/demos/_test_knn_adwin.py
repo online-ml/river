@@ -1,12 +1,10 @@
-import warnings, logging
-from skmultiflow.classification.lazy.knn import KNN
-from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
-from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
-from skmultiflow.core.pipeline import Pipeline
+import logging
+from skmultiflow.lazy import KNNAdwin
+from skmultiflow.data import FileStream
+from skmultiflow.transform import OneHotToCategorical
 from sklearn.neighbors.classification import KNeighborsClassifier
 from timeit import default_timer as timer
+
 
 def demo():
     """ _test_knn_adwin
@@ -21,8 +19,8 @@ def demo():
     """
     start = timer()
     logging.basicConfig(format='%(message)s', level=logging.INFO)
-    #warnings.filterwarnings("ignore", ".*Passing 1d.*")
-    stream = FileStream('../datasets/sea_big.csv', -1, 1)
+    # warnings.filterwarnings("ignore", ".*Passing 1d.*")
+    stream = FileStream('../data/datasets/sea_big.csv', -1, 1)
     # stream = RandomRBFGeneratorDrift(change_speed=41.00, n_centroids=50, model_random_state=32523423,
     #                                  sample_seed=5435, n_classes=2, num_att=10, num_drift_centroids=50)
     stream.prepare_for_use()

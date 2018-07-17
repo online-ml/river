@@ -1,12 +1,7 @@
-from sklearn.linear_model.stochastic_gradient import SGDClassifier, SGDRegressor
-from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-from sklearn.linear_model.perceptron import Perceptron
-from skmultiflow.classification.perceptron import PerceptronMask
-from skmultiflow.classification.multi_output_learner import MultiOutputLearner
+from sklearn.linear_model.stochastic_gradient import SGDClassifier
+from skmultiflow.meta.multi_output_learner import MultiOutputLearner
 from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.multilabel_generator import MultilabelGenerator
-from skmultiflow.data.generators.waveform_generator import WaveformGenerator
+from skmultiflow.data.multilabel_generator import MultilabelGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
 
@@ -26,7 +21,7 @@ def demo(output_file=None, instances=40000):
 
     """
     # Setup the File Stream
-    # stream = FileStream("../datasets/music.csv", 0, 6)
+    # stream = FileStream("../data/datasets/music.csv", 0, 6)
     stream = MultilabelGenerator(n_samples=instances)
     # stream = WaveformGenerator()
     stream.prepare_for_use()
@@ -51,4 +46,4 @@ def demo(output_file=None, instances=40000):
 
 
 if __name__ == '__main__':
-    demo('log_mol1.csv', 50000)
+    demo('test_prequential_mol.csv', 50000)

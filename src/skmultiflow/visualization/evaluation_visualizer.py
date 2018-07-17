@@ -769,7 +769,7 @@ class EvaluationVisualizer(BaseListener):
 
             self.subplot_true_vs_predicts.legend(loc=2, bbox_to_anchor=(1.01, 1.))
 
-        if self._draw_cnt == 4:
+        if self._draw_cnt == 4:  # Refresh rate to mitigate re-drawing overhead for small changes
             plt.subplots_adjust(right=0.72)   # Adjust subplots to include metrics
             self.fig.canvas.draw()
             plt.pause(1e-9)

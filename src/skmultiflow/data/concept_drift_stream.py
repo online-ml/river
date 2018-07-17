@@ -1,7 +1,7 @@
 import numpy as np
 from skmultiflow.data.base_stream import Stream
-from skmultiflow.core.utils.validation import check_random_state
-from skmultiflow.data.generators.agrawal_generator import AGRAWALGenerator
+from skmultiflow.utils import check_random_state
+from skmultiflow.data import AGRAWALGenerator
 
 
 class ConceptDriftStream(Stream):

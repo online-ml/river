@@ -1,8 +1,7 @@
-import numpy as np
-from skmultiflow.classification.lazy.sam_knn import SAMKNN
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-from skmultiflow.core.pipeline import Pipeline
+from skmultiflow.lazy import SAMKNN
+from skmultiflow.data import FileStream
+from skmultiflow.evaluation import EvaluatePrequential
+
 
 def demo(output_file=None, instances=50000):
     """ _test_sam_knn_prequential
@@ -29,7 +28,7 @@ def demo(output_file=None, instances=50000):
 
     """
     # Setup the File Stream
-    stream = FileStream("../datasets/movingSquares.csv", -1, 1)
+    stream = FileStream("../data/datasets/movingSquares.csv", -1, 1)
     # stream = WaveformGenerator()
     stream.prepare_for_use()
 

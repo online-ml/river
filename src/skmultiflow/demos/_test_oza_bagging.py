@@ -1,8 +1,8 @@
-import logging, warnings
-import numpy as np
-from skmultiflow.classification.meta.oza_bagging import OzaBagging
-from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
-from skmultiflow.data.generators.sea_generator import SEAGenerator
+import logging
+import warnings
+from skmultiflow.meta import OzaBagging
+from skmultiflow.lazy import KNNAdwin
+from skmultiflow.data import SEAGenerator
 
 
 def demo():
@@ -18,9 +18,8 @@ def demo():
     """
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
-    stream = SEAGenerator(1, noise_percentage=6.7)
+    stream = SEAGenerator(1, noise_percentage=.067)
     stream.prepare_for_use()
-    #print(stream.get_targets())
     clf = OzaBagging(h=KNNAdwin(k=8,max_window_size=2000,leaf_size=30), ensemble_length=2)
     sample_count = 0
     correctly_classified = 0
@@ -52,6 +51,7 @@ def demo():
 
     print(str(sample_count) + ' samples analyzed.')
     print('My performance: ' + str(correctly_classified / sample_count))
+
 
 if __name__ == '__main__':
     demo()

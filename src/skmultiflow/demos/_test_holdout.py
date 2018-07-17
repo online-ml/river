@@ -1,11 +1,7 @@
-from sklearn.linear_model.stochastic_gradient import SGDClassifier, SGDRegressor
-from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-from sklearn.linear_model.perceptron import Perceptron
-from skmultiflow.classification.perceptron import PerceptronMask
-from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.waveform_generator import WaveformGenerator
-from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
+from sklearn.linear_model import SGDClassifier
+from skmultiflow.core import Pipeline
+from skmultiflow.data import WaveformGenerator
+from skmultiflow.evaluation import EvaluateHoldout
 
 
 def demo(output_file=None, instances=40000):
@@ -26,7 +22,7 @@ def demo(output_file=None, instances=40000):
          
     """
     # Setup the File Stream
-    # stream = FileStream("../datasets/covtype.csv", -1, 1)
+    # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
     stream = WaveformGenerator()
     stream.prepare_for_use()
 
@@ -49,4 +45,4 @@ def demo(output_file=None, instances=40000):
 
 
 if __name__ == '__main__':
-    demo('log1.csv', 400000)
+    demo('test_holdout.csv', 400000)

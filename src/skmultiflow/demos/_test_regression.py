@@ -1,12 +1,7 @@
-from sklearn.linear_model.stochastic_gradient import SGDClassifier, SGDRegressor
-from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-from sklearn.linear_model.perceptron import Perceptron
-from skmultiflow.classification.perceptron import PerceptronMask
+from sklearn.linear_model.stochastic_gradient import SGDRegressor
 from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.waveform_generator import WaveformGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-from skmultiflow.data.generators.regression_generator import RegressionGenerator
+from skmultiflow.data.regression_generator import RegressionGenerator
 
 
 def demo(output_file=None, instances=40000):
@@ -26,7 +21,7 @@ def demo(output_file=None, instances=40000):
 
     """
     # Setup the File Stream
-    # stream = FileStream("../datasets/covtype.csv", -1, 1)
+    # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
     # stream = WaveformGenerator()
     # stream.prepare_for_use()
     stream = RegressionGenerator(n_samples=40000)
@@ -40,12 +35,12 @@ def demo(output_file=None, instances=40000):
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    evaluator = EvaluatePrequential(pretrain_size=1, max_samples=instances, batch_size=1, n_wait=1, max_time=1000,
-                                    output_file=output_file, show_plot=True, metrics=['true_vs_predicts'])
+    evaluator = EvaluatePrequential(pretrain_size=1, max_samples=instances, batch_size=1, n_wait=200, max_time=1000,
+                                    output_file=output_file, show_plot=True, metrics=['mean_square_error'])
 
     # Evaluate
     evaluator.evaluate(stream=stream, model=pipe)
 
 
 if __name__ == '__main__':
-    demo('log1.csv', 40000)
+    demo('test_regression.csv', 40000)

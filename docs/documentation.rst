@@ -18,98 +18,115 @@ Data: :mod:`skmultiflow.data`
    skmultiflow.data.data_stream
    skmultiflow.data.file_stream
 
-.. currentmodule:: skmultiflow
-
 Stream Generators
 -----------------
-
-.. automodule:: skmultiflow.data.generators
-   :no-members:
-   :no-inherited-members:
 
 .. autosummary::
    :toctree: _autosummary
 
-   skmultiflow.data.generators.agrawal_generator
-   skmultiflow.data.generators.hyper_plane_generator
-   skmultiflow.data.generators.led_generator
-   skmultiflow.data.generators.led_generator_drift
-   skmultiflow.data.generators.mixed_generator
-   skmultiflow.data.generators.random_rbf_generator
-   skmultiflow.data.generators.random_rbf_generator_drift
-   skmultiflow.data.generators.random_tree_generator
-   skmultiflow.data.generators.sea_generator
-   skmultiflow.data.generators.sine_generator
-   skmultiflow.data.generators.stagger_generator
-   skmultiflow.data.generators.waveform_generator
-   skmultiflow.data.generators.multilabel_generator
-   skmultiflow.data.generators.regression_generator
+   skmultiflow.data.agrawal_generator
+   skmultiflow.data.hyper_plane_generator
+   skmultiflow.data.led_generator
+   skmultiflow.data.led_generator_drift
+   skmultiflow.data.mixed_generator
+   skmultiflow.data.random_rbf_generator
+   skmultiflow.data.random_rbf_generator_drift
+   skmultiflow.data.random_tree_generator
+   skmultiflow.data.sea_generator
+   skmultiflow.data.sine_generator
+   skmultiflow.data.stagger_generator
+   skmultiflow.data.waveform_generator
+   skmultiflow.data.multilabel_generator
+   skmultiflow.data.regression_generator
 
 .. currentmodule:: skmultiflow
 
-Classification: :mod:`skmultiflow.classification`
+Learning methods
 =================================================
 
-.. automodule:: skmultiflow.classification
+Bayes methods
+----------------
+
+.. automodule:: skmultiflow.bayes
     :no-members:
     :no-inherited-members:
 
 .. autosummary::
    :toctree: _autosummary
 
-   skmultiflow.classification.multi_output_learner
-   skmultiflow.classification.naive_bayes
-   skmultiflow.classification.perceptron
+
+   skmultiflow.bayes.naive_bayes
 
 .. currentmodule:: skmultiflow
 
 Ensemble methods
 ----------------
 
-.. automodule:: skmultiflow.classification.meta
+.. automodule:: skmultiflow.meta
    :no-members:
    :no-inherited-members:
 
 .. autosummary::
    :toctree: _autosummary
 
-   skmultiflow.classification.meta.batch_incremental
-   skmultiflow.classification.meta.oza_bagging
-   skmultiflow.classification.meta.oza_bagging_adwin
-   skmultiflow.classification.meta.leverage_bagging
-   skmultiflow.classification.meta.adaptive_random_forests
+   skmultiflow.meta.batch_incremental
+   skmultiflow.meta.oza_bagging
+   skmultiflow.meta.oza_bagging_adwin
+   skmultiflow.meta.leverage_bagging
+   skmultiflow.meta.adaptive_random_forests
+   skmultiflow.meta.multi_output_learner
+   skmultiflow.meta.classifier_chains
+   skmultiflow.meta.regressor_chains
+
+.. currentmodule:: skmultiflow
+
+Lazy learning methods
+---------------------
+
+.. automodule:: skmultiflow.lazy
+   :no-members:
+   :no-inherited-members:
+
+.. autosummary::
+   :toctree: _autosummary
+
+   skmultiflow.lazy.kdtree
+   skmultiflow.lazy.knn
+   skmultiflow.lazy.knn_adwin
+   skmultiflow.lazy.sam_knn
+
+.. currentmodule:: skmultiflow
+
+Neural Networks
+---------------
+
+.. automodule:: skmultiflow.neural_networks
+    :no-members:
+    :no-inherited-members:
+
+.. autosummary::
+   :toctree: _autosummary
+
+   skmultiflow.neural_networks.perceptron
 
 .. currentmodule:: skmultiflow
 
 Tree methods
 ------------
 
-.. automodule:: skmultiflow.classification.trees
+.. automodule:: skmultiflow.trees
    :no-members:
    :no-inherited-members:
 
 .. autosummary::
    :toctree: _autosummary
 
-   skmultiflow.classification.trees.hoeffding_tree
-   skmultiflow.classification.trees.hoeffding_adaptive_tree
-   skmultiflow.classification.trees.arf_hoeffding_tree
-
-.. currentmodule:: skmultiflow
-
-Lazy learning methods
--------------------------
-
-.. automodule:: skmultiflow.classification.lazy
-   :no-members:
-   :no-inherited-members:
-
-.. autosummary::
-   :toctree: _autosummary
-
-   skmultiflow.classification.lazy.knn
-   skmultiflow.classification.lazy.knn_adwin
-   skmultiflow.classification.lazy.sam_knn
+   skmultiflow.trees.hoeffding_tree
+   skmultiflow.trees.hoeffding_adaptive_tree
+   skmultiflow.trees.arf_hoeffding_tree
+   skmultiflow.trees.lc_hoeffding_tree
+   skmultiflow.trees.regression_hoeffding_tree
+   skmultiflow.trees.regression_hoeffding_adaptive_tree
 
 .. currentmodule:: skmultiflow
 

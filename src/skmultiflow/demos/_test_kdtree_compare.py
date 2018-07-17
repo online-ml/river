@@ -1,11 +1,11 @@
 import warnings
 import numpy as np
 from scipy import spatial
-from skmultiflow.classification.lazy.neighbors.kdtree import KDTree
+from skmultiflow.lazy import KDTree
 from sklearn import neighbors as ng
 from timeit import default_timer as timer
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
+from skmultiflow.data import FileStream
+from skmultiflow.transform import OneHotToCategorical
 
 
 def demo():
@@ -23,7 +23,7 @@ def demo():
     """
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
-    stream = FileStream('../datasets/covtype.csv', -1, 1)
+    stream = FileStream('../data/datasets/covtype.csv', -1, 1)
     stream.prepare_for_use()
     filter = OneHotToCategorical([[10, 11, 12, 13],
                                   [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,

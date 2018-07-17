@@ -72,7 +72,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
-    >>> stream = FileStream("skmultiflow/datasets/covtype.csv", -1, 1)
+    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setup the classifier
     >>> classifier = PassiveAggressiveClassifier()
@@ -87,12 +87,12 @@ class EvaluatePrequential(StreamEvaluator):
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluatePrequential
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+    >>> from skmultiflow.lazy.knn_adwin import KNNAdwin
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
-    >>> stream = FileStream("skmultiflow/datasets/covtype.csv", -1, 1)
+    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setup the classifiers
     >>> clf_one = PassiveAggressiveClassifier()

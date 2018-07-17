@@ -1,6 +1,5 @@
-import numpy as np
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.transform.missing_values_cleaner import MissingValuesCleaner
+from skmultiflow.transform import MissingValuesCleaner
 
 
 def demo():
@@ -16,7 +15,7 @@ def demo():
     by the median of the 9 first samples.
     
     """
-    stream = FileStream('../datasets/covtype.csv', -1, 1)
+    stream = FileStream('../data/datasets/covtype.csv', -1, 1)
     stream.prepare_for_use()
 
     filter = MissingValuesCleaner(-47, 'median', 10)

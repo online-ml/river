@@ -1,8 +1,5 @@
-from skmultiflow.classification.lazy.knn import KNN
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
-from skmultiflow.core.pipeline import Pipeline
-from sklearn.neighbors.classification import KNeighborsClassifier
+from skmultiflow.lazy import KNN
+from skmultiflow.data import FileStream
 from timeit import default_timer as timer
 
 
@@ -17,7 +14,7 @@ def demo():
     default) instances.
     
     """
-    stream = FileStream('../datasets/sea_big.csv', -1, 1)
+    stream = FileStream('../data/datasets/sea_big.csv', -1, 1)
     stream.prepare_for_use()
     train = 200
     X, y = stream.next_sample(train)

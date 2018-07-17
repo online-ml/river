@@ -4,7 +4,7 @@ from skmultiflow.data.file_stream import FileStream
 
 
 def test_file_stream(test_path, package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/datasets/sea_stream.csv')
+    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
     stream = FileStream(test_file)
     stream.prepare_for_use()
 
@@ -33,7 +33,7 @@ def test_file_stream(test_path, package_path):
     assert stream.is_restartable() is True
 
     # Load test data corresponding to first 10 instances
-    test_file = os.path.join(test_path, 'sea_stream.npz')
+    test_file = os.path.join(test_path, 'sea_stream_file.npz')
     data = np.load(test_file)
     X_expected = data['X']
     y_expected = data['y']

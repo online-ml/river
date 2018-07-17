@@ -81,7 +81,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
     >>> # Setup the File Stream
-    >>> stream = FileStream("skmultiflow/datasets/covtype.csv", -1, 1)
+    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setup the classifier
     >>> classifier = PassiveAggressiveClassifier()
@@ -96,10 +96,10 @@ class EvaluateHoldout(StreamEvaluator):
     
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluateHoldout
-    >>> from skmultiflow.data.generators.waveform_generator import WaveformGenerator
+    >>> from skmultiflow.data import WaveformGenerator
     >>> from sklearn.linear_model.stochastic_gradient import SGDClassifier
-    >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
-    >>> from skmultiflow.classification.lazy.knn_adwin import KNNAdwin
+    >>> from skmultiflow.evaluation import EvaluateHoldout
+    >>> from skmultiflow.lazy import KNNAdwin
     >>> stream = WaveformGenerator()
     >>> stream.prepare_for_use()
     >>> clf_one = SGDClassifier()

@@ -1,13 +1,6 @@
 skmultiflow.evaluation package
 ==============================
 
-Subpackages
------------
-
-.. toctree::
-
-    skmultiflow.evaluation.metrics
-
 Submodules
 ----------
 
@@ -17,7 +10,6 @@ Submodules
    skmultiflow.evaluation.evaluate_holdout
    skmultiflow.evaluation.evaluate_prequential
    skmultiflow.evaluation.evaluate_stream_gen_speed
-   skmultiflow.evaluation.measure_collection
 
 Module contents
 ---------------

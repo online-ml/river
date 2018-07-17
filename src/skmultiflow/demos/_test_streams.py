@@ -1,6 +1,6 @@
-from skmultiflow.data.file_stream import FileStream
-from skmultiflow.data.generators.random_rbf_generator_drift import RandomRBFGeneratorDrift
-from skmultiflow.data.generators.sea_generator import SEAGenerator
+from skmultiflow.data import FileStream
+from skmultiflow.data import RandomRBFGeneratorDrift
+from skmultiflow.data import SEAGenerator
 
 
 def demo():
@@ -10,7 +10,7 @@ def demo():
     
     :return: 
     """
-    stream = FileStream('../datasets/covtype.csv', -1, 1)
+    stream = FileStream('../data/datasets/covtype.csv', -1, 1)
     stream.prepare_for_use()
     rbf_drift = RandomRBFGeneratorDrift(change_speed=41.00, n_centroids=50, model_seed=32523423, instance_seed=5435,
                                         n_classes=2, n_features=10, num_drift_centroids=50)

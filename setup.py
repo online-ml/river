@@ -52,7 +52,7 @@ if __name__ == "__main__":
                             libraries=[],
                             library_dirs=[],
                             extra_compile_args=['-O3'],
-                            sources=['src/skmultiflow/classification/lazy/libNearestNeighbors/nearestNeighbor.cpp'])
+                            sources=['src/skmultiflow/lazy/src/libNearestNeighbors/nearestNeighbor.cpp'])
 
     setup(name=DISTNAME,
           version=VERSION,
