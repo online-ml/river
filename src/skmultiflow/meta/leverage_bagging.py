@@ -316,13 +316,14 @@ class LeverageBagging(StreamModel):
         
         """
         r, c = get_dimensions(X)
-        probs = self.predict_proba(X)
-        preds = []
-        if probs is None:
-            return None
+        proba = self.predict_proba(X)
+        predictions = []
+        if proba is None:
+            # Ensemble is empty, all classes equal, default to zero
+            proba = [[0] * self.classes] * r
         for i in range(r):
-            preds.append(self.classes[probs[i].index(np.max(probs[i]))])
-        return preds
+            predictions.append(self.classes[proba[i].index(np.max(proba[i]))])
+        return predictions
 
     def predict_proba(self, X):
         """ predict_proba
@@ -358,14 +359,13 @@ class LeverageBagging(StreamModel):
         try:
             for i in range(self.ensemble_length):
                 partial_probs = self.ensemble[i].predict_proba(X)
-                if len(partial_probs[0]) != len(self.classes):
+                if len(partial_probs[0]) > len(self.classes):
                     raise ValueError(
-                        "The number of classes is different in the bagging algorithm and in the chosen learning "
-                        "algorithm.")
+                        "The number of classes is larger in the base base learner than in the ensemble.")
 
                 if len(probs) < 1:
                     for n in range(r):
-                        probs.append([0.0 for x in partial_probs[n]])
+                        probs.append([0.0] * len(partial_probs[n]))
 
                 for n in range(r):
                     for l in range(len(partial_probs[n])):
