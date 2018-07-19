@@ -229,7 +229,11 @@ class EvaluatePrequential(StreamEvaluator):
                     # Test
                     prediction = [[] for _ in range(self.n_models)]
                     for i in range(self.n_models):
-                        prediction[i].extend(self.model[i].predict(X))
+                        try:
+                            prediction[i].extend(self.model[i].predict(X))
+                        except TypeError:
+                            raise TypeError("Unexpected value when getting predictions from {}"
+                                            .format(type(self.model[i])))
                     self.global_sample_count += self.batch_size
 
                     for j in range(self.n_models):
