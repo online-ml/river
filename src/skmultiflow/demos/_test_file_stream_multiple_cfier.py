@@ -6,7 +6,7 @@ from skmultiflow.evaluation import EvaluatePrequential
 from skmultiflow.data import FileStream
 
 
-def demo_parameterized(h, filename="covtype.csv", show_plot=True):
+def demo_parameterized(h, filename="covtype.csv", show_plot=True, model_names=None):
     # Setup Stream
     stream = FileStream("../data/datasets/" + filename)
     stream.prepare_for_use()
@@ -14,8 +14,8 @@ def demo_parameterized(h, filename="covtype.csv", show_plot=True):
     # For each classifier, e...
     pretrain = 100
     evaluator = EvaluatePrequential(pretrain_size=pretrain, output_file='test_parametrized.csv', max_samples=10000,
-                                    batch_size=1, n_wait=1000, show_plot=show_plot, metrics=['performance'])
-    evaluator.evaluate(stream=stream, model=h)
+                                    batch_size=1, n_wait=500, show_plot=show_plot, metrics=['performance'])
+    evaluator.evaluate(stream=stream, model=h, model_names=model_names)
 
 
 def demo():
@@ -24,15 +24,16 @@ def demo():
     h1 = [HoeffdingTree(), SAMKNN(), LeverageBagging(), SGDClassifier()]
     h2 = [HoeffdingTree(), SAMKNN(), LeverageBagging(), SGDClassifier()]
     h3 = [HoeffdingTree(), SAMKNN(), LeverageBagging(), SGDClassifier()]
+    model_names = ['HT', 'SAMKNN', 'LBHT', 'SGDC']
 
     # Demo 1 -- plot should not fail
-    demo_parameterized(h1)
+    demo_parameterized(h1, model_names=model_names)
 
     # Demo 2 -- csv output should look nice
-    demo_parameterized(h2, "sea_stream.csv", False)
+    demo_parameterized(h2, "sea_stream.csv", False, model_names)
 
     # Demo 3 -- should not give "'NoneType' object is not iterable" error
-    demo_parameterized(h3, "covtype.csv", False)
+    demo_parameterized(h3, "covtype.csv", False, model_names)
 
 
 if __name__ == '__main__':
