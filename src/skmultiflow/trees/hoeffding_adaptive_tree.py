@@ -470,23 +470,7 @@ class HAT(HoeffdingTree):
                     result.update(dist)  # add elements to dictionary
         return result
 
-    # Override HoeffdingTree/BaseClassifier
-    def predict(self, X):
-        r, _ = get_dimensions(X)
-        predictions = []
-        for i in range(r):
-            votes = self.get_votes_for_instance(X[i])
-            if votes == {}:
-                # Tree is empty, all classes equal, default to zero
-                predictions.append(0)
-            else:
-                predictions.append(max(votes, key=votes.get))
-        return predictions
-
     def score(self, X, y):
-        raise NotImplementedError
-
-    def predict_proba(self, X):
         raise NotImplementedError
 
     # Override HoeffdingTree
