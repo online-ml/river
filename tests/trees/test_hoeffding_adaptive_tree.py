@@ -50,9 +50,10 @@ def test_HAT(test_path):
 
     assert learner.get_info() == expected_info
 
-    expected_model_2 = 'Leaf = Class 1.0 | {1.0: 1702.2738590243584, 2.0: 952.1668539501372,' \
-                       ' 0.0: 1367.3628584299263, 3.0: 822.1964285955778}\n'
     expected_model_1 = 'Leaf = Class 1.0 | {0.0: 1367.3628584299263, 1.0: 1702.2738590243584,' \
                        ' 2.0: 952.1668539501372, 3.0: 822.1964285955778}\n'
+    expected_model_2 = 'Leaf = Class 1.0 | {1.0: 1702.2738590243584, 2.0: 952.1668539501372,' \
+                       ' 0.0: 1367.3628584299263, 3.0: 822.1964285955778}\n'
+
     assert (learner.get_model_description() == expected_model_1) \
            or (learner.get_model_description() == expected_model_2)
