@@ -279,8 +279,11 @@ class EvaluateHoldout(StreamEvaluator):
                         if (self.X_test is not None) and (self.y_test is not None):
                             prediction = [[] for _ in range(self.n_models)]
                             for i in range(self.n_models):
-                                prediction[i].extend(self.model[i].predict(self.X_test))
-
+                                try:
+                                    prediction[i].extend(self.model[i].predict(self.X_test))
+                                except TypeError:
+                                    raise TypeError("Unexpected value when getting predictions from {}"
+                                                    .format(type(self.model[i])))
                             if prediction is not None:
                                 for j in range(self.n_models):
                                     for i in range(len(prediction[0])):
