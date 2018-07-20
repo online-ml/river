@@ -21,10 +21,10 @@ def demo_parameterized(h, filename="covtype.csv", show_plot=True, model_names=No
 def demo():
 
     # The classifier we will use (other options: SAMKNN, LeverageBagging, SGD)
-    h1 = [HoeffdingTree(), SAMKNN(), LeverageBagging(), SGDClassifier()]
-    h2 = [HoeffdingTree(), SAMKNN(), LeverageBagging(), SGDClassifier()]
-    h3 = [HoeffdingTree(), SAMKNN(), LeverageBagging(), SGDClassifier()]
-    model_names = ['HT', 'SAMKNN', 'LBHT', 'SGDC']
+    h1 = [HoeffdingTree(), SAMKNN(), LeverageBagging(random_sate=1), SGDClassifier()]
+    h2 = [HoeffdingTree(), SAMKNN(), LeverageBagging(random_sate=1), SGDClassifier()]
+    h3 = [HoeffdingTree(), SAMKNN(), LeverageBagging(random_sate=1), SGDClassifier()]
+    model_names = ['HT', 'SAMKNN', 'LBkNN', 'SGDC']
 
     # Demo 1 -- plot should not fail
     demo_parameterized(h1, model_names=model_names)

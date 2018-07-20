@@ -3,6 +3,7 @@ from skmultiflow.core.base import StreamModel
 from skmultiflow.lazy.knn import KNN
 from skmultiflow.drift_detection.adwin import ADWIN
 from skmultiflow.utils.utils import *
+from skmultiflow.utils import check_random_state
 
 
 class LeverageBagging(StreamModel):
@@ -53,6 +54,11 @@ class LeverageBagging(StreamModel):
         A string representing the bagging algorithm to use. Can be one of the 
         following: 'leveraging_bag', 'leveraging_bag_me', 'leveraging_bag_half', 
         'leveraging_bag_wt', 'leveraging_subag'
+
+    random_state: int, RandomState instance or None, optional (default=None)
+            If int, random_state is the seed used by the random number generator;
+            If RandomState instance, random_state is the random number generator;
+            If None, the random number generator is the RandomState instance used by `np.random`.
     
     Raises
     ------
@@ -115,7 +121,8 @@ class LeverageBagging(StreamModel):
                  w=6,
                  delta=0.002,
                  enable_code_matrix=False,
-                 leverage_algorithm='leveraging_bag'):
+                 leverage_algorithm='leveraging_bag',
+                 random_sate=None):
 
         super().__init__()
         # default values
@@ -123,7 +130,7 @@ class LeverageBagging(StreamModel):
         self.ensemble_length = None
         self.ensemble = None
         self.adwin_ensemble = None
-        self.n_detected_changes = None
+        self.n_detected_changes = 0
         self.matrix_codes = None
         self.enable_matrix_codes = None
         self.w = None
@@ -132,6 +139,7 @@ class LeverageBagging(StreamModel):
         self.leveraging_algorithm = None
         self.__configure(h, ensemble_length, w, delta, enable_code_matrix, leverage_algorithm)
         self.init_matrix_codes = True
+        self.random_state = check_random_state(random_sate)
 
         self.adwin_ensemble = []
         for i in range(ensemble_length):
@@ -218,7 +226,7 @@ class LeverageBagging(StreamModel):
                         if (j == 1) and (len(self.classes) == 2):
                             result = 1 - self.matrix_codes[i][0]
                         else:
-                            result = np.random.randint(2)
+                            result = self.random_state.randint(2)
 
                         self.matrix_codes[i][j] = result
                         if result == 1:
@@ -233,7 +241,7 @@ class LeverageBagging(StreamModel):
             k = 0.0
 
             if self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[0]:
-                k = np.random.poisson(self.w)
+                k = self.random_state.poisson(self.w)
 
             elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[1]:
                 error = self.adwin_ensemble[i]._estimation
@@ -242,22 +250,22 @@ class LeverageBagging(StreamModel):
                     k = 1.0
                 elif pred[0] != y:
                     k = 1.0
-                elif np.random.rand() < (error/(1.0 - error)):
+                elif self.random_state.rand() < (error/(1.0 - error)):
                     k = 1.0
                 else:
                     k = 0.0
 
             elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[2]:
                 w = 1.0
-                k = 0.0 if (np.random.randint(2) == 1) else w
+                k = 0.0 if (self.random_state.randint(2) == 1) else w
 
             elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[3]:
                 w = 1.0
-                k = 1.0 + np.random.poisson(w)
+                k = 1.0 + self.random_state.poisson(w)
 
             elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[4]:
                 w = 1.0
-                k = np.random.poisson(1)
+                k = self.random_state.poisson(1)
                 k = w if k > 0 else 0
 
             if k > 0:
@@ -322,7 +330,7 @@ class LeverageBagging(StreamModel):
             # Ensemble is empty, all classes equal, default to zero
             proba = [[0] * self.classes] * r
         for i in range(r):
-            predictions.append(self.classes[proba[i].index(np.max(proba[i]))])
+            predictions.append(np.argmax(proba[i]))
         return predictions
 
     def predict_proba(self, X):
@@ -340,8 +348,8 @@ class LeverageBagging(StreamModel):
 
         Raises
         ------
-        ValueError: A ValueError is raised if the number of classes in the h
-        learner differs from that of the ensemble learner.
+        ValueError: A ValueError is raised if the number of classes in the base
+        learner exceed that of the ensemble learner.
 
         Returns
         -------
@@ -354,30 +362,35 @@ class LeverageBagging(StreamModel):
         """
         if self.enable_matrix_codes:
             return self.predict_binary_proba(X)
-        probs = []
+        proba = []
         r, c = get_dimensions(X)
         try:
             for i in range(self.ensemble_length):
-                partial_probs = self.ensemble[i].predict_proba(X)
-                if len(partial_probs[0]) > len(self.classes):
-                    raise ValueError(
-                        "The number of classes is larger in the base base learner than in the ensemble.")
+                partial_proba = self.ensemble[i].predict_proba(X)
+                if len(partial_proba[0]) > max(self.classes) + 1:
+                    raise ValueError("The number of classes is larger in the base base learner than in the ensemble.")
 
-                if len(probs) < 1:
+                if len(proba) < 1:
                     for n in range(r):
-                        probs.append([0.0] * len(partial_probs[n]))
+                        proba.append([0.0] * len(partial_proba[n]))
 
                 for n in range(r):
-                    for l in range(len(partial_probs[n])):
-                        probs[n][l] += partial_probs[n][l]
+                    for l in range(len(partial_proba[n])):
+                        try:
+                            proba[n][l] += partial_proba[n][l]
+                        except IndexError:
+                            proba[n].append(partial_proba[n][l])
         except ValueError:
             return None
 
         # normalizing probabilities
-        total_sum = np.sum(probs)
+        sum_proba = np.sum(proba)
         aux = []
-        for i in range(len(probs)):
-            aux.append([x / total_sum for x in probs[i]])
+        if sum_proba > 0.0:
+            for i in range(len(proba)):
+                aux.append([x / sum_proba for x in proba[i]])
+        else:
+            aux = proba
         return aux
 
     def predict_binary_proba(self, X):
