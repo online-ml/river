@@ -254,7 +254,7 @@ class LCHT(HoeffdingTree):
 
         Returns
         -------
-        list
+        numpy.array
             Predicted labels for all instances in X.
 
         """
@@ -262,12 +262,12 @@ class LCHT(HoeffdingTree):
         predictions = []
         y_proba = self.predict_proba(X)
         for i in range(r):
-            index = y_proba[i].index(max(y_proba[i]))
+            index = np.argmax(y_proba[i])
             pred = str("{0:0"+str(self.n_labels)+"b}").format(index)
             pred = [int(e) for e in pred]
             predictions.append(pred)
 
-        return predictions
+        return np.array(predictions)
 
     def _new_learning_node(self, initial_class_observations=None):
         """Create a new learning node. The type of learning node depends on the tree configuration."""

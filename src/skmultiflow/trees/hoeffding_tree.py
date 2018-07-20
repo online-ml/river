@@ -1044,7 +1044,7 @@ class HoeffdingTree(StreamModel):
 
         Returns
         -------
-        list
+        numpy.array
             Predicted labels for all instances in X.
 
         """
@@ -1052,9 +1052,9 @@ class HoeffdingTree(StreamModel):
         predictions = []
         y_proba = self.predict_proba(X)
         for i in range(r):
-            index = y_proba[i].index(max(y_proba[i]))
+            index = np.argmax(y_proba[i])
             predictions.append(index)
-        return predictions
+        return np.array(predictions)
 
     def predict_proba(self, X):
         """Predicts probabilities of all label of the X instance(s)
@@ -1066,7 +1066,7 @@ class HoeffdingTree(StreamModel):
 
         Returns
         -------
-        list
+        numpy.array
             Predicted the probabilities of all the labels for all instances in X.
 
         """
@@ -1084,7 +1084,7 @@ class HoeffdingTree(StreamModel):
                 for key, value in votes.items():
                     y_proba[int(key)] = value
                 predictions.append(y_proba)
-        return predictions
+        return np.array(predictions)
 
     @property
     def get_model_measurements(self):

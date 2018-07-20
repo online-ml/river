@@ -21,10 +21,11 @@ def test_lc_hoeffding_tree(test_path):
         # Test every n samples
         learner.partial_fit(X, y)
         if cnt % wait_samples == 0 and (cnt != 0):
-            predictions.append(learner.predict(X)[0])
+            predictions.append(learner.predict(X)[0].tolist())
             proba_predictions.append(learner.predict_proba(X)[0])
         cnt += 1
 
+    print(predictions)
     expected_predictions = [[0, 0, 1], [1, 1, 1], [0, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 1], [1, 1, 0], [1, 1, 1],
                            [1, 1, 1], [1, 1, 1], [0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 1],
                            [0, 1, 1], [1, 1, 1], [0, 0, 0], [1, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1], [0, 0, 1],
