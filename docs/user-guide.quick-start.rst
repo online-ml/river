@@ -5,11 +5,11 @@ Quick-Start Guide
 Train and test a stream classification model in ``scikit-multiflow``
 ====================================================================
 
-.. py:currentmodule:: skmultiflow.classification.trees.hoeffding_tree
+.. py:currentmodule:: skmultiflow.trees.hoeffding_tree
 
 In this example, we will use a data stream to train a :class:`HoeffdingTree` classifier and will measure its performance using prequential evaluation:
 
-.. py:currentmodule:: skmultiflow.data.generators.waveform_generator
+.. py:currentmodule:: skmultiflow.data.waveform_generator
 
 1. Create a stream
 
@@ -29,7 +29,7 @@ In this example, we will use a data stream to train a :class:`HoeffdingTree` cla
 
 2. Instantiate the Hoeffding Tree classifier
 
-   Use default parameters.
+   We will use the default parameters.
 
    .. code-block:: python
 
@@ -100,7 +100,7 @@ In this example, we will use a data stream to train a :class:`HoeffdingTree` cla
 Load data from a file as a stream and save test results into a file.
 ====================================================================
 
-.. py:currentmodule:: skmultiflow.classification.trees.hoeffding_tree
+.. py:currentmodule:: skmultiflow.trees.hoeffding_tree
 
 There are cases where we want to use data stored in files. In this example we will train a :class:`HoeffdingTree` classifier, but this time we will read the data from a (csv) file and will write the results of the evaluation into a (csv) file.
 
@@ -125,7 +125,7 @@ There are cases where we want to use data stored in files. In this example we wi
 
 2. Instantiate the Hoeffding Tree classifier
 
-   Use default parameters.
+   We will use the default parameters.
 
    .. code-block:: python
 
