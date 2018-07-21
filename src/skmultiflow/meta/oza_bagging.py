@@ -1,7 +1,8 @@
 import copy as cp
 from skmultiflow.core.base import StreamModel
-from skmultiflow.lazy.knn_adwin import KNNAdwin
+from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils.utils import *
+from skmultiflow.utils import check_random_state
 
 
 class OzaBagging(StreamModel):
@@ -33,6 +34,11 @@ class OzaBagging(StreamModel):
     
     ensemble_length: int
         The size of the ensemble, in other words, how many classifiers to train.
+
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
     
     Raises
     ------
@@ -68,7 +74,7 @@ class OzaBagging(StreamModel):
     >>> corrects = 0
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
-    >>> clf = clf.partial_fit(X, y, classes=stream.get_targets())
+    >>> clf = clf.partial_fit(X, y, classes=stream.target_values)
     >>> for i in range(2000):
     ...     X, y = stream.next_sample()
     ...     pred = clf.predict(X)
@@ -86,22 +92,25 @@ class OzaBagging(StreamModel):
     
     """
 
-    def __init__(self, h=KNNAdwin(), ensemble_length=2):
+    def __init__(self, h=KNNAdwin(), ensemble_length=2, random_state=None):
         super().__init__()
         # default values
         self.ensemble = None
         self.ensemble_length = None
         self.classes = None
+        self.random_state = None
+        self._init_ensemble_length = ensemble_length
+        self._init_random_state = random_state
+        self.__configure(h)
+
+    def __configure(self, h):
         self.h = h.reset()
-
-        self.__configure(h, ensemble_length)
-
-    def __configure(self, h, ensemble_length):
-        self.ensemble_length = ensemble_length
-        self.ensemble = [cp.deepcopy(h) for j in range(self.ensemble_length)]
+        self.ensemble_length = self._init_ensemble_length
+        self.ensemble = [cp.deepcopy(h) for _ in range(self.ensemble_length)]
+        self.random_state = check_random_state(self._init_random_state)
 
     def reset(self):
-        self.__configure(self.h, self.ensemble_length)
+        self.__configure(self.h)
 
     def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
@@ -145,7 +154,6 @@ class OzaBagging(StreamModel):
             self
         
         """
-        r, c = get_dimensions(X)
         if self.classes is None:
             if classes is None:
                 raise ValueError("The first partial_fit call should pass all the classes.")
@@ -161,7 +169,7 @@ class OzaBagging(StreamModel):
         self.__adjust_ensemble_size()
 
         for i in range(self.ensemble_length):
-            k = np.random.poisson()
+            k = self.random_state.poisson()
             if k > 0:
                 for b in range(k):
                     self.ensemble[i].partial_fit(X, y, classes, weight)
@@ -192,13 +200,13 @@ class OzaBagging(StreamModel):
         
         """
         r, c = get_dimensions(X)
-        probs = self.predict_proba(X)
-        preds = []
-        if probs is None:
+        proba = self.predict_proba(X)
+        predictions = []
+        if proba is None:
             return None
         for i in range(r):
-            preds.append(self.classes[probs[i].index(np.max(probs[i]))])
-        return preds
+            predictions.append(self.classes[proba[i].index(np.max(proba[i]))])
+        return predictions
 
     def predict_proba(self, X):
         """ predict_proba
@@ -225,34 +233,37 @@ class OzaBagging(StreamModel):
             the probability that the i-th sample of X belongs to a certain label.
         
         """
-        probs = []
+        proba = []
         r, c = get_dimensions(X)
         try:
             for i in range(self.ensemble_length):
-                partial_probs = self.ensemble[i].predict_proba(X)
-                if len(partial_probs[0]) != len(self.classes):
-                    raise ValueError("The number of classes is different in the bagging algorithm and in the chosen learning algorithm.")
+                partial_proba = self.ensemble[i].predict_proba(X)
+                if len(partial_proba[0]) > max(self.classes) + 1:
+                    raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
 
-                if len(probs) < 1:
+                if len(proba) < 1:
                     for n in range(r):
-                        probs.append([0.0 for x in partial_probs[n]])
+                        proba.append([0.0 for x in partial_proba[n]])
 
                 for n in range(r):
-                    for l in range(len(partial_probs[n])):
-                        probs[n][l] += partial_probs[n][l]
+                    for l in range(len(partial_proba[n])):
+                        try:
+                            proba[n][l] += partial_proba[n][l]
+                        except IndexError:
+                            proba[n].append(partial_proba[n][l])
         except ValueError:
             return None
 
         # normalizing probabilities
-        if r > 1:
-            total_sum = []
-            for l in range(r):
-                total_sum.append(np.sum(probs[l]))
-        else:
-            total_sum = [np.sum(probs)]
+        sum_proba = []
+        for l in range(r):
+            sum_proba.append(np.sum(proba[l]))
         aux = []
-        for i in range(len(probs)):
-            aux.append([x / total_sum[i] for x in probs[i]])
+        for i in range(len(proba)):
+            if sum_proba[i] > 0.:
+                aux.append([x / sum_proba[i] for x in proba[i]])
+            else:
+                aux.append(proba[i])
         return aux
 
     def score(self, X, y):
