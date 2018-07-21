@@ -18,9 +18,9 @@ def demo():
     """
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
-    stream = SEAGenerator(1, noise_percentage=.067)
+    stream = SEAGenerator(1, noise_percentage=.067, random_state=1)
     stream.prepare_for_use()
-    clf = OzaBagging(h=KNNAdwin(k=8,max_window_size=2000,leaf_size=30), ensemble_length=2)
+    clf = OzaBagging(h=KNNAdwin(k=8, max_window_size=2000, leaf_size=30), ensemble_length=2, random_state=1)
     sample_count = 0
     correctly_classified = 0
     max_samples = 5000
