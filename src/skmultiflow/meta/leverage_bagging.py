@@ -33,11 +33,11 @@ class LeverageBagging(StreamModel):
     
     Parameters
     ----------
-    h: classifier (extension of the BaseClassifier)
-        This is the ensemble classifier type, each ensemble classifier is going 
-        to be a copy of the h classifier.
+    base_estimator: StreamModel
+        This is the ensemble classifier type, each ensemble classifier will be a
+        copy of the base_estimator.
         
-    ensemble_length: int
+    n_estimators: int
         The size of the ensemble, in other words, how many classifiers to train.
         
     w: int
@@ -70,7 +70,7 @@ class LeverageBagging(StreamModel):
     
     Notes
     -----
-    To choose the correct ensemble_length (a value too high or too low may 
+    To choose the correct n_estimators (a value too high or too low may
     deteriorate performance) there are different techniques. One of them is 
     called 'The law of diminishing returns in ensemble construction' by Bonab 
     and Can. This theoretical framework claims, with experimental results, that 
@@ -88,7 +88,7 @@ class LeverageBagging(StreamModel):
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
     >>> stream.prepare_for_use()
     >>> # Setting up the LeverageBagging classifier to work with KNN classifiers
-    >>> clf = LeverageBagging(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=2)
+    >>> clf = LeverageBagging(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=2)
     >>> # Keeping track of sample count and correct prediction count
     >>> sample_count = 0
     >>> corrects = 0
@@ -116,44 +116,45 @@ class LeverageBagging(StreamModel):
                            'leveraging_subag']
 
     def __init__(self,
-                 h=KNN(),
-                 ensemble_length=2,
+                 base_estimator=KNN(),
+                 n_estimators=2,
                  w=6,
                  delta=0.002,
                  enable_code_matrix=False,
                  leverage_algorithm='leveraging_bag',
-                 random_sate=None):
+                 random_state=None):
 
         super().__init__()
         # default values
-        self.h = h.reset()
-        self.ensemble_length = None
         self.ensemble = None
         self.adwin_ensemble = None
-        self.n_detected_changes = 0
+        self.n_detected_changes = None
         self.matrix_codes = None
-        self.enable_matrix_codes = None
-        self.w = None
-        self.delta = None
         self.classes = None
-        self.leveraging_algorithm = None
-        self.__configure(h, ensemble_length, w, delta, enable_code_matrix, leverage_algorithm)
-        self.init_matrix_codes = True
-        self.random_state = check_random_state(random_sate)
-
-        self.adwin_ensemble = []
-        for i in range(ensemble_length):
-            self.adwin_ensemble.append(ADWIN(self.delta))
-
-    def __configure(self, h, ensemble_length, w, delta, enable_code_matrix, leverage_algorithm):
-        self.ensemble_length = ensemble_length
-        self.ensemble = [cp.deepcopy(h) for x in range(ensemble_length)]
+        self.init_matrix_codes = None
+        self.random_state = None
+        self.base_estimator = base_estimator
+        self._init_n_estimators = n_estimators
+        self.enable_matrix_codes = enable_code_matrix
         self.w = w
         self.delta = delta
-        self.enable_matrix_codes = enable_code_matrix
         if leverage_algorithm not in self.LEVERAGE_ALGORITHMS:
             raise ValueError("Leverage algorithm not supported.")
         self.leveraging_algorithm = leverage_algorithm
+        self._init_random_state = random_state
+        self.__configure()
+
+    def __configure(self):
+        self.base_estimator.reset()
+        self.n_estimators = self._init_n_estimators
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.n_estimators)]
+        self.adwin_ensemble = []
+        for i in range(self.n_estimators):
+            self.adwin_ensemble.append(ADWIN(self.delta))
+        self.random_state = check_random_state(self._init_random_state)
+        self.n_detected_changes = 0
+        self.classes = None
+        self.init_matrix_codes = True
 
     def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
@@ -210,19 +211,15 @@ class LeverageBagging(StreamModel):
         return self
 
     def __partial_fit(self, X, y):
-        n_classes = len(self.classes)
-        change = False
-
         if self.init_matrix_codes:
-            self.matrix_codes = np.zeros((self.ensemble_length, len(self.classes)), dtype=int)
-            for i in range(self.ensemble_length):
+            self.matrix_codes = np.zeros((self.n_estimators, len(self.classes)), dtype=int)
+            for i in range(self.n_estimators):
                 n_zeros = 0
                 n_ones = 0
-                while (n_ones - n_zeros) * (n_ones - n_zeros) > self.ensemble_length % 2:
+                while (n_ones - n_zeros) * (n_ones - n_zeros) > self.n_estimators % 2:
                     n_zeros = 0
                     n_ones = 0
                     for j in range(len(self.classes)):
-                        result = 0
                         if (j == 1) and (len(self.classes) == 2):
                             result = 1 - self.matrix_codes[i][0]
                         else:
@@ -235,9 +232,9 @@ class LeverageBagging(StreamModel):
                             n_zeros += 1
             self.init_matrix_codes = False
 
-        detected_change = False
+        change_detected = False
         X_cp, y_cp = cp.deepcopy(X), cp.deepcopy(y)
-        for i in range(self.ensemble_length):
+        for i in range(self.n_estimators):
             k = 0.0
 
             if self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[0]:
@@ -282,30 +279,30 @@ class LeverageBagging(StreamModel):
                     self.adwin_ensemble[i].add_element(add)
                     if self.adwin_ensemble[i].detected_change():
                         if self.adwin_ensemble[i]._estimation > error:
-                            change = True
+                            change_detected = True
             except ValueError:
-                change = False
+                change_detected = False
 
-        if change:
+        if change_detected:
             self.n_detected_changes += 1
-            max = 0.0
-            imax = -1
-            for i in range(self.ensemble_length):
-                if max < self.adwin_ensemble[i]._estimation:
-                    max = self.adwin_ensemble[i]._estimation
-                    imax = i
-            if imax != -1:
-                self.ensemble[imax].reset()
-                self.adwin_ensemble[imax] = ADWIN(self.delta)
+            max_threshold = 0.0
+            i_max = -1
+            for i in range(self.n_estimators):
+                if max_threshold < self.adwin_ensemble[i]._estimation:
+                    max_threshold = self.adwin_ensemble[i]._estimation
+                    i_max = i
+            if i_max != -1:
+                self.ensemble[i_max].reset()
+                self.adwin_ensemble[i_max] = ADWIN(self.delta)
         return self
 
     def __adjust_ensemble_size(self):
         if len(self.classes) != len(self.ensemble):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
-                    self.ensemble.append(cp.deepcopy(self.h))
+                    self.ensemble.append(cp.deepcopy(self.base_estimator))
                     self.adwin_ensemble.append(ADWIN(self.delta))
-                    self.ensemble_length += 1
+                    self.n_estimators += 1
 
     def predict(self, X):
         """ predict
@@ -365,7 +362,7 @@ class LeverageBagging(StreamModel):
         proba = []
         r, c = get_dimensions(X)
         try:
-            for i in range(self.ensemble_length):
+            for i in range(self.n_estimators):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
                     raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
@@ -417,71 +414,60 @@ class LeverageBagging(StreamModel):
             label.
 
         """
-        probs = []
+        proba = []
         r, c = get_dimensions(X)
         if not self.init_matrix_codes:
             try:
-                for i in range(self.ensemble_length):
+                for i in range(self.n_estimators):
                     vote = self.ensemble[i].predict_proba(X)
                     vote_class = 0
 
                     if len(vote) == 2:
                         vote_class = 1 if (vote[1] > vote[0]) else 0
 
-                    if len(probs) < 1:
+                    if len(proba) < 1:
                         for n in range(r):
-                            probs.append([0.0 for x in vote[n]])
+                            proba.append([0.0 for _ in vote[n]])
 
                     for j in range(len(self.classes)):
                         if self.matrix_codes[i][j] == vote_class:
-                            probs[j] += 1
+                            proba[j] += 1
             except ValueError:
                 return None
 
-            if len(probs) < 1:
+            if len(proba) < 1:
                 return None
 
             # normalizing probabilities
             if r > 1:
                 total_sum = []
                 for l in range(r):
-                    total_sum.append(np.sum(probs[l]))
+                    total_sum.append(np.sum(proba[l]))
             else:
-                total_sum = [np.sum(probs)]
+                total_sum = [np.sum(proba)]
             aux = []
-            for i in range(len(probs)):
-                aux.append([x / total_sum[i] for x in probs[i]])
+            for i in range(len(proba)):
+                aux.append([x / total_sum[i] for x in proba[i]])
             return aux
         return None
 
     def reset(self):
-        """ reset
-        
-        Resets all the classifiers, as well as all the ADWIN change
-        detectors.
+        """ Resets all the estimators, as well as all the ADWIN change detectors.
         
         Returns
         -------
         LeverageBagging
             self
-        
         """
-        self.__configure(self.h, self.ensemble_length, self.w, self.delta, self.enable_matrix_codes)
-        self.adwin_ensemble = []
-        for i in range(self.ensemble_length):
-            self.adwin_ensemble.append(ADWIN(self.delta))
-        self.n_detected_changes = 0
-        self.classes = None
-        self.init_matrix_codes = True
-
+        self.__configure()
         return self
 
     def score(self, X, y):
         raise NotImplementedError
 
     def get_info(self):
-        return 'LeverageBagging Classifier: h: ' + str(self.h) + \
-               ' - ensemble_length: ' + str(self.ensemble_length) + \
+        return 'LeverageBagging Classifier: base_estimator: ' + str(self.base_estimator) + \
+               ' - n_estimators: ' + str(self.n_estimators) + \
                ' - w: ' + str(self.w) + \
                ' - delta: ' + str(self.delta) + \
                ' - enable_code_matrix: ' + ('True' if self.enable_matrix_codes else 'False') + \

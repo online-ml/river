@@ -28,14 +28,15 @@ def demo():
 
     # Setup the classifier, by default it uses Logistic Regression
     # classifier = MultiOutputLearner()
-    # classifier = MultiOutputLearner(h=SGDClassifier(n_iter=100))
-    classifier = MultiOutputLearner(h=Perceptron())
+    # classifier = MultiOutputLearner(base_estimator=SGDClassifier(n_iter=100))
+    classifier = MultiOutputLearner(base_estimator=Perceptron())
 
     # Setup the pipeline
     pipe = Pipeline([('classifier', classifier)])
 
     pretrain_size = 150
     logging.info('Pre training on %s samples', str(pretrain_size))
+    logging.info('Total %s samples', str(stream.n_samples))
     X, y = stream.next_sample(pretrain_size)
     # classifier.fit(X, y)
     classes = stream.target_values

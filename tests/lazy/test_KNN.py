@@ -8,7 +8,7 @@ def test_KNN(test_path, package_path):
     stream = FileStream(test_file, -1, 1)
     stream.prepare_for_use()
 
-    learner = KNN(k=8, max_window_size=2000, leaf_size=40)
+    learner = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
     cnt = 0
     max_samples = 5000
     predictions = []

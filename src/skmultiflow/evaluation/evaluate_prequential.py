@@ -96,7 +96,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>> stream.prepare_for_use()
     >>> # Setup the classifiers
     >>> clf_one = PassiveAggressiveClassifier()
-    >>> clf_two = KNNAdwin(k=8)
+    >>> clf_two = KNNAdwin(n_neighbors=8)
     >>> # Setup the pipeline for clf_one
     >>> pipe = Pipeline([('Classifier', clf_one)])
     >>> # Create the list to hold both classifiers

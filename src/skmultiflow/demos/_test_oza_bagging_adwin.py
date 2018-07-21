@@ -19,7 +19,7 @@ def demo():
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=1)
     stream.prepare_for_use()
-    clf = OzaBaggingAdwin(h=KNNAdwin(k=8,max_window_size=2000,leaf_size=30), ensemble_length=2, random_state=1)
+    clf = OzaBaggingAdwin(base_estimator=KNNAdwin(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=2, random_state=1)
     sample_count = 0
     correctly_classified = 0
     max_samples = 20000

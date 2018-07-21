@@ -7,24 +7,26 @@ from skmultiflow.metrics import *
 
 class MultiOutputLearner(StreamModel):
     """ MultiOutputLearner
-    
+
+    Parameters
+    ----------
+    base_estimator: StreamModel or sklearn model
+        This is the ensemble classifier type, each ensemble classifier is going 
+        to be a copy of the base_estimator classifier.
+
+    Notes
+    -----
+    Use this meta learner to make single output predictors capable of learning
+    a multi output problem, by applying them individually to each output. In
+    the classification context, this is the "binary relevance" estimator.
+
     A Multi-Output Learner learns to predict multiple outputs for each
     instance. The outputs may either be discrete (i.e., classification),
     or continuous (i.e., regression). This class takes any base learner
     (which by default is LogisticRegression) and builds a separate model
     for each output, and will distribute each instance to each model
-    for individual learning and classification. 
-    
-    Use this meta learner to make single output predictors capable of learning 
-    a multi output problem, by applying them individually to each output. In 
-    the classification context, this is the "binary relevance" classifier.
+    for individual learning and classification.
 
-    Parameters
-    ----------
-    h: classifier (extension of the BaseClassifier)
-        This is the ensemble classifier type, each ensemble classifier is going 
-        to be a copy of the h classifier.
-        
     Examples
     --------
     # Imports
@@ -36,7 +38,7 @@ class MultiOutputLearner(StreamModel):
     >>> stream = FileStream("skmultiflow/data/datasets/music.csv", 0, 6)
     >>> stream.prepare_for_use()
     >>> # Setup the MultiOutputLearner using sklearn Perceptrons
-    >>> classifier = MultiOutputLearner(h=Perceptron())
+    >>> classifier = MultiOutputLearner(base_estimator=Perceptron())
     >>> # Setup the pipeline
     >>> pipe = Pipeline([('classifier', classifier)])
     >>> # Pre training the classifier with 150 samples
@@ -61,17 +63,14 @@ class MultiOutputLearner(StreamModel):
     
     """
 
-    h = None
-    L = -1
-
-    def __init__(self, h=linear_model.SGDClassifier(max_iter=100)):
+    def __init__(self, base_estimator=linear_model.SGDClassifier(max_iter=100)):
         super().__init__()
-        self.hop = h
-        self.h = None
-        self.L = None
+        self.base_estimator = base_estimator
+        self.ensemble = None
+        self.n_labels = None
 
     def __configure(self):
-        self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.n_labels)]
 
     def fit(self, X, y, classes=None, weight=None):
         """ fit
@@ -96,18 +95,16 @@ class MultiOutputLearner(StreamModel):
             self
 
         """
-        N,L = y.shape
-        self.L = L
-        self.h = [cp.deepcopy(self.hop) for j in range(self.L)]
+        N, L = y.shape
+        self.n_labels = L
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.n_labels)]
 
-        for j in range(self.L):
-            self.h[j].fit(X, y[:, j])
+        for j in range(self.n_labels):
+            self.ensemble[j].fit(X, y[:, j])
         return self
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-
-        Partially fit each of the classifiers on the X matrix and the 
+        """ Partially fit each of the classifiers on the X matrix and the
         corresponding y matrix.
 
         Parameters
@@ -132,27 +129,23 @@ class MultiOutputLearner(StreamModel):
             self
 
         """
-        Y = y
+        N, self.n_labels = y.shape
 
-        N,self.L = Y.shape
-
-        if self.h is None:
+        if self.ensemble is None:
             self.__configure()
 
-        for j in range(self.L):
-            if "weight" in self.h[j].partial_fit.__code__.co_varnames:
-                self.h[j].partial_fit(X, Y[:, j], classes, weight)
-            elif "sample_weight" in self.h[j].partial_fit.__code__.co_varnames:
-                self.h[j].partial_fit(X, Y[:, j], classes, weight)
+        for j in range(self.n_labels):
+            if "weight" in self.ensemble[j].partial_fit.__code__.co_varnames:
+                self.ensemble[j].partial_fit(X, y[:, j], classes, weight)
+            elif "sample_weight" in self.ensemble[j].partial_fit.__code__.co_varnames:
+                self.ensemble[j].partial_fit(X, y[:, j], classes, weight)
             else:
-                self.h[j].partial_fit(X, Y[:, j])
+                self.ensemble[j].partial_fit(X, y[:, j])
 
         return self
 
     def predict(self, X):
-        ''' predict
-            
-        Iterates over all the classifiers, predicting with each one, to obtain 
+        """ Iterates over all the classifiers, predicting with each one, to obtain
         the multi output prediction.
         
         Parameters
@@ -165,17 +158,16 @@ class MultiOutputLearner(StreamModel):
         numpy.ndarray
             Numpy.ndarray of shape (n_samples, n_labels)
             All the predictions for the samples in X.
-        '''
-        N,D = X.shape
-        Y = np.zeros((N,self.L))
-        for j in range(self.L):
-            Y[:,j] = self.h[j].predict(X)
-        return Y
+        """
+
+        N, D = X.shape
+        predictions = np.zeros((N, self.n_labels))
+        for j in range(self.n_labels):
+            predictions[:, j] = self.ensemble[j].predict(X)
+        return predictions
 
     def predict_proba(self, X):
-        """ predict_proba
-        
-        Estimates the probability of each sample in X belonging to each of 
+        """ Estimates the probability of each sample in X belonging to each of
         the existing labels for each of the classification tasks.
         
         It's a simple call to all of the classifier's predict_proba function, 
@@ -194,44 +186,20 @@ class MultiOutputLearner(StreamModel):
             in each of the classification tasks.
         
         """
-        N,D = X.shape
-        P = np.zeros((N,self.L))
-        for j in range(self.L):
-            P[:,j] = self.h[j].predict_proba(X)[:,1]
-        return P
+        N, D = X.shape
+        proba = np.zeros((N,self.n_labels))
+        for j in range(self.n_labels):
+            proba[:, j] = self.ensemble[j].predict_proba(X)[:, 1]
+        return proba
 
     def get_info(self):
-        return 'MultiOutputLearner: h: ' + str(self.h) + \
-               ' - n_learners: ' + str(len(self.h)) + \
-               ' - n_classification_tasks: ' + str(self.L)
-
+        return 'MultiOutputLearner: - base_estimator: ' + str(self.ensemble) + \
+               ' - n_learners: ' + str(len(self.ensemble)) + \
+               ' - n_classification_tasks: ' + str(self.n_labels)
 
     def score(self, X, y):
         raise NotImplementedError
 
     def reset(self):
-        raise NotImplementedError
-
-def demo():
-    import sys
-    sys.path.append( '../data' )
-    from skmultiflow.data.synth import make_logical
-
-    X,Y = make_logical()
-    N,L = Y.shape
-
-    h = MultiOutputLearner(linear_model.SGDClassifier(max_iter=1000))
-    h.fit(X, Y)
-
-    p = h.predict(X)
-    ham = hamming_score(Y, p)
-    print(ham)
-
-    # Test
-    print(h.predict(X))
-    print("vs")
-    print(Y)
-
-if __name__ == '__main__':
-    demo()
-
+        self.ensemble = None
+        self.n_labels = None

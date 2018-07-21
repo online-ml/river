@@ -25,7 +25,7 @@ def demo():
     #                         [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
     #                          36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
     start = timer()
-    knn = KNN(k=8, max_window_size=2000, leaf_size=40)
+    knn = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
     # pipe = Pipeline([('one_hot_to_categorical', t), ('KNN', knn)])
 
     # compare = KNeighborsClassifier(n_neighbors=8, algorithm='kd_tree', leaf_size=40, metric='euclidean')

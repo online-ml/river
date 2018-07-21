@@ -103,7 +103,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>> stream = WaveformGenerator()
     >>> stream.prepare_for_use()
     >>> clf_one = SGDClassifier()
-    >>> clf_two = KNNAdwin(k=8,max_window_size=2000)
+    >>> clf_two = KNNAdwin(n_neighbors=8,max_window_size=2000)
     >>> classifier = [clf_one, clf_two]
     >>> evaluator = EvaluateHoldout(test_size=5000, dynamic_test_set=True, max_samples=100000, batch_size=1,
     >>>                             n_wait=10000, max_time=1000, output_file=None, show_plot=True,

@@ -35,8 +35,8 @@ class FastBuffer(BaseObject):
     >>> from skmultiflow.data.file_stream import FileStream
     >>> file_stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
     >>> file_stream.prepare_for_use()
-    >>> clf = KNN(k=8, max_window_size=2000, leaf_size=40)
-    >>> # Initially we need to partial_fit at least k=8 samples
+    >>> clf = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
+    >>> # Initially we need to partial_fit at least n_neighbors=8 samples
     >>> X, y = file_stream.next_sample(8)
     >>> clf = clf.partial_fit(X, y, classes=file_stream.target_values)
     >>> predictions_buffer = FastBuffer(1000)

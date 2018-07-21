@@ -15,9 +15,9 @@ def test_sam_knn(package_path):
     hyperParams = {'maxSize': 1000, 'nNeighbours': 5, 'knnWeights': 'distance', 'STMSizeAdaption': 'maxACCApprox',
                    'useLTM': False}
 
-    learner = SAMKNN(n_neighbors=hyperParams['nNeighbours'], maxSize=hyperParams['maxSize'],
-                     knnWeights=hyperParams['knnWeights'],
-                     STMSizeAdaption=hyperParams['STMSizeAdaption'], useLTM=hyperParams['useLTM'])
+    learner = SAMKNN(n_neighbors=hyperParams['nNeighbours'], max_window_size=hyperParams['maxSize'],
+                     weighting=hyperParams['knnWeights'],
+                     stm_size_option=hyperParams['STMSizeAdaption'], use_ltm=hyperParams['useLTM'])
 
     cnt = 0
     max_samples = 5000

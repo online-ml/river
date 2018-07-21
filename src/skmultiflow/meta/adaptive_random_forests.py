@@ -13,7 +13,7 @@ class AdaptiveRandomForest(StreamModel):
 
         Parameters
         ----------
-        nb_ensemble: int, optional (default=10)
+        n_estimators: int, optional (default=10)
             Number of trees oin the ensemble.
 
         max_features : int, float, string or None, optional (default="auto")
@@ -128,7 +128,7 @@ class AdaptiveRandomForest(StreamModel):
     """
 
     def __init__(self,
-                 nb_ensemble=10,
+                 n_estimators=10,
                  max_features='auto',
                  disable_weighted_vote=False,
                  lambda_value=6,
@@ -151,7 +151,7 @@ class AdaptiveRandomForest(StreamModel):
                  random_state=None):
         """AdaptiveRandomForest class constructor."""
         super().__init__()          
-        self.nb_ensemble = nb_ensemble        
+        self.n_estimators = n_estimators
         self.max_features = max_features
         self.disable_weighted_vote = disable_weighted_vote
         self.lambda_value = lambda_value
@@ -206,7 +206,7 @@ class AdaptiveRandomForest(StreamModel):
         if self.ensemble is None:
             self.init_ensemble(X)
 
-        for i in range(self.nb_ensemble):
+        for i in range(self.n_estimators):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
             self.ensemble[i].evaluator.add_result(y_predicted, y, weight)
             rnd = check_random_state(self.random_state)
@@ -258,7 +258,7 @@ class AdaptiveRandomForest(StreamModel):
             self.init_ensemble(X)
         combined_votes = {}
 
-        for i in range(self.nb_ensemble):
+        for i in range(self.n_estimators):
             vote = self.ensemble[i].get_votes_for_instance(X)
             if vote != {} and sum(vote.values()) > 0:
                 normalize_values_in_dict(vote)
@@ -278,11 +278,11 @@ class AdaptiveRandomForest(StreamModel):
         return combined_votes
         
     def init_ensemble(self, X):
-        self.ensemble = [None] * self.nb_ensemble
+        self.ensemble = [None] * self.n_estimators
 
         self._set_max_features(get_dimensions(X)[1])
 
-        for i in range(self.nb_ensemble):            
+        for i in range(self.n_estimators):
             self.ensemble[i] = ARFBaseLearner(i,
                                               ARFHoeffdingTree(max_byte_size=self.max_byte_size,
                                                                memory_estimate_period=self.memory_estimate_period,

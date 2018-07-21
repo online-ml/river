@@ -2,6 +2,7 @@ from skmultiflow.data import WaveformGenerator
 from sklearn.linear_model import SGDClassifier
 from skmultiflow.evaluation import EvaluateHoldout
 from skmultiflow.lazy import KNNAdwin
+from skmultiflow.trees import HoeffdingTree
 
 
 def demo(output_file=None, instances=40000):
@@ -26,17 +27,17 @@ def demo(output_file=None, instances=40000):
     stream.prepare_for_use()
 
     # Setup the classifier
-    clf_one = SGDClassifier()
-    clf_two = KNNAdwin(k=8, max_window_size=2000)
+    clf_one = HoeffdingTree()
+    # clf_two = KNNAdwin(n_neighbors=8, max_window_size=2000)
     # classifier = PassiveAggressiveClassifier()
     # classifier = SGDRegressor()
     # classifier = PerceptronMask()
 
     # Setup the pipeline
-    classifier = [clf_one, clf_two]
+    classifier = [clf_one]
 
     # Setup the evaluator
-    evaluator = EvaluateHoldout(test_size=2000, dynamic_test_set=True, max_samples=instances, batch_size=1, n_wait=5000,
+    evaluator = EvaluateHoldout(test_size=500, dynamic_test_set=True, max_samples=instances, batch_size=1, n_wait=5000,
                                 max_time=1000, output_file=output_file, show_plot=True, metrics=['kappa'])
 
     # Evaluate

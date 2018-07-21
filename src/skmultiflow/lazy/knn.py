@@ -8,7 +8,7 @@ class KNN(StreamModel):
     """ K-Nearest Neighbors Classifier
     
     This is a non-parametric classification method. The output of this
-    algorithm are the k closest training examples to the query sample 
+    algorithm are the n_neighbors closest training examples to the query sample
     X.
     
     It works by keeping track of a fixed number of training samples, in 
@@ -18,7 +18,7 @@ class KNN(StreamModel):
     metric.
     
     To store the samples, while reducing search times, we use a structure 
-    called KD Tree (a K Dimensional Tree, for k dimensional problems). 
+    called KD Tree (a K Dimensional Tree, for n_neighbors dimensional problems).
     Although we do have our own KDTree implementation, which accepts 
     custom metrics, we recommend using the standard scikit-learn KDTree,  
     that even though doesn't accept custom metrics, is optimized and will 
@@ -26,7 +26,7 @@ class KNN(StreamModel):
     
     Parameters
     ----------
-    k: int
+    n_neighbors: int
         The number of nearest neighbors to search for.
         
     max_window_size: int
@@ -38,7 +38,7 @@ class KNN(StreamModel):
         brute-force approach. The bigger this number the faster the tree 
         construction time, but the slower the query time will be.
         
-    categorical_list: An array-like
+    categorical_list: array-like
         Each entry is the index of a categorical feature. May be requested 
         further filtering.
     
@@ -48,7 +48,7 @@ class KNN(StreamModel):
     implemented since they have no application in this context.
     
     ValueError: A ValueError is raised if the predict function is called 
-    before at least k samples have been analyzed by the algorithm.
+    before at least n_neighbors samples have been analyzed by the algorithm.
     
     Notes
     -----
@@ -71,7 +71,7 @@ class KNN(StreamModel):
     >>> stream.prepare_for_use()
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
-    >>> knn = KNN(k=8, max_window_size=2000, leaf_size=40)
+    >>> knn = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
     >>> knn.partial_fit(X, y)
     >>> # Preparing the processing of 5000 samples and correct prediction count
     >>> n_samples = 0
@@ -93,9 +93,9 @@ class KNN(StreamModel):
     
     """
 
-    def __init__(self, k=5, max_window_size=1000, leaf_size=30, categorical_list=None):
+    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, categorical_list=None):
         super().__init__()
-        self.k = k
+        self.n_neighbors = n_neighbors
         self.max_window_size = max_window_size
         self.c = 0
         self.window = InstanceWindow(max_size=max_window_size, dtype=float)
@@ -192,7 +192,7 @@ class KNN(StreamModel):
         """ predict
         
         Predicts the label of the X sample, by searching the KDTree for 
-        the k-Nearest Neighbors.
+        the n_neighbors-Nearest Neighbors.
         
         Parameters
         ----------
@@ -228,7 +228,7 @@ class KNN(StreamModel):
         Raises
         ------
         ValueError: If there is an attempt to call this function before, 
-        at least, k samples have been analyzed by the learner, a ValueError 
+        at least, n_neighbors samples have been analyzed by the learner, a ValueError
         is raised.
         
         Returns
@@ -240,10 +240,8 @@ class KNN(StreamModel):
             the probability that the i-th sample of X belongs to a certain label.
          
         """
-        if self.window is None:
-            raise ValueError("KNN should be partially fitted on at least k samples before doing any prediction.")
-        if self.window._num_samples < self.k:
-            raise ValueError("KNN should be partially fitted on at least k samples before doing any prediction.")
+        if self.window is None or self.window._num_samples < self.n_neighbors:
+            raise ValueError("KNN must be partially fitted on n_neighbors samples before doing any prediction.")
         proba = []
         r, c = get_dimensions(X)
 
@@ -280,16 +278,18 @@ class KNN(StreamModel):
         second lines.
         
         """
-        #tree = KDTree(self.window.get_attributes_matrix(), metric='euclidean',
+        # tree = KDTree(self.window.get_attributes_matrix(), metric='euclidean',
         #              categorical_list=self.categorical_list, return_distance=True)
 
         tree = sk.KDTree(self.window.get_attributes_matrix(), self.leaf_size, metric='euclidean')
-        dist, ind = tree.query(np.asarray(X), k=self.k)
+        dist, ind = tree.query(np.asarray(X), k=self.n_neighbors)
         return dist, ind
 
     def score(self, X, y):
         raise NotImplementedError
 
     def get_info(self):
-        return 'KNN Classifier: max_window_size: ' + str(self.max_window_size) + \
-            ' - leaf_size: ' + str(self.leaf_size)
+        return 'KNN Classifier:' \
+               ' - n_neighbors: {}'.format(self.n_neighbors) + \
+               ' - max_window_size: {}'.format(self.max_window_size) + \
+               ' - leaf_size: {}'.format(self.leaf_size)
