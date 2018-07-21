@@ -56,9 +56,9 @@ class LeverageBagging(StreamModel):
         'leveraging_bag_wt', 'leveraging_subag'
 
     random_state: int, RandomState instance or None, optional (default=None)
-            If int, random_state is the seed used by the random number generator;
-            If RandomState instance, random_state is the random number generator;
-            If None, the random number generator is the RandomState instance used by `np.random`.
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
     
     Raises
     ------
@@ -218,7 +218,7 @@ class LeverageBagging(StreamModel):
             for i in range(self.ensemble_length):
                 n_zeros = 0
                 n_ones = 0
-                while((n_ones - n_zeros) * (n_ones - n_zeros) > self.ensemble_length % 2):
+                while (n_ones - n_zeros) * (n_ones - n_zeros) > self.ensemble_length % 2:
                     n_zeros = 0
                     n_ones = 0
                     for j in range(len(self.classes)):
@@ -368,7 +368,7 @@ class LeverageBagging(StreamModel):
             for i in range(self.ensemble_length):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
-                    raise ValueError("The number of classes is larger in the base base learner than in the ensemble.")
+                    raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
 
                 if len(proba) < 1:
                     for n in range(r):
@@ -384,13 +384,15 @@ class LeverageBagging(StreamModel):
             return None
 
         # normalizing probabilities
-        sum_proba = np.sum(proba)
+        sum_proba = []
+        for l in range(r):
+            sum_proba.append(np.sum(proba[l]))
         aux = []
-        if sum_proba > 0.0:
-            for i in range(len(proba)):
-                aux.append([x / sum_proba for x in proba[i]])
-        else:
-            aux = proba
+        for i in range(len(proba)):
+            if sum_proba[i] > 0.:
+                aux.append([x / sum_proba[i] for x in proba[i]])
+            else:
+                aux.append(proba[i])
         return aux
 
     def predict_binary_proba(self, X):
