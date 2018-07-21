@@ -166,7 +166,8 @@ class AdaptiveRandomForest(StreamModel):
         self.instances_seen = 0
         self._train_weight_seen_by_model = 0.0
         self.ensemble = None
-        self.random_state = check_random_state(random_state)
+        self._init_random_state = random_state
+        self.random_state = check_random_state(self._init_random_state)
         if performance_metric in ['acc', 'kappa']:
             self.performance_metric = performance_metric
         else:
@@ -244,6 +245,7 @@ class AdaptiveRandomForest(StreamModel):
         self.max_features = 0
         self.instances_seen = 0
         self._train_weight_seen_by_model = 0.0
+        self.random_state = check_random_state(self._init_random_state)
 
     def score(self, X, y):
         raise NotImplementedError
