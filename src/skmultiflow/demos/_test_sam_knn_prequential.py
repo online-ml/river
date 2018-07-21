@@ -34,10 +34,10 @@ def demo(output_file=None, instances=50000):
 
     # Setup the classifier
     # classifier = SGDClassifier()
-    # classifier = KNNAdwin(k=8, max_window_size=2000,leaf_size=40, categorical_list=None)
-    # classifier = OzaBaggingAdwin(h=KNN(k=8, max_window_size=2000, leaf_size=30, categorical_list=None))
-    classifier = SAMKNN(n_neighbors=5, knnWeights='distance', maxSize=1000, STMSizeAdaption='maxACCApprox',
-                        useLTM=False)
+    # classifier = KNNAdwin(n_neighbors=8, max_window_size=2000,leaf_size=40, categorical_list=None)
+    # classifier = OzaBaggingAdwin(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30, categorical_list=None))
+    classifier = SAMKNN(n_neighbors=5, weighting='distance', max_window_size=1000, stm_size_option='maxACCApprox',
+                        use_ltm=False)
     # classifier = SGDRegressor()
     # classifier = PerceptronMask()
 

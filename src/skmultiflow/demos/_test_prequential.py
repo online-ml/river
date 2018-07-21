@@ -35,8 +35,8 @@ def demo(output_file=None, instances=40000):
 
     # Setup the classifier
     # classifier = SGDClassifier()
-    # classifier = KNNAdwin(k=8, max_window_size=2000,leaf_size=40, categorical_list=None)
-    # classifier = OzaBaggingAdwin(h=KNN(k=8, max_window_size=2000, leaf_size=30, categorical_list=None))
+    # classifier = KNNAdwin(n_neighbors=8, max_window_size=2000,leaf_size=40, categorical_list=None)
+    # classifier = OzaBaggingAdwin(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30, categorical_list=None))
     classifier = PassiveAggressiveClassifier()
     # classifier = SGDRegressor()
     # classifier = PerceptronMask()

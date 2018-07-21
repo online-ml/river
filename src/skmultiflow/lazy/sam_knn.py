@@ -16,18 +16,18 @@ class SAMKNN(StreamModel):
     n_neighbors : int, optional (default=5)
         number of evaluated nearest neighbors.
         
-    knnWeights: string, optional (default='distance')
+    weighting: string, optional (default='distance')
         Type of weighting of the nearest neighbors. It must be either 'distance' 
         or 'uniform' (majority voting).
          
-    maxSize : int, optional (default=5000)
+    max_window_size : int, optional (default=5000)
          Maximum number of overall stored data points.
          
-    LTMSizeProportion: float, optional (default=0.4)
+    ltm_size: float, optional (default=0.4)
         Proportion of the overall instances that may be used for the LTM. This is 
         only relevant when the maximum number(maxSize) of stored instances is reached.
         
-    STMSizeAdaption : string, optional (default='maxACCApprox')
+    stm_size_option : string, optional (default='maxACCApprox')
         Type of STM size adaption.
         'maxACC' calculates the Interleaved test-train error exactly for each of the 
         evaluated window sizes, which means it has often to be recalculated from the 
@@ -37,10 +37,10 @@ class SAMKNN(StreamModel):
         adapted at all. When additionally useLTM=false, this algorithm is simply a kNN 
         with fixed sliding window size.
         
-    minSTMSize : int, optional (default=50)
+    min_stm_size : int, optional (default=50)
         Minimum STM size which is evaluated during the STM size adaption.
         
-    useLTM : boolean, optional (default=True)
+    use_ltm : boolean, optional (default=True)
         Specifies whether the LTM should be used at all.
     
     Examples
@@ -52,7 +52,8 @@ class SAMKNN(StreamModel):
     >>> stream = FileStream("skmultiflow/data/datasets/movingSquares.csv", -1, 1)
     >>> stream.prepare_for_use()
     >>> # Setup the classifier
-    >>> classifier = SAMKNN(n_neighbors=5, knnWeights='distance', maxSize=1000, STMSizeAdaption='maxACCApprox', useLTM=False)
+    >>> classifier = SAMKNN(n_neighbors=5, weighting='distance', max_window_size=1000, stm_size_option='maxACCApprox',
+    >>>                     use_ltm=False)
     >>> # Setup the evaluator
     >>> evaluator = EvaluatePrequential(pretrain_size=0, max_samples=200000, batch_size=1, n_wait=100, max_time=1000,
     >>>                                 output_file=None, show_plot=True, metrics=['performance', 'kappa_t'])
@@ -82,26 +83,27 @@ class SAMKNN(StreamModel):
 
     """
 
-    def __init__(self, n_neighbors=5, knnWeights='distance', maxSize=5000, LTMSizeProportion = 0.4, minSTMSize=50, STMSizeAdaption='maxACCApprox', useLTM=True):
+    def __init__(self, n_neighbors=5, weighting='distance', max_window_size=5000, ltm_size=0.4, min_stm_size=50,
+                 stm_size_option='maxACCApprox', use_ltm=True):
         super().__init__()
         self.n_neighbors = n_neighbors
         self._STMSamples = None
         self._STMLabels = np.empty(shape=(0), dtype=np.int32)
         self._LTMSamples = None
         self._LTMLabels = np.empty(shape=(0), dtype=np.int32)
-        self.maxLTMSize = LTMSizeProportion * maxSize
-        self.maxSTMSize = maxSize - self.maxLTMSize
-        self.minSTMSize = minSTMSize
+        self.maxLTMSize = ltm_size * max_window_size
+        self.maxSTMSize = max_window_size - self.maxLTMSize
+        self.minSTMSize = min_stm_size
 
-        if STMSizeAdaption is not None:
-            self.STMDistances = np.zeros(shape=(maxSize + 1, maxSize + 1))
-        if knnWeights == 'distance':
+        if stm_size_option is not None:
+            self.STMDistances = np.zeros(shape=(max_window_size + 1, max_window_size + 1))
+        if weighting == 'distance':
             self.getLabelsFct = SAMKNN.get_distance_weighted_label
-        elif knnWeights == 'uniform':
+        elif weighting == 'uniform':
             self.getLabelsFct = SAMKNN.get_maj_label
-        self.STMSizeAdaption = STMSizeAdaption
-        self.useLTM = useLTM
-        if useLTM:
+        self.STMSizeAdaption = stm_size_option
+        self.useLTM = use_ltm
+        if use_ltm:
             self.predictFct = self._predict_by_all_memories
             self.sizeCheckFct = self.size_check_STMLTM
         else:
@@ -130,7 +132,8 @@ class SAMKNN(StreamModel):
         return libNearestNeighbor.get1ToNDistances(sample, samples)
 
     def cluster_down(self, samples, labels):
-        """Performs classwise kMeans++ clustering for given samples with corresponding labels. The number of samples is halved per class."""
+        """Performs classwise kMeans++ clustering for given samples with corresponding labels.
+        The number of samples is halved per class."""
         logging.debug('cluster Down %d' % self.trainStepCount)
         uniqueLabels = np.unique(labels)
         newSamples = np.empty(shape=(0, samples.shape[1]))

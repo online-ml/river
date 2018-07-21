@@ -1,6 +1,6 @@
 import sys
-from skmultiflow.lazy.knn import KNN
-from skmultiflow.drift_detection.adwin import ADWIN
+from skmultiflow.lazy import KNN
+from skmultiflow.drift_detection import ADWIN
 from skmultiflow.utils.data_structures import InstanceWindow
 from skmultiflow.utils.utils import *
 
@@ -23,7 +23,7 @@ class KNNAdwin(KNN):
     
     Parameters
     ----------
-    k: int
+    n_neighbors: int
         The number of nearest neighbors to search for.
         
     max_window_size: int
@@ -51,13 +51,12 @@ class KNNAdwin(KNN):
     --------
     >>> # Imports
     >>> from skmultiflow.lazy.knn_adwin import KNNAdwin
-    >>> from skmultiflow.lazy.knn import KNN
     >>> from skmultiflow.data.file_stream import FileStream
     >>> # Setting up the stream
-    >>> stream = FileStream('skmultiflow/data/datasets/covtype.csv', -1, 1)
+    >>> stream = FileStream('skmultiflow/data/datasets/covtype.csv')
     >>> stream.prepare_for_use()
     >>> # Setting up the KNNAdwin classifier
-    >>> knn_adwin = KNNAdwin(k=8, leaf_size=40, max_window_size=2000)
+    >>> knn_adwin = KNNAdwin(n_neighbors=8, leaf_size=40, max_window_size=2000)
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
     >>> knn_adwin = knn_adwin.partial_fit(X, y)
@@ -81,8 +80,9 @@ class KNNAdwin(KNN):
 
     """
 
-    def __init__(self, k=5, max_window_size=sys.maxsize, leaf_size=30, categorical_list=[]):
-        super().__init__(k=k, max_window_size=max_window_size, leaf_size=leaf_size, categorical_list=categorical_list)
+    def __init__(self, n_neighbors=5, max_window_size=sys.maxsize, leaf_size=30, categorical_list=None):
+        super().__init__(n_neighbors=n_neighbors, max_window_size=max_window_size, leaf_size=leaf_size,
+                         categorical_list=categorical_list)
         self.adwin = ADWIN()
         self.window = None
 
@@ -137,13 +137,13 @@ class KNNAdwin(KNN):
                 self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
             else:
                 self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
-            if self.window._num_samples >= self.k:
+            if self.window._num_samples >= self.n_neighbors:
                 add = 1 if self.predict(np.asarray([X[i]])) == y[i] else 0
                 self.adwin.add_element(add)
             else:
                 self.adwin.add_element(0)
 
-        if self.window._num_samples >= self.k:
+        if self.window._num_samples >= self.n_neighbors:
             changed = self.adwin.detected_change()
 
             if changed:
@@ -151,3 +151,9 @@ class KNNAdwin(KNN):
                     for i in range(self.window._num_samples, self.adwin._width, -1):
                         self.window.delete_element()
         return self
+
+    def get_info(self):
+        return 'KNNAdwin Classifier:' \
+               ' - n_neighbors: {}'.format(self.n_neighbors) + \
+               ' - max_window_size: {}'.format(self.max_window_size) + \
+               ' - leaf_size: {}'.format(self.leaf_size)

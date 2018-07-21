@@ -24,10 +24,10 @@ def run(X, y, hyperParams):
     """
     r, c = get_dimensions(X)
     classifier = SAMKNN(n_neighbors=hyperParams['nNeighbours'],
-                        maxSize=hyperParams['maxSize'],
-                        knnWeights=hyperParams['knnWeights'],
-                        STMSizeAdaption=hyperParams['STMSizeAdaption'],
-                        useLTM=hyperParams['useLTM'])
+                        max_window_size=hyperParams['maxSize'],
+                        weighting=hyperParams['knnWeights'],
+                        stm_size_option=hyperParams['STMSizeAdaption'],
+                        use_ltm=hyperParams['useLTM'])
     logging.info('applying model on dataset')
     predicted_labels = []
     true_labels = []

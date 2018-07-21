@@ -28,11 +28,11 @@ class OzaBagging(StreamModel):
     
     Parameters
     ----------
-    h: classifier (extension of the BaseClassifier)
+    base_estimator: StreamModel
         This is the ensemble classifier type, each ensemble classifier is going 
-        to be a copy of the h classifier.
+        to be a copy of the base_estimator.
     
-    ensemble_length: int
+    n_estimators: int
         The size of the ensemble, in other words, how many classifiers to train.
 
     random_state: int, RandomState instance or None, optional (default=None)
@@ -50,7 +50,7 @@ class OzaBagging(StreamModel):
     
     Notes
     -----
-    To choose the correct ensemble_length (a value too high or too low may 
+    To choose the correct n_estimators (a value too high or too low may
     deteriorate performance) there are different techniques. One of them is 
     called 'The law of diminishing returns in ensemble construction' by Bonab 
     and Can. This theoretical framework claims, with experimental results, that 
@@ -68,7 +68,7 @@ class OzaBagging(StreamModel):
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
     >>> stream.prepare_for_use()
     >>> # Setting up the OzaBagging classifier to work with KNN classifiers
-    >>> clf = OzaBagging(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=2)
+    >>> clf = OzaBagging(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=2)
     >>> # Keeping track of sample count and correct prediction count
     >>> sample_count = 0
     >>> corrects = 0
@@ -92,25 +92,26 @@ class OzaBagging(StreamModel):
     
     """
 
-    def __init__(self, h=KNNAdwin(), ensemble_length=2, random_state=None):
+    def __init__(self, base_estimator=KNNAdwin(), n_estimators=2, random_state=None):
         super().__init__()
         # default values
         self.ensemble = None
-        self.ensemble_length = None
+        self.n_estimators = None
         self.classes = None
         self.random_state = None
-        self._init_ensemble_length = ensemble_length
+        self._init_n_estimators = n_estimators
         self._init_random_state = random_state
-        self.__configure(h)
+        self.__configure(base_estimator)
 
-    def __configure(self, h):
-        self.h = h.reset()
-        self.ensemble_length = self._init_ensemble_length
-        self.ensemble = [cp.deepcopy(h) for _ in range(self.ensemble_length)]
+    def __configure(self, base_estimator):
+        base_estimator.reset()
+        self.base_estimator = base_estimator
+        self.n_estimators = self._init_n_estimators
+        self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
         self.random_state = check_random_state(self._init_random_state)
 
     def reset(self):
-        self.__configure(self.h)
+        self.__configure(self.base_estimator)
 
     def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
@@ -168,7 +169,7 @@ class OzaBagging(StreamModel):
 
         self.__adjust_ensemble_size()
 
-        for i in range(self.ensemble_length):
+        for i in range(self.n_estimators):
             k = self.random_state.poisson()
             if k > 0:
                 for b in range(k):
@@ -179,8 +180,8 @@ class OzaBagging(StreamModel):
         if len(self.classes) != len(self.ensemble):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
-                    self.ensemble.append(cp.deepcopy(self.h))
-                    self.ensemble_length += 1
+                    self.ensemble.append(cp.deepcopy(self.base_estimator))
+                    self.n_estimators += 1
 
     def predict(self, X):
         """ predict
@@ -221,7 +222,7 @@ class OzaBagging(StreamModel):
         
         Raises
         ------
-        ValueError: A ValueError is raised if the number of classes in the h
+        ValueError: A ValueError is raised if the number of classes in the base_estimator
         learner differs from that of the ensemble learner.
         
         Returns
@@ -236,14 +237,14 @@ class OzaBagging(StreamModel):
         proba = []
         r, c = get_dimensions(X)
         try:
-            for i in range(self.ensemble_length):
+            for i in range(self.n_estimators):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
                     raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
 
                 if len(proba) < 1:
                     for n in range(r):
-                        proba.append([0.0 for x in partial_proba[n]])
+                        proba.append([0.0 for _ in partial_proba[n]])
 
                 for n in range(r):
                     for l in range(len(partial_proba[n])):
@@ -270,5 +271,5 @@ class OzaBagging(StreamModel):
         raise NotImplementedError
 
     def get_info(self):
-        return 'OzaBagging Classifier: h: ' + str(self.h) + \
-               ' - ensemble_length: ' + str(self.ensemble_length)
+        return 'OzaBagging Classifier: base_estimator: ' + str(self.base_estimator) + \
+               ' - n_estimators: ' + str(self.n_estimators)

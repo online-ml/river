@@ -20,11 +20,11 @@ class OzaBaggingAdwin(OzaBagging):
     
     Parameters
     ----------
-    h: classifier (extension of the BaseClassifier)
+    base_estimator: StreamModel
         This is the ensemble classifier type, each ensemble classifier is going 
-        to be a copy of the h classifier.
+        to be a copy of the base_estimator.
     
-    ensemble_length: int
+    n_estimators: int
         The size of the ensemble, in other words, how many classifiers to train.
 
     random_state: int, RandomState instance or None, optional (default=None)
@@ -42,7 +42,7 @@ class OzaBaggingAdwin(OzaBagging):
     
     Notes
     -----
-    To choose the correct ensemble_length (a value too high or too low may 
+    To choose the correct n_estimators (a value too high or too low may
     deteriorate performance) there are different techniques. One of them is 
     called 'The law of diminishing returns in ensemble construction' by Bonab 
     and Can. This theoretical framework claims, with experimental results, that 
@@ -60,7 +60,7 @@ class OzaBaggingAdwin(OzaBagging):
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
     >>> stream.prepare_for_use()
     >>> # Setting up the OzaBagginAdwin classifier to work with KNN classifiers
-    >>> clf = OzaBaggingAdwin(h=KNN(k=8, max_window_size=2000, leaf_size=30), ensemble_length=2)
+    >>> clf = OzaBaggingAdwin(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=2)
     >>> # Keeping track of sample count and correct prediction count
     >>> sample_count = 0
     >>> corrects = 0
@@ -84,29 +84,30 @@ class OzaBaggingAdwin(OzaBagging):
     
     """
 
-    def __init__(self, h=KNNAdwin(), ensemble_length=2, random_state=None):
-        super().__init__(h, ensemble_length, random_state)
+    def __init__(self, base_estimator=KNNAdwin(), n_estimators=2, random_state=None):
+        super().__init__(base_estimator, n_estimators, random_state)
         # default values
         self.ensemble = None
-        self.ensemble_length = None
+        self.n_estimators = None
         self.classes = None
         self.adwin_ensemble = None
         self.random_state = None
-        self._init_ensemble_length = ensemble_length
+        self._init_n_estimators = n_estimators
         self._init_random_state = random_state
-        self.__configure(h)
+        self.__configure(base_estimator)
 
-    def __configure(self, h):
-        self.ensemble_length = self._init_ensemble_length
+    def __configure(self, base_estimator):
+        self.n_estimators = self._init_n_estimators
         self.adwin_ensemble = []
-        for i in range(self.ensemble_length):
+        for i in range(self.n_estimators):
             self.adwin_ensemble.append(ADWIN())
-        self.h = h.reset()
-        self.ensemble = [cp.deepcopy(h) for _ in range(self.ensemble_length)]
+        base_estimator.reset()
+        self.base_estimator = base_estimator
+        self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
         self.random_state = check_random_state(self._init_random_state)
 
     def reset(self):
-        self.__configure(self.h)
+        self.__configure(self.base_estimator)
 
     def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
@@ -169,7 +170,7 @@ class OzaBaggingAdwin(OzaBagging):
 
         self.__adjust_ensemble_size()
         change_detected = False
-        for i in range(self.ensemble_length):
+        for i in range(self.n_estimators):
             k = self.random_state.poisson()
             if k > 0:
                 for b in range(k):
@@ -192,15 +193,15 @@ class OzaBaggingAdwin(OzaBagging):
                 pass
 
         if change_detected:
-            max = 0.0
-            imax = -1
-            for i in range(self.ensemble_length):
-                if max < self.adwin_ensemble[i]._estimation:
-                    max = self.adwin_ensemble[i]._estimation
-                    imax = i
-            if imax != -1:
-                self.ensemble[imax].reset()
-                self.adwin_ensemble[imax] = ADWIN()
+            max_threshold = 0.0
+            i_max = -1
+            for i in range(self.n_estimators):
+                if max_threshold < self.adwin_ensemble[i]._estimation:
+                    max_threshold = self.adwin_ensemble[i]._estimation
+                    i_max = i
+            if i_max != -1:
+                self.ensemble[i_max].reset()
+                self.adwin_ensemble[i_max] = ADWIN()
 
         return self
 
@@ -208,10 +209,10 @@ class OzaBaggingAdwin(OzaBagging):
         if len(self.classes) != len(self.ensemble):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
-                    self.ensemble.append(cp.deepcopy(self.h))
+                    self.ensemble.append(cp.deepcopy(self.base_estimator))
                     self.adwin_ensemble.append(ADWIN())
-                    self.ensemble_length += 1
+                    self.n_estimators += 1
 
     def get_info(self):
-        return 'OzaBagginAdwin Classifier: h: ' + str(self.h) + \
-               ' - ensemble_length: ' + str(self.ensemble_length)
+        return 'OzaBagginAdwin Classifier: base_estimator: ' + str(self.base_estimator) + \
+               ' - n_estimators: ' + str(self.n_estimators)

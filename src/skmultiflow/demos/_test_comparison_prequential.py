@@ -24,11 +24,11 @@ def demo(instances=2000):
     stream.prepare_for_use()
     # Setup the classifier
     clf = SGDClassifier()
-    # classifier = KNNAdwin(k=8, max_window_size=2000,leaf_size=40, categorical_list=None)
-    # classifier = OzaBaggingAdwin(h=KNN(k=8, max_window_size=2000, leaf_size=30, categorical_list=None))
-    clf_one = KNNAdwin(k=8, max_window_size=1000, leaf_size=30)
-    # clf_two = KNN(k=8, max_window_size=1000, leaf_size=30)
-    # clf_two = LeverageBagging(h=KNN(), ensemble_length=2)
+    # classifier = KNNAdwin(n_neighbors=8, max_window_size=2000,leaf_size=40, categorical_list=None)
+    # classifier = OzaBaggingAdwin(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30, categorical_list=None))
+    clf_one = KNNAdwin(n_neighbors=8, max_window_size=1000, leaf_size=30)
+    # clf_two = KNN(n_neighbors=8, max_window_size=1000, leaf_size=30)
+    # clf_two = LeverageBagging(base_estimator=KNN(), n_estimators=2)
 
     t_one = OneHotToCategorical([[10, 11, 12, 13],
                             [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,

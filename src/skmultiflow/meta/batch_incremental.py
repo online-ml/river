@@ -1,4 +1,5 @@
 import copy as cp
+import numpy as np
 from skmultiflow.core.base import StreamModel
 from sklearn.tree import DecisionTreeClassifier
 
@@ -14,16 +15,15 @@ class BatchIncremental(StreamModel):
 
     Parameters
     ----------
-    h: learner (extension of the BaseClassifier)
+    base_estimator: StreamModel
         This is the ensemble learner type, each ensemble model is a copy of 
         this one.
         
-    window_size: int
-        The size of the ensemble, in other words, how many classifiers to train.
-        
-    ensemble_length: int
-        The maximum size of the ensemble, i.e., the maximum number of
-        classifiers to store at any point in time.
+    window_size (int)
+        The size of the training window (batch), in other words, how many instances are kept for training.
+
+    n_estimators (int)
+        Number of estimators in the ensemble.
 
     Notes
     -----
@@ -31,12 +31,12 @@ class BatchIncremental(StreamModel):
 
     """
 
-    def __init__(self, h=DecisionTreeClassifier, window_size=100, ensemble_length=100):
+    def __init__(self, base_estimator=DecisionTreeClassifier, window_size=100, n_estimators=100):
         self.window_size = window_size
-        self.max_models = ensemble_length
-        self.h = h
+        self.n_estimators = n_estimators
+        self.base_estimator = base_estimator
         # The ensemble 
-        self.H = []
+        self.ensemble = []
         self.i = -1
         self.X_batch = None
         self.y_batch = None
@@ -45,12 +45,12 @@ class BatchIncremental(StreamModel):
         raise NotImplementedError
 
     def partial_fit(self, X, y=None):
-        N,D = X.shape
+        N, D = X.shape
 
         if self.i < 0:
             # No models yet -- initialize
-            self.X_batch = zeros((self.window_size,D))
-            self.y_batch = zeros(self.window_size)
+            self.X_batch = np.zeros((self.window_size,D))
+            self.y_batch = np.zeros(self.window_size)
             self.i = 0
 
         for n in range(N):
@@ -61,28 +61,28 @@ class BatchIncremental(StreamModel):
             self.i = self.i + 1
             if self.i == self.window_size:
                 # Get rid of the oldest model
-                if len(self.H) >= self.max_models:
-                    self.H.pop(0)
+                if len(self.ensemble) >= self.n_estimators:
+                    self.ensemble.pop(0)
                 # A new model
-                h = cp.deepcopy(h)
+                h = cp.deepcopy(self.base_estimator)
                 # Train it 
                 h.fit(self.X_batch,self.y_batch)
                 # Add it
-                self.H.append(h)
+                self.ensemble.append(h)
                 # Reset the window
                 self.i = 0
 
         return self
 
     def predict_proba(self, X): 
-        N,D = X.shape
-        votes = zeros(N)
-        if len(self.H) <= 0:
+        N, D = X.shape
+        votes = np.zeros(N)
+        if len(self.ensemble) <= 0:
             # No models yet, just predict zeros
             return votes
-        for h_i in self.H:
+        for h_i in self.ensemble:
             # Add vote (normalized by number of models)
-            votes = votes + 1./len(self.H) * h_i.predict(X)
+            votes = votes + 1. / len(self.ensemble) * h_i.predict(X)
         return votes
 
     def predict(self, X):
@@ -90,3 +90,8 @@ class BatchIncremental(StreamModel):
         # Suppose a threshold of 0.5
         return (votes >= 0.5) * 1.
 
+    def get_info(self):
+        return 'BatchIncremental Classifier:' \
+               ' - base_estimator: {}'.format(self.base_estimator) + \
+               ' - window_size: {}'.format(self.window_size) + \
+               ' - n_estimators: {}'.format(self.n_estimators)
