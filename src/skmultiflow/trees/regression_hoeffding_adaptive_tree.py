@@ -127,13 +127,13 @@ class RegressionHAT(RegressionHoeffdingTree):
 
         # Override NewNode
         def get_error_estimation(self):
-            return self._estimation_error_weight._estimation
+            return self._estimation_error_weight.estimation
 
         # Override NewNode
         def get_error_width(self):
             w = 0.0
             if self.is_null_error() is False:
-                w = self._estimation_error_weight._width
+                w = self._estimation_error_weight.width
 
             return w
 
@@ -282,11 +282,11 @@ class RegressionHAT(RegressionHoeffdingTree):
 
         # Override NewNode
         def get_error_estimation(self):
-            return self.estimationErrorWeight._estimation
+            return self.estimationErrorWeight.estimation
 
         # Override NewNode
         def get_error_width(self):
-            return self.estimationErrorWeight._width
+            return self.estimationErrorWeight.width
 
         # Override NewNode
         def is_null_error(self):

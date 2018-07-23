@@ -178,7 +178,7 @@ class OzaBaggingAdwin(OzaBagging):
 
             try:
                 pred = self.ensemble[i].predict(X)
-                error_estimation = self.adwin_ensemble[i]._estimation
+                error_estimation = self.adwin_ensemble[i].estimation
                 for j in range(r):
                     if pred[j] is not None:
                         if pred[j] == y[j]:
@@ -186,7 +186,7 @@ class OzaBaggingAdwin(OzaBagging):
                         else:
                             self.adwin_ensemble[i].add_element(0)
                 if self.adwin_ensemble[i].detected_change():
-                    if self.adwin_ensemble[i]._estimation > error_estimation:
+                    if self.adwin_ensemble[i].estimation > error_estimation:
                         change_detected = True
             except ValueError:
                 change_detected = False
@@ -196,8 +196,8 @@ class OzaBaggingAdwin(OzaBagging):
             max_threshold = 0.0
             i_max = -1
             for i in range(self.n_estimators):
-                if max_threshold < self.adwin_ensemble[i]._estimation:
-                    max_threshold = self.adwin_ensemble[i]._estimation
+                if max_threshold < self.adwin_ensemble[i].estimation:
+                    max_threshold = self.adwin_ensemble[i].estimation
                     i_max = i
             if i_max != -1:
                 self.ensemble[i_max].reset()
