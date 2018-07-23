@@ -26,7 +26,7 @@ class ClassifierChain(StreamModel):
 
     Notes
     -----
-    Classifier Chains_[1] is a popular method for multi-label learning. It exploits correlation between labels
+    Classifier Chains [1]_ is a popular method for multi-label learning. It exploits correlation between labels
     by incrementally building binary classifiers for each label.
 
     scikit-learn also includes 'ClassifierChain'. A difference is probabilistic extensions are included here.

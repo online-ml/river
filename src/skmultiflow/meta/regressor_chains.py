@@ -24,7 +24,7 @@ class RegressorChain(StreamModel) :
 
     Notes
     -----
-    Regressor Chains are an extension of Classifier Chains_[1] for regression.
+    Regressor Chains are a modification of Classifier Chains [1]_ for regression.
 
     References
     ----------
