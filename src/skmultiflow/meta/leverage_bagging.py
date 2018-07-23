@@ -241,7 +241,7 @@ class LeverageBagging(StreamModel):
                 k = self.random_state.poisson(self.w)
 
             elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[1]:
-                error = self.adwin_ensemble[i]._estimation
+                error = self.adwin_ensemble[i].estimation
                 pred = self.ensemble[i].predict(np.asarray([X]))
                 if pred is None:
                     k = 1.0
@@ -275,10 +275,10 @@ class LeverageBagging(StreamModel):
                 pred = self.ensemble[i].predict(np.asarray([X]))
                 if pred is not None:
                     add = 1 if (pred[0] == y_cp) else 0
-                    error = self.adwin_ensemble[i]._estimation
+                    error = self.adwin_ensemble[i].estimation
                     self.adwin_ensemble[i].add_element(add)
                     if self.adwin_ensemble[i].detected_change():
-                        if self.adwin_ensemble[i]._estimation > error:
+                        if self.adwin_ensemble[i].estimation > error:
                             change_detected = True
             except ValueError:
                 change_detected = False
@@ -288,8 +288,8 @@ class LeverageBagging(StreamModel):
             max_threshold = 0.0
             i_max = -1
             for i in range(self.n_estimators):
-                if max_threshold < self.adwin_ensemble[i]._estimation:
-                    max_threshold = self.adwin_ensemble[i]._estimation
+                if max_threshold < self.adwin_ensemble[i].estimation:
+                    max_threshold = self.adwin_ensemble[i].estimation
                     i_max = i
             if i_max != -1:
                 self.ensemble[i_max].reset()

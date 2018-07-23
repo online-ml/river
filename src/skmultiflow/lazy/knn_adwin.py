@@ -147,8 +147,8 @@ class KNNAdwin(KNN):
             changed = self.adwin.detected_change()
 
             if changed:
-                if self.adwin._width < self.window._num_samples:
-                    for i in range(self.window._num_samples, self.adwin._width, -1):
+                if self.adwin.width < self.window._num_samples:
+                    for i in range(self.window._num_samples, self.adwin.width, -1):
                         self.window.delete_element()
         return self
 
