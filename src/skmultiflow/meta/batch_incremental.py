@@ -15,7 +15,7 @@ class BatchIncremental(StreamModel):
 
     Parameters
     ----------
-    base_estimator: StreamModel
+    base_estimator: StreamModel or sklearn model
         This is the ensemble learner type, each ensemble model is a copy of 
         this one.
         
@@ -31,7 +31,7 @@ class BatchIncremental(StreamModel):
 
     """
 
-    def __init__(self, base_estimator=DecisionTreeClassifier, window_size=100, n_estimators=100):
+    def __init__(self, base_estimator=DecisionTreeClassifier(), window_size=100, n_estimators=100):
         self.window_size = window_size
         self.n_estimators = n_estimators
         self.base_estimator = base_estimator
@@ -41,21 +41,21 @@ class BatchIncremental(StreamModel):
         self.X_batch = None
         self.y_batch = None
 
-    def fit(self, X, y):
+    def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
 
-    def partial_fit(self, X, y=None):
+    def partial_fit(self, X, y=None, classes=None, weight=None):
         N, D = X.shape
 
         if self.i < 0:
             # No models yet -- initialize
-            self.X_batch = np.zeros((self.window_size,D))
+            self.X_batch = np.zeros((self.window_size, D))
             self.y_batch = np.zeros(self.window_size)
             self.i = 0
 
         for n in range(N):
             # For each instance ...
-            # (TODO: not very python-esque ot the moment)
+            # TODO not very pythonic at the moment
             self.X_batch[self.i] = X[n]
             self.y_batch[self.i] = y[n]
             self.i = self.i + 1
@@ -66,7 +66,7 @@ class BatchIncremental(StreamModel):
                 # A new model
                 h = cp.deepcopy(self.base_estimator)
                 # Train it 
-                h.fit(self.X_batch,self.y_batch)
+                h.fit(X=self.X_batch, y=self.y_batch.astype(int))
                 # Add it
                 self.ensemble.append(h)
                 # Reset the window
@@ -90,8 +90,17 @@ class BatchIncremental(StreamModel):
         # Suppose a threshold of 0.5
         return (votes >= 0.5) * 1.
 
+    def score(self, X, y):
+        raise NotImplementedError
+
+    def reset(self):
+        self.ensemble = []
+        self.i = -1
+        self.X_batch = None
+        self.y_batch = None
+
     def get_info(self):
         return 'BatchIncremental Classifier:' \
-               ' - base_estimator: {}'.format(self.base_estimator) + \
+               ' - base_estimator: {}'.format(type(self.base_estimator).__name__) + \
                ' - window_size: {}'.format(self.window_size) + \
                ' - n_estimators: {}'.format(self.n_estimators)
