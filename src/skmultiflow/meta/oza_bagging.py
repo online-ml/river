@@ -206,7 +206,7 @@ class OzaBagging(StreamModel):
         if proba is None:
             return None
         for i in range(r):
-            predictions.append(self.classes[proba[i].index(np.max(proba[i]))])
+            predictions.append(np.argmax(proba[i]))
         return predictions
 
     def predict_proba(self, X):
