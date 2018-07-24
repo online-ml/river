@@ -282,8 +282,8 @@ class EvaluateHoldout(StreamEvaluator):
                                 try:
                                     prediction[i].extend(self.model[i].predict(self.X_test))
                                 except TypeError:
-                                    raise TypeError("Unexpected value when getting predictions from {}"
-                                                    .format(type(self.model[i])))
+                                    raise TypeError("Unexpected prediction value from {}"
+                                                    .format(type(self.model[i]).__name__))
                             if prediction is not None:
                                 for j in range(self.n_models):
                                     for i in range(len(prediction[0])):
