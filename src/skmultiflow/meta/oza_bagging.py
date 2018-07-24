@@ -253,7 +253,9 @@ class OzaBagging(StreamModel):
                         except IndexError:
                             proba[n].append(partial_proba[n][l])
         except ValueError:
-            return None
+            return np.zeros((r, 1))
+        except TypeError:
+            return np.zeros((r, 1))
 
         # normalizing probabilities
         sum_proba = []
