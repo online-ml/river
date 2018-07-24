@@ -325,7 +325,7 @@ class LeverageBagging(StreamModel):
         predictions = []
         if proba is None:
             # Ensemble is empty, all classes equal, default to zero
-            proba = [[0] * self.classes] * r
+            proba = np.zeros((r, 1))
         for i in range(r):
             predictions.append(np.argmax(proba[i]))
         return predictions
@@ -378,7 +378,9 @@ class LeverageBagging(StreamModel):
                         except IndexError:
                             proba[n].append(partial_proba[n][l])
         except ValueError:
-            return None
+            return np.zeros((r, 1))
+        except TypeError:
+            return np.zeros((r, 1))
 
         # normalizing probabilities
         sum_proba = []
@@ -433,21 +435,21 @@ class LeverageBagging(StreamModel):
                         if self.matrix_codes[i][j] == vote_class:
                             proba[j] += 1
             except ValueError:
-                return None
+                return np.zeros((r, 1))
 
             if len(proba) < 1:
                 return None
 
             # normalizing probabilities
-            if r > 1:
-                total_sum = []
-                for l in range(r):
-                    total_sum.append(np.sum(proba[l]))
-            else:
-                total_sum = [np.sum(proba)]
+            sum_proba = []
+            for l in range(r):
+                sum_proba.append(np.sum(proba[l]))
             aux = []
             for i in range(len(proba)):
-                aux.append([x / total_sum[i] for x in proba[i]])
+                if sum_proba[i] > 0.:
+                    aux.append([x / sum_proba[i] for x in proba[i]])
+                else:
+                    aux.append(proba[i])
             return aux
         return None
 
@@ -466,7 +468,7 @@ class LeverageBagging(StreamModel):
         raise NotImplementedError
 
     def get_info(self):
-        return 'LeverageBagging Classifier: base_estimator: ' + str(self.base_estimator) + \
+        return 'LeverageBagging Classifier: base_estimator: ' + str(type(self.base_estimator).__name__) + \
                ' - n_estimators: ' + str(self.n_estimators) + \
                ' - w: ' + str(self.w) + \
                ' - delta: ' + str(self.delta) + \
