@@ -151,11 +151,8 @@ class DataStream(Stream):
             self._data = data
         elif isinstance(data, np.ndarray):
             self._data = pd.DataFrame(data)
-        elif data is None:
-            raise ValueError("data  must be set , a NoneType is not accepted")
         else:
-            raise ValueError("np.ndarray or pd.DataFrame data object expected, and {} was passed".format(type(data)))
-
+            raise ValueError("Invalid type {}, for data".format(type(data)))
 
     @data.deleter
     def data(self):
