@@ -209,8 +209,8 @@ class FileStream(Stream):
             else:
                 self.task_type = self._REGRESSION
             self.target_values = self.get_target_values()
-        except IOError:
-            raise IOError("{} file reading failed.".format(self.filepath))
+        except FileNotFoundError:
+            raise FileNotFoundError("File {} does not exist.".format(self.filepath))
         pass
 
     def restart(self):
