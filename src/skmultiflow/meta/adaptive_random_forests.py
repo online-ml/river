@@ -251,7 +251,19 @@ class AdaptiveRandomForest(StreamModel):
         raise NotImplementedError
         
     def get_info(self):
-        raise NotImplementedError
+        """Collect information about the Hoeffding Tree configuration.
+
+        Returns
+        -------
+        string
+            Configuration for the Hoeffding Tree.
+        """
+        description = type(self).__name__ + ': '
+        description += 'n_estimators: {} - '.format(self.n_estimators)
+        description += 'max_features: {} - '.format(self.max_features)
+        description += 'disable_weighted_vote: {} - '.format(self.disable_weighted_vote)
+        description += 'lambda_value: {} - '.format(self.lambda_value)
+        return description
 
     def get_votes_for_instance(self, X):
         if self.ensemble is None:
