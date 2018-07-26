@@ -68,6 +68,8 @@ class EvaluationVisualizer(BaseListener):
 
         self.text_annotations = []
 
+        self.prediction = None
+
         self.true_values = None
         self.pred_values = None
 
@@ -145,6 +147,8 @@ class EvaluationVisualizer(BaseListener):
         self.line_true = None
         self.line_pred = None
 
+        self.line_prediction = None
+
         # Subplot default
         self.subplot_performance = None
         self.subplot_kappa = None
@@ -158,8 +162,9 @@ class EvaluationVisualizer(BaseListener):
         self.subplot_mse = None
         self.subplot_mae = None
         self.subplot_true_vs_predicts = None
+        self.subplot_prediction = None
 
-        if task_type is None:
+        if task_type is None or task_type == "undefined":
             raise ValueError('Task type for visualizer object is undefined.')
         else:
             if task_type in ['classification', 'regression', 'multi_output']:
@@ -578,6 +583,34 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_true_vs_predicts.legend(handles=handle)
             self.subplot_true_vs_predicts.set_ylim(0, 1)
 
+        if 'prediction' in self.plots:
+
+            self.prediction = [[] for _ in range(self.n_learners)]
+            handle = []
+
+            self.subplot_prediction = self.fig.add_subplot(base)
+            self.subplot_prediction.set_title('Predicted values')
+            self.subplot_prediction.set_ylabel('y')
+            self.subplot_prediction.set_prop_cycle(cycler('color', ['c', 'm', 'y', 'k']))
+            base += 1
+
+            self.line_prediction = [None for _ in range(self.n_learners)]
+
+            for i in range(self.n_learners):
+                if self.task_type == 'classification':
+                    self.line_prediction[i], = self.subplot_prediction.step(self.sample_id, self.prediction[i],
+                                                                            label='Model {} (global)'.
+                                                                            format(self.model_names[i])
+                                                                            )
+                else:
+                    self.line_prediction[i], = self.subplot_prediction.plot(self.sample_id, self.prediction[i],
+                                                                            label='Model {} (global)'.
+                                                                            format(self.model_names[i])
+                                                                            )
+                handle.append(self.line_prediction[i])
+            self.subplot_prediction.legend(handle)
+            self.subplot_prediction.set_ylim(0, 1)
+
         plt.xlabel('Samples')
         self.fig.subplots_adjust(hspace=.5)
         self.fig.tight_layout(rect=[0, .04, 1, 0.98], pad=2.6, w_pad=0.5, h_pad=1.0)
@@ -768,6 +801,20 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_true_vs_predicts.set_ylim(minimum - 1, maximum + 1)
 
             self.subplot_true_vs_predicts.legend(loc=2, bbox_to_anchor=(1.01, 1.))
+
+        if 'prediction' in self.plots:
+            minimum = 0
+            maximum = 0
+            for i in range(self.n_learners):
+                self.prediction[i].append(metrics_dict['prediction'][i][0])
+                self.line_prediction[i].set_data(self.sample_id, self.prediction[i])
+                minimum = min([min(self.prediction[i]), minimum])
+                maximum = max([max(self.prediction[i]), maximum])
+
+            self.subplot_prediction.set_xlim(0, self.sample_id[-1])
+            self.subplot_prediction.set_ylim(minimum - 1, maximum + 1)
+
+            self.subplot_prediction.legend(loc=2, bbox_to_anchor=(1.01, 1.))
 
         if self._draw_cnt == 4:  # Refresh rate to mitigate re-drawing overhead for small changes
             plt.subplots_adjust(right=0.72)   # Adjust subplots to include metrics
