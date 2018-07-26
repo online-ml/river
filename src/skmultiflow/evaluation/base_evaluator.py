@@ -33,6 +33,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     MSE = 'mean_square_error'
     MAE = 'mean_absolute_error'
     TRUE_VS_PREDICT = 'true_vs_predicts'
+    PREDICTION = 'prediction'
     PLOT_TYPES = [PERFORMANCE,
                   KAPPA,
                   KAPPA_T,
@@ -43,15 +44,18 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                   J_INDEX,
                   MSE,
                   MAE,
-                  TRUE_VS_PREDICT]
+                  TRUE_VS_PREDICT,
+                  PREDICTION]
     CLASSIFICATION_METRICS = [PERFORMANCE,
                               KAPPA,
                               KAPPA_T,
                               KAPPA_M,
-                              TRUE_VS_PREDICT]
+                              TRUE_VS_PREDICT,
+                              PREDICTION]
     REGRESSION_METRICS = [MSE,
                           MAE,
-                          TRUE_VS_PREDICT]
+                          TRUE_VS_PREDICT,
+                          PREDICTION]
     MULTI_OUTPUT_METRICS = [HAMMING_SCORE,
                             HAMMING_LOSS,
                             EXACT_MATCH,
@@ -60,10 +64,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     REGRESSION = 'regression'
     MULTI_OUTPUT = 'multi_output'
     SINGLE_OUTPUT = 'single-output'
+    UNDEFINED = 'undefined'
     TASK_TYPES = [CLASSIFICATION,
                   REGRESSION,
                   MULTI_OUTPUT,
-                  SINGLE_OUTPUT]
+                  SINGLE_OUTPUT,
+                  UNDEFINED]
 
     def __init__(self):
         # Evaluator configuration
@@ -241,7 +247,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             regression_metrics = set(self.REGRESSION_METRICS)
             evaluation_metrics = set(self.metrics)
 
-            if evaluation_metrics.union(classification_metrics) == classification_metrics:
+            if evaluation_metrics.intersection(classification_metrics) == evaluation_metrics.intersection\
+               (regression_metrics):
+                self._task_type = self.UNDEFINED
+                raise ValueError("You need another metric with {}".format(self.metrics))
+
+            elif evaluation_metrics.union(classification_metrics) == classification_metrics:
                 self._task_type = self.CLASSIFICATION
             elif evaluation_metrics.union(regression_metrics) == regression_metrics:
                 self._task_type = self.REGRESSION
@@ -358,6 +369,14 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 pred.append(p)
             new_points_dict['true_vs_predicts'] = [[true[i], pred[i]] for i in range(self.n_models)]
 
+        if 'prediction' in self.metrics:
+            pred = []
+            for i in range(self.n_models):
+                t, p = self.global_classification_metrics[i].get_last()
+
+                pred.append(p)
+            new_points_dict['prediction'] = [[pred[i]] for i in range(self.n_models)]
+
         shift = 0
         if self._method == 'prequential':
             shift = -self.batch_size   # Adjust index due to training after testing
@@ -369,8 +388,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self._update_plot(current_x, new_points_dict)
 
     def _init_file(self):
-        # Note: 'TRUE_VS_PREDICTS' or other informative data shall not be logged into the results file since they do
-        # not represent actual performance.
+
         if self.output_file is not None:
             with open(self.output_file, 'w+') as f:
                 f.write("# TEST CONFIGURATION BEGIN")
@@ -422,6 +440,17 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     for i in range(self.n_models):
                         header += ',global_mae_[{}],sliding_mae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
+
+                if self.TRUE_VS_PREDICT in self.metrics and self.PREDICTION in self.metrics or \
+                   self.TRUE_VS_PREDICT in self.metrics and self.PREDICTION not in self.metrics:
+                    for i in range(self.n_models):
+                        header += ',true_value_[{}],predicted_value_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
+                if self.TRUE_VS_PREDICT not in self.metrics and self.PREDICTION in self.metrics:
+                    for i in range(self.n_models):
+                        header += 'predicted_value_[{}]'.\
+                            format(self.model_names[i])
+
                 f.write(header)
 
     def _update_file(self, current_x, ):
@@ -468,6 +497,18 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 for i in range(self.n_models):
                     line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_error(),
                                                     self.partial_classification_metrics[i].get_average_error())
+
+            if self.TRUE_VS_PREDICT in self.metrics and self.PREDICTION in self.metrics or \
+                    self.TRUE_VS_PREDICT in self.metrics and self.PREDICTION not in self.metrics:
+
+                for i in range(self.n_models):
+                    t, p = self.global_classification_metrics[i].get_last()
+                    line += ',{:.6f},{:.6f}'.format(t, p)
+            if self.TRUE_VS_PREDICT not in self.metrics and self.PREDICTION in self.metrics:
+                for i in range(self.n_models):
+                    _, p = self.global_classification_metrics[i].get_last()
+                    line += ',{:.6f}'.format(p)
+
             with open(self.output_file, 'a') as f:
                 f.write('\n' + line)
 
