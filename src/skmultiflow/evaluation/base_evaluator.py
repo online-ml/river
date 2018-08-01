@@ -4,6 +4,7 @@ from skmultiflow.data.base_stream import Stream
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 from skmultiflow.metrics import WindowClassificationMeasurements, ClassificationMeasurements, \
     MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
+from skmultiflow.utils import FastBuffer
 
 
 class StreamEvaluator(BaseObject, metaclass=ABCMeta):
@@ -22,6 +23,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
     """
     # Constants
+    DATA_POINTS = 'data_points'
     PERFORMANCE = 'performance'
     KAPPA = 'kappa'
     KAPPA_T = 'kappa_t'
@@ -45,13 +47,15 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                   MSE,
                   MAE,
                   TRUE_VS_PREDICT,
-                  PREDICTION]
+                  PREDICTION,
+                  DATA_POINTS]
     CLASSIFICATION_METRICS = [PERFORMANCE,
                               KAPPA,
                               KAPPA_T,
                               KAPPA_M,
                               TRUE_VS_PREDICT,
-                              PREDICTION]
+                              PREDICTION,
+                              DATA_POINTS]
     REGRESSION_METRICS = [MSE,
                           MAE,
                           TRUE_VS_PREDICT,
@@ -84,6 +88,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self.restart_stream = True
         self.test_size = 0
         self.dynamic_test_set = False
+        self.data_points_for_classification = False
 
         # Metrics
         self.global_classification_metrics = None
@@ -98,6 +103,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self.model = None
         self.n_models = 0
         self.stream = None
+
         self.visualizer = None
         self.n_sliding = 0
         self.global_sample_count = 0
@@ -252,7 +258,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 self._task_type = self.UNDEFINED
                 raise ValueError("You need another metric with {}".format(self.metrics))
 
-            elif evaluation_metrics.union(classification_metrics) == classification_metrics:
+            elif evaluation_metrics.union(classification_metrics) == classification_metrics or \
+                    self.data_points_for_classification:
                 self._task_type = self.CLASSIFICATION
             elif evaluation_metrics.union(regression_metrics) == regression_metrics:
                 self._task_type = self.REGRESSION
@@ -377,15 +384,30 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 pred.append(p)
             new_points_dict['prediction'] = [[pred[i]] for i in range(self.n_models)]
 
+        if 'data_points' in self.metrics:
+
+            targets = self.stream.target_values
+            pred = []
+            samples = FastBuffer(5000)
+
+            for i in range(self.n_models):
+                _, p = self.global_classification_metrics[i].get_last()
+                X = self.global_classification_metrics[i].get_last_sample()
+
+                pred.append(p)
+                samples.add_element([X])
+
+            new_points_dict['data_points'] = [[[samples.get_queue()[i]], targets, pred[i]]for i in range(self.n_models)]
+
         shift = 0
         if self._method == 'prequential':
             shift = -self.batch_size   # Adjust index due to training after testing
         self._update_outputs(self.global_sample_count + shift, new_points_dict)
 
-    def _update_outputs(self, current_x, new_points_dict):
+    def _update_outputs(self, current_sample_id, new_points_dict):
         """ Update outputs of the evaluation. """
-        self._update_file(current_x)
-        self._update_plot(current_x, new_points_dict)
+        self._update_file(current_sample_id)
+        self._update_plot(current_sample_id, new_points_dict)
 
     def _init_file(self):
 
@@ -453,10 +475,10 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
                 f.write(header)
 
-    def _update_file(self, current_x, ):
+    def _update_file(self, current_sample_id):
         if self.output_file is not None:
             # Note: Must follow order set in _init_file()
-            line = str(current_x)
+            line = str(current_sample_id)
             if self.PERFORMANCE in self.metrics:
                 for i in range(self.n_models):
                     line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_performance(),
@@ -524,12 +546,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                                                    n_learners=self.n_models,
                                                    learner_name=self.model_names)
 
-    def _update_plot(self, current_x, new_points_dict):
+    def _update_plot(self, current_sample_id, new_points_dict):
         """ Update evaluation plot.
 
         Parameters
         ----------
-        current_x: int
+        current_sample_id: int
             The current count of analysed samples.
 
         new_points_dict: dictionary
@@ -538,7 +560,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
         """
         if self.visualizer is not None and self.show_plot:
-            self.visualizer.on_new_train_step(current_x, new_points_dict)
+            self.visualizer.on_new_train_step(current_sample_id, new_points_dict)
 
     def _reset_globals(self):
         self.global_sample_count = 0
