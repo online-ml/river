@@ -624,8 +624,8 @@ class EvaluationVisualizer(BaseListener):
             self.Flag = True
             self.X = FastBuffer(5000)
             self.targets = []
-            self.prediction = [[] for _ in range(self.n_learners)]
-            self.clusters = [[] for _ in range(self.n_learners)]
+            self.prediction = []
+            self.clusters = []
             self.subplot_scatter_points = self.fig.add_subplot(base)
             base += 1
 
@@ -848,11 +848,10 @@ class EvaluationVisualizer(BaseListener):
                 raise ValueError("you can not compare classifiers in this type of plot.")
             else:
 
-                for i in range(self.n_learners):
-                    self.prediction[i].append(metrics_dict['data_points'][i][2])
-                    if self.Flag is True:
-                        for j in range(len(self.targets)):
-                            self.clusters[i].append(FastBuffer(100))
+                self.prediction.append(metrics_dict['data_points'][0][2])
+                if self.Flag is True:
+                    for j in range(len(self.targets)):
+                        self.clusters.append(FastBuffer(100))
                 self.Flag = False
 
                 self.subplot_scatter_points.clear()
@@ -862,15 +861,13 @@ class EvaluationVisualizer(BaseListener):
                 X1 = self.X.get_queue()[-1][0]
                 X2 = self.X.get_queue()[-1][1]
 
-                for i in range(self.n_learners):
-                    for k, cluster in enumerate(self.clusters[i]):
-                        if self.prediction[i][-1] == k:
-                            self.clusters[i][k].add_element([(X1, X2)])
-                        if cluster.get_queue():
-
-                            temp = cluster.get_queue()
-                            self.subplot_scatter_points.scatter(*zip(*temp), label="cluster{k}".format(k=k))
-                            self.subplot_scatter_points.legend(loc = "best")
+                for k, cluster in enumerate(self.clusters):
+                    if self.prediction[-1] == k:
+                        self.clusters[k].add_element([(X1, X2)])
+                    if cluster.get_queue():
+                        temp = cluster.get_queue()
+                        self.subplot_scatter_points.scatter(*zip(*temp), label="class {k}".format(k=k))
+                        self.subplot_scatter_points.legend(loc="best")
 
         if self._draw_cnt == 4:  # Refresh rate to mitigate re-drawing overhead for small changes
             plt.subplots_adjust(right=0.72)   # Adjust subplots to include metrics
