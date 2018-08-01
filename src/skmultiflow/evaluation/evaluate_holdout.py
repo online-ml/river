@@ -287,10 +287,18 @@ class EvaluateHoldout(StreamEvaluator):
                             if prediction is not None:
                                 for j in range(self.n_models):
                                     for i in range(len(prediction[0])):
-                                        self.global_classification_metrics[j].add_result(self.y_test[i],
-                                                                                         prediction[j][i])
-                                        self.partial_classification_metrics[j].add_result(self.y_test[i],
-                                                                                          prediction[j][i])
+                                        if self._task_type == EvaluateHoldout.CLASSIFICATION:
+                                            self.global_classification_metrics[j].add_result(self.X_test[i],
+                                                                                             self.y_test[i],
+                                                                                             prediction[j][i])
+                                            self.partial_classification_metrics[j].add_result(self.X_test[i],
+                                                                                              self.y_test[i],
+                                                                                              prediction[j][i])
+                                        else:
+                                            self.global_classification_metrics[j].add_result(self.y_test[i],
+                                                                                             prediction[j][i])
+                                            self.partial_classification_metrics[j].add_result(self.y_test[i],
+                                                                                              prediction[j][i])
                                 self._update_metrics()
                             performance_sampling_cnt += 1
 
