@@ -52,8 +52,12 @@ class EvaluatePrequential(StreamEvaluator):
         If True, a plot will show the progress of the evaluation. Warning: Plotting will slow down the evaluation
         process.
 
-    restart_stream: bool, optional (default=True)
+    restart_stream: bool, optional (default: True)
         If True, the stream is restarted once the evaluation is complete.
+
+    data_points_for_classification: bool(Default: False)
+        If True , the plot type is a data points
+        (only works for classification)
     
     Notes
     -----
@@ -106,7 +110,27 @@ class EvaluatePrequential(StreamEvaluator):
     ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
     >>> # Evaluate
     >>> evaluator.evaluate(stream=stream, model=classifier)
-    
+
+    >>> # The third example will demonstrate how to plot data points for a classifier with
+    >>> # the EvaluatePrequential
+    >>> #PS: You can not in this case compare two classifers , the evaluator only takes
+    >>> #one classifier
+    >>> from skmultiflow.trees.hoeffding_tree import HoeffdingTree
+    >>> from skmultiflow.core.pipeline import Pipeline
+    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+    >>> # Setup the File Stream
+    >>> stream = FileStream("skmultiflow/data/datasets/sea_big.csv", -1, 1)
+    >>> stream.prepare_for_use()
+    >>> # Setup the classifier
+    >>> classifier = HoeffdingTree()
+    >>> # Setup the pipeline for clf_one
+    >>> pipe = Pipeline([('Classifier', classifier)])
+    >>> # Setup the evaluator
+    >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
+    ... output_file=None, show_plot=True, data_points_for_classification=True)
+    >>> # Evaluate
+    >>> evaluator.evaluate(stream=stream, model=pipe)
     """
 
     def __init__(self,
@@ -118,7 +142,8 @@ class EvaluatePrequential(StreamEvaluator):
                  metrics=None,
                  output_file=None,
                  show_plot=False,
-                 restart_stream=True):
+                 restart_stream=True,
+                 data_points_for_classification=False):
 
         super().__init__()
         self._method = 'prequential'
@@ -129,10 +154,17 @@ class EvaluatePrequential(StreamEvaluator):
         self.max_time = max_time
         self.output_file = output_file
         self.show_plot = show_plot
-        if metrics is None:
+        self.data_points_for_classification = data_points_for_classification
+
+        if metrics is None and data_points_for_classification is False:
             self.metrics = [self.PERFORMANCE, self.KAPPA]
+
+        elif data_points_for_classification is True:
+            self.metrics = [self.DATA_POINTS]
+
         else:
             self.metrics = metrics
+
         self.restart_stream = restart_stream
         self.n_sliding = n_wait
 
@@ -238,9 +270,12 @@ class EvaluatePrequential(StreamEvaluator):
 
                     for j in range(self.n_models):
                         for i in range(len(prediction[0])):
-                            self.global_classification_metrics[j].add_result(y[i], prediction[j][i])
-                            self.partial_classification_metrics[j].add_result(y[i], prediction[j][i])
-
+                            if self._task_type == EvaluatePrequential.CLASSIFICATION:
+                                self.global_classification_metrics[j].add_result(X[i], y[i], prediction[j][i])
+                                self.partial_classification_metrics[j].add_result(X[i], y[i], prediction[j][i])
+                            else:
+                                self.global_classification_metrics[j].add_result(y[i], prediction[j][i])
+                                self.partial_classification_metrics[j].add_result(y[i], prediction[j][i])
                     self._check_progress(n_samples)
 
                     # Train
