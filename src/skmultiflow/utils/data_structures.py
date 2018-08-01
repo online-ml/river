@@ -31,7 +31,7 @@ class FastBuffer(BaseObject):
     >>> # In the following example we keep track of the last 1000 predictions 
     >>> # and true labels
     >>> from skmultiflow.utils import FastBuffer
-    >>> from skmultiflow.lazy.knn import KNN
+    >>> from skmultiflow.lazy import KNN
     >>> from skmultiflow.data.file_stream import FileStream
     >>> file_stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
     >>> file_stream.prepare_for_use()
@@ -393,7 +393,7 @@ class ConfusionMatrix(BaseObject):
         self.sample_count += 1
         return True
 
-    def update(self, i = None, j = None):
+    def update(self, i=None, j=None):
         """ update
         
         Increases by one the count of occurrences in one of the ConfusionMatrix's 
@@ -435,7 +435,7 @@ class ConfusionMatrix(BaseObject):
                     self.reshape(max, max)
                     return self._update(i, j)
 
-    def remove(self, i = None, j = None):
+    def remove(self, i=None, j=None):
         """ remove
         
         Decreases by one the count of occurrences in one of the ConfusionMatrix's 
@@ -646,7 +646,7 @@ class MOLConfusionMatrix(BaseObject):
         self.confusion_matrix[int(target), int(true), int(pred)] += 1
         return True
 
-    def update(self, target=None, true = None, pred = None):
+    def update(self, target=None, true=None, pred=None):
         """ update
         
         Increases by one the occurrence count in one of the matrix's positions. 
@@ -687,7 +687,7 @@ class MOLConfusionMatrix(BaseObject):
                     self.reshape(target+1, 2, 2)
                     return self._update(target, true, pred)
 
-    def remove(self, target=None, true = None, pred = None):
+    def remove(self, target=None, true=None, pred=None):
         """ remove
         
         Decreases by one the occurrence count in one of the matrix's positions. 
@@ -707,7 +707,7 @@ class MOLConfusionMatrix(BaseObject):
         
         Returns
         -------
-        bools
+        bool
             True if the removal was successful, False otherwise.
         
         """
@@ -868,6 +868,7 @@ class MOLConfusionMatrix(BaseObject):
     def get_class_type(self):
         return 'collection'
 
+
 class InstanceWindow(BaseObject):
     """ InstanceWindow
     
@@ -946,7 +947,7 @@ class InstanceWindow(BaseObject):
         initialized, a TypeError may be raised.
         
         """
-        if (self.n_attributes != X.size):
+        if self.n_attributes != X.size:
             if self.n_samples == 0:
                 self.n_attributes = X.size
                 self.n_target_tasks = y.size
@@ -960,7 +961,8 @@ class InstanceWindow(BaseObject):
             self.buffer = np.delete(self.buffer, 0, axis=0)
 
         if self.buffer is None:
-            raise TypeError("None type not supported as the buffer, call __configure() to correctly set up the InstanceWindow")
+            raise TypeError("None type not supported as the buffer, call __configure() to correctly set up "
+                            "the InstanceWindow")
 
         aux = np.concatenate((X, y), axis=1)
         self.buffer = np.concatenate((self.buffer, aux), axis=0)
@@ -1025,6 +1027,7 @@ class InstanceWindow(BaseObject):
                ' - n_samples: ' + str(self.n_samples) + \
                ' - max_size: ' + str(self.max_size) + \
                ' - dtype: ' + str(self.dtype)
+
 
 if __name__ == '__main__':
     text = '/asddfdsd/'
