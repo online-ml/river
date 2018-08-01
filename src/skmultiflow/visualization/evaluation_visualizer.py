@@ -2,8 +2,7 @@ import warnings
 from skmultiflow.visualization.base_listener import BaseListener
 from matplotlib.rcsetup import cycler
 import matplotlib.pyplot as plt
-from skmultiflow.utils.data_structures import FastBuffer
-
+from skmultiflow.utils import FastBuffer
 
 
 class EvaluationVisualizer(BaseListener):
