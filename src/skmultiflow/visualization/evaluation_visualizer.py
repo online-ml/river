@@ -2,6 +2,8 @@ import warnings
 from skmultiflow.visualization.base_listener import BaseListener
 from matplotlib.rcsetup import cycler
 import matplotlib.pyplot as plt
+from skmultiflow.utils.data_structures import FastBuffer
+
 
 
 class EvaluationVisualizer(BaseListener):
@@ -69,6 +71,10 @@ class EvaluationVisualizer(BaseListener):
         self.text_annotations = []
 
         self.prediction = None
+        self.clusters = None
+        self.X = None
+        self.targets = None
+        self.Flag = None
 
         self.true_values = None
         self.pred_values = None
@@ -257,6 +263,7 @@ class EvaluationVisualizer(BaseListener):
             The number of learners to compare.
          
         """
+        data_points = False
         font_size_small = 8
         font_size_medium = 10
         font_size_large = 12
@@ -611,7 +618,22 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_prediction.legend(handle)
             self.subplot_prediction.set_ylim(0, 1)
 
-        plt.xlabel('Samples')
+        if 'data_points' in self.plots:
+
+            data_points = True
+            self.Flag = True
+            self.X = FastBuffer(5000)
+            self.targets = []
+            self.prediction = [[] for _ in range(self.n_learners)]
+            self.clusters = [[] for _ in range(self.n_learners)]
+            self.subplot_scatter_points = self.fig.add_subplot(base)
+            base += 1
+
+        if data_points:
+            plt.xlabel('X1')
+        else:
+            plt.xlabel('Samples')
+
         self.fig.subplots_adjust(hspace=.5)
         self.fig.tight_layout(rect=[0, .04, 1, 0.98], pad=2.6, w_pad=0.5, h_pad=1.0)
 
@@ -636,6 +658,8 @@ class EvaluationVisualizer(BaseListener):
             second element is its numerical value.
              
         """
+
+
         self.sample_id.append(train_step)
 
         self._clear_annotations()
@@ -815,6 +839,38 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_prediction.set_ylim(minimum - 1, maximum + 1)
 
             self.subplot_prediction.legend(loc=2, bbox_to_anchor=(1.01, 1.))
+
+        if 'data_points' in self.plots:
+            self.X.add_element(metrics_dict['data_points'][0][0])
+
+            self.targets = metrics_dict['data_points'][0][1]
+            if self.n_learners > 1:
+                raise ValueError("you can not compare classifiers in this type of plot.")
+            else:
+
+                for i in range(self.n_learners):
+                    self.prediction[i].append(metrics_dict['data_points'][i][2])
+                    if self.Flag is True:
+                        for j in range(len(self.targets)):
+                            self.clusters[i].append(FastBuffer(100))
+                self.Flag = False
+
+                self.subplot_scatter_points.clear()
+
+                self.subplot_scatter_points.set_ylabel('X2')
+                self.subplot_scatter_points.set_xlabel('X1')
+                X1 = self.X.get_queue()[-1][0]
+                X2 = self.X.get_queue()[-1][1]
+
+                for i in range(self.n_learners):
+                    for k, cluster in enumerate(self.clusters[i]):
+                        if self.prediction[i][-1] == k:
+                            self.clusters[i][k].add_element([(X1, X2)])
+                        if cluster.get_queue():
+
+                            temp = cluster.get_queue()
+                            self.subplot_scatter_points.scatter(*zip(*temp), label="cluster{k}".format(k=k))
+                            self.subplot_scatter_points.legend(loc = "best")
 
         if self._draw_cnt == 4:  # Refresh rate to mitigate re-drawing overhead for small changes
             plt.subplots_adjust(right=0.72)   # Adjust subplots to include metrics
