@@ -50,6 +50,7 @@ class DataStream(Stream):
         self.task_type = None
         self.n_classes = 0
         self.data = data
+        self._is_ready = False
         self.__configure()
 
     def __configure(self):
@@ -58,7 +59,7 @@ class DataStream(Stream):
             if self.y.shape[0] != self.data.shape[0]:
                 raise ValueError("X and y should have the same number of rows")
             else:
-                self.X = self.data
+                self.X = pd.DataFrame(self.data)
                 self.target_idx = -self.y.shape[1]
                 self.n_targets = self.y.shape[1]
 
@@ -116,12 +117,11 @@ class DataStream(Stream):
             the features' columns.
         """
 
-        if isinstance(X, np.ndarray) or isinstance(X, pd.DataFrame) or  not self._Y_is_defined:
+        if isinstance(X, np.ndarray) or isinstance(X, pd.DataFrame) or not self._Y_is_defined:
             self._X = X
 
         else:
             raise ValueError("np.ndarray or pd.DataFrame X object expected, and {} was passed".format(type(X)))
-
 
     @property
     def data(self):
@@ -242,14 +242,14 @@ class DataStream(Stream):
         called after the stream initialization.
 
         """
-        if self._Y_is_defined:
-            self._load_X_y()
-        else:
-            self._load_data()
-            del self.data
-        self.sample_idx = 0
-        self.current_sample_x = None
-        self.current_sample_y = None
+        self.restart()
+        if not self._is_ready:
+            if self._Y_is_defined:
+                self._load_X_y()
+            else:
+                self._load_data()
+                del self.data
+            self._is_ready = True
 
     def _load_X_y(self):
 
