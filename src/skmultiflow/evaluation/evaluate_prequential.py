@@ -43,7 +43,7 @@ class EvaluatePrequential(StreamEvaluator):
         The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
         and/or logged into the output file. Valid options are 'performance', 'kappa', 'kappa_t', 'kappa_m',
         'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
-        'true_vs_predicts'.
+        'true_vs_predicted'.
     
     output_file: string, optional (Default: None)
         File name to save the summary of the evaluation.
@@ -64,9 +64,8 @@ class EvaluatePrequential(StreamEvaluator):
     1. This evaluator can process a single learner to track its performance; or multiple learners  at a time, to
        compare different models on the same stream.
 
-    2. The metric 'true_vs_predicts' is intended to be informative only. It corresponds to evaluations at a specific
-       moment which might not represent the actual learner performance across all instances. Values are not logged into
-       the result file.
+    2. The metric 'true_vs_predicted' is intended to be informative only. It corresponds to evaluations at a specific
+       moment which might not represent the actual learner performance across all instances.
     
     Examples
     --------
@@ -312,34 +311,34 @@ class EvaluatePrequential(StreamEvaluator):
         logging.info('Total samples: {}'.format(self.global_sample_count))
         logging.info('Global performance:')
         for i in range(self.n_models):
-            if 'performance' in self.metrics:
+            if self.PERFORMANCE in self.metrics:
                 logging.info('{} - Accuracy     : {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_performance()))
-            if 'kappa' in self.metrics:
+            if self.KAPPA in self.metrics:
                 logging.info('{} - Kappa        : {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_kappa()))
-            if 'kappa_t' in self.metrics:
+            if self.KAPPA_T in self.metrics:
                 logging.info('{} - Kappa T      : {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_kappa_t()))
-            if 'kappa_m' in self.metrics:
+            if self.KAPPA_M in self.metrics:
                 logging.info('{} - Kappa M      : {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_kappa_m()))
-            if 'hamming_score' in self.metrics:
+            if self.HAMMING_SCORE in self.metrics:
                 logging.info('{} - Hamming score: {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_hamming_score()))
-            if 'hamming_loss' in self.metrics:
+            if self.HAMMING_LOSS in self.metrics:
                 logging.info('{} - Hamming loss : {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_hamming_loss()))
-            if 'exact_match' in self.metrics:
+            if self.EXACT_MATCH in self.metrics:
                 logging.info('{} - Exact matches: {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_exact_match()))
             if 'j_index' in self.metrics:
                 logging.info('{} - j index      : {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_j_index()))
-            if 'mean_square_error' in self.metrics:
+            if self.MSE in self.metrics:
                 logging.info('{} - MSE          : {:.3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_mean_square_error()))
-            if 'mean_absolute_error' in self.metrics:
+            if self.MAE in self.metrics:
                 logging.info('{} - MAE          : {:3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_average_error()))
 
