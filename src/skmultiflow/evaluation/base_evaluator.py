@@ -34,8 +34,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     J_INDEX = 'j_index'
     MSE = 'mean_square_error'
     MAE = 'mean_absolute_error'
-    TRUE_VS_PREDICT = 'true_vs_predicts'
-    PREDICTION = 'prediction'
+    TRUE_VS_PREDICTED = 'true_vs_predicted'
+
     PLOT_TYPES = [PERFORMANCE,
                   KAPPA,
                   KAPPA_T,
@@ -46,20 +46,20 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                   J_INDEX,
                   MSE,
                   MAE,
-                  TRUE_VS_PREDICT,
-                  PREDICTION,
+                  TRUE_VS_PREDICTED,
+
                   DATA_POINTS]
     CLASSIFICATION_METRICS = [PERFORMANCE,
                               KAPPA,
                               KAPPA_T,
                               KAPPA_M,
-                              TRUE_VS_PREDICT,
-                              PREDICTION,
+                              TRUE_VS_PREDICTED,
+
                               DATA_POINTS]
     REGRESSION_METRICS = [MSE,
                           MAE,
-                          TRUE_VS_PREDICT,
-                          PREDICTION]
+                          TRUE_VS_PREDICTED
+                          ]
     MULTI_OUTPUT_METRICS = [HAMMING_SCORE,
                             HAMMING_LOSS,
                             EXACT_MATCH,
@@ -318,73 +318,65 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
         """
         new_points_dict = {}
-        if 'performance' in self.metrics:
-            new_points_dict['performance'] = [[self.global_classification_metrics[i].get_performance(),
-                                               self.partial_classification_metrics[i].get_performance()]
-                                              for i in range(self.n_models)]
+        if self.PERFORMANCE in self.metrics:
+            new_points_dict[self.PERFORMANCE] = [[self.global_classification_metrics[i].get_performance(),
+                                                  self.partial_classification_metrics[i].get_performance()]
+                                                 for i in range(self.n_models)]
 
-        if 'kappa' in self.metrics:
-            new_points_dict['kappa'] = [[self.global_classification_metrics[i].get_kappa(),
-                                         self.partial_classification_metrics[i].get_kappa()]
-                                        for i in range(self.n_models)]
+        if self.KAPPA in self.metrics:
+            new_points_dict[self.KAPPA] = [[self.global_classification_metrics[i].get_kappa(),
+                                            self.partial_classification_metrics[i].get_kappa()]
+                                           for i in range(self.n_models)]
 
-        if 'kappa_t' in self.metrics:
-            new_points_dict['kappa_t'] = [[self.global_classification_metrics[i].get_kappa_t(),
-                                           self.partial_classification_metrics[i].get_kappa_t()]
-                                          for i in range(self.n_models)]
+        if self.KAPPA_T in self.metrics:
+            new_points_dict[self.KAPPA_T] = [[self.global_classification_metrics[i].get_kappa_t(),
+                                              self.partial_classification_metrics[i].get_kappa_t()]
+                                             for i in range(self.n_models)]
 
-        if 'kappa_m' in self.metrics:
-            new_points_dict['kappa_m'] = [[self.global_classification_metrics[i].get_kappa_m(),
-                                           self.partial_classification_metrics[i].get_kappa_m()]
-                                          for i in range(self.n_models)]
+        if self.KAPPA_M in self.metrics:
+            new_points_dict[self.KAPPA_M] = [[self.global_classification_metrics[i].get_kappa_m(),
+                                              self.partial_classification_metrics[i].get_kappa_m()]
+                                             for i in range(self.n_models)]
 
-        if 'hamming_score' in self.metrics:
-            new_points_dict['hamming_score'] = [[self.global_classification_metrics[i].get_hamming_score(),
-                                                 self.partial_classification_metrics[i].get_hamming_score()]
-                                                for i in range(self.n_models)]
+        if self.HAMMING_SCORE in self.metrics:
+            new_points_dict[self.HAMMING_SCORE] = [[self.global_classification_metrics[i].get_hamming_score(),
+                                                    self.partial_classification_metrics[i].get_hamming_score()]
+                                                   for i in range(self.n_models)]
 
-        if 'hamming_loss' in self.metrics:
-            new_points_dict['hamming_loss'] = [[self.global_classification_metrics[i].get_hamming_loss(),
-                                                self.partial_classification_metrics[i].get_hamming_loss()]
-                                               for i in range(self.n_models)]
+        if self.HAMMING_LOSS in self.metrics:
+            new_points_dict[self.HAMMING_LOSS] = [[self.global_classification_metrics[i].get_hamming_loss(),
+                                                   self.partial_classification_metrics[i].get_hamming_loss()]
+                                                  for i in range(self.n_models)]
 
-        if 'exact_match' in self.metrics:
-            new_points_dict['exact_match'] = [[self.global_classification_metrics[i].get_exact_match(),
-                                               self.partial_classification_metrics[i].get_exact_match()]
-                                              for i in range(self.n_models)]
+        if self.EXACT_MATCH in self.metrics:
+            new_points_dict[self.EXACT_MATCH] = [[self.global_classification_metrics[i].get_exact_match(),
+                                                  self.partial_classification_metrics[i].get_exact_match()]
+                                                 for i in range(self.n_models)]
 
-        if 'j_index' in self.metrics:
-            new_points_dict['j_index'] = [[self.global_classification_metrics[i].get_j_index(),
-                                           self.partial_classification_metrics[i].get_j_index()]
-                                          for i in range(self.n_models)]
+        if self.J_INDEX in self.metrics:
+            new_points_dict[self.J_INDEX] = [[self.global_classification_metrics[i].get_j_index(),
+                                              self.partial_classification_metrics[i].get_j_index()]
+                                             for i in range(self.n_models)]
 
-        if 'mean_square_error' in self.metrics:
-            new_points_dict['mean_square_error'] = [[self.global_classification_metrics[i].get_mean_square_error(),
-                                                     self.partial_classification_metrics[i].get_mean_square_error()]
-                                                    for i in range(self.n_models)]
+        if self.MSE in self.metrics:
+            new_points_dict[self.MSE] = [[self.global_classification_metrics[i].get_mean_square_error(),
+                                          self.partial_classification_metrics[i].get_mean_square_error()]
+                                         for i in range(self.n_models)]
 
-        if 'mean_absolute_error' in self.metrics:
-            new_points_dict['mean_absolute_error'] = [[self.global_classification_metrics[i].get_average_error(),
-                                                       self.partial_classification_metrics[i].get_average_error()]
-                                                      for i in range(self.n_models)]
+        if self.MAE in self.metrics:
+            new_points_dict[self.MAE] = [[self.global_classification_metrics[i].get_average_error(),
+                                          self.partial_classification_metrics[i].get_average_error()]
+                                         for i in range(self.n_models)]
 
-        if 'true_vs_predicts' in self.metrics:
+        if self.TRUE_VS_PREDICTED in self.metrics:
             true, pred = [], []
             for i in range(self.n_models):
                 t, p = self.global_classification_metrics[i].get_last()
                 true.append(t)
                 pred.append(p)
-            new_points_dict['true_vs_predicts'] = [[true[i], pred[i]] for i in range(self.n_models)]
+            new_points_dict[self.TRUE_VS_PREDICTED] = [[true[i], pred[i]] for i in range(self.n_models)]
 
-        if 'prediction' in self.metrics:
-            pred = []
-            for i in range(self.n_models):
-                t, p = self.global_classification_metrics[i].get_last()
-
-                pred.append(p)
-            new_points_dict['prediction'] = [[pred[i]] for i in range(self.n_models)]
-
-        if 'data_points' in self.metrics:
+        if self.DATA_POINTS in self.metrics:
 
             targets = self.stream.target_values
             pred = []
@@ -397,7 +389,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 pred.append(p)
                 samples.add_element([X])
 
-            new_points_dict['data_points'] = [[[samples.get_queue()[i]], targets, pred[i]]for i in range(self.n_models)]
+            new_points_dict[self.DATA_POINTS] = [[[samples.get_queue()[i]], targets, pred[i]]
+                                                 for i in range(self.n_models)]
 
         shift = 0
         if self._method == 'prequential':
@@ -463,15 +456,10 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                         header += ',global_mae_[{}],sliding_mae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
 
-                if self.TRUE_VS_PREDICT in self.metrics and self.PREDICTION in self.metrics or \
-                   self.TRUE_VS_PREDICT in self.metrics and self.PREDICTION not in self.metrics:
+                if self.TRUE_VS_PREDICTED in self.metrics:
                     for i in range(self.n_models):
                         header += ',true_value_[{}],predicted_value_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.TRUE_VS_PREDICT not in self.metrics and self.PREDICTION in self.metrics:
-                    for i in range(self.n_models):
-                        header += 'predicted_value_[{}]'.\
-                            format(self.model_names[i])
 
                 f.write(header)
 
@@ -520,16 +508,11 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_error(),
                                                     self.partial_classification_metrics[i].get_average_error())
 
-            if self.TRUE_VS_PREDICT in self.metrics and self.PREDICTION in self.metrics or \
-                    self.TRUE_VS_PREDICT in self.metrics and self.PREDICTION not in self.metrics:
+            if self.TRUE_VS_PREDICTED in self.metrics:
 
                 for i in range(self.n_models):
                     t, p = self.global_classification_metrics[i].get_last()
                     line += ',{:.6f},{:.6f}'.format(t, p)
-            if self.TRUE_VS_PREDICT not in self.metrics and self.PREDICTION in self.metrics:
-                for i in range(self.n_models):
-                    _, p = self.global_classification_metrics[i].get_last()
-                    line += ',{:.6f}'.format(p)
 
             with open(self.output_file, 'a') as f:
                 f.write('\n' + line)

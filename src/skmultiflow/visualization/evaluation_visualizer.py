@@ -38,7 +38,7 @@ class EvaluationVisualizer(BaseListener):
         A list containing all the subplots to plot. Can be any of: 
         'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
         'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
-        'true_vs_predicts', 'kappa_t', 'kappa_m'
+        'true_vs_predicted', 'kappa_t', 'kappa_m'
     
     n_learners: int
         The number of learners to compare.
@@ -69,7 +69,6 @@ class EvaluationVisualizer(BaseListener):
 
         self.text_annotations = []
 
-        self.prediction = None
         self.clusters = None
         self.X = None
         self.targets = None
@@ -166,7 +165,7 @@ class EvaluationVisualizer(BaseListener):
         self.subplot_j_index = None
         self.subplot_mse = None
         self.subplot_mae = None
-        self.subplot_true_vs_predicts = None
+        self.subplot_true_vs_predicted = None
         self.subplot_prediction = None
 
         if task_type is None or task_type == "undefined":
@@ -256,7 +255,7 @@ class EvaluationVisualizer(BaseListener):
             A list containing all the subplots to plot. Can be any of: 
             'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
             'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
-            'true_vs_predicts', 'kappa_t', 'kappa_m'
+            'true_vs_predicted', 'kappa_t', 'kappa_m'
         
         n_learners: int
             The number of learners to compare.
@@ -553,69 +552,41 @@ class EvaluationVisualizer(BaseListener):
             self._set_fig_legend(handle)
             self.subplot_mae.set_ylim(0, 1)
 
-        if 'true_vs_predicts' in self.plots:
+        if 'true_vs_predicted' in self.plots:
             self.true_values = []
             self.pred_values = [[] for _ in range(self.n_learners)]
 
-            self.subplot_true_vs_predicts = self.fig.add_subplot(base)
-            self.subplot_true_vs_predicts.set_title('True vs Predicted')
-            self.subplot_true_vs_predicts.set_ylabel('y')
-            self.subplot_true_vs_predicts.set_prop_cycle(cycler('color', ['c', 'm', 'y', 'k']))
+            self.subplot_true_vs_predicted = self.fig.add_subplot(base)
+            self.subplot_true_vs_predicted.set_title('True vs Predicted')
+            self.subplot_true_vs_predicted.set_ylabel('y')
+            self.subplot_true_vs_predicted.set_prop_cycle(cycler('color', ['c', 'm', 'y', 'k']))
             base += 1
 
             if self.task_type == 'classification':
-                self.line_true, = self.subplot_true_vs_predicts.step(self.sample_id, self.true_values,
-                                                                     label='True value')
+                self.line_true, = self.subplot_true_vs_predicted.step(self.sample_id, self.true_values,
+                                                                      label='True value')
             else:
-                self.line_true, = self.subplot_true_vs_predicts.plot(self.sample_id, self.true_values,
-                                                                     label='True value')
+                self.line_true, = self.subplot_true_vs_predicted.plot(self.sample_id, self.true_values,
+                                                                      label='True value')
             handle = [self.line_true]
 
             self.line_pred = [None for _ in range(self.n_learners)]
 
             for i in range(self.n_learners):
                 if self.task_type == 'classification':
-                    self.line_pred[i], = self.subplot_true_vs_predicts.step(self.sample_id, self.pred_values[i],
-                                                                            label='Model {} (global)'.
-                                                                            format(self.model_names[i]),
-                                                                            linestyle='dotted')
+                    self.line_pred[i], = self.subplot_true_vs_predicted.step(self.sample_id, self.pred_values[i],
+                                                                             label='Model {} (global)'.
+                                                                             format(self.model_names[i]),
+                                                                             linestyle='dotted')
                 else:
-                    self.line_pred[i], = self.subplot_true_vs_predicts.plot(self.sample_id, self.pred_values[i],
-                                                                            label='Model {} (global)'.
-                                                                            format(self.model_names[i]),
-                                                                            linestyle='dotted')
+                    self.line_pred[i], = self.subplot_true_vs_predicted.plot(self.sample_id, self.pred_values[i],
+                                                                             label='Model {} (global)'.
+                                                                             format(self.model_names[i]),
+                                                                             linestyle='dotted')
                 handle.append(self.line_pred[i])
 
-            self.subplot_true_vs_predicts.legend(handles=handle)
-            self.subplot_true_vs_predicts.set_ylim(0, 1)
-
-        if 'prediction' in self.plots:
-
-            self.prediction = [[] for _ in range(self.n_learners)]
-            handle = []
-
-            self.subplot_prediction = self.fig.add_subplot(base)
-            self.subplot_prediction.set_title('Predicted values')
-            self.subplot_prediction.set_ylabel('y')
-            self.subplot_prediction.set_prop_cycle(cycler('color', ['c', 'm', 'y', 'k']))
-            base += 1
-
-            self.line_prediction = [None for _ in range(self.n_learners)]
-
-            for i in range(self.n_learners):
-                if self.task_type == 'classification':
-                    self.line_prediction[i], = self.subplot_prediction.step(self.sample_id, self.prediction[i],
-                                                                            label='Model {} (global)'.
-                                                                            format(self.model_names[i])
-                                                                            )
-                else:
-                    self.line_prediction[i], = self.subplot_prediction.plot(self.sample_id, self.prediction[i],
-                                                                            label='Model {} (global)'.
-                                                                            format(self.model_names[i])
-                                                                            )
-                handle.append(self.line_prediction[i])
-            self.subplot_prediction.legend(handle)
-            self.subplot_prediction.set_ylim(0, 1)
+            self.subplot_true_vs_predicted.legend(handles=handle)
+            self.subplot_true_vs_predicted.set_ylim(0, 1)
 
         if 'data_points' in self.plots:
 
@@ -657,7 +628,6 @@ class EvaluationVisualizer(BaseListener):
             second element is its numerical value.
              
         """
-
 
         self.sample_id.append(train_step)
 
@@ -809,35 +779,21 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_mae.set_xlim(0, self.sample_id[-1])
             self.subplot_mae.set_ylim(minimum, 1.2*maximum)
 
-        if 'true_vs_predicts' in self.plots:
-            self.true_values.append(metrics_dict['true_vs_predicts'][0][0])
+        if 'true_vs_predicted' in self.plots:
+            self.true_values.append(metrics_dict['true_vs_predicted'][0][0])
             self.line_true.set_data(self.sample_id, self.true_values)
             minimum = 0
             maximum = 0
             for i in range(self.n_learners):
-                self.pred_values[i].append(metrics_dict['true_vs_predicts'][i][1])
+                self.pred_values[i].append(metrics_dict['true_vs_predicted'][i][1])
                 self.line_pred[i].set_data(self.sample_id, self.pred_values[i])
                 minimum = min([min(self.pred_values[i]), min(self.true_values), minimum])
                 maximum = max([max(self.pred_values[i]), max(self.true_values), maximum])
 
-            self.subplot_true_vs_predicts.set_xlim(0, self.sample_id[-1])
-            self.subplot_true_vs_predicts.set_ylim(minimum - 1, maximum + 1)
+            self.subplot_true_vs_predicted.set_xlim(0, self.sample_id[-1])
+            self.subplot_true_vs_predicted.set_ylim(minimum - 1, maximum + 1)
 
-            self.subplot_true_vs_predicts.legend(loc=2, bbox_to_anchor=(1.01, 1.))
-
-        if 'prediction' in self.plots:
-            minimum = 0
-            maximum = 0
-            for i in range(self.n_learners):
-                self.prediction[i].append(metrics_dict['prediction'][i][0])
-                self.line_prediction[i].set_data(self.sample_id, self.prediction[i])
-                minimum = min([min(self.prediction[i]), minimum])
-                maximum = max([max(self.prediction[i]), maximum])
-
-            self.subplot_prediction.set_xlim(0, self.sample_id[-1])
-            self.subplot_prediction.set_ylim(minimum - 1, maximum + 1)
-
-            self.subplot_prediction.legend(loc=2, bbox_to_anchor=(1.01, 1.))
+            self.subplot_true_vs_predicted.legend(loc=2, bbox_to_anchor=(1.01, 1.))
 
         if 'data_points' in self.plots:
             self.X.add_element(metrics_dict['data_points'][0][0])
