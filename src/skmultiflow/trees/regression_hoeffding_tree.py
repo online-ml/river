@@ -305,6 +305,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
                  learning_ratio_decay=0.001,
                  learning_ratio_const=True):
 
+        self.split_criterion = 'variance reduction'
         self.max_byte_size = max_byte_size
         self.memory_estimate_period = memory_estimate_period
         self.grace_period = grace_period
@@ -349,6 +350,18 @@ class RegressionHoeffdingTree(HoeffdingTree):
             self._leaf_prediction = PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
+
+    @property
+    def split_criterion(self):
+        return self._split_criterion
+
+    @split_criterion.setter
+    def split_criterion(self, split_criterion):
+        if split_criterion != 'variance reduction':
+            logger.info("Invalid option {}', will use default '{}'".format(split_criterion, 'variance reduction'))
+            self._split_criterion = 'variance reduction'
+        else:
+            self._split_criterion = split_criterion
 
     def normalize_sample(self, X):
         """
