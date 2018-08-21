@@ -774,6 +774,7 @@ class HoeffdingTree(StreamModel):
         self._byte_size_estimate_overhead_fraction = 1.0
         self._growth_allowed = True
         self._train_weight_seen_by_model = 0.0
+        self.classes = None
 
     @property
     def max_byte_size(self):
@@ -891,6 +892,14 @@ class HoeffdingTree(StreamModel):
             logger.debug("No Nominal attributes have been defined, will consider all attributes as numerical")
         self._nominal_attributes = nominal_attributes
 
+    @property
+    def classes(self):
+        return self._classes
+
+    @classes.setter
+    def classes(self, value):
+        self._classes = value
+
     def __sizeof__(self):
         """Calculate the size of the tree.
 
@@ -957,11 +966,15 @@ class HoeffdingTree(StreamModel):
             Instance attributes.
         y: array_like
             Classes (targets) for all samples in X.
-        classes: Not used.
+        classes: list or numpy.array
+            Contains the class values in the stream. If defined, will be used to define the length of the arrays
+            returned by `predict_proba`
         weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
 
         """
+        if self.classes is None and classes is not None:
+            self.classes = classes
         if y is not None:
             if weight is None:
                 weight = np.array([1.0])
@@ -985,7 +998,6 @@ class HoeffdingTree(StreamModel):
             Instance attributes.
         y: array_like
             Classes (targets) for all samples in X.
-        classes: Not used.
         weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
 
@@ -1080,7 +1092,10 @@ class HoeffdingTree(StreamModel):
             else:
                 if sum(votes.values()) != 0:
                     normalize_values_in_dict(votes)
-                y_proba = [0] * (int(max(votes.keys())) + 1)
+                if self.classes is not None:
+                    y_proba = np.zeros(int(max(self.classes)) + 1)
+                else:
+                    y_proba = np.zeros(int(max(votes.keys())) + 1)
                 for key, value in votes.items():
                     y_proba[int(key)] = value
                 predictions.append(y_proba)
