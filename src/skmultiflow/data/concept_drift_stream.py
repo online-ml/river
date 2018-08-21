@@ -10,46 +10,51 @@ class ConceptDriftStream(Stream):
     A stream generator that adds concept drift or change by joining several streams.
     This is done by building a weighted combination of two pure distributions that
     characterizes the target concepts before and after the change.
-    MOA uses the sigmoid function as an elegant and practical solution to define
-    the probability that each new instance of the stream belongs to the new concept after the drift.
-    The sigmoid function introduces a gradual, smooth transition whose duration is controlled with
-    two parameters: p, the position where the change occurs, and the length w of the transition
-    :math:`f(t) = 1/(1+\e^{-4*(t-p)/w})`
+
+    The sigmoid function is an elegant and practical solution to define the probability that ech
+    new instance of the stream belongs to the new concept after the drift. The sigmoid function
+    introduces a gradual, smooth transition whose duration is controlled with two parameters:
+
+    - `p`, the position where the change occurs
+    - `w`, the width of the transition
+
+    The sigmoid funtion at sample `t` is
+
+    :math:`f(t) = 1/(1+e^{-4*(t-p)/w})`
 
     Parameters
     ----------
-    stream_option: generator (Default= AGRAWALGenerator(random_state=112))
+    stream_option: generator (default= AGRAWALGenerator(random_state=112))
         stream generator
 
-    drift_stream_option: generator (Default= AGRAWALGenerator(random_state=112,classification_function=2))
+    drift_stream_option: generator (default= AGRAWALGenerator(random_state=112, classification_function=2))
         stream generator that adds drift
 
-     random_state: int, RandomState instance or None, optional (default=None)
+    random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
 
     alpha_option: float (Default: 0.0)
-        Angle alpha of change grade
-        Values go from 0.0 to 90.0
+        Angle alpha of change grade.
+        Values go from 0.0 to 90.0.
 
     position_option: int (Default: 0)
-        Central position of concept drift change
+        Central position of concept drift change.
 
-    position_option: int (Default: 1000)
-        Width of concept drift change
-
-
+    width_option: int (Default: 1000)
+        Width of concept drift change.
 
     """
 
     def __init__(self, stream_option=AGRAWALGenerator(random_state=112),
                  drift_stream_option=AGRAWALGenerator(random_state=112, classification_function=2),
-                 random_state=None, alpha_option=0.0,
-                 position_option=0, width_option=1000):
-
-        super().__init__()
+                 random_state=None,
+                 alpha_option=0.0,
+                 position_option=0,
+                 width_option=1000):
+        super(ConceptDriftStream, self).__init__()
 
         self.n_samples = stream_option.n_samples
         self.n_targets = stream_option.n_targets
@@ -119,14 +124,14 @@ class ConceptDriftStream(Stream):
             x = -4.0 * float(self.sample_idx - self.position_option) / float(self.width_option)
             probability_drift = 1.0 / (1.0 + np.exp(x))
             if self.random_state.rand() > probability_drift:
-                if self.current_sample_x == []:
+                if not self.current_sample_x:
                     self.current_sample_x, self.current_sample_y = self._input_stream.next_sample()
                 else:
                     X, y = self._input_stream.next_sample()
                     self.current_sample_x = np.append(self.current_sample_x, X, axis=0)
                     self.current_sample_y = np.append(self.current_sample_y, y, axis=0)
             else:
-                if self.current_sample_x == []:
+                if not self.current_sample_x:
                     self.current_sample_x, self.current_sample_y = self._drift_stream.next_sample()
                 else:
                     X, y = self._drift_stream.next_sample()
@@ -139,4 +144,17 @@ class ConceptDriftStream(Stream):
         self.prepare_for_use()
 
     def get_info(self):
-        pass
+        """Collects information about the generator.
+
+        Returns
+        -------
+        string
+            Configuration for the generator object.
+        """
+        description = type(self).__name__ + ': '
+        description += 'First Stream: {} - '.format(type(self._input_stream).__name__)
+        description += 'Drift Stream: {} - '.format(type(self._drift_stream).__name__)
+        description += 'alpha: {} - '.format(self.alpha_option)
+        description += 'position: {} - '.format(self.position_option)
+        description += 'width: {} - '.format(self.width_option)
+        return description
