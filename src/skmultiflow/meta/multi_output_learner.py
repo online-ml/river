@@ -193,9 +193,7 @@ class MultiOutputLearner(StreamModel):
         return proba
 
     def get_info(self):
-        return 'MultiOutputLearner: - base_estimator: ' + str(self.ensemble) + \
-               ' - n_learners: ' + str(len(self.ensemble)) + \
-               ' - n_classification_tasks: ' + str(self.n_labels)
+        return 'MultiOutputLearner: - base_estimator: '  + str(type(self.base_estimator).__name__)
 
     def score(self, X, y):
         raise NotImplementedError
