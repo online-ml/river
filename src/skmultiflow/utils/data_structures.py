@@ -1,4 +1,3 @@
-import sys
 from skmultiflow.core.base_object import BaseObject
 import numpy as np
 
@@ -30,10 +29,10 @@ class FastBuffer(BaseObject):
     --------
     >>> # In the following example we keep track of the last 1000 predictions 
     >>> # and true labels
-    >>> from skmultiflow.utils import FastBuffer
-    >>> from skmultiflow.lazy import KNN
+    >>> from skmultiflow.utils.data_structures import FastBuffer
+    >>> from skmultiflow.lazy.knn import KNN
     >>> from skmultiflow.data.file_stream import FileStream
-    >>> file_stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
+    >>> file_stream = FileStream("skmultiflow/data/datasets/covtype.csv")
     >>> file_stream.prepare_for_use()
     >>> clf = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
     >>> # Initially we need to partial_fit at least n_neighbors=8 samples
@@ -51,7 +50,7 @@ class FastBuffer(BaseObject):
 
     def __init__(self, max_size, object_list=None):
         super().__init__()
-        #default values
+        # Default values
         self.current_size = 0
         self.max_size = None
         self.buffer = []
@@ -63,8 +62,8 @@ class FastBuffer(BaseObject):
 
     def configure(self, max_size, object_list):
         self.max_size = max_size
-        if object_list is not None:
-            self.buffer = object_list
+        if isinstance(object_list, list):
+            self.add_element(object_list)
 
     def add_element(self, element_list):
         """ add_element
@@ -95,13 +94,11 @@ class FastBuffer(BaseObject):
 
         else:
             aux = []
-            if self.isfull():
-                aux.append(self.get_next_element())
-            else:
+            for element in element_list:
+                if self.is_full():
+                    aux.append(self.get_next_element())
+                self.buffer.append(element)
                 self.current_size += 1
-            self.buffer.append(element_list[0])
-            if len(element_list) > 1:
-                aux.extend(self.add_element(element_list[1:]))
             return aux
 
     def get_next_element(self):
@@ -115,7 +112,11 @@ class FastBuffer(BaseObject):
             The first element in the queue.
         
         """
-        return self.buffer.pop(0)
+        result = None
+        if len(self.buffer) > 0:
+            result = self.buffer.pop(0)
+            self.current_size -= 1
+        return result
 
     def clear_queue(self):
         self._clear_all()
@@ -129,10 +130,10 @@ class FastBuffer(BaseObject):
     def print_queue(self):
         print(self.buffer)
 
-    def isfull(self):
+    def is_full(self):
         return self.current_size == self.max_size
 
-    def isempty(self):
+    def is_empty(self):
         return self.current_size == 0
 
     def get_current_size(self):
@@ -193,7 +194,7 @@ class FastComplexBuffer(BaseObject):
 
     def __init__(self, max_size, width):
         super().__init__()
-        #default values
+        # Default values
         self.current_size = 0
         self.max_size = None
         self.width = None
@@ -218,7 +219,7 @@ class FastComplexBuffer(BaseObject):
 
         Parameters
         ----------
-        element_list: list
+        element_list: list or numpy.array
             A list with all the elements that are to be added to the queue.
 
         Returns
@@ -256,29 +257,27 @@ class FastComplexBuffer(BaseObject):
 
         if not is_list:
             if size == 1:
-                list = [element_list.tolist()]
+                items = [element_list.tolist()]
             else:
-                list = element_list.tolist()
+                items = element_list.tolist()
         else:
             if size == 1:
-                list = [element_list]
+                items = [element_list]
             else:
-                list = element_list
+                items = element_list
 
         if (self.current_size+size) <= self.max_size:
             for i in range(size):
-                self.buffer.append(list[i])
+                self.buffer.append(items[i])
             self.current_size += size
             return None
         else:
             aux = []
-            if self.isfull():
-                aux.append(self.get_next_element())
-            else:
+            for element in items:
+                if self.is_full():
+                    aux.append(self.get_next_element())
+                self.buffer.append(element)
                 self.current_size += 1
-            self.buffer.append(list[0])
-            if len(list) > 1:
-                aux.extend(self.add_element(list[1:]))
             return aux
 
     def get_next_element(self):
@@ -292,7 +291,11 @@ class FastComplexBuffer(BaseObject):
             The first element of the queue.
         
         """
-        return self.buffer.pop(0)
+        result = None
+        if len(self.buffer) > 0:
+            result = self.buffer.pop(0)
+            self.current_size -= 1
+        return result
 
     def clear_queue(self):
         self._clear_all()
@@ -306,10 +309,10 @@ class FastComplexBuffer(BaseObject):
     def print_queue(self):
         print(self.buffer)
 
-    def isfull(self):
+    def is_full(self):
         return self.current_size == self.max_size
 
-    def isempty(self):
+    def is_empty(self):
         return self.current_size == 0
 
     def get_current_size(self):
@@ -335,8 +338,9 @@ class FastComplexBuffer(BaseObject):
         return self.buffer
 
     def get_info(self):
-        return 'FastBuffer: max_size: ' + str(self.max_size) + ' - current_size: ' \
-               + str(self.current_size) + ' - width: ' + str(self.width)
+        return 'FastBuffer: max_size: ' + str(self.max_size)\
+               + ' - current_size: ' + str(self.current_size)\
+               + ' - width: ' + str(self.width)
 
 
 class ConfusionMatrix(BaseObject):
@@ -427,12 +431,12 @@ class ConfusionMatrix(BaseObject):
                 return self._update(i, j)
 
             else:
-                max = np.max(i, j)
-                if max > m+1:
+                max_value = np.max(i, j)
+                if max_value > m + 1:
                     return False
 
                 else:
-                    self.reshape(max, max)
+                    self.reshape(max_value, max_value)
                     return self._update(i, j)
 
     def remove(self, i=None, j=None):
@@ -451,7 +455,7 @@ class ConfusionMatrix(BaseObject):
         
         Returns
         -------
-        bools
+        bool
             True if the removal was successful and False otherwise.
         
         Notes
@@ -532,7 +536,7 @@ class ConfusionMatrix(BaseObject):
             The complete row indexed by r.
         
         """
-        return self.confusion_matrix[r:r+1, :]
+        return self.confusion_matrix[r: r + 1, :]
 
     def column(self, c):
         """ column
@@ -548,12 +552,10 @@ class ConfusionMatrix(BaseObject):
             The complete column indexed by c.
 
         """
-        return self.confusion_matrix[:, c:c+1]
+        return self.confusion_matrix[:, c: c + 1]
 
     def get_sum_main_diagonal(self):
-        """ get_sum_main_diagonal
-        
-        Computes the sum of occurrences in the main diagonal.
+        """ Computes the sum of occurrences in the main diagonal.
         
         Returns
         -------
@@ -562,10 +564,10 @@ class ConfusionMatrix(BaseObject):
         
         """
         m, n = self.confusion_matrix.shape
-        sum = 0
+        sum_main_diagonal = 0
         for i in range(m):
-            sum += self.confusion_matrix[i, i]
-        return sum
+            sum_main_diagonal += self.confusion_matrix[i, i]
+        return sum_main_diagonal
 
     @property
     def _matrix(self):
@@ -820,11 +822,11 @@ class MOLConfusionMatrix(BaseObject):
 
         """
         t, m, n = self.confusion_matrix.shape
-        sum = 0
+        sum_main_diagonal = 0
         for i in range(t):
-            sum += self.confusion_matrix[i, 0, 0]
-            sum += self.confusion_matrix[i, 1, 1]
-        return sum
+            sum_main_diagonal += self.confusion_matrix[i, 0, 0]
+            sum_main_diagonal += self.confusion_matrix[i, 1, 1]
+        return sum_main_diagonal
 
     def get_total_sum(self):
         """ get_total_sum
@@ -832,7 +834,7 @@ class MOLConfusionMatrix(BaseObject):
         Returns
         ------
         int
-            The sum of occurrences in the metrix.
+            The sum of occurrences in the matrix.
         
         """
         return np.sum(self.confusion_matrix)
@@ -908,22 +910,17 @@ class InstanceWindow(BaseObject):
     def __init__(self, num_attributes=0, num_target_tasks=1, categorical_list=None, max_size=1000, dtype=float):
         super().__init__()
         # default values
-        self.dtype = None
         self.buffer = None
-        self.n_attributes = None
-        self.max_size = None
-        self.categorical_attributes = None
         self.n_samples = None
-        self.n_target_tasks = None
-        self.configure(num_attributes=num_attributes, num_target_tasks=num_target_tasks, categorical_list=categorical_list, max_size=max_size, dtype=dtype)
-
-    def configure(self, num_attributes, num_target_tasks, categorical_list=None, max_size=1000, dtype=float):
         self.n_attributes = num_attributes
         self.categorical_attributes = categorical_list
         self.max_size = max_size
         self.dtype = dtype
         self.n_target_tasks = num_target_tasks
-        self.buffer = np.zeros((0, num_attributes+num_target_tasks))
+        self.configure()
+
+    def configure(self):
+        self.buffer = np.zeros((0, self.n_attributes + self.n_target_tasks))
         self.n_samples = 0
 
     def add_element(self, X, y):
@@ -961,8 +958,7 @@ class InstanceWindow(BaseObject):
             self.buffer = np.delete(self.buffer, 0, axis=0)
 
         if self.buffer is None:
-            raise TypeError("None type not supported as the buffer, call __configure() to correctly set up "
-                            "the InstanceWindow")
+            raise TypeError("None type not supported as the buffer, call configure() to set up the InstanceWindow")
 
         aux = np.concatenate((X, y), axis=1)
         self.buffer = np.concatenate((self.buffer, aux), axis=0)
@@ -1027,11 +1023,3 @@ class InstanceWindow(BaseObject):
                ' - n_samples: ' + str(self.n_samples) + \
                ' - max_size: ' + str(self.max_size) + \
                ' - dtype: ' + str(self.dtype)
-
-
-if __name__ == '__main__':
-    text = '/asddfdsd/'
-    aux = text.split("/")
-    print(aux)
-
-
