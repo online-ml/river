@@ -1,4 +1,3 @@
-from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data import RandomTreeGenerator
 from skmultiflow.meta.adaptive_random_forests import AdaptiveRandomForest
 import numpy as np
@@ -8,9 +7,7 @@ def test_adaptive_random_forests():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112)
     stream.prepare_for_use()
 
-    classifier = AdaptiveRandomForest(random_state=112)
-
-    learner = Pipeline([('classifier', classifier)])
+    learner = AdaptiveRandomForest(random_state=112)
 
     X, y = stream.next_sample(150)
     learner.partial_fit(X, y)
@@ -35,9 +32,9 @@ def test_adaptive_random_forests():
         cnt += 1
 
     performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1,
-                            0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0,
-                            1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0]
+    expected_predictions = [1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0,
+                            1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0,
+                            1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0]
     expected_correct_predictions = 31
     expected_performance = 0.6326530612244898
 
