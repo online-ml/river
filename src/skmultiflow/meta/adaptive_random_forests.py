@@ -209,8 +209,7 @@ class AdaptiveRandomForest(StreamModel):
         for i in range(self.n_estimators):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
             self.ensemble[i].evaluator.add_result(y_predicted, y, weight)
-            rnd = check_random_state(self.random_state)
-            k = rnd.poisson(self.lambda_value)
+            k = self.random_state.poisson(self.lambda_value)
             if k > 0:
                 self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]), np.asarray([k]), self.instances_seen)
     
@@ -310,7 +309,7 @@ class AdaptiveRandomForest(StreamModel):
                                                                nb_threshold=self.nb_threshold,
                                                                nominal_attributes=self.nominal_attributes,
                                                                max_features=self.max_features,
-                                                               random_state=self.random_state),
+                                                               random_state=self._init_random_state),
                                               self.instances_seen,
                                               self.drift_detection_method,
                                               self.warning_detection_method,
