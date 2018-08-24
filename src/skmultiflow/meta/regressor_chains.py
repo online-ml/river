@@ -122,3 +122,6 @@ class RegressorChain(StreamModel) :
                ' - base_estimator: {}'.format(self.base_estimator) + \
                ' - order: {}'.format(self.order) + \
                ' - random_state: {}'.format(self._init_random_state)
+
+    def predict_proba(self, X):
+        raise NotImplementedError
