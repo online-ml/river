@@ -7,26 +7,26 @@ from skmultiflow.evaluation.base_evaluator import StreamEvaluator
 
 class EvaluateHoldout(StreamEvaluator):
     """ EvaluateHoldout
-    
-    The holdout evaluation method, or periodic holdout evaluation method, analyses 
-    each arriving sample, without computing performance metrics, nor predicting 
+
+    The holdout evaluation method, or periodic holdout evaluation method, analyses
+    each arriving sample, without computing performance metrics, nor predicting
     labels or regressing values, but by updating its statistics.
-    
-    The performance evaluation happens at every n_wait analysed samples, at which 
-    moment the evaluator will test the learners performance on a test set, formed 
-    by yet unseen samples, which will be used to evaluate performance, but not to 
-    train the model. 
-    
-    It's possible to use the same test set for every test made, but it's also 
-    possible to dynamically create test sets, so that they differ from each other. 
-    If dynamic test sets are enabled, we use the data stream to create test sets 
-    on the go. This process is more likely to generate test sets that follow the 
+
+    The performance evaluation happens at every n_wait analysed samples, at which
+    moment the evaluator will test the learners performance on a test set, formed
+    by yet unseen samples, which will be used to evaluate performance, but not to
+    train the model.
+
+    It's possible to use the same test set for every test made, but it's also
+    possible to dynamically create test sets, so that they differ from each other.
+    If dynamic test sets are enabled, we use the data stream to create test sets
+    on the go. This process is more likely to generate test sets that follow the
     current concept, in comparison to static test sets.
-    
-    Thus, if concept drift is known to be present in the dataset/generator enabling 
-    dynamic test sets is highly recommended. If no concept drift is expected, 
+
+    Thus, if concept drift is known to be present in the dataset/generator enabling
+    dynamic test sets is highly recommended. If no concept drift is expected,
     disabling this parameter will speed up the evaluation process.
-    
+
     Parameters
     ----------
     n_wait: int (Default: 10000)
@@ -34,18 +34,18 @@ class EvaluateHoldout(StreamEvaluator):
 
     max_samples: int (Default: 100000)
         The maximum number of samples to process during the evaluation.
-    
+
     batch_size: int (Default: 1)
         The number of samples to pass at a time to the model(s).
 
     max_time: float (Default: float("inf"))
         The maximum duration of the simulation (in seconds).
-    
+
     metrics: list, optional (Default: ['performance'])
         The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
         and/or logged into the output file. Valid options are 'performance', 'kappa', 'kappa_t', 'kappa_m',
         'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
-        'true_vs_predicts'.
+        'true_vs_predicts', 'average_mean_squared_error', 'average_mean_absolute_error'.
 
     output_file: string, optional (Default: None)
         File name to save the summary of the evaluation.
@@ -62,17 +62,17 @@ class EvaluateHoldout(StreamEvaluator):
 
     dynamic_test_set: bool (Default: False)
         If True, will continuously change the test set, otherwise will use the same test set for all tests.
-    
+
     Notes
     -----
-    It's important to note that testing the model too often, which means choosing 
+    It's important to note that testing the model too often, which means choosing
     a `n_wait` parameter too small, will significantly slow the evaluation process,
-    depending on the test size. 
-    
-    This evaluator accepts to types of evaluation processes. It can either evaluate 
-    a single learner while computing its metrics or it can evaluate multiple learners 
+    depending on the test size.
+
+    This evaluator accepts to types of evaluation processes. It can either evaluate
+    a single learner while computing its metrics or it can evaluate multiple learners
     at a time, as a means of comparing different approaches to the same problem.
-    
+
     Examples
     --------
     >>> # The first example demonstrates how to use the evaluator to evaluate one learner
@@ -93,7 +93,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>>                             test_size=5000, dynamic_test_set=True)
     >>> # Evaluate
     >>> evaluator.evaluate(stream=stream, model=pipe)
-    
+
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluateHoldout
     >>> from skmultiflow.data import WaveformGenerator
@@ -109,7 +109,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>>                             n_wait=10000, max_time=1000, output_file=None, show_plot=True,
     >>>                             metrics=['kappa', 'performance'])
     >>> evaluator.evaluate(stream=stream, model=classifier)
-    
+
     """
 
     def __init__(self,
@@ -150,24 +150,24 @@ class EvaluateHoldout(StreamEvaluator):
 
     def evaluate(self, stream, model, model_names=None):
         """ evaluate
-        
+
         Parameters
         ---------
-        stream: A stream (an extension from BaseInstanceStream) 
-            The stream from which to draw the samples. 
-        
+        stream: A stream (an extension from BaseInstanceStream)
+            The stream from which to draw the samples.
+
         model: A learner (an extension from BaseClassifier) or a list of learners.
-            The learner or learners on which to train the model and measure the 
+            The learner or learners on which to train the model and measure the
             performance metrics.
 
         model_names: list, optional (Default=None)
             A list with the names of the learners.
-            
+
         Returns
         -------
         BaseClassifier extension or list of BaseClassifier extensions
             The trained classifier's at the end of the evaluation process.
-        
+
         """
         # First off we need to verify if this is a simple evaluation task or a comparison between learners task.
         self._init_evaluation(model=model, stream=stream, model_names=model_names)
@@ -188,18 +188,18 @@ class EvaluateHoldout(StreamEvaluator):
 
     def _periodic_holdout(self):
         """ Method to control the holdout evaluation.
-             
+
         Returns
         -------
         BaseClassifier extension or list of BaseClassifier extensions
-            The trained classifiers. 
-        
+            The trained classifiers.
+
         Notes
         -----
-        The classifier parameter should be an extension from the BaseClassifier. In 
-        the future, when BaseRegressor is created, it could be an axtension from that 
+        The classifier parameter should be an extension from the BaseClassifier. In
+        the future, when BaseRegressor is created, it could be an axtension from that
         class as well.
-        
+
         """
         logging.basicConfig(format='%(message)s', level=logging.INFO)
         init_time = timer()
@@ -250,7 +250,8 @@ class EvaluateHoldout(StreamEvaluator):
                     # Train
                     if first_run:
                         for i in range(self.n_models):
-                            if self._task_type != EvaluateHoldout.REGRESSION:
+                            if self._task_type != EvaluateHoldout.REGRESSION and \
+                               self._task_type != EvaluateHoldout.MULTI_TARGET_REGRESSION:
                                 self.model[i].partial_fit(X, y, self.stream.target_values)
                             else:
                                 self.model[i].partial_fit(X, y)
@@ -347,6 +348,12 @@ class EvaluateHoldout(StreamEvaluator):
             if 'mean_absolute_error' in self.metrics:
                 logging.info('{} - MAE          : {:3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_average_error()))
+            if 'average_mean_square_error' in self.metrics:
+                logging.info('{} - AMSE          : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_average_mean_square_error()))
+            if 'average_mean_absolute_error' in self.metrics:
+                logging.info('{} - AMAE          : {:3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_average_absolute_error()))
 
         if self.restart_stream:
             self.stream.restart()
@@ -355,28 +362,28 @@ class EvaluateHoldout(StreamEvaluator):
 
     def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
-        
+
         Partially fit all the learners on the given data.
-        
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             The data upon which the algorithm will create its model.
-            
+
         y: Array-like
             An array-like containing the classification targets for all samples in X.
-            
+
         classes: list
             Stores all the classes that may be encountered during the classification task.
 
         weight: Array-like
             Instance weight. If not provided, uniform weights are assumed.
-        
+
         Returns
         -------
         EvaluateHoldout
             self
-         
+
         """
         if self.model is not None:
             for i in range(self.n_models):
@@ -388,7 +395,7 @@ class EvaluateHoldout(StreamEvaluator):
     def predict(self, X):
         """ predict
 
-        Predicts the labels of the X samples, by calling the predict 
+        Predicts the labels of the X samples, by calling the predict
         function of all the learners.
 
         Parameters
@@ -399,7 +406,7 @@ class EvaluateHoldout(StreamEvaluator):
         Returns
         -------
         list
-            A list containing the predicted labels for all instances in X in 
+            A list containing the predicted labels for all instances in X in
             all learners.
 
         """
@@ -420,17 +427,17 @@ class EvaluateHoldout(StreamEvaluator):
 
     def set_params(self, parameter_dict):
         """ set_params
-        
-        This function allows the users to change some of the evaluator's parameters, 
-        by passing a dictionary where keys are the parameters names, and values are 
+
+        This function allows the users to change some of the evaluator's parameters,
+        by passing a dictionary where keys are the parameters names, and values are
         the new parameters' values.
-        
+
         Parameters
         ----------
         dict: Dictionary
-            A dictionary where the keys are the names of attributes the user 
+            A dictionary where the keys are the names of attributes the user
             wants to change, and the values are the new values of those attributes.
-             
+
         """
         for name, value in parameter_dict.items():
             if name == 'n_wait':
