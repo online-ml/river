@@ -43,7 +43,7 @@ class EvaluatePrequential(StreamEvaluator):
         The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
         and/or logged into the output file. Valid options are 'performance', 'kappa', 'kappa_t', 'kappa_m',
         'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
-        'true_vs_predicted'.
+        'true_vs_predicted', 'average_mean_square_error', 'average_mean_absolute_error'.
 
     output_file: string, optional (Default: None)
         File name to save the summary of the evaluation.
@@ -240,7 +240,8 @@ class EvaluatePrequential(StreamEvaluator):
             logging.info('Pre-training on %s samples.', str(self.pretrain_size))
             X, y = self.stream.next_sample(self.pretrain_size)
             for i in range(self.n_models):
-                if self._task_type != EvaluatePrequential.REGRESSION:
+                if self._task_type != EvaluatePrequential.REGRESSION and \
+                   self._task_type != EvaluatePrequential.MULTI_TARGET_REGRESSION:
                     self.model[i].partial_fit(X=X, y=y, classes=self.stream.target_values)
                 else:
                     self.model[i].partial_fit(X=X, y=y)
@@ -280,7 +281,8 @@ class EvaluatePrequential(StreamEvaluator):
                     # Train
                     if first_run:
                         for i in range(self.n_models):
-                            if self._task_type != EvaluatePrequential.REGRESSION:
+                            if self._task_type != EvaluatePrequential.REGRESSION and \
+                               self._task_type != EvaluatePrequential.MULTI_TARGET_REGRESSION:
                                 self.model[i].partial_fit(X, y, self.stream.target_values)
                             else:
                                 self.model[i].partial_fit(X, y)
@@ -341,6 +343,12 @@ class EvaluatePrequential(StreamEvaluator):
             if self.MAE in self.metrics:
                 logging.info('{} - MAE          : {:3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_average_error()))
+            if self.AMSE in self.metrics:
+                logging.info('{} - AMSE          : {:.3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_average_mean_square_error()))
+            if self.AMAE in self.metrics:
+                logging.info('{} - AMAE          : {:3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_average_absolute_error()))
 
         if self.restart_stream:
             self.stream.restart()
