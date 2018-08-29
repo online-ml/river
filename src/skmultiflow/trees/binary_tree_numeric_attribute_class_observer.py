@@ -118,6 +118,3 @@ class BinaryTreeNumericAttributeClassObserver(AttributeClassObserver):
                                                                 post_split_dists[1], False, criterion, pre_split_dist,
                                                                 att_idx)
         return current_best_option
-
-
-

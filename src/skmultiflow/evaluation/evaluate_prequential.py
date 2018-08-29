@@ -7,26 +7,26 @@ from skmultiflow.evaluation.base_evaluator import StreamEvaluator
 
 class EvaluatePrequential(StreamEvaluator):
     """ EvaluatePrequential
-    
-    The prequential evaluation method, or interleaved test-then-train method, 
-    is an alternative to the traditional holdout evaluation, inherited from 
-    batch setting problems. 
-    
-    The prequential evaluation is designed specifically for stream settings, 
-    in the sense that each sample serves two purposes, and that samples are 
-    analysed sequentially, in order of arrival, and become immediately 
+
+    The prequential evaluation method, or interleaved test-then-train method,
+    is an alternative to the traditional holdout evaluation, inherited from
+    batch setting problems.
+
+    The prequential evaluation is designed specifically for stream settings,
+    in the sense that each sample serves two purposes, and that samples are
+    analysed sequentially, in order of arrival, and become immediately
     inaccessible by the means of the stream.
-    
-    This method consists of using each sample to test the model, which means 
-    to make a predictions or a regression, and then the same sample is used 
-    to train the learner (partial fit it). This way the learner is always 
+
+    This method consists of using each sample to test the model, which means
+    to make a predictions or a regression, and then the same sample is used
+    to train the learner (partial fit it). This way the learner is always
     being tested on samples that it hasn't seen yet.
-    
+
     Parameters
     ----------
     n_wait: int (Default: 200)
         The number of samples to process between each test. Also defines when to update the plot if `show_plot=True`.
-        
+
     max_samples: int (Default: 100000)
         The maximum number of samples to process during the evaluation.
 
@@ -44,7 +44,7 @@ class EvaluatePrequential(StreamEvaluator):
         and/or logged into the output file. Valid options are 'performance', 'kappa', 'kappa_t', 'kappa_m',
         'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
         'true_vs_predicted'.
-    
+
     output_file: string, optional (Default: None)
         File name to save the summary of the evaluation.
 
@@ -58,7 +58,7 @@ class EvaluatePrequential(StreamEvaluator):
     data_points_for_classification: bool(Default: False)
         If True , the plot type is a data points
         (only works for classification)
-    
+
     Notes
     -----
     1. This evaluator can process a single learner to track its performance; or multiple learners  at a time, to
@@ -66,7 +66,7 @@ class EvaluatePrequential(StreamEvaluator):
 
     2. The metric 'true_vs_predicted' is intended to be informative only. It corresponds to evaluations at a specific
        moment which might not represent the actual learner performance across all instances.
-    
+
     Examples
     --------
     >>> # The first example demonstrates how to use the evaluator to evaluate one learner
@@ -86,7 +86,7 @@ class EvaluatePrequential(StreamEvaluator):
     ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
     >>> # Evaluate
     >>> evaluator.evaluate(stream=stream, model=pipe)
-    
+
     >>> # The second example will demonstrate how to compare two classifiers with
     >>> # the EvaluatePrequential
     >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
@@ -172,27 +172,27 @@ class EvaluatePrequential(StreamEvaluator):
 
     def evaluate(self, stream, model, model_names=None):
         """ evaluate
-        
-        Evaluates a learner or set of learners by feeding them with the stream 
+
+        Evaluates a learner or set of learners by feeding them with the stream
         samples.
-        
+
         Parameters
         ----------
-        stream: A stream (an extension from BaseInstanceStream) 
-            The stream from which to draw the samples. 
-        
+        stream: A stream (an extension from BaseInstanceStream)
+            The stream from which to draw the samples.
+
         model: A learner (an extension from BaseClassifier) or a list of learners.
-            The learner or learners on which to train the model and measure the 
+            The learner or learners on which to train the model and measure the
             performance metrics.
 
         model_names: list, optional (Default=None)
             A list with the names of the learners.
-            
+
         Returns
         -------
         BaseClassifier extension or list of BaseClassifier extensions
             The trained classifiers.
-        
+
         """
         self._init_evaluation(model=model, stream=stream, model_names=model_names)
 
@@ -216,14 +216,14 @@ class EvaluatePrequential(StreamEvaluator):
         Returns
         -------
         BaseClassifier extension or list of BaseClassifier extensions
-            The trained classifiers. 
-        
+            The trained classifiers.
+
         Notes
         -----
-        The classifier parameter should be an extension from the BaseClassifier. In 
+        The classifier parameter should be an extension from the BaseClassifier. In
         the future, when BaseRegressor is created, it could be an extension from that
         class as well.
-        
+
         """
         logging.basicConfig(format='%(message)s', level=logging.INFO)
         init_time = timer()
@@ -382,7 +382,7 @@ class EvaluatePrequential(StreamEvaluator):
     def predict(self, X):
         """ predict
 
-        Predicts the labels of the X samples, by calling the predict 
+        Predicts the labels of the X samples, by calling the predict
         function of all the learners.
 
         Parameters
@@ -393,7 +393,7 @@ class EvaluatePrequential(StreamEvaluator):
         Returns
         -------
         list
-            A list containing the predicted labels for all instances in X in 
+            A list containing the predicted labels for all instances in X in
             all learners.
 
         """
@@ -415,14 +415,14 @@ class EvaluatePrequential(StreamEvaluator):
     def set_params(self, parameter_dict):
         """ set_params
 
-        This function allows the users to change some of the evaluator's parameters, 
-        by passing a dictionary where keys are the parameters names, and values are 
+        This function allows the users to change some of the evaluator's parameters,
+        by passing a dictionary where keys are the parameters names, and values are
         the new parameters' values.
 
         Parameters
         ----------
         parameter_dict: Dictionary
-            A dictionary where the keys are the names of attributes the user 
+            A dictionary where the keys are the names of attributes the user
             wants to change, and the values are the new values of those attributes.
 
         """
