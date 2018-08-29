@@ -270,8 +270,8 @@ class EvaluatePrequential(StreamEvaluator):
                     for j in range(self.n_models):
                         for i in range(len(prediction[0])):
                             if self._task_type == EvaluatePrequential.CLASSIFICATION:
-                                self.global_classification_metrics[j].add_result(X[i], y[i], prediction[j][i])
-                                self.partial_classification_metrics[j].add_result(X[i], y[i], prediction[j][i])
+                                self.global_classification_metrics[j].add_result(y[i], prediction[j][i])
+                                self.partial_classification_metrics[j].add_result(y[i], prediction[j][i])
                             else:
                                 self.global_classification_metrics[j].add_result(y[i], prediction[j][i])
                                 self.partial_classification_metrics[j].add_result(y[i], prediction[j][i])
