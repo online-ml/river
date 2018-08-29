@@ -252,13 +252,13 @@ class ClassificationMeasurements(BaseObject):
         return self.confusion_matrix._matrix
 
     def get_info(self):
-        return 'ClassificationMeasurements: targets: ' + str(self.targets) + \
-               ' - sample_count: ' + str(self.sample_count) + \
-               ' - performance: ' + str(self.get_performance()) + \
-               ' - kappa: ' + str(self.get_kappa()) + \
-               ' - kappa_t: ' + str(self.get_kappa_t()) + \
-               ' - kappa_m: ' + str(self.get_kappa_m()) + \
-               ' - majority_class: ' + str(self.get_majority_class())
+        return '{}:'.format(type(self).__name__) + \
+               ' - sample_count: {}'.format(self.sample_count) + \
+               ' - performance: {:.4f}'.format(self.get_performance()) + \
+               ' - kappa: {:.4f}'.format(self.get_kappa()) + \
+               ' - kappa_t: {:.4f}'.format(self.get_kappa_t()) + \
+               ' - kappa_m: {:.4f}'.format(self.get_kappa_m()) + \
+               ' - majority_class: {}'.format(self.get_majority_class())
 
     def get_class_type(self):
         return 'collection'
@@ -515,8 +515,8 @@ class WindowClassificationMeasurements(BaseObject):
 
         """
         p0 = self.get_performance()
-        if self._sample_count != 0:
-            pc = self.correct_no_change / self._sample_count
+        if self.sample_count != 0:
+            pc = self.correct_no_change / self.sample_count
         else:
             pc = 0
         if pc == 1:
@@ -535,8 +535,8 @@ class WindowClassificationMeasurements(BaseObject):
 
         """
         p0 = self.get_performance()
-        if self._sample_count != 0:
-            pc = self.majority_classifier / self._sample_count
+        if self.sample_count != 0:
+            pc = self.majority_classifier / self.sample_count
         else:
             pc = 0
         if pc == 1:
@@ -548,21 +548,21 @@ class WindowClassificationMeasurements(BaseObject):
         return self.confusion_matrix._matrix
 
     @property
-    def _sample_count(self):
+    def sample_count(self):
         return self.true_labels.get_current_size()
 
     def get_class_type(self):
         return 'collection'
 
     def get_info(self):
-        return 'ClassificationMeasurements: targets: ' + str(self.targets) + \
-               ' - sample_count: ' + str(self._sample_count) + \
-               ' - window_size: ' + str(self.window_size) + \
-               ' - performance: ' + str(self.get_performance()) + \
-               ' - kappa: ' + str(self.get_kappa()) + \
-               ' - kappa_t: ' + str(self.get_kappa_t()) + \
-               ' - kappa_m: ' + str(self.get_kappa_m()) + \
-               ' - majority_class: ' + str(self.get_majority_class())
+        return '{}:'.format(type(self).__name__) + \
+               ' - sample_count: {}'.format(self.sample_count) + \
+               ' - window_size: {}'.format(self.window_size) + \
+               ' - performance: {:.4f}'.format(self.get_performance()) + \
+               ' - kappa: {:.4f}'.format(self.get_kappa()) + \
+               ' - kappa_t: {:.4f}'.format(self.get_kappa_t()) + \
+               ' - kappa_m: {:.4f}'.format(self.get_kappa_m()) + \
+               ' - majority_class: {}'.format(self.get_majority_class())
 
 
 class MultiOutputMeasurements(BaseObject):
@@ -738,17 +738,13 @@ class MultiOutputMeasurements(BaseObject):
     def _matrix(self):
         return self.confusion_matrix._matrix
 
-    @property
-    def _sample_count(self):
-        return self.sample_count
-
     def get_info(self):
-        return 'MultiOutputMeasurements: targets: ' + str(self.targets) + \
-               ' - sample_count: ' + str(self._sample_count) + \
-               ' - hamming_loss: ' + str(self.get_hamming_loss()) + \
-               ' - hamming_score: ' + str(self.get_hamming_score()) + \
-               ' - exact_match: ' + str(self.get_exact_match()) + \
-               ' - j_index: ' + str(self.get_j_index())
+        return '{}:'.format(type(self).__name__) + \
+               ' - sample_count: {}'.format(self.sample_count) + \
+               ' - hamming_loss: {:.4f}'.format(self.get_hamming_loss()) + \
+               ' - hamming_score: {:.4f}'.format(self.get_hamming_score()) + \
+               ' - exact_match: {:.4f}'.format(self.get_exact_match()) + \
+               ' - j_index: {:.4f}'.format(self.get_j_index())
 
     def get_class_type(self):
         return 'collection'
@@ -925,16 +921,16 @@ class WindowMultiOutputMeasurements(BaseObject):
         return self.confusion_matrix._matrix
 
     @property
-    def _sample_count(self):
+    def sample_count(self):
         return self.true_labels.get_current_size()
 
     def get_info(self):
-        return 'WindowMultiOutputMeasurements: targets: ' + str(self.targets) + \
-               ' - sample_count: ' + str(self._sample_count) + \
-               ' - hamming_loss: ' + str(self.get_hamming_loss()) + \
-               ' - hamming_score: ' + str(self.get_hamming_score()) + \
-               ' - exact_match: ' + str(self.get_exact_match()) + \
-               ' - j_index: ' + str(self.get_j_index())
+        return '{}:'.format(type(self).__name__) + \
+               ' - sample_count: {}'.format(self.sample_count) + \
+               ' - hamming_loss: {:.4f}'.format(self.get_hamming_loss()) + \
+               ' - hamming_score: {:.4f}'.format(self.get_hamming_score()) + \
+               ' - exact_match: {:.4f}'.format(self.get_exact_match()) + \
+               ' - j_index: {:.4f}'.format(self.get_j_index())
 
     def get_class_type(self):
         return 'collection'
@@ -1026,17 +1022,14 @@ class RegressionMeasurements(BaseObject):
     def get_last(self):
         return self.last_true_label, self.last_prediction
 
-    @property
-    def _sample_count(self):
-        return self.sample_count
-
     def get_class_type(self):
         return 'collection'
 
     def get_info(self):
-        return 'RegressionMeasurements: sample_count: ' + str(self._sample_count) + \
-               ' - mean_square_error: ' + str(self.get_mean_square_error()) + \
-               ' - mean_absolute_error: ' + str(self.get_average_error())
+        return '{}:'.format(type(self).__name__) + \
+               ' - sample_count: {}'.format(self.sample_count) + \
+               ' - mean_square_error: {:.4f}'.format(self.get_mean_square_error()) + \
+               ' - mean_absolute_error: {:.4f}'.format(self.get_average_error())
 
 
 class WindowRegressionMeasurements(BaseObject):
@@ -1108,10 +1101,10 @@ class WindowRegressionMeasurements(BaseObject):
             Returns the window/local mean square error.
 
         """
-        if self._sample_count == 0:
+        if self.sample_count == 0:
             return 0.0
         else:
-            return self.total_square_error / self._sample_count
+            return self.total_square_error / self.sample_count
 
     def get_average_error(self):
         """ get_average_error
@@ -1124,25 +1117,26 @@ class WindowRegressionMeasurements(BaseObject):
             Returns the window/local mean absolute error.
 
         """
-        if self._sample_count == 0:
+        if self.sample_count == 0:
             return 0.0
         else:
-            return self.average_error / self._sample_count
+            return self.average_error / self.sample_count
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
 
     @property
-    def _sample_count(self):
+    def sample_count(self):
         return self.total_square_error_correction.get_current_size()
 
     def get_class_type(self):
         return 'collection'
 
     def get_info(self):
-        return 'RegressionMeasurements: sample_count: ' + str(self._sample_count) + \
-               ' - mean_square_error: ' + str(self.get_mean_square_error()) + \
-               ' - mean_absolute_error: ' + str(self.get_average_error())
+        return '{}:'.format(type(self).__name__) + \
+               ' - sample_count: {}'.format(self.sample_count) + \
+               ' - mean_square_error: {:.4f}'.format(self.get_mean_square_error()) + \
+               ' - mean_absolute_error: {:.4f}'.format(self.get_average_error())
 
 
 def hamming_score(true_labels, predicts):

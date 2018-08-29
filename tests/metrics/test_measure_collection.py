@@ -31,8 +31,8 @@ def test_classification_measurements():
     expected_kappa_t = (expected_acc - .97) / (1 - 0.97)
     assert expected_kappa_t == measurements.get_kappa_t()
 
-    expected_info = 'ClassificationMeasurements: targets: [1.0, 0.0] - sample_count: 100.0 - performance: 0.9 ' \
-                    '- kappa: 0.44444444444444436 - kappa_t: -2.3333333333333295 - kappa_m: 0.888888888888889 - majority_class: 0'
+    expected_info = 'ClassificationMeasurements: - sample_count: 100.0 - performance: 0.9000 - kappa: 0.4444 ' \
+                    '- kappa_t: -2.3333 - kappa_m: 0.8889 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
     expected_last = (1.0, 0.0)
@@ -69,8 +69,8 @@ def test_window_classification_measurements():
     expected_kappa_t = 1
     assert expected_kappa_t == measurements.get_kappa_t()
 
-    expected_info = 'ClassificationMeasurements: targets: [1.0, 0.0] - sample_count: 20 - window_size: 20 ' \
-                    '- performance: 0.5 - kappa: 0.0 - kappa_t: 1 - kappa_m: 0.5 - majority_class: 0'
+    expected_info = 'WindowClassificationMeasurements: - sample_count: 20 - window_size: 20 - performance: 0.5000 ' \
+                    '- kappa: 0.0000 - kappa_t: 1.0000 - kappa_m: 0.5000 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
     expected_last = (1.0, 0.0)
@@ -109,8 +109,8 @@ def test_multi_output_measurements():
     expected_total_sum = 300
     assert expected_total_sum == measurements.get_total_sum()
 
-    expected_info = 'MultiOutputMeasurements: targets: None - sample_count: 100 - hamming_loss: 0.06666666666666665 ' \
-                    '- hamming_score: 0.9333333333333333 - exact_match: 0.85 - j_index: 0.9333333333333336'
+    expected_info = 'MultiOutputMeasurements: - sample_count: 100 - hamming_loss: 0.0667 - hamming_score: 0.9333 ' \
+                    '- exact_match: 0.8500 - j_index: 0.9333'
     assert expected_info == measurements.get_info()
 
     expected_last_true = (1.0, 1.0, 1.0)
@@ -145,8 +145,8 @@ def test_window_multi_output_measurements():
     expected_total_sum = 300
     assert expected_total_sum == measurements.get_total_sum()
 
-    expected_info = 'WindowMultiOutputMeasurements: targets: None - sample_count: 20 - hamming_loss: 0.33333333333333337 ' \
-                    '- hamming_score: 0.6666666666666666 - exact_match: 0.25 - j_index: 0.6666666666666667'
+    expected_info = 'WindowMultiOutputMeasurements: - sample_count: 20 - hamming_loss: 0.3333 ' \
+                    '- hamming_score: 0.6667 - exact_match: 0.2500 - j_index: 0.6667'
     assert expected_info == measurements.get_info()
 
     expected_last_true = (1.0, 1.0, 1.0)
@@ -169,8 +169,8 @@ def test_regression_measurements():
     expected_ae = 0.049999999999999906
     assert np.isclose(expected_ae, measurements.get_average_error())
 
-    expected_info = 'RegressionMeasurements: sample_count: 100 - mean_square_error: 0.0025000000000000022 ' \
-                    '- mean_absolute_error: 0.049999999999999906'
+    expected_info = 'RegressionMeasurements: - sample_count: 100 - mean_square_error: 0.0025 ' \
+                    '- mean_absolute_error: 0.0500'
     assert expected_info == measurements.get_info()
 
     expected_last = (-0.9992068341863537, -0.9492068341863537)
@@ -191,8 +191,8 @@ def test_window_regression_measurements():
     expected_ae = 0.050000000000000024
     assert np.isclose(expected_ae, measurements.get_average_error())
 
-    expected_info = 'RegressionMeasurements: sample_count: 20 - mean_square_error: 0.0025000000000000022 ' \
-                    '- mean_absolute_error: 0.050000000000000024'
+    expected_info = 'WindowRegressionMeasurements: - sample_count: 20 - mean_square_error: 0.0025 ' \
+                    '- mean_absolute_error: 0.0500'
     assert expected_info == measurements.get_info()
 
     expected_last = (-0.9992068341863537, -0.9492068341863537)
