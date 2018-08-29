@@ -48,9 +48,9 @@ class ClassificationMeasurements(BaseObject):
         self.correct_no_change = 0
         self.targets = targets
 
-    def reset(self, targets=None):
-        if targets is not None:
-            self.n_targets = len(targets)
+    def reset(self):
+        if self.targets is not None:
+            self.n_targets = len(self.targets)
         else:
             self.n_targets = 0
         self.sample_count = 0
@@ -58,41 +58,40 @@ class ClassificationMeasurements(BaseObject):
         self.correct_no_change = 0
         self.confusion_matrix.restart(self.n_targets)
 
-    def add_result(self, X, y, prediction, weight=1.0):
+    def add_result(self, y_true, y_pred, weight=1.0):
         """ add_result
 
         Updates its statistics with the results of a prediction.
 
         Parameters
         ----------
-        sample: int
+        y_true: int
             The true label.
 
-        prediction: int
+        y_pred: int
             The classifier's prediction
+
+        weight: float
+            Sample's weight
 
         """
         check_weights(weight)
 
-        true_y = self._get_target_index(y, True)
-        pred = self._get_target_index(prediction, True)
+        true_y = self._get_target_index(y_true, True)
+        pred = self._get_target_index(y_pred, True)
         self.confusion_matrix.update(true_y, pred)
         self.sample_count += weight
 
-        if self.get_majority_class() == y:
+        if self.get_majority_class() == y_true:
             self.majority_classifier = self.majority_classifier + weight
-        if self.last_true_label == y:
+        if self.last_true_label == y_true:
             self.correct_no_change = self.correct_no_change + weight
 
-        self.last_true_label = y
-        self.last_prediction = prediction
-        self.last_sample = X
+        self.last_true_label = y_true
+        self.last_prediction = y_pred
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
-
-    def get_last_sample(self):
-        return self.last_sample
 
     def get_majority_class(self):
         """ get_majority_class
@@ -110,12 +109,12 @@ class ClassificationMeasurements(BaseObject):
         majority_class = 0
         max_prob = 0.0
         for i in range(self.n_targets):
-            sum = 0.0
+            sum_value = 0.0
             for j in range(self.n_targets):
-                sum += self.confusion_matrix.value_at(i, j)
-            sum = sum / self.sample_count
-            if sum > max_prob:
-                max_prob = sum
+                sum_value += self.confusion_matrix.value_at(i, j)
+            sum_value = sum_value / self.sample_count
+            if sum_value > max_prob:
+                max_prob = sum_value
                 majority_class = i
 
         return majority_class
@@ -143,7 +142,7 @@ class ClassificationMeasurements(BaseObject):
     def get_incorrectly_classified_ratio(self):
         return 1.0 - self.get_performance()
 
-    def _get_target_index(self, target, add=False):
+    def _get_target_index(self, target, add_label=False):
         """ _get_target_index
 
         Computes the index of an element in the self.targets list.
@@ -155,7 +154,7 @@ class ClassificationMeasurements(BaseObject):
         target: int
             A class label.
 
-        add: bool
+        add_label: bool
             Either to add new found labels to the targets list or not.
 
         Returns
@@ -164,14 +163,14 @@ class ClassificationMeasurements(BaseObject):
             The target index in the self.targets list.
 
         """
-        if (self.targets is None) and add:
+        if (self.targets is None) and add_label:
             self.targets = []
             self.targets.append(target)
             self.n_targets = len(self.targets)
             self.confusion_matrix.reshape(len(self.targets), len(self.targets))
-        elif (self.targets is None) and (not add):
+        elif (self.targets is None) and (not add_label):
             return None
-        if ((target not in self.targets) and (add)):
+        if (target not in self.targets) and add_label:
             self.targets.append(target)
             self.n_targets = len(self.targets)
             self.confusion_matrix.reshape(len(self.targets), len(self.targets))
@@ -193,8 +192,8 @@ class ClassificationMeasurements(BaseObject):
         """
         p0 = self.get_performance()
         pc = 0.0
-        n, l = self.confusion_matrix.shape()
-        for i in range(n):
+        n_rows, n_cols = self.confusion_matrix.shape()
+        for i in range(n_rows):
             row = self.confusion_matrix.row(i)
             column = self.confusion_matrix.column(i)
 
@@ -249,15 +248,15 @@ class ClassificationMeasurements(BaseObject):
 
     @property
     def _matrix(self):
-        return self.confusion_matrix._matrix
+        return self.confusion_matrix.matrix
 
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
-               ' - performance: {:.4f}'.format(self.get_performance()) + \
-               ' - kappa: {:.4f}'.format(self.get_kappa()) + \
-               ' - kappa_t: {:.4f}'.format(self.get_kappa_t()) + \
-               ' - kappa_m: {:.4f}'.format(self.get_kappa_m()) + \
+               ' - performance: {:.6f}'.format(self.get_performance()) + \
+               ' - kappa: {:.6f}'.format(self.get_kappa()) + \
+               ' - kappa_t: {:.6f}'.format(self.get_kappa_t()) + \
+               ' - kappa_m: {:.6f}'.format(self.get_kappa_m()) + \
                ' - majority_class: {}'.format(self.get_majority_class())
 
     def get_class_type(self):
@@ -275,7 +274,7 @@ class WindowClassificationMeasurements(BaseObject):
     ConfusionMatrix object, alongside FastBuffers, to simulate fixed sized
     windows of the important classifier's attributes.
 
-    Its functionalities are somewhat similar to those of the
+    Its functionality is somewhat similar to those of the
     ClassificationMeasurements class. The difference is that the statistics
     kept by this class are local, or partial, while the statistics kept by
     the ClassificationMeasurements class are global.
@@ -323,9 +322,9 @@ class WindowClassificationMeasurements(BaseObject):
         self.majority_classifier_correction = FastBuffer(window_size)
         self.correct_no_change_correction = FastBuffer(window_size)
 
-    def reset(self, targets=None):
-        if targets is not None:
-            self.n_targets = len(targets)
+    def reset(self):
+        if self.targets is not None:
+            self.n_targets = len(self.targets)
         else:
             self.n_targets = 0
         self.majority_classifier = 0
@@ -334,7 +333,7 @@ class WindowClassificationMeasurements(BaseObject):
         self.majority_classifier_correction = FastBuffer(self.window_size)
         self.correct_no_change_correction = FastBuffer(self.window_size)
 
-    def add_result(self, X, y, prediction):
+    def add_result(self, y_true, y_pred):
         """ add_result
 
         Updates its statistics with the results of a prediction. If needed it
@@ -342,36 +341,36 @@ class WindowClassificationMeasurements(BaseObject):
 
         Parameters
         ----------
-        y: int
+        y_true: int
             The true label.
 
-        prediction: int
+        y_pred: int
             The classifier's prediction
 
         """
-        true_y = self._get_target_index(y, True)
-        pred = self._get_target_index(prediction, True)
-        old_true = self.true_labels.add_element(np.array([y]))
-        old_predict = self.predictions.add_element(np.array([prediction]))
+        true_y = self._get_target_index(y_true, True)
+        pred = self._get_target_index(y_pred, True)
+        old_true = self.true_labels.add_element(np.array([y_true]))
+        old_predict = self.predictions.add_element(np.array([y_pred]))
 
-        # Verify if its needed to decrease the count of any label
+        # Verify if it's needed to decrease the count of any label
         # pair in the confusion matrix
         if (old_true is not None) and (old_predict is not None):
             self.temp += 1
-            error = self.confusion_matrix.remove(self._get_target_index(old_true[0]),
-                                                 self._get_target_index(old_predict[0]))
+            self.confusion_matrix.remove(self._get_target_index(old_true[0]),
+                                         self._get_target_index(old_predict[0]))
             self.correct_no_change += self.correct_no_change_correction.peek()
             self.majority_classifier += self.majority_classifier_correction.peek()
 
-        # Verify if its needed to decrease the majority_classifier count
-        if (self.get_majority_class() == y) and (self.get_majority_class() is not None):
+        # Verify if it's needed to decrease the majority_classifier count
+        if (self.get_majority_class() == y_true) and (self.get_majority_class() is not None):
             self.majority_classifier += 1
             self.majority_classifier_correction.add_element([-1])
         else:
             self.majority_classifier_correction.add_element([0])
 
-        # Verify if its needed to decrease the correct_no_change
-        if (self.last_true_label == y) and (self.last_true_label is not None):
+        # Verify if it's needed to decrease the correct_no_change
+        if (self.last_true_label == y_true) and (self.last_true_label is not None):
             self.correct_no_change += 1
             self.correct_no_change_correction.add_element([-1])
         else:
@@ -379,15 +378,11 @@ class WindowClassificationMeasurements(BaseObject):
 
         self.confusion_matrix.update(true_y, pred)
 
-        self.last_true_label = y
-        self.last_prediction = prediction
-        self.last_sample = X
+        self.last_true_label = y_true
+        self.last_prediction = y_pred
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
-
-    def get_last_sample(self):
-        return self.last_sample
 
     def get_majority_class(self):
         """ get_majority_class
@@ -405,12 +400,12 @@ class WindowClassificationMeasurements(BaseObject):
         majority_class = 0
         max_prob = 0.0
         for i in range(self.n_targets):
-            sum = 0.0
+            sum_value = 0.0
             for j in range(self.n_targets):
-                sum += self.confusion_matrix.value_at(i, j)
-            sum = sum / self.true_labels.get_current_size()
-            if sum > max_prob:
-                max_prob = sum
+                sum_value += self.confusion_matrix.value_at(i, j)
+            sum_value = sum_value / self.true_labels.get_current_size()
+            if sum_value > max_prob:
+                max_prob = sum_value
                 majority_class = i
 
         return majority_class
@@ -488,8 +483,8 @@ class WindowClassificationMeasurements(BaseObject):
         """
         p0 = self.get_performance()
         pc = 0.0
-        n, l = self.confusion_matrix.shape()
-        for i in range(n):
+        n_rows, n_cols = self.confusion_matrix.shape()
+        for i in range(n_rows):
             row = self.confusion_matrix.row(i)
             column = self.confusion_matrix.column(i)
 
@@ -545,7 +540,7 @@ class WindowClassificationMeasurements(BaseObject):
 
     @property
     def _matrix(self):
-        return self.confusion_matrix._matrix
+        return self.confusion_matrix.matrix
 
     @property
     def sample_count(self):
@@ -558,10 +553,10 @@ class WindowClassificationMeasurements(BaseObject):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
                ' - window_size: {}'.format(self.window_size) + \
-               ' - performance: {:.4f}'.format(self.get_performance()) + \
-               ' - kappa: {:.4f}'.format(self.get_kappa()) + \
-               ' - kappa_t: {:.4f}'.format(self.get_kappa_t()) + \
-               ' - kappa_m: {:.4f}'.format(self.get_kappa_m()) + \
+               ' - performance: {:.6f}'.format(self.get_performance()) + \
+               ' - kappa: {:.6f}'.format(self.get_kappa()) + \
+               ' - kappa_t: {:.6f}'.format(self.get_kappa_t()) + \
+               ' - kappa_m: {:.6f}'.format(self.get_kappa_m()) + \
                ' - majority_class: {}'.format(self.get_majority_class())
 
 
@@ -608,9 +603,9 @@ class MultiOutputMeasurements(BaseObject):
         self.exact_match_count = 0
         self.j_sum = 0
 
-    def reset(self, targets=None):
-        if targets is not None:
-            self.n_targets = len(targets)
+    def reset(self):
+        if self.targets is not None:
+            self.n_targets = len(self.targets)
         else:
             self.n_targets = 0
         self.sample_count = 0
@@ -619,7 +614,7 @@ class MultiOutputMeasurements(BaseObject):
         self.j_sum = 0
         pass
 
-    def add_result(self, y, prediction):
+    def add_result(self, y_true, y_pred):
         """ add_result
 
         Updates its statistics with the results of a prediction.
@@ -629,26 +624,26 @@ class MultiOutputMeasurements(BaseObject):
 
         Parameters
         ----------
-        y: int
+        y_true: list or numpy.ndarray
             The true label.
 
-        prediction: int
+        y_pred: list or numpy.ndarray
             The classifier's prediction
 
         """
-        self.last_true_label = y
-        self.last_prediction = prediction
+        self.last_true_label = y_true
+        self.last_prediction = y_pred
         m = 0
-        if hasattr(y, 'size'):
-            m = y.size
-        elif hasattr(y, 'append'):
-            m = len(y)
+        if isinstance(y_true, np.ndarray):
+            m = y_true.size
+        elif isinstance(y_true, list):
+            m = len(y_true)
         self.n_targets = m
         equal = True
         for i in range(m):
-            self.confusion_matrix.update(i, y[i], prediction[i])
+            self.confusion_matrix.update(i, y_true[i], y_pred[i])
             # update exact_match count
-            if y[i] != prediction[i]:
+            if y_true[i] != y_pred[i]:
                 equal = False
 
         # update exact_match
@@ -656,11 +651,11 @@ class MultiOutputMeasurements(BaseObject):
             self.exact_match_count += 1
 
         # update j_index count
-        inter = sum((y * prediction) > 0) * 1.
-        union = sum((y + prediction) > 0) * 1.
+        inter = sum((y_true * y_pred) > 0) * 1.
+        union = sum((y_true + y_pred) > 0) * 1.
         if union > 0:
             self.j_sum += inter / union
-        elif np.sum(y) == 0:
+        elif np.sum(y_true) == 0:
             self.j_sum += 1
 
         self.sample_count += 1
@@ -736,15 +731,15 @@ class MultiOutputMeasurements(BaseObject):
 
     @property
     def _matrix(self):
-        return self.confusion_matrix._matrix
+        return self.confusion_matrix.matrix
 
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
-               ' - hamming_loss: {:.4f}'.format(self.get_hamming_loss()) + \
-               ' - hamming_score: {:.4f}'.format(self.get_hamming_score()) + \
-               ' - exact_match: {:.4f}'.format(self.get_exact_match()) + \
-               ' - j_index: {:.4f}'.format(self.get_j_index())
+               ' - hamming_loss: {:.6f}'.format(self.get_hamming_loss()) + \
+               ' - hamming_score: {:.6f}'.format(self.get_hamming_score()) + \
+               ' - exact_match: {:.6f}'.format(self.get_exact_match()) + \
+               ' - j_index: {:.6f}'.format(self.get_j_index())
 
     def get_class_type(self):
         return 'collection'
@@ -763,7 +758,7 @@ class WindowMultiOutputMeasurements(BaseObject):
     attributes stored in ComplexFastBuffer objects, which will simulate
     fixed sized windows.
 
-    Its functionalities are somewhat similar to those of the
+    Its functionality is somewhat similar to those of the
     MultiOutputMeasurements class. The difference is that the statistics
     kept by this class are local, or partial, while the statistics kept by
     the MultiOutputMeasurements class are global.
@@ -800,12 +795,14 @@ class WindowMultiOutputMeasurements(BaseObject):
 
         self.targets = targets
         self.window_size = window_size
+        self.exact_match_count = 0
+        self.j_sum = 0
         self.true_labels = FastComplexBuffer(window_size, self.n_targets)
         self.predictions = FastComplexBuffer(window_size, self.n_targets)
 
-    def reset(self, targets=None):
-        if targets is not None:
-            self.n_targets = len(targets)
+    def reset(self):
+        if self.targets is not None:
+            self.n_targets = len(self.targets)
         else:
             self.n_targets = 0
         self.confusion_matrix.restart(self.n_targets)
@@ -814,7 +811,7 @@ class WindowMultiOutputMeasurements(BaseObject):
         self.true_labels = FastComplexBuffer(self.window_size, self.n_targets)
         self.predictions = FastComplexBuffer(self.window_size, self.n_targets)
 
-    def add_result(self, y, prediction):
+    def add_result(self, y_true, y_pred):
         """ add_result
 
         Updates its statistics with the results of a prediction.
@@ -824,30 +821,30 @@ class WindowMultiOutputMeasurements(BaseObject):
 
         Parameters
         ----------
-        y: int
+        y_true: list or numpy.ndarray
             The true label.
 
-        prediction: int
+        y_pred: list or numpy.ndarray
             The classifier's prediction
 
         """
-        self.last_true_label = y
-        self.last_prediction = prediction
+        self.last_true_label = y_true
+        self.last_prediction = y_pred
         m = 0
-        if hasattr(y, 'size'):
-            m = y.size
-        elif hasattr(y, 'append'):
-            m = len(y)
+        if hasattr(y_true, 'size'):
+            m = y_true.size
+        elif hasattr(y_true, 'append'):
+            m = len(y_true)
         self.n_targets = m
 
         for i in range(m):
-            self.confusion_matrix.update(i, y[i], prediction[i])
+            self.confusion_matrix.update(i, y_true[i], y_pred[i])
 
-        old_true = self.true_labels.add_element(y)
-        old_predict = self.predictions.add_element(prediction)
+        old_true = self.true_labels.add_element(y_true)
+        old_predict = self.predictions.add_element(y_pred)
         if (old_true is not None) and (old_predict is not None):
             for i in range(m):
-                error = self.confusion_matrix.remove(old_true[0][i], old_predict[0][i])
+                self.confusion_matrix.remove(old_true[0][i], old_predict[0][i])
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
@@ -917,8 +914,8 @@ class WindowMultiOutputMeasurements(BaseObject):
         return self.confusion_matrix.get_total_sum()
 
     @property
-    def _matrix(self):
-        return self.confusion_matrix._matrix
+    def matrix(self):
+        return self.confusion_matrix.matrix
 
     @property
     def sample_count(self):
@@ -927,10 +924,10 @@ class WindowMultiOutputMeasurements(BaseObject):
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
-               ' - hamming_loss: {:.4f}'.format(self.get_hamming_loss()) + \
-               ' - hamming_score: {:.4f}'.format(self.get_hamming_score()) + \
-               ' - exact_match: {:.4f}'.format(self.get_exact_match()) + \
-               ' - j_index: {:.4f}'.format(self.get_j_index())
+               ' - hamming_loss: {:.6f}'.format(self.get_hamming_loss()) + \
+               ' - hamming_score: {:.6f}'.format(self.get_hamming_score()) + \
+               ' - exact_match: {:.6f}'.format(self.get_exact_match()) + \
+               ' - j_index: {:.6f}'.format(self.get_j_index())
 
     def get_class_type(self):
         return 'collection'
@@ -963,28 +960,25 @@ class RegressionMeasurements(BaseObject):
         self.last_true_label = None
         self.last_prediction = None
 
-    def add_result(self, y, prediction):
+    def add_result(self, y_true, y_pred):
         """ add_result
 
         Use the true label and the prediction to update the statistics.
 
         Parameters
         ----------
-        X: int
-            The sample .
-
-        y: int
+        y_true: int
             The true label.
 
-        prediction: int
+        y_pred: int
             The classifier's prediction
 
         """
-        self.last_true_label = y
-        self.last_prediction = prediction
+        self.last_true_label = y_true
+        self.last_prediction = y_pred
 
-        self.total_square_error += (y - prediction) * (y - prediction)
-        self.average_error += np.absolute(y - prediction)
+        self.total_square_error += (y_true - y_pred) * (y_true - y_pred)
+        self.average_error += np.absolute(y_true - y_pred)
         self.sample_count += 1
 
     def get_mean_square_error(self):
@@ -1028,8 +1022,8 @@ class RegressionMeasurements(BaseObject):
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
-               ' - mean_square_error: {:.4f}'.format(self.get_mean_square_error()) + \
-               ' - mean_absolute_error: {:.4f}'.format(self.get_average_error())
+               ' - mean_square_error: {:.6f}'.format(self.get_mean_square_error()) + \
+               ' - mean_absolute_error: {:.6f}'.format(self.get_average_error())
 
 
 class WindowRegressionMeasurements(BaseObject):
@@ -1063,28 +1057,28 @@ class WindowRegressionMeasurements(BaseObject):
         self.total_square_error_correction = FastBuffer(self.window_size)
         self.average_error_correction = FastBuffer(self.window_size)
 
-    def add_result(self, y, prediction):
+    def add_result(self, y_true, y_pred):
         """ add_result
 
         Use the true label and the prediction to update the statistics.
 
         Parameters
         ----------
-        y: int
+        y_true: int
             The true label.
 
-        prediction: int
+        y_pred: int
             The classifier's prediction
 
         """
-        self.last_true_label = y
-        self.last_prediction = prediction
-        self.total_square_error += (y - prediction) * (y - prediction)
-        self.average_error += np.absolute(y - prediction)
+        self.last_true_label = y_true
+        self.last_prediction = y_pred
+        self.total_square_error += (y_true - y_pred) * (y_true - y_pred)
+        self.average_error += np.absolute(y_true - y_pred)
 
         old_square = self.total_square_error_correction.add_element(
-            np.array([-1 * ((y - prediction) * (y - prediction))]))
-        old_average = self.average_error_correction.add_element(np.array([-1 * (np.absolute(y - prediction))]))
+            np.array([-1 * ((y_true - y_pred) * (y_true - y_pred))]))
+        old_average = self.average_error_correction.add_element(np.array([-1 * (np.absolute(y_true - y_pred))]))
 
         if (old_square is not None) and (old_average is not None):
             self.total_square_error += old_square[0]
@@ -1135,8 +1129,8 @@ class WindowRegressionMeasurements(BaseObject):
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
-               ' - mean_square_error: {:.4f}'.format(self.get_mean_square_error()) + \
-               ' - mean_absolute_error: {:.4f}'.format(self.get_average_error())
+               ' - mean_square_error: {:.6f}'.format(self.get_mean_square_error()) + \
+               ' - mean_absolute_error: {:.6f}'.format(self.get_average_error())
 
 
 def hamming_score(true_labels, predicts):

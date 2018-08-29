@@ -75,7 +75,7 @@ class FastBuffer(BaseObject):
         
         Parameters
         ----------
-        element_list: list
+        element_list: list, numpy.ndarray
             A list with all the elements that are to be added to the queue.
             
         Returns
@@ -570,7 +570,7 @@ class ConfusionMatrix(BaseObject):
         return sum_main_diagonal
 
     @property
-    def _matrix(self):
+    def matrix(self):
         if self.confusion_matrix is not None:
             return self.confusion_matrix
         else:
@@ -855,7 +855,7 @@ class MOLConfusionMatrix(BaseObject):
         return self.get_total_sum() - self.get_sum_main_diagonal()
 
     @property
-    def _matrix(self):
+    def matrix(self):
         if self.confusion_matrix is not None:
             return self.confusion_matrix
         else:
