@@ -9,7 +9,7 @@ class StreamModel(BaseObject, metaclass=ABCMeta):
     Notes
     _____
     This class should not me instantiated, as none of its methods, except the `get_class_type`, are implemented.
-    
+
     Raises
     ------
     NotImplementedError: This is an abstract class.
@@ -27,21 +27,21 @@ class StreamModel(BaseObject, metaclass=ABCMeta):
         ----------
         X : Numpy.ndarray of shape (n_samples, n_features)
             The array of samples used to fit the model.
-            
+
         y: Array-like
             An array-like with the labels of all samples in X.
-            
+
         classes: Array-like, optional (default=None)
             Contains all possible labels. Applicability varies depending on the algorithm.
 
         weight: Array-like, optional (default=None)
             Instance weight. If not provided, uniform weights are assumed.
             Applicability varies depending on the algorithm.
-            
+
         Returns
         -------
         self
-            
+
         """
         raise NotImplementedError
 
@@ -53,21 +53,21 @@ class StreamModel(BaseObject, metaclass=ABCMeta):
         ----------
         X : Numpy.ndarray of shape (n_samples, n_features)
             The array of samples used to fit the model.
-            
+
         y: Array-like
             An array-like with the labels of all samples in X.
-            
+
         classes: Array-like, optional (default=None)
             Contains all possible labels. Applicability varies depending on the algorithm.
 
         weight: Array-like, optional (default=None)
             Instance weight. If not provided, uniform weights are assumed.
             Applicability varies depending on the algorithm.
-        
+
         Returns
         -------
         self
-        
+
         """
         raise NotImplementedError
 
@@ -83,7 +83,7 @@ class StreamModel(BaseObject, metaclass=ABCMeta):
         Returns
         -------
         An array-like with all the predictions for the samples in X.
-        
+
         """
         raise NotImplementedError
 
@@ -101,45 +101,45 @@ class StreamModel(BaseObject, metaclass=ABCMeta):
         An array of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the same
         index. And where the list in index [i] contains len(self.target_values) elements, each of which represents the
         probability that the i-th sample of X belongs to a certain label.
-        
+
         """
         raise NotImplementedError
 
     @abstractmethod
     def reset(self):
         """ Resets the model to its initial state.
-        
+
         Returns
         -------
         StreamModel
             self
-        
+
         """
         raise NotImplementedError
 
     @abstractmethod
     def score(self, X, y):
         """ score
-        
+
         Calculate the performance base metric for the model in its current state.
 
         Notes
         -----
         This function isn't natively implemented on all models.
-        
+
         Parameters
         ----------
         X: numpy.ndarray of shape (n_sample, n_features)
             The features matrix.
-        
+
         y: Array-like
             An array-like containing the targets for all samples in X.
-            
+
         Returns
         -------
         float
             The model's score.
-        
+
         """
         raise NotImplementedError
 

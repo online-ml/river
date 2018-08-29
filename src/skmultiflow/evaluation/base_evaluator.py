@@ -3,18 +3,20 @@ from skmultiflow.core.base_object import BaseObject
 from skmultiflow.data.base_stream import Stream
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 from skmultiflow.metrics import WindowClassificationMeasurements, ClassificationMeasurements, \
-    MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
+    MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, \
+    WindowRegressionMeasurements, MultiTargetRegressionMeasurements, \
+    WindowMultiTargetRegressionMeasurements
 from skmultiflow.utils import FastBuffer
 
 
 class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     """ BaseEvaluator
 
-    The abstract class that works as a base model for all of this framework's 
-    evaluators. It creates a basic interface that evaluation modules should 
+    The abstract class that works as a base model for all of this framework's
+    evaluators. It creates a basic interface that evaluation modules should
     follow in order to use them with all the tools available in scikit-workflow.
 
-    This class should not me instantiated, as none of its methods, except the 
+    This class should not me instantiated, as none of its methods, except the
     get_class_type, are implemented.
 
     Raises
@@ -35,7 +37,9 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     MSE = 'mean_square_error'
     MAE = 'mean_absolute_error'
     TRUE_VS_PREDICTED = 'true_vs_predicted'
+    AMAE = 'average_mean_absolute_error'
 
+    # TODO consider new plot types
     PLOT_TYPES = [PERFORMANCE,
                   KAPPA,
                   KAPPA_T,
@@ -64,14 +68,17 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                             HAMMING_LOSS,
                             EXACT_MATCH,
                             J_INDEX]
+    MULTI_TARGET_REGRESSION_METRICS = [AMAE]
     CLASSIFICATION = 'classification'
     REGRESSION = 'regression'
     MULTI_OUTPUT = 'multi_output'
+    MULTI_TARGET_REGRESSION = 'multi_target_regression'
     SINGLE_OUTPUT = 'single-output'
     UNDEFINED = 'undefined'
     TASK_TYPES = [CLASSIFICATION,
                   REGRESSION,
                   MULTI_OUTPUT,
+                  MULTI_TARGET_REGRESSION,
                   SINGLE_OUTPUT,
                   UNDEFINED]
 
@@ -111,38 +118,38 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     @abstractmethod
     def evaluate(self, stream, classifier):
         """ evaluate
-        
-        This function evaluates the classifier, using the class parameters, and 
+
+        This function evaluates the classifier, using the class parameters, and
         by feeding it with instances coming from the stream parameter.
-        
+
         Parameters
         ----------
         stream: BaseInstanceStream extension
             The stream to be use in the evaluation process.
-        
+
         classifier: BaseClassifier extension or list of BaseClassifier extensions
             The classifier or classifiers to be evaluated.
-            
+
         Returns
         -------
         BaseClassifier extension or list of BaseClassifier extensions
             The trained classifier's at the end of the evaluation process.
-            
+
         """
         raise NotImplementedError
 
     @abstractmethod
     def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
-        
+
         Partially fits the classifiers.
-        
+
         X: numpy.ndarray of shape (n_samples, n_features)
             The feature's matrix.
-        
+
         y: Array-like
             An array-like containing the class labels of all samples in X.
-        
+
         classes: list
             A list containing all class labels of the classification problem.
 
@@ -154,25 +161,25 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         -------
         BaseClassifier extension or list of BaseClassifier extensions
             The trained classifier's at the end of the evaluation process.
-        
+
         """
         raise NotImplementedError
 
     @abstractmethod
     def predict(self, X):
         """ predict
-        
+
         Predicts with the classifier, or classifiers, being evaluated.
-        
+
         X: numpy.ndarray of shape (n_samples, n_features)
             The feature's matrix.
-        
+
         Returns
         -------
         list
-            A list containing the array-likes representing each classifier's 
+            A list containing the array-likes representing each classifier's
             prediction.
-        
+
         """
         raise NotImplementedError
 
@@ -182,16 +189,16 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     @abstractmethod
     def set_params(self, parameter_dict):
         """ set_params
-        
-        Pass parameter names and values through a dictionary so that their 
+
+        Pass parameter names and values through a dictionary so that their
         values can be updated.
-        
+
         Parameters
         ----------
         parameter_dict: dictionary
-            A dictionary where the keys are parameters' names and the values 
+            A dictionary where the keys are parameters' names and the values
             are the new values for those parameters.
-         
+
         """
         raise NotImplementedError
 
@@ -265,11 +272,17 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 self._task_type = self.REGRESSION
             else:
                 raise ValueError("Inconsistent metrics {} for {} stream.".format(self.metrics, self._output_type))
-        else:
+        else: # Multi-output problems
             multi_output_metrics = set(self.MULTI_OUTPUT_METRICS)
+            multi_target_regression_metrics = set(self.MULTI_TARGET_REGRESSION_METRICS)
             evaluation_metrics = set(self.metrics)
+
+            # TODO extend the original MULTI_OUTPUT problem evaluation for
+            # MULTI_LABEL_CLASSIFICATION and MULTI_TARGET_REGRESSION
             if evaluation_metrics.union(multi_output_metrics) == multi_output_metrics:
                 self._task_type = self.MULTI_OUTPUT
+            elif evaluation_metrics.union(multi_target_regression_metrics) == multi_target_regression_metrics:
+                self._task_type = self.MULTI_TARGET_REGRESSION
             else:
                 raise ValueError("Inconsistent metrics {} for {} stream.".format(self.metrics, self._output_type))
 
@@ -301,6 +314,10 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             for i in range(self.n_models):
                 self.global_classification_metrics.append(RegressionMeasurements())
                 self.partial_classification_metrics.append(WindowRegressionMeasurements(window_size=self.n_sliding))
+        elif self._task_type == self.MULTI_TARGET_REGRESSION:
+            for i in range(self.n_models):
+                self.global_classification_metrics.append(MultiTargetRegressionMeasurements())
+                self.partial_classification_metrics.append(WindowMultiTargetRegressionMeasurements(window_size=self.n_sliding))
 
     def _update_metrics(self):
         """ _update_metrics
@@ -367,6 +384,17 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             new_points_dict[self.MAE] = [[self.global_classification_metrics[i].get_average_error(),
                                           self.partial_classification_metrics[i].get_average_error()]
                                          for i in range(self.n_models)]
+
+        if self.AMSE in self.metrics:
+            new_points_dict[self.AMSE] = [[self.global_classification_metrics[i].get_average_mean_square_error(),
+                                          self.partial_classification_metrics[i].get_average_mean_square_error()]
+                                          for i in range(self.n_models)]
+
+        if self.AMAE in self.metrics:
+            new_points_dict[self.AMAE] = [[self.global_classification_metrics[i].get_average_absolute_error(),
+                                          self.partial_classification_metrics[i].get_average_absolute_error()]
+                                          for i in range(self.n_models)]
+        # TODO Implement ARMAE
 
         if self.TRUE_VS_PREDICTED in self.metrics:
             true, pred = [], []
@@ -455,6 +483,14 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     for i in range(self.n_models):
                         header += ',global_mae_[{}],sliding_mae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
+                if self.AMSE in self.metrics:
+                    for i in range(self.n_models):
+                        header += ',global_amse_[{}],sliding_amse_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
+                if self.AMAE in self.metrics:
+                    for i in range(self.n_models):
+                        header += ',global_amae_[{}],sliding_amae_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
 
                 if self.TRUE_VS_PREDICTED in self.metrics:
                     for i in range(self.n_models):
@@ -507,6 +543,14 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 for i in range(self.n_models):
                     line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_error(),
                                                     self.partial_classification_metrics[i].get_average_error())
+            if self.AMSE in self.metrics:
+                for i in range(self.n_models):
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_mean_square_error(),
+                                                    self.partial_classification_metrics[i].get_average_mean_square_error())
+            if self.AMAE in self.metrics:
+                for i in range(self.n_models):
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_absolute_error(),
+                                                    self.partial_classification_metrics[i].get_average_absolute_error())
 
             if self.TRUE_VS_PREDICTED in self.metrics:
 

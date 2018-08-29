@@ -1,3 +1,4 @@
+import numpy as np
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.trees.hoeffding_numeric_attribute_class_observer import HoeffdingNumericAttributeClassObserver
 from skmultiflow.trees.hoeffding_nominal_class_attribute_observer import HoeffdingNominalAttributeClassObserver
@@ -48,7 +49,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes: list, optional
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
-    learning_ratio_perceptron: flaot
+    learning_ratio_perceptron: float
         The learning rate of the perceptron.
     learning_ratio_decay: float
         Decay multiplier for the learning rate of the perceptron
@@ -689,6 +690,3 @@ class RegressionHoeffdingTree(HoeffdingTree):
             parent.set_child(parent_branch, new_leaf)
         self._active_leaf_node_cnt -= 1
         self._inactive_leaf_node_cnt += 1
-
-
-
