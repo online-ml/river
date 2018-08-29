@@ -86,7 +86,10 @@ class ConceptDriftStream(Stream):
             self.width_option = int(1 / np.tan(self.alpha_option * np.pi / 180))
 
     def n_remaining_samples(self):
-        return self._input_stream.n_remaining_samples() + self._drift_stream.n_remaining_samples()
+        n_samples = self._input_stream.n_remaining_samples() + self._drift_stream.n_remaining_samples()
+        if n_samples < 0:
+            n_samples = -1
+        return n_samples
 
     def has_more_samples(self):
         return self._input_stream.has_more_samples() and self._drift_stream.has_more_samples()
