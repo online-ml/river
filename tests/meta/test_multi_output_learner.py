@@ -1,5 +1,4 @@
 from skmultiflow.meta.multi_output_learner import MultiOutputLearner
-from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data import MultilabelGenerator
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.metrics.measure_collection import hamming_score
@@ -8,15 +7,13 @@ import numpy as np
 
 def test_multi_output_learner():
 
-    stream = MultilabelGenerator(n_samples=10000, n_features=15, n_targets=3, n_labels=4, random_state=112)
+    stream = MultilabelGenerator(n_samples=5150, n_features=15, n_targets=3, n_labels=4, random_state=112)
     stream.prepare_for_use()
 
     classifier = MultiOutputLearner(base_estimator=HoeffdingTree())
 
-    learner = Pipeline([('classifier', classifier)])
-
     X, y = stream.next_sample(150)
-    learner.partial_fit(X, y)
+    classifier.partial_fit(X, y)
 
     cnt = 0
     max_samples = 5000
@@ -29,12 +26,12 @@ def test_multi_output_learner():
         X, y = stream.next_sample()
         # Test every n samples
         if (cnt % wait_samples == 0) and (cnt != 0):
-            predictions.append(learner.predict(X)[0])
+            predictions.append(classifier.predict(X)[0])
             true_labels.append(y[0])
             if np.array_equal(y[0], predictions[-1]):
                 correct_predictions += 1
 
-        learner.partial_fit(X, y)
+        classifier.partial_fit(X, y)
         cnt += 1
 
     perf = hamming_score(true_labels, predictions)
