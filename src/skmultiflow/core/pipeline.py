@@ -4,37 +4,37 @@ from sklearn.utils import tosequence
 
 class Pipeline(BaseObject):
     """ Pipeline
-        
-    A pipeline structure that holds a set of sequential Transforms, followed 
-    by a single learner. It allows for easy manipulation of datasets that may 
-    require several transformation processes before being used by a learner. 
+
+    A pipeline structure that holds a set of sequential Transforms, followed
+    by a single learner. It allows for easy manipulation of datasets that may
+    require several transformation processes before being used by a learner.
     Also allows for the cross-validation of several steps.
-    
-    Each of the intermediate steps should be an extension of the BaseTransform 
-    class, or at least implement the transform and partial_fit functions or the 
+
+    Each of the intermediate steps should be an extension of the BaseTransform
+    class, or at least implement the transform and partial_fit functions or the
     partial_fit_transform.
-    
-    The last step should be an estimator (learner), so it should implement 
+
+    The last step should be an estimator (learner), so it should implement
     partial_fit, and predict at least.
-    
-    Since it has an estimator as the last step, the Pipeline will act like as 
-    an estimator itself, in a way that it can be directly passed to evaluation 
+
+    Since it has an estimator as the last step, the Pipeline will act like as
+    an estimator itself, in a way that it can be directly passed to evaluation
     objects, as if it was a learner.
-    
+
     Parameters
     ----------
     dict: list of tuple
-        Tuple list containing the set of transforms and the final estimator. 
-        It doesn't need to contain a transform type object, but the estimator 
+        Tuple list containing the set of transforms and the final estimator.
+        It doesn't need to contain a transform type object, but the estimator
         is required. Each tuple should be of the format ('name', estimator).
-    
+
     Raises
     ------
-    TypeError: If the intermediate steps or the final estimator do not implement 
+    TypeError: If the intermediate steps or the final estimator do not implement
     the necessary functions for the pipeline to work, a TypeError is raised.
-    
+
     NotImplementedError: Some of the functions are yet to be implemented.
-    
+
     Examples
     --------
     >>> # Imports
@@ -57,7 +57,7 @@ class Pipeline(BaseObject):
     >>> evaluator = EvaluatePrequential(show_plot=True, pretrain_size=1000, max_samples=500000)
     >>> # Evaluate
     >>> evaluator.evaluate(stream=stream, model=pipe)
-    
+
     """
 
     def __init__(self, steps):
@@ -69,28 +69,28 @@ class Pipeline(BaseObject):
         self.__configure()
 
     def __configure(self):
-        """ __configure 
-        
+        """ __configure
+
         Initial Pipeline configuration. Validates the Pipeline's steps.
-        
+
         """
         self._validate_steps()
 
     def predict(self, X):
         """ predict
-         
+
         Sequentially applies all transforms and then predict with last step.
-        
+
         Parameters
         ----------
         X: numpy.ndarray of shape (n_samples, n_features)
             All the samples we want to predict the label for.
-        
+
         Returns
         -------
         list
             The predicted class label for all the samples in X.
-        
+
         """
         Xt = X
         for name, transform in self.steps[:-1]:
@@ -99,25 +99,25 @@ class Pipeline(BaseObject):
         return self.steps[-1][-1].predict(Xt)
 
     def fit(self, X, y):
-        """ fit 
-        
-        Sequentially fit and transform data in all but last step, then fit 
+        """ fit
+
+        Sequentially fit and transform data in all but last step, then fit
         the model in last step.
-        
+
         Parameters
         ----------
         X: numpy.ndarray of shape (n_samples, n_features)
-            The data upon which the transforms/estimator will create their 
+            The data upon which the transforms/estimator will create their
             model.
-            
+
         y: An array_like object of length n_samples
             Contains the true class labels for all the samples in X.
-            
+
         Returns
         -------
         Pipeline
             self
-        
+
         """
         Xt = X
         for name, transform in self.steps[:-1]:
@@ -134,30 +134,30 @@ class Pipeline(BaseObject):
         return self
 
     def partial_fit(self, X, y, classes=None):
-        """ partial_fit 
-        
-        Sequentially partial fit and transform data in all but last step, 
+        """ partial_fit
+
+        Sequentially partial fit and transform data in all but last step,
         then partial fit data in last step.
-        
+
         Parameters
         ----------
         X: numpy.ndarray of shape (n_samples, n_features)
-            The data upon which the transforms/estimator will create their 
+            The data upon which the transforms/estimator will create their
             model.
-        
+
         y: An array_like object of length n_samples
             Contains the true class labels for all the samples in X
-        
+
         classes: list, optional
             A list containing all classes that can show up during subsequent
-            partial_fit calls. It's optional for all but the first call, when 
+            partial_fit calls. It's optional for all but the first call, when
             it's obligatory.
-            
+
         Returns
         -------
         Pipeline
             self
-        
+
         """
         Xt = X
         for name, transform in self.steps[:-1]:
@@ -177,23 +177,23 @@ class Pipeline(BaseObject):
 
     def partial_fit_predict(self, X, y):
         """ partial_fit_predict
-        
-        Partial fits and transforms data in all but last step, then partial 
+
+        Partial fits and transforms data in all but last step, then partial
         fits and predicts in the last step
-        
+
         Parameters
         ----------
         X: numpy.ndarray of shape (n_samples, n_features)
             All the samples we want to predict the label for.
-        
+
         y: An array_like object of length n_samples
             Contains the true class labels for all the samples in X
-        
+
         Returns
         -------
         list
             The predicted class label for all the samples in X.
-        
+
         """
         Xt = X
         for name, transform in self.steps[:-1]:
@@ -209,26 +209,26 @@ class Pipeline(BaseObject):
         else:
             return self._final_estimator.partial_fit(Xt, y).predict(Xt)
 
-    def partial_fit_transform(self, X, y = None):
-        """ partial_fit_trasnform 
-        
-        Partial fits and transforms data in all but last step, then 
+    def partial_fit_transform(self, X, y=None):
+        """ partial_fit_transform
+
+        Partial fits and transforms data in all but last step, then
         partial_fit in last step
-        
+
         Parameters
         ----------
         X: numpy.ndarray of shape (n_samples, n_features)
-            The data upon which the transforms/estimator will create their 
+            The data upon which the transforms/estimator will create their
             model.
-        
+
         y: An array_like object of length n_samples
             Contains the true class labels for all the samples in X
-        
+
         Returns
         -------
         Pipeline
             self
-        
+
         """
         raise NotImplementedError
 
@@ -237,16 +237,16 @@ class Pipeline(BaseObject):
 
     def _validate_steps(self):
         """ validate_steps
-         
+
         Validates all steps, guaranteeing that there's an estimator in its last step.
-        
+
         Alters the value of self.active according to the validity of the steps.
-        
+
         Raises
         ------
-        TypeError: If the intermediate steps or the final estimator do not implement 
+        TypeError: If the intermediate steps or the final estimator do not implement
         the necessary functions for the pipeline to work, a TypeError is raised.
-        
+
         """
 
         names, estimators = zip(*self.steps)
@@ -270,14 +270,14 @@ class Pipeline(BaseObject):
 
     def named_steps(self):
         """ named_steps
-         
+
         Generates a dictionary to access all the steps' properties.
-        
+
         Returns
         -------
         dictionary
             A steps dictionary, so that each step can be accessed by name.
-        
+
         """
         return dict(self.steps)
 
@@ -311,13 +311,13 @@ class Pipeline(BaseObject):
     @property
     def _final_estimator(self):
         """ _final_estimator
-        
+
         Easy to access estimator.
-        
+
         Returns
         -------
         Extension of BaseClassifier
             The Pipeline's classifier
-             
+
         """
         return self.steps[-1][-1]

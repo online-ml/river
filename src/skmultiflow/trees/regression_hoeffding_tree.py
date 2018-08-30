@@ -72,11 +72,11 @@ class RegressionHoeffdingTree(HoeffdingTree):
             try:
                 self._observed_class_distribution[0] += weight
                 self._observed_class_distribution[1] += y * weight
-                self._observed_class_distribution[0] += y * y * weight
+                self._observed_class_distribution[2] += y * y * weight
             except KeyError:
                 self._observed_class_distribution[0] = weight
-                self._observed_class_distribution[0] = y * weight
-                self._observed_class_distribution[0] = y * y * weight
+                self._observed_class_distribution[1] = y * weight
+                self._observed_class_distribution[2] = y * y * weight
 
     class ActiveLearningNodeForRegression(HoeffdingTree.ActiveLearningNode):
 
