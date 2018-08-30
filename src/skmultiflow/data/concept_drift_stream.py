@@ -37,7 +37,8 @@ class ConceptDriftStream(Stream):
         by `np.random`.
 
     alpha: float (optional, default: 0.0)
-        Angle of change. If set will overwrite the width value. Valid values are in the range go from 0.0 to 90.0.
+        Angle of change to estimate the width of concept drift change. If set will override the width parameter.
+        Valid values are in the range (0.0, 90.0].
 
     position: int (default: 0)
         Central position of concept drift change.
@@ -49,7 +50,7 @@ class ConceptDriftStream(Stream):
     -----
     An optional way to estimate the width of the transition :math:`w` is based on the angle :math:`\\alpha`:
     :math:`w = 1/ tan(\\alpha)`. Since width corresponds to the number of samples for the transition, the width
-    is rounded-down to the nearest smaller integer. Notice that larger values of :math:`\\alpha` result in smaller
+    is round-down to the nearest smaller integer. Notice that larger values of :math:`\\alpha` result in smaller
     widths. For :math:`\\alpha>45.0`, the width is smaller than 1 so values are round-up to 1 to avoid
     division by zero errors.
 
@@ -111,13 +112,7 @@ class ConceptDriftStream(Stream):
 
     def next_sample(self, batch_size=1):
 
-        """ next_sample
-
-        An instance is generated based on the parameters passed. If noise
-        is included the total number of attributes will be 24, if it's not
-        included there will be 7 attributes.
-
-
+        """ Returns the next `batch_size` samples.
 
         Parameters
         ----------
