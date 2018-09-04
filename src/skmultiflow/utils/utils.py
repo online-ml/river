@@ -8,7 +8,7 @@ def get_dimensions(X):
     Parameters
     ----------
     X: numpy.array, numpy.ndarray, list, list of lists.
-    
+
     Returns
     -------
     tuple

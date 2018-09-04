@@ -18,4 +18,7 @@ class IntraClusterVarianceReductionSplitCriterion(VarianceReductionSplitCriterio
         sum = dist[1]
         sum_sq = dist[2]
 
-        return np.sqrt((np.sum(sum_sq) - (np.sum(sum) * np.sum(sum))/N)/N)
+        # return np.sqrt((np.sum(sum_sq) - (np.sum(sum) * np.sum(sum))/N)/N)
+        return np.sum(
+            np.sqrt((sum_sq - (sum ** 2) / N) / N)
+        )

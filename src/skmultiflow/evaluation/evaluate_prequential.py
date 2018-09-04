@@ -238,11 +238,14 @@ class EvaluatePrequential(StreamEvaluator):
         first_run = True
         if self.pretrain_size > 0:
             logging.info('Pre-training on %s samples.', str(self.pretrain_size))
+
             X, y = self.stream.next_sample(self.pretrain_size)
+
             for i in range(self.n_models):
                 if self._task_type != EvaluatePrequential.REGRESSION and \
                    self._task_type != EvaluatePrequential.MULTI_TARGET_REGRESSION:
-                    self.model[i].partial_fit(X=X, y=y, classes=self.stream.target_values)
+                    self.model[i].partial_fit(X=X, y=y, classes=self.stream.
+                                              target_values)
                 else:
                     self.model[i].partial_fit(X=X, y=y)
             self.global_sample_count += self.pretrain_size

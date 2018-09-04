@@ -37,9 +37,9 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     MSE = 'mean_square_error'
     MAE = 'mean_absolute_error'
     TRUE_VS_PREDICTED = 'true_vs_predicted'
+    AMSE = 'average_mean_square_error'
     AMAE = 'average_mean_absolute_error'
 
-    # TODO consider new plot types
     PLOT_TYPES = [PERFORMANCE,
                   KAPPA,
                   KAPPA_T,
@@ -51,6 +51,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                   MSE,
                   MAE,
                   TRUE_VS_PREDICTED,
+                  AMSE,
+                  AMAE,
 
                   DATA_POINTS]
     CLASSIFICATION_METRICS = [PERFORMANCE,
@@ -68,7 +70,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                             HAMMING_LOSS,
                             EXACT_MATCH,
                             J_INDEX]
-    MULTI_TARGET_REGRESSION_METRICS = [AMAE]
+    MULTI_TARGET_REGRESSION_METRICS = [AMSE, AMAE]
     CLASSIFICATION = 'classification'
     REGRESSION = 'regression'
     MULTI_OUTPUT = 'multi_output'

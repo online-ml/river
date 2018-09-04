@@ -75,6 +75,10 @@ class FileStream(Stream):
         self.filename = ''
         self.basename = ''
 
+        # Automatically infer target_idx if not passed in multi-output problems
+        if self.n_targets > 1 and self.target_idx == -1:
+            self.target_idx = -self.n_targets
+
         self.__configure()
 
     def __configure(self):
@@ -181,6 +185,7 @@ class FileStream(Stream):
             rows, cols = raw_data.shape
             self.n_samples = rows
             labels = raw_data.columns.values.tolist()
+
 
             if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
                 # Take everything to the right of target_idx

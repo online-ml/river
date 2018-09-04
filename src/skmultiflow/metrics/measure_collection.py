@@ -1196,11 +1196,8 @@ class MultiTargetRegressionMeasurements(BaseObject):
             m = len(y)
         self.n_targets = m
 
-        self.total_square_error += np.sum([(y[t] - prediction[t]) *
-                                           (y[t] - prediction[t]) for t in
-                                           range(self.n_targets)])
-        self.average_error += np.sum([np.absolute(y[t] - prediction[t]) for t
-                                     in range(self.n_targets)])
+        self.total_square_error += (y - prediction) ** 2
+        self.average_error += np.absolute(y - prediction)
         self.sample_count += 1
 
     def get_average_mean_square_error(self):
@@ -1217,7 +1214,8 @@ class MultiTargetRegressionMeasurements(BaseObject):
         if self.sample_count == 0:
             return 0.0
         else:
-            return self.total_square_error / self.sample_count
+            return np.sum(self.total_square_error / self.sample_count) \
+                / self.n_targets
 
     def get_average_absolute_error(self):
         """ get_average_absolute_error
@@ -1233,7 +1231,8 @@ class MultiTargetRegressionMeasurements(BaseObject):
         if self.sample_count == 0:
             return 0.0
         else:
-            return self.average_error / self.sample_count
+            return np.sum(self.average_error / self.sample_count) \
+                / self.n_targets
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
@@ -1307,19 +1306,15 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
             m = len(y)
         self.n_targets = m
 
-        self.total_square_error += np.sum([(y[t] - prediction[t]) *
-                                           (y[t] - prediction[t]) for t in
-                                           range(self.n_targets)])
-        self.average_error += np.sum([np.absolute(y[t] - prediction[t]) for t
-                                     in range(self.n_targets)])
+        self.total_square_error += (y - prediction) ** 2
+        self.average_error += np.absolute(y - prediction)
 
         old_square = self.total_square_error_correction.add_element(
-            np.array([-1 * (np.sum([(y[t] - prediction[t]) *
-                                    (y[t] - prediction[t]) for t in
-                                    range(self.n_targets)]))]))
+            np.array([-1 * ((y - prediction) ** 2)])
+        )
         old_average = self.average_error_correction.add_element(
-            np.array([-1 * (np.sum([np.absolute(y[t] - prediction[t]) for t
-                     in range(self.n_targets)]))]))
+            np.array([-1 * (np.absolute(y - prediction))])
+        )
 
         if (old_square is not None) and (old_average is not None):
             self.total_square_error += old_square[0]
@@ -1339,7 +1334,8 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         if self._sample_count == 0:
             return 0.0
         else:
-            return self.total_square_error / self._sample_count
+            return np.sum(self.total_square_error / self._sample_count) \
+                / self.n_targets
 
     def get_average_error(self):
         """ get_average_error
@@ -1355,7 +1351,8 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         if self._sample_count == 0:
             return 0.0
         else:
-            return self.average_error / self._sample_count
+            return np.sum(self.average_error / self._sample_count) \
+                / self.n_targets
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
