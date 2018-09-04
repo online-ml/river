@@ -1,7 +1,8 @@
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-from skmultiflow.trees.regression_hoeffding_tree import RegressionHoeffdingTree
+from skmultiflow.trees.multi_target_regression_hoeffding_tree import \
+    MultiTargetRegressionHoeffdingTree
 
 
 def demo(input_file, output_file=None):
@@ -29,19 +30,23 @@ def demo(input_file, output_file=None):
     # Setup the classifier
     # classifier = SGDClassifier()
     # classifier = PassiveAggressiveClassifier()
-    classifier = RegressionHoeffdingTree()
+    classifier = MultiTargetRegressionHoeffdingTree()
     # classifier = PerceptronMask()
 
     # Setup the pipeline
     pipe = Pipeline([('Classifier', classifier)])
 
     # Setup the evaluator
-    evaluator = EvaluatePrequential(pretrain_size=1, batch_size=1, n_wait=200, max_time=1000,
-                                    output_file=output_file, show_plot=False, metrics=['hamming_loss'])
+    evaluator = EvaluatePrequential(pretrain_size=1, batch_size=1, n_wait=200,
+                                    max_time=1000, output_file=output_file,
+                                    show_plot=False,
+                                    metrics=['average_mean_square_error',
+                                             'average_mean_absolute_error'])
 
     # Evaluate
     evaluator.evaluate(stream=stream, model=pipe)
 
 
 if __name__ == '__main__':
-    demo('../data/datasets/mtr/scm1d.csv', '/home/mastelini/Desktop/test_regression.csv')
+    demo('../data/datasets/mtr/scm1d.csv',
+         '/home/mastelini/Desktop/test_regression.csv')
