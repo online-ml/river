@@ -53,31 +53,32 @@ class LEDGenerator(Stream):
        >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
-       array([[0., 1., 1., 1., 0., 0., 0., 0., 1., 0., 0., 0., 1., 0., 1., 1.,
-        1., 0., 0., 1., 1., 0., 1., 1.]])
+       (array([[0., 1., 1., 1., 0., 0., 0., 0., 1., 0., 0., 0., 1., 0., 1., 1.,
+         1., 0., 0., 1., 1., 0., 1., 1.]]), array([4]))
 
        >>> # Retrieving 10 samples
        >>> stream.next_sample(10)
-        array([[0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 1., 1., 0., 0., 0., 0.,
-        1., 1., 1., 0., 0., 0., 1., 1.],
-       [1., 1., 1., 0., 1., 0., 1., 1., 1., 0., 1., 0., 0., 0., 1., 1.,
-        1., 1., 0., 0., 1., 0., 1., 0.],
-       [0., 1., 1., 0., 0., 1., 1., 1., 0., 0., 0., 0., 1., 0., 0., 0.,
-        0., 1., 0., 1., 1., 1., 1., 1.],
-       [1., 1., 0., 0., 0., 1., 1., 1., 0., 1., 1., 0., 1., 1., 0., 0.,
-        1., 1., 1., 0., 0., 0., 1., 0.],
-       [1., 1., 1., 0., 0., 1., 0., 0., 1., 1., 0., 1., 1., 0., 1., 0.,
-        0., 0., 1., 0., 1., 0., 0., 0.],
-       [0., 1., 1., 0., 0., 1., 0., 0., 1., 1., 0., 1., 0., 1., 1., 1.,
-        0., 0., 1., 0., 1., 1., 0., 0.],
-       [0., 0., 0., 0., 1., 0., 1., 0., 1., 0., 1., 0., 1., 0., 1., 0.,
-        1., 1., 1., 0., 1., 0., 0., 1.],
-       [0., 0., 0., 0., 0., 1., 0., 1., 1., 1., 0., 0., 0., 0., 0., 1.,
-        1., 1., 1., 1., 0., 1., 1., 1.],
-       [1., 1., 1., 0., 0., 1., 0., 1., 1., 1., 0., 1., 1., 1., 1., 1.,
-        0., 1., 1., 0., 0., 0., 0., 1.],
-       [1., 1., 1., 0., 0., 1., 1., 0., 0., 0., 0., 0., 1., 0., 0., 0.,
-        1., 1., 0., 0., 0., 0., 1., 0.]])
+       (array([[0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 1., 1., 0., 0., 0., 0.,
+         1., 1., 1., 0., 0., 0., 1., 1.],
+        [1., 1., 1., 0., 1., 0., 1., 1., 1., 0., 1., 0., 0., 0., 1., 1.,
+         1., 1., 0., 0., 1., 0., 1., 0.],
+        [0., 1., 1., 0., 0., 1., 1., 1., 0., 0., 0., 0., 1., 0., 0., 0.,
+         0., 1., 0., 1., 1., 1., 1., 1.],
+        [1., 1., 0., 0., 0., 1., 1., 1., 0., 1., 1., 0., 1., 1., 0., 0.,
+         1., 1., 1., 0., 0., 0., 1., 0.],
+        [1., 1., 1., 0., 0., 1., 0., 0., 1., 1., 0., 1., 1., 0., 1., 0.,
+         0., 0., 1., 0., 1., 0., 0., 0.],
+        [0., 1., 1., 0., 0., 1., 0., 0., 1., 1., 0., 1., 0., 1., 1., 1.,
+         0., 0., 1., 0., 1., 1., 0., 0.],
+        [0., 0., 0., 0., 1., 0., 1., 0., 1., 0., 1., 0., 1., 0., 1., 0.,
+         1., 1., 1., 0., 1., 0., 0., 1.],
+        [0., 0., 0., 0., 0., 1., 0., 1., 1., 1., 0., 0., 0., 0., 0., 1.,
+         1., 1., 1., 1., 0., 1., 1., 1.],
+        [1., 1., 1., 0., 0., 1., 0., 1., 1., 1., 0., 1., 1., 1., 1., 1.,
+         0., 1., 1., 0., 0., 0., 0., 1.],
+        [1., 1., 1., 0., 0., 1., 1., 0., 0., 0., 0., 0., 1., 0., 0., 0.,
+         1., 1., 0., 0., 0., 0., 1., 0.]]),
+        array([1, 0, 7, 9, 7, 1, 3, 1, 4, 1]))
 
      >>> stream.n_remaining_samples()
      -1
@@ -107,7 +108,8 @@ class LEDGenerator(Stream):
         self.n_cat_features = self._NUM_BASE_ATTRIBUTES
         self.n_features = self.n_cat_features
         self.has_noise = has_noise
-        self.n_targets = 0
+        self.n_targets = 1
+        self.n_classes = 10
         self.name = "Led Generator"
         self.__configure()
 
@@ -116,7 +118,7 @@ class LEDGenerator(Stream):
         self.n_cat_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE if self.has_noise else self._NUM_BASE_ATTRIBUTES
         self.n_features = self.n_cat_features
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_cat_features)]
-        self.target_values = [i for i in range(self.n_targets)]
+        self.target_values = [i for i in range(self.n_classes)]
 
     @property
     def noise_percentage(self):
@@ -196,10 +198,12 @@ class LEDGenerator(Stream):
         """
 
         data = np.zeros([batch_size, self.n_features + 1])
+        target = np.zeros(batch_size, dtype=int)
 
         for j in range(batch_size):
             self.sample_idx += 1
-            selected = self.random_state.randint(10)
+            selected = self.random_state.randint(self.n_classes)
+            target[j] = selected
 
             for i in range(self._NUM_BASE_ATTRIBUTES):
 
@@ -213,7 +217,8 @@ class LEDGenerator(Stream):
                     data[j, i] = self.random_state.randint(2)
 
         self.current_sample_x = data[:, :self.n_features]
-        return self.current_sample_x
+        self.current_sample_y = target
+        return self.current_sample_x, self.current_sample_y
 
     def restart(self):
         self.prepare_for_use()
