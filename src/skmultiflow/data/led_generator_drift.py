@@ -38,31 +38,32 @@ class LEDGeneratorDrift(LEDGenerator):
        >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
-       array([[0., 1., 1., 1., 0., 1., 1., 0., 1., 0., 0., 0., 1., 0., 1., 1.,
-        1., 0., 0., 0., 0., 0., 1., 1.]])
+       (array([[0., 1., 1., 1., 0., 1., 1., 0., 1., 0., 0., 0., 1., 0., 1., 1.,
+         1., 0., 0., 0., 0., 0., 1., 1.]]), array([4]))
 
        >>> # Retrieving 10 samples
        >>> stream.next_sample(10)
-        array([[0., 0., 1., 0., 1., 0., 0., 1., 0., 0., 1., 1., 0., 0., 0., 0.,
-        1., 1., 0., 0., 0., 0., 1., 1.],
-       [0., 1., 1., 0., 0., 0., 1., 1., 1., 0., 1., 0., 0., 0., 1., 1.,
-        1., 1., 1., 0., 1., 1., 1., 0.],
-       [1., 1., 1., 0., 0., 1., 1., 1., 0., 0., 0., 0., 1., 0., 0., 0.,
-        0., 1., 0., 1., 1., 0., 1., 1.],
-       [0., 1., 0., 0., 1., 0., 0., 1., 0., 1., 1., 0., 1., 1., 0., 0.,
-        1., 1., 0., 1., 1., 1., 1., 0.],
-       [0., 1., 1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 1., 0., 1., 0.,
-        0., 0., 0., 1., 0., 1., 0., 0.],
-       [1., 1., 1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 1., 1.,
-        0., 0., 0., 1., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 1., 0., 1., 0., 1., 0., 1., 0., 1., 0., 1., 0.,
-        1., 1., 1., 0., 1., 0., 0., 1.],
-       [1., 0., 0., 0., 1., 1., 0., 1., 1., 1., 0., 0., 0., 0., 0., 1.,
-        1., 1., 0., 1., 0., 0., 1., 1.],
-       [0., 1., 1., 0., 1., 0., 0., 1., 1., 1., 0., 1., 1., 1., 1., 1.,
-        0., 1., 0., 1., 0., 1., 0., 1.],
-       [0., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.,
-        1., 1., 0., 1., 1., 1., 1., 0.]])
+       (array([[0., 0., 1., 0., 1., 0., 0., 1., 0., 0., 1., 1., 0., 0., 0., 0.,
+         1., 1., 0., 0., 0., 0., 1., 1.],
+        [0., 1., 1., 0., 0., 0., 1., 1., 1., 0., 1., 0., 0., 0., 1., 1.,
+         1., 1., 1., 0., 1., 1., 1., 0.],
+        [1., 1., 1., 0., 0., 1., 1., 1., 0., 0., 0., 0., 1., 0., 0., 0.,
+         0., 1., 0., 1., 1., 0., 1., 1.],
+        [0., 1., 0., 0., 1., 0., 0., 1., 0., 1., 1., 0., 1., 1., 0., 0.,
+         1., 1., 0., 1., 1., 1., 1., 0.],
+        [0., 1., 1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 1., 0., 1., 0.,
+         0., 0., 0., 1., 0., 1., 0., 0.],
+        [1., 1., 1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 1., 1.,
+         0., 0., 0., 1., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1., 0., 1., 0., 1., 0., 1., 0., 1., 0., 1., 0.,
+         1., 1., 1., 0., 1., 0., 0., 1.],
+        [1., 0., 0., 0., 1., 1., 0., 1., 1., 1., 0., 0., 0., 0., 0., 1.,
+         1., 1., 0., 1., 0., 0., 1., 1.],
+        [0., 1., 1., 0., 1., 0., 0., 1., 1., 1., 0., 1., 1., 1., 1., 1.,
+         0., 1., 0., 1., 0., 1., 0., 1.],
+        [0., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.,
+         1., 1., 0., 1., 1., 1., 1., 0.]]),
+        array([1, 0, 7, 9, 7, 1, 3, 1, 4, 1]))
 
        >>> # Generators will have infinite remaining instances, so it returns -1
        >>> stream.n_remaining_samples()
@@ -119,10 +120,12 @@ class LEDGeneratorDrift(LEDGenerator):
 
         """
         data = np.zeros([batch_size, self.n_features + 1])
+        target = np.zeros(batch_size, dtype=int)
 
         for j in range(batch_size):
             self.sample_idx += 1
-            selected = self.random_state.randint(10)
+            selected = self.random_state.randint(self.n_classes)
+            target[j] = selected
             for i in range(self._NUM_BASE_ATTRIBUTES):
                 if (0.01 + self.random_state.rand()) <= self.noise_percentage:
                     data[j, self._numberAttribute[i]] = 1 if (self._ORIGINAL_INSTANCES[selected, i] == 0) else 0
@@ -133,7 +136,8 @@ class LEDGeneratorDrift(LEDGenerator):
                     data[j, self._numberAttribute[i]] = self.random_state.randint(2)
 
         self.current_sample_x = data[:, :self.n_features]
-        return self.current_sample_x
+        self.current_sample_y = target
+        return self.current_sample_x, self.current_sample_y
 
     def get_data_info(self):
         return "Led Generator with drift - {} features".format(self.n_features)

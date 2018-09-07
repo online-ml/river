@@ -20,7 +20,7 @@ def test_led_generator_drift(test_path):
 
     assert stream.feature_names == expected_names
 
-    expected_targets = []
+    expected_targets = [i for i in range(10)]
     assert stream.target_values == expected_targets
 
     assert stream.target_names is None
@@ -31,7 +31,9 @@ def test_led_generator_drift(test_path):
 
     assert stream.n_num_features == 0
 
-    assert stream.n_targets == 0
+    assert stream.n_targets == 1
+
+    assert stream.n_classes == 10
 
     assert stream.get_data_info() == 'Led Generator with drift - 24 features'
 
@@ -39,19 +41,19 @@ def test_led_generator_drift(test_path):
 
     assert stream.is_restartable() is True
 
-
     # Load test data corresponding to first 10 instances
     test_file = os.path.join(test_path, 'led_stream_drift.npz')
     data = np.load(test_file)
     X_expected = data['X']
+    y_expected = data['y']
 
-    X = stream.next_sample()
+    X, y = stream.next_sample()
     assert np.alltrue(X[0] == X_expected[0])
-
-    X = stream.last_sample()
+    assert np.alltrue(y[0] == y_expected[0])
 
     stream.restart()
-    X = stream.next_sample(10)
+    X, y = stream.next_sample(10)
     assert np.alltrue(X == X_expected)
+    assert np.alltrue(y == y_expected)
 
     assert stream.n_features == X.shape[1]
