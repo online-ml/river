@@ -41,7 +41,8 @@ def demo(input_file, output_file=None):
                                     max_time=1000, output_file=output_file,
                                     show_plot=False,
                                     metrics=['average_mean_square_error',
-                                             'average_mean_absolute_error'])
+                                             'average_mean_absolute_error',
+                                             'average_root_mean_square_error'])
 
     # Evaluate
     evaluator.evaluate(stream=stream, model=pipe)
@@ -49,4 +50,4 @@ def demo(input_file, output_file=None):
 
 if __name__ == '__main__':
     demo('../data/datasets/mtr/scm1d.csv',
-         '/home/mastelini/Desktop/test_regression.csv')
+         'test_mtr.csv')

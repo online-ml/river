@@ -39,6 +39,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     TRUE_VS_PREDICTED = 'true_vs_predicted'
     AMSE = 'average_mean_square_error'
     AMAE = 'average_mean_absolute_error'
+    ARMSE = 'average_root_mean_square_error'
 
     PLOT_TYPES = [PERFORMANCE,
                   KAPPA,
@@ -53,6 +54,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                   TRUE_VS_PREDICTED,
                   AMSE,
                   AMAE,
+                  ARMSE,
 
                   DATA_POINTS]
     CLASSIFICATION_METRICS = [PERFORMANCE,
@@ -70,7 +72,9 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                             HAMMING_LOSS,
                             EXACT_MATCH,
                             J_INDEX]
-    MULTI_TARGET_REGRESSION_METRICS = [AMSE, AMAE]
+    MULTI_TARGET_REGRESSION_METRICS = [AMSE,
+                                       AMAE,
+                                       ARMSE]
     CLASSIFICATION = 'classification'
     REGRESSION = 'regression'
     MULTI_OUTPUT = 'multi_output'
@@ -396,7 +400,10 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             new_points_dict[self.AMAE] = [[self.global_classification_metrics[i].get_average_absolute_error(),
                                           self.partial_classification_metrics[i].get_average_absolute_error()]
                                           for i in range(self.n_models)]
-        # TODO Implement ARMAE
+        if self.ARMSE in self.metrics:
+            new_points_dict[self.ARMSE] = [[self.global_classification_metrics[i].get_average_root_mean_square_error(),
+                                           self.partial_classification_metrics[i].get_average_root_mean_square_error()]
+                                           for i in range(self.n_models)]
 
         if self.TRUE_VS_PREDICTED in self.metrics:
             true, pred = [], []
@@ -493,6 +500,10 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     for i in range(self.n_models):
                         header += ',global_amae_[{}],sliding_amae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
+                if self.ARMSE in self.metrics:
+                    for i in range(self.n_models):
+                        header += ',global_armse_[{}],sliding_armse_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
 
                 if self.TRUE_VS_PREDICTED in self.metrics:
                     for i in range(self.n_models):
@@ -553,6 +564,10 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 for i in range(self.n_models):
                     line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_absolute_error(),
                                                     self.partial_classification_metrics[i].get_average_absolute_error())
+            if self.ARMSE in self.metrics:
+                for i in range(self.n_models):
+                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_root_mean_square_error(),
+                                                    self.partial_classification_metrics[i].get_average_root_mean_square_error())
 
             if self.TRUE_VS_PREDICTED in self.metrics:
 

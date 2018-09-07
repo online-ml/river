@@ -354,6 +354,9 @@ class EvaluateHoldout(StreamEvaluator):
             if 'average_mean_absolute_error' in self.metrics:
                 logging.info('{} - AMAE          : {:3f}'.format(
                     self.model_names[i], self.global_classification_metrics[i].get_average_absolute_error()))
+            if 'average_root_mean_square_error' in self.metrics:
+                logging.info('{} - ARMSE          : {:3f}'.format(
+                    self.model_names[i], self.global_classification_metrics[i].get_average_root_mean_square_error()))
 
         if self.restart_stream:
             self.stream.restart()
