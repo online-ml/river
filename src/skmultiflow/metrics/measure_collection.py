@@ -1234,6 +1234,24 @@ class MultiTargetRegressionMeasurements(BaseObject):
             return np.sum(self.average_error / self.sample_count) \
                 / self.n_targets
 
+    def get_average_root_mean_square_error(self):
+        """ get_average_root_mean_square_error
+
+        Computes the mean square error.
+
+        Returns
+        -------
+        float
+            Returns the average mean square error.
+
+        """
+        if self.sample_count == 0:
+            return 0.0
+        else:
+            return np.sum(np.sqrt(self.total_square_error /
+                                  self.sample_count)) \
+                / self.n_targets
+
     def get_last(self):
         return self.last_true_label, self.last_prediction
 
@@ -1320,15 +1338,15 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
             self.total_square_error += old_square[0]
             self.average_error += old_average[0]
 
-    def get_mean_square_error(self):
-        """ get_mean_square_error
+    def get_average_mean_square_error(self):
+        """ get_average_mean_square_error
 
-        Computes the window/local mean square error.
+        Computes the window/local average mean square error.
 
         Returns
         -------
         float
-            Returns the window/local mean square error.
+            Returns the window/local average mean square error.
 
         """
         if self._sample_count == 0:
@@ -1337,21 +1355,39 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
             return np.sum(self.total_square_error / self._sample_count) \
                 / self.n_targets
 
-    def get_average_error(self):
-        """ get_average_error
+    def get_average_absolute_error(self):
+        """ get_average_absolute_error
 
-        Computes the window/local mean absolute error.
+        Computes the window/local average mean absolute error.
 
         Returns
         -------
         float
-            Returns the window/local mean absolute error.
+            Returns the window/local average mean absolute error.
 
         """
         if self._sample_count == 0:
             return 0.0
         else:
             return np.sum(self.average_error / self._sample_count) \
+                / self.n_targets
+
+    def get_average_root_mean_square_error(self):
+        """ get_average_root_mean_square_error
+
+        Computes the mean square error.
+
+        Returns
+        -------
+        float
+            Returns the average mean square error.
+
+        """
+        if self._sample_count == 0:
+            return 0.0
+        else:
+            return np.sum(np.sqrt(self.total_square_error /
+                                  self._sample_count)) \
                 / self.n_targets
 
     def get_last(self):

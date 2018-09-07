@@ -96,8 +96,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             ----------
             X: numpy.ndarray of length equal to the number of features.
                 Instance attributes for updating the node.
-            y: int
-                Instance class.
+            y: numpy.ndarray of length equal to the number of targets.
+                Instance targets.
             weight: float
                 Instance weight.
             ht: HoeffdingTree
@@ -110,8 +110,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 _, rows = get_dimensions(y)
                 _, cols = get_dimensions(X)
 
-                self.perceptron_weight = np.random.uniform(-1, 1, (rows,
-                                                                   cols + 1))
+                self.perceptron_weight = np.random.uniform(-1.0, 1.0,
+                                                           (rows, cols + 1))
 
             try:
                 self._observed_class_distribution[0] += weight
@@ -169,16 +169,20 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
             normalized_target_value = ht.normalized_target_value(y)
 
-            # TODO: Verify perceptron update
             self.perceptron_weight += learning_ratio * \
-                np.matmul((normalized_target_value - normalized_pred)
-                          .reshape((n_targets, 1)),
-                          normalized_sample.reshape((1, n_features + 1)))
+                (normalized_target_value - normalized_pred).\
+                reshape((n_targets, 1)) @ \
+                normalized_sample.reshape((1, n_features + 1))
+
+            # Normalize perceptron weights
+            for i in range(n_targets):
+                sum_w = np.sum(np.absolute(self.perceptron_weight[i, :]))
+                self.perceptron_weight[i, :] /= sum_w
 
         # Predicts new income instances as a multiplication of the neurons
         # weights with the inputs augmented with a bias value
         def predict(self, X):
-            return np.matmul(self.perceptron_weight, X)
+            return self.perceptron_weight @ X
 
         def get_weight_seen(self):
             """Calculate the total weight seen by the node.
@@ -258,9 +262,11 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
             normalized_target_value = ht.normalized_target_value(y)
             self.perceptron_weight += learning_ratio * \
-                np.matmul((normalized_target_value - normalized_pred)
-                          .reshape((n_targets, 1)),
-                          normalized_sample.reshape((1, n_features + 1)))
+                np.matmul(
+                    (normalized_target_value - normalized_pred)
+                    .reshape((n_targets, 1)),
+                    normalized_sample.reshape((1, n_features + 1))
+                )
 
         # Predicts new income instances as a multiplication of the neurons
         # weights with the inputs augmented with a bias value
@@ -369,7 +375,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
         if self.examples_seen <= 1:
             _, c = get_dimensions(X)
-            return np.zeros((c + 1,), dtype=float)
+            return np.zeros((c + 1,), dtype=np.float64)
 
         mean = self.sum_of_attribute_values / self.examples_seen
 
@@ -378,7 +384,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                       self.examples_seen) / self.examples_seen)
 
         normalized_sample = np.divide(X - mean, sd, where=sd != 0,
-                                      out=np.zeros_like(X, dtype=float))
+                                      out=np.zeros_like(X, dtype=np.float64))
 
         # Augments sample with the bias input signal (or y intercept for
         # each target)
@@ -398,7 +404,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             normalized targets values
         """
         if self.examples_seen <= 1:
-            return np.zeros_like(y, dtype=float)
+            return np.zeros_like(y, dtype=np.float64)
 
         mean = self.sum_of_values / self.examples_seen
 
@@ -407,7 +413,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                       self.examples_seen) / self.examples_seen)
 
         normalized_targets = np.divide(y - mean, sd, where=sd != 0,
-                                       out=np.zeros_like(y, dtype=float))
+                                       out=np.zeros_like(y, dtype=np.float64))
 
         return normalized_targets
 
@@ -473,7 +479,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             Instance attributes.
         y: numpy.ndarray of shape (n_samples, n_targets)
             Target values.
-        classes: Not used.
         weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
 
@@ -485,11 +490,11 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 self._n_targets_set = True
 
             if weight is None:
-                weight = np.array([1.0])
+                weight = np.array([1.0], dtype=np.float64)
             row_cnt, _ = get_dimensions(X)
             wrow_cnt, _ = get_dimensions(weight)
             if row_cnt != wrow_cnt:
-                weight = [weight[0]] * row_cnt
+                weight = np.array([weight[0]] * row_cnt, dtype=np.float64)
 
             for i in range(row_cnt):
                 if weight[i] != 0.0:
@@ -513,10 +518,14 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             Instance weight. If not provided, uniform weights are assumed.
 
         """
-
-        self.examples_seen += weight
-        self.sum_of_values += weight * y
-        self.sum_of_squares += weight * (y ** 2)
+        try:
+            self.examples_seen += weight
+            self.sum_of_values += weight * y
+            self.sum_of_squares += weight * (y ** 2)
+        except ValueError:
+            self.examples_seen = weight
+            self.sum_of_values = weight * y
+            self.sum_of_squares = weight * (y ** 2)
 
         try:
             self.sum_of_attribute_values += weight * X
@@ -571,7 +580,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
         """
         r, _ = get_dimensions(X)
-        predictions = np.zeros((r, self._n_targets), dtype=float)
+
+        predictions = np.zeros((r, self._n_targets), dtype=np.float64)
         for i in range(r):
             if self.leaf_prediction == TARGET_MEAN:
                 votes = self.get_votes_for_instance(X[i]).copy()
@@ -629,6 +639,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         split_criterion = IntraClusterVarianceReductionSplitCriterion()
         best_split_suggestions = node.\
             get_best_split_suggestions(split_criterion, self)
+
         best_split_suggestions.sort(key=attrgetter('merit'))
         should_split = False
         if len(best_split_suggestions) < 2:
@@ -640,6 +651,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 ), self.split_confidence, node.get_weight_seen())
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
+
             if (second_best_suggestion.merit / best_suggestion.merit <
                     1 - hoeffding_bound or hoeffding_bound <
                     self.tie_threshold):
