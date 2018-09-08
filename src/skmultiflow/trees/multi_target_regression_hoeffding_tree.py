@@ -112,6 +112,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
                 self.perceptron_weight = np.random.uniform(-1.0, 1.0,
                                                            (rows, cols + 1))
+                self.normalize_perceptron_weights()
 
             try:
                 self._observed_class_distribution[0] += weight
@@ -174,6 +175,10 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 reshape((n_targets, 1)) @ \
                 normalized_sample.reshape((1, n_features + 1))
 
+            self.normalize_perceptron_weights()
+
+        def normalize_perceptron_weights(self):
+            n_targets = self.perceptron_weight.shape[0]
             # Normalize perceptron weights
             for i in range(n_targets):
                 sum_w = np.sum(np.absolute(self.perceptron_weight[i, :]))
@@ -217,6 +222,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
                 self.perceptron_weight = np.random.uniform(-1, 1, (rows,
                                                                    cols + 1))
+                self.normalize_perceptron_weights()
 
             try:
                 self._observed_class_distribution[0] += weight
@@ -267,6 +273,14 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     .reshape((n_targets, 1)),
                     normalized_sample.reshape((1, n_features + 1))
                 )
+            self.normalize_perceptron_weights()
+
+        def normalize_perceptron_weights(self):
+            n_targets = self.perceptron_weight.shape[0]
+            # Normalize perceptron weights
+            for i in range(n_targets):
+                sum_w = np.sum(np.absolute(self.perceptron_weight[i, :]))
+                self.perceptron_weight[i, :] /= sum_w
 
         # Predicts new income instances as a multiplication of the neurons
         # weights with the inputs augmented with a bias value
