@@ -13,7 +13,7 @@ class OneHotToCategorical(StreamTransform):
     Parameters
     ----------
     categorical_list: list of lists
-        Each inner list contains all the one hot indexes associated with 
+        Each inner list contains all the attribute indexes that are associated with
         the same categorical feature.
     
     """
