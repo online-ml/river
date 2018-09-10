@@ -29,7 +29,7 @@ def demo(input_file, output_file=None):
     # Setup the classifier
     # classifier = SGDClassifier()
     # classifier = PassiveAggressiveClassifier()
-    classifier = MultiTargetRegressionHoeffdingTree(remove_poor_atts=True)
+    classifier = MultiTargetRegressionHoeffdingTree()
     # classifier = PerceptronMask()
 
     # Setup the pipeline
