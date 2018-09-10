@@ -49,4 +49,4 @@ def demo(input_file, output_file=None):
 
 if __name__ == '__main__':
     demo('../data/datasets/mtr/scm1d.csv',
-         '/home/mastelini/Desktop/mtr_test.csv')
+         'mtr_test.csv')
