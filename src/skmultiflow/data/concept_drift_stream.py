@@ -72,7 +72,7 @@ class ConceptDriftStream(Stream):
         self.n_classes = stream.n_classes
         self.cat_features_idx = stream.cat_features_idx
         self.feature_names = stream.feature_names
-        self.target_names = stream.target_values
+        self.target_names = ['target'] if self.n_targets == 1 else ['target_' + i for i in range(self.n_targets)]
         self.target_values = stream.target_values
         self.name = stream.name
 
