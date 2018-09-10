@@ -68,7 +68,7 @@ class AGRAWALGenerator(Stream):
         self.__configure()
 
     def __configure(self):
-        self.target_names = ["target_0"]
+        self.target_names = ["target"]
         self.feature_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue", "hyears", "loan"]
         self.target_values = [i for i in range(self.n_classes)]
 

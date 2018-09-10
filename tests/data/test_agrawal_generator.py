@@ -15,7 +15,7 @@ def test_agrawal_generator(test_path):
     expected_targets = [0, 1]
     assert stream.target_values == expected_targets
 
-    assert stream.target_names == ['target_0']
+    assert stream.target_names == ['target']
 
     assert stream.n_features == 9
 
