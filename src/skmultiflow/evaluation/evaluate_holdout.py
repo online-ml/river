@@ -289,11 +289,9 @@ class EvaluateHoldout(StreamEvaluator):
                                 for j in range(self.n_models):
                                     for i in range(len(prediction[0])):
                                         if self._task_type == EvaluateHoldout.CLASSIFICATION:
-                                            self.global_classification_metrics[j].add_result(self.X_test[i],
-                                                                                             self.y_test[i],
+                                            self.global_classification_metrics[j].add_result(self.y_test[i],
                                                                                              prediction[j][i])
-                                            self.partial_classification_metrics[j].add_result(self.X_test[i],
-                                                                                              self.y_test[i],
+                                            self.partial_classification_metrics[j].add_result(self.y_test[i],
                                                                                               prediction[j][i])
                                         else:
                                             self.global_classification_metrics[j].add_result(self.y_test[i],

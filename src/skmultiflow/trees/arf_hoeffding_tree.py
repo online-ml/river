@@ -126,8 +126,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                 obs.observe_attribute_class(X[i], int(y), weight)
 
         def _sample_features(self, n_features):
-            rnd = check_random_state(self.random_state)
-            return rnd.choice(n_features, size=self.max_features, replace=False)
+            return self.random_state.choice(n_features, size=self.max_features, replace=False)
 
     class LearningNodeNB(RandomLearningNode):
         """Naive Bayes learning node class.
@@ -272,7 +271,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                          nominal_attributes)
         self.max_features = max_features
         self.remove_poor_attributes = False
-        self.random_state = random_state
+        self.random_state = check_random_state(random_state)
 
     def _new_learning_node(self, initial_class_observations=None):
         """Create a new learning node. The type of learning node depends on the tree configuration."""
