@@ -48,3 +48,7 @@ pip-delete-this-directory.txt
 # *.csv
 !data/*.csv
 !data/*.txt
+
+# Coverage
+.coverage
+coverage/
