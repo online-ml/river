@@ -5,7 +5,7 @@ from skmultiflow.trees.hoeffding_numeric_attribute_class_observer \
 from skmultiflow.trees.hoeffding_nominal_class_attribute_observer \
      import HoeffdingNominalAttributeClassObserver
 from operator import attrgetter
-from skmultiflow.utils.utils import *
+from skmultiflow.utils.utils import get_dimensions
 from skmultiflow.trees.intra_cluster_variance_reduction_split_criterion \
      import IntraClusterVarianceReductionSplitCriterion
 import logging

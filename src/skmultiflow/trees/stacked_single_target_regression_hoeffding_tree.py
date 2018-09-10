@@ -6,6 +6,7 @@ from skmultiflow.trees.hoeffding_numeric_attribute_class_observer \
 from skmultiflow.trees.hoeffding_nominal_class_attribute_observer \
      import HoeffdingNominalAttributeClassObserver
 import logging
+from skmultiflow.utils.utils import get_dimensions
 
 TARGET_MEAN = 'tm'
 PERCEPTRON = 'perceptron'
