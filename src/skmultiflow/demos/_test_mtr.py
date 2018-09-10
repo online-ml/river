@@ -8,9 +8,8 @@ from skmultiflow.trees.multi_target_regression_hoeffding_tree import \
 def demo(input_file, output_file=None):
     """ _test_mtr_regression
 
-    This demo demonstrates how to evaluate a regressor. The data stream used
-    is an instance of the RegressionGenerator, which feeds an instance from
-    sklearn's SGDRegressor.
+    This demo demonstrates how to evaluate a Multi-Target Regressor. The
+    employed dataset is 'scm1d', which is contained in the data folder.
 
     Parameters
     ----------
@@ -30,7 +29,7 @@ def demo(input_file, output_file=None):
     # Setup the classifier
     # classifier = SGDClassifier()
     # classifier = PassiveAggressiveClassifier()
-    classifier = MultiTargetRegressionHoeffdingTree()
+    classifier = MultiTargetRegressionHoeffdingTree(remove_poor_atts=True)
     # classifier = PerceptronMask()
 
     # Setup the pipeline
@@ -50,4 +49,4 @@ def demo(input_file, output_file=None):
 
 if __name__ == '__main__':
     demo('../data/datasets/mtr/scm1d.csv',
-         'test_mtr.csv')
+         '/home/mastelini/Desktop/mtr_test.csv')
