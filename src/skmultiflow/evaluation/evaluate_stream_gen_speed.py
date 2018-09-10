@@ -10,7 +10,7 @@ class EvaluateStreamGenerationSpeed(BaseObject):
     
     Parameters
     ----------
-    num_samples: int (Default: 100000)
+    n_samples: int (Default: 100000)
         The number of samples to generate.
     
     max_time: float (Default: float("inf"))
@@ -35,9 +35,9 @@ class EvaluateStreamGenerationSpeed(BaseObject):
     Samples/second = 908.56
     
     """
-    def __init__(self, num_samples=100000, max_time=float("inf"), output_file=None, batch_size=1):
+    def __init__(self, n_samples=100000, max_time=float("inf"), output_file=None, batch_size=1):
         super().__init__()
-        self.num_samples = num_samples
+        self.num_samples = n_samples
         self.max_time = max_time
         self.output_file = output_file
         self.batch_size = batch_size
@@ -107,16 +107,10 @@ class EvaluateStreamGenerationSpeed(BaseObject):
                 self.batch_size = value
 
     def get_class_type(self):
-        return 'estimator'
+        return 'evaluator'
 
     def get_info(self):
         return 'EvaluateStreamGenerationSpeed: n_samples: ' + str(self.num_samples) + \
                ' - max_time: ' + (str(self.max_time)) + \
                ' - output_file: ' + (self.output_file if self.output_file is not None else 'None') + \
                ' - batch_size: ' + str(self.batch_size)
-
-
-if __name__ == '__main__':
-    msg = EvaluateStreamGenerationSpeed()
-    print(msg.get_class_type())
-    pass
