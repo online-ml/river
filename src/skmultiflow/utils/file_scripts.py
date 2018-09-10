@@ -98,9 +98,11 @@ class RemoveHeader(BaseObject):
             self.new_file = base_path + '.' + file_type if file_type is not None else base_path
 
     def get_info(self):
-        return 'Remove Header: base_file: ' + self.base_file + \
-               '  -  new_file: ' + self.new_file + \
-               '  -  ignore_char: ' + self.ignore_char
+        info = type(self).__name__ + ':'
+        info += ' - base_file: {}'.format(self.base_file)
+        info += ' - new_file: {}'.format(self.new_file)
+        info += ' - ignore_char: {}'.format(self.ignore_char)
+        return info
 
     def get_class_type(self):
         return 'file_utils'
