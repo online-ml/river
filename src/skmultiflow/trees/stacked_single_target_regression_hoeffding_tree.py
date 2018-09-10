@@ -5,10 +5,6 @@ from skmultiflow.trees.hoeffding_numeric_attribute_class_observer \
      import HoeffdingNumericAttributeClassObserver
 from skmultiflow.trees.hoeffding_nominal_class_attribute_observer \
      import HoeffdingNominalAttributeClassObserver
-from operator import attrgetter
-from skmultiflow.utils.utils import *
-from skmultiflow.trees.intra_cluster_variance_reduction_split_criterion \
-     import IntraClusterVarianceReductionSplitCriterion
 import logging
 
 TARGET_MEAN = 'tm'
@@ -111,7 +107,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
                                                               (rows, cols + 1))
                 # Cascade Stacking
                 self.perceptron_weight[1] = np.random.uniform(-1.0, 1.0,
-                                                              (rows, rows))
+                                                              (rows, rows + 1))
                 self.normalize_perceptron_weights()
 
             try:
@@ -175,12 +171,14 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 reshape((n_targets, 1)) @ \
                 normalized_sample.reshape((1, n_features + 1))
 
+            # Add bias term
+            normalized_base_pred = np.append(normalized_base_pred, 1.0)
             normalized_meta_pred = self._predict_meta(normalized_base_pred)
 
             self.perceptron_weight[1] += learning_ratio * \
                 (normalized_target_value - normalized_meta_pred).\
                 reshape((n_targets, 1)) @ \
-                normalized_base_pred.reshape((1, n_targets))
+                normalized_base_pred.reshape((1, n_targets + 1))
 
             self.normalize_perceptron_weights()
 
@@ -235,7 +233,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
                                                               (rows, cols + 1))
                 # Cascade Stacking
                 self.perceptron_weight[1] = np.random.uniform(-1.0, 1.0,
-                                                              (rows, rows))
+                                                              (rows, rows + 1))
                 self.normalize_perceptron_weights()
 
             try:
@@ -287,12 +285,14 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 reshape((n_targets, 1)) @ \
                 normalized_sample.reshape((1, n_features + 1))
 
+            # Add bias term
+            normalized_base_pred = np.append(normalized_base_pred, 1.0)
             normalized_meta_pred = self._predict_meta(normalized_base_pred)
 
             self.perceptron_weight[1] += learning_ratio * \
                 (normalized_target_value - normalized_meta_pred).\
                 reshape((n_targets, 1)) @ \
-                normalized_base_pred.reshape((1, n_targets))
+                normalized_base_pred.reshape((1, n_targets + 1))
 
             self.normalize_perceptron_weights()
 
@@ -403,7 +403,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 normalized_base_prediction = perceptron_weights[0] @ \
                     normalized_sample
                 normalized_meta_prediction = perceptron_weights[1] @ \
-                    normalized_base_prediction
+                    np.append(normalized_base_prediction, 1.0)
                 mean = self.sum_of_values / self.examples_seen
                 sd = np.sqrt((self.sum_of_squares - (self.sum_of_values ** 2)
                              / self.examples_seen) / self.examples_seen)
