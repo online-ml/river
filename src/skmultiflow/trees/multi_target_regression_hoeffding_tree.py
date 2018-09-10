@@ -268,11 +268,10 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
             normalized_target_value = ht.normalized_target_value(y)
             self.perceptron_weight += learning_ratio * \
-                np.matmul(
-                    (normalized_target_value - normalized_pred)
-                    .reshape((n_targets, 1)),
-                    normalized_sample.reshape((1, n_features + 1))
-                )
+                (normalized_target_value - normalized_pred).\
+                reshape((n_targets, 1)) @ \
+                normalized_sample.reshape((1, n_features + 1))
+
             self.normalize_perceptron_weights()
 
         def normalize_perceptron_weights(self):
@@ -285,7 +284,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         # Predicts new income instances as a multiplication of the neurons
         # weights with the inputs augmented with a bias value
         def predict(self, X):
-            return np.matmul(self.perceptron_weight, X)
+            return self.perceptron_weight @ X
 
     # ===========================================
     # == Hoeffding Regression Tree implementation ===
@@ -670,32 +669,23 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     1 - hoeffding_bound or hoeffding_bound <
                     self.tie_threshold):
                 should_split = True
-            if self.remove_poor_atts is not None and self.remove_poor_atts:
+            if self.remove_poor_atts is not None and self.remove_poor_atts \
+                    and not should_split:
                 poor_atts = set()
+                best_ratio = second_best_suggestion.merit \
+                    / best_suggestion.merit
 
-                ################### TODO Verify #########################
-
-                # Scan 1 - add any poor attribute to set
+                # Add any poor attribute to set
                 for i in range(len(best_split_suggestions)):
-                    if best_split_suggestions[i] is not None:
+                    if best_split_suggestions[i].split_test is not None:
                         split_atts = best_split_suggestions[i].\
                             split_test.get_atts_test_depends_on()
                         if len(split_atts) == 1:
-                            if best_suggestion.merit - \
-                                    best_split_suggestions[i].merit > \
-                                    hoeffding_bound:
+                            if best_split_suggestions[i].merit / \
+                                    best_suggestion.merit < \
+                                    best_ratio - 2 * hoeffding_bound:
                                 poor_atts.add(int(split_atts[0]))
-                # Scan 2 - remove good attributes from set
-                for i in range(len(best_split_suggestions)):
-                    if best_split_suggestions[i] is not None:
-                        split_atts = best_split_suggestions[i].\
-                            split_test.get_atts_test_depends_on()
-                        if len(split_atts) == 1:
-                            if best_suggestion.merit - \
-                                    best_split_suggestions[i].merit < \
-                                    hoeffding_bound:
-                                poor_atts.remove(int(split_atts[0]))
-                #########################################################
+
                 for poor_att in poor_atts:
                     node.disable_attribute(poor_att)
         if should_split:
