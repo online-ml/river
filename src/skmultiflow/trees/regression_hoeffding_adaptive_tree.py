@@ -6,7 +6,8 @@ from abc import ABCMeta, abstractmethod
 from skmultiflow.utils import check_random_state
 
 
-PERCEPTRON = 'perceptron'
+_TARGET_MEAN = 'mean'
+_PERCEPTRON = 'perceptron'
 error_width_threshold = 300
 SplitNode = RegressionHoeffdingTree.SplitNode
 LearningNodePerceptron = RegressionHoeffdingTree.LearningNodePerceptron
@@ -44,7 +45,7 @@ class RegressionHAT(RegressionHoeffdingTree):
         If True, disable pre-pruning.
     leaf_prediction: string (default='nba')
         | Prediction mechanism used at leafs.
-        | 'tm' - Target mean
+        | 'mean' - Target mean
         | 'perceptron' - Perceptron
     nb_threshold: int (default=0)
         Number of instances a leaf should observe before allowing Naive Bayes.
@@ -56,6 +57,11 @@ class RegressionHAT(RegressionHoeffdingTree):
         Decay multiplier for the learning rate of the perceptron
     learning_ratio_const: Bool
         If False the learning ratio will decay with the number of examples seen
+    random_state: int, RandomState instance or None, optional (default=None)
+       If int, random_state is the seed used by the random number generator;
+       If RandomState instance, random_state is the random number generator;
+       If None, the random number generator is the RandomState instance used
+       by `np.random`. Used when leaf_prediction is 'perceptron'.
 
     """
 
@@ -142,20 +148,19 @@ class RegressionHAT(RegressionHoeffdingTree):
             return self._estimation_error_weight is None
 
         # Override NewNode
-        def learn_from_instance(self, X, y, weight, Rhat, parent, parent_branch):
+        def learn_from_instance(self, X, y, weight, rhat, parent, parent_branch):
 
             true_target = y
 
             normalized_error = 0.0
 
             if self.filter_instance_to_leaf(X, parent, parent_branch).node is not None:
-                target_prediction = Rhat.predict([X])[0]
-                normalized_error = Rhat.get_normalized_error(target_prediction,true_target)
+                target_prediction = rhat.predict([X])[0]
+                normalized_error = rhat.get_normalized_error(target_prediction, true_target)
             if self._estimation_error_weight is None:
                 self._estimation_error_weight = ADWIN()
 
             old_error = self.get_error_estimation()
-
 
             # Add element to Change detector
             self._estimation_error_weight.add_element(normalized_error)
@@ -170,8 +175,8 @@ class RegressionHAT(RegressionHoeffdingTree):
             # Check condition to build a new alternate tree
             if self.error_change is True:
 
-                self._alternate_tree = Rhat._new_learning_node()
-                Rhat._alternateTrees += 1
+                self._alternate_tree = rhat._new_learning_node()
+                rhat._alternateTrees += 1
 
             # Condition to replace alternate tree
             elif self._alternate_tree is not None and self._alternate_tree.is_null_error() is False:
@@ -186,31 +191,31 @@ class RegressionHAT(RegressionHoeffdingTree):
                     bound = math.sqrt(2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / fDelta) * fN)
                     # To check, bound never less than (old_error_rate - alt_error_rate)
                     if bound < (old_error_rate - alt_error_rate):
-                        Rhat._active_leaf_node_cnt -= self.number_leaves()
-                        Rhat._active_leaf_node_cnt += self._alternate_tree.number_leaves()
-                        self.kill_tree_children(Rhat)
+                        rhat._active_leaf_node_cnt -= self.number_leaves()
+                        rhat._active_leaf_node_cnt += self._alternate_tree.number_leaves()
+                        self.kill_tree_children(rhat)
 
                         if parent is not None:
                             parent.set_child(parent_branch, self._alternate_tree)
                         else:
-                            Rhat._tree_root = Rhat._tree_root._alternate_tree
-                        Rhat._switchAlternateTrees += 1
+                            rhat._tree_root = rhat._tree_root._alternate_tree
+                        rhat._switchAlternateTrees += 1
                     elif bound < alt_error_rate - old_error_rate:
                         if isinstance(self._alternate_tree, HoeffdingTree.ActiveLearningNode):
                             self._alternate_tree = None
                         elif isinstance(self._alternate_tree, HoeffdingTree.ActiveLearningNode):
                             self._alternate_tree = None
                         else:
-                            self._alternate_tree.kill_tree_children(Rhat)
-                        Rhat._prunedalternateTree += 1  # hat._pruned_alternate_trees to check
+                            self._alternate_tree.kill_tree_children(rhat)
+                        rhat._prunedalternateTree += 1  # hat._pruned_alternate_trees to check
 
             # Learn_From_Instance alternate Tree and Child nodes
             if self._alternate_tree is not None:
-                self._alternate_tree.learn_from_instance(X, y, weight, Rhat, parent, parent_branch)
+                self._alternate_tree.learn_from_instance(X, y, weight, rhat, parent, parent_branch)
             child_branch = self.instance_child_index(X)
             child = self.get_child(child_branch)
             if child is not None:
-                child.learn_from_instance(X, y, weight, Rhat, parent, parent_branch)
+                child.learn_from_instance(X, y, weight, rhat, parent, parent_branch)
 
         # Override NewNode
         def kill_tree_children(self, Rhat):
@@ -263,8 +268,8 @@ class RegressionHAT(RegressionHoeffdingTree):
 
     class AdaLearningNodeForRegression(LearningNodePerceptron, NewNode):
 
-        def __init__(self, initial_class_observations, perceptron_weight):
-            LearningNodePerceptron.__init__(self, initial_class_observations, perceptron_weight)
+        def __init__(self, initial_class_observations, perceptron_weight, random_state=None):
+            LearningNodePerceptron.__init__(self, initial_class_observations, perceptron_weight, random_state)
             self.estimationErrorWeight = ADWIN()
             self.ErrorChange = False
             self._randomSeed = 1
@@ -296,14 +301,14 @@ class RegressionHAT(RegressionHoeffdingTree):
             pass
 
         # Override NewNode
-        def learn_from_instance(self, X, y, weight, Rhat, parent, parent_branch):
+        def learn_from_instance(self, X, y, weight, rhat, parent, parent_branch):
 
-            super().learn_from_instance(X, y, weight, Rhat)
+            super().learn_from_instance(X, y, weight, rhat)
 
             true_target = y
-            target_prediction = Rhat.predict([X])[0]
+            target_prediction = rhat.predict([X])[0]
 
-            normalized_error = Rhat.get_normalized_error(target_prediction, true_target)
+            normalized_error = rhat.get_normalized_error(target_prediction, true_target)
 
             if self.estimationErrorWeight is None:
                 self.estimationErrorWeight = ADWIN()
@@ -322,8 +327,8 @@ class RegressionHAT(RegressionHoeffdingTree):
             # call ActiveLearningNode
             weight_seen = self.get_weight_seen()
 
-            if weight_seen - self.get_weight_seen_at_last_split_evaluation() >= Rhat.grace_period:
-                Rhat._attempt_to_split(self, parent, parent_branch)
+            if weight_seen - self.get_weight_seen_at_last_split_evaluation() >= rhat.grace_period:
+                rhat._attempt_to_split(self, parent, parent_branch)
                 self.set_weight_seen_at_last_split_evaluation(weight_seen)
 
         # Override NewNode, New for option votes
@@ -352,7 +357,8 @@ class RegressionHAT(RegressionHoeffdingTree):
                  nominal_attributes=None,
                  learning_ratio_perceptron=0.02,
                  learning_ratio_decay=0.001,
-                 learning_ratio_const=True):
+                 learning_ratio_const=True,
+                 random_state=None):
 
         super(RegressionHAT, self).__init__(max_byte_size=max_byte_size,
                                             memory_estimate_period=memory_estimate_period,
@@ -367,11 +373,12 @@ class RegressionHAT(RegressionHoeffdingTree):
                                             nominal_attributes=nominal_attributes,
                                             learning_ratio_perceptron=learning_ratio_perceptron,
                                             learning_ratio_decay=learning_ratio_decay,
-                                            learning_ratio_const=learning_ratio_const)
-        self.leaf_prediction = leaf_prediction
+                                            learning_ratio_const=learning_ratio_const,
+                                            leaf_prediction=leaf_prediction,
+                                            random_state=random_state)
         self._alternateTrees = 0
-        self._switchAlternateTrees = 0
-        self._prunedalternateTree = 0
+        self._switch_alternate_trees = 0
+        self._pruned_alternate_tree = 0
 
     @property
     def leaf_prediction(self):
@@ -379,9 +386,9 @@ class RegressionHAT(RegressionHoeffdingTree):
 
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction != PERCEPTRON:
-            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, PERCEPTRON))
-            self._leaf_prediction = PERCEPTRON
+        if leaf_prediction not in {_TARGET_MEAN, _PERCEPTRON}:
+            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, _PERCEPTRON))
+            self._leaf_prediction = _PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
 
@@ -390,7 +397,8 @@ class RegressionHAT(RegressionHoeffdingTree):
         if initial_class_observations is None:
             initial_class_observations = {}
 
-        return self.AdaLearningNodeForRegression(initial_class_observations, perceptron_weight)
+        return self.AdaLearningNodeForRegression(initial_class_observations, perceptron_weight,
+                                                 random_state=self._init_random_state)
 
     def _partial_fit(self, X, y, weight):
         """Trains the model on samples X and corresponding targets y.
