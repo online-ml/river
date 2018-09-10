@@ -128,17 +128,17 @@ class MissingValuesCleaner(StreamTransform):
         if self.strategy == 'zero':
             return 0
         elif self.strategy == 'mean':
-            if not self.window.isempty():
+            if not self.window.is_empty():
                 return np.mean(np.array(self.window.get_queue())[:, column_index:column_index+1])
             else:
                 return self.new_value
         elif self.strategy == 'median':
-            if not self.window.isempty():
+            if not self.window.is_empty():
                 return np.median(np.array(self.window.get_queue())[:, column_index:column_index+1].flatten())
             else:
                 return self.new_value
         elif self.strategy == 'mode':
-            if not self.window.isempty():
+            if not self.window.is_empty():
                 return stats.mode(np.array(self.window.get_queue())[:, column_index:column_index+1].flatten())
             else:
                 return self.new_value

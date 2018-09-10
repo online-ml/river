@@ -38,6 +38,7 @@ Stream Generators
    skmultiflow.data.waveform_generator
    skmultiflow.data.multilabel_generator
    skmultiflow.data.regression_generator
+   skmultiflow.data.concept_drift_stream
 
 .. currentmodule:: skmultiflow
 
