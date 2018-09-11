@@ -1,7 +1,7 @@
 import numpy as np
 from array import array
 import os
-from skmultiflow.data import RandomTreeGenerator
+from skmultiflow.data import RandomTreeGenerator, SEAGenerator
 from skmultiflow.trees import HoeffdingTree
 
 
@@ -16,7 +16,7 @@ def test_hoeffding_tree(test_path):
 
     cnt = 0
     max_samples = 5000
-    predictions = array('d')
+    predictions = array('i')
     proba_predictions = []
     wait_samples = 100
 
@@ -29,11 +29,11 @@ def test_hoeffding_tree(test_path):
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('d', [0.0, 1.0, 3.0, 0.0, 0.0, 3.0, 0.0, 1.0, 1.0, 2.0,
-                                       0.0, 2.0, 1.0, 1.0, 2.0, 1.0, 3.0, 0.0, 1.0, 1.0,
-                                       1.0, 1.0, 0.0, 3.0, 1.0, 2.0, 1.0, 1.0, 3.0, 2.0,
-                                       1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 0.0, 1.0, 2.0,
-                                       0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 2.0])
+    expected_predictions = array('i', [0, 1, 3, 0, 0, 3, 0, 1, 1, 2,
+                                       0, 2, 1, 1, 2, 1, 3, 0, 1, 1,
+                                       1, 1, 0, 3, 1, 2, 1, 1, 3, 2,
+                                       1, 2, 2, 2, 1, 1, 1, 0, 1, 2,
+                                       0, 2, 0, 0, 0, 0, 1, 3, 2])
 
     test_file = os.path.join(test_path, 'test_hoeffding_tree.npy')
 
@@ -53,3 +53,24 @@ def test_hoeffding_tree(test_path):
     expected_model_2 = 'Leaf = Class 1.0 | {1.0: 1745.0, 2.0: 978.0, 0.0: 1423.0, 3.0: 854.0}\n'
     assert (learner.get_model_description() == expected_model_1) \
            or (learner.get_model_description() == expected_model_2)
+
+
+def test_hoeffding_tree_coverage():
+    # Cover memory management
+    stream = SEAGenerator(random_state=1, noise_percentage=0.05)
+    stream.prepare_for_use()
+    X, y = stream.next_sample(5000)
+
+    learner = HoeffdingTree(max_byte_size=30, memory_estimate_period=100, grace_period=10, leaf_prediction='mc')
+
+    learner.partial_fit(X, y, classes=stream.target_values)
+
+    learner.reset()
+
+    # Cover nominal attribute observer
+    stream = RandomTreeGenerator(tree_random_state=1, sample_random_state=1, n_num_features=0,
+                                 n_categories_per_cat_feature=2)
+    stream.prepare_for_use()
+    X, y = stream.next_sample(1000)
+    learner = HoeffdingTree(leaf_prediction='mc', nominal_attributes=[i for i in range(10)])
+    learner.partial_fit(X, y, classes=stream.target_values)
