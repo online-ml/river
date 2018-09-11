@@ -1,8 +1,11 @@
 from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data.file_stream import FileStream
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-from skmultiflow.trees.multi_target_regression_hoeffding_tree import \
-    MultiTargetRegressionHoeffdingTree
+from skmultiflow.trees.stacked_single_target_regression_hoeffding_tree import \
+    StackedSingleTargetRegressionHoeffdingTree
+
+# from skmultiflow.trees.multi_target_regression_hoeffding_tree import \
+#     MultiTargetRegressionHoeffdingTree
 
 
 def demo(input_file, output_file=None):
@@ -29,7 +32,8 @@ def demo(input_file, output_file=None):
     # Setup the classifier
     # classifier = SGDClassifier()
     # classifier = PassiveAggressiveClassifier()
-    classifier = MultiTargetRegressionHoeffdingTree()
+    classifier = StackedSingleTargetRegressionHoeffdingTree(leaf_prediction='adaptive')
+    # classifier = MultiTargetRegressionHoeffdingTree(leaf_prediction='adaptive')
     # classifier = PerceptronMask()
 
     # Setup the pipeline
@@ -49,4 +53,4 @@ def demo(input_file, output_file=None):
 
 if __name__ == '__main__':
     demo('../data/datasets/mtr/scm1d.csv',
-         'mtr_test.csv')
+         '/home/mastelini/Desktop/sst_mtr_test_adaptive.csv')
