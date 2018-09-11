@@ -101,7 +101,7 @@ class RegressionHAT(RegressionHoeffdingTree):
 
     class AdaSplitNodeForRegression(SplitNode, NewNode):
         def __init__(self, split_test, class_observations):
-            SplitNode.__init__(self, split_test, class_observations)
+            super().__init__(split_test, class_observations)
             self._estimation_error_weight = ADWIN()
             self._alternate_tree = None
             self.error_change = False
@@ -174,9 +174,8 @@ class RegressionHAT(RegressionHoeffdingTree):
 
             # Check condition to build a new alternate tree
             if self.error_change is True:
-
                 self._alternate_tree = rhat._new_learning_node()
-                rhat._alternateTrees += 1
+                rhat.alternate_trees_cnt += 1
 
             # Condition to replace alternate tree
             elif self._alternate_tree is not None and self._alternate_tree.is_null_error() is False:
@@ -199,7 +198,7 @@ class RegressionHAT(RegressionHoeffdingTree):
                             parent.set_child(parent_branch, self._alternate_tree)
                         else:
                             rhat._tree_root = rhat._tree_root._alternate_tree
-                        rhat._switchAlternateTrees += 1
+                        rhat.switch_alternate_trees_cnt += 1
                     elif bound < alt_error_rate - old_error_rate:
                         if isinstance(self._alternate_tree, HoeffdingTree.ActiveLearningNode):
                             self._alternate_tree = None
@@ -207,7 +206,7 @@ class RegressionHAT(RegressionHoeffdingTree):
                             self._alternate_tree = None
                         else:
                             self._alternate_tree.kill_tree_children(rhat)
-                        rhat._prunedalternateTree += 1  # hat._pruned_alternate_trees to check
+                        rhat.pruned_alternate_trees_cnt += 1  # hat.pruned_alternate_trees_cnt to check
 
             # Learn_From_Instance alternate Tree and Child nodes
             if self._alternate_tree is not None:
@@ -218,22 +217,22 @@ class RegressionHAT(RegressionHoeffdingTree):
                 child.learn_from_instance(X, y, weight, rhat, parent, parent_branch)
 
         # Override NewNode
-        def kill_tree_children(self, Rhat):
+        def kill_tree_children(self, rhat):
             for child in self._children:
                 if child is not None:
                     # Delete alternate tree if it exists
-                    if isinstance(child, Rhat.AdaSplitNodeForRegression) and child._alternate_tree is not None:
+                    if isinstance(child, rhat.AdaSplitNodeForRegression) and child._alternate_tree is not None:
                         self._pruned_alternate_trees += 1
                     # Recursive delete of SplitNodes
-                    if isinstance(child, Rhat.AdaSplitNodeForRegression):
-                        child.kill_tree_children(Rhat)
+                    if isinstance(child, rhat.AdaSplitNodeForRegression):
+                        child.kill_tree_children(rhat)
 
                     if isinstance(child, HoeffdingTree.ActiveLearningNode):
                         child = None
-                        Rhat._active_leaf_node_cnt -= 1
+                        rhat._active_leaf_node_cnt -= 1
                     elif isinstance(child, HoeffdingTree.InactiveLearningNode):
                         child = None
-                        Rhat._inactive_leaf_node_cnt -= 1
+                        rhat._inactive_leaf_node_cnt -= 1
 
         # override NewNode
         def filter_instance_to_leaves(self, X, y, weight, parent, parent_branch,
@@ -269,16 +268,16 @@ class RegressionHAT(RegressionHoeffdingTree):
     class AdaLearningNodeForRegression(LearningNodePerceptron, NewNode):
 
         def __init__(self, initial_class_observations, perceptron_weight, random_state=None):
-            LearningNodePerceptron.__init__(self, initial_class_observations, perceptron_weight, random_state)
-            self.estimationErrorWeight = ADWIN()
-            self.ErrorChange = False
+            super().__init__(initial_class_observations, perceptron_weight, random_state)
+            self._estimation_error_weight = ADWIN()
+            self._error_change = False
             self._randomSeed = 1
             self._classifier_random = check_random_state(self._randomSeed)
 
         def calc_byte_size(self):
             byte_size = self.__sizeof__()
-            if self.estimationErrorWeight is not None:
-                byte_size += self.estimationErrorWeight.get_length_estimation()
+            if self._estimation_error_weight is not None:
+                byte_size += self._estimation_error_weight.get_length_estimation()
             return byte_size
 
         # Override NewNode
@@ -287,15 +286,15 @@ class RegressionHAT(RegressionHoeffdingTree):
 
         # Override NewNode
         def get_error_estimation(self):
-            return self.estimationErrorWeight.estimation
+            return self._estimation_error_weight.estimation
 
         # Override NewNode
         def get_error_width(self):
-            return self.estimationErrorWeight.width
+            return self._estimation_error_weight.width
 
         # Override NewNode
         def is_null_error(self):
-            return (self.estimationErrorWeight is None)
+            return self._estimation_error_weight is None
 
         def kill_tree_children(self, hat):
             pass
@@ -310,19 +309,19 @@ class RegressionHAT(RegressionHoeffdingTree):
 
             normalized_error = rhat.get_normalized_error(target_prediction, true_target)
 
-            if self.estimationErrorWeight is None:
-                self.estimationErrorWeight = ADWIN()
+            if self._estimation_error_weight is None:
+                self._estimation_error_weight = ADWIN()
 
             old_error = self.get_error_estimation()
 
             # Add element to Adwin
 
-            self.estimationErrorWeight.add_element(normalized_error)
+            self._estimation_error_weight.add_element(normalized_error)
             # Detect change with Adwin
-            self.ErrorChange = self.estimationErrorWeight.detected_change()
+            self._error_change = self._estimation_error_weight.detected_change()
 
-            if self.ErrorChange is True and old_error > self.get_error_estimation():
-                self.ErrorChange = False
+            if self._error_change is True and old_error > self.get_error_estimation():
+                self._error_change = False
 
             # call ActiveLearningNode
             weight_seen = self.get_weight_seen()
@@ -376,9 +375,9 @@ class RegressionHAT(RegressionHoeffdingTree):
                                             learning_ratio_const=learning_ratio_const,
                                             leaf_prediction=leaf_prediction,
                                             random_state=random_state)
-        self._alternateTrees = 0
-        self._switch_alternate_trees = 0
-        self._pruned_alternate_tree = 0
+        self.alternate_trees_cnt = 0
+        self.switch_alternate_trees_cnt = 0
+        self.pruned_alternate_trees_cnt = 0
 
     @property
     def leaf_prediction(self):
