@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from array import array
 from sklearn.metrics import mean_absolute_error
@@ -103,3 +104,14 @@ def test_hoeffding_tree_perceptron():
     assert learner.get_info() == expected_info
 
     assert isinstance(learner.get_model_description(), type(''))
+
+
+def test_hoeffding_tree_coverage(test_path):
+    # Cover nominal attribute observer
+    test_file = os.path.join(test_path, 'regression_data.npz')
+    data = np.load(test_file)
+    X = data['X']
+    y = data['y']
+
+    learner = RegressionHoeffdingTree(leaf_prediction='mean', nominal_attributes=[i for i in range(3)])
+    learner.partial_fit(X, y)
