@@ -139,8 +139,6 @@ class KNN(StreamModel):
         r, c = get_dimensions(X)
         if classes is not None:
             self.classes = list(set().union(self.classes, classes))
-        if self.window is None:
-            self.window = InstanceWindow(max_size=self.max_window_size)
 
         for i in range(r):
             self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
@@ -177,15 +175,13 @@ class KNN(StreamModel):
         
         """
         r, c = get_dimensions(X)
-        if self.window is None:
-            self.window = InstanceWindow(max_size=self.max_window_size)
 
         for i in range(r):
             self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
         return self
 
     def reset(self):
-        self.window = None
+        self.window.reset()
         return self
 
     def predict(self, X):
@@ -209,11 +205,8 @@ class KNN(StreamModel):
         proba = self.predict_proba(X)
         predictions = []
         for i in range(r):
-            predictions.append(np.argmax(proba))
-        return predictions
-
-    def _predict(self, X):
-        raise NotImplementedError
+            predictions.append(np.argmax(proba[i]))
+        return np.array(predictions)
 
     def predict_proba(self, X):
         """ predict_proba
@@ -240,7 +233,7 @@ class KNN(StreamModel):
             the probability that the i-th sample of X belongs to a certain label.
          
         """
-        if self.window is None or self.window._num_samples < self.n_neighbors:
+        if self.window is None or self.window.n_samples < self.n_neighbors:
             raise ValueError("KNN must be partially fitted on n_neighbors samples before doing any prediction.")
         proba = []
         r, c = get_dimensions(X)
@@ -248,13 +241,13 @@ class KNN(StreamModel):
         self.classes = list(set().union(self.classes, np.unique(self.window.get_targets_matrix())))
 
         new_dist, new_ind = self.__predict_proba(X)
-        votes = [0.0 for _ in range(int(max(self.classes) + 1))]
         for i in range(r):
+            votes = [0.0 for _ in range(int(max(self.classes) + 1))]
             for index in new_ind[i]:
                 votes[int(self.window.get_targets_matrix()[index])] += 1. / len(new_ind[i])
             proba.append(votes)
 
-        return proba
+        return np.array(proba)
 
     def __predict_proba(self, X):
         """ __predict_proba
@@ -289,7 +282,8 @@ class KNN(StreamModel):
         raise NotImplementedError
 
     def get_info(self):
-        return 'KNN Classifier:' \
-               ' - n_neighbors: {}'.format(self.n_neighbors) + \
-               ' - max_window_size: {}'.format(self.max_window_size) + \
-               ' - leaf_size: {}'.format(self.leaf_size)
+        info = '{}:'.format(type(self).__name__)
+        info += ' - n_neighbors: {}'.format(self.n_neighbors)
+        info += ' - max_window_size: {}'.format(self.max_window_size)
+        info += ' - leaf_size: {}'.format(self.leaf_size)
+        return info
