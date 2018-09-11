@@ -18,11 +18,11 @@ class HoeffdingNominalAttributeClassObserver(AttributeClassObserver):
         _statistics = {}
         _child = None
 
-        def __init__(self, val, label, weight):
+        def __init__(self, val, label, weight=None):
             self._cut_point = val
-            self._statistics[0] += 1
-            self._statistics[1] += label
-            self._statistics[2] += label * label
+            self._statistics[0] = 1
+            self._statistics[1] = label
+            self._statistics[2] = label * label
 
         """
          /**
