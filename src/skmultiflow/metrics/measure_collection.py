@@ -1252,9 +1252,10 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
     def get_info(self):
         return 'MultiTargetRegressionMeasurements: sample_count: ' + \
-                str(self._sample_count) + ' - mean_square_error: ' + \
-                str(self.get_mean_square_error()) + ' - mean_absolute_error: ' + \
-                str(self.get_average_error())
+                str(self._sample_count) + ' - average_mean_square_error: ' + \
+                str(self.get_average_mean_square_error()) + ' - average_mean_absolute_error: ' + \
+                str(self.get_average_absolute_error()) + ' - average_root_mean_square_error: ' + \
+                str(self.get_average_root_mean_square_error())
 
 
 class WindowMultiTargetRegressionMeasurements(BaseObject):
@@ -1390,9 +1391,10 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
 
     def get_info(self):
         return 'MultiTargetRegressionMeasurements: sample_count: ' + \
-                str(self._sample_count) + ' - mean_square_error: ' + \
-                str(self.get_mean_square_error()) + \
-               ' - mean_absolute_error: ' + str(self.get_average_error())
+                str(self._sample_count) + ' - average_mean_square_error: ' + \
+                str(self.get_average_mean_square_error()) + ' - average_mean_absolute_error: ' + \
+                str(self.get_average_absolute_error()) + ' - average_root_mean_square_error: ' + \
+                str(self.get_average_root_mean_square_error())
 
 
 def hamming_score(true_labels, predicts):

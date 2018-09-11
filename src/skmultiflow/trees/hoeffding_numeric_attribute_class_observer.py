@@ -135,12 +135,12 @@ class HoeffdingNumericAttributeClassObserver(BinaryTreeNumericAttributeClassObse
             current_best_option = self.search_for_best_split_option(current_node._right, current_best_option, criterion,
                                                                     att_idx)
 
-        self._sum_total_left -= current_node._left_statistics.get(1)
-        self._sum_total_right += current_node._left_statistics.get(1)
-        self._sum_sq_total_left -= current_node._left_statistics.get(2)
-        self._sum_sq_total_right += current_node._left_statistics.get(2)
-        self._count_left_total -= current_node._left_statistics.get(0)
-        self._count_right_total += current_node._left_statistics.get(0)
+        self._sum_total_left -= current_node._left_statistics[1]
+        self._sum_total_right += current_node._left_statistics[1]
+        self._sum_sq_total_left -= current_node._left_statistics[2]
+        self._sum_sq_total_right += current_node._left_statistics[2]
+        self._count_left_total -= current_node._left_statistics[0]
+        self._count_right_total += current_node._left_statistics[0]
 
         return current_best_option
 
@@ -168,9 +168,9 @@ class HoeffdingNumericAttributeClassObserver(BinaryTreeNumericAttributeClassObse
                           current_node._right_statistics[2]]
 
             post_split_dists = [left_stat, right_stat]
-            pre_split_dist = [(current_node._left_statistics.get(0) + current_node._right_statistics.get(0)),
-                               (current_node._left_statistics.get(1) + current_node._right_statistics.get(1)),
-                               (current_node._left_statistics.get(2) + current_node._right_statistics.get(2))]
+            pre_split_dist = [(current_node._left_statistics[0] + current_node._right_statistics[0]),
+                              (current_node._left_statistics[1] + current_node._right_statistics[1]),
+                              (current_node._left_statistics[2] + current_node._right_statistics[2])]
             merit = criterion.get_merit_of_split(pre_split_dist, post_split_dists)
             if (merit / last_check_sdr) < (last_check_ratio - (2 * last_check_e)):
                 current_node = None
