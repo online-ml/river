@@ -72,7 +72,7 @@ class ConceptDriftStream(Stream):
         self.n_classes = stream.n_classes
         self.cat_features_idx = stream.cat_features_idx
         self.feature_names = stream.feature_names
-        self.target_names = stream.target_values
+        self.target_names = ['target'] if self.n_targets == 1 else ['target_' + i for i in range(self.n_targets)]
         self.target_values = stream.target_values
         self.name = stream.name
 
@@ -126,29 +126,21 @@ class ConceptDriftStream(Stream):
             for the batch_size samples that were requested.
 
         """
-        self.current_sample_x = None
-        self.current_sample_y = None
+        self.current_sample_x = np.zeros((batch_size, self.n_features))
+        self.current_sample_y = np.zeros((batch_size, self.n_targets))
 
         for j in range(batch_size):
             self.sample_idx += 1
             x = -4.0 * float(self.sample_idx - self.position) / float(self.width)
             probability_drift = 1.0 / (1.0 + np.exp(x))
             if self.random_state.rand() > probability_drift:
-                if self.current_sample_x is None:
-                    self.current_sample_x, self.current_sample_y = self._input_stream.next_sample()
-                else:
-                    X, y = self._input_stream.next_sample()
-                    self.current_sample_x = np.append(self.current_sample_x, X, axis=0)
-                    self.current_sample_y = np.append(self.current_sample_y, y, axis=0)
+                X, y = self._input_stream.next_sample()
             else:
-                if self.current_sample_x is None:
-                    self.current_sample_x, self.current_sample_y = self._drift_stream.next_sample()
-                else:
-                    X, y = self._drift_stream.next_sample()
-                    self.current_sample_x = np.append(self.current_sample_x, X, axis=0)
-                    self.current_sample_y = np.append(self.current_sample_y, y, axis=0)
+                X, y = self._drift_stream.next_sample()
+            self.current_sample_x[j, :] = X
+            self.current_sample_y[j, :] = y
 
-        return self.current_sample_x, self.current_sample_y
+        return self.current_sample_x, self.current_sample_y.flatten()
 
     def restart(self):
         self.random_state = check_random_state(self._original_random_state)

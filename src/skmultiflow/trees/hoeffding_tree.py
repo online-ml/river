@@ -1162,10 +1162,6 @@ class HoeffdingTree(StreamModel):
             return description
 
     @staticmethod
-    def is_randomizable():  # TODO do we need this?
-        return False
-
-    @staticmethod
     def compute_hoeffding_bound(range_val, confidence, n):
         r"""Compute the Hoeffding bound, used to decide how many samples are necessary at each node.
 
@@ -1298,8 +1294,9 @@ class HoeffdingTree(StreamModel):
                      + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate) \
                     * self._byte_size_estimate_overhead_fraction
         if self._inactive_leaf_node_cnt > 0 or byte_size > self.max_byte_size:
-            self._growth_allowed = False
-            return
+            if self.stop_mem_management:
+                self._growth_allowed = False
+                return
         learning_nodes = self._find_learning_nodes()
         learning_nodes.sort(key=lambda n: n.node.calculate_promise())
         max_active = 0

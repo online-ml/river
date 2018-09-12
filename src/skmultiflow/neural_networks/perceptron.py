@@ -12,9 +12,35 @@ class PerceptronMask(StreamModel):
     the latter.
 
     """
-    def __init__(self):
+    def __init__(self, penalty=None, alpha=0.0001, fit_intercept=True,
+                 max_iter=1000, tol=1e-3, shuffle=True, verbose=0, eta0=1.0,
+                 n_jobs=1, random_state=0, class_weight=None,
+                 warm_start=False):
+        self.penalty = penalty
+        self.alpha = alpha
+        self.fit_intercept = fit_intercept
+        self.max_iter = max_iter
+        self.tol = tol
+        self.shuffle = shuffle
+        self.verbose = verbose
+        self.eta0 = eta0
+        self.n_jobs = n_jobs
+        self.random_state = random_state
+        self.class_weight = class_weight
+        self.warm_start = warm_start
         super().__init__()
-        self.classifier = Perceptron(n_iter=50)
+        self.classifier = Perceptron(penalty=self.penalty,
+                                     alpha=self.alpha,
+                                     fit_intercept=self.fit_intercept,
+                                     max_iter=self.max_iter,
+                                     tol=self.tol,
+                                     shuffle=self.shuffle,
+                                     verbose=self.verbose,
+                                     random_state=self.random_state,
+                                     eta0=self.eta0,
+                                     warm_start=self.warm_start,
+                                     class_weight=self.class_weight,
+                                     n_jobs=self.n_jobs)
 
     def fit(self, X, y, classes=None, weight=None):
         """ fit
@@ -107,7 +133,7 @@ class PerceptronMask(StreamModel):
             the probability that the i-th sample of X belongs to a certain label.
     
         """
-        return self.classifier.predict_proba(X)
+        return self.classifier._predict_proba_lr(X)
 
     def score(self, X, y):
         """ score
@@ -132,14 +158,29 @@ class PerceptronMask(StreamModel):
 
     def get_info(self):
         params = self.classifier.get_params()
-        penalty = params['penalty']
-        penalty = 'None' if penalty is None else penalty
-        fit_int = params['fit_intercept']
-        fit_int = 'True' if fit_int else 'False'
-        shuffle = params['shuffle']
-        shuffle = 'True' if shuffle else 'False'
-        return 'Perceptron: penalty: ' + penalty + \
-               '  -  alpha: ' + str(round(params['alpha'], 3)) + \
-               '  -  fit_intercept: ' + fit_int + \
-               '  -  n_iter: ' + str(params['n_iter']) + \
-               '  -  shuffle: ' + shuffle
+        info = type(self).__name__ + ':'
+        info += ' - penalty: {}'.format( params['penalty'])
+        info += ' - alpha: {}'.format(params['alpha'])
+        info += ' - fit_intercept: {}'.format(params['fit_intercept'])
+        info += ' - max_iter: {}'.format(params['max_iter'])
+        info += ' - tol: {}'.format(params['tol'])
+        info += ' - shuffle: {}'.format(params['shuffle'])
+        info += ' - eta0: {}'.format(params['eta0'])
+        info += ' - warm_start: {}'.format(params['warm_start'])
+        info += ' - class_weight: {}'.format(params['class_weight'])
+        info += ' - n_jobs: {}'.format(params['n_jobs'])
+        return info
+
+    def reset(self):
+        self.__init__(penalty=self.penalty,
+                      alpha=self.alpha,
+                      fit_intercept=self.fit_intercept,
+                      max_iter=self.max_iter,
+                      tol=self.tol,
+                      shuffle=self.shuffle,
+                      verbose=self.verbose,
+                      random_state=self.random_state,
+                      eta0=self.eta0,
+                      warm_start=self.warm_start,
+                      class_weight=self.class_weight,
+                      n_jobs=self.n_jobs)

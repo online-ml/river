@@ -1,21 +1,21 @@
+from array import array
 from skmultiflow.lazy import KNNAdwin
-from skmultiflow.data.file_stream import FileStream
-import os
+from skmultiflow.data import ConceptDriftStream, SEAGenerator
 import numpy as np
 
 
-def test_KNN_adwin(test_path, package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_big.csv')
-    stream = FileStream(test_file, -1, 1)
+def test_knn_adwin():
+    stream = ConceptDriftStream(stream=SEAGenerator(random_state=1),
+                                drift_stream=SEAGenerator(random_state=2, classification_function=2),
+                                random_state=1, position=250, width=10)
     stream.prepare_for_use()
-    learner = KNNAdwin(n_neighbors=8, leaf_size=40, max_window_size=2000)
+    learner = KNNAdwin(n_neighbors=8, leaf_size=40, max_window_size=200)
 
     cnt = 0
-    max_samples = 5000
-    predictions = []
+    max_samples = 1000
+    predictions = array('i')
     correct_predictions = 0
-
-    wait_samples = 100
+    wait_samples = 20
 
     while cnt < max_samples:
         X, y = stream.next_sample()
@@ -26,20 +26,29 @@ def test_KNN_adwin(test_path, package_path):
                 correct_predictions += 1
         learner.partial_fit(X, y)
         cnt += 1
-    performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 0, 0, 1, 0,
-                            0, 1, 1, 1, 0,
-                            0, 1, 0, 0, 1,
-                            0, 1, 0, 0, 1,
-                            1, 0, 0, 1, 1,
-                            1, 1, 1, 0, 1,
-                            0, 1, 0, 1, 1,
-                            0, 1, 0, 1, 0,
-                            1, 1, 0, 1, 0,
-                            1, 1, 1, 1]
-    expected_correct_predictions = 40
-    expected_performance = 0.8163265306122449
 
+    expected_predictions = array('i', [1, 0, 1, 1, 1, 1, 0, 1, 1, 1,
+                                       0, 1, 1, 0, 1, 1, 0, 1, 0, 1,
+                                       1, 1, 1, 0, 1, 0, 0, 1, 1, 1,
+                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       0, 1, 1, 1, 0, 1, 0, 1, 1])
     assert np.alltrue(predictions == expected_predictions)
-    assert np.isclose(expected_performance, performance)
+
+    expected_correct_predictions = 46
+    assert correct_predictions == expected_correct_predictions
+
+    learner.reset()
+    assert learner.window.n_samples == 0
+
+    expected_info = 'KNNAdwin: - n_neighbors: 8 - max_window_size: 200 - leaf_size: 40'
+    assert learner.get_info() == expected_info
+
+    stream.restart()
+
+    X, y = stream.next_sample(max_samples)
+    learner.fit(X[:950], y[:950])
+    predictions = learner.predict(X[951:])
+
+    correct_predictions = sum(np.array(predictions) == y[951:])
+    expected_correct_predictions = 47
     assert correct_predictions == expected_correct_predictions

@@ -41,7 +41,7 @@ class NaiveBayes(StreamModel):
             self
         
         """
-        self.classifier.fit(X, y, classes, weight)
+        self.classifier.fit(X, y, sample_weight=weight)
         return self
 
     def partial_fit(self, X, y, classes=None, weight=None):

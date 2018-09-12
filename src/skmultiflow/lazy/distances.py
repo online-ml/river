@@ -7,7 +7,10 @@ def mixed_distance(instance_one, instance_two, **kwargs):
     n_att2 = instance_two.size if hasattr(instance_two, 'size') else len(instance_two)
 
     if n_att1 != n_att2:
-        raise ValueError("The two instances must have the same length.")
+        if 'index' in kwargs and n_att2 == 1:
+            instance_two = [instance_two] * n_att1
+        else:
+            raise ValueError("The two instances must have the same length.")
 
     index = -1
     categorical_list = None
@@ -33,19 +36,19 @@ def mixed_distance(instance_one, instance_two, **kwargs):
                         return ((instance_one[index]-instance_two[index])*(instance_one[index]-instance_two[index]))\
                                / (distance_array[index]*distance_array[index]) if distance_array[index] != 0 else 0.0
                     else:
-                        return ((instance_one[index]-instance_two[index])*(instance_one[index]-instance_two[index]))
+                        return (instance_one[index]-instance_two[index]) * (instance_one[index]-instance_two[index])
             else:
                 if distance_array is not None:
                     return ((instance_one[index]-instance_two[index])*(instance_one[index]-instance_two[index]))\
                                / (distance_array[index]*distance_array[index]) if distance_array[index] != 0 else 0.0
                 else:
-                    return ((instance_one[index] - instance_two[index]) * (instance_one[index] - instance_two[index]))
+                    return (instance_one[index] - instance_two[index]) * (instance_one[index] - instance_two[index])
         else:
             if distance_array is not None:
                 return ((instance_one[index]-instance_two[index])*(instance_one[index]-instance_two[index]))\
                                / (distance_array[index]*distance_array[index]) if distance_array[index] != 0 else 0.0
             else:
-                return ((instance_one[index]-instance_two[index])*(instance_one[index]-instance_two[index]))
+                return (instance_one[index]-instance_two[index]) * (instance_one[index]-instance_two[index])
 
     partial_dist = []
     for i in range(n_att1):
@@ -53,10 +56,8 @@ def mixed_distance(instance_one, instance_two, **kwargs):
             if i in categorical_list:
                 if instance_one[i] != instance_two[i]:
                     partial_dist.append(1)
-                    #print(1)
                 else:
                     partial_dist.append(0)
-                    #print(0)
             else:
                 if not distance_array[i] == 0:
                     partial_dist.append(math.pow(instance_one[i] - instance_two[i], 2)/(distance_array[i]*distance_array[i]))
@@ -70,6 +71,7 @@ def mixed_distance(instance_one, instance_two, **kwargs):
                 partial_dist.append(0.0)
 
     return sum(partial_dist)
+
 
 def euclidean_distance(instance_one, instance_two, **kwargs):
     """ Euclidean distance
@@ -105,17 +107,18 @@ def euclidean_distance(instance_one, instance_two, **kwargs):
     
     """
     # Check for kwargs
-    index = None
-    for key, value in kwargs.items():
-        if key == 'index':
-            index = value
+    key = 'index'
+    if key in kwargs:
+        index = kwargs[key]
+    else:
+        index = None
 
     one = np.array(instance_one).flatten()
 
     if index is not None:
-        #print("entrou")
+        # entropy
         return np.sqrt(np.power(one[index] - instance_two, 2))
 
     two = np.array(instance_two)
-    return np.sqrt(np.sum(np.power(np.subtract(one, two), [2 for i in range(one.size)])))
+    return np.sqrt(np.sum(np.power(np.subtract(one, two), [2 for _ in range(one.size)])))
 

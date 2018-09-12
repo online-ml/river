@@ -118,9 +118,15 @@ class HoeffdingNumericAttributeClassObserver(BinaryTreeNumericAttributeClassObse
         self._count_right_total -= current_node._left_statistics[0]
         self._count_left_total += current_node._left_statistics[0]
 
-        left_dict = [self._count_left_total, self._sum_total_left, self._sum_sq_total_left]
-        right_dict = [self._count_right_total, self._sum_total_right, self._sum_sq_total_right]
-        post_split_dists = [left_dict, right_dict]
+        lhs_dist = {}
+        rhs_dist = {}
+        lhs_dist[0] = self._count_left_total
+        lhs_dist[1] = self._sum_total_left
+        lhs_dist[2] = self._sum_sq_total_left
+        rhs_dist[0] = self._count_right_total
+        rhs_dist[1] = self._sum_total_right
+        rhs_dist[2] = self._sum_sq_total_right
+        post_split_dists = [lhs_dist, rhs_dist]
         pre_split_dist = [(self._count_left_total + self._count_right_total),
                           (self._sum_total_left + self._sum_total_right),
                           (self._sum_sq_total_left + self._sum_sq_total_right)]

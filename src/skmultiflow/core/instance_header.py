@@ -17,7 +17,6 @@ class InstanceHeader(BaseObject):
     def __init__(self, header=None):
         super().__init__()
         self.header = header
-        pass
 
     def get_header_label_at(self, header_index=-1):
         """ get_header_label_at
@@ -36,8 +35,8 @@ class InstanceHeader(BaseObject):
 
 
         """
-        if self.header is not None:
-            return self.header[header_index] if ((header_index > -1) and (header_index < len(self.header))) else None
+        if (header_index > -1) and (header_index < len(self.header)):
+            return self.header[header_index]
         else:
             return None
 

@@ -6,6 +6,7 @@ conversion and generators.
 from .data_stream import DataStream
 from .file_stream import FileStream
 from .agrawal_generator import AGRAWALGenerator
+from .concept_drift_stream import ConceptDriftStream
 from .hyper_plane_generator import HyperplaneGenerator
 from .led_generator import LEDGenerator
 from .led_generator_drift import LEDGeneratorDrift
@@ -18,9 +19,10 @@ from .regression_generator import RegressionGenerator
 from .sea_generator import SEAGenerator
 from .sine_generator import SineGenerator
 from .stagger_generator import STAGGERGenerator
+from .synth import make_logical
 from .waveform_generator import WaveformGenerator
 
-__all__ = ["DataStream", "FileStream", "AGRAWALGenerator", "HyperplaneGenerator", "LEDGenerator", "LEDGeneratorDrift",
-           "MIXEDGenerator", "MultilabelGenerator", "RandomRBFGenerator", "RandomRBFGeneratorDrift",
-           "RandomTreeGenerator", "RegressionGenerator", "SEAGenerator", "SineGenerator", "STAGGERGenerator",
-           "WaveformGenerator"]
+__all__ = ["DataStream", "FileStream", "AGRAWALGenerator", "ConceptDriftStream", "HyperplaneGenerator", "LEDGenerator",
+           "LEDGeneratorDrift", "MIXEDGenerator", "MultilabelGenerator", "RandomRBFGenerator",
+           "RandomRBFGeneratorDrift", "RandomTreeGenerator", "RegressionGenerator", "SEAGenerator", "SineGenerator",
+           "STAGGERGenerator", "make_logical", "WaveformGenerator"]

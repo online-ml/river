@@ -6,26 +6,14 @@ from skmultiflow.utils.utils import get_dimensions
 
 
 class MissingValuesCleaner(StreamTransform):
-    """ MissingValuesCleaner
-    
-    This is a transform object. It provides a simple way to replace missing 
+    """ This is a transform object. It provides a simple way to replace missing
     values in samples with another value, which can be chosen from a set of 
     replacing strategies.
     
-    A missing value in a sample can be coded in many different ways, but the 
-    most common one is to use numpy's NaN, that's why that is the default 
-    missing value parameter.
-    
-    The user should choose the correct substitution strategy for his use 
-    case, as each strategy has its pros and cons. The strategy can be chosen 
-    from a set of predefined strategies, which are: 'zero', 'mean', 'median', 
-    'mode', 'custom'.
-    
     Parameters
     ----------
-    missing_value: int, char (Default: numpy.nan)
-        The way a missed value is coded in the matrices that are to be 
-        transformed.
+    missing_value: int, float or list (Default: numpy.nan)
+        Missing value to replace
     
     strategy: string (Default: 'zero')
         The strategy adopted to find the missing value replacement. It can 
@@ -52,43 +40,49 @@ class MissingValuesCleaner(StreamTransform):
     >>> X, y = stream.next_sample(10)
     >>> X[9, 0] = -47
     >>> # We will use this list to keep track of values
-    >>> list = []
+    >>> data = []
     >>> # Iterate over the first 9 samples, to build a sample window
     >>> for i in range(9):
     >>>     X_transf = cleaner.partial_fit_transform([X[i].tolist()])
-    >>>     list.append(X_transf[0][0])
-    >>>     print(X_transf)
+    >>>     data.append(X_transf[0][0])
     >>>
     >>> # Transform last sample. The first feature should be replaced by the list's 
     >>> # median value
     >>> X_transf = cleaner.partial_fit_transform([X[9].tolist()])
-    >>> print(X_transf)
-    >>> np.median(list)
-    
+    >>> np.median(data)
+
+    Notes
+    -----
+    A missing value in a sample can be coded in many different ways, but the
+    most common one is to use numpy's NaN, that's why that is the default
+    missing value parameter.
+
+    The user should choose the correct substitution strategy for his use
+    case, as each strategy has its pros and cons. The strategy can be chosen
+    from a set of predefined strategies, which are: 'zero', 'mean', 'median',
+    'mode', 'custom'.
+
+    Notice that `MissingValuesCleaner` can actually be used to replace arbitrary
+    values.
+
     """
 
     def __init__(self, missing_value=np.nan, strategy='zero', window_size=200, new_value=1):
         super().__init__()
-        # dDefault_values
-        self.missing_value = np.nan
-        self.strategy = 'zero'
-        self.window_size = 200
-        self.window = None
-        self.new_value = 1
-
-        self.__configure(missing_value, strategy, window_size, new_value)
-
-    def __configure(self, missing_value, strategy, window_size, new_value=1):
-        if hasattr(missing_value, 'append'):
+        if isinstance(missing_value, list):
             self.missing_value = missing_value
         else:
             self.missing_value = [missing_value]
         self.strategy = strategy
         self.window_size = window_size
+        self.window = None
         self.new_value = new_value
 
-        if strategy in ['mean', 'median', 'mode']:
-            self.window = FastBuffer(max_size=window_size)
+        self.__configure()
+
+    def __configure(self):
+        if self.strategy in ['mean', 'median', 'mode']:
+            self.window = FastBuffer(max_size=self.window_size)
 
     def transform(self, X):
         """ transform
@@ -103,8 +97,10 @@ class MissingValuesCleaner(StreamTransform):
         """
         r, c = get_dimensions(X)
         for i in range(r):
+            if self.strategy in ['mean', 'median', 'mode']:
+                self.window.add_element([X[i][:]])
             for j in range(c):
-                if X[i][j] in self.missing_value:
+                if X[i][j] in self.missing_value or np.isnan(X[i][j]):
                     X[i][j] = self._get_substitute(j)
 
         return X
@@ -129,17 +125,18 @@ class MissingValuesCleaner(StreamTransform):
             return 0
         elif self.strategy == 'mean':
             if not self.window.is_empty():
-                return np.mean(np.array(self.window.get_queue())[:, column_index:column_index+1])
+                return np.nanmean(np.array(self.window.get_queue())[:, column_index])
             else:
                 return self.new_value
         elif self.strategy == 'median':
             if not self.window.is_empty():
-                return np.median(np.array(self.window.get_queue())[:, column_index:column_index+1].flatten())
+                return np.nanmedian(np.array(self.window.get_queue())[:, column_index])
             else:
                 return self.new_value
         elif self.strategy == 'mode':
             if not self.window.is_empty():
-                return stats.mode(np.array(self.window.get_queue())[:, column_index:column_index+1].flatten())
+                return stats.mode(np.array(self.window.get_queue())[:, column_index],
+                                  nan_policy='omit')[0]
             else:
                 return self.new_value
         elif self.strategy == 'custom':
@@ -165,8 +162,6 @@ class MissingValuesCleaner(StreamTransform):
         
         """
         X = self.transform(X)
-        if self.strategy in ['mean', 'median', 'mode']:
-            self.window.add_element(X)
 
         return X
 
@@ -195,7 +190,8 @@ class MissingValuesCleaner(StreamTransform):
         return self
 
     def get_info(self):
-        return 'MissingValueCleaner: missing_value: ' + str(self.missing_value) + \
-               ' - strategy: ' + self.strategy + \
-               ' - window_size: ' + str(self.window_size) + \
-               ' - new_value: ' + str(self.new_value)
+        info = '{}:'.format(type(self).__name__)
+        info += ' - strategy: {}'.format(self.strategy)
+        info += ' - window_size: {}'.format(self.window_size)
+        info += ' - new_value: {}'.format(self.new_value)
+        return info

@@ -881,10 +881,10 @@ class InstanceWindow(BaseObject):
 
     Parameters
     ----------
-    num_attributes: int
-        The total number of attributes to be expected.
+    n_features: int
+        The total number of features to be expected.
 
-    num_target_tasks: int
+    n_targets: int
         The total number of target tasks to be expected.
 
     categorical_list: list
@@ -907,21 +907,21 @@ class InstanceWindow(BaseObject):
 
     """
 
-    def __init__(self, num_attributes=0, num_target_tasks=1, categorical_list=None, max_size=1000, dtype=float):
+    def __init__(self, n_features=0, n_targets=1, categorical_list=None, max_size=1000, dtype=float):
         super().__init__()
         # default values
-        self.buffer = None
-        self.n_samples = None
-        self.n_attributes = num_attributes
+        self._buffer = None
+        self._n_samples = None
+        self._n_attributes = n_features
         self.categorical_attributes = categorical_list
         self.max_size = max_size
         self.dtype = dtype
-        self.n_target_tasks = num_target_tasks
+        self._n_target_tasks = n_targets
         self.configure()
 
     def configure(self):
-        self.buffer = np.zeros((0, self.n_attributes + self.n_target_tasks))
-        self.n_samples = 0
+        self._buffer = np.zeros((0, self._n_attributes + self._n_target_tasks))
+        self._n_samples = 0
 
     def add_element(self, X, y):
         """ add_element
@@ -944,25 +944,25 @@ class InstanceWindow(BaseObject):
         initialized, a TypeError may be raised.
 
         """
-        if self.n_attributes != X.size:
-            if self.n_samples == 0:
-                self.n_attributes = X.size
-                self.n_target_tasks = y.size
-                self.buffer = np.zeros((0, self.n_attributes+self.n_target_tasks))
+        if self._n_attributes != X.size:
+            if self._n_samples == 0:
+                self._n_attributes = X.size
+                self._n_target_tasks = y.size
+                self._buffer = np.zeros((0, self._n_attributes + self._n_target_tasks))
             else:
                 raise ValueError("Number of attributes in X is different from the objects buffer dimension. "
                                  "Call __configure() to correctly set up the InstanceWindow")
 
-        if self.n_samples >= self.max_size:
-            self.n_samples -= 1
-            self.buffer = np.delete(self.buffer, 0, axis=0)
+        if self._n_samples >= self.max_size:
+            self._n_samples -= 1
+            self._buffer = np.delete(self._buffer, 0, axis=0)
 
-        if self.buffer is None:
+        if self._buffer is None:
             raise TypeError("None type not supported as the buffer, call configure() to set up the InstanceWindow")
 
         aux = np.concatenate((X, y), axis=1)
-        self.buffer = np.concatenate((self.buffer, aux), axis=0)
-        self.n_samples += 1
+        self._buffer = np.concatenate((self._buffer, aux), axis=0)
+        self._n_samples += 1
 
     def delete_element(self):
         """ delete_element
@@ -970,14 +970,14 @@ class InstanceWindow(BaseObject):
         Delete the oldest element from the sample window.
 
         """
-        self.n_samples -= 1
-        self.buffer = self.buffer[1:, :]
+        self._n_samples -= 1
+        self._buffer = self._buffer[1:, :]
 
     def get_attributes_matrix(self):
-        return self.buffer[:, :self.n_attributes]
+        return self._buffer[:, :self._n_attributes]
 
     def get_targets_matrix(self):
-        return self.buffer[:, self.n_attributes:]
+        return self._buffer[:, self._n_attributes:]
 
     def at_index(self, index):
         """ at_index
@@ -998,28 +998,31 @@ class InstanceWindow(BaseObject):
         """
         return self.get_attributes_matrix()[index], self.get_targets_matrix()[index]
 
-    @property
-    def _buffer(self):
-        return self.buffer
+    def reset(self):
+        self.configure()
 
     @property
-    def _num_target_tasks(self):
-        return self.n_target_tasks
+    def buffer(self):
+        return self._buffer
 
     @property
-    def _num_attributes(self):
-        return self.n_attributes
+    def n_targets(self):
+        return self._n_target_tasks
 
     @property
-    def _num_samples(self):
-        return self.n_samples
+    def n_attributes(self):
+        return self._n_attributes
+
+    @property
+    def n_samples(self):
+        return self._n_samples
 
     def get_class_type(self):
         return 'data_structure'
 
     def get_info(self):
         return 'InstanceWindow: n_attributes: ' + str(self.n_attributes) + \
-               ' - n_target_tasks: ' + str(self.n_target_tasks) + \
+               ' - n_target_tasks: ' + str(self.n_targets) + \
                ' - n_samples: ' + str(self.n_samples) + \
                ' - max_size: ' + str(self.max_size) + \
                ' - dtype: ' + str(self.dtype)
