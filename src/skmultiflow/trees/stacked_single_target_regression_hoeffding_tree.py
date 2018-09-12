@@ -11,11 +11,12 @@ from operator import attrgetter
 from skmultiflow.utils.utils import get_dimensions
 from skmultiflow.trees.intra_cluster_variance_reduction_split_criterion \
      import IntraClusterVarianceReductionSplitCriterion
+from skmultiflow.utils import check_random_state
 import logging
 
-TARGET_MEAN = 'tm'
-PERCEPTRON = 'perceptron'
-ADAPTIVE = 'adaptive'
+_TARGET_MEAN = 'mean'
+_PERCEPTRON = 'perceptron'
+_ADAPTIVE = 'adaptive'
 
 # logger
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -27,6 +28,8 @@ class StackedSingleTargetRegressionHoeffdingTree(
         MultiTargetRegressionHoeffdingTree):
     """
     Stacked Single Target Multi-target Regression Hoeffding tree.
+
+    Proposed (and yet not published) by Saulo Martiello Mastelini.
 
     Parameters
     ----------
@@ -64,12 +67,18 @@ class StackedSingleTargetRegressionHoeffdingTree(
         Decay multiplier for the learning rate of the perceptron
     learning_ratio_const: Bool
         If False the learning ratio will decay with the number of examples seen
+    random_state: int, RandomState instance or None, optional (default=None)
+       If int, random_state is the seed used by the random number generator;
+       If RandomState instance, random_state is the random number generator;
+       If None, the random number generator is the RandomState instance used
+       by `np.random`. Used when leaf_prediction is 'perceptron'.
     """
 
     class LearningNodePerceptron(MultiTargetRegressionHoeffdingTree.
                                  LearningNodePerceptron):
 
-        def __init__(self, initial_class_observations, perceptron_weight=None):
+        def __init__(self, initial_class_observations, perceptron_weight=None,
+                     random_state=None):
             """
             LearningNodePerceptron class constructor
             Parameters
@@ -77,14 +86,10 @@ class StackedSingleTargetRegressionHoeffdingTree(
             initial_class_observations
             perceptron_weight
             """
-            super().__init__(initial_class_observations)
+            super().__init__(initial_class_observations, perceptron_weight,
+                             random_state)
 
-            if perceptron_weight is None:
-                self.perceptron_weight = {}
-            else:
-                self.perceptron_weight = perceptron_weight
-
-        def learn_from_instance(self, X, y, weight, ht):
+        def learn_from_instance(self, X, y, weight, rht):
             """Update the node with the provided instance.
 
             Parameters
@@ -95,21 +100,22 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 Instance targets.
             weight: float
                 Instance weight.
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
 
             """
 
-            if self.perceptron_weight == {}:
+            if self.perceptron_weight is None:
+                self.perceptron_weight = {}
                 # Creates matrix of perceptron random weights
                 _, rows = get_dimensions(y)
                 _, cols = get_dimensions(X)
 
-                self.perceptron_weight[0] = np.random.uniform(-1.0, 1.0,
-                                                              (rows, cols + 1))
+                self.perceptron_weight[0] = \
+                    self.random_state.uniform(-1.0, 1.0, (rows, cols + 1))
                 # Cascade Stacking
-                self.perceptron_weight[1] = np.random.uniform(-1.0, 1.0,
-                                                              (rows, rows + 1))
+                self.perceptron_weight[1] = \
+                    self.random_state.uniform(-1.0, 1.0, (rows, rows + 1))
                 self.normalize_perceptron_weights()
 
             try:
@@ -117,12 +123,12 @@ class StackedSingleTargetRegressionHoeffdingTree(
             except KeyError:
                 self._observed_class_distribution[0] = weight
 
-            if ht.learning_ratio_const:
-                learning_ratio = ht.learning_ratio_perceptron
+            if rht.learning_ratio_const:
+                learning_ratio = rht.learning_ratio_perceptron
             else:
-                learning_ratio = ht.learning_ratio_perceptron / \
+                learning_ratio = rht.learning_ratio_perceptron / \
                                  (1 + self._observed_class_distribution[0] *
-                                  ht.learning_ratio_decay)
+                                  rht.learning_ratio_decay)
 
             try:
                 self._observed_class_distribution[1] += weight * y
@@ -132,21 +138,21 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 self._observed_class_distribution[2] = weight * (y ** 2)
 
             for i in range(int(weight)):
-                self.update_weights(X, y, learning_ratio, ht)
+                self.update_weights(X, y, learning_ratio, rht)
 
             for i in range(len(X)):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
                     # Creates targets observers, if not already defined
-                    if i in ht.nominal_attributes:
+                    if i in rht.nominal_attributes:
                         obs = HoeffdingNominalAttributeClassObserver()
                     else:
                         obs = HoeffdingNumericAttributeClassObserver()
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(X[i], y, weight)
 
-        def update_weights(self, X, y, learning_ratio, ht):
+        def update_weights(self, X, y, learning_ratio, rht):
             """
             Update the perceptron weights
             Parameters
@@ -157,16 +163,16 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 Targets values.
             learning_ratio: float
                 perceptron learning ratio
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
             """
-            normalized_sample = ht.normalize_sample(X)
+            normalized_sample = rht.normalize_sample(X)
             normalized_base_pred = self._predict_base(normalized_sample)
 
             _, n_features = get_dimensions(X)
             _, n_targets = get_dimensions(y)
 
-            normalized_target_value = ht.normalized_target_value(y)
+            normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight[0] += learning_ratio * \
                 (normalized_target_value - normalized_base_pred).\
@@ -216,7 +222,8 @@ class StackedSingleTargetRegressionHoeffdingTree(
 
     class LearningNodeAdaptive(LearningNodePerceptron):
 
-        def __init__(self, initial_class_observations, perceptron_weight=None):
+        def __init__(self, initial_class_observations, perceptron_weight=None,
+                     random_state=None):
             """
             LearningNodeAdaptive class constructor
             Parameters
@@ -224,7 +231,8 @@ class StackedSingleTargetRegressionHoeffdingTree(
             initial_class_observations
             perceptron_weight
             """
-            super().__init__(initial_class_observations, perceptron_weight)
+            super().__init__(initial_class_observations, perceptron_weight,
+                             random_state)
 
             # Faded adaptive errors
             self.fMAE_M = 0.0
@@ -232,7 +240,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
             # Stacked Perceptron
             self.fMAE_SP = 0.0
 
-        def update_weights(self, X, y, learning_ratio, ht):
+        def update_weights(self, X, y, learning_ratio, rht):
             """
             Update the perceptron weights
             Parameters
@@ -243,16 +251,16 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 Targets values.
             learning_ratio: float
                 perceptron learning ratio
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
             """
-            normalized_sample = ht.normalize_sample(X)
+            normalized_sample = rht.normalize_sample(X)
             normalized_base_pred = self._predict_base(normalized_sample)
 
             _, n_features = get_dimensions(X)
             _, n_targets = get_dimensions(y)
 
-            normalized_target_value = ht.normalized_target_value(y)
+            normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight[0] += learning_ratio * \
                 (normalized_target_value - normalized_base_pred).\
@@ -274,7 +282,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
             # The considered errors are normalized, since they are based on
             # mean centered and sd scaled values
             self.fMAE_M = 0.95 * self.fMAE_M + np.absolute(
-                normalized_target_value - ht.
+                normalized_target_value - rht.
                 normalized_target_value(self._observed_class_distribution[1] /
                                         self._observed_class_distribution[0])
             )
@@ -291,25 +299,24 @@ class StackedSingleTargetRegressionHoeffdingTree(
     class InactiveLearningNodePerceptron(MultiTargetRegressionHoeffdingTree.
                                          InactiveLearningNodePerceptron):
 
-        def __init__(self, initial_class_observations, perceptron_weight=None):
-            super().__init__(initial_class_observations)
-            if perceptron_weight is None:
+        def __init__(self, initial_class_observations, perceptron_weight=None,
+                     random_state=None):
+            super().__init__(initial_class_observations, perceptron_weight,
+                             random_state)
+
+        def learn_from_instance(self, X, y, weight, rht):
+
+            if self.perceptron_weight is None:
                 self.perceptron_weight = {}
-            else:
-                self.perceptron_weight = perceptron_weight
-
-        def learn_from_instance(self, X, y, weight, ht):
-
-            if self.perceptron_weight == {}:
                 # Creates matrix of perceptron random weights
                 _, rows = get_dimensions(y)
                 _, cols = get_dimensions(X)
 
-                self.perceptron_weight[0] = np.random.uniform(-1.0, 1.0,
-                                                              (rows, cols + 1))
+                self.perceptron_weight[0] = \
+                    self.random_state.uniform(-1.0, 1.0, (rows, cols + 1))
                 # Cascade Stacking
-                self.perceptron_weight[1] = np.random.uniform(-1.0, 1.0,
-                                                              (rows, rows + 1))
+                self.perceptron_weight[1] = \
+                    self.random_state.uniform(-1.0, 1.0, (rows, rows + 1))
                 self.normalize_perceptron_weights()
 
             try:
@@ -317,12 +324,12 @@ class StackedSingleTargetRegressionHoeffdingTree(
             except KeyError:
                 self._observed_class_distribution[0] = weight
 
-            if ht.learning_ratio_const:
-                learning_ratio = ht.learning_ratio_perceptron
+            if rht.learning_ratio_const:
+                learning_ratio = rht.learning_ratio_perceptron
             else:
-                learning_ratio = ht.learning_ratio_perceptron / \
+                learning_ratio = rht.learning_ratio_perceptron / \
                                 (1 + self._observed_class_distribution[0] *
-                                 ht.learning_ratio_decay)
+                                 rht.learning_ratio_decay)
 
             try:
                 self._observed_class_distribution[1] += weight * y
@@ -332,9 +339,9 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 self._observed_class_distribution[2] = weight * (y ** 2)
 
             for i in range(int(weight)):
-                self.update_weights(X, y, learning_ratio, ht)
+                self.update_weights(X, y, learning_ratio, rht)
 
-        def update_weights(self, X, y, learning_ratio, ht):
+        def update_weights(self, X, y, learning_ratio, rht):
             """
             Update the perceptron weights
             Parameters
@@ -345,16 +352,16 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 Targets values.
             learning_ratio: float
                 perceptron learning ratio
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
             """
-            normalized_sample = ht.normalize_sample(X)
+            normalized_sample = rht.normalize_sample(X)
             normalized_base_pred = self._predict_base(normalized_sample)
 
             _, n_features = get_dimensions(X)
             _, n_targets = get_dimensions(y)
 
-            normalized_target_value = ht.normalized_target_value(y)
+            normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight[0] += learning_ratio * \
                 (normalized_target_value - normalized_base_pred).\
@@ -390,7 +397,8 @@ class StackedSingleTargetRegressionHoeffdingTree(
 
     class InactiveLearningNodeAdaptive(InactiveLearningNodePerceptron):
 
-        def __init__(self, initial_class_observations, perceptron_weight=None):
+        def __init__(self, initial_class_observations, perceptron_weight=None,
+                     random_state=None):
             """
             InactiveLearningNodeAdaptive class constructor
             Parameters
@@ -398,7 +406,8 @@ class StackedSingleTargetRegressionHoeffdingTree(
             initial_class_observations
             perceptron_weight
             """
-            super().__init__(initial_class_observations, perceptron_weight)
+            super().__init__(initial_class_observations, perceptron_weight,
+                             random_state)
 
             # Faded adaptive errors
             self.fMAE_M = 0.0
@@ -406,7 +415,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
             # Stacked Perceptron
             self.fMAE_SP = 0.0
 
-        def update_weights(self, X, y, learning_ratio, ht):
+        def update_weights(self, X, y, learning_ratio, rht):
             """
             Update the perceptron weights
             Parameters
@@ -417,16 +426,16 @@ class StackedSingleTargetRegressionHoeffdingTree(
                 Targets values.
             learning_ratio: float
                 perceptron learning ratio
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
             """
-            normalized_sample = ht.normalize_sample(X)
+            normalized_sample = rht.normalize_sample(X)
             normalized_base_pred = self._predict_base(normalized_sample)
 
             _, n_features = get_dimensions(X)
             _, n_targets = get_dimensions(y)
 
-            normalized_target_value = ht.normalized_target_value(y)
+            normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight[0] += learning_ratio * \
                 (normalized_target_value - normalized_base_pred).\
@@ -448,7 +457,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
             # The considered errors are normalized, since they are based on
             # mean centered and sd scaled values
             self.fMAE_M = 0.95 * self.fMAE_M + np.absolute(
-                normalized_target_value - ht.
+                normalized_target_value - rht.
                 normalized_target_value(self._observed_class_distribution[1] /
                                         self._observed_class_distribution[0])
             )
@@ -481,7 +490,8 @@ class StackedSingleTargetRegressionHoeffdingTree(
                  nominal_attributes=None,
                  learning_ratio_perceptron=0.02,
                  learning_ratio_decay=0.001,
-                 learning_ratio_const=True):
+                 learning_ratio_const=True,
+                 random_state=None):
 
         self.split_criterion = 'intra cluster variance reduction'
         self.max_byte_size = max_byte_size
@@ -515,7 +525,8 @@ class StackedSingleTargetRegressionHoeffdingTree(
         self.sum_of_squares = 0.0
         self.sum_of_attribute_values = 0.0
         self.sum_of_attribute_squares = 0.0
-        self.leaf_prediction = leaf_prediction
+        self._init_random_state = random_state
+        self.random_state = check_random_state(self._init_random_state)
 
         # To add the n_targets property once
         self._n_targets_set = False
@@ -563,7 +574,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
 
         predictions = np.zeros((r, self._n_targets), dtype=np.float64)
         for i in range(r):
-            if self.leaf_prediction == TARGET_MEAN:
+            if self.leaf_prediction == _TARGET_MEAN:
                 votes = self.get_votes_for_instance(X[i]).copy()
                 # Tree is not empty, otherwise, all target_values are set
                 # equally, default to zero
@@ -571,7 +582,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
                     number_of_examples_seen = votes[0]
                     sum_of_values = votes[1]
                     predictions[i] = sum_of_values / number_of_examples_seen
-            elif self.leaf_prediction == PERCEPTRON:
+            elif self.leaf_prediction == _PERCEPTRON:
                 if self.examples_seen > 1:
                     normalized_sample = self.normalize_sample(X[i])
                     perceptron_weights = self.get_weights_for_instance(X[i])
@@ -587,7 +598,7 @@ class StackedSingleTargetRegressionHoeffdingTree(
                     # Samples are normalized using just one sd, as proposed in
                     # the iSoup-Tree method
                     predictions[i] = normalized_meta_prediction * sd + mean
-            elif self.leaf_prediction == ADAPTIVE:
+            elif self.leaf_prediction == _ADAPTIVE:
                 if self.examples_seen > 1:
                     # Mean predictor
                     votes = self.get_votes_for_instance(X[i]).copy()
@@ -722,18 +733,18 @@ class StackedSingleTargetRegressionHoeffdingTree(
                     node.get_observed_class_distribution()
                 )
                 for i in range(split_decision.num_splits()):
-                    if self.leaf_prediction == PERCEPTRON:
+                    if self.leaf_prediction == _PERCEPTRON:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
                             node.perceptron_weight
                         )
-                    elif self.leaf_prediction == TARGET_MEAN:
+                    elif self.leaf_prediction == _TARGET_MEAN:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
                             None)
-                    elif self.leaf_prediction == ADAPTIVE:
+                    elif self.leaf_prediction == _ADAPTIVE:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
@@ -775,16 +786,16 @@ class StackedSingleTargetRegressionHoeffdingTree(
 
         """
 
-        if self.leaf_prediction == TARGET_MEAN:
+        if self.leaf_prediction == _TARGET_MEAN:
             new_leaf = self.InactiveLearningNodeForRegression(
                 to_deactivate.get_observed_class_distribution()
             )
-        elif self.leaf_prediction == PERCEPTRON:
+        elif self.leaf_prediction == _PERCEPTRON:
             new_leaf = self.InactiveLearningNodePerceptron(
                 to_deactivate.get_observed_class_distribution(),
                 to_deactivate.perceptron_weight
             )
-        elif self.leaf_prediction == ADAPTIVE:
+        elif self.leaf_prediction == _ADAPTIVE:
             new_leaf = self.InactiveLearningNodeAdaptive(
                 to_deactivate.get_observed_class_distribution(),
                 to_deactivate.perceptron_weight
