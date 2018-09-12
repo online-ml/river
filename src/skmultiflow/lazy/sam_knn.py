@@ -49,7 +49,7 @@ class SAMKNN(StreamModel):
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
-    >>> stream = FileStream("skmultiflow/data/datasets/movingSquares.csv", -1, 1)
+    >>> stream = FileStream("moving_squares.csv")
     >>> stream.prepare_for_use()
     >>> # Setup the classifier
     >>> classifier = SAMKNN(n_neighbors=5, weighting='distance', max_window_size=1000, stm_size_option='maxACCApprox',
