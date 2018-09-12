@@ -5,24 +5,7 @@ from skmultiflow.utils.utils import *
 
 
 class KDTree(BaseObject):
-    """ KD Tree
-    
-    A K dimensional tree implementation, adapted for k dimensional problems.
-
-    A KD Tree is a space partitioning (in axis-aligned hyperrectangles) tree 
-    structure, where each node is associated with a feature and a splitting 
-    value. Each node can have up to two children nodes, with the property that 
-    all the samples stored by the left child have their feature value smaller 
-    then the node's splitting value, and all the samples stored by the right 
-    child have their relevant feature greater than or equal to the node's 
-    splitting value.
-    
-    The algorithm used to select the splitting feature and the splitting 
-    value for each node is called the sliding midpoint rule, as defined in 
-    Maneewongvatana and Mount 1999. The idea is that we don't need a balanced 
-    distribution of samples in all nodes, for the query time to be efficient, 
-    as long as there are 'fat' nodes around. This algorithm guarantees that 
-    the nodes won't become long and thin.
+    """ A K-dimensional tree implementation, adapted for k dimensional problems.
     
     Parameters
     ----------
@@ -56,10 +39,25 @@ class KDTree(BaseObject):
     
     Notes
     -----
+    A KD Tree is a space partitioning (in axis-aligned hyper-rectangles) tree
+    structure, where each node is associated with a feature and a splitting
+    value. Each node can have up to two children nodes, with the property that
+    all the samples stored by the left child have their feature value smaller
+    then the node's splitting value, and all the samples stored by the right
+    child have their relevant feature greater than or equal to the node's
+    splitting value.
+
+    The algorithm used to select the splitting feature and the splitting
+    value for each node is called the sliding midpoint rule, as defined in
+    Maneewongvatana and Mount 1999. The idea is that we don't need a balanced
+    distribution of samples in all nodes, for the query time to be efficient,
+    as long as there are 'fat' nodes around. This algorithm guarantees that
+    the nodes won't become long and thin.
+
     This implementation is not faster than scikit-learn's implementation, 
     nor than scipy's implementation, but it allow users to use a custom 
     metric for the distance calculation.
-    term
+
     """
 
     METRICS = ['mixed', 'euclidean']
@@ -98,7 +96,7 @@ class KDTree(BaseObject):
 
         self.kwargs = kwargs if kwargs is not None else {}
 
-        distance_array = [0.0 for i in range(self.n_features)]
+        distance_array = [0.0 for _ in range(self.n_features)]
         for i in range(self.n_features):
             if self.categorical_list is not None:
                 if i not in self.categorical_list:
@@ -156,15 +154,14 @@ class KDTree(BaseObject):
         Returns
         -------
         list or tuple list
-            Either a list containing all the indexes from the closest neighbors (if 
-            return_distance is False) or two lists, one with the neighbors indexes 
-            and another one with their distance to the samples in X. 
+            idx: List containing all the indexes from the closest neighbors (if return_distance is False)
+            (dist, idx): Distance to neighbors and corresponding index ()if return_distance is True).
         
         """
         r, c = get_dimensions(X)
         dist_all, ind_all = [], []
 
-        if (r == 1) and ((not isinstance(X[0], type([]))) and (not isinstance(X[0], type(np.ndarray([0]))))):
+        if (r == 1) and not isinstance(X[0], type([]) and not isinstance(X[0], type(np.ndarray([0])))):
             neighbors_distances = []
             neighbors_distances = self.root.query_node(X, k, neighbors_distances)
             indexes, distances = [], []
@@ -220,18 +217,18 @@ class KDTree(BaseObject):
         return self.root
 
     def get_info(self):
-        return 'KDTree: leaf_size: ' + str(self.leaf_size) + \
-               ' - metric: ' + str(self.metric) + \
-               ' - return_distance' + ('True' if self.return_distance else 'False')
+        info = '{}:'.format(type(self).__name__)
+        info += ' - leaf_size: {}'.format(self.leaf_size)
+        info += ' - metric: {}'.format(self.metric)
+        info += ' - return_distance: {}'.format(self.return_distance)
+        return info
 
     def get_class_type(self):
         return 'data_structure'
 
 
 class KDTreeNode(BaseObject):
-    """ KD Tree Node
-     
-    A node from a KD Tree. A node object will store the indexes of its children's 
+    """ A node from a KD Tree. A node object will store the indexes of its children's
     samples, and only a reference to the tree's complete data.
     
     Parameters
@@ -467,7 +464,8 @@ class KDTreeNode(BaseObject):
         # If the node is a leaf, adopt the brute-force strategy
         if self.is_leaf:
             for i in range(len(self.leaf_indexes)):
-                dist = self.distance_function(instance_one=self.data[self.leaf_indexes[i]], instance_two=X, **self.kwargs)
+                dist = self.distance_function(instance_one=self.data[self.leaf_indexes[i]],
+                                              instance_two=X, **self.kwargs)
                 switch = 0
                 while True:
                     if len(neighbors_distance_list) == 0:
@@ -497,7 +495,6 @@ class KDTreeNode(BaseObject):
 
         # If the node is an inner node the regular query strategy is used
         else:
-
             # Advance in the tree structure until a leaf node is reached
             if X[self.split_axis] < self.split_value:
                 if self.left_subtree is not None:
@@ -547,9 +544,11 @@ class KDTreeNode(BaseObject):
         return self.right_subtree
 
     def get_info(self):
-        return 'KDTreeNode: is_leaf: ' + ('True' if self.is_leaf else 'False') + \
-               ' - split_axis: ' + str(self.split_axis) + \
-               ' - split_value: ' + str(self.split_value)
+        info = '{}:'.format(type(self).__name__)
+        info += ' - is_leaf: {}'.format(self.is_leaf)
+        info += ' - split_axis: {}'.format(self.split_axis)
+        info += ' - split_value: {}'.format(self.split_value)
+        return info
 
     def get_class_type(self):
         return 'data_structure'

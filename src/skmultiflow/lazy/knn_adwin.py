@@ -101,6 +101,10 @@ class KNNAdwin(KNN):
         self.adwin = ADWIN()
         return super().reset()
 
+    def fit(self, X, y, classes=None, weights=None):
+        self.partial_fit(X, y, classes, weights)
+        return self
+
     def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
         
@@ -133,27 +137,25 @@ class KNNAdwin(KNN):
             self.window = InstanceWindow(max_size=self.max_window_size)
 
         for i in range(r):
-            if r > 1:
-                self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
-            else:
-                self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
-            if self.window._num_samples >= self.n_neighbors:
+            self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
+            if self.window.n_samples >= self.n_neighbors:
                 add = 1 if self.predict(np.asarray([X[i]])) == y[i] else 0
                 self.adwin.add_element(add)
             else:
                 self.adwin.add_element(0)
 
-        if self.window._num_samples >= self.n_neighbors:
+        if self.window.n_samples >= self.n_neighbors:
             changed = self.adwin.detected_change()
 
             if changed:
-                if self.adwin.width < self.window._num_samples:
-                    for i in range(self.window._num_samples, self.adwin.width, -1):
+                if self.adwin.width < self.window.n_samples:
+                    for i in range(self.window.n_samples, self.adwin.width, -1):
                         self.window.delete_element()
         return self
 
     def get_info(self):
-        return 'KNNAdwin Classifier:' \
-               ' - n_neighbors: {}'.format(self.n_neighbors) + \
-               ' - max_window_size: {}'.format(self.max_window_size) + \
-               ' - leaf_size: {}'.format(self.leaf_size)
+        info = '{}:'.format(type(self).__name__)
+        info += ' - n_neighbors: {}'.format(self.n_neighbors)
+        info += ' - max_window_size: {}'.format(self.max_window_size)
+        info += ' - leaf_size: {}'.format(self.leaf_size)
+        return info
