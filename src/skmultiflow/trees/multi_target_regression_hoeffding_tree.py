@@ -8,11 +8,12 @@ from operator import attrgetter
 from skmultiflow.utils.utils import get_dimensions
 from skmultiflow.trees.intra_cluster_variance_reduction_split_criterion \
      import IntraClusterVarianceReductionSplitCriterion
+from skmultiflow.utils import check_random_state
 import logging
 
-TARGET_MEAN = 'tm'
-PERCEPTRON = 'perceptron'
-ADAPTIVE = 'adaptive'
+_TARGET_MEAN = 'mean'
+_PERCEPTRON = 'perceptron'
+_ADAPTIVE = 'adaptive'
 
 # logger
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -53,8 +54,9 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         If True, disable pre-pruning.
     leaf_prediction: string (default='perceptron')
         | Prediction mechanism used at leafs.
-        | 'tm' - Target mean
+        | 'mean' - Target mean
         | 'perceptron' - Perceptron
+        | 'adaptive' - Adptively chooses between the best predictor
     nb_threshold: int (default=0)
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes: list, optional
@@ -66,6 +68,11 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         Decay multiplier for the learning rate of the perceptron
     learning_ratio_const: Bool
         If False the learning ratio will decay with the number of examples seen
+    random_state: int, RandomState instance or None, optional (default=None)
+       If int, random_state is the seed used by the random number generator;
+       If RandomState instance, random_state is the random number generator;
+       If None, the random number generator is the RandomState instance used
+       by `np.random`. Used when leaf_prediction is 'perceptron'.
 
     References
     ----------
@@ -76,7 +83,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
     class LearningNodePerceptron(RegressionHoeffdingTree.ActiveLearningNode):
 
-        def __init__(self, initial_class_observations, perceptron_weight=None):
+        def __init__(self, initial_class_observations, perceptron_weight=None,
+                     random_state=None):
             """
             LearningNodePerceptron class constructor
             Parameters
@@ -85,12 +93,10 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             perceptron_weight
             """
             super().__init__(initial_class_observations)
-            if perceptron_weight is None:
-                self.perceptron_weight = []
-            else:
-                self.perceptron_weight = perceptron_weight
+            self.perceptron_weight = perceptron_weight
+            self.random_state = check_random_state(random_state)
 
-        def learn_from_instance(self, X, y, weight, ht):
+        def learn_from_instance(self, X, y, weight, rht):
             """Update the node with the provided instance.
 
             Parameters
@@ -101,18 +107,20 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 Instance targets.
             weight: float
                 Instance weight.
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
 
             """
 
-            if self.perceptron_weight == []:
+            if self.perceptron_weight is None:
                 # Creates matrix of perceptron random weights
                 _, rows = get_dimensions(y)
                 _, cols = get_dimensions(X)
 
-                self.perceptron_weight = np.random.uniform(-1.0, 1.0,
-                                                           (rows, cols + 1))
+                self.perceptron_weight = self.random_state.uniform(-1.0, 1.0,
+                                                                   (rows,
+                                                                    cols + 1)
+                                                                   )
                 self.normalize_perceptron_weights()
 
             try:
@@ -120,12 +128,12 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             except KeyError:
                 self._observed_class_distribution[0] = weight
 
-            if ht.learning_ratio_const:
-                learning_ratio = ht.learning_ratio_perceptron
+            if rht.learning_ratio_const:
+                learning_ratio = rht.learning_ratio_perceptron
             else:
-                learning_ratio = ht.learning_ratio_perceptron / \
+                learning_ratio = rht.learning_ratio_perceptron / \
                                  (1 + self._observed_class_distribution[0] *
-                                  ht.learning_ratio_decay)
+                                  rht.learning_ratio_decay)
 
             try:
                 self._observed_class_distribution[1] += weight * y
@@ -135,21 +143,21 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 self._observed_class_distribution[2] = weight * (y ** 2)
 
             for i in range(int(weight)):
-                self.update_weights(X, y, learning_ratio, ht)
+                self.update_weights(X, y, learning_ratio, rht)
 
             for i in range(len(X)):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
                     # Creates targets observers, if not already defined
-                    if i in ht.nominal_attributes:
+                    if i in rht.nominal_attributes:
                         obs = HoeffdingNominalAttributeClassObserver()
                     else:
                         obs = HoeffdingNumericAttributeClassObserver()
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(X[i], y, weight)
 
-        def update_weights(self, X, y, learning_ratio, ht):
+        def update_weights(self, X, y, learning_ratio, rht):
             """
             Update the perceptron weights
             Parameters
@@ -160,16 +168,16 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 Targets values.
             learning_ratio: float
                 perceptron learning ratio
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
             """
-            normalized_sample = ht.normalize_sample(X)
+            normalized_sample = rht.normalize_sample(X)
             normalized_pred = self.predict(normalized_sample)
 
             _, n_features = get_dimensions(X)
             _, n_targets = get_dimensions(y)
 
-            normalized_target_value = ht.normalized_target_value(y)
+            normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight += learning_ratio * \
                 (normalized_target_value - normalized_pred).\
@@ -205,7 +213,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 return self._observed_class_distribution[0]
 
     class LearningNodeAdaptive(LearningNodePerceptron):
-        def __init__(self, initial_class_observations, perceptron_weight=None):
+        def __init__(self, initial_class_observations, perceptron_weight=None,
+                     random_state=None):
             """
             LearningNodePerceptron class constructor
             Parameters
@@ -213,13 +222,14 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             initial_class_observations
             perceptron_weight
             """
-            super().__init__(initial_class_observations, perceptron_weight)
+            super().__init__(initial_class_observations, perceptron_weight,
+                             random_state)
 
             # Faded errors for the perceptron and mean predictors
             self.fMAE_M = 0.0
             self.fMAE_P = 0.0
 
-        def update_weights(self, X, y, learning_ratio, ht):
+        def update_weights(self, X, y, learning_ratio, rht):
             """
             Update the perceptron weights
             Parameters
@@ -230,16 +240,16 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 Targets values.
             learning_ratio: float
                 perceptron learning ratio
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
             """
-            normalized_sample = ht.normalize_sample(X)
+            normalized_sample = rht.normalize_sample(X)
             normalized_pred = self.predict(normalized_sample)
 
             _, n_features = get_dimensions(X)
             _, n_targets = get_dimensions(y)
 
-            normalized_target_value = ht.normalized_target_value(y)
+            normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight += learning_ratio * \
                 (normalized_target_value - normalized_pred).\
@@ -256,7 +266,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             )
 
             self.fMAE_M = 0.95 * self.fMAE_M + np.absolute(
-                normalized_target_value - ht.
+                normalized_target_value - rht.
                 normalized_target_value(self._observed_class_distribution[1] /
                                         self._observed_class_distribution[0])
             )
@@ -264,22 +274,23 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
     class InactiveLearningNodePerceptron(RegressionHoeffdingTree.
                                          InactiveLearningNode):
 
-        def __init__(self, initial_class_observations, perceptron_weight=None):
+        def __init__(self, initial_class_observations, perceptron_weight=None,
+                     random_state=None):
             super().__init__(initial_class_observations)
-            if perceptron_weight is None:
-                self.perceptron_weight = []
-            else:
-                self.perceptron_weight = perceptron_weight
 
-        def learn_from_instance(self, X, y, weight, ht):
+            self.perceptron_weight = perceptron_weight
+            self.random_state = check_random_state(random_state)
 
-            if self.perceptron_weight == []:
+        def learn_from_instance(self, X, y, weight, rht):
+
+            if self.perceptron_weight is None:
                 # Creates matrix of perceptron random weights
                 _, rows = get_dimensions(y)
                 _, cols = get_dimensions(X)
 
-                self.perceptron_weight = np.random.uniform(-1, 1, (rows,
-                                                                   cols + 1))
+                self.perceptron_weight = self.random_state.uniform(-1, 1,
+                                                                   (rows,
+                                                                    cols + 1))
                 self.normalize_perceptron_weights()
 
             try:
@@ -287,12 +298,12 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             except KeyError:
                 self._observed_class_distribution[0] = weight
 
-            if ht.learning_ratio_const:
-                learning_ratio = ht.learning_ratio_perceptron
+            if rht.learning_ratio_const:
+                learning_ratio = rht.learning_ratio_perceptron
             else:
-                learning_ratio = ht.learning_ratio_perceptron / \
+                learning_ratio = rht.learning_ratio_perceptron / \
                                 (1 + self._observed_class_distribution[0] *
-                                 ht.learning_ratio_decay)
+                                 rht.learning_ratio_decay)
 
             try:
                 self._observed_class_distribution[1] += weight * y
@@ -302,9 +313,9 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 self._observed_class_distribution[2] = weight * (y ** 2)
 
             for i in range(int(weight)):
-                self.update_weights(X, y, learning_ratio, ht)
+                self.update_weights(X, y, learning_ratio, rht)
 
-        def update_weights(self, X, y, learning_ratio, ht):
+        def update_weights(self, X, y, learning_ratio, rht):
             """
             Update the perceptron weights
             Parameters
@@ -315,16 +326,16 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 Targets values.
             learning_ratio: float
                 perceptron learning ratio
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
             """
-            normalized_sample = ht.normalize_sample(X)
+            normalized_sample = rht.normalize_sample(X)
             normalized_pred = self.predict(normalized_sample)
 
             _, n_features = get_dimensions(X)
             _, n_targets = get_dimensions(y)
 
-            normalized_target_value = ht.normalized_target_value(y)
+            normalized_target_value = rht.normalized_target_value(y)
             self.perceptron_weight += learning_ratio * \
                 (normalized_target_value - normalized_pred).\
                 reshape((n_targets, 1)) @ \
@@ -346,14 +357,16 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
     class InactiveLearningNodeAdaptive(InactiveLearningNodePerceptron):
 
-        def __init__(self, initial_class_observations, perceptron_weight=None):
-            super().__init__(initial_class_observations, perceptron_weight)
+        def __init__(self, initial_class_observations, perceptron_weight=None,
+                     random_state=None):
+            super().__init__(initial_class_observations, perceptron_weight,
+                             random_state)
 
             # Faded errors for the perceptron and mean predictors
             self.fMAE_M = 0.0
             self.fMAE_P = 0.0
 
-        def update_weights(self, X, y, learning_ratio, ht):
+        def update_weights(self, X, y, learning_ratio, rht):
             """
             Update the perceptron weights
             Parameters
@@ -364,16 +377,16 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 Targets values.
             learning_ratio: float
                 perceptron learning ratio
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
+            rht: RegressionHoeffdingTree
+                Regression Hoeffding Tree to update.
             """
-            normalized_sample = ht.normalize_sample(X)
+            normalized_sample = rht.normalize_sample(X)
             normalized_pred = self.predict(normalized_sample)
 
             _, n_features = get_dimensions(X)
             _, n_targets = get_dimensions(y)
 
-            normalized_target_value = ht.normalized_target_value(y)
+            normalized_target_value = rht.normalized_target_value(y)
             self.perceptron_weight += learning_ratio * \
                 (normalized_target_value - normalized_pred).\
                 reshape((n_targets, 1)) @ \
@@ -389,7 +402,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             )
 
             self.fMAE_M = 0.95 * self.fMAE_M + np.absolute(
-                normalized_target_value - ht.
+                normalized_target_value - rht.
                 normalized_target_value(self._observed_class_distribution[1] /
                                         self._observed_class_distribution[0])
             )
@@ -413,7 +426,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                  nominal_attributes=None,
                  learning_ratio_perceptron=0.02,
                  learning_ratio_decay=0.001,
-                 learning_ratio_const=True):
+                 learning_ratio_const=True,
+                 random_state=None):
 
         self.max_byte_size = max_byte_size
         self.split_criterion = 'intra cluster variance reduction'
@@ -447,7 +461,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         self.sum_of_squares = 0.0
         self.sum_of_attribute_values = 0.0
         self.sum_of_attribute_squares = 0.0
-        self.leaf_prediction = leaf_prediction
+        self._init_random_state = random_state
+        self.random_state = check_random_state(self._init_random_state)
 
         # To add the n_targets property once
         self._n_targets_set = False
@@ -458,11 +473,10 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction != TARGET_MEAN and leaf_prediction != PERCEPTRON \
-                and leaf_prediction != ADAPTIVE:
+        if leaf_prediction not in {_TARGET_MEAN, _PERCEPTRON, _ADAPTIVE}:
             logger.info("Invalid option {}', will use default '{}'"
-                        .format(leaf_prediction, PERCEPTRON))
-            self._leaf_prediction = PERCEPTRON
+                        .format(leaf_prediction, _PERCEPTRON))
+            self._leaf_prediction = _PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
 
@@ -545,15 +559,18 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
-        if self.leaf_prediction == TARGET_MEAN:
+        if self.leaf_prediction == _TARGET_MEAN:
             return self.ActiveLearningNodeForRegression(
                 initial_class_observations)
-        elif self.leaf_prediction == PERCEPTRON:
+        elif self.leaf_prediction == _PERCEPTRON:
             return self.LearningNodePerceptron(initial_class_observations,
                                                perceptron_weight)
-        elif self.leaf_prediction == ADAPTIVE:
-            return self.LearningNodeAdaptive(initial_class_observations,
-                                             perceptron_weight)
+        elif self.leaf_prediction == _ADAPTIVE:
+            return self.LearningNodeAdaptive(
+                initial_class_observations,
+                perceptron_weight,
+                random_state=self._init_random_state
+            )
 
     def _get_predictors_faded_error(self, X):
         """ Get the faded error of the leaf corresponding to the instance.
@@ -732,7 +749,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
         predictions = np.zeros((r, self._n_targets), dtype=np.float64)
         for i in range(r):
-            if self.leaf_prediction == TARGET_MEAN:
+            if self.leaf_prediction == _TARGET_MEAN:
                 votes = self.get_votes_for_instance(X[i]).copy()
                 # Tree is not empty, otherwise, all target_values are set
                 # equally, default to zero
@@ -740,7 +757,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     number_of_examples_seen = votes[0]
                     sum_of_values = votes[1]
                     predictions[i] = sum_of_values / number_of_examples_seen
-            elif self.leaf_prediction == PERCEPTRON:
+            elif self.leaf_prediction == _PERCEPTRON:
                 if self.examples_seen > 1:
                     normalized_sample = self.normalize_sample(X[i])
                     normalized_prediction = \
@@ -754,7 +771,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     # Samples are normalized using just one sd, as proposed in
                     # the iSoup-Tree method
                     predictions[i] = normalized_prediction * sd + mean
-            elif self.leaf_prediction == ADAPTIVE:
+            elif self.leaf_prediction == _ADAPTIVE:
                 if self.examples_seen > 1:
                     # Mean predictor
                     votes = self.get_votes_for_instance(X[i]).copy()
@@ -822,13 +839,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         best_split_suggestions = node.\
             get_best_split_suggestions(split_criterion, self)
 
-        for huei in range(len(best_split_suggestions)):
-            print(best_split_suggestions[huei].merit)
-            print(best_split_suggestions[huei].resulting_class_distributions)
-            print()
-            print()
-
-        exit()
         best_split_suggestions.sort(key=attrgetter('merit'))
         should_split = False
         if len(best_split_suggestions) < 2:
@@ -874,21 +884,20 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     split_decision.split_test,
                     node.get_observed_class_distribution()
                 )
-                print(node.get_observed_class_distribution())
-                print()
+
                 for i in range(split_decision.num_splits()):
-                    if self.leaf_prediction == PERCEPTRON:
+                    if self.leaf_prediction == _PERCEPTRON:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
                             node.perceptron_weight
                         )
-                    elif self.leaf_prediction == TARGET_MEAN:
+                    elif self.leaf_prediction == _TARGET_MEAN:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
                             None)
-                    elif self.leaf_prediction == ADAPTIVE:
+                    elif self.leaf_prediction == _ADAPTIVE:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
@@ -900,12 +909,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                         new_child.fMAE_P = np.zeros(self._n_targets,
                                                     dtype=np.float64)
                     new_split.set_child(i, new_child)
-
-                    print(split_decision.
-                          resulting_class_distribution_from_split(i))
-                    print()
-                    print()
-                    exit()
 
                 self._active_leaf_node_cnt -= 1
                 self._decision_node_cnt += 1
@@ -934,19 +937,21 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
         """
 
-        if self.leaf_prediction == TARGET_MEAN:
+        if self.leaf_prediction == _TARGET_MEAN:
             new_leaf = self.InactiveLearningNodeForRegression(
                 to_deactivate.get_observed_class_distribution()
             )
-        elif self.leaf_prediction == PERCEPTRON:
+        elif self.leaf_prediction == _PERCEPTRON:
             new_leaf = self.InactiveLearningNodePerceptron(
                 to_deactivate.get_observed_class_distribution(),
-                to_deactivate.perceptron_weight
+                to_deactivate.perceptron_weight,
+                to_deactivate.random_state
             )
-        elif self.leaf_prediction == ADAPTIVE:
+        elif self.leaf_prediction == _ADAPTIVE:
             new_leaf = self.InactiveLearningNodeAdaptive(
                 to_deactivate.get_observed_class_distribution(),
-                to_deactivate.perceptron_weight
+                to_deactivate.perceptron_weight,
+                to_deactivate.random_state
             )
             new_leaf.fMAE_M = to_deactivate.fMAE_M
             new_leaf.fMAE_P = to_deactivate.fMAE_P
