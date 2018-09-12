@@ -794,12 +794,13 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
     def _attempt_to_split(self, node, parent, parent_idx: int):
         """Attempt to split a node.
 
-        If the samples seen so far are not from the same class then:
+        If there exists significative variance among the target space of the
+        seem examples:
 
         1. Find split candidates and select the top 2.
         2. Compute the Hoeffding bound.
-        3. If the difference between the top 2 split candidates is larger than
-        the Hoeffding bound:
+        3. If the difference between the merit ratio of the top 2 split
+        candidates is smaller than 1 minus the Hoeffding bound:
            3.1 Replace the leaf node by a split node.
            3.2 Add a new leaf node on each branch of the new split node.
            3.3 Update tree's metrics
@@ -817,9 +818,17 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
         """
         split_criterion = IntraClusterVarianceReductionSplitCriterion()
+
         best_split_suggestions = node.\
             get_best_split_suggestions(split_criterion, self)
 
+        for huei in range(len(best_split_suggestions)):
+            print(best_split_suggestions[huei].merit)
+            print(best_split_suggestions[huei].resulting_class_distributions)
+            print()
+            print()
+
+        exit()
         best_split_suggestions.sort(key=attrgetter('merit'))
         should_split = False
         if len(best_split_suggestions) < 2:
@@ -865,6 +874,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     split_decision.split_test,
                     node.get_observed_class_distribution()
                 )
+                print(node.get_observed_class_distribution())
+                print()
                 for i in range(split_decision.num_splits()):
                     if self.leaf_prediction == PERCEPTRON:
                         new_child = self._new_learning_node(
@@ -889,6 +900,13 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                         new_child.fMAE_P = np.zeros(self._n_targets,
                                                     dtype=np.float64)
                     new_split.set_child(i, new_child)
+
+                    print(split_decision.
+                          resulting_class_distribution_from_split(i))
+                    print()
+                    print()
+                    exit()
+
                 self._active_leaf_node_cnt -= 1
                 self._decision_node_cnt += 1
                 self._active_leaf_node_cnt += split_decision.num_splits()
