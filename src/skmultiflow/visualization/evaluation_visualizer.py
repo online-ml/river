@@ -2,7 +2,7 @@ import warnings
 from skmultiflow.visualization.base_listener import BaseListener
 from matplotlib.rcsetup import cycler
 import matplotlib.pyplot as plt
-from skmultiflow.utils import FastBuffer
+from skmultiflow.utils import FastBuffer, constants
 
 
 class EvaluationVisualizer(BaseListener):
@@ -36,7 +36,7 @@ class EvaluationVisualizer(BaseListener):
     
     plots: list
         A list containing all the subplots to plot. Can be any of: 
-        'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
+        'accuracy', 'kappa', 'scatter', 'hamming_score', 'hamming_loss',
         'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
         'true_vs_predicted', 'kappa_t', 'kappa_m'
     
@@ -77,35 +77,35 @@ class EvaluationVisualizer(BaseListener):
         self.true_values = None
         self.pred_values = None
 
-        self.partial_performance = None
-        self.global_performance = None
+        self.current_accuracy = None
+        self.mean_accuracy = None
 
-        self.global_kappa = None
-        self.partial_kappa = None
+        self.mean_kappa = None
+        self.current_kappa = None
 
-        self.global_kappa_t = None
-        self.partial_kappa_t = None
+        self.mean_kappa_t = None
+        self.current_kappa_t = None
 
-        self.global_kappa_m = None
-        self.partial_kappa_m = None
+        self.mean_kappa_m = None
+        self.current_kappa_m = None
 
-        self.global_hamming_score = None
-        self.partial_hamming_score = None
+        self.mean_hamming_score = None
+        self.current_hamming_score = None
 
-        self.global_hamming_loss = None
-        self.partial_hamming_loss = None
+        self.mean_hamming_loss = None
+        self.current_hamming_loss = None
 
-        self.global_exact_match = None
-        self.partial_exact_match = None
+        self.mean_exact_match = None
+        self.current_exact_match = None
 
-        self.global_j_index = None
-        self.partial_j_index = None
+        self.mean_j_index = None
+        self.current_j_index = None
 
-        self.global_mse = None
-        self.partial_mse = None
+        self.mean_mse = None
+        self.current_mse = None
 
-        self.global_mae = None
-        self.partial_mae = None
+        self.mean_mae = None
+        self.current_mae = None
 
         self.regression_true = None
         self.regression_pred = None
@@ -118,35 +118,35 @@ class EvaluationVisualizer(BaseListener):
         self.num_plots = 0
 
         # Lines
-        self.line_global_performance = None
-        self.line_partial_performance = None
+        self.line_mean_accuracy = None
+        self.line_current_accuracy = None
 
-        self.line_global_kappa = None
-        self.line_partial_kappa = None
+        self.line_mean_kappa = None
+        self.line_current_kappa = None
 
-        self.line_global_kappa_t = None
-        self.line_partial_kappa_t = None
+        self.line_mean_kappa_t = None
+        self.line_current_kappa_t = None
 
-        self.line_global_kappa_m = None
-        self.line_partial_kappa_m = None
+        self.line_mean_kappa_m = None
+        self.line_current_kappa_m = None
 
-        self.line_global_hamming_score = None
-        self.line_partial_hamming_score = None
+        self.line_mean_hamming_score = None
+        self.line_current_hamming_score = None
 
-        self.line_global_hamming_loss = None
-        self.line_partial_hamming_loss = None
+        self.line_mean_hamming_loss = None
+        self.line_current_hamming_loss = None
 
-        self.line_global_exact_match = None
-        self.line_partial_exact_match = None
+        self.line_mean_exact_match = None
+        self.line_current_exact_match = None
 
-        self.line_global_j_index = None
-        self.line_partial_j_index = None
+        self.line_mean_j_index = None
+        self.line_current_j_index = None
 
-        self.line_global_mse = None
-        self.line_partial_mse = None
+        self.line_mean_mse = None
+        self.line_current_mse = None
 
-        self.line_global_mae = None
-        self.line_partial_mae = None
+        self.line_mean_mae = None
+        self.line_current_mae = None
 
         self.line_true = None
         self.line_pred = None
@@ -154,7 +154,7 @@ class EvaluationVisualizer(BaseListener):
         self.line_prediction = None
 
         # Subplot default
-        self.subplot_performance = None
+        self.subplot_accuracy = None
         self.subplot_kappa = None
         self.subplot_kappa_t = None
         self.subplot_kappa_m = None
@@ -168,10 +168,10 @@ class EvaluationVisualizer(BaseListener):
         self.subplot_true_vs_predicted = None
         self.subplot_prediction = None
 
-        if task_type is None or task_type == "undefined":
+        if task_type is None or task_type == constants.UNDEFINED:
             raise ValueError('Task type for visualizer object is undefined.')
         else:
-            if task_type in ['classification', 'regression', 'multi_output']:
+            if task_type in [constants.CLASSIFICATION, constants.REGRESSION, constants.MULTI_OUTPUT]:
                 self.task_type = task_type
             else:
                 raise ValueError('Invalid task type: {}'.format(task_type))
@@ -235,7 +235,7 @@ class EvaluationVisualizer(BaseListener):
         plotting points.
         
         Basic structures needed to keep track of plot values (for each subplot) 
-        are: lists of values and matplotlib's line objects.
+        are: lists of values and matplot line objects.
         
         The __configure function will also initialize each subplot with the 
         correct name and setup the axis.
@@ -253,7 +253,7 @@ class EvaluationVisualizer(BaseListener):
     
         plots: list
             A list containing all the subplots to plot. Can be any of: 
-            'performance', 'kappa', 'scatter', 'hamming_score', 'hamming_loss', 
+            'accuracy', 'kappa', 'scatter', 'hamming_score', 'hamming_loss',
             'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error', 
             'true_vs_predicted', 'kappa_t', 'kappa_m'
         
@@ -291,268 +291,268 @@ class EvaluationVisualizer(BaseListener):
         base = 11 + self.num_plots * 100  # 3-digit integer describing the position of the subplot.
         self.fig.canvas.set_window_title('scikit-multiflow')
 
-        if 'performance' in self.plots:
-            self.partial_performance = [[] for _ in range(self.n_learners)]
-            self.global_performance = [[] for _ in range(self.n_learners)]
+        if constants.ACCURACY in self.plots:
+            self.current_accuracy = [[] for _ in range(self.n_learners)]
+            self.mean_accuracy = [[] for _ in range(self.n_learners)]
 
-            self.subplot_performance = self.fig.add_subplot(base)
-            self.subplot_performance.set_title('Accuracy')
-            self.subplot_performance.set_ylabel('Accuracy')
+            self.subplot_accuracy = self.fig.add_subplot(base)
+            self.subplot_accuracy.set_title('Accuracy')
+            self.subplot_accuracy.set_ylabel('Accuracy')
             base += 1
 
-            self.line_partial_performance = [None for _ in range(self.n_learners)]
-            self.line_global_performance = [None for _ in range(self.n_learners)]
+            self.line_current_accuracy = [None for _ in range(self.n_learners)]
+            self.line_mean_accuracy = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_performance[i], = self.subplot_performance.plot(
+                self.line_current_accuracy[i], = self.subplot_accuracy.plot(
                     self.sample_id,
-                    self.partial_performance[i],
+                    self.current_accuracy[i],
                     label='{}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_performance[i], = self.subplot_performance.plot(
-                    self.sample_id, self.global_performance[i],
+                self.line_mean_accuracy[i], = self.subplot_accuracy.plot(
+                    self.sample_id, self.mean_accuracy[i],
                     label='{} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_performance[i])
-                handle.append(self.line_global_performance[i])
+                handle.append(self.line_current_accuracy[i])
+                handle.append(self.line_mean_accuracy[i])
 
             self._set_fig_legend(handle)
-            self.subplot_performance.set_ylim(0, 1)
+            self.subplot_accuracy.set_ylim(0, 1)
 
-        if 'kappa' in self.plots:
-            self.partial_kappa = [[] for _ in range(self.n_learners)]
-            self.global_kappa = [[] for _ in range(self.n_learners)]
+        if constants.KAPPA in self.plots:
+            self.current_kappa = [[] for _ in range(self.n_learners)]
+            self.mean_kappa = [[] for _ in range(self.n_learners)]
 
             self.subplot_kappa = self.fig.add_subplot(base)
             self.subplot_kappa.set_title('Kappa')
-            self.subplot_kappa.set_ylabel('Kappa statistic')
+            self.subplot_kappa.set_ylabel('Kappa')
             base += 1
 
-            self.line_partial_kappa = [None for _ in range(self.n_learners)]
-            self.line_global_kappa = [None for _ in range(self.n_learners)]
+            self.line_current_kappa = [None for _ in range(self.n_learners)]
+            self.line_mean_kappa = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_kappa[i], = self.subplot_kappa.plot(
-                    self.sample_id, self.partial_kappa[i],
+                self.line_current_kappa[i], = self.subplot_kappa.plot(
+                    self.sample_id, self.current_kappa[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_kappa[i], = self.subplot_kappa.plot(
-                    self.sample_id, self.global_kappa[i],
+                self.line_mean_kappa[i], = self.subplot_kappa.plot(
+                    self.sample_id, self.mean_kappa[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_kappa[i])
-                handle.append(self.line_global_kappa[i])
+                handle.append(self.line_current_kappa[i])
+                handle.append(self.line_mean_kappa[i])
 
             self._set_fig_legend(handle)
             self.subplot_kappa.set_ylim(-1, 1)
 
-        if 'kappa_t' in self.plots:
-            self.partial_kappa_t = [[] for _ in range(self.n_learners)]
-            self.global_kappa_t = [[] for _ in range(self.n_learners)]
+        if constants.KAPPA_T in self.plots:
+            self.current_kappa_t = [[] for _ in range(self.n_learners)]
+            self.mean_kappa_t = [[] for _ in range(self.n_learners)]
 
             self.subplot_kappa_t = self.fig.add_subplot(base)
             self.subplot_kappa_t.set_title('Kappa T')
-            self.subplot_kappa_t.set_ylabel('Kappa T statistic')
+            self.subplot_kappa_t.set_ylabel('Kappa T')
             base += 1
 
-            self.line_partial_kappa_t = [None for _ in range(self.n_learners)]
-            self.line_global_kappa_t = [None for _ in range(self.n_learners)]
+            self.line_current_kappa_t = [None for _ in range(self.n_learners)]
+            self.line_mean_kappa_t = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_kappa_t[i], = self.subplot_kappa_t.plot(
-                    self.sample_id, self.partial_kappa_t[i],
+                self.line_current_kappa_t[i], = self.subplot_kappa_t.plot(
+                    self.sample_id, self.current_kappa_t[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_kappa_t[i], = self.subplot_kappa_t.plot(
-                    self.sample_id, self.global_kappa_t[i],
+                self.line_mean_kappa_t[i], = self.subplot_kappa_t.plot(
+                    self.sample_id, self.mean_kappa_t[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_kappa_t[i])
-                handle.append(self.line_global_kappa_t[i])
+                handle.append(self.line_current_kappa_t[i])
+                handle.append(self.line_mean_kappa_t[i])
 
             self._set_fig_legend(handle)
             self.subplot_kappa_t.set_ylim(-1, 1)
 
-        if 'kappa_m' in self.plots:
-            self.partial_kappa_m = [[] for _ in range(self.n_learners)]
-            self.global_kappa_m = [[] for _ in range(self.n_learners)]
+        if constants.KAPPA_M in self.plots:
+            self.current_kappa_m = [[] for _ in range(self.n_learners)]
+            self.mean_kappa_m = [[] for _ in range(self.n_learners)]
 
             self.subplot_kappa_m = self.fig.add_subplot(base)
             self.subplot_kappa_m.set_title('Kappa M')
-            self.subplot_kappa_m.set_ylabel('Kappa M statistic')
+            self.subplot_kappa_m.set_ylabel('Kappa M')
             base += 1
 
-            self.line_partial_kappa_m = [None for _ in range(self.n_learners)]
-            self.line_global_kappa_m = [None for _ in range(self.n_learners)]
+            self.line_current_kappa_m = [None for _ in range(self.n_learners)]
+            self.line_mean_kappa_m = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_kappa_m[i], = self.subplot_kappa_m.plot(
-                    self.sample_id, self.partial_kappa_m[i],
+                self.line_current_kappa_m[i], = self.subplot_kappa_m.plot(
+                    self.sample_id, self.current_kappa_m[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_kappa_m[i], = self.subplot_kappa_m.plot(
-                    self.sample_id, self.global_kappa_m[i],
+                self.line_mean_kappa_m[i], = self.subplot_kappa_m.plot(
+                    self.sample_id, self.mean_kappa_m[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_kappa_m[i])
-                handle.append(self.line_global_kappa_m[i])
+                handle.append(self.line_current_kappa_m[i])
+                handle.append(self.line_mean_kappa_m[i])
 
             self._set_fig_legend(handle)
             self.subplot_kappa_m.set_ylim(-1, 1)
 
-        if 'hamming_score' in self.plots:
-            self.global_hamming_score = [[] for _ in range(self.n_learners)]
-            self.partial_hamming_score = [[] for _ in range(self.n_learners)]
+        if constants.HAMMING_SCORE in self.plots:
+            self.mean_hamming_score = [[] for _ in range(self.n_learners)]
+            self.current_hamming_score = [[] for _ in range(self.n_learners)]
 
             self.subplot_hamming_score = self.fig.add_subplot(base)
             self.subplot_hamming_score.set_title('Hamming score')
             self.subplot_hamming_score.set_ylabel('Hamming score')
             base += 1
 
-            self.line_partial_hamming_score = [None for _ in range(self.n_learners)]
-            self.line_global_hamming_score = [None for _ in range(self.n_learners)]
+            self.line_current_hamming_score = [None for _ in range(self.n_learners)]
+            self.line_mean_hamming_score = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_hamming_score[i], = self.subplot_hamming_score.plot(
-                    self.sample_id, self.partial_hamming_score[i],
+                self.line_current_hamming_score[i], = self.subplot_hamming_score.plot(
+                    self.sample_id, self.current_hamming_score[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_hamming_score[i], = self.subplot_hamming_score.plot(
-                    self.sample_id, self.global_hamming_score[i],
+                self.line_mean_hamming_score[i], = self.subplot_hamming_score.plot(
+                    self.sample_id, self.mean_hamming_score[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_hamming_score[i])
-                handle.append(self.line_global_hamming_score[i])
+                handle.append(self.line_current_hamming_score[i])
+                handle.append(self.line_mean_hamming_score[i])
 
             self._set_fig_legend(handle)
             self.subplot_hamming_score.set_ylim(0, 1)
 
-        if 'hamming_loss' in self.plots:
-            self.global_hamming_loss = [[] for _ in range(self.n_learners)]
-            self.partial_hamming_loss = [[] for _ in range(self.n_learners)]
+        if constants.HAMMING_LOSS in self.plots:
+            self.mean_hamming_loss = [[] for _ in range(self.n_learners)]
+            self.current_hamming_loss = [[] for _ in range(self.n_learners)]
 
             self.subplot_hamming_loss = self.fig.add_subplot(base)
             self.subplot_hamming_loss.set_title('Hamming loss')
             self.subplot_hamming_loss.set_ylabel('Hamming loss')
             base += 1
 
-            self.line_partial_hamming_loss = [None for _ in range(self.n_learners)]
-            self.line_global_hamming_loss = [None for _ in range(self.n_learners)]
+            self.line_current_hamming_loss = [None for _ in range(self.n_learners)]
+            self.line_mean_hamming_loss = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_hamming_loss[i], = self.subplot_hamming_loss.plot(
-                    self.sample_id, self.partial_hamming_loss[i],
+                self.line_current_hamming_loss[i], = self.subplot_hamming_loss.plot(
+                    self.sample_id, self.current_hamming_loss[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_hamming_loss[i], = self.subplot_hamming_loss.plot(
-                    self.sample_id, self.global_hamming_loss[i],
+                self.line_mean_hamming_loss[i], = self.subplot_hamming_loss.plot(
+                    self.sample_id, self.mean_hamming_loss[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_hamming_loss[i])
-                handle.append(self.line_global_hamming_loss[i])
+                handle.append(self.line_current_hamming_loss[i])
+                handle.append(self.line_mean_hamming_loss[i])
 
             self._set_fig_legend(handle)
             self.subplot_hamming_loss.set_ylim(0, 1)
 
-        if 'exact_match' in self.plots:
-            self.global_exact_match = [[] for _ in range(self.n_learners)]
-            self.partial_exact_match = [[] for _ in range(self.n_learners)]
+        if constants.EXACT_MATCH in self.plots:
+            self.mean_exact_match = [[] for _ in range(self.n_learners)]
+            self.current_exact_match = [[] for _ in range(self.n_learners)]
 
             self.subplot_exact_match = self.fig.add_subplot(base)
             self.subplot_exact_match.set_title('Exact matches')
             self.subplot_exact_match.set_ylabel('Exact matches')
             base += 1
 
-            self.line_partial_exact_match = [None for _ in range(self.n_learners)]
-            self.line_global_exact_match = [None for _ in range(self.n_learners)]
+            self.line_current_exact_match = [None for _ in range(self.n_learners)]
+            self.line_mean_exact_match = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_exact_match[i], = self.subplot_exact_match.plot(
-                    self.sample_id, self.partial_exact_match[i],
+                self.line_current_exact_match[i], = self.subplot_exact_match.plot(
+                    self.sample_id, self.current_exact_match[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_exact_match[i], = self.subplot_exact_match.plot(
-                    self.sample_id, self.global_exact_match[i],
+                self.line_mean_exact_match[i], = self.subplot_exact_match.plot(
+                    self.sample_id, self.mean_exact_match[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_exact_match[i])
-                handle.append(self.line_global_exact_match[i])
+                handle.append(self.line_current_exact_match[i])
+                handle.append(self.line_mean_exact_match[i])
 
             self._set_fig_legend(handle)
             self.subplot_exact_match.set_ylim(0, 1)
 
-        if 'j_index' in self.plots:
-            self.global_j_index = [[] for _ in range(self.n_learners)]
-            self.partial_j_index = [[] for _ in range(self.n_learners)]
+        if constants.J_INDEX in self.plots:
+            self.mean_j_index = [[] for _ in range(self.n_learners)]
+            self.current_j_index = [[] for _ in range(self.n_learners)]
 
             self.subplot_j_index = self.fig.add_subplot(base)
-            self.subplot_j_index.set_title('J index')
-            self.subplot_j_index.set_ylabel('J index')
+            self.subplot_j_index.set_title('Jaccard index')
+            self.subplot_j_index.set_ylabel('Jaccard index')
             base += 1
 
-            self.line_partial_j_index = [None for _ in range(self.n_learners)]
-            self.line_global_j_index = [None for _ in range(self.n_learners)]
+            self.line_current_j_index = [None for _ in range(self.n_learners)]
+            self.line_mean_j_index = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_j_index[i], = self.subplot_j_index.plot(
-                    self.sample_id, self.partial_j_index[i],
+                self.line_current_j_index[i], = self.subplot_j_index.plot(
+                    self.sample_id, self.current_j_index[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_j_index[i], = self.subplot_j_index.plot(
-                    self.sample_id, self.global_j_index[i],
+                self.line_mean_j_index[i], = self.subplot_j_index.plot(
+                    self.sample_id, self.mean_j_index[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_j_index[i])
-                handle.append(self.line_global_j_index[i])
+                handle.append(self.line_current_j_index[i])
+                handle.append(self.line_mean_j_index[i])
 
             self._set_fig_legend(handle)
             self.subplot_j_index.set_ylim(0, 1)
 
-        if 'mean_square_error' in self.plots:
-            self.global_mse = [[] for _ in range(self.n_learners)]
-            self.partial_mse = [[] for _ in range(self.n_learners)]
+        if constants.MSE in self.plots:
+            self.mean_mse = [[] for _ in range(self.n_learners)]
+            self.current_mse = [[] for _ in range(self.n_learners)]
 
             self.subplot_mse = self.fig.add_subplot(base)
             self.subplot_mse.set_title('Mean Squared Error')
             self.subplot_mse.set_ylabel('MSE')
             base += 1
 
-            self.line_partial_mse = [None for _ in range(self.n_learners)]
-            self.line_global_mse = [None for _ in range(self.n_learners)]
+            self.line_current_mse = [None for _ in range(self.n_learners)]
+            self.line_mean_mse = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_mse[i], = self.subplot_mse.plot(
-                    self.sample_id, self.partial_mse[i],
+                self.line_current_mse[i], = self.subplot_mse.plot(
+                    self.sample_id, self.current_mse[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_mse[i], = self.subplot_mse.plot(
-                    self.sample_id, self.global_mse[i],
+                self.line_mean_mse[i], = self.subplot_mse.plot(
+                    self.sample_id, self.mean_mse[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_mse[i])
-                handle.append(self.line_global_mse[i])
+                handle.append(self.line_current_mse[i])
+                handle.append(self.line_mean_mse[i])
 
             self._set_fig_legend(handle)
             self.subplot_mse.set_ylim(0, 1)
 
-        if 'mean_absolute_error' in self.plots:
-            self.global_mae = [[] for _ in range(self.n_learners)]
-            self.partial_mae = [[] for _ in range(self.n_learners)]
+        if constants.MAE in self.plots:
+            self.mean_mae = [[] for _ in range(self.n_learners)]
+            self.current_mae = [[] for _ in range(self.n_learners)]
 
             self.subplot_mae = self.fig.add_subplot(base)
             self.subplot_mae.set_title('Mean Absolute Error')
             self.subplot_mae.set_ylabel('MAE')
             base += 1
 
-            self.line_partial_mae = [None for _ in range(self.n_learners)]
-            self.line_global_mae = [None for _ in range(self.n_learners)]
+            self.line_current_mae = [None for _ in range(self.n_learners)]
+            self.line_mean_mae = [None for _ in range(self.n_learners)]
             handle = []
 
             for i in range(self.n_learners):
-                self.line_partial_mae[i], = self.subplot_mae.plot(
-                    self.sample_id, self.partial_mae[i],
+                self.line_current_mae[i], = self.subplot_mae.plot(
+                    self.sample_id, self.current_mae[i],
                     label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
-                self.line_global_mae[i], = self.subplot_mae.plot(
-                    self.sample_id, self.global_mae[i],
+                self.line_mean_mae[i], = self.subplot_mae.plot(
+                    self.sample_id, self.mean_mae[i],
                     label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
-                handle.append(self.line_partial_mae[i])
-                handle.append(self.line_global_mae[i])
+                handle.append(self.line_current_mae[i])
+                handle.append(self.line_mean_mae[i])
 
             self._set_fig_legend(handle)
             self.subplot_mae.set_ylim(0, 1)
 
-        if 'true_vs_predicted' in self.plots:
+        if constants.TRUE_VS_PREDICTED in self.plots:
             self.true_values = []
             self.pred_values = [[] for _ in range(self.n_learners)]
 
@@ -562,7 +562,7 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_true_vs_predicted.set_prop_cycle(cycler('color', ['c', 'm', 'y', 'k']))
             base += 1
 
-            if self.task_type == 'classification':
+            if self.task_type == constants.CLASSIFICATION:
                 self.line_true, = self.subplot_true_vs_predicted.step(self.sample_id, self.true_values,
                                                                       label='True value')
             else:
@@ -573,7 +573,7 @@ class EvaluationVisualizer(BaseListener):
             self.line_pred = [None for _ in range(self.n_learners)]
 
             for i in range(self.n_learners):
-                if self.task_type == 'classification':
+                if self.task_type == constants.CLASSIFICATION:
                     self.line_pred[i], = self.subplot_true_vs_predicted.step(self.sample_id, self.pred_values[i],
                                                                              label='Model {} (global)'.
                                                                              format(self.model_names[i]),
@@ -588,7 +588,7 @@ class EvaluationVisualizer(BaseListener):
             self.subplot_true_vs_predicted.legend(handles=handle)
             self.subplot_true_vs_predicted.set_ylim(0, 1)
 
-        if 'data_points' in self.plots:
+        if constants.DATA_POINTS in self.plots:
 
             data_points = True
             self.Flag = True
@@ -633,159 +633,159 @@ class EvaluationVisualizer(BaseListener):
 
         self._clear_annotations()
 
-        if 'performance' in self.plots:
+        if constants.ACCURACY in self.plots:
             for i in range(self.n_learners):
-                self.global_performance[i].append(metrics_dict['performance'][i][0])
-                self.partial_performance[i].append(metrics_dict['performance'][i][1])
-                self.line_global_performance[i].set_data(self.sample_id, self.global_performance[i])
-                self.line_partial_performance[i].set_data(self.sample_id, self.partial_performance[i])
+                self.mean_accuracy[i].append(metrics_dict[constants.ACCURACY][i][0])
+                self.current_accuracy[i].append(metrics_dict[constants.ACCURACY][i][1])
+                self.line_mean_accuracy[i].set_data(self.sample_id, self.mean_accuracy[i])
+                self.line_current_accuracy[i].set_data(self.sample_id, self.current_accuracy[i])
 
-                self._update_annotations(i, self.subplot_performance, self.model_names[i],
-                                         self.global_performance[i][-1], self.partial_performance[i][-1])
+                self._update_annotations(i, self.subplot_accuracy, self.model_names[i],
+                                         self.mean_accuracy[i][-1], self.current_accuracy[i][-1])
 
-            self.subplot_performance.set_xlim(0, self.sample_id[-1])
-            self.subplot_performance.set_ylim(0, 1)
+            self.subplot_accuracy.set_xlim(0, self.sample_id[-1])
+            self.subplot_accuracy.set_ylim(0, 1)
 
-        if 'kappa' in self.plots:
+        if constants.KAPPA in self.plots:
             for i in range(self.n_learners):
-                self.global_kappa[i].append(metrics_dict['kappa'][i][0])
-                self.partial_kappa[i].append(metrics_dict['kappa'][i][1])
-                self.line_global_kappa[i].set_data(self.sample_id, self.global_kappa[i])
-                self.line_partial_kappa[i].set_data(self.sample_id, self.partial_kappa[i])
+                self.mean_kappa[i].append(metrics_dict[constants.KAPPA][i][0])
+                self.current_kappa[i].append(metrics_dict[constants.KAPPA][i][1])
+                self.line_mean_kappa[i].set_data(self.sample_id, self.mean_kappa[i])
+                self.line_current_kappa[i].set_data(self.sample_id, self.current_kappa[i])
 
                 self._update_annotations(i, self.subplot_kappa, self.model_names[i],
-                                         self.global_kappa[i][-1], self.partial_kappa[i][-1])
+                                         self.mean_kappa[i][-1], self.current_kappa[i][-1])
 
             self.subplot_kappa.set_xlim(0, self.sample_id[-1])
             self.subplot_kappa.set_ylim(0, 1)
 
-        if 'kappa_t' in self.plots:
+        if constants.KAPPA_T in self.plots:
             minimum = -1.
             for i in range(self.n_learners):
-                self.global_kappa_t[i].append(metrics_dict['kappa_t'][i][0])
-                self.partial_kappa_t[i].append(metrics_dict['kappa_t'][i][1])
-                self.line_global_kappa_t[i].set_data(self.sample_id, self.global_kappa_t[i])
-                self.line_partial_kappa_t[i].set_data(self.sample_id, self.partial_kappa_t[i])
+                self.mean_kappa_t[i].append(metrics_dict[constants.KAPPA_T][i][0])
+                self.current_kappa_t[i].append(metrics_dict[constants.KAPPA_T][i][1])
+                self.line_mean_kappa_t[i].set_data(self.sample_id, self.mean_kappa_t[i])
+                self.line_current_kappa_t[i].set_data(self.sample_id, self.current_kappa_t[i])
 
                 self._update_annotations(i, self.subplot_kappa_t, self.model_names[i],
-                                         self.global_kappa_t[i][-1], self.partial_kappa_t[i][-1])
+                                         self.mean_kappa_t[i][-1], self.current_kappa_t[i][-1])
 
-                minimum = min(min(minimum, min(self.global_kappa_t[i])), min(minimum, min(self.partial_kappa_t[i])))
+                minimum = min(min(minimum, min(self.mean_kappa_t[i])), min(minimum, min(self.current_kappa_t[i])))
 
             self.subplot_kappa_t.set_xlim(0, self.sample_id[-1])
             self.subplot_kappa_t.set_ylim([minimum, 1.])
 
-        if 'kappa_m' in self.plots:
+        if constants.KAPPA_M in self.plots:
             minimum = -1.
             for i in range(self.n_learners):
-                self.global_kappa_m[i].append(metrics_dict['kappa_m'][i][0])
-                self.partial_kappa_m[i].append(metrics_dict['kappa_m'][i][1])
-                self.line_global_kappa_m[i].set_data(self.sample_id, self.global_kappa_m[i])
-                self.line_partial_kappa_m[i].set_data(self.sample_id, self.partial_kappa_m[i])
+                self.mean_kappa_m[i].append(metrics_dict[constants.KAPPA_M][i][0])
+                self.current_kappa_m[i].append(metrics_dict[constants.KAPPA_M][i][1])
+                self.line_mean_kappa_m[i].set_data(self.sample_id, self.mean_kappa_m[i])
+                self.line_current_kappa_m[i].set_data(self.sample_id, self.current_kappa_m[i])
 
                 self._update_annotations(i, self.subplot_kappa_m, self.model_names[i],
-                                         self.global_kappa_m[i][-1], self.partial_kappa_m[i][-1])
+                                         self.mean_kappa_m[i][-1], self.current_kappa_m[i][-1])
 
-                minimum = min(min(minimum, min(self.global_kappa_m[i])), min(minimum, min(self.partial_kappa_m[i])))
+                minimum = min(min(minimum, min(self.mean_kappa_m[i])), min(minimum, min(self.current_kappa_m[i])))
 
             self.subplot_kappa_m.set_xlim(0, self.sample_id[-1])
             self.subplot_kappa_m.set_ylim(minimum, 1.)
 
-        if 'hamming_score' in self.plots:
+        if constants.HAMMING_SCORE in self.plots:
             for i in range(self.n_learners):
-                self.global_hamming_score[i].append(metrics_dict['hamming_score'][i][0])
-                self.partial_hamming_score[i].append(metrics_dict['hamming_score'][i][1])
-                self.line_global_hamming_score[i].set_data(self.sample_id, self.global_hamming_score[i])
-                self.line_partial_hamming_score[i].set_data(self.sample_id, self.partial_hamming_score[i])
+                self.mean_hamming_score[i].append(metrics_dict[constants.HAMMING_SCORE][i][0])
+                self.current_hamming_score[i].append(metrics_dict[constants.HAMMING_SCORE][i][1])
+                self.line_mean_hamming_score[i].set_data(self.sample_id, self.mean_hamming_score[i])
+                self.line_current_hamming_score[i].set_data(self.sample_id, self.current_hamming_score[i])
 
                 self._update_annotations(i, self.subplot_hamming_score, self.model_names[i],
-                                         self.global_hamming_score[i][-1], self.partial_hamming_score[i][-1])
+                                         self.mean_hamming_score[i][-1], self.current_hamming_score[i][-1])
 
             self.subplot_hamming_score.set_xlim(0, self.sample_id[-1])
             self.subplot_hamming_score.set_ylim(0, 1)
 
-        if 'hamming_loss' in self.plots:
+        if constants.HAMMING_LOSS in self.plots:
             for i in range(self.n_learners):
-                self.global_hamming_loss[i].append(metrics_dict['hamming_loss'][i][0])
-                self.partial_hamming_loss[i].append(metrics_dict['hamming_loss'][i][1])
-                self.line_global_hamming_loss[i].set_data(self.sample_id, self.global_hamming_loss[i])
-                self.line_partial_hamming_loss[i].set_data(self.sample_id, self.partial_hamming_loss[i])
+                self.mean_hamming_loss[i].append(metrics_dict[constants.HAMMING_LOSS][i][0])
+                self.current_hamming_loss[i].append(metrics_dict[constants.HAMMING_LOSS][i][1])
+                self.line_mean_hamming_loss[i].set_data(self.sample_id, self.mean_hamming_loss[i])
+                self.line_current_hamming_loss[i].set_data(self.sample_id, self.current_hamming_loss[i])
 
                 self._update_annotations(i, self.subplot_hamming_loss, self.model_names[i],
-                                         self.global_hamming_loss[i][-1], self.partial_hamming_loss[i][-1])
+                                         self.mean_hamming_loss[i][-1], self.current_hamming_loss[i][-1])
 
             self.subplot_hamming_loss.set_xlim(0, self.sample_id[-1])
             self.subplot_hamming_loss.set_ylim(0, 1)
 
-        if 'exact_match' in self.plots:
+        if constants.EXACT_MATCH in self.plots:
             for i in range(self.n_learners):
-                self.global_exact_match[i].append(metrics_dict['exact_match'][i][0])
-                self.partial_exact_match[i].append(metrics_dict['exact_match'][i][1])
-                self.line_global_exact_match[i].set_data(self.sample_id, self.global_exact_match[i])
-                self.line_partial_exact_match[i].set_data(self.sample_id, self.partial_exact_match[i])
+                self.mean_exact_match[i].append(metrics_dict[constants.EXACT_MATCH][i][0])
+                self.current_exact_match[i].append(metrics_dict[constants.EXACT_MATCH][i][1])
+                self.line_mean_exact_match[i].set_data(self.sample_id, self.mean_exact_match[i])
+                self.line_current_exact_match[i].set_data(self.sample_id, self.current_exact_match[i])
 
                 self._update_annotations(i, self.subplot_exact_match, self.model_names[i],
-                                         self.global_exact_match[i][-1], self.partial_exact_match[i][-1])
+                                         self.mean_exact_match[i][-1], self.current_exact_match[i][-1])
 
             self.subplot_exact_match.set_xlim(0, self.sample_id[-1])
             self.subplot_exact_match.set_ylim(0, 1)
 
-        if 'j_index' in self.plots:
+        if constants.J_INDEX in self.plots:
             for i in range(self.n_learners):
-                self.global_j_index[i].append(metrics_dict['j_index'][i][0])
-                self.partial_j_index[i].append(metrics_dict['j_index'][i][1])
-                self.line_global_j_index[i].set_data(self.sample_id, self.global_j_index[i])
-                self.line_partial_j_index[i].set_data(self.sample_id, self.partial_j_index[i])
+                self.mean_j_index[i].append(metrics_dict[constants.J_INDEX][i][0])
+                self.current_j_index[i].append(metrics_dict[constants.J_INDEX][i][1])
+                self.line_mean_j_index[i].set_data(self.sample_id, self.mean_j_index[i])
+                self.line_current_j_index[i].set_data(self.sample_id, self.current_j_index[i])
 
                 self._update_annotations(i, self.subplot_j_index, self.model_names[i],
-                                         self.global_j_index[i][-1], self.partial_j_index[i][-1])
+                                         self.mean_j_index[i][-1], self.current_j_index[i][-1])
 
             self.subplot_j_index.set_xlim(0, self.sample_id[-1])
             self.subplot_j_index.set_ylim(0, 1)
 
-        if 'mean_square_error' in self.plots:
+        if constants.MSE in self.plots:
             minimum = -1
             maximum = 0
             for i in range(self.n_learners):
-                self.global_mse[i].append(metrics_dict['mean_square_error'][i][0])
-                self.partial_mse[i].append(metrics_dict['mean_square_error'][i][1])
-                self.line_global_mse[i].set_data(self.sample_id, self.global_mse[i])
-                self.line_partial_mse[i].set_data(self.sample_id, self.partial_mse[i])
+                self.mean_mse[i].append(metrics_dict[constants.MSE][i][0])
+                self.current_mse[i].append(metrics_dict[constants.MSE][i][1])
+                self.line_mean_mse[i].set_data(self.sample_id, self.mean_mse[i])
+                self.line_current_mse[i].set_data(self.sample_id, self.current_mse[i])
 
                 self._update_annotations(i, self.subplot_mse, self.model_names[i],
-                                         self.global_mse[i][-1], self.partial_mse[i][-1])
+                                         self.mean_mse[i][-1], self.current_mse[i][-1])
 
-                # minimum = min([min(self.global_mse[i]), min(self.partial_mse[i]), minimum])
-                maximum = max([max(self.global_mse[i]), max(self.partial_mse[i]), maximum])
+                # minimum = min([min(self.mean_mse[i]), min(self.current_mse[i]), minimum])
+                maximum = max([max(self.mean_mse[i]), max(self.current_mse[i]), maximum])
 
             self.subplot_mse.set_xlim(0, self.sample_id[-1])
             self.subplot_mse.set_ylim(minimum, 1.2*maximum)
 
-        if 'mean_absolute_error' in self.plots:
+        if constants.MAE in self.plots:
             minimum = -1
             maximum = 0
             for i in range(self.n_learners):
-                self.global_mae[i].append(metrics_dict['mean_absolute_error'][i][0])
-                self.partial_mae[i].append(metrics_dict['mean_absolute_error'][i][1])
-                self.line_global_mae[i].set_data(self.sample_id, self.global_mae[i])
-                self.line_partial_mae[i].set_data(self.sample_id, self.partial_mae[i])
+                self.mean_mae[i].append(metrics_dict[constants.MAE][i][0])
+                self.current_mae[i].append(metrics_dict[constants.MAE][i][1])
+                self.line_mean_mae[i].set_data(self.sample_id, self.mean_mae[i])
+                self.line_current_mae[i].set_data(self.sample_id, self.current_mae[i])
 
                 self._update_annotations(i, self.subplot_mae, self.model_names[i],
-                                         self.global_mae[i][-1], self.partial_mae[i][-1])
+                                         self.mean_mae[i][-1], self.current_mae[i][-1])
 
-                # minimum = min([min(self.global_mae[i]), min(self.partial_mae[i]), minimum])
-                maximum = max([max(self.global_mae[i]), max(self.partial_mae[i]), maximum])
+                # minimum = min([min(self.mean_mae[i]), min(self.current_mae[i]), minimum])
+                maximum = max([max(self.mean_mae[i]), max(self.current_mae[i]), maximum])
 
             self.subplot_mae.set_xlim(0, self.sample_id[-1])
             self.subplot_mae.set_ylim(minimum, 1.2*maximum)
 
-        if 'true_vs_predicted' in self.plots:
-            self.true_values.append(metrics_dict['true_vs_predicted'][0][0])
+        if constants.TRUE_VS_PREDICTED in self.plots:
+            self.true_values.append(metrics_dict[constants.TRUE_VS_PREDICTED][0][0])
             self.line_true.set_data(self.sample_id, self.true_values)
             minimum = 0
             maximum = 0
             for i in range(self.n_learners):
-                self.pred_values[i].append(metrics_dict['true_vs_predicted'][i][1])
+                self.pred_values[i].append(metrics_dict[constants.TRUE_VS_PREDICTED][i][1])
                 self.line_pred[i].set_data(self.sample_id, self.pred_values[i])
                 minimum = min([min(self.pred_values[i]), min(self.true_values), minimum])
                 maximum = max([max(self.pred_values[i]), max(self.true_values), maximum])
@@ -795,15 +795,15 @@ class EvaluationVisualizer(BaseListener):
 
             self.subplot_true_vs_predicted.legend(loc=2, bbox_to_anchor=(1.01, 1.))
 
-        if 'data_points' in self.plots:
-            self.X.add_element(metrics_dict['data_points'][0][0])
+        if constants.DATA_POINTS in self.plots:
+            self.X.add_element(metrics_dict[constants.DATA_POINTS][0][0])
 
-            self.targets = metrics_dict['data_points'][0][1]
+            self.targets = metrics_dict[constants.DATA_POINTS][0][1]
             if self.n_learners > 1:
                 raise ValueError("you can not compare classifiers in this type of plot.")
             else:
 
-                self.prediction.append(metrics_dict['data_points'][0][2])
+                self.prediction.append(metrics_dict[constants.DATA_POINTS][0][2])
                 if self.Flag is True:
                     for j in range(len(self.targets)):
                         self.clusters.append(FastBuffer(100))
@@ -844,12 +844,12 @@ class EvaluationVisualizer(BaseListener):
         xy_pos = xy_pos_default
         if idx == 0:
             self.text_annotations.append(subplot.annotate('{: <12} | {: ^16} | {: ^16}'.
-                                                          format('Model', 'Global', 'Sliding'),
+                                                          format('Model', 'Mean', 'Current'),
                                                           xy=xy_pos, xycoords='axes fraction'))
         self.text_annotations.append(subplot.annotate('{: <10.10s}'.format(model_name[:6]),
                                                       xy=xy_pos, xycoords='axes fraction',
                                                       xytext=(0, -shift_y), textcoords='offset points'))
-        self.text_annotations.append(subplot.annotate('{: ^14.4f}   {: ^14.4f}'.format(global_value, partial_value),
+        self.text_annotations.append(subplot.annotate('{: ^16.4f}  {: ^16.4f}'.format(global_value, partial_value),
                                                       xy=xy_pos, xycoords='axes fraction',
                                                       xytext=(50, -shift_y), textcoords='offset points'))
 

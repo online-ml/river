@@ -1,6 +1,7 @@
 import os
 import filecmp
 import difflib
+import numpy as np
 from skmultiflow.data import RandomTreeGenerator
 from skmultiflow.trees import HoeffdingTree
 from skmultiflow.evaluation import EvaluatePrequential
@@ -19,7 +20,7 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
 
     # Setup evaluator
     max_samples = 1000
-    metrics = ['kappa', 'kappa_t', 'performance']
+    metrics = ['kappa', 'kappa_t', 'accuracy']
     output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
     evaluator = EvaluatePrequential(max_samples=max_samples,
                                     metrics=metrics,
@@ -35,6 +36,20 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
 
     expected_file = os.path.join(test_path, 'prequential_summary.csv')
     compare_files(output_file, expected_file)
+
+    mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
+    expected_mean_accuracy = 0.436250
+    expected_mean_kappa = 0.231791
+    expected_mean_kappa_t = 0.236887
+    expected_current_accuracy = 0.430000
+    expected_current_kappa = 0.223909
+    expected_current_kappa_t = 0.240000
+    assert np.isclose(mean_performance.get_accuracy(), expected_mean_accuracy)
+    assert np.isclose(mean_performance.get_kappa(), expected_mean_kappa)
+    assert np.isclose(mean_performance.get_kappa_t(), expected_mean_kappa_t)
+    assert np.isclose(current_performance.get_accuracy(), expected_current_accuracy)
+    assert np.isclose(current_performance.get_kappa(), expected_current_kappa)
+    assert np.isclose(current_performance.get_kappa_t(), expected_current_kappa_t)
 
 
 def compare_files(test, expected):
