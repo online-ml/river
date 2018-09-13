@@ -14,6 +14,7 @@
 # serve to show the default.
 import os
 import sys
+from sphinx.domains.python import PythonDomain
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -264,3 +265,16 @@ epub_copyright = copyright
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
+
+
+# Avoid misleading warning triggered by more than one target for cross-reference
+class PatchedPythonDomain(PythonDomain):
+    def resolve_xref(self, env, fromdocname, builder, typ, target, node, contnode):
+        if 'refspecific' in node:
+            del node['refspecific']
+        return super(PatchedPythonDomain, self).resolve_xref(
+            env, fromdocname, builder, typ, target, node, contnode)
+
+
+def setup(sphinx):
+    sphinx.override_domain(PatchedPythonDomain)
