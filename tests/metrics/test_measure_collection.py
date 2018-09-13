@@ -16,7 +16,7 @@ def test_classification_measurements():
         measurements.add_result(y_true[i], y_pred[i])
 
     expected_acc = .9
-    assert expected_acc == measurements.get_performance()
+    assert expected_acc == measurements.get_accuracy()
 
     expected_incorrectly_classified_ratio = 1 - expected_acc
     assert expected_incorrectly_classified_ratio == measurements.get_incorrectly_classified_ratio()
@@ -30,7 +30,7 @@ def test_classification_measurements():
     expected_kappa_t = (expected_acc - .97) / (1 - 0.97)
     assert expected_kappa_t == measurements.get_kappa_t()
 
-    expected_info = 'ClassificationMeasurements: - sample_count: 100.0 - performance: 0.900000 - kappa: 0.444444 ' \
+    expected_info = 'ClassificationMeasurements: - sample_count: 100.0 - accuracy: 0.900000 - kappa: 0.444444 ' \
                     '- kappa_t: -2.333333 - kappa_m: 0.888889 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
@@ -50,7 +50,7 @@ def test_window_classification_measurements():
         measurements.add_result(y_true[i], y_pred[i])
 
     expected_acc = .5
-    assert expected_acc == measurements.get_performance()
+    assert expected_acc == measurements.get_accuracy()
 
     expected_incorrectly_classified_ratio = 1 - expected_acc
     assert expected_incorrectly_classified_ratio == measurements.get_incorrectly_classified_ratio()
@@ -64,7 +64,7 @@ def test_window_classification_measurements():
     expected_kappa_t = 1
     assert expected_kappa_t == measurements.get_kappa_t()
 
-    expected_info = 'WindowClassificationMeasurements: - sample_count: 20 - window_size: 20 - performance: 0.500000 ' \
+    expected_info = 'WindowClassificationMeasurements: - sample_count: 20 - window_size: 20 - accuracy: 0.500000 ' \
                     '- kappa: 0.000000 - kappa_t: 1.000000 - kappa_m: 0.500000 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
