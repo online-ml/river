@@ -14,7 +14,7 @@ def demo_parameterized(h, filename="covtype.csv", show_plot=True, model_names=No
     # For each classifier, e...
     pretrain = 100
     evaluator = EvaluatePrequential(pretrain_size=pretrain, output_file='test_parametrized.csv', max_samples=10000,
-                                    batch_size=1, n_wait=500, show_plot=show_plot, metrics=['performance'])
+                                    batch_size=1, n_wait=500, show_plot=show_plot)
     evaluator.evaluate(stream=stream, model=h, model_names=model_names)
 
 
