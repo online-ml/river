@@ -49,8 +49,7 @@ def demo(instances=2000):
 
     # Setup the evaluator
     evaluator = EvaluatePrequential(pretrain_size=2000, output_file='test_comparison_prequential.csv',
-                                    max_samples=instances, batch_size=1, n_wait=200, max_time=1000, show_plot=True,
-                                    metrics=['performance', 'kappa_t'])
+                                    max_samples=instances, batch_size=1, n_wait=200, max_time=1000, show_plot=True)
 
     # Evaluate
     evaluator.evaluate(stream=stream, model=classifier)
