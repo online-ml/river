@@ -1,7 +1,7 @@
 import numpy as np
 from skmultiflow.trees.regression_hoeffding_tree import RegressionHoeffdingTree
-from skmultiflow.trees.hoeffding_numeric_attribute_class_observer \
-     import HoeffdingNumericAttributeClassObserver
+from skmultiflow.trees.hoeffding_multi_output_numeric_attribute_observer \
+     import HoeffdingMultiOutputTNumericAttributeObserver
 from skmultiflow.trees.hoeffding_nominal_class_attribute_observer \
      import HoeffdingNominalAttributeClassObserver
 from operator import attrgetter
@@ -137,15 +137,15 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
             try:
                 self._observed_class_distribution[1] += weight * y
-                self._observed_class_distribution[2] += weight * (y ** 2)
+                self._observed_class_distribution[2] += weight * y * y
             except KeyError:
                 self._observed_class_distribution[1] = weight * y
-                self._observed_class_distribution[2] = weight * (y ** 2)
+                self._observed_class_distribution[2] = weight * y * y
 
             for i in range(int(weight)):
                 self.update_weights(X, y, learning_ratio, rht)
 
-            for i in range(len(X)):
+            for i, x in enumerate(X.tolist()):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
@@ -153,9 +153,9 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     if i in rht.nominal_attributes:
                         obs = HoeffdingNominalAttributeClassObserver()
                     else:
-                        obs = HoeffdingNumericAttributeClassObserver()
+                        obs = HoeffdingMultiOutputTNumericAttributeObserver()
                     self._attribute_observers[i] = obs
-                obs.observe_attribute_class(X[i], y, weight)
+                obs.observe_attribute_class(x, y, weight)
 
         def update_weights(self, X, y, learning_ratio, rht):
             """
@@ -174,23 +174,19 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             normalized_sample = rht.normalize_sample(X)
             normalized_pred = self.predict(normalized_sample)
 
-            _, n_features = get_dimensions(X)
-            _, n_targets = get_dimensions(y)
-
             normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight += learning_ratio * \
-                (normalized_target_value - normalized_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_sample.reshape((1, n_features + 1))
+                (normalized_target_value - normalized_pred)[:, None] @ \
+                normalized_sample[None, :]
 
             self.normalize_perceptron_weights()
 
         def normalize_perceptron_weights(self):
-            n_targets = self.perceptron_weight.shape[0]
             # Normalize perceptron weights
+            n_targets = self.perceptron_weight.shape[0]
             for i in range(n_targets):
-                sum_w = np.sum(np.absolute(self.perceptron_weight[i, :]))
+                sum_w = np.sum(np.abs(self.perceptron_weight[i, :]))
                 self.perceptron_weight[i, :] /= sum_w
 
         # Predicts new income instances as a multiplication of the neurons
@@ -246,26 +242,22 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             normalized_sample = rht.normalize_sample(X)
             normalized_pred = self.predict(normalized_sample)
 
-            _, n_features = get_dimensions(X)
-            _, n_targets = get_dimensions(y)
-
             normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight += learning_ratio * \
-                (normalized_target_value - normalized_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_sample.reshape((1, n_features + 1))
+                (normalized_target_value - normalized_pred)[:, None] @ \
+                normalized_sample[None, :]
 
             self.normalize_perceptron_weights()
 
             # Update faded errors for the predictors
             # The considered errors are normalized, since they are based on
             # mean centered and sd scaled values
-            self.fMAE_P = 0.95 * self.fMAE_P + np.absolute(
+            self.fMAE_P = 0.95 * self.fMAE_P + np.abs(
                 normalized_target_value - normalized_pred
             )
 
-            self.fMAE_M = 0.95 * self.fMAE_M + np.absolute(
+            self.fMAE_M = 0.95 * self.fMAE_M + np.abs(
                 normalized_target_value - rht.
                 normalized_target_value(self._observed_class_distribution[1] /
                                         self._observed_class_distribution[0])
@@ -307,10 +299,10 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
             try:
                 self._observed_class_distribution[1] += weight * y
-                self._observed_class_distribution[2] += weight * (y ** 2)
+                self._observed_class_distribution[2] += weight * y * y
             except KeyError:
                 self._observed_class_distribution[1] = weight * y
-                self._observed_class_distribution[2] = weight * (y ** 2)
+                self._observed_class_distribution[2] = weight * y * y
 
             for i in range(int(weight)):
                 self.update_weights(X, y, learning_ratio, rht)
@@ -332,14 +324,10 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             normalized_sample = rht.normalize_sample(X)
             normalized_pred = self.predict(normalized_sample)
 
-            _, n_features = get_dimensions(X)
-            _, n_targets = get_dimensions(y)
-
             normalized_target_value = rht.normalized_target_value(y)
             self.perceptron_weight += learning_ratio * \
-                (normalized_target_value - normalized_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_sample.reshape((1, n_features + 1))
+                (normalized_target_value - normalized_pred)[:, None] @ \
+                normalized_sample[None, :]
 
             self.normalize_perceptron_weights()
 
@@ -347,7 +335,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             n_targets = self.perceptron_weight.shape[0]
             # Normalize perceptron weights
             for i in range(n_targets):
-                sum_w = np.sum(np.absolute(self.perceptron_weight[i, :]))
+                sum_w = np.sum(np.abs(self.perceptron_weight[i, :]))
                 self.perceptron_weight[i, :] /= sum_w
 
         # Predicts new income instances as a multiplication of the neurons
@@ -383,25 +371,21 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             normalized_sample = rht.normalize_sample(X)
             normalized_pred = self.predict(normalized_sample)
 
-            _, n_features = get_dimensions(X)
-            _, n_targets = get_dimensions(y)
-
             normalized_target_value = rht.normalized_target_value(y)
             self.perceptron_weight += learning_ratio * \
-                (normalized_target_value - normalized_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_sample.reshape((1, n_features + 1))
+                (normalized_target_value - normalized_pred)[:, None] @ \
+                normalized_sample[None, :]
 
             self.normalize_perceptron_weights()
 
             # Update faded errors for the predictors
             # The considered errors are normalized, since they are based on
             # mean centered and sd scaled values
-            self.fMAE_P = 0.95 * self.fMAE_P + np.absolute(
+            self.fMAE_P = 0.95 * self.fMAE_P + np.abs(
                 normalized_target_value - normalized_pred
             )
 
-            self.fMAE_M = 0.95 * self.fMAE_M + np.absolute(
+            self.fMAE_M = 0.95 * self.fMAE_M + np.abs(
                 normalized_target_value - rht.
                 normalized_target_value(self._observed_class_distribution[1] /
                                         self._observed_class_distribution[0])
@@ -511,7 +495,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
         if self.examples_seen <= 1:
             _, c = get_dimensions(X)
-            return np.zeros((c + 1,), dtype=np.float64)
+            return np.zeros((c + 1), dtype=np.float64)
 
         mean = self.sum_of_attribute_values / self.examples_seen
 
@@ -687,18 +671,18 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         try:
             self.examples_seen += weight
             self.sum_of_values += weight * y
-            self.sum_of_squares += weight * (y ** 2)
+            self.sum_of_squares += weight * y * y
         except ValueError:
             self.examples_seen = weight
             self.sum_of_values = weight * y
-            self.sum_of_squares = weight * (y ** 2)
+            self.sum_of_squares = weight * y * y
 
         try:
             self.sum_of_attribute_values += weight * X
-            self.sum_of_attribute_squares += weight * (X ** 2)
+            self.sum_of_attribute_squares += weight * X * X
         except ValueError:
             self.sum_of_attribute_values = weight * X
-            self.sum_of_attribute_squares = weight * (X ** 2)
+            self.sum_of_attribute_squares = weight * X * X
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
@@ -710,6 +694,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             leaf_node = self._new_learning_node()
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._active_leaf_node_cnt += 1
+
         if isinstance(leaf_node, self.LearningNode):
             learning_node = leaf_node
             learning_node.learn_from_instance(X, y, weight, self)
@@ -874,6 +859,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
                 for poor_att in poor_atts:
                     node.disable_attribute(poor_att)
+
         if should_split:
             split_decision = best_split_suggestions[-1]
             if split_decision.split_test is None:

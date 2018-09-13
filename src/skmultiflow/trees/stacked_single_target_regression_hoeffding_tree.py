@@ -3,8 +3,8 @@ from skmultiflow.trees.regression_hoeffding_tree import \
     RegressionHoeffdingTree
 from skmultiflow.trees.multi_target_regression_hoeffding_tree import \
     MultiTargetRegressionHoeffdingTree
-from skmultiflow.trees.hoeffding_numeric_attribute_class_observer \
-     import HoeffdingNumericAttributeClassObserver
+from skmultiflow.trees.hoeffding_multi_output_numeric_attribute_observer \
+     import HoeffdingMultiOutputTNumericAttributeObserver
 from skmultiflow.trees.hoeffding_nominal_class_attribute_observer \
      import HoeffdingNominalAttributeClassObserver
 from operator import attrgetter
@@ -132,15 +132,15 @@ class StackedSingleTargetRegressionHoeffdingTree(
 
             try:
                 self._observed_class_distribution[1] += weight * y
-                self._observed_class_distribution[2] += weight * (y ** 2)
+                self._observed_class_distribution[2] += weight * y * y
             except KeyError:
                 self._observed_class_distribution[1] = weight * y
-                self._observed_class_distribution[2] = weight * (y ** 2)
+                self._observed_class_distribution[2] = weight * y * y
 
             for i in range(int(weight)):
                 self.update_weights(X, y, learning_ratio, rht)
 
-            for i in range(len(X)):
+            for i, x in enumerate(X):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
@@ -148,9 +148,9 @@ class StackedSingleTargetRegressionHoeffdingTree(
                     if i in rht.nominal_attributes:
                         obs = HoeffdingNominalAttributeClassObserver()
                     else:
-                        obs = HoeffdingNumericAttributeClassObserver()
+                        obs = HoeffdingMultiOutputTNumericAttributeObserver()
                     self._attribute_observers[i] = obs
-                obs.observe_attribute_class(X[i], y, weight)
+                obs.observe_attribute_class(x, y, weight)
 
         def update_weights(self, X, y, learning_ratio, rht):
             """
@@ -169,24 +169,19 @@ class StackedSingleTargetRegressionHoeffdingTree(
             normalized_sample = rht.normalize_sample(X)
             normalized_base_pred = self._predict_base(normalized_sample)
 
-            _, n_features = get_dimensions(X)
-            _, n_targets = get_dimensions(y)
-
             normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight[0] += learning_ratio * \
-                (normalized_target_value - normalized_base_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_sample.reshape((1, n_features + 1))
+                (normalized_target_value - normalized_base_pred)[:, None] @ \
+                normalized_sample[None, :]
 
             # Add bias term
             normalized_base_pred = np.append(normalized_base_pred, 1.0)
             normalized_meta_pred = self._predict_meta(normalized_base_pred)
 
             self.perceptron_weight[1] += learning_ratio * \
-                (normalized_target_value - normalized_meta_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_base_pred.reshape((1, n_targets + 1))
+                (normalized_target_value - normalized_meta_pred)[:, None] @ \
+                normalized_base_pred[None, :]
 
             self.normalize_perceptron_weights()
 
@@ -263,18 +258,16 @@ class StackedSingleTargetRegressionHoeffdingTree(
             normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight[0] += learning_ratio * \
-                (normalized_target_value - normalized_base_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_sample.reshape((1, n_features + 1))
+                (normalized_target_value - normalized_base_pred)[:, None] @ \
+                normalized_sample[None, :]
 
             # Add bias term
             normalized_base_pred = np.append(normalized_base_pred, 1.0)
             normalized_meta_pred = self._predict_meta(normalized_base_pred)
 
             self.perceptron_weight[1] += learning_ratio * \
-                (normalized_target_value - normalized_meta_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_base_pred.reshape((1, n_targets + 1))
+                (normalized_target_value - normalized_meta_pred)[:, None] @ \
+                normalized_base_pred[None, :]
 
             self.normalize_perceptron_weights()
 
@@ -333,10 +326,10 @@ class StackedSingleTargetRegressionHoeffdingTree(
 
             try:
                 self._observed_class_distribution[1] += weight * y
-                self._observed_class_distribution[2] += weight * (y ** 2)
+                self._observed_class_distribution[2] += weight * y * y
             except KeyError:
                 self._observed_class_distribution[1] = weight * y
-                self._observed_class_distribution[2] = weight * (y ** 2)
+                self._observed_class_distribution[2] = weight * y * y
 
             for i in range(int(weight)):
                 self.update_weights(X, y, learning_ratio, rht)
@@ -364,18 +357,17 @@ class StackedSingleTargetRegressionHoeffdingTree(
             normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight[0] += learning_ratio * \
-                (normalized_target_value - normalized_base_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_sample.reshape((1, n_features + 1))
+                (normalized_target_value - normalized_base_pred)[:, None] @ \
+                normalized_sample[None, :]
 
             # Add bias term
             normalized_base_pred = np.append(normalized_base_pred, 1.0)
+
             normalized_meta_pred = self._predict_meta(normalized_base_pred)
 
             self.perceptron_weight[1] += learning_ratio * \
-                (normalized_target_value - normalized_meta_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_base_pred.reshape((1, n_targets + 1))
+                (normalized_target_value - normalized_meta_pred)[:, None] @ \
+                normalized_base_pred[None, :]
 
             self.normalize_perceptron_weights()
 
@@ -438,18 +430,16 @@ class StackedSingleTargetRegressionHoeffdingTree(
             normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight[0] += learning_ratio * \
-                (normalized_target_value - normalized_base_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_sample.reshape((1, n_features + 1))
+                (normalized_target_value - normalized_base_pred)[:, None] @ \
+                normalized_sample[None, :]
 
             # Add bias term
             normalized_base_pred = np.append(normalized_base_pred, 1.0)
             normalized_meta_pred = self._predict_meta(normalized_base_pred)
 
             self.perceptron_weight[1] += learning_ratio * \
-                (normalized_target_value - normalized_meta_pred).\
-                reshape((n_targets, 1)) @ \
-                normalized_base_pred.reshape((1, n_targets + 1))
+                (normalized_target_value - normalized_meta_pred)[:, None] @ \
+                normalized_base_pred[None, :]
 
             self.normalize_perceptron_weights()
 
