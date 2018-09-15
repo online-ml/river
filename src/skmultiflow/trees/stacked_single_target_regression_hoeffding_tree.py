@@ -14,6 +14,7 @@ from skmultiflow.trees.intra_cluster_variance_reduction_split_criterion \
 from skmultiflow.utils import check_random_state
 import logging
 
+
 _TARGET_MEAN = 'mean'
 _PERCEPTRON = 'perceptron'
 _ADAPTIVE = 'adaptive'

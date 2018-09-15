@@ -32,26 +32,60 @@ class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
             self._left = None
             self._right = None
 
-        def insert_value(self, att_val, target):
-            if att_val <= self.att_val:
-                self.k += 1
-                self.sum_target += target
-                self.sum_sq_target += target * target
+        # def insert_value(self, att_val, target):
+        #     if att_val <= self.att_val:
+        #         self.k += 1
+        #         self.sum_target += target
+        #         self.sum_sq_target += target * target
+        #
+        #         if att_val < self.att_val:
+        #             if self._left is None:
+        #                 self._left = \
+        #                     HoeffdingMultiOutputTNumericAttributeObserver.\
+        #                     Node(att_val, target)
+        #             else:
+        #                 self._left.insert_value(att_val, target)
+        #     else:
+        #         if self._right is None:
+        #             self._right = \
+        #                 HoeffdingMultiOutputTNumericAttributeObserver.\
+        #                 Node(att_val, target)
+        #         else:
+        #             self._right.insert_value(att_val, target)
 
-                if att_val < self.att_val:
-                    if self._left is None:
-                        self._left = \
-                            HoeffdingMultiOutputTNumericAttributeObserver.\
-                            Node(att_val, target)
-                    else:
-                        self._left.insert_value(att_val, target)
-            else:
-                if self._right is None:
-                    self._right = \
-                        HoeffdingMultiOutputTNumericAttributeObserver.\
-                        Node(att_val, target)
+        # Incremental implementation of the insert method. Avoiding unecessary
+        # stack tracing must decrease memory costs
+        def insert_value(self, att_val, target):
+            current = self
+            antecedent = None
+
+            while current is not None:
+                antecedent = current
+                if current.att_val == att_val:
+                    current.k += 1
+                    current.sum_target += target
+                    current.sum_sq_target += target * target
+                    return
+                elif att_val < current.att_val:
+                    current.k += 1
+                    current.sum_target += target
+                    current.sum_sq_target += target * target
+
+                    current = current._left
+                    is_right = False
                 else:
-                    self._right.insert_value(att_val, target)
+                    current = current._right
+                    is_right = True
+
+            # Value was not yet added to the tree
+            if is_right:
+                antecedent._right = \
+                    HoeffdingMultiOutputTNumericAttributeObserver.\
+                    Node(att_val, target)
+            else:
+                antecedent._left = \
+                    HoeffdingMultiOutputTNumericAttributeObserver.\
+                    Node(att_val, target)
 
     def __init__(self):
         super().__init__()
