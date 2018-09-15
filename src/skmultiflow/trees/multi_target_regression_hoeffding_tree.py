@@ -11,6 +11,7 @@ from skmultiflow.trees.intra_cluster_variance_reduction_split_criterion \
 from skmultiflow.utils import check_random_state
 import logging
 
+
 _TARGET_MEAN = 'mean'
 _PERCEPTRON = 'perceptron'
 _ADAPTIVE = 'adaptive'
@@ -503,12 +504,13 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                       (self.sum_of_attribute_values ** 2) /
                       self.examples_seen) / self.examples_seen)
 
-        normalized_sample = np.divide(X - mean, sd, where=sd != 0,
-                                      out=np.zeros_like(X, dtype=np.float64))
-
+        normalized_sample = np.zeros(X.shape[0] + 1, dtype=np.float64)
+        np.divide(X - mean, sd, where=sd != 0, out=normalized_sample[:-1])
         # Augments sample with the bias input signal (or y intercept for
         # each target)
-        return np.append(normalized_sample, 1.0)
+        normalized_sample[-1] = 1.0
+
+        return normalized_sample
 
     def normalized_target_value(self, y):
         """
