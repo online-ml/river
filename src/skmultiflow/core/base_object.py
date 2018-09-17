@@ -36,6 +36,7 @@ class BaseObject(metaclass=ABCMeta):
         
         Returns
         -------
+        string
         A string with the class' relevant information.
         
         """

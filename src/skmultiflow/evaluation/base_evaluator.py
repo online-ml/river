@@ -7,12 +7,11 @@ from skmultiflow.metrics import WindowClassificationMeasurements, Classification
     WindowRegressionMeasurements, MultiTargetRegressionMeasurements, \
     WindowMultiTargetRegressionMeasurements
 from skmultiflow.utils import FastBuffer
+import skmultiflow.utils.constants as constants
 
 
 class StreamEvaluator(BaseObject, metaclass=ABCMeta):
-    """ BaseEvaluator
-
-    The abstract class that works as a base model for all of this framework's
+    """ The abstract class that works as a base model for all of this framework's
     evaluators. It creates a basic interface that evaluation modules should
     follow in order to use them with all the tools available in scikit-workflow.
 
@@ -24,69 +23,6 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     NotImplementedError: This is an abstract class.
 
     """
-    # Constants
-    DATA_POINTS = 'data_points'
-    PERFORMANCE = 'performance'
-    KAPPA = 'kappa'
-    KAPPA_T = 'kappa_t'
-    KAPPA_M = 'kappa_m'
-    HAMMING_SCORE = 'hamming_score'
-    HAMMING_LOSS = 'hamming_loss'
-    EXACT_MATCH = 'exact_match'
-    J_INDEX = 'j_index'
-    MSE = 'mean_square_error'
-    MAE = 'mean_absolute_error'
-    TRUE_VS_PREDICTED = 'true_vs_predicted'
-    AMSE = 'average_mean_square_error'
-    AMAE = 'average_mean_absolute_error'
-    ARMSE = 'average_root_mean_square_error'
-
-    PLOT_TYPES = [PERFORMANCE,
-                  KAPPA,
-                  KAPPA_T,
-                  KAPPA_M,
-                  HAMMING_SCORE,
-                  HAMMING_LOSS,
-                  EXACT_MATCH,
-                  J_INDEX,
-                  MSE,
-                  MAE,
-                  TRUE_VS_PREDICTED,
-                  AMSE,
-                  AMAE,
-                  ARMSE,
-
-                  DATA_POINTS]
-    CLASSIFICATION_METRICS = [PERFORMANCE,
-                              KAPPA,
-                              KAPPA_T,
-                              KAPPA_M,
-                              TRUE_VS_PREDICTED,
-
-                              DATA_POINTS]
-    REGRESSION_METRICS = [MSE,
-                          MAE,
-                          TRUE_VS_PREDICTED
-                          ]
-    MULTI_OUTPUT_METRICS = [HAMMING_SCORE,
-                            HAMMING_LOSS,
-                            EXACT_MATCH,
-                            J_INDEX]
-    MULTI_TARGET_REGRESSION_METRICS = [AMSE,
-                                       AMAE,
-                                       ARMSE]
-    CLASSIFICATION = 'classification'
-    REGRESSION = 'regression'
-    MULTI_OUTPUT = 'multi_output'
-    MULTI_TARGET_REGRESSION = 'multi_target_regression'
-    SINGLE_OUTPUT = 'single-output'
-    UNDEFINED = 'undefined'
-    TASK_TYPES = [CLASSIFICATION,
-                  REGRESSION,
-                  MULTI_OUTPUT,
-                  MULTI_TARGET_REGRESSION,
-                  SINGLE_OUTPUT,
-                  UNDEFINED]
 
     def __init__(self):
         # Evaluator configuration
@@ -104,8 +40,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self.data_points_for_classification = False
 
         # Metrics
-        self.global_classification_metrics = None
-        self.partial_classification_metrics = None
+        self.mean_eval_measurements = None
+        self.current_eval_measurements = None
 
         # Misc
         self._method = None
@@ -122,33 +58,33 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self.global_sample_count = 0
 
     @abstractmethod
-    def evaluate(self, stream, classifier):
+    def evaluate(self, stream, model, model_names=None):
         """ evaluate
 
-        This function evaluates the classifier, using the class parameters, and
-        by feeding it with instances coming from the stream parameter.
+        Evaluates a learner or set of learners on samples from a stream.
 
         Parameters
         ----------
-        stream: BaseInstanceStream extension
-            The stream to be use in the evaluation process.
+        stream: Stream
+            The stream from which to draw the samples.
 
-        classifier: BaseClassifier extension or list of BaseClassifier extensions
-            The classifier or classifiers to be evaluated.
+        model: StreamModel or list
+            The learner or list of learners to evaluate.
+
+        model_names: list, optional (Default=None)
+            A list with the names of the learners.
 
         Returns
         -------
-        BaseClassifier extension or list of BaseClassifier extensions
-            The trained classifier's at the end of the evaluation process.
+        StreamModel or list
+            The trained learner(s).
 
         """
         raise NotImplementedError
 
     @abstractmethod
     def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-
-        Partially fits the classifiers.
+        """ Partially fits the classifiers.
 
         X: numpy.ndarray of shape (n_samples, n_features)
             The feature's matrix.
@@ -173,9 +109,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def predict(self, X):
-        """ predict
-
-        Predicts with the classifier, or classifiers, being evaluated.
+        """ Predicts with the classifier, or classifiers, being evaluated.
 
         X: numpy.ndarray of shape (n_samples, n_features)
             The feature's matrix.
@@ -194,10 +128,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def set_params(self, parameter_dict):
-        """ set_params
-
-        Pass parameter names and values through a dictionary so that their
-        values can be updated.
+        """ Update parameter names and values via a dictionary.
 
         Parameters
         ----------
@@ -210,6 +141,13 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
     @abstractmethod
     def get_info(self):
+        """Collects information about the evaluator.
+
+            Returns
+            -------
+            string
+                Evaluator description.
+        """
         raise NotImplementedError
 
     def _init_evaluation(self, stream, model, model_names=None):
@@ -245,9 +183,9 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         # Check stream to infer task type
         if isinstance(self.stream, Stream):
             if self.stream.n_targets == 1:
-                self._output_type = self.SINGLE_OUTPUT
+                self._output_type = constants.SINGLE_OUTPUT
             elif self.stream.n_targets > 1:
-                self._output_type = self.MULTI_OUTPUT
+                self._output_type = constants.MULTI_OUTPUT
             else:
                 raise ValueError('Unexpected number of outputs in stream: {}.'.format(self.stream.n_targets))
         else:
@@ -257,38 +195,38 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self.metrics = [x.lower() for x in self.metrics]
 
         for plot in self.metrics:
-            if plot not in self.PLOT_TYPES:
+            if plot not in constants.PLOT_TYPES:
                 raise ValueError('Plot type not supported: {}.'.format(plot))
 
         # Check consistency between output type and metrics and between metrics
-        if self._output_type == self.SINGLE_OUTPUT:
-            classification_metrics = set(self.CLASSIFICATION_METRICS)
-            regression_metrics = set(self.REGRESSION_METRICS)
+        if self._output_type == constants.SINGLE_OUTPUT:
+            classification_metrics = set(constants.CLASSIFICATION_METRICS)
+            regression_metrics = set(constants.REGRESSION_METRICS)
             evaluation_metrics = set(self.metrics)
 
-            if evaluation_metrics.intersection(classification_metrics) == evaluation_metrics.intersection\
-               (regression_metrics):
-                self._task_type = self.UNDEFINED
+            if evaluation_metrics.intersection(classification_metrics) == \
+                    evaluation_metrics.intersection(regression_metrics):
+                self._task_type = constants.UNDEFINED
                 raise ValueError("You need another metric with {}".format(self.metrics))
 
             elif evaluation_metrics.union(classification_metrics) == classification_metrics or \
                     self.data_points_for_classification:
-                self._task_type = self.CLASSIFICATION
+                self._task_type = constants.CLASSIFICATION
             elif evaluation_metrics.union(regression_metrics) == regression_metrics:
-                self._task_type = self.REGRESSION
+                self._task_type = constants.REGRESSION
             else:
                 raise ValueError("Inconsistent metrics {} for {} stream.".format(self.metrics, self._output_type))
-        else: # Multi-output problems
-            multi_output_metrics = set(self.MULTI_OUTPUT_METRICS)
-            multi_target_regression_metrics = set(self.MULTI_TARGET_REGRESSION_METRICS)
+        else:
+            multi_output_metrics = set(constants.MULTI_OUTPUT_METRICS)
+            multi_target_regression_metrics = set(constants.MULTI_TARGET_REGRESSION_METRICS)
             evaluation_metrics = set(self.metrics)
 
             # TODO extend the original MULTI_OUTPUT problem evaluation for
             # MULTI_LABEL_CLASSIFICATION and MULTI_TARGET_REGRESSION
             if evaluation_metrics.union(multi_output_metrics) == multi_output_metrics:
-                self._task_type = self.MULTI_OUTPUT
+                self._task_type = constants.MULTI_OUTPUT
             elif evaluation_metrics.union(multi_target_regression_metrics) == multi_target_regression_metrics:
-                self._task_type = self.MULTI_TARGET_REGRESSION
+                self._task_type = constants.MULTI_TARGET_REGRESSION
             else:
                 raise ValueError("Inconsistent metrics {} for {} stream.".format(self.metrics, self._output_type))
 
@@ -297,26 +235,24 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         return self._valid_configuration
 
     def _init_metrics(self):
-        """ _init_metrics
-
-        Starts up the metrics and statistics watchers. One watcher is created
+        """ Starts up the metrics and statistics watchers. One watcher is created
         for each of the learners to be evaluated.
 
         """
-        self.global_classification_metrics = []
-        self.partial_classification_metrics = []
+        self.mean_eval_measurements = []
+        self.current_eval_measurements = []
 
-        if self._task_type == self.CLASSIFICATION:
+        if self._task_type == constants.CLASSIFICATION:
             for i in range(self.n_models):
-                self.global_classification_metrics.append(ClassificationMeasurements())
-                self.partial_classification_metrics.append(WindowClassificationMeasurements(window_size=self.n_sliding))
+                self.mean_eval_measurements.append(ClassificationMeasurements())
+                self.current_eval_measurements.append(WindowClassificationMeasurements(window_size=self.n_sliding))
 
-        elif self._task_type == self.MULTI_OUTPUT:
+        elif self._task_type == constants.MULTI_OUTPUT:
             for i in range(self.n_models):
-                self.global_classification_metrics.append(MultiOutputMeasurements())
-                self.partial_classification_metrics.append(WindowMultiOutputMeasurements(window_size=self.n_sliding))
+                self.mean_eval_measurements.append(MultiOutputMeasurements())
+                self.current_eval_measurements.append(WindowMultiOutputMeasurements(window_size=self.n_sliding))
 
-        elif self._task_type == self.REGRESSION:
+        elif self._task_type == constants.REGRESSION:
             for i in range(self.n_models):
                 self.global_classification_metrics.append(RegressionMeasurements())
                 self.partial_classification_metrics.append(WindowRegressionMeasurements(window_size=self.n_sliding))
@@ -326,9 +262,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 self.partial_classification_metrics.append(WindowMultiTargetRegressionMeasurements(window_size=self.n_sliding))
 
     def _update_metrics(self):
-        """ _update_metrics
-
-        Updates the metrics of interest. This function creates a metrics dictionary,
+        """ Updates the metrics of interest. This function creates a metrics dictionary,
         which will be sent to _update_outputs, in order to save the data (if configured)
 
         Creates/updates a dictionary of new evaluation points. The keys of this dictionary are
@@ -341,55 +275,55 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
         """
         new_points_dict = {}
-        if self.PERFORMANCE in self.metrics:
-            new_points_dict[self.PERFORMANCE] = [[self.global_classification_metrics[i].get_performance(),
-                                                  self.partial_classification_metrics[i].get_performance()]
-                                                 for i in range(self.n_models)]
-
-        if self.KAPPA in self.metrics:
-            new_points_dict[self.KAPPA] = [[self.global_classification_metrics[i].get_kappa(),
-                                            self.partial_classification_metrics[i].get_kappa()]
-                                           for i in range(self.n_models)]
-
-        if self.KAPPA_T in self.metrics:
-            new_points_dict[self.KAPPA_T] = [[self.global_classification_metrics[i].get_kappa_t(),
-                                              self.partial_classification_metrics[i].get_kappa_t()]
-                                             for i in range(self.n_models)]
-
-        if self.KAPPA_M in self.metrics:
-            new_points_dict[self.KAPPA_M] = [[self.global_classification_metrics[i].get_kappa_m(),
-                                              self.partial_classification_metrics[i].get_kappa_m()]
-                                             for i in range(self.n_models)]
-
-        if self.HAMMING_SCORE in self.metrics:
-            new_points_dict[self.HAMMING_SCORE] = [[self.global_classification_metrics[i].get_hamming_score(),
-                                                    self.partial_classification_metrics[i].get_hamming_score()]
+        if constants.ACCURACY in self.metrics:
+            new_points_dict[constants.ACCURACY] = [[self.mean_eval_measurements[i].get_accuracy(),
+                                                    self.current_eval_measurements[i].get_accuracy()]
                                                    for i in range(self.n_models)]
 
-        if self.HAMMING_LOSS in self.metrics:
-            new_points_dict[self.HAMMING_LOSS] = [[self.global_classification_metrics[i].get_hamming_loss(),
-                                                   self.partial_classification_metrics[i].get_hamming_loss()]
+        if constants.KAPPA in self.metrics:
+            new_points_dict[constants.KAPPA] = [[self.mean_eval_measurements[i].get_kappa(),
+                                                 self.current_eval_measurements[i].get_kappa()]
+                                                for i in range(self.n_models)]
+
+        if constants.KAPPA_T in self.metrics:
+            new_points_dict[constants.KAPPA_T] = [[self.mean_eval_measurements[i].get_kappa_t(),
+                                                   self.current_eval_measurements[i].get_kappa_t()]
                                                   for i in range(self.n_models)]
 
-        if self.EXACT_MATCH in self.metrics:
-            new_points_dict[self.EXACT_MATCH] = [[self.global_classification_metrics[i].get_exact_match(),
-                                                  self.partial_classification_metrics[i].get_exact_match()]
-                                                 for i in range(self.n_models)]
+        if constants.KAPPA_M in self.metrics:
+            new_points_dict[constants.KAPPA_M] = [[self.mean_eval_measurements[i].get_kappa_m(),
+                                                   self.current_eval_measurements[i].get_kappa_m()]
+                                                  for i in range(self.n_models)]
 
-        if self.J_INDEX in self.metrics:
-            new_points_dict[self.J_INDEX] = [[self.global_classification_metrics[i].get_j_index(),
-                                              self.partial_classification_metrics[i].get_j_index()]
-                                             for i in range(self.n_models)]
+        if constants.HAMMING_SCORE in self.metrics:
+            new_points_dict[constants.HAMMING_SCORE] = [[self.mean_eval_measurements[i].get_hamming_score(),
+                                                         self.current_eval_measurements[i].get_hamming_score()]
+                                                        for i in range(self.n_models)]
 
-        if self.MSE in self.metrics:
-            new_points_dict[self.MSE] = [[self.global_classification_metrics[i].get_mean_square_error(),
-                                          self.partial_classification_metrics[i].get_mean_square_error()]
-                                         for i in range(self.n_models)]
+        if constants.HAMMING_LOSS in self.metrics:
+            new_points_dict[constants.HAMMING_LOSS] = [[self.mean_eval_measurements[i].get_hamming_loss(),
+                                                        self.current_eval_measurements[i].get_hamming_loss()]
+                                                       for i in range(self.n_models)]
 
-        if self.MAE in self.metrics:
-            new_points_dict[self.MAE] = [[self.global_classification_metrics[i].get_average_error(),
-                                          self.partial_classification_metrics[i].get_average_error()]
-                                         for i in range(self.n_models)]
+        if constants.EXACT_MATCH in self.metrics:
+            new_points_dict[constants.EXACT_MATCH] = [[self.mean_eval_measurements[i].get_exact_match(),
+                                                       self.current_eval_measurements[i].get_exact_match()]
+                                                      for i in range(self.n_models)]
+
+        if constants.J_INDEX in self.metrics:
+            new_points_dict[constants.J_INDEX] = [[self.mean_eval_measurements[i].get_j_index(),
+                                                   self.current_eval_measurements[i].get_j_index()]
+                                                  for i in range(self.n_models)]
+
+        if constants.MSE in self.metrics:
+            new_points_dict[constants.MSE] = [[self.mean_eval_measurements[i].get_mean_square_error(),
+                                               self.current_eval_measurements[i].get_mean_square_error()]
+                                              for i in range(self.n_models)]
+
+        if constants.MAE in self.metrics:
+            new_points_dict[constants.MAE] = [[self.mean_eval_measurements[i].get_average_error(),
+                                               self.current_eval_measurements[i].get_average_error()]
+                                              for i in range(self.n_models)]
 
         if self.AMSE in self.metrics:
             new_points_dict[self.AMSE] = [[self.global_classification_metrics[i].get_average_mean_square_error(),
@@ -408,26 +342,26 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         if self.TRUE_VS_PREDICTED in self.metrics:
             true, pred = [], []
             for i in range(self.n_models):
-                t, p = self.global_classification_metrics[i].get_last()
+                t, p = self.mean_eval_measurements[i].get_last()
                 true.append(t)
                 pred.append(p)
-            new_points_dict[self.TRUE_VS_PREDICTED] = [[true[i], pred[i]] for i in range(self.n_models)]
+            new_points_dict[constants.TRUE_VS_PREDICTED] = [[true[i], pred[i]] for i in range(self.n_models)]
 
-        if self.DATA_POINTS in self.metrics:
+        if constants.DATA_POINTS in self.metrics:
 
             targets = self.stream.target_values
             pred = []
             samples = FastBuffer(5000)
 
             for i in range(self.n_models):
-                _, p = self.global_classification_metrics[i].get_last()
-                X = self.global_classification_metrics[i].get_last_sample()
+                _, p = self.mean_eval_measurements[i].get_last()
+                X = self.mean_eval_measurements[i].get_last_sample()
 
                 pred.append(p)
                 samples.add_element([X])
 
-            new_points_dict[self.DATA_POINTS] = [[[samples.get_queue()[i]], targets, pred[i]]
-                                                 for i in range(self.n_models)]
+            new_points_dict[constants.DATA_POINTS] = [[[samples.get_queue()[i]], targets, pred[i]]
+                                                      for i in range(self.n_models)]
 
         shift = 0
         if self._method == 'prequential':
@@ -452,43 +386,43 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 f.write("\n# {}".format(self.get_info()))
                 f.write("\n# TEST CONFIGURATION END")
                 header = '\nid'
-                if self.PERFORMANCE in self.metrics:
+                if constants.ACCURACY in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_acc_[{}],sliding_acc_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.KAPPA in self.metrics:
+                if constants.KAPPA in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_kappa_[{}],sliding_kappa_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.KAPPA_T in self.metrics:
+                if constants.KAPPA_T in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_kappa_t_[{}],sliding_kappa_t_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.KAPPA_M in self.metrics:
+                if constants.KAPPA_M in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_kappa_m_[{}],sliding_kappa_m_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.HAMMING_SCORE in self.metrics:
+                if constants.HAMMING_SCORE in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_hamming_score_[{}],sliding_hamming_score_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.HAMMING_LOSS in self.metrics:
+                if constants.HAMMING_LOSS in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_hamming_loss_[{}],sliding_hamming_loss_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.EXACT_MATCH in self.metrics:
+                if constants.EXACT_MATCH in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_exact_match_[{}],sliding_exact_match_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.J_INDEX in self.metrics:
+                if constants.J_INDEX in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_j_index_[{}],sliding_j_index_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.MSE in self.metrics:
+                if constants.MSE in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_mse_[{}],sliding_mse_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.MAE in self.metrics:
+                if constants.MAE in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_mae_[{}],sliding_mae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
@@ -505,7 +439,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                         header += ',global_armse_[{}],sliding_armse_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
 
-                if self.TRUE_VS_PREDICTED in self.metrics:
+                if constants.TRUE_VS_PREDICTED in self.metrics:
                     for i in range(self.n_models):
                         header += ',true_value_[{}],predicted_value_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
@@ -516,43 +450,43 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         if self.output_file is not None:
             # Note: Must follow order set in _init_file()
             line = str(current_sample_id)
-            if self.PERFORMANCE in self.metrics:
+            if constants.ACCURACY in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_performance(),
-                                                    self.partial_classification_metrics[i].get_performance())
-            if self.KAPPA in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_accuracy(),
+                                                    self.current_eval_measurements[i].get_accuracy())
+            if constants.KAPPA in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_kappa(),
-                                                    self.partial_classification_metrics[i].get_kappa())
-            if self.KAPPA_T in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_kappa(),
+                                                    self.current_eval_measurements[i].get_kappa())
+            if constants.KAPPA_T in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_kappa_t(),
-                                                    self.partial_classification_metrics[i].get_kappa_t())
-            if self.KAPPA_M in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_kappa_t(),
+                                                    self.current_eval_measurements[i].get_kappa_t())
+            if constants.KAPPA_M in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_kappa_m(),
-                                                    self.partial_classification_metrics[i].get_kappa_m())
-            if self.HAMMING_SCORE in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_kappa_m(),
+                                                    self.current_eval_measurements[i].get_kappa_m())
+            if constants.HAMMING_SCORE in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_hamming_score(),
-                                                    self.partial_classification_metrics[i].get_hamming_score())
-            if self.HAMMING_LOSS in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_hamming_score(),
+                                                    self.current_eval_measurements[i].get_hamming_score())
+            if constants.HAMMING_LOSS in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_hamming_loss(),
-                                                    self.partial_classification_metrics[i].get_hamming_loss())
-            if self.EXACT_MATCH in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_hamming_loss(),
+                                                    self.current_eval_measurements[i].get_hamming_loss())
+            if constants.EXACT_MATCH in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_exact_match(),
-                                                    self.partial_classification_metrics[i].get_exact_match())
-            if self.J_INDEX in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_exact_match(),
+                                                    self.current_eval_measurements[i].get_exact_match())
+            if constants.J_INDEX in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_j_index(),
-                                                    self.partial_classification_metrics[i].get_j_index())
-            if self.MSE in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_j_index(),
+                                                    self.current_eval_measurements[i].get_j_index())
+            if constants.MSE in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_mean_square_error(),
-                                                    self.partial_classification_metrics[i].get_mean_square_error())
-            if self.MAE in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_mean_square_error(),
+                                                    self.current_eval_measurements[i].get_mean_square_error())
+            if constants.MAE in self.metrics:
                 for i in range(self.n_models):
                     line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_error(),
                                                     self.partial_classification_metrics[i].get_average_error())
@@ -569,10 +503,10 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_root_mean_square_error(),
                                                     self.partial_classification_metrics[i].get_average_root_mean_square_error())
 
-            if self.TRUE_VS_PREDICTED in self.metrics:
+            if constants.TRUE_VS_PREDICTED in self.metrics:
 
                 for i in range(self.n_models):
-                    t, p = self.global_classification_metrics[i].get_last()
+                    t, p = self.mean_eval_measurements[i].get_last()
                     line += ',{:.6f},{:.6f}'.format(t, p)
 
             with open(self.output_file, 'a') as f:
@@ -608,3 +542,130 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
     def _reset_globals(self):
         self.global_sample_count = 0
+
+    def evaluation_summary(self, logging, start_time, end_time):
+        if end_time - start_time > self.max_time:
+            logging.info('Time limit reached. Evaluation stopped.')
+            logging.info('Evaluation time:     {:.2f} s'.format(self.max_time))
+        else:
+            logging.info('Evaluation time:     {:.2f} s'.format(end_time - start_time))
+        logging.info('Processed samples: {}'.format(self.global_sample_count))
+        logging.info('Mean performance:')
+        for i in range(self.n_models):
+            if constants.ACCURACY in self.metrics:
+                logging.info('{} - Accuracy     : {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_accuracy()))
+            if constants.KAPPA in self.metrics:
+                logging.info('{} - Kappa        : {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_kappa()))
+            if constants.KAPPA_T in self.metrics:
+                logging.info('{} - Kappa T      : {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_kappa_t()))
+            if constants.KAPPA_M in self.metrics:
+                logging.info('{} - Kappa M      : {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_kappa_m()))
+            if constants.HAMMING_SCORE in self.metrics:
+                logging.info('{} - Hamming score: {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_hamming_score()))
+            if constants.HAMMING_LOSS in self.metrics:
+                logging.info('{} - Hamming loss : {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_hamming_loss()))
+            if constants.EXACT_MATCH in self.metrics:
+                logging.info('{} - Exact matches: {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_exact_match()))
+            if constants.J_INDEX in self.metrics:
+                logging.info('{} - Jaccard index: {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_j_index()))
+            if constants.MSE in self.metrics:
+                logging.info('{} - MSE          : {:.4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_mean_square_error()))
+            if constants.MAE in self.metrics:
+                logging.info('{} - MAE          : {:4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_average_error()))
+            if constants.AMSE in self.metrics:
+                logging.info('{} - AMSE          : {:4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_average_mean_square_error()))
+            if constants.AMAE in self.metrics:
+                logging.info('{} - AMAE          : {:4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_average_absolute_error()))
+            if constants.ARMSE in self.metrics:
+                logging.info('{} - ARMSE          : {:4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_average_root_mean_square_error()))
+
+    def get_measurements(self, model_idx=None):
+        """ Get measurements from the evaluation.
+
+        Parameters
+        ----------
+        model_idx: int, optional (Default=None)
+            Indicates the index of the model as defined in `evaluate(model)`.
+            If None, returns a list with the measurements for each model.
+
+        Returns
+        -------
+        tuple (mean, current)
+        Mean and Current measurements. If model_idx is None, each member of the tuple
+         is a a list with the measurements for each model.
+
+        Raises
+        ------
+        IndexError: If the index is invalid.
+
+        """
+        if model_idx is None:
+            return self.mean_eval_measurements, self.current_eval_measurements
+        else:
+            try:
+                # Check index
+                _ = self.mean_eval_measurements[model_idx]
+                _ = self.current_eval_measurements[model_idx]
+            except IndexError:
+                print('Model index {} is invalid'.format(model_idx))
+                return None, None
+            return self.mean_eval_measurements[model_idx], self.current_eval_measurements[model_idx]
+
+    def get_mean_measurements(self, model_idx=None):
+        """ Get mean measurements from the evaluation.
+
+        Parameters
+        ----------
+        model_idx: int, optional (Default=None)
+            Indicates the index of the model as defined in `evaluate(model)`.
+            If None, returns a list with the measurements for each model.
+
+        Returns
+        -------
+        measurements or list
+        Mean measurements. If model_idx is None, returns a list with the measurements
+         for each model.
+
+        Raises
+        ------
+        IndexError: If the index is invalid.
+
+        """
+        measurements, _ = self.get_measurements(model_idx)
+        return measurements
+
+    def get_current_measurements(self, model_idx=None):
+        """ Get current measurements from the evaluation (measured on last `n_wait` samples).
+
+        Parameters
+        ----------
+        model_idx: int, optional (Default=None)
+            Indicates the index of the model as defined in `evaluate(model)`.
+            If None, returns a list with the measurements for each model.
+
+        Returns
+        -------
+        measurements or list
+        Current measurements. If model_idx is None, returns a list with the measurements
+         for each model.
+
+        Raises
+        ------
+        IndexError: If the index is invalid.
+
+        """
+        _, measurements = self.get_measurements(model_idx)
+        return measurements

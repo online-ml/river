@@ -274,7 +274,7 @@ class AdaptiveRandomForest(StreamModel):
             if vote != {} and sum(vote.values()) > 0:
                 normalize_values_in_dict(vote)
                 if not self.disable_weighted_vote:
-                    performance = self.ensemble[i].evaluator.get_performance()\
+                    performance = self.ensemble[i].evaluator.get_accuracy()\
                         if self.performance_metric == 'acc'\
                         else self.ensemble[i].evaluator.get_kappa()
                     if performance != 0.0:  # CHECK How to handle negative (kappa) values?

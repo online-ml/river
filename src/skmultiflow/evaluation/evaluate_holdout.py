@@ -3,6 +3,7 @@ import warnings
 import logging
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
+from skmultiflow.utils import constants
 
 
 class EvaluateHoldout(StreamEvaluator):
@@ -41,9 +42,9 @@ class EvaluateHoldout(StreamEvaluator):
     max_time: float (Default: float("inf"))
         The maximum duration of the simulation (in seconds).
 
-    metrics: list, optional (Default: ['performance'])
+    metrics: list, optional (Default: ['accuracy', 'kappa'])
         The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
-        and/or logged into the output file. Valid options are 'performance', 'kappa', 'kappa_t', 'kappa_m',
+        and/or logged into the output file. Valid options are 'accuracy', 'kappa', 'kappa_t', 'kappa_m',
         'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
         'true_vs_predicts', 'average_mean_squared_error', 'average_mean_absolute_error'.
 
@@ -107,7 +108,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>> classifier = [clf_one, clf_two]
     >>> evaluator = EvaluateHoldout(test_size=5000, dynamic_test_set=True, max_samples=100000, batch_size=1,
     >>>                             n_wait=10000, max_time=1000, output_file=None, show_plot=True,
-    >>>                             metrics=['kappa', 'performance'])
+    >>>                             metrics=['kappa', 'accuracy'])
     >>> evaluator.evaluate(stream=stream, model=classifier)
 
     """
@@ -133,7 +134,7 @@ class EvaluateHoldout(StreamEvaluator):
         self.output_file = output_file
         self.show_plot = show_plot
         if metrics is None:
-            self.metrics = [self.PERFORMANCE, self.KAPPA]
+            self.metrics = [constants.ACCURACY, constants.KAPPA]
         else:
             self.metrics = metrics
         self.restart_stream = restart_stream
@@ -149,24 +150,23 @@ class EvaluateHoldout(StreamEvaluator):
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
     def evaluate(self, stream, model, model_names=None):
-        """ evaluate
+        """ Evaluates a learner or set of learners on samples from a stream.
 
         Parameters
-        ---------
-        stream: A stream (an extension from BaseInstanceStream)
+        ----------
+        stream: Stream
             The stream from which to draw the samples.
 
-        model: A learner (an extension from BaseClassifier) or a list of learners.
-            The learner or learners on which to train the model and measure the
-            performance metrics.
+        model: StreamModel or list
+            The learner or list of learners to evaluate.
 
         model_names: list, optional (Default=None)
             A list with the names of the learners.
 
         Returns
         -------
-        BaseClassifier extension or list of BaseClassifier extensions
-            The trained classifier's at the end of the evaluation process.
+        StreamModel or list
+            The trained learner(s).
 
         """
         # First off we need to verify if this is a simple evaluation task or a comparison between learners task.
@@ -202,7 +202,7 @@ class EvaluateHoldout(StreamEvaluator):
 
         """
         logging.basicConfig(format='%(message)s', level=logging.INFO)
-        init_time = timer()
+        start_time = timer()
         end_time = timer()
         logging.info('Holdout Evaluation')
         logging.info('Evaluating %s target(s).', str(self.stream.n_targets))
@@ -212,25 +212,6 @@ class EvaluateHoldout(StreamEvaluator):
             n_samples = self.max_samples
 
         first_run = True
-        # if self.pretrain_size > 0:
-        #     logging.info('Pre-training on %s samples.', str(self.pretrain_size))
-        #     X, y = self.stream.next_sample(self.pretrain_size)
-        #     for i in range(self.n_models):
-        #         if self._task_type != EvaluateHoldout._REGRESSION:
-        #             self.model[i].partial_fit(X=X, y=y, classes=self.stream.target_values)
-        #         else:
-        #             self.model[i].partial_fit(X=X, y=y)
-        #     self.global_sample_count += self.pretrain_size
-        #     first_run = False
-        # else:
-        #     logging.info('Pre-training on 1 sample.')   # TODO Confirm if needed
-        #     X, y = self.stream.next_sample()
-        #     for i in range(self.n_models):
-        #         if self.task_type != 'regression':
-        #             self.model[i].partial_fit(X, y, self.stream.get_targets())
-        #         else:
-        #             self.model[i].partial_fit(X, y)
-        #     first_run = False
 
         if not self.dynamic_test_set:
             logging.info('Separating %s holdout samples.', str(self.test_size))
@@ -239,7 +220,7 @@ class EvaluateHoldout(StreamEvaluator):
 
         performance_sampling_cnt = 0
         logging.info('Evaluating...')
-        while ((self.global_sample_count < self.max_samples) & (end_time - init_time < self.max_time)
+        while ((self.global_sample_count < self.max_samples) & (end_time - start_time < self.max_time)
                & (self.stream.has_more_samples())):
             try:
                 X, y = self.stream.next_sample(self.batch_size)
@@ -250,8 +231,8 @@ class EvaluateHoldout(StreamEvaluator):
                     # Train
                     if first_run:
                         for i in range(self.n_models):
-                            if self._task_type != EvaluateHoldout.REGRESSION and \
-                               self._task_type != EvaluateHoldout.MULTI_TARGET_REGRESSION:
+                            if self._task_type != constants.REGRESSION and \
+                               self._task_type != constants.MULTI_TARGET_REGRESSION:
                                 self.model[i].partial_fit(X, y, self.stream.target_values)
                             else:
                                 self.model[i].partial_fit(X, y)
@@ -288,16 +269,16 @@ class EvaluateHoldout(StreamEvaluator):
                             if prediction is not None:
                                 for j in range(self.n_models):
                                     for i in range(len(prediction[0])):
-                                        if self._task_type == EvaluateHoldout.CLASSIFICATION:
-                                            self.global_classification_metrics[j].add_result(self.y_test[i],
-                                                                                             prediction[j][i])
-                                            self.partial_classification_metrics[j].add_result(self.y_test[i],
-                                                                                              prediction[j][i])
+                                        if self._task_type == constants.CLASSIFICATION:
+                                            self.mean_eval_measurements[j].add_result(self.y_test[i],
+                                                                                      prediction[j][i])
+                                            self.current_eval_measurements[j].add_result(self.y_test[i],
+                                                                                         prediction[j][i])
                                         else:
-                                            self.global_classification_metrics[j].add_result(self.y_test[i],
-                                                                                             prediction[j][i])
-                                            self.partial_classification_metrics[j].add_result(self.y_test[i],
-                                                                                              prediction[j][i])
+                                            self.mean_eval_measurements[j].add_result(self.y_test[i],
+                                                                                      prediction[j][i])
+                                            self.current_eval_measurements[j].add_result(self.y_test[i],
+                                                                                         prediction[j][i])
                                 self._update_metrics()
                             performance_sampling_cnt += 1
 
@@ -308,53 +289,7 @@ class EvaluateHoldout(StreamEvaluator):
                     self._update_metrics()
                 break
 
-        if end_time - init_time > self.max_time:
-            logging.info('Time limit reached. Evaluation stopped.')
-            logging.info('Evaluation time: {} s'.format(self.max_time))
-        else:
-            logging.info('Evaluation time: {:.3f} s'.format(end_time - init_time))
-        logging.info('Total samples: {}'.format(self.global_sample_count))
-        logging.info('Global performance:')
-        for i in range(self.n_models):
-            if 'performance' in self.metrics:
-                logging.info('{} - Accuracy     : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_performance()))
-            if 'kappa' in self.metrics:
-                logging.info('{} - Kappa        : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_kappa()))
-            if 'kappa_t' in self.metrics:
-                logging.info('{} - Kappa T      : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_kappa_t()))
-            if 'kappa_m' in self.metrics:
-                logging.info('{} - Kappa M      : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_kappa_m()))
-            if 'hamming_score' in self.metrics:
-                logging.info('{} - Hamming score: {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_hamming_score()))
-            if 'hamming_loss' in self.metrics:
-                logging.info('{} - Hamming loss : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_hamming_loss()))
-            if 'exact_match' in self.metrics:
-                logging.info('{} - Exact matches: {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_exact_match()))
-            if 'j_index' in self.metrics:
-                logging.info('{} - j index      : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_j_index()))
-            if 'mean_square_error' in self.metrics:
-                logging.info('{} - MSE          : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_mean_square_error()))
-            if 'mean_absolute_error' in self.metrics:
-                logging.info('{} - MAE          : {:3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_average_error()))
-            if 'average_mean_square_error' in self.metrics:
-                logging.info('{} - AMSE          : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_average_mean_square_error()))
-            if 'average_mean_absolute_error' in self.metrics:
-                logging.info('{} - AMAE          : {:3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_average_absolute_error()))
-            if 'average_root_mean_square_error' in self.metrics:
-                logging.info('{} - ARMSE          : {:3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_average_root_mean_square_error()))
+        self.evaluation_summary(logging, start_time, end_time)
 
         if self.restart_stream:
             self.stream.restart()
@@ -435,7 +370,7 @@ class EvaluateHoldout(StreamEvaluator):
 
         Parameters
         ----------
-        dict: Dictionary
+        parameter_dict: Dictionary
             A dictionary where the keys are the names of attributes the user
             wants to change, and the values are the new values of those attributes.
 
