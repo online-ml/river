@@ -3,6 +3,7 @@ import logging
 import warnings
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
+from skmultiflow.utils import constants
 
 
 class EvaluatePrequential(StreamEvaluator):
@@ -39,9 +40,9 @@ class EvaluatePrequential(StreamEvaluator):
     max_time: float (Default: float("inf"))
         The maximum duration of the simulation (in seconds).
 
-    metrics: list, optional (Default: ['performance', 'kappa'])
+    metrics: list, optional (Default: ['accuracy', 'kappa'])
         The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
-        and/or logged into the output file. Valid options are 'performance', 'kappa', 'kappa_t', 'kappa_m',
+        and/or logged into the output file. Valid options are 'accuracy', 'kappa', 'kappa_t', 'kappa_m',
         'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
         'true_vs_predicted', 'average_mean_square_error', 'average_mean_absolute_error'.
 
@@ -106,13 +107,13 @@ class EvaluatePrequential(StreamEvaluator):
     >>> classifier = [pipe, clf_two]
     >>> # Setup the evaluator
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
-    ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
+    ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'accuracy'])
     >>> # Evaluate
     >>> evaluator.evaluate(stream=stream, model=classifier)
 
     >>> # The third example will demonstrate how to plot data points for a classifier with
     >>> # the EvaluatePrequential
-    >>> #PS: You can not in this case compare two classifers , the evaluator only takes
+    >>> #PS: You can not in this case compare two classifiers , the evaluator only takes
     >>> #one classifier
     >>> from skmultiflow.trees.hoeffding_tree import HoeffdingTree
     >>> from skmultiflow.core.pipeline import Pipeline
@@ -156,10 +157,10 @@ class EvaluatePrequential(StreamEvaluator):
         self.data_points_for_classification = data_points_for_classification
 
         if metrics is None and data_points_for_classification is False:
-            self.metrics = [self.PERFORMANCE, self.KAPPA]
+            self.metrics = [constants.ACCURACY, constants.KAPPA]
 
         elif data_points_for_classification is True:
-            self.metrics = [self.DATA_POINTS]
+            self.metrics = [constants.DATA_POINTS]
 
         else:
             self.metrics = metrics
@@ -173,25 +174,23 @@ class EvaluatePrequential(StreamEvaluator):
     def evaluate(self, stream, model, model_names=None):
         """ evaluate
 
-        Evaluates a learner or set of learners by feeding them with the stream
-        samples.
+        Evaluates a learner or set of learners on samples from a stream.
 
         Parameters
         ----------
-        stream: A stream (an extension from BaseInstanceStream)
+        stream: Stream
             The stream from which to draw the samples.
 
-        model: A learner (an extension from BaseClassifier) or a list of learners.
-            The learner or learners on which to train the model and measure the
-            performance metrics.
+        model: StreamModel or list
+            The learner or list of learners to evaluate.
 
         model_names: list, optional (Default=None)
             A list with the names of the learners.
 
         Returns
         -------
-        BaseClassifier extension or list of BaseClassifier extensions
-            The trained classifiers.
+        StreamModel or list
+            The trained learner(s).
 
         """
         self._init_evaluation(model=model, stream=stream, model_names=model_names)
@@ -226,7 +225,7 @@ class EvaluatePrequential(StreamEvaluator):
 
         """
         logging.basicConfig(format='%(message)s', level=logging.INFO)
-        init_time = timer()
+        start_time = timer()
         end_time = timer()
         logging.info('Prequential Evaluation')
         logging.info('Evaluating %s target(s).', str(self.stream.n_targets))
@@ -242,8 +241,8 @@ class EvaluatePrequential(StreamEvaluator):
             X, y = self.stream.next_sample(self.pretrain_size)
 
             for i in range(self.n_models):
-                if self._task_type != EvaluatePrequential.REGRESSION and \
-                   self._task_type != EvaluatePrequential.MULTI_TARGET_REGRESSION:
+                if self._task_type != constants.REGRESSION and \
+                   self._task_type != constants.MULTI_TARGET_REGRESSION:
                     self.model[i].partial_fit(X=X, y=y, classes=self.stream.
                                               target_values)
                 else:
@@ -255,7 +254,7 @@ class EvaluatePrequential(StreamEvaluator):
 
         update_count = 0
         logging.info('Evaluating...')
-        while ((self.global_sample_count < self.max_samples) & (end_time - init_time < self.max_time)
+        while ((self.global_sample_count < self.max_samples) & (end_time - start_time < self.max_time)
                & (self.stream.has_more_samples())):
             try:
                 X, y = self.stream.next_sample(self.batch_size)
@@ -273,19 +272,19 @@ class EvaluatePrequential(StreamEvaluator):
 
                     for j in range(self.n_models):
                         for i in range(len(prediction[0])):
-                            if self._task_type == EvaluatePrequential.CLASSIFICATION:
-                                self.global_classification_metrics[j].add_result(y[i], prediction[j][i])
-                                self.partial_classification_metrics[j].add_result(y[i], prediction[j][i])
+                            if self._task_type == constants.CLASSIFICATION:
+                                self.mean_eval_measurements[j].add_result(y[i], prediction[j][i])
+                                self.current_eval_measurements[j].add_result(y[i], prediction[j][i])
                             else:
-                                self.global_classification_metrics[j].add_result(y[i], prediction[j][i])
-                                self.partial_classification_metrics[j].add_result(y[i], prediction[j][i])
+                                self.mean_eval_measurements[j].add_result(y[i], prediction[j][i])
+                                self.current_eval_measurements[j].add_result(y[i], prediction[j][i])
                     self._check_progress(n_samples)
 
                     # Train
                     if first_run:
                         for i in range(self.n_models):
-                            if self._task_type != EvaluatePrequential.REGRESSION and \
-                               self._task_type != EvaluatePrequential.MULTI_TARGET_REGRESSION:
+                            if self._task_type != constants.REGRESSION and \
+                               self._task_type != constants.MULTI_TARGET_REGRESSION:
                                 self.model[i].partial_fit(X, y, self.stream.target_values)
                             else:
                                 self.model[i].partial_fit(X, y)
@@ -308,53 +307,7 @@ class EvaluatePrequential(StreamEvaluator):
                     self._update_metrics()
                 break
 
-        if end_time - init_time > self.max_time:
-            logging.info('Time limit reached. Evaluation stopped.')
-            logging.info('Evaluation time: {} s'.format(self.max_time))
-        else:
-            logging.info('Evaluation time: {:.3f} s'.format(end_time - init_time))
-        logging.info('Total samples: {}'.format(self.global_sample_count))
-        logging.info('Global performance:')
-        for i in range(self.n_models):
-            if self.PERFORMANCE in self.metrics:
-                logging.info('{} - Accuracy     : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_performance()))
-            if self.KAPPA in self.metrics:
-                logging.info('{} - Kappa        : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_kappa()))
-            if self.KAPPA_T in self.metrics:
-                logging.info('{} - Kappa T      : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_kappa_t()))
-            if self.KAPPA_M in self.metrics:
-                logging.info('{} - Kappa M      : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_kappa_m()))
-            if self.HAMMING_SCORE in self.metrics:
-                logging.info('{} - Hamming score: {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_hamming_score()))
-            if self.HAMMING_LOSS in self.metrics:
-                logging.info('{} - Hamming loss : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_hamming_loss()))
-            if self.EXACT_MATCH in self.metrics:
-                logging.info('{} - Exact matches: {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_exact_match()))
-            if 'j_index' in self.metrics:
-                logging.info('{} - j index      : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_j_index()))
-            if self.MSE in self.metrics:
-                logging.info('{} - MSE          : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_mean_square_error()))
-            if self.MAE in self.metrics:
-                logging.info('{} - MAE          : {:3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_average_error()))
-            if self.AMSE in self.metrics:
-                logging.info('{} - AMSE          : {:.3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_average_mean_square_error()))
-            if self.AMAE in self.metrics:
-                logging.info('{} - AMAE          : {:3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_average_absolute_error()))
-            if self.ARMSE in self.metrics:
-                logging.info('{} - ARMSE          : {:3f}'.format(
-                    self.model_names[i], self.global_classification_metrics[i].get_average_root_mean_square_error()))
+        self.evaluation_summary(logging, start_time, end_time)
 
         if self.restart_stream:
             self.stream.restart()

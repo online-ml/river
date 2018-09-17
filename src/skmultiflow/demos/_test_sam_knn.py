@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from skmultiflow.data import FileStream
 from skmultiflow.lazy import SAMKNN
 from sklearn.metrics import accuracy_score
 from skmultiflow.utils.utils import get_dimensions
@@ -49,10 +50,12 @@ if __name__ == '__main__':
     #               'useLTM': False}
 
     logging.info('loading dataset')
-    # X=pd.read_csv('../datasets/neweather_data.csv', sep=',', header=None).values
-    # y=pd.read_csv('../datasets/neweather_class.csv', sep=',', header=None, dtype=np.int8).values.ravel()
-    X = np.loadtxt('../data/datasets/movingSquares.data')
-    y = np.loadtxt('../data/datasets/movingSquares.labels', dtype=np.uint8)
+    # stream = FileStream("../data/datasets/weather.csv")
+    stream = FileStream("../data/datasets/moving_squares.csv")
+    stream.prepare_for_use()
+
+    X, y = stream.next_sample(stream.n_samples)
+
     logging.info('%d samples' % X.shape[0])
     logging.info('%d dimensions' % X.shape[1])
     run(X[:], y[:], hyperParams)

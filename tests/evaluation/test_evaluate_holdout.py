@@ -1,6 +1,7 @@
 import os
 import filecmp
 import difflib
+import numpy as np
 from skmultiflow.data import RandomTreeGenerator
 from skmultiflow.trees import HoeffdingTree
 from skmultiflow.evaluation import EvaluateHoldout
@@ -20,7 +21,7 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
     # Setup evaluator
     n_wait = 200
     max_samples = 1000
-    metrics = ['kappa', 'kappa_t', 'performance']
+    metrics = ['kappa', 'kappa_t', 'accuracy']
     output_file = os.path.join(str(tmpdir), "holdout_summary.csv")
     evaluator = EvaluateHoldout(n_wait=n_wait,
                                 max_samples=max_samples,
@@ -38,6 +39,20 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
 
     expected_file = os.path.join(test_path, 'holdout_summary.csv')
     compare_files(output_file, expected_file)
+
+    mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
+    expected_mean_accuracy = 0.344000
+    expected_mean_kappa = 0.135021
+    expected_mean_kappa_t = 0.180000
+    expected_current_accuracy = 0.360000
+    expected_current_kappa = 0.152542
+    expected_current_kappa_t = 0.200000
+    assert np.isclose(mean_performance.get_accuracy(), expected_mean_accuracy)
+    assert np.isclose(mean_performance.get_kappa(), expected_mean_kappa)
+    assert np.isclose(mean_performance.get_kappa_t(), expected_mean_kappa_t)
+    assert np.isclose(current_performance.get_accuracy(), expected_current_accuracy)
+    assert np.isclose(current_performance.get_kappa(), expected_current_kappa)
+    assert np.isclose(current_performance.get_kappa_t(), expected_current_kappa_t)
 
 
 def compare_files(test, expected):

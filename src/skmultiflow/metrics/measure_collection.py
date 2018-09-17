@@ -17,7 +17,7 @@ class ClassificationMeasurements(BaseObject):
     In order to keep statistics updated, the class won't require lots of
     information, but two: the predictions and true labels.
 
-    At any given moment, it can compute the following statistics: performance,
+    At any given moment, it can compute the following statistics: accuracy,
     kappa, kappa_t, kappa_m, majority_class and error rate.
 
     Parameters
@@ -119,15 +119,15 @@ class ClassificationMeasurements(BaseObject):
 
         return majority_class
 
-    def get_performance(self):
-        """ get_performance
+    def get_accuracy(self):
+        """ get_accuracy
 
-        Computes the performance.
+        Computes the accuracy.
 
         Returns
         -------
         float
-            Returns the performance.
+            Returns the accuracy.
 
         """
         sum_value = 0.0
@@ -140,7 +140,7 @@ class ClassificationMeasurements(BaseObject):
             return 0.0
 
     def get_incorrectly_classified_ratio(self):
-        return 1.0 - self.get_performance()
+        return 1.0 - self.get_accuracy()
 
     def _get_target_index(self, target, add_label=False):
         """ _get_target_index
@@ -190,7 +190,7 @@ class ClassificationMeasurements(BaseObject):
             Returns the Cohen's kappa coefficient.
 
         """
-        p0 = self.get_performance()
+        p0 = self.get_accuracy()
         pc = 0.0
         n_rows, n_cols = self.confusion_matrix.shape()
         for i in range(n_rows):
@@ -217,7 +217,7 @@ class ClassificationMeasurements(BaseObject):
             Returns the Cohen's kappa T coefficient.
 
         """
-        p0 = self.get_performance()
+        p0 = self.get_accuracy()
         if self.sample_count != 0:
             pc = self.correct_no_change / self.sample_count
         else:
@@ -237,7 +237,7 @@ class ClassificationMeasurements(BaseObject):
             Returns the Cohen's kappa M coefficient.
 
         """
-        p0 = self.get_performance()
+        p0 = self.get_accuracy()
         if self.sample_count != 0:
             pc = self.majority_classifier / self.sample_count
         else:
@@ -253,7 +253,7 @@ class ClassificationMeasurements(BaseObject):
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
-               ' - performance: {:.6f}'.format(self.get_performance()) + \
+               ' - accuracy: {:.6f}'.format(self.get_accuracy()) + \
                ' - kappa: {:.6f}'.format(self.get_kappa()) + \
                ' - kappa_t: {:.6f}'.format(self.get_kappa_t()) + \
                ' - kappa_m: {:.6f}'.format(self.get_kappa_m()) + \
@@ -279,7 +279,7 @@ class WindowClassificationMeasurements(BaseObject):
     kept by this class are local, or partial, while the statistics kept by
     the ClassificationMeasurements class are global.
 
-    At any given moment, it can compute the following statistics: performance,
+    At any given moment, it can compute the following statistics: accuracy,
     kappa, kappa_t, kappa_m, majority_class and error rate.
 
     Parameters
@@ -410,15 +410,15 @@ class WindowClassificationMeasurements(BaseObject):
 
         return majority_class
 
-    def get_performance(self):
-        """ get_performance
+    def get_accuracy(self):
+        """ get_accuracy
 
-        Computes the window/local performance.
+        Computes the window/local accuracy.
 
         Returns
         -------
         float
-            Returns the window/local performance.
+            Returns the window/local accuracy.
 
         """
         sum_value = 0.0
@@ -431,7 +431,7 @@ class WindowClassificationMeasurements(BaseObject):
             return 0.0
 
     def get_incorrectly_classified_ratio(self):
-        return 1.0 - self.get_performance()
+        return 1.0 - self.get_accuracy()
 
     def _get_target_index(self, target, add=False):
         """ _get_target_index
@@ -481,7 +481,7 @@ class WindowClassificationMeasurements(BaseObject):
             Returns the window/local Cohen's kappa coefficient.
 
         """
-        p0 = self.get_performance()
+        p0 = self.get_accuracy()
         pc = 0.0
         n_rows, n_cols = self.confusion_matrix.shape()
         for i in range(n_rows):
@@ -509,7 +509,7 @@ class WindowClassificationMeasurements(BaseObject):
             Returns the window/local Cohen's kappa T coefficient.
 
         """
-        p0 = self.get_performance()
+        p0 = self.get_accuracy()
         if self.sample_count != 0:
             pc = self.correct_no_change / self.sample_count
         else:
@@ -529,7 +529,7 @@ class WindowClassificationMeasurements(BaseObject):
             Returns the window/local Cohen's kappa M coefficient.
 
         """
-        p0 = self.get_performance()
+        p0 = self.get_accuracy()
         if self.sample_count != 0:
             pc = self.majority_classifier / self.sample_count
         else:
@@ -553,7 +553,7 @@ class WindowClassificationMeasurements(BaseObject):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
                ' - window_size: {}'.format(self.window_size) + \
-               ' - performance: {:.6f}'.format(self.get_performance()) + \
+               ' - accuracy: {:.6f}'.format(self.get_accuracy()) + \
                ' - kappa: {:.6f}'.format(self.get_kappa()) + \
                ' - kappa_t: {:.6f}'.format(self.get_kappa_t()) + \
                ' - kappa_m: {:.6f}'.format(self.get_kappa_m()) + \
