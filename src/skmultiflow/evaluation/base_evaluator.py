@@ -254,12 +254,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
         elif self._task_type == constants.REGRESSION:
             for i in range(self.n_models):
-                self.global_classification_metrics.append(RegressionMeasurements())
-                self.partial_classification_metrics.append(WindowRegressionMeasurements(window_size=self.n_sliding))
-        elif self._task_type == self.MULTI_TARGET_REGRESSION:
+                self.mean_eval_measurements.append(RegressionMeasurements())
+                self.current_eval_measurements.append(WindowRegressionMeasurements(window_size=self.n_sliding))
+        elif self._task_type == constants.MULTI_TARGET_REGRESSION:
             for i in range(self.n_models):
-                self.global_classification_metrics.append(MultiTargetRegressionMeasurements())
-                self.partial_classification_metrics.append(WindowMultiTargetRegressionMeasurements(window_size=self.n_sliding))
+                self.mean_eval_measurements.append(MultiTargetRegressionMeasurements())
+                self.current_eval_measurements.append(WindowMultiTargetRegressionMeasurements(window_size=self.n_sliding))
 
     def _update_metrics(self):
         """ Updates the metrics of interest. This function creates a metrics dictionary,
@@ -325,21 +325,21 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                                                self.current_eval_measurements[i].get_average_error()]
                                               for i in range(self.n_models)]
 
-        if self.AMSE in self.metrics:
-            new_points_dict[self.AMSE] = [[self.global_classification_metrics[i].get_average_mean_square_error(),
-                                          self.partial_classification_metrics[i].get_average_mean_square_error()]
-                                          for i in range(self.n_models)]
+        if constants.AMSE in self.metrics:
+            new_points_dict[constants.AMSE] = [[self.mean_eval_measurements[i].get_average_mean_square_error(),
+                                                self.current_eval_measurements[i].get_average_mean_square_error()]
+                                               for i in range(self.n_models)]
 
-        if self.AMAE in self.metrics:
-            new_points_dict[self.AMAE] = [[self.global_classification_metrics[i].get_average_absolute_error(),
-                                          self.partial_classification_metrics[i].get_average_absolute_error()]
-                                          for i in range(self.n_models)]
-        if self.ARMSE in self.metrics:
-            new_points_dict[self.ARMSE] = [[self.global_classification_metrics[i].get_average_root_mean_square_error(),
-                                           self.partial_classification_metrics[i].get_average_root_mean_square_error()]
-                                           for i in range(self.n_models)]
+        if constants.AMAE in self.metrics:
+            new_points_dict[constants.AMAE] = [[self.mean_eval_measurements[i].get_average_absolute_error(),
+                                                self.current_eval_measurements[i].get_average_absolute_error()]
+                                               for i in range(self.n_models)]
+        if constants.ARMSE in self.metrics:
+            new_points_dict[constants.ARMSE] = [[self.mean_eval_measurements[i].get_average_root_mean_square_error(),
+                                                 self.current_eval_measurements[i].get_average_root_mean_square_error()]
+                                                for i in range(self.n_models)]
 
-        if self.TRUE_VS_PREDICTED in self.metrics:
+        if constants.TRUE_VS_PREDICTED in self.metrics:
             true, pred = [], []
             for i in range(self.n_models):
                 t, p = self.mean_eval_measurements[i].get_last()
@@ -426,15 +426,15 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     for i in range(self.n_models):
                         header += ',global_mae_[{}],sliding_mae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.AMSE in self.metrics:
+                if constants.AMSE in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_amse_[{}],sliding_amse_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.AMAE in self.metrics:
+                if constants.AMAE in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_amae_[{}],sliding_amae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
-                if self.ARMSE in self.metrics:
+                if constants.ARMSE in self.metrics:
                     for i in range(self.n_models):
                         header += ',global_armse_[{}],sliding_armse_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
@@ -488,20 +488,20 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                                                     self.current_eval_measurements[i].get_mean_square_error())
             if constants.MAE in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_error(),
-                                                    self.partial_classification_metrics[i].get_average_error())
-            if self.AMSE in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_average_error(),
+                                                    self.current_eval_measurements[i].get_average_error())
+            if constants.AMSE in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_mean_square_error(),
-                                                    self.partial_classification_metrics[i].get_average_mean_square_error())
-            if self.AMAE in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_average_mean_square_error(),
+                                                    self.current_eval_measurements[i].get_average_mean_square_error())
+            if constants.AMAE in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_absolute_error(),
-                                                    self.partial_classification_metrics[i].get_average_absolute_error())
-            if self.ARMSE in self.metrics:
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_average_absolute_error(),
+                                                    self.current_eval_measurements[i].get_average_absolute_error())
+            if constants.ARMSE in self.metrics:
                 for i in range(self.n_models):
-                    line += ',{:.6f},{:.6f}'.format(self.global_classification_metrics[i].get_average_root_mean_square_error(),
-                                                    self.partial_classification_metrics[i].get_average_root_mean_square_error())
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_average_root_mean_square_error(),
+                                                    self.current_eval_measurements[i].get_average_root_mean_square_error())
 
             if constants.TRUE_VS_PREDICTED in self.metrics:
 
