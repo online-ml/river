@@ -217,14 +217,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             else:
                 raise ValueError("Inconsistent metrics {} for {} stream.".format(self.metrics, self._output_type))
         else:
-            multi_output_metrics = set(constants.MULTI_OUTPUT_METRICS)
+            multi_label_classification_metrics = set(constants.MULTI_LABEL_CLASSIFICATION_METRICS)
             multi_target_regression_metrics = set(constants.MULTI_TARGET_REGRESSION_METRICS)
             evaluation_metrics = set(self.metrics)
 
-            # TODO extend the original MULTI_OUTPUT problem evaluation for
-            # MULTI_LABEL_CLASSIFICATION and MULTI_TARGET_REGRESSION
-            if evaluation_metrics.union(multi_output_metrics) == multi_output_metrics:
-                self._task_type = constants.MULTI_OUTPUT
+            if evaluation_metrics.union(multi_label_classification_metrics) == multi_label_classification_metrics:
+                self._task_type = constants.MULTI_LABEL_CLASSIFICATION
             elif evaluation_metrics.union(multi_target_regression_metrics) == multi_target_regression_metrics:
                 self._task_type = constants.MULTI_TARGET_REGRESSION
             else:
@@ -247,7 +245,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 self.mean_eval_measurements.append(ClassificationMeasurements())
                 self.current_eval_measurements.append(WindowClassificationMeasurements(window_size=self.n_sliding))
 
-        elif self._task_type == constants.MULTI_OUTPUT:
+        elif self._task_type == constants.MULTI_LABEL_CLASSIFICATION:
             for i in range(self.n_models):
                 self.mean_eval_measurements.append(MultiOutputMeasurements())
                 self.current_eval_measurements.append(WindowMultiOutputMeasurements(window_size=self.n_sliding))
