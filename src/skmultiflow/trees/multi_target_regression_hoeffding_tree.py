@@ -178,8 +178,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight += learning_ratio * \
-                (normalized_target_value - normalized_pred)[:, None] @ \
-                normalized_sample[None, :]
+                np.matmul((normalized_target_value - normalized_pred)[:, None],
+                          normalized_sample[None, :])
 
             self.normalize_perceptron_weights()
 
@@ -193,7 +193,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         # Predicts new income instances as a multiplication of the neurons
         # weights with the inputs augmented with a bias value
         def predict(self, X):
-            return self.perceptron_weight @ X
+            return np.matmul(self.perceptron_weight, X)
 
         def get_weight_seen(self):
             """Calculate the total weight seen by the node.
@@ -246,8 +246,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             normalized_target_value = rht.normalized_target_value(y)
 
             self.perceptron_weight += learning_ratio * \
-                (normalized_target_value - normalized_pred)[:, None] @ \
-                normalized_sample[None, :]
+                np.matmul((normalized_target_value - normalized_pred)[:, None],
+                          normalized_sample[None, :])
 
             self.normalize_perceptron_weights()
 
@@ -327,8 +327,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
             normalized_target_value = rht.normalized_target_value(y)
             self.perceptron_weight += learning_ratio * \
-                (normalized_target_value - normalized_pred)[:, None] @ \
-                normalized_sample[None, :]
+                np.matmul((normalized_target_value - normalized_pred)[:, None],
+                          normalized_sample[None, :])
 
             self.normalize_perceptron_weights()
 
@@ -342,7 +342,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         # Predicts new income instances as a multiplication of the neurons
         # weights with the inputs augmented with a bias value
         def predict(self, X):
-            return self.perceptron_weight @ X
+            return np.matmul(self.perceptron_weight, X)
 
     class InactiveLearningNodeAdaptive(InactiveLearningNodePerceptron):
 
@@ -374,8 +374,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
             normalized_target_value = rht.normalized_target_value(y)
             self.perceptron_weight += learning_ratio * \
-                (normalized_target_value - normalized_pred)[:, None] @ \
-                normalized_sample[None, :]
+                np.matmul((normalized_target_value - normalized_pred)[:, None],
+                          normalized_sample[None, :])
 
             self.normalize_perceptron_weights()
 
@@ -749,8 +749,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 if self.examples_seen > 1:
                     normalized_sample = self.normalize_sample(X[i])
                     normalized_prediction = \
-                        self.get_weights_for_instance(X[i]) @ \
-                        normalized_sample
+                        np.matmul(self.get_weights_for_instance(X[i]),
+                                  normalized_sample)
                     mean = self.sum_of_values / self.examples_seen
                     sd = np.sqrt((self.sum_of_squares -
                                  (self.sum_of_values ** 2) /
@@ -771,8 +771,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     # Perceptron
                     normalized_sample = self.normalize_sample(X[i])
                     normalized_prediction = \
-                        self.get_weights_for_instance(X[i]) @ \
-                        normalized_sample
+                        np.matmul(self.get_weights_for_instance(X[i]),
+                                  normalized_sample)
                     mean = self.sum_of_values / self.examples_seen
                     sd = np.sqrt((self.sum_of_squares -
                                  (self.sum_of_values ** 2) /
