@@ -28,14 +28,6 @@ This directory contains some datasets for basic testing and demos.
 
 *Note:* SEA datasets were created using the SEAGenerator. The recommended approach is to use the `SEAGenerator` directly.
 
-Multi-target regression datasets contained in the 'mtr' folder:
-
-* **scm1d and scm20d Datasets** (scm1d.csv, scm20.csv)
-
-  Type: Multi-target regression
-
-  > Spyromitros-Xioufis, E., Tsoumakas, G., Groves, W., & Vlahavas, I. (2016). Multi-target regression via input space expansion: treating targets as inputs. Machine Learning, 104(1), 55-98.
-
 ---
 
 Large files will be stored on an external repository.

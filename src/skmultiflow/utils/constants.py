@@ -41,10 +41,10 @@ REGRESSION_METRICS = [MSE,
                       MAE,
                       TRUE_VS_PREDICTED
                       ]
-MULTI_LABEL_CLASSIFICATION_METRICS = [HAMMING_SCORE,
-                                      HAMMING_LOSS,
-                                      EXACT_MATCH,
-                                      J_INDEX]
+MULTI_TARGET_CLASSIFICATION_METRICS = [HAMMING_SCORE,
+                                       HAMMING_LOSS,
+                                       EXACT_MATCH,
+                                       J_INDEX]
 MULTI_TARGET_REGRESSION_METRICS = [AMSE,
                                    AMAE,
                                    ARMSE]
@@ -52,13 +52,13 @@ CLASSIFICATION = 'classification'
 REGRESSION = 'regression'
 MULTI_OUTPUT = 'multi_output'
 SINGLE_OUTPUT = 'single-output'
-MULTI_LABEL_CLASSIFICATION = 'multi_label_classification'
+MULTI_TARGET_CLASSIFICATION = 'multi_target_classification'
 MULTI_TARGET_REGRESSION = 'multi_target_regression'
 UNDEFINED = 'undefined'
 TASK_TYPES = [CLASSIFICATION,
               REGRESSION,
               SINGLE_OUTPUT,
               MULTI_OUTPUT,
-              MULTI_LABEL_CLASSIFICATION,
+              MULTI_TARGET_CLASSIFICATION,
               MULTI_TARGET_REGRESSION,
               UNDEFINED]

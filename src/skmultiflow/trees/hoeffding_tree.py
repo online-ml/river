@@ -260,8 +260,12 @@ class HoeffdingTree(StreamModel):
 
             """
             buffer[0] += textwrap.indent('Leaf = ', ' ' * indent)
-            class_val = max(self._observed_class_distribution, key=self._observed_class_distribution.get)
-            buffer[0] += 'Class {} | {}\n'.format(class_val, self._observed_class_distribution)
+
+            try:
+                class_val = max(self._observed_class_distribution, key=self._observed_class_distribution.get)
+                buffer[0] += 'Class {} | {}\n'.format(class_val, self._observed_class_distribution)
+            except ValueError:  # Regression problems
+                buffer[0] += 'Statistics {}\n'.format(self._observed_class_distribution)
 
         # TODO
         def get_description(self):

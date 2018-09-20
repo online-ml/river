@@ -1,5 +1,5 @@
 from skmultiflow.core.pipeline import Pipeline
-from skmultiflow.data.file_stream import FileStream
+from skmultiflow.data import RegressionGenerator
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 from skmultiflow.trees.multi_target_regression_hoeffding_tree import \
     MultiTargetRegressionHoeffdingTree
@@ -20,18 +20,12 @@ def demo(input_file, output_file=None):
         The name of the csv output file
 
     """
-    # Setup the File Stream
-    # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
-    # stream = WaveformGenerator()
-    # stream.prepare_for_use()
-    stream = FileStream(input_file, n_targets=16)
+    stream = RegressionGenerator(n_samples=5000, n_features=20,
+                                 n_informative=15, random_state=1,
+                                 n_targets=7)
     stream.prepare_for_use()
-    # Setup the classifier
-    # classifier = SGDClassifier()
-    # classifier = PassiveAggressiveClassifier()
 
     classifier = MultiTargetRegressionHoeffdingTree(leaf_prediction='adaptive')
-    # classifier = PerceptronMask()
 
     # Setup the pipeline
     pipe = Pipeline([('Classifier', classifier)])

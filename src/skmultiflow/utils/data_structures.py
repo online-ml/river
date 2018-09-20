@@ -186,7 +186,7 @@ class FastComplexBuffer(BaseObject):
     --------
     It works similarly to the FastBuffer structure, except that it keeps track
     of more than one value per entry. For a complete example, please see
-    skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements'
+    skmultiflow.evaluation.measure_collection.WindowMultiTargetClassificationMeasurements'
     implementation, where the FastComplexBuffer is used to keep track of the
     MultiOutputLearner's statistics.
 
