@@ -3,7 +3,6 @@ from skmultiflow.trees.numeric_attribute_binary_test import \
     NumericAttributeBinaryTest
 from skmultiflow.trees.attribute_split_suggestion import \
     AttributeSplitSuggestion
-import math
 
 
 class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
@@ -115,7 +114,7 @@ class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
         self._aux_sum = 0.0
         self._aux_sq_sum = 0.0
 
-        candidate = AttributeSplitSuggestion(None, [{}], -math.inf)
+        candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
 
         best_split = self._find_best_split(self._root, candidate)
 
