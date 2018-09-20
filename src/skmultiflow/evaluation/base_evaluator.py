@@ -3,7 +3,7 @@ from skmultiflow.core.base_object import BaseObject
 from skmultiflow.data.base_stream import Stream
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 from skmultiflow.metrics import WindowClassificationMeasurements, ClassificationMeasurements, \
-    MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, \
+    MultiTargetClassificationMeasurements, WindowMultiTargetClassificationMeasurements, RegressionMeasurements, \
     WindowRegressionMeasurements, MultiTargetRegressionMeasurements, \
     WindowMultiTargetRegressionMeasurements
 from skmultiflow.utils import FastBuffer
@@ -217,12 +217,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             else:
                 raise ValueError("Inconsistent metrics {} for {} stream.".format(self.metrics, self._output_type))
         else:
-            multi_label_classification_metrics = set(constants.MULTI_LABEL_CLASSIFICATION_METRICS)
+            multi_label_classification_metrics = set(constants.MULTI_TARGET_CLASSIFICATION_METRICS)
             multi_target_regression_metrics = set(constants.MULTI_TARGET_REGRESSION_METRICS)
             evaluation_metrics = set(self.metrics)
 
             if evaluation_metrics.union(multi_label_classification_metrics) == multi_label_classification_metrics:
-                self._task_type = constants.MULTI_LABEL_CLASSIFICATION
+                self._task_type = constants.MULTI_TARGET_CLASSIFICATION
             elif evaluation_metrics.union(multi_target_regression_metrics) == multi_target_regression_metrics:
                 self._task_type = constants.MULTI_TARGET_REGRESSION
             else:
@@ -245,10 +245,10 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 self.mean_eval_measurements.append(ClassificationMeasurements())
                 self.current_eval_measurements.append(WindowClassificationMeasurements(window_size=self.n_sliding))
 
-        elif self._task_type == constants.MULTI_LABEL_CLASSIFICATION:
+        elif self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
             for i in range(self.n_models):
-                self.mean_eval_measurements.append(MultiOutputMeasurements())
-                self.current_eval_measurements.append(WindowMultiOutputMeasurements(window_size=self.n_sliding))
+                self.mean_eval_measurements.append(MultiTargetClassificationMeasurements())
+                self.current_eval_measurements.append(WindowMultiTargetClassificationMeasurements(window_size=self.n_sliding))
 
         elif self._task_type == constants.REGRESSION:
             for i in range(self.n_models):

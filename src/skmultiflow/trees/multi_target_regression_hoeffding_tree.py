@@ -550,7 +550,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 initial_class_observations)
         elif self.leaf_prediction == _PERCEPTRON:
             return self.LearningNodePerceptron(initial_class_observations,
-                                               perceptron_weight)
+                                               perceptron_weight,
+                                               self._init_random_state)
         elif self.leaf_prediction == _ADAPTIVE:
             return self.LearningNodeAdaptive(
                 initial_class_observations,

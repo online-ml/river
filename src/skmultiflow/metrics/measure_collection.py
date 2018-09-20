@@ -560,8 +560,8 @@ class WindowClassificationMeasurements(BaseObject):
                ' - majority_class: {}'.format(self.get_majority_class())
 
 
-class MultiOutputMeasurements(BaseObject):
-    """ MultiOutputMeasurements
+class MultiTargetClassificationMeasurements(BaseObject):
+    """ MultiTargetClassificationMeasurements
 
     This class will keep updated statistics about a multi output classifier,
     using a confusion matrix adapted to multi output problems, the
@@ -745,8 +745,8 @@ class MultiOutputMeasurements(BaseObject):
         return 'collection'
 
 
-class WindowMultiOutputMeasurements(BaseObject):
-    """ MultiOutputMeasurements
+class WindowMultiTargetClassificationMeasurements(BaseObject):
+    """ MultiTargetClassificationMeasurements
 
     This class will maintain a fixed sized window of the newest information
     about one classifier. It can provide, as requested, any of the relevant
@@ -759,9 +759,9 @@ class WindowMultiOutputMeasurements(BaseObject):
     fixed sized windows.
 
     Its functionality is somewhat similar to those of the
-    MultiOutputMeasurements class. The difference is that the statistics
+    MultiTargetClassificationMeasurements class. The difference is that the statistics
     kept by this class are local, or partial, while the statistics kept by
-    the MultiOutputMeasurements class are global.
+    the MultiTargetClassificationMeasurements class are global.
 
     At any given moment, it can compute the following statistics: hamming_loss,
     hamming_score, exact_match and j_index.

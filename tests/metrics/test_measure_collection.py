@@ -1,8 +1,8 @@
 import numpy as np
 from skmultiflow.metrics import ClassificationMeasurements
 from skmultiflow.metrics import WindowClassificationMeasurements
-from skmultiflow.metrics import MultiOutputMeasurements
-from skmultiflow.metrics import WindowMultiOutputMeasurements
+from skmultiflow.metrics import MultiTargetClassificationMeasurements
+from skmultiflow.metrics import WindowMultiTargetClassificationMeasurements
 from skmultiflow.metrics import RegressionMeasurements
 from skmultiflow.metrics import WindowRegressionMeasurements
 
@@ -82,7 +82,7 @@ def test_multi_output_measurements():
     y_true = np.ones((100, 3))
     y_pred = np.vstack((y_0, y_1, y_2)).T
 
-    measurements = MultiOutputMeasurements()
+    measurements = MultiTargetClassificationMeasurements()
     for i in range(len(y_true)):
         measurements.add_result(y_true[i], y_pred[i])
 
@@ -101,7 +101,7 @@ def test_multi_output_measurements():
     expected_total_sum = 300
     assert expected_total_sum == measurements.get_total_sum()
 
-    expected_info = 'MultiOutputMeasurements: - sample_count: 100 - hamming_loss: 0.066667 - hamming_score: 0.933333 ' \
+    expected_info = 'MultiTargetClassificationMeasurements: - sample_count: 100 - hamming_loss: 0.066667 - hamming_score: 0.933333 ' \
                     '- exact_match: 0.850000 - j_index: 0.933333'
     assert expected_info == measurements.get_info()
 
@@ -118,7 +118,7 @@ def test_window_multi_output_measurements():
     y_true = np.ones((100, 3))
     y_pred = np.vstack((y_0, y_1, y_2)).T
 
-    measurements = WindowMultiOutputMeasurements(window_size=20)
+    measurements = WindowMultiTargetClassificationMeasurements(window_size=20)
     for i in range(len(y_true)):
         measurements.add_result(y_true[i], y_pred[i])
 
@@ -137,7 +137,7 @@ def test_window_multi_output_measurements():
     expected_total_sum = 300
     assert expected_total_sum == measurements.get_total_sum()
 
-    expected_info = 'WindowMultiOutputMeasurements: - sample_count: 20 - hamming_loss: 0.333333 ' \
+    expected_info = 'WindowMultiTargetClassificationMeasurements: - sample_count: 20 - hamming_loss: 0.333333 ' \
                     '- hamming_score: 0.666667 - exact_match: 0.250000 - j_index: 0.666667'
     assert expected_info == measurements.get_info()
 
