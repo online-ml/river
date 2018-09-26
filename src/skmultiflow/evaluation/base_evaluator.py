@@ -362,43 +362,43 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 header = '\nid'
                 if constants.ACCURACY in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_acc_[{}],sliding_acc_[{}]'.\
+                        header += ',mean_acc_[{}],current_acc_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.KAPPA in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_[{}],sliding_kappa_[{}]'.\
+                        header += ',mean_kappa_[{}],current_kappa_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.KAPPA_T in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_t_[{}],sliding_kappa_t_[{}]'.\
+                        header += ',mean_kappa_t_[{}],current_kappa_t_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.KAPPA_M in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_kappa_m_[{}],sliding_kappa_m_[{}]'.\
+                        header += ',mean_kappa_m_[{}],current_kappa_m_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.HAMMING_SCORE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_hamming_score_[{}],sliding_hamming_score_[{}]'.\
+                        header += ',mean_hamming_score_[{}],current_hamming_score_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.HAMMING_LOSS in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_hamming_loss_[{}],sliding_hamming_loss_[{}]'.\
+                        header += ',mean_hamming_loss_[{}],current_hamming_loss_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.EXACT_MATCH in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_exact_match_[{}],sliding_exact_match_[{}]'.\
+                        header += ',mean_exact_match_[{}],current_exact_match_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.J_INDEX in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_j_index_[{}],sliding_j_index_[{}]'.\
+                        header += ',mean_j_index_[{}],current_j_index_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.MSE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_mse_[{}],sliding_mse_[{}]'.\
+                        header += ',mean_mse_[{}],current_mse_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
                 if constants.MAE in self.metrics:
                     for i in range(self.n_models):
-                        header += ',global_mae_[{}],sliding_mae_[{}]'.\
+                        header += ',mean_mae_[{}],current_mae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
 
                 if constants.TRUE_VS_PREDICTED in self.metrics:
