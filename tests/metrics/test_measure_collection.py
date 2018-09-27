@@ -217,9 +217,13 @@ def test_multi_target_regression_measurements():
                       measurements.get_average_root_mean_square_error())
 
     expected_info = 'MultiTargetRegressionMeasurements: sample_count: 100 - ' \
-                    'average_mean_square_error: 0.011666666666666664 - ' \
-                    'average_mean_absolute_error: 0.09999999999999999 - ' \
-                    'average_root_mean_square_error: 0.09999999999999999'
+                    'average_mean_square_error: {} - ' \
+                    'average_mean_absolute_error: {} - ' \
+                    'average_root_mean_square_error: {}'.format(
+                        measurements.get_average_mean_square_error(),
+                        measurements.get_average_absolute_error(),
+                        measurements.get_average_root_mean_square_error()
+                    )
     assert expected_info == measurements.get_info()
 
     expected_last = (np.array([-0.99920683, -0.99920683, -0.99920683]),
@@ -252,9 +256,13 @@ def test_window_multi_target_regression_measurements():
                       measurements.get_average_root_mean_square_error())
 
     expected_info = 'MultiTargetRegressionMeasurements: sample_count: 20 - ' \
-                    'average_mean_square_error: 0.011666666666666672 - ' \
-                    'average_mean_absolute_error: 0.10000000000000002 - ' \
-                    'average_root_mean_square_error: 0.10000000000000003'
+                    'average_mean_square_error: {} - ' \
+                    'average_mean_absolute_error: {} - ' \
+                    'average_root_mean_square_error: {}'.format(
+                        measurements.get_average_mean_square_error(),
+                        measurements.get_average_absolute_error(),
+                        measurements.get_average_root_mean_square_error()
+                    )
     assert expected_info == measurements.get_info()
 
     expected_last = (np.array([-0.99920683, -0.99920683, -0.99920683]),
