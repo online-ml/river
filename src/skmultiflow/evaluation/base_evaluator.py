@@ -329,7 +329,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
             for i in range(self.n_models):
                 _, p = self.mean_eval_measurements[i].get_last()
-                X = self.mean_eval_measurements[i].get_last_sample()
+                X, _ = self.stream.last_sample()
 
                 pred.append(p)
                 samples.add_element([X])
