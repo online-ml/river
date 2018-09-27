@@ -220,9 +220,9 @@ def test_multi_target_regression_measurements():
                     'average_mean_square_error: {} - ' \
                     'average_mean_absolute_error: {} - ' \
                     'average_root_mean_square_error: {}'.format(
-                        measurements.get_average_mean_square_error(),
-                        measurements.get_average_absolute_error(),
-                        measurements.get_average_root_mean_square_error()
+                        str(measurements.get_average_mean_square_error()),
+                        str(measurements.get_average_absolute_error()),
+                        str(measurements.get_average_root_mean_square_error())
                     )
     assert expected_info == measurements.get_info()
 
@@ -259,9 +259,9 @@ def test_window_multi_target_regression_measurements():
                     'average_mean_square_error: {} - ' \
                     'average_mean_absolute_error: {} - ' \
                     'average_root_mean_square_error: {}'.format(
-                        measurements.get_average_mean_square_error(),
-                        measurements.get_average_absolute_error(),
-                        measurements.get_average_root_mean_square_error()
+                        str(measurements.get_average_mean_square_error()),
+                        str(measurements.get_average_absolute_error()),
+                        str(measurements.get_average_root_mean_square_error())
                     )
     assert expected_info == measurements.get_info()
 
