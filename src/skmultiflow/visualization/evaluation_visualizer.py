@@ -308,10 +308,10 @@ class EvaluationVisualizer(BaseListener):
                 self.line_current_accuracy[i], = self.subplot_accuracy.plot(
                     self.sample_id,
                     self.current_accuracy[i],
-                    label='{}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='{}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_accuracy[i], = self.subplot_accuracy.plot(
                     self.sample_id, self.mean_accuracy[i],
-                    label='{} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='{} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_accuracy[i])
                 handle.append(self.line_mean_accuracy[i])
 
@@ -334,10 +334,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_kappa[i], = self.subplot_kappa.plot(
                     self.sample_id, self.current_kappa[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_kappa[i], = self.subplot_kappa.plot(
                     self.sample_id, self.mean_kappa[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_kappa[i])
                 handle.append(self.line_mean_kappa[i])
 
@@ -360,10 +360,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_kappa_t[i], = self.subplot_kappa_t.plot(
                     self.sample_id, self.current_kappa_t[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_kappa_t[i], = self.subplot_kappa_t.plot(
                     self.sample_id, self.mean_kappa_t[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_kappa_t[i])
                 handle.append(self.line_mean_kappa_t[i])
 
@@ -386,10 +386,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_kappa_m[i], = self.subplot_kappa_m.plot(
                     self.sample_id, self.current_kappa_m[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_kappa_m[i], = self.subplot_kappa_m.plot(
                     self.sample_id, self.mean_kappa_m[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_kappa_m[i])
                 handle.append(self.line_mean_kappa_m[i])
 
@@ -412,10 +412,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_hamming_score[i], = self.subplot_hamming_score.plot(
                     self.sample_id, self.current_hamming_score[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_hamming_score[i], = self.subplot_hamming_score.plot(
                     self.sample_id, self.mean_hamming_score[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_hamming_score[i])
                 handle.append(self.line_mean_hamming_score[i])
 
@@ -438,10 +438,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_hamming_loss[i], = self.subplot_hamming_loss.plot(
                     self.sample_id, self.current_hamming_loss[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_hamming_loss[i], = self.subplot_hamming_loss.plot(
                     self.sample_id, self.mean_hamming_loss[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_hamming_loss[i])
                 handle.append(self.line_mean_hamming_loss[i])
 
@@ -464,10 +464,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_exact_match[i], = self.subplot_exact_match.plot(
                     self.sample_id, self.current_exact_match[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_exact_match[i], = self.subplot_exact_match.plot(
                     self.sample_id, self.mean_exact_match[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_exact_match[i])
                 handle.append(self.line_mean_exact_match[i])
 
@@ -490,10 +490,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_j_index[i], = self.subplot_j_index.plot(
                     self.sample_id, self.current_j_index[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_j_index[i], = self.subplot_j_index.plot(
                     self.sample_id, self.mean_j_index[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_j_index[i])
                 handle.append(self.line_mean_j_index[i])
 
@@ -516,10 +516,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_mse[i], = self.subplot_mse.plot(
                     self.sample_id, self.current_mse[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_mse[i], = self.subplot_mse.plot(
                     self.sample_id, self.mean_mse[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_mse[i])
                 handle.append(self.line_mean_mse[i])
 
@@ -542,10 +542,10 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 self.line_current_mae[i], = self.subplot_mae.plot(
                     self.sample_id, self.current_mae[i],
-                    label='Model {}  (sliding {} samples)'.format(self.model_names[i], self.n_sliding))
+                    label='Model {}  (current, {} samples)'.format(self.model_names[i], self.n_sliding))
                 self.line_mean_mae[i], = self.subplot_mae.plot(
                     self.sample_id, self.mean_mae[i],
-                    label='Model {} (global)'.format(self.model_names[i]), linestyle='dotted')
+                    label='Model {} (mean)'.format(self.model_names[i]), linestyle='dotted')
                 handle.append(self.line_current_mae[i])
                 handle.append(self.line_mean_mae[i])
 
@@ -575,12 +575,12 @@ class EvaluationVisualizer(BaseListener):
             for i in range(self.n_learners):
                 if self.task_type == constants.CLASSIFICATION:
                     self.line_pred[i], = self.subplot_true_vs_predicted.step(self.sample_id, self.pred_values[i],
-                                                                             label='Model {} (global)'.
+                                                                             label='Model {} (mean)'.
                                                                              format(self.model_names[i]),
                                                                              linestyle='dotted')
                 else:
                     self.line_pred[i], = self.subplot_true_vs_predicted.plot(self.sample_id, self.pred_values[i],
-                                                                             label='Model {} (global)'.
+                                                                             label='Model {} (mean)'.
                                                                              format(self.model_names[i]),
                                                                              linestyle='dotted')
                 handle.append(self.line_pred[i])
@@ -838,7 +838,7 @@ class EvaluationVisualizer(BaseListener):
             self.text_annotations[i].remove()
         self.text_annotations = []
 
-    def _update_annotations(self, idx, subplot, model_name, global_value, partial_value):
+    def _update_annotations(self, idx, subplot, model_name, mean_value, current_value):
         xy_pos_default = (1.02, .90)  # Default xy position for metric annotations
         shift_y = 10 * (idx + 1)  # y axis shift for plot annotations
         xy_pos = xy_pos_default
@@ -849,7 +849,7 @@ class EvaluationVisualizer(BaseListener):
         self.text_annotations.append(subplot.annotate('{: <10.10s}'.format(model_name[:6]),
                                                       xy=xy_pos, xycoords='axes fraction',
                                                       xytext=(0, -shift_y), textcoords='offset points'))
-        self.text_annotations.append(subplot.annotate('{: ^16.4f}  {: ^16.4f}'.format(global_value, partial_value),
+        self.text_annotations.append(subplot.annotate('{: ^16.4f}  {: ^16.4f}'.format(mean_value, current_value),
                                                       xy=xy_pos, xycoords='axes fraction',
                                                       xytext=(50, -shift_y), textcoords='offset points'))
 
