@@ -24,8 +24,7 @@ class NominalAttributeClassObserver(AttributeClassObserver):
         else:
             val_dist = self._att_val_dist_per_class.get(class_val, None)
             if val_dist is None:
-                val_dist = {}
-                val_dist[att_val] = 0.0
+                val_dist = {att_val: 0.0}
                 self._att_val_dist_per_class[class_val] = val_dist
             if att_val not in val_dist:
                 val_dist[att_val] = 0.0
@@ -46,11 +45,12 @@ class NominalAttributeClassObserver(AttributeClassObserver):
             merit = criterion.get_merit_of_split(pre_split_dist, post_split_dist)
             best_suggestion = AttributeSplitSuggestion(NominalAttributeMultiwayTest(att_idx),
                                                        post_split_dist, merit)
-        for val_idx in self._att_val_dist_per_class.keys():
-            post_split_dist = self.get_class_dist_from_binary_split(val_idx)
+        att_values = set([att_val for class_val in self._att_val_dist_per_class.values() for att_val in class_val])
+        for att_val in att_values:
+            post_split_dist = self.get_class_dist_from_binary_split(att_val)
             merit = criterion.get_merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
-                best_suggestion = AttributeSplitSuggestion(NominalAttributeBinaryTest(att_idx, val_idx),
+                best_suggestion = AttributeSplitSuggestion(NominalAttributeBinaryTest(att_idx, att_val),
                                                            post_split_dist, merit)
         return best_suggestion
 
