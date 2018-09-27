@@ -5,6 +5,8 @@ from skmultiflow.metrics import MultiTargetClassificationMeasurements
 from skmultiflow.metrics import WindowMultiTargetClassificationMeasurements
 from skmultiflow.metrics import RegressionMeasurements
 from skmultiflow.metrics import WindowRegressionMeasurements
+from skmultiflow.metrics import MultiTargetRegressionMeasurements
+from skmultiflow.metrics import WindowMultiTargetRegressionMeasurements
 
 
 def test_classification_measurements():
@@ -75,7 +77,7 @@ def test_window_classification_measurements():
     assert expected_majority_class == measurements.get_majority_class()
 
 
-def test_multi_output_measurements():
+def test_multi_target_classification_measurements():
     y_0 = np.ones(100)
     y_1 = np.concatenate((np.ones(90), np.zeros(10)))
     y_2 = np.concatenate((np.ones(85), np.zeros(10), np.ones(5)))
@@ -111,7 +113,7 @@ def test_multi_output_measurements():
     assert np.alltrue(expected_last_pred == measurements.get_last()[1])
 
 
-def test_window_multi_output_measurements():
+def test_window_multi_target_classification_measurements():
     y_0 = np.ones(100)
     y_1 = np.concatenate((np.ones(90), np.zeros(10)))
     y_2 = np.concatenate((np.ones(85), np.zeros(10), np.ones(5)))
@@ -189,3 +191,73 @@ def test_window_regression_measurements():
 
     expected_last = (-0.9992068341863537, -0.9492068341863537)
     assert np.alltrue(expected_last == measurements.get_last())
+
+
+def test_multi_target_regression_measurements():
+    y_true = np.zeros((100, 3))
+    y_pred = np.zeros((100, 3))
+
+    for t in range(3):
+        y_true[:, t] = np.sin(range(100))
+        y_pred[:, t] = np.sin(range(100)) + (t + 1) * .05
+
+    measurements = MultiTargetRegressionMeasurements()
+    for i in range(100):
+        measurements.add_result(y_true[i], y_pred[i])
+
+    expected_amse = 0.011666666666666664
+    assert np.isclose(expected_amse,
+                      measurements.get_average_mean_square_error())
+
+    expected_aae = 0.09999999999999999
+    assert np.isclose(expected_aae, measurements.get_average_absolute_error())
+
+    expected_armse = 0.09999999999999999
+    assert np.isclose(expected_armse,
+                      measurements.get_average_root_mean_square_error())
+
+    expected_info = 'MultiTargetRegressionMeasurements: sample_count: 100 - ' \
+                    'average_mean_square_error: 0.011666666666666664 - ' \
+                    'average_mean_absolute_error: 0.09999999999999999 - ' \
+                    'average_root_mean_square_error: 0.09999999999999999'
+    assert expected_info == measurements.get_info()
+
+    expected_last = (np.array([-0.99920683, -0.99920683, -0.99920683]),
+                     np.array([-0.94920683, -0.89920683, -0.84920683]))
+    for exp, obs in zip(expected_last, measurements.get_last()):
+        assert np.isclose(exp, obs).all()
+
+
+def test_window_multi_target_regression_measurements():
+    y_true = np.zeros((100, 3))
+    y_pred = np.zeros((100, 3))
+
+    for t in range(3):
+        y_true[:, t] = np.sin(range(100))
+        y_pred[:, t] = np.sin(range(100)) + (t + 1) * .05
+
+    measurements = WindowMultiTargetRegressionMeasurements(window_size=20)
+    for i in range(100):
+        measurements.add_result(y_true[i], y_pred[i])
+
+    expected_amse = 0.011666666666666672
+    assert np.isclose(expected_amse,
+                      measurements.get_average_mean_square_error())
+
+    expected_aae = 0.10000000000000002
+    assert np.isclose(expected_aae, measurements.get_average_absolute_error())
+
+    expected_armse = 0.10000000000000003
+    assert np.isclose(expected_armse,
+                      measurements.get_average_root_mean_square_error())
+
+    expected_info = 'MultiTargetRegressionMeasurements: sample_count: 20 - ' \
+                    'average_mean_square_error: 0.011666666666666672 - ' \
+                    'average_mean_absolute_error: 0.10000000000000002 - ' \
+                    'average_root_mean_square_error: 0.10000000000000003'
+    assert expected_info == measurements.get_info()
+
+    expected_last = (np.array([-0.99920683, -0.99920683, -0.99920683]),
+                     np.array([-0.94920683, -0.89920683, -0.84920683]))
+    for exp, obs in zip(expected_last, measurements.get_last()):
+        assert np.isclose(exp, obs).all()
