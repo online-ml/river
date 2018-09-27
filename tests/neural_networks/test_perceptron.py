@@ -3,6 +3,7 @@ from array import array
 import os
 from skmultiflow.data import SEAGenerator
 from skmultiflow.neural_networks import PerceptronMask
+from sklearn.metrics import accuracy_score
 
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -51,8 +52,9 @@ def test_perceptron(test_path):
 
     learner.reset()
     learner.fit(X=X_batch[:4500], y=y_batch[:4500])
-
-    expected_score = 0.8897795591182365
-    assert np.isclose(expected_score, learner.score(X=X_batch[4501:], y=y_batch[4501:]))
+    y_pred = learner.predict(X=X_batch[4501:])
+    accuracy = accuracy_score(y_true=y_batch[4501:], y_pred=y_pred)
+    expected_accuracy = 0.8897795591182365
+    assert np.isclose(expected_accuracy, accuracy)
 
     assert 'estimator' == learner.get_class_type()
