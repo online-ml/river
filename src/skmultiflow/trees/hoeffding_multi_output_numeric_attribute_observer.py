@@ -6,9 +6,10 @@ from skmultiflow.trees.attribute_split_suggestion import \
 
 
 class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
-    """
+    """iSoup-Tree's Extended Binary Search Tree (E-BST)
+
     This class implements the Extended Binary Search Tree (E-BST)
-    structure, using the variant employed by Osojnik et al. [1] in the
+    structure, using the variant employed by Osojnik et al. [1]_ in the
     iSoup-Tree algorithm. This structure is employed to observe the target
     space distribution.
 
@@ -16,9 +17,10 @@ class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
 
     References:
     .. [1] Osojnik, Aljaž. 2017. Structured output prediction on Data
-    Streams (Doctoral Dissertation). Retrieved from:
-    http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf
+       Streams (Doctoral Dissertation). Retrieved from:
+       http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf
     """
+
     class Node:
 
         def __init__(self, att_val, target):

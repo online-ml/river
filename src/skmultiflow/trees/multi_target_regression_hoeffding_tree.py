@@ -23,11 +23,10 @@ logger = logging.getLogger(__name__)
 
 
 class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
-    """
-    Multi-target Regression Hoeffding tree.
+    """Multi-target Regression Hoeffding tree.
 
     This is an implementation of the iSoup-Tree proposed by A. Osojnik,
-    P. Panov, and S. Džeroski [1]. Currently, only multi-target regression
+    P. Panov, and S. Džeroski [1]_. Currently, only multi-target regression
     problems are supported. Besides, the current implementation does not uses
     adaptive models in the leaves: one must choose either using perceptrons or
     the target mean.
@@ -78,16 +77,16 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
     References
     ----------
     .. [1] Aljaž Osojnik, Panče Panov, and Sašo Džeroski. "Tree-based methods
-           for online multi-target regression." Journal of Intelligent
-           Information Systems 50.2 (2018): 315-339.
+       for online multi-target regression." Journal of Intelligent
+       Information Systems 50.2 (2018): 315-339.
     """
 
     class LearningNodePerceptron(RegressionHoeffdingTree.ActiveLearningNode):
 
         def __init__(self, initial_class_observations, perceptron_weight=None,
                      random_state=None):
-            """
-            LearningNodePerceptron class constructor
+            """LearningNodePerceptron class constructor
+
             Parameters
             ----------
             initial_class_observations
@@ -110,9 +109,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 Instance weight.
             rht: RegressionHoeffdingTree
                 Regression Hoeffding Tree to update.
-
             """
-
             if self.perceptron_weight is None:
                 # Creates matrix of perceptron random weights
                 _, rows = get_dimensions(y)
@@ -159,8 +156,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 obs.observe_attribute_class(x, y, weight)
 
         def update_weights(self, X, y, learning_ratio, rht):
-            """
-            Update the perceptron weights
+            """Update the perceptron weights
+
             Parameters
             ----------
             X: numpy.ndarray of length equal to the number of features.
@@ -202,7 +199,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             -------
             float
                 Total weight seen.
-
             """
             if self._observed_class_distribution == {}:
                 return 0
@@ -212,8 +208,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
     class LearningNodeAdaptive(LearningNodePerceptron):
         def __init__(self, initial_class_observations, perceptron_weight=None,
                      random_state=None):
-            """
-            LearningNodePerceptron class constructor
+            """LearningNodePerceptron class constructor
+
             Parameters
             ----------
             initial_class_observations
@@ -227,8 +223,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             self.fMAE_P = 0.0
 
         def update_weights(self, X, y, learning_ratio, rht):
-            """
-            Update the perceptron weights
+            """Update the perceptron weights
+
             Parameters
             ----------
             X: numpy.ndarray of length equal to the number of features.
@@ -309,8 +305,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 self.update_weights(X, y, learning_ratio, rht)
 
         def update_weights(self, X, y, learning_ratio, rht):
-            """
-            Update the perceptron weights
+            """Update the perceptron weights
+
             Parameters
             ----------
             X: numpy.ndarray of length equal to the number of features.
@@ -356,8 +352,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             self.fMAE_P = 0.0
 
         def update_weights(self, X, y, learning_ratio, rht):
-            """
-            Update the perceptron weights
+            """Update the perceptron weights
+
             Parameters
             ----------
             X: numpy.ndarray of length equal to the number of features.
@@ -480,8 +476,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             self._split_criterion = split_criterion
 
     def normalize_sample(self, X):
-        """
-        Normalize the features in order to have the same influence during the
+        """Normalize the features in order to have the same influence during the
         process of training.
 
         Parameters
@@ -493,7 +488,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         np.array:
             normalized samples
         """
-
         if self.examples_seen <= 1:
             _, c = get_dimensions(X)
             return np.zeros((c + 1), dtype=np.float64)
@@ -513,13 +507,14 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         return normalized_sample
 
     def normalized_target_value(self, y):
-        """
-        Normalize the targets in order to have the same influence during the
+        """Normalize the targets in order to have the same influence during the
         process of training.
+
         Parameters
         ----------
         y: np.array
             targets.
+
         Returns
         -------
         np.array:
@@ -541,8 +536,9 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
 
     def _new_learning_node(self, initial_class_observations=None,
                            perceptron_weight=None):
-        """Create a new learning node. The type of learning node depends on \
-        the tree configuration."""
+        """Create a new learning node. The type of learning node depends on
+        the tree configuration.
+        """
         if initial_class_observations is None:
             initial_class_observations = {}
         if self.leaf_prediction == _TARGET_MEAN:
@@ -560,7 +556,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             )
 
     def _get_predictors_faded_error(self, X):
-        """ Get the faded error of the leaf corresponding to the instance.
+        """Get the faded error of the leaf corresponding to the instance.
 
         Parameters
         ----------
@@ -570,7 +566,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         Returns
         -------
         dict (predictor, fmae)
-
         """
         fmaes = {}
         if self._tree_root is not None:
@@ -584,7 +579,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         return fmaes
 
     def get_weights_for_instance(self, X):
-        """ Get class votes for a single instance.
+        """Get class votes for a single instance.
 
         Parameters
         ----------
@@ -594,7 +589,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         Returns
         -------
         dict (class_value, weight)
-
         """
         if self._tree_root is not None:
             found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
@@ -612,19 +606,19 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         Tasks performed before training:
 
         * Verify instance weight. if not provided, uniform weights (1.0) are
-        assumed.
+          assumed.
         * If more than one instance is passed, loop through X and pass
-        instances one at a time.
+          instances one at a time.
         * Update weight seen by model.
 
         Training tasks:
 
         * If the tree is empty, create a leaf node as the root.
         * If the tree is already initialized, find the corresponding leaf for
-        the instance and update the leaf node statistics.
+          the instance and update the leaf node statistics.
         * If growth is allowed and the number of instances that the leaf has
-        observed between split attempts exceed the grace period then attempt
-        to split.
+          observed between split attempts exceed the grace period then attempt
+          to split.
 
         Parameters
         ----------
@@ -634,7 +628,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             Target values.
         weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
-
         """
         if y is not None:
             # Set the number of targets once
@@ -666,10 +659,8 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         y: array_like
             numpy.ndarray of shape (n_samples, n_targets)
                 Instance targets.
-
         weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
-
         """
         try:
             self.examples_seen += weight
@@ -731,7 +722,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
         -------
         list
             Predicted target values.
-
         """
         r, _ = get_dimensions(X)
 
@@ -820,7 +810,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             The node's parent.
         parent_idx: int
             Parent node's branch index.
-
         """
         split_criterion = IntraClusterVarianceReductionSplitCriterion()
 
@@ -923,9 +912,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             The node's parent.
         parent_branch: int
             Parent node's branch index.
-
         """
-
         if self.leaf_prediction == _TARGET_MEAN:
             new_leaf = self.InactiveLearningNodeForRegression(
                 to_deactivate.get_observed_class_distribution()
