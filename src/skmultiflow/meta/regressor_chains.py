@@ -5,7 +5,7 @@ from sklearn.linear_model import SGDRegressor
 from skmultiflow.utils import check_random_state
 
 
-class RegressorChain(StreamModel) :
+class RegressorChain(StreamModel):
     """ Classifier Chains for multi-label learning.
 
     Parameters

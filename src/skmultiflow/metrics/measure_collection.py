@@ -560,8 +560,8 @@ class WindowClassificationMeasurements(BaseObject):
                ' - majority_class: {}'.format(self.get_majority_class())
 
 
-class MultiOutputMeasurements(BaseObject):
-    """ MultiOutputMeasurements
+class MultiTargetClassificationMeasurements(BaseObject):
+    """ MultiTargetClassificationMeasurements
 
     This class will keep updated statistics about a multi output classifier,
     using a confusion matrix adapted to multi output problems, the
@@ -745,8 +745,8 @@ class MultiOutputMeasurements(BaseObject):
         return 'collection'
 
 
-class WindowMultiOutputMeasurements(BaseObject):
-    """ MultiOutputMeasurements
+class WindowMultiTargetClassificationMeasurements(BaseObject):
+    """ MultiTargetClassificationMeasurements
 
     This class will maintain a fixed sized window of the newest information
     about one classifier. It can provide, as requested, any of the relevant
@@ -759,9 +759,9 @@ class WindowMultiOutputMeasurements(BaseObject):
     fixed sized windows.
 
     Its functionality is somewhat similar to those of the
-    MultiOutputMeasurements class. The difference is that the statistics
+    MultiTargetClassificationMeasurements class. The difference is that the statistics
     kept by this class are local, or partial, while the statistics kept by
-    the MultiOutputMeasurements class are global.
+    the MultiTargetClassificationMeasurements class are global.
 
     At any given moment, it can compute the following statistics: hamming_loss,
     hamming_score, exact_match and j_index.
@@ -1131,6 +1131,270 @@ class WindowRegressionMeasurements(BaseObject):
                ' - sample_count: {}'.format(self.sample_count) + \
                ' - mean_square_error: {:.6f}'.format(self.get_mean_square_error()) + \
                ' - mean_absolute_error: {:.6f}'.format(self.get_average_error())
+
+
+class MultiTargetRegressionMeasurements(BaseObject):
+    """ MultiTargetRegressionMeasurements
+
+    This class is used to keep updated statistics over a multi-target regression
+    learner in a multi-target regression problem context.
+
+    It will keep track of global metrics, that can be provided at
+    any moment. The relevant metrics kept by an instance of this class
+    are: AMSE (average mean square error) and AMAE (average mean absolute error).
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.total_square_error = 0.0
+        self.average_error = 0.0
+        self.sample_count = 0
+        self.last_true_label = None
+        self.last_prediction = None
+
+    def reset(self):
+        self.total_square_error = 0.0
+        self.average_error = 0.0
+        self.sample_count = 0
+        self.last_true_label = None
+        self.last_prediction = None
+
+    def add_result(self, y, prediction):
+        """ add_result
+
+        Use the true label and the prediction to update the statistics.
+
+        Parameters
+        ----------
+        y: int
+            The true label.
+
+        prediction: int
+            The classifier's prediction
+
+        """
+        self.last_true_label = y
+        self.last_prediction = prediction
+
+        m = 0
+        if hasattr(y, 'size'):
+            m = y.size
+        elif hasattr(y, 'append'):
+            m = len(y)
+        self.n_targets = m
+
+        self.total_square_error += (y - prediction) ** 2
+        self.average_error += np.absolute(y - prediction)
+        self.sample_count += 1
+
+    def get_average_mean_square_error(self):
+        """ get_average_mean_square_error
+
+        Computes the mean square error.
+
+        Returns
+        -------
+        float
+            Returns the average mean square error.
+
+        """
+        if self.sample_count == 0:
+            return 0.0
+        else:
+            return np.sum(self.total_square_error / self.sample_count) \
+                / self.n_targets
+
+    def get_average_absolute_error(self):
+        """ get_average_absolute_error
+
+        Computes the average mean absolute error.
+
+        Returns
+        -------
+        float
+            Returns the average mean absolute error.
+
+        """
+        if self.sample_count == 0:
+            return 0.0
+        else:
+            return np.sum(self.average_error / self.sample_count) \
+                / self.n_targets
+
+    def get_average_root_mean_square_error(self):
+        """ get_average_root_mean_square_error
+
+        Computes the mean square error.
+
+        Returns
+        -------
+        float
+            Returns the average mean square error.
+
+        """
+        if self.sample_count == 0:
+            return 0.0
+        else:
+            return np.sum(np.sqrt(self.total_square_error /
+                                  self.sample_count)) \
+                / self.n_targets
+
+    def get_last(self):
+        return self.last_true_label, self.last_prediction
+
+    @property
+    def _sample_count(self):
+        return self.sample_count
+
+    def get_class_type(self):
+        return 'collection'
+
+    def get_info(self):
+        return 'MultiTargetRegressionMeasurements: sample_count: ' + \
+                str(self._sample_count) + ' - average_mean_square_error: ' + \
+                str(self.get_average_mean_square_error()) + ' - average_mean_absolute_error: ' + \
+                str(self.get_average_absolute_error()) + ' - average_root_mean_square_error: ' + \
+                str(self.get_average_root_mean_square_error())
+
+
+class WindowMultiTargetRegressionMeasurements(BaseObject):
+    """ WindowMultiTargetRegressionMeasurements
+
+    This class is used to keep updated statistics over a multi-target regression
+    learner in a multi-target regression problem context inside a fixed sized
+    window. It uses FastBuffer objects to simulate the fixed sized windows.
+
+    It will keep track of partial metrics, that can be provided at
+    any moment. The relevant metrics kept by an instance of this class
+    are: AMSE (average mean square error) and AMAE (average mean absolute error).
+
+    """
+
+    def __init__(self, window_size=200):
+        super().__init__()
+        self.total_square_error = 0.0
+        self.average_error = 0.0
+        self.last_true_label = None
+        self.last_prediction = None
+        self.total_square_error_correction = FastBuffer(window_size)
+        self.average_error_correction = FastBuffer(window_size)
+        self.window_size = window_size
+
+    def reset(self):
+        self.total_square_error = 0.0
+        self.average_error = 0.0
+        self.last_true_label = None
+        self.last_prediction = None
+        self.total_square_error_correction = FastBuffer(self.window_size)
+        self.average_error_correction = FastBuffer(self.window_size)
+
+    def add_result(self, y, prediction):
+        """ add_result
+
+        Use the true label and the prediction to update the statistics.
+
+        Parameters
+        ----------
+        y: int
+            The true label.
+
+        prediction: int
+            The classifier's prediction
+
+        """
+        self.last_true_label = y
+        self.last_prediction = prediction
+
+        m = 0
+        if hasattr(y, 'size'):
+            m = y.size
+        elif hasattr(y, 'append'):
+            m = len(y)
+        self.n_targets = m
+
+        self.total_square_error += (y - prediction) ** 2
+        self.average_error += np.absolute(y - prediction)
+
+        old_square = self.total_square_error_correction.add_element(
+            np.array([-1 * ((y - prediction) ** 2)])
+        )
+        old_average = self.average_error_correction.add_element(
+            np.array([-1 * (np.absolute(y - prediction))])
+        )
+
+        if (old_square is not None) and (old_average is not None):
+            self.total_square_error += old_square[0]
+            self.average_error += old_average[0]
+
+    def get_average_mean_square_error(self):
+        """ get_average_mean_square_error
+
+        Computes the window/local average mean square error.
+
+        Returns
+        -------
+        float
+            Returns the window/local average mean square error.
+
+        """
+        if self._sample_count == 0:
+            return 0.0
+        else:
+            return np.sum(self.total_square_error / self._sample_count) \
+                / self.n_targets
+
+    def get_average_absolute_error(self):
+        """ get_average_absolute_error
+
+        Computes the window/local average mean absolute error.
+
+        Returns
+        -------
+        float
+            Returns the window/local average mean absolute error.
+
+        """
+        if self._sample_count == 0:
+            return 0.0
+        else:
+            return np.sum(self.average_error / self._sample_count) \
+                / self.n_targets
+
+    def get_average_root_mean_square_error(self):
+        """ get_average_root_mean_square_error
+
+        Computes the mean square error.
+
+        Returns
+        -------
+        float
+            Returns the average mean square error.
+
+        """
+        if self._sample_count == 0:
+            return 0.0
+        else:
+            return np.sum(np.sqrt(self.total_square_error /
+                                  self._sample_count)) \
+                / self.n_targets
+
+    def get_last(self):
+        return self.last_true_label, self.last_prediction
+
+    @property
+    def _sample_count(self):
+        return self.total_square_error_correction.get_current_size()
+
+    def get_class_type(self):
+        return 'collection'
+
+    def get_info(self):
+        return 'MultiTargetRegressionMeasurements: sample_count: ' + \
+                str(self._sample_count) + ' - average_mean_square_error: ' + \
+                str(self.get_average_mean_square_error()) + ' - average_mean_absolute_error: ' + \
+                str(self.get_average_absolute_error()) + ' - average_root_mean_square_error: ' + \
+                str(self.get_average_root_mean_square_error())
 
 
 def hamming_score(true_labels, predicts):

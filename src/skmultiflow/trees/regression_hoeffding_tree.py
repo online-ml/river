@@ -1,3 +1,4 @@
+import numpy as np
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.trees.hoeffding_numeric_attribute_class_observer import HoeffdingNumericAttributeClassObserver
 from skmultiflow.trees.hoeffding_nominal_class_attribute_observer import HoeffdingNominalAttributeClassObserver
