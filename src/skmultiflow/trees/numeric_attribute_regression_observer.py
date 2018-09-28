@@ -1,13 +1,10 @@
-from skmultiflow.trees.binary_tree_numeric_attribute_class_observer import BinaryTreeNumericAttributeClassObserver
+from skmultiflow.trees.numeric_attribute_class_observer_binary_tree import NumericAttributeClassObserverBinaryTree
 from skmultiflow.trees.numeric_attribute_binary_test import NumericAttributeBinaryTest
 from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
 
 
-class HoeffdingNumericAttributeClassObserver(BinaryTreeNumericAttributeClassObserver):
-    """ FIMTDDNumericAttributeClassObserver
-
-    Class for observing the class data distribution for a numeric attribute using gaussian estimators.
-    This observer monitors the class distribution of a given attribute.
+class NumericAttributeRegressionObserver(NumericAttributeClassObserverBinaryTree):
+    """ Class for observing the data distribution for a numeric attribute for regression.
 
     """
 
@@ -48,7 +45,7 @@ class HoeffdingNumericAttributeClassObserver(BinaryTreeNumericAttributeClassObse
                 self._left_statistics[1] += label
                 self._left_statistics[2] += label * label
                 if self._left is None:
-                    self._left = HoeffdingNumericAttributeClassObserver.Node(val, label)
+                    self._left = NumericAttributeRegressionObserver.Node(val, label)
                 else:
                     self._left.insert_value(val, label)
             else:
@@ -62,7 +59,7 @@ class HoeffdingNumericAttributeClassObserver(BinaryTreeNumericAttributeClassObse
                     self._right_statistics[2] = label * label
 
                 if self._right is None:
-                    self._right = HoeffdingNumericAttributeClassObserver.Node(val, label)
+                    self._right = NumericAttributeRegressionObserver.Node(val, label)
                 else:
                     self._right.insert_value(val, label)
 
@@ -88,7 +85,7 @@ class HoeffdingNumericAttributeClassObserver(BinaryTreeNumericAttributeClassObse
 
         else:
             if self._root is None:
-                self._root = HoeffdingNumericAttributeClassObserver.Node(att_val, class_val)
+                self._root = NumericAttributeRegressionObserver.Node(att_val, class_val)
             else:
                 self._root.insert_value(att_val, class_val)
 

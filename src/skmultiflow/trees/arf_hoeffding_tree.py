@@ -121,7 +121,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                     if i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
-                        obs = GaussianNumericAttributeClassObserver()
+                        obs = NumericAttributeClassObserverGaussian()
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(X[i], int(y), weight)
 

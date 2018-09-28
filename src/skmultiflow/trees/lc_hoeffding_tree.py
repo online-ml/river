@@ -1,5 +1,5 @@
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.trees.gaussian_numeric_attribute_class_observer import GaussianNumericAttributeClassObserver
+from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.utils.utils import *
 from skmultiflow.trees.utils import do_naive_bayes_prediction
@@ -127,7 +127,7 @@ class LCHT(HoeffdingTree):
                     if i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
-                        obs = GaussianNumericAttributeClassObserver()
+                        obs = NumericAttributeClassObserverGaussian()
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(X[i], int(y), weight)
 

@@ -6,14 +6,10 @@ from skmultiflow.trees.attribute_split_suggestion import \
 from collections import Counter
 
 
-class BinaryTreeNumericAttributeClassObserver(AttributeClassObserver):
-    """ BinaryTreeNumericAttributeClassObserver
-
-    Class for observing the class data distribution for a numeric attribute
-    using a binary tree.
-    This observer monitors the class distribution of a given attribute.
-    Used in naive Bayes and decision trees to monitor data statistics on
-    leaves.
+class NumericAttributeClassObserverBinaryTree(AttributeClassObserver):
+    """ Class for observing the class data distribution for a numeric attribute
+    using a binary tree. Used in Naive Bayes and decision trees to monitor data
+    statistics on leaves.
     """
 
     class Node:
@@ -33,14 +29,14 @@ class BinaryTreeNumericAttributeClassObserver(AttributeClassObserver):
             elif val < self._cut_point:
                 self._class_count_left[label] += weight
                 if self._left is None:
-                    self._left = BinaryTreeNumericAttributeClassObserver.\
+                    self._left = NumericAttributeClassObserverBinaryTree.\
                         Node(val, label, weight)
                 else:
                     self._left.insert_value(val, label, weight)
             else:
                 self._class_count_right[label] += weight
                 if self._right is None:
-                    self._right = BinaryTreeNumericAttributeClassObserver.\
+                    self._right = NumericAttributeClassObserverBinaryTree.\
                         Node(val, label, weight)
                 else:
                     self._right.insert_value(val, label, weight)
@@ -59,7 +55,7 @@ class BinaryTreeNumericAttributeClassObserver(AttributeClassObserver):
             return
         else:
             if self._root is None:
-                self._root = BinaryTreeNumericAttributeClassObserver.\
+                self._root = NumericAttributeClassObserverBinaryTree.\
                     Node(att_val, class_val, weight)
             else:
                 self._root.insert_value(att_val, class_val, weight)

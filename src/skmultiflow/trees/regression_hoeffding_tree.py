@@ -1,7 +1,7 @@
 import numpy as np
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.trees.hoeffding_numeric_attribute_class_observer import HoeffdingNumericAttributeClassObserver
-from skmultiflow.trees.hoeffding_nominal_class_attribute_observer import HoeffdingNominalAttributeClassObserver
+from skmultiflow.trees.numeric_attribute_regression_observer import NumericAttributeRegressionObserver
+from skmultiflow.trees.nominal_attribute_regression_observer import NominalAttributeRegressionObserver
 from operator import attrgetter
 from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
@@ -119,9 +119,9 @@ class RegressionHoeffdingTree(HoeffdingTree):
                     obs = self._attribute_observers[i]
                 except KeyError:
                     if i in ht.nominal_attributes:
-                        obs = HoeffdingNominalAttributeClassObserver()
+                        obs = NominalAttributeRegressionObserver()
                     else:
-                        obs = HoeffdingNumericAttributeClassObserver()
+                        obs = NumericAttributeRegressionObserver()
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(X[i], y, weight)
 
@@ -201,9 +201,9 @@ class RegressionHoeffdingTree(HoeffdingTree):
                     obs = self._attribute_observers[i]
                 except KeyError:
                     if i in rht.nominal_attributes:
-                        obs = HoeffdingNominalAttributeClassObserver()
+                        obs = NominalAttributeRegressionObserver()
                     else:
-                        obs = HoeffdingNumericAttributeClassObserver()
+                        obs = NumericAttributeRegressionObserver()
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(X[i], y, weight)
 
