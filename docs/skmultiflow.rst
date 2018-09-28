@@ -15,7 +15,6 @@ Subpackages
     skmultiflow.meta
     skmultiflow.metrics
     skmultiflow.neural_networks
-    skmultiflow.options
     skmultiflow.transform
     skmultiflow.trees
     skmultiflow.utils
