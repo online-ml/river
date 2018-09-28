@@ -6,24 +6,24 @@ from skmultiflow.data.base_stream import Stream
 
 class FileStream(Stream):
     """ FileStream
-    
-    A stream generated from the entries of a file. For the moment only 
+
+    A stream generated from the entries of a file. For the moment only
     csv files are supported, but the idea is to support different formats,
-    as long as there is a function that correctly reads, interprets, and 
+    as long as there is a function that correctly reads, interprets, and
     returns a pandas' DataFrame or numpy.ndarray with the data.
-    
-    The stream is able to provide, as requested, a number of samples, in 
-    a way that old samples cannot be accessed in a later time. This is done 
-    so that a stream context can be correctly simulated. 
-    
+
+    The stream is able to provide, as requested, a number of samples, in
+    a way that old samples cannot be accessed in a later time. This is done
+    so that a stream context can be correctly simulated.
+
     Parameters
     ----------
     filepath:
         Path to the data file
-        
+
     target_idx: int, optional (default=-1)
         The column index from which the targets start.
-        
+
     n_targets: int, optional (default=1)
         The number of targets.
 
@@ -74,6 +74,10 @@ class FileStream(Stream):
         self.filepath = filepath
         self.filename = ''
         self.basename = ''
+
+        # Automatically infer target_idx if not passed in multi-output problems
+        if self.n_targets > 1 and self.target_idx == -1:
+            self.target_idx = -self.n_targets
 
         self.__configure()
 
@@ -162,10 +166,10 @@ class FileStream(Stream):
 
     def prepare_for_use(self):
         """ prepare_for_use
-        
-        Prepares the stream for use. This functions should always be 
+
+        Prepares the stream for use. This functions should always be
         called after the stream initialization.
-        
+
         """
         self._load_data()
         self.sample_idx = 0
@@ -181,6 +185,7 @@ class FileStream(Stream):
             rows, cols = raw_data.shape
             self.n_samples = rows
             labels = raw_data.columns.values.tolist()
+
 
             if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
                 # Take everything to the right of target_idx
@@ -215,13 +220,13 @@ class FileStream(Stream):
 
     def restart(self):
         """ restart
-        
-        Restarts the stream's sample feeding, while keeping all of its 
+
+        Restarts the stream's sample feeding, while keeping all of its
         parameters.
-        
-        It basically server the purpose of reinitializing the stream to 
+
+        It basically server the purpose of reinitializing the stream to
         its initial state.
-        
+
         """
         self.sample_idx = 0
         self.current_sample_x = None
@@ -229,21 +234,21 @@ class FileStream(Stream):
 
     def next_sample(self, batch_size=1):
         """ next_sample
-        
-        If there is enough instances to supply at least batch_size samples, those 
+
+        If there is enough instances to supply at least batch_size samples, those
         are returned. If there aren't a tuple of (None, None) is returned.
-        
+
         Parameters
         ----------
         batch_size: int
             The number of instances to return.
-        
+
         Returns
         -------
         tuple or tuple list
             Returns the next batch_size instances.
             For general purposes the return can be treated as a numpy.ndarray.
-        
+
         """
         self.sample_idx += batch_size
         try:

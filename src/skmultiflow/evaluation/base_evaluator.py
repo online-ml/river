@@ -3,17 +3,19 @@ from skmultiflow.core.base_object import BaseObject
 from skmultiflow.data.base_stream import Stream
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
 from skmultiflow.metrics import WindowClassificationMeasurements, ClassificationMeasurements, \
-    MultiOutputMeasurements, WindowMultiOutputMeasurements, RegressionMeasurements, WindowRegressionMeasurements
+    MultiTargetClassificationMeasurements, WindowMultiTargetClassificationMeasurements, RegressionMeasurements, \
+    WindowRegressionMeasurements, MultiTargetRegressionMeasurements, \
+    WindowMultiTargetRegressionMeasurements
 from skmultiflow.utils import FastBuffer
 import skmultiflow.utils.constants as constants
 
 
 class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     """ The abstract class that works as a base model for all of this framework's
-    evaluators. It creates a basic interface that evaluation modules should 
+    evaluators. It creates a basic interface that evaluation modules should
     follow in order to use them with all the tools available in scikit-workflow.
 
-    This class should not me instantiated, as none of its methods, except the 
+    This class should not me instantiated, as none of its methods, except the
     get_class_type, are implemented.
 
     Raises
@@ -83,13 +85,13 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     @abstractmethod
     def partial_fit(self, X, y, classes=None, weight=None):
         """ Partially fits the classifiers.
-        
+
         X: numpy.ndarray of shape (n_samples, n_features)
             The feature's matrix.
-        
+
         y: Array-like
             An array-like containing the class labels of all samples in X.
-        
+
         classes: list
             A list containing all class labels of the classification problem.
 
@@ -101,23 +103,23 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         -------
         BaseClassifier extension or list of BaseClassifier extensions
             The trained classifier's at the end of the evaluation process.
-        
+
         """
         raise NotImplementedError
 
     @abstractmethod
     def predict(self, X):
         """ Predicts with the classifier, or classifiers, being evaluated.
-        
+
         X: numpy.ndarray of shape (n_samples, n_features)
             The feature's matrix.
-        
+
         Returns
         -------
         list
-            A list containing the array-likes representing each classifier's 
+            A list containing the array-likes representing each classifier's
             prediction.
-        
+
         """
         raise NotImplementedError
 
@@ -127,13 +129,13 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     @abstractmethod
     def set_params(self, parameter_dict):
         """ Update parameter names and values via a dictionary.
-        
+
         Parameters
         ----------
         parameter_dict: dictionary
-            A dictionary where the keys are parameters' names and the values 
+            A dictionary where the keys are parameters' names and the values
             are the new values for those parameters.
-         
+
         """
         raise NotImplementedError
 
@@ -215,10 +217,14 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             else:
                 raise ValueError("Inconsistent metrics {} for {} stream.".format(self.metrics, self._output_type))
         else:
-            multi_output_metrics = set(constants.MULTI_OUTPUT_METRICS)
+            multi_label_classification_metrics = set(constants.MULTI_TARGET_CLASSIFICATION_METRICS)
+            multi_target_regression_metrics = set(constants.MULTI_TARGET_REGRESSION_METRICS)
             evaluation_metrics = set(self.metrics)
-            if evaluation_metrics.union(multi_output_metrics) == multi_output_metrics:
-                self._task_type = constants.MULTI_OUTPUT
+
+            if evaluation_metrics.union(multi_label_classification_metrics) == multi_label_classification_metrics:
+                self._task_type = constants.MULTI_TARGET_CLASSIFICATION
+            elif evaluation_metrics.union(multi_target_regression_metrics) == multi_target_regression_metrics:
+                self._task_type = constants.MULTI_TARGET_REGRESSION
             else:
                 raise ValueError("Inconsistent metrics {} for {} stream.".format(self.metrics, self._output_type))
 
@@ -239,15 +245,19 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 self.mean_eval_measurements.append(ClassificationMeasurements())
                 self.current_eval_measurements.append(WindowClassificationMeasurements(window_size=self.n_sliding))
 
-        elif self._task_type == constants.MULTI_OUTPUT:
+        elif self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
             for i in range(self.n_models):
-                self.mean_eval_measurements.append(MultiOutputMeasurements())
-                self.current_eval_measurements.append(WindowMultiOutputMeasurements(window_size=self.n_sliding))
+                self.mean_eval_measurements.append(MultiTargetClassificationMeasurements())
+                self.current_eval_measurements.append(WindowMultiTargetClassificationMeasurements(window_size=self.n_sliding))
 
         elif self._task_type == constants.REGRESSION:
             for i in range(self.n_models):
                 self.mean_eval_measurements.append(RegressionMeasurements())
                 self.current_eval_measurements.append(WindowRegressionMeasurements(window_size=self.n_sliding))
+        elif self._task_type == constants.MULTI_TARGET_REGRESSION:
+            for i in range(self.n_models):
+                self.mean_eval_measurements.append(MultiTargetRegressionMeasurements())
+                self.current_eval_measurements.append(WindowMultiTargetRegressionMeasurements(window_size=self.n_sliding))
 
     def _update_metrics(self):
         """ Updates the metrics of interest. This function creates a metrics dictionary,
@@ -312,6 +322,20 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             new_points_dict[constants.MAE] = [[self.mean_eval_measurements[i].get_average_error(),
                                                self.current_eval_measurements[i].get_average_error()]
                                               for i in range(self.n_models)]
+
+        if constants.AMSE in self.metrics:
+            new_points_dict[constants.AMSE] = [[self.mean_eval_measurements[i].get_average_mean_square_error(),
+                                                self.current_eval_measurements[i].get_average_mean_square_error()]
+                                               for i in range(self.n_models)]
+
+        if constants.AMAE in self.metrics:
+            new_points_dict[constants.AMAE] = [[self.mean_eval_measurements[i].get_average_absolute_error(),
+                                                self.current_eval_measurements[i].get_average_absolute_error()]
+                                               for i in range(self.n_models)]
+        if constants.ARMSE in self.metrics:
+            new_points_dict[constants.ARMSE] = [[self.mean_eval_measurements[i].get_average_root_mean_square_error(),
+                                                 self.current_eval_measurements[i].get_average_root_mean_square_error()]
+                                                for i in range(self.n_models)]
 
         if constants.TRUE_VS_PREDICTED in self.metrics:
             true, pred = [], []
@@ -400,6 +424,18 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     for i in range(self.n_models):
                         header += ',mean_mae_[{}],current_mae_[{}]'.\
                             format(self.model_names[i], self.model_names[i])
+                if constants.AMSE in self.metrics:
+                    for i in range(self.n_models):
+                        header += ',global_amse_[{}],sliding_amse_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
+                if constants.AMAE in self.metrics:
+                    for i in range(self.n_models):
+                        header += ',global_amae_[{}],sliding_amae_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
+                if constants.ARMSE in self.metrics:
+                    for i in range(self.n_models):
+                        header += ',global_armse_[{}],sliding_armse_[{}]'.\
+                            format(self.model_names[i], self.model_names[i])
 
                 if constants.TRUE_VS_PREDICTED in self.metrics:
                     for i in range(self.n_models):
@@ -452,6 +488,18 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 for i in range(self.n_models):
                     line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_average_error(),
                                                     self.current_eval_measurements[i].get_average_error())
+            if constants.AMSE in self.metrics:
+                for i in range(self.n_models):
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_average_mean_square_error(),
+                                                    self.current_eval_measurements[i].get_average_mean_square_error())
+            if constants.AMAE in self.metrics:
+                for i in range(self.n_models):
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_average_absolute_error(),
+                                                    self.current_eval_measurements[i].get_average_absolute_error())
+            if constants.ARMSE in self.metrics:
+                for i in range(self.n_models):
+                    line += ',{:.6f},{:.6f}'.format(self.mean_eval_measurements[i].get_average_root_mean_square_error(),
+                                                    self.current_eval_measurements[i].get_average_root_mean_square_error())
 
             if constants.TRUE_VS_PREDICTED in self.metrics:
 
@@ -532,6 +580,15 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             if constants.MAE in self.metrics:
                 logging.info('{} - MAE          : {:4f}'.format(
                     self.model_names[i], self.mean_eval_measurements[i].get_average_error()))
+            if constants.AMSE in self.metrics:
+                logging.info('{} - AMSE          : {:4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_average_mean_square_error()))
+            if constants.AMAE in self.metrics:
+                logging.info('{} - AMAE          : {:4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_average_absolute_error()))
+            if constants.ARMSE in self.metrics:
+                logging.info('{} - ARMSE          : {:4f}'.format(
+                    self.model_names[i], self.mean_eval_measurements[i].get_average_root_mean_square_error()))
 
     def get_measurements(self, model_idx=None):
         """ Get measurements from the evaluation.

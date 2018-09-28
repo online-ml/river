@@ -4,30 +4,30 @@ import numpy as np
 
 class FastBuffer(BaseObject):
     """ FastBuffer
-     
-    A simple buffer used to keep track of a limited number of unitary entries. It 
-    updates the buffer following a FIFO method, meaning that when the buffer is 
+
+    A simple buffer used to keep track of a limited number of unitary entries. It
+    updates the buffer following a FIFO method, meaning that when the buffer is
     full and a new entry arrives, the oldest entry is pushed out of the queue.
-    
-    In theory it keeps track of simple, primitive objects, such as numeric values, 
-    but in practice it can be used to store any kind of object. 
-    
-    For this framework the FastBuffer is mainly used to keep track of true labels 
-    and predictions in a classification task context, so that we can keep updated 
+
+    In theory it keeps track of simple, primitive objects, such as numeric values,
+    but in practice it can be used to store any kind of object.
+
+    For this framework the FastBuffer is mainly used to keep track of true labels
+    and predictions in a classification task context, so that we can keep updated
     statistics about the task being executed.
-    
+
     Parameters
     ----------
     max_size: int
-        Maximum size of the queue. 
-        
+        Maximum size of the queue.
+
     object_list: list
-        An initial list. Optional. If given the queue will be started with the 
+        An initial list. Optional. If given the queue will be started with the
         values from this list.
-    
+
     Examples
     --------
-    >>> # In the following example we keep track of the last 1000 predictions 
+    >>> # In the following example we keep track of the last 1000 predictions
     >>> # and true labels
     >>> from skmultiflow.utils.data_structures import FastBuffer
     >>> from skmultiflow.lazy.knn import KNN
@@ -45,7 +45,7 @@ class FastBuffer(BaseObject):
     ...     true_label_popped = true_labels_buffer.add_element(y)
     ...     prediction_popped = predictions_buffer.add_element(clf.predict(X))
     ...     clf = clf.partial_fit(X, y)
-        
+
     """
 
     def __init__(self, max_size, object_list=None):
@@ -67,24 +67,24 @@ class FastBuffer(BaseObject):
 
     def add_element(self, element_list):
         """ add_element
-        
-        Adds a new entry to the buffer. In case there are more elements in the 
-        element_list parameter than there is free space in the queue, elements 
-        from the queue are iteratively popped from the queue and appended to 
+
+        Adds a new entry to the buffer. In case there are more elements in the
+        element_list parameter than there is free space in the queue, elements
+        from the queue are iteratively popped from the queue and appended to
         a list, which in the end is returned.
-        
+
         Parameters
         ----------
         element_list: list, numpy.ndarray
             A list with all the elements that are to be added to the queue.
-            
+
         Returns
         -------
         list
-            If no elements need to be popped from the queue to make space for new 
-            entries there is no return. On the other hand, if elements need to be 
+            If no elements need to be popped from the queue to make space for new
+            entries there is no return. On the other hand, if elements need to be
             removed, they are added to an auxiliary list, and that list is returned.
-        
+
         """
         if (self.current_size+len(element_list)) <= self.max_size:
             for i in range(len(element_list)):
@@ -103,14 +103,14 @@ class FastBuffer(BaseObject):
 
     def get_next_element(self):
         """ get_next_element
-        
+
         Pop the head of the queue.
-        
+
         Returns
         -------
         int or float
             The first element in the queue.
-        
+
         """
         result = None
         if len(self.buffer) > 0:
@@ -141,14 +141,14 @@ class FastBuffer(BaseObject):
 
     def peek(self):
         """ peek
-        
+
         Peek the head of the queue, without removing or altering it.
-        
+
         Returns
         -------
         int or float
             The head of the queue.
-        
+
         """
         try:
             return self.buffer[0]
@@ -164,32 +164,32 @@ class FastBuffer(BaseObject):
 
 class FastComplexBuffer(BaseObject):
     """ FastComplexBuffer
-    
-    A complex buffer used to keep track of a limited number of complex entries. It 
-    updates the buffer following a FIFO method, meaning that when the buffer is 
+
+    A complex buffer used to keep track of a limited number of complex entries. It
+    updates the buffer following a FIFO method, meaning that when the buffer is
     full and a new entry arrives, the oldest entry is pushed out of the queue.
-    
-    We use the term complex entry to specify that each entry is a set of n 
-    predictions, one for each classification task. This structure is used to keep 
+
+    We use the term complex entry to specify that each entry is a set of n
+    predictions, one for each classification task. This structure is used to keep
     updated statistics from a multi output context.
-    
+
     Parameters
     ----------
     max_size: int
-        Maximum size of the queue. 
-        
+        Maximum size of the queue.
+
     width: int
-        The width from a complex entry, in other words how many classification 
+        The width from a complex entry, in other words how many classification
         tasks are there to keep track of.
-    
+
     Examples
     --------
-    It works similarly to the FastBuffer structure, except that it keeps track 
-    of more than one value per entry. For a complete example, please see 
-    skmultiflow.evaluation.measure_collection.WindowMultiOutputMeasurements' 
-    implementation, where the FastComplexBuffer is used to keep track of the 
+    It works similarly to the FastBuffer structure, except that it keeps track
+    of more than one value per entry. For a complete example, please see
+    skmultiflow.evaluation.measure_collection.WindowMultiTargetClassificationMeasurements'
+    implementation, where the FastComplexBuffer is used to keep track of the
     MultiOutputLearner's statistics.
-    
+
     """
 
     def __init__(self, max_size, width):
@@ -212,9 +212,9 @@ class FastComplexBuffer(BaseObject):
     def add_element(self, element_list):
         """ add_element
 
-        Adds a new entry to the buffer. In case there are more elements in the 
-        element_list parameter than there is free space in the queue, elements 
-        from the queue are iteratively popped from the queue and appended to 
+        Adds a new entry to the buffer. In case there are more elements in the
+        element_list parameter than there is free space in the queue, elements
+        from the queue are iteratively popped from the queue and appended to
         a list, which in the end is returned.
 
         Parameters
@@ -225,8 +225,8 @@ class FastComplexBuffer(BaseObject):
         Returns
         -------
         list
-            If no elements need to be popped from the queue to make space for new 
-            entries there is no return. On the other hand, if elements need to be 
+            If no elements need to be popped from the queue to make space for new
+            entries there is no return. On the other hand, if elements need to be
             removed, they are added to an auxiliary list, and that list is returned.
 
         """
@@ -282,14 +282,14 @@ class FastComplexBuffer(BaseObject):
 
     def get_next_element(self):
         """ get_next_element
-        
+
         Pop the head of the queue.
-        
+
         Returns
         -------
         tuple
             The first element of the queue.
-        
+
         """
         result = None
         if len(self.buffer) > 0:
@@ -345,31 +345,31 @@ class FastComplexBuffer(BaseObject):
 
 class ConfusionMatrix(BaseObject):
     """ ConfusionMatrix
-    
-    This structure constitutes a confusion matrix, or an error matrix. It is 
-    represented by a matrix of shape (n_labels, n_labels), in a simple, one 
+
+    This structure constitutes a confusion matrix, or an error matrix. It is
+    represented by a matrix of shape (n_labels, n_labels), in a simple, one
     classification task context.
-    
-    One of the matrices dimension is associated with the true labels, while 
-    the other is associated with the predictions. If we consider the columns 
-    to represent predictions and the rows to represent true labels. An entry 
-    in position [1, 2] means that the true label was 1, while the prediction 
+
+    One of the matrices dimension is associated with the true labels, while
+    the other is associated with the predictions. If we consider the columns
+    to represent predictions and the rows to represent true labels. An entry
+    in position [1, 2] means that the true label was 1, while the prediction
     was label 2, thus this was a bad prediction.
-    
-    This structure is used to keep updated statistics from a classifier's 
+
+    This structure is used to keep updated statistics from a classifier's
     performance, which allows to compute different evaluation metrics.
-    
+
     Parameters
     ----------
     n_targets: int
-        The number of targets from the single classification task associated 
+        The number of targets from the single classification task associated
         with this confusion matrix.
-    
+
     dtype: data type
-        A data type supported by numpy.ndarrays, which can correctly represent 
-        the entries to the matrix. In most cases this will be ints, which are 
+        A data type supported by numpy.ndarrays, which can correctly represent
+        the entries to the matrix. In most cases this will be ints, which are
         the default option.
-        
+
     """
 
     def __init__(self, n_targets=None, dtype=np.int64):
@@ -399,28 +399,28 @@ class ConfusionMatrix(BaseObject):
 
     def update(self, i=None, j=None):
         """ update
-        
-        Increases by one the count of occurrences in one of the ConfusionMatrix's 
+
+        Increases by one the count of occurrences in one of the ConfusionMatrix's
         cells.
-        
+
         Parameters
         ---------
         i: int
             The index of the row to be updated.
-        
+
         j: int
             The index of the column to be updated.
-        
+
         Returns
         -------
         bool
-            True if the update was successful and False if it was unsuccessful, 
-            case in which a index is out of range. 
-        
+            True if the update was successful and False if it was unsuccessful,
+            case in which a index is out of range.
+
         Notes
         -----
         No IndexError or IndexOutOfRange errors raised.
-        
+
         """
         if i is None or j is None:
             return False
@@ -441,27 +441,27 @@ class ConfusionMatrix(BaseObject):
 
     def remove(self, i=None, j=None):
         """ remove
-        
-        Decreases by one the count of occurrences in one of the ConfusionMatrix's 
+
+        Decreases by one the count of occurrences in one of the ConfusionMatrix's
         cells.
-        
+
         Parameters
         ----------
         i: int
             The index of the row to be updated.
-        
+
         j: int
             The index of the column to be updated.
-        
+
         Returns
         -------
         bool
             True if the removal was successful and False otherwise.
-        
+
         Notes
         -----
         No IndexError or IndexOutOfRange errors raised.
-        
+
         """
         if i is None or j is None:
             return False
@@ -494,47 +494,47 @@ class ConfusionMatrix(BaseObject):
 
     def shape(self):
         """ shape
-        
+
         Returns
         -------
         tuple
             The confusion matrix's shape.
-        
+
         """
         return self.confusion_matrix.shape
 
     def value_at(self, i, j):
         """ value_at
-        
+
         Parameters
         ----------
         i: int
             An index from one of the matrix's rows.
-            
+
         j: int
             An index from one of the matrix's columns.
-        
+
         Returns
         -------
         int
             The current occurrence count at position [i, j].
-        
+
         """
         return self.confusion_matrix[i, j]
 
     def row(self, r):
         """ row
-        
+
         Parameters
         ----------
         r: int
             An index from one of the matrix' rows.
-        
+
         Returns
         -------
         numpy.array
             The complete row indexed by r.
-        
+
         """
         return self.confusion_matrix[r: r + 1, :]
 
@@ -556,12 +556,12 @@ class ConfusionMatrix(BaseObject):
 
     def get_sum_main_diagonal(self):
         """ Computes the sum of occurrences in the main diagonal.
-        
+
         Returns
         -------
         int
             The occurrence count in the main diagonal.
-        
+
         """
         m, n = self.confusion_matrix.shape
         sum_main_diagonal = 0
@@ -591,39 +591,39 @@ class ConfusionMatrix(BaseObject):
 
 class MOLConfusionMatrix(BaseObject):
     """ MOLConfusionMatrix
-    
-    This structure constitutes a confusion matrix, or an error matrix. It is 
+
+    This structure constitutes a confusion matrix, or an error matrix. It is
     represented by a matrix of shape (n_targets, n_labels, n_labels). It
-    basically works as an individual ConfusionMatrix for each of the 
-    classification tasks in a multi label environment. Thus, n_labels is 
+    basically works as an individual ConfusionMatrix for each of the
+    classification tasks in a multi label environment. Thus, n_labels is
     always 2 (binary).
-    
+
     The first dimension defines which classification task it keeps track of.
-    The second dimension is associated with the true labels, while the other 
-    is associated with the predictions. For example, an entry in position 
-    [2, 1, 2] represents a miss classification in the classification task of 
+    The second dimension is associated with the true labels, while the other
+    is associated with the predictions. For example, an entry in position
+    [2, 1, 2] represents a miss classification in the classification task of
     index 2, where the true label was index 1, but the prediction was index 2.
-    
-    This structure is used to keep updated statistics from a multi output 
-    classifier's performance, which allows to compute different evaluation 
+
+    This structure is used to keep updated statistics from a multi output
+    classifier's performance, which allows to compute different evaluation
     metrics.
-    
+
     Parameters
     ----------
     n_targets: int
         The number of classification tasks.
-    
+
     dtype: data type
-        A data type supported by numpy.ndarrays, which can correctly represent 
-        the entries to the matrix. In most cases this will be ints, which are 
+        A data type supported by numpy.ndarrays, which can correctly represent
+        the entries to the matrix. In most cases this will be ints, which are
         the default option.
-        
+
     Notes
     -----
     This structure starts with n_targets classification tasks. As the entries
-    arrive, if new labels are identified, the matrix may reshape itself to 
+    arrive, if new labels are identified, the matrix may reshape itself to
     accommodate all labels.
-        
+
     """
 
     def __init__(self, n_targets=None, dtype=np.int64):
@@ -650,29 +650,29 @@ class MOLConfusionMatrix(BaseObject):
 
     def update(self, target=None, true=None, pred=None):
         """ update
-        
-        Increases by one the occurrence count in one of the matrix's positions. 
-        As entries arrive, it may reshape the matrix to correctly accommodate all 
-        possible labels. 
-        
+
+        Increases by one the occurrence count in one of the matrix's positions.
+        As entries arrive, it may reshape the matrix to correctly accommodate all
+        possible labels.
+
         The count will be increased in the matrix's [target, true, pred] position.
-        
+
         Parameters
         ----------
         target: int
             A classification task's index.
-        
+
         true: int
             A true label's index.
-        
+
         pred: int
             A prediction's index
-        
+
         Returns
         -------
         bool
             True if the update was successful, False otherwise.
-        
+
         """
         if target is None or true is None or pred is None:
             return False
@@ -691,27 +691,27 @@ class MOLConfusionMatrix(BaseObject):
 
     def remove(self, target=None, true=None, pred=None):
         """ remove
-        
-        Decreases by one the occurrence count in one of the matrix's positions. 
-        
+
+        Decreases by one the occurrence count in one of the matrix's positions.
+
         The count will be increased in the matrix's [target, true, pred] position.
-        
+
         Parameters
         ----------
         target: int
             A classification task's index.
-        
+
         true: int
             A true label's index.
-        
+
         pred: int
             A prediction's index
-        
+
         Returns
         -------
         bool
             True if the removal was successful, False otherwise.
-        
+
         """
         if true is None or pred is None or target is None:
             return False
@@ -742,23 +742,23 @@ class MOLConfusionMatrix(BaseObject):
 
     def value_at(self, target, i, j):
         """ value_at
-        
+
         Parameters
         ----------
         target: int
             An index from one of classification's tasks.
-        
+
         i: int
             An index from one of the matrix's rows.
-            
+
         j: int
             An index from one of the matrix's columns.
-        
+
         Returns
         -------
         int
             The current occurrence count at position [target, i, j].
-        
+
         """
         return self.confusion_matrix[target, i, j]
 
@@ -830,27 +830,27 @@ class MOLConfusionMatrix(BaseObject):
 
     def get_total_sum(self):
         """ get_total_sum
-        
+
         Returns
         ------
         int
             The sum of occurrences in the matrix.
-        
+
         """
         return np.sum(self.confusion_matrix)
 
     def get_total_discordance(self):
         """ get_total_discordance
-        
-        The total discordance is defined as all the occurrences where a miss 
-        classification was detected. In other words it's the sum of all cells 
+
+        The total discordance is defined as all the occurrences where a miss
+        classification was detected. In other words it's the sum of all cells
         indexed by [t, i, j] where i and j are different.
-        
+
         Returns
         -------
         float
             The total discordance from all target's matrices.
-        
+
         """
         return self.get_total_sum() - self.get_sum_main_diagonal()
 
@@ -873,38 +873,38 @@ class MOLConfusionMatrix(BaseObject):
 
 class InstanceWindow(BaseObject):
     """ InstanceWindow
-    
-    Keeps a limited size window from the most recent instances seen. 
-    It updates its recorded instances by the FIFO method, which means 
-    that when size limit is reached, old instances are dumped to give 
+
+    Keeps a limited size window from the most recent instances seen.
+    It updates its recorded instances by the FIFO method, which means
+    that when size limit is reached, old instances are dumped to give
     place to new instances.
-    
+
     Parameters
     ----------
     n_features: int
         The total number of features to be expected.
-    
+
     n_targets: int
         The total number of target tasks to be expected.
-    
+
     categorical_list: list
         A list with the indexes from all the categorical attributes.
-    
+
     max_size: int
         The window's maximum length.
-    
+
     dtype: data type
         A data type supported by numpy, by default it is a float.
-    
+
     Raises
     ------
-    ValueError: If at any moment, an instance with a different number of 
-    attributes than that of the n_attributes parameter is passed, a ValueError 
+    ValueError: If at any moment, an instance with a different number of
+    attributes than that of the n_attributes parameter is passed, a ValueError
     is raised.
-    
-    TypeError: If the buffer type is altered by the user, or isn't correctly 
+
+    TypeError: If the buffer type is altered by the user, or isn't correctly
     initialized, a TypeError may be raised.
-    
+
     """
 
     def __init__(self, n_features=0, n_targets=1, categorical_list=None, max_size=1000, dtype=float):
@@ -924,25 +924,25 @@ class InstanceWindow(BaseObject):
         self._n_samples = 0
 
     def add_element(self, X, y):
-        """ add_element 
-        
+        """ add_element
+
         Adds a sample to the instance window.
-        
-        X: numpy.ndarray of shape (1, 1) 
+
+        X: numpy.ndarray of shape (1, 1)
             Feature matrix of a single sample.
-        
-        y: numpy.ndarray of shape (1, 1) 
+
+        y: numpy.ndarray of shape (1, 1)
             Labels matrix of a single sample.
 
         Raises
         ------
-        ValueError: If at any moment, an instance with a different number of 
-        attributes than that of the n_attributes parameter is passed, a ValueError 
+        ValueError: If at any moment, an instance with a different number of
+        attributes than that of the n_attributes parameter is passed, a ValueError
         is raised.
-        
-        TypeError: If the buffer type is altered by the user, or isn't correctly 
+
+        TypeError: If the buffer type is altered by the user, or isn't correctly
         initialized, a TypeError may be raised.
-        
+
         """
         if self._n_attributes != X.size:
             if self._n_samples == 0:
@@ -966,9 +966,9 @@ class InstanceWindow(BaseObject):
 
     def delete_element(self):
         """ delete_element
-        
+
         Delete the oldest element from the sample window.
-        
+
         """
         self._n_samples -= 1
         self._buffer = self._buffer[1:, :]
@@ -981,20 +981,20 @@ class InstanceWindow(BaseObject):
 
     def at_index(self, index):
         """ at_index
-        
+
         Returns the complete sample and index = index.
-        
+
         Parameters
         ----------
         index: int
             An index from the InstanceWindow buffer.
-        
+
         Returns
         -------
         tuple
-            A tuple containing both the attributes and the targets from sample 
+            A tuple containing both the attributes and the targets from sample
             indexed of index.
-        
+
         """
         return self.get_attributes_matrix()[index], self.get_targets_matrix()[index]
 
