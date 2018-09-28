@@ -48,7 +48,7 @@ If you are adding new code to `scikit-multiflow`, it is highly encouraged that y
     * Make your way to the scikit-multiflow parent directory (outside the project)
     * Type in:  
       ``` bash
-      $ sphinx-apidoc -o scikit-multiflow/docs scikit-multiflow/ -e -f
+      $ sphinx-apidoc -o scikit-multiflow/docs scikit-multiflow/src/skmultiflow -e -f 
       ```
 
     * Go to scikit-multiflow/docs and type in:  
