@@ -14,3 +14,4 @@ The following people have contributed to `scikit-multiflow`'s development and ma
 * Anderson Carlos FERREIRA DA SILVA
 * Bader DAMMAK
 * Amine KRIFI
+* Saulo MARTIELLO MASTELINI
