@@ -33,27 +33,6 @@ class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
             self._left = None
             self._right = None
 
-        # def insert_value(self, att_val, target):
-        #     if att_val <= self.att_val:
-        #         self.k += 1
-        #         self.sum_target += target
-        #         self.sum_sq_target += target * target
-        #
-        #         if att_val < self.att_val:
-        #             if self._left is None:
-        #                 self._left = \
-        #                     HoeffdingMultiOutputTNumericAttributeObserver.\
-        #                     Node(att_val, target)
-        #             else:
-        #                 self._left.insert_value(att_val, target)
-        #     else:
-        #         if self._right is None:
-        #             self._right = \
-        #                 HoeffdingMultiOutputTNumericAttributeObserver.\
-        #                 Node(att_val, target)
-        #         else:
-        #             self._right.insert_value(att_val, target)
-
         # Incremental implementation of the insert method. Avoiding unecessary
         # stack tracing must decrease memory costs
         def insert_value(self, att_val, target):
@@ -120,10 +99,6 @@ class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
 
         best_split = self._find_best_split(self._root, candidate)
 
-        # del self._criterion
-        # del self._pre_split_dist
-        # del self._att_idx
-        # del self._aux_statistics
         return best_split
 
     def _find_best_split(self, node, candidate):
