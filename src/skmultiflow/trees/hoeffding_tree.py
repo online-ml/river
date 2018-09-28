@@ -5,9 +5,9 @@ from abc import ABCMeta
 from operator import attrgetter
 from skmultiflow.utils.utils import *
 from skmultiflow.core.base import StreamModel
-from skmultiflow.trees.gaussian_numeric_attribute_class_observer import GaussianNumericAttributeClassObserver
+from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
-from skmultiflow.trees.null_attribute_class_observer import NullAttributeClassObserver
+from skmultiflow.trees.attribute_class_observer_null import AttributeClassObserverNull
 from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
 from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
@@ -547,7 +547,7 @@ class HoeffdingTree(StreamModel):
                     if i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
-                        obs = GaussianNumericAttributeClassObserver()
+                        obs = NumericAttributeClassObserverGaussian()
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(X[i], int(y), weight)
 
@@ -624,7 +624,7 @@ class HoeffdingTree(StreamModel):
 
             """
             if att_idx in self._attribute_observers:
-                self._attribute_observers[att_idx] = NullAttributeClassObserver()
+                self._attribute_observers[att_idx] = AttributeClassObserverNull()
 
     class LearningNodeNB(ActiveLearningNode):
         """Learning node that uses Naive Bayes models.

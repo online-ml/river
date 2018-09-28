@@ -5,7 +5,7 @@ from skmultiflow.trees.attribute_split_suggestion import \
     AttributeSplitSuggestion
 
 
-class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
+class NumericAttributeRegressionObserverMultiTarget(AttributeClassObserver):
     """iSoup-Tree's Extended Binary Search Tree (E-BST)
 
     This class implements the Extended Binary Search Tree (E-BST)
@@ -60,11 +60,11 @@ class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
             # Value was not yet added to the tree
             if is_right:
                 antecedent._right = \
-                    HoeffdingMultiOutputTNumericAttributeObserver.\
+                    NumericAttributeRegressionObserverMultiTarget.\
                     Node(att_val, target)
             else:
                 antecedent._left = \
-                    HoeffdingMultiOutputTNumericAttributeObserver.\
+                    NumericAttributeRegressionObserverMultiTarget.\
                     Node(att_val, target)
 
     def __init__(self):
@@ -76,7 +76,7 @@ class HoeffdingMultiOutputTNumericAttributeObserver(AttributeClassObserver):
             return
         else:
             if self._root is None:
-                self._root = HoeffdingMultiOutputTNumericAttributeObserver.\
+                self._root = NumericAttributeRegressionObserverMultiTarget.\
                     Node(att_val, class_val)
             else:
                 self._root.insert_value(att_val, class_val)

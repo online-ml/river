@@ -5,11 +5,8 @@ import numpy as np
 from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
 
 
-class HoeffdingNominalAttributeClassObserver(AttributeClassObserver):
-    """ HoeffdingNominalAttributeClassObserver
-
-    Class for observing the class data distribution for a numeric attribute using gaussian estimators.
-    This observer monitors the class distribution of a given attribute.
+class NominalAttributeRegressionObserver(AttributeClassObserver):
+    """ Class for observing the data distribution for a nominal attribute for regression.
 
     """
 
@@ -42,7 +39,7 @@ class HoeffdingNominalAttributeClassObserver(AttributeClassObserver):
             else:
 
                 if self._child is None:
-                    self._child = HoeffdingNominalAttributeClassObserver.Node(val, label)
+                    self._child = NominalAttributeRegressionObserver.Node(val, label)
                 else:
                     self._child.insert_value(val, label)
 
@@ -74,7 +71,7 @@ class HoeffdingNominalAttributeClassObserver(AttributeClassObserver):
         else:
             if self._root is None:
                 self._number_of_possible_values = 1
-                self._root = HoeffdingNominalAttributeClassObserver.Node(att_val, class_val, weight)
+                self._root = NominalAttributeRegressionObserver.Node(att_val, class_val, weight)
             else:
                 self._root.insert_value(att_val, class_val)
 

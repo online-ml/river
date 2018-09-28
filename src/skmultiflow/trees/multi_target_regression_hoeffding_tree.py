@@ -1,9 +1,9 @@
 import numpy as np
 from skmultiflow.trees.regression_hoeffding_tree import RegressionHoeffdingTree
-from skmultiflow.trees.hoeffding_multi_output_numeric_attribute_observer \
-     import HoeffdingMultiOutputTNumericAttributeObserver
-from skmultiflow.trees.hoeffding_nominal_class_attribute_observer \
-     import HoeffdingNominalAttributeClassObserver
+from skmultiflow.trees.numeric_attribute_regression_observer_multi_target \
+     import NumericAttributeRegressionObserverMultiTarget
+from skmultiflow.trees.nominal_attribute_regression_observer \
+     import NominalAttributeRegressionObserver
 from operator import attrgetter
 from skmultiflow.utils.utils import get_dimensions
 from skmultiflow.trees.intra_cluster_variance_reduction_split_criterion \
@@ -149,9 +149,9 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 except KeyError:
                     # Creates targets observers, if not already defined
                     if i in rht.nominal_attributes:
-                        obs = HoeffdingNominalAttributeClassObserver()
+                        obs = NominalAttributeRegressionObserver()
                     else:
-                        obs = HoeffdingMultiOutputTNumericAttributeObserver()
+                        obs = NumericAttributeRegressionObserverMultiTarget()
                     self._attribute_observers[i] = obs
                 obs.observe_attribute_class(x, y, weight)
 

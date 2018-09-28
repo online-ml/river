@@ -6,11 +6,9 @@ from sortedcontainers.sortedlist import SortedList
 import numpy as np
 
 
-class GaussianNumericAttributeClassObserver(AttributeClassObserver):
-    """ GaussianNumericAttributeClassObserver
-
-    Class for observing the class data distribution for a numeric attribute using gaussian estimators.
-    This observer monitors the class distribution of a given attribute.
+class NumericAttributeClassObserverGaussian(AttributeClassObserver):
+    """ Class for observing the class data distribution for a numeric attribute
+    using gaussian estimators.
 
     """
     def __init__(self):
