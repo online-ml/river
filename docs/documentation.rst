@@ -128,6 +128,7 @@ Tree methods
    skmultiflow.trees.lc_hoeffding_tree
    skmultiflow.trees.regression_hoeffding_tree
    skmultiflow.trees.regression_hoeffding_adaptive_tree
+   skmultiflow.trees.multi_target_regression_hoeffding_tree
 
 .. currentmodule:: skmultiflow
 

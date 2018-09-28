@@ -5,4 +5,3 @@ skmultiflow.evaluation.evaluate\_holdout module
     :members:
     :undoc-members:
     :show-inheritance:
-    :inherited-members:
