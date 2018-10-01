@@ -3,6 +3,7 @@ from copy import copy
 from skmultiflow.utils.utils import get_dimensions
 from skmultiflow.utils.utils import get_max_value_key
 from skmultiflow.utils.utils import normalize_values_in_dict
+from skmultiflow.utils.utils import calculate_object_size
 
 
 def test_get_dimensions():
@@ -53,3 +54,16 @@ def test_normalize_values_in_dict():
     normalize_values_in_dict(a_dictionary, factor=1/sum_of_values)
     for k, v in a_dictionary.items():
         assert a_dictionary[k] == reference[k]
+
+
+def test_calculate_object_size():
+    dict = {}
+    array_length = 10
+
+    for i in range(100):
+        dict[i] = np.ones((array_length), np.float64)
+        dict[i + 100] = 'testing_string'
+
+    assert calculate_object_size(dict, 'byte') == 64579
+    assert calculate_object_size(dict, 'kB') == 63.0654296875
+    assert calculate_object_size(dict, 'MB') == 0.06158733367919922
