@@ -26,10 +26,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
     """Multi-target Regression Hoeffding tree.
 
     This is an implementation of the iSoup-Tree proposed by A. Osojnik,
-    P. Panov, and S. Džeroski [1]_. Currently, only multi-target regression
-    problems are supported. Besides, the current implementation does not uses
-    adaptive models in the leaves: one must choose either using perceptrons or
-    the target mean.
+    P. Panov, and S. Džeroski [1]_.
 
     Parameters
     ----------
