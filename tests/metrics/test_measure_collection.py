@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from skmultiflow.metrics import ClassificationMeasurements
 from skmultiflow.metrics import WindowClassificationMeasurements
 from skmultiflow.metrics import MultiTargetClassificationMeasurements
@@ -7,6 +8,7 @@ from skmultiflow.metrics import RegressionMeasurements
 from skmultiflow.metrics import WindowRegressionMeasurements
 from skmultiflow.metrics import MultiTargetRegressionMeasurements
 from skmultiflow.metrics import WindowMultiTargetRegressionMeasurements
+from skmultiflow.metrics import RunningTimeMeasurements
 
 
 def test_classification_measurements():
@@ -309,3 +311,32 @@ def test_window_multi_target_regression_measurements():
     assert np.isclose(measurements.total_square_error, 0.0)
 
     assert measurements.get_class_type() == 'measurement'
+
+
+def test_running_time_measurements():
+    rtm = RunningTimeMeasurements()
+
+    for i in range(1000):
+        # Test training time
+        rtm.compute_training_time_begin()
+        time.sleep(0.0005)
+        rtm.compute_training_time_end()
+
+        # Test testing time
+        rtm.compute_testing_time_begin()
+        time.sleep(0.0002)
+        rtm.compute_testing_time_end()
+
+        # Update statistics
+        rtm.update_time_measurements()
+
+    expected_info = 'RunningTimeMeasurements: sample_count: 1000 - ' \
+                    'Total running time: {} - ' \
+                    'training_time: {} - ' \
+                    'testing_time: {}'.format(
+                        rtm.get_current_total_running_time(),
+                        rtm.get_current_training_time(),
+                        rtm.get_current_testing_time(),
+                    )
+
+    assert expected_info == rtm.get_info()

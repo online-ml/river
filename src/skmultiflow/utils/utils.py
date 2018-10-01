@@ -1,5 +1,7 @@
 import numpy as np
 import math
+import sys
+from collections import deque
 
 
 def get_dimensions(X):
@@ -75,3 +77,69 @@ def get_max_value_key(dictionary):
         return max(dictionary, key=dictionary.get)
     else:
         return 0
+
+
+def calculate_object_size(obj, unit='kB'):
+    """Iteratively calculates the `obj` size in bytes.
+
+    Visits all the elements related to obj accounting for their respective
+    sizes.
+
+    Parameters
+    ----------
+    object: obj
+        Object to evaluate.
+    string: unit
+        The unit in which the accounted value is going to be returned.
+        Values: 'byte', 'kB', 'MB' (Default: 'kB').
+
+    Returns
+    -------
+    int
+        The size of the object and its related properties and objects,
+        in 'unit'.
+    """
+    seen = set()
+    to_visit = deque()
+    byte_size = 0
+
+    to_visit.append(obj)
+
+    while True:
+        try:
+            obj = to_visit.popleft()
+        except IndexError:
+            break
+
+        # If element was already covered, skip it
+        if id(obj) in seen:
+            continue
+
+        # Update size accounting
+        byte_size += sys.getsizeof(obj)
+
+        # Mark element as seen
+        seen.add(id(obj))
+
+        # Add keys and values for size account
+        if isinstance(obj, dict):
+            for v in obj.values():
+                to_visit.append(v)
+
+            for k in obj.keys():
+                to_visit.append(k)
+        elif hasattr(obj, '__dict__'):
+            to_visit.append(obj.__dict__)
+        elif hasattr(obj, '__iter__') and \
+                not isinstance(obj, (str, bytes, bytearray)):
+            for i in obj:
+                to_visit.append(i)
+
+    if unit == 'kB':
+        final_size = byte_size / 1024
+    elif unit == 'MB':
+        final_size = byte_size / (2 ** 20)
+    else:
+        final_size = byte_size
+
+    return final_size
