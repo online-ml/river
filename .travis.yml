@@ -12,7 +12,7 @@ install:
   - pip install -U .
 # command to run tests
 script:
-  - pytest tests --showlocals -v --cov=src/skmultiflow
+  - pytest tests --showlocals -v --cov=skmultiflow
 
 after_success:
   - codecov
