@@ -42,6 +42,11 @@ def test_classification_measurements():
     expected_majority_class = 0
     assert expected_majority_class == measurements.get_majority_class()
 
+    measurements.reset()
+    assert measurements.sample_count == 0
+
+    assert measurements.get_class_type() == 'measurement'
+
 
 def test_window_classification_measurements():
     y_true = np.ones(100)
@@ -76,6 +81,11 @@ def test_window_classification_measurements():
     expected_majority_class = 0
     assert expected_majority_class == measurements.get_majority_class()
 
+    measurements.reset()
+    assert measurements.sample_count == 0
+
+    assert measurements.get_class_type() == 'measurement'
+
 
 def test_multi_target_classification_measurements():
     y_0 = np.ones(100)
@@ -103,14 +113,19 @@ def test_multi_target_classification_measurements():
     expected_total_sum = 300
     assert expected_total_sum == measurements.get_total_sum()
 
-    expected_info = 'MultiTargetClassificationMeasurements: - sample_count: 100 - hamming_loss: 0.066667 - hamming_score: 0.933333 ' \
-                    '- exact_match: 0.850000 - j_index: 0.933333'
+    expected_info = 'MultiTargetClassificationMeasurements: - sample_count: 100 - hamming_loss: 0.066667 - ' \
+                    'hamming_score: 0.933333 - exact_match: 0.850000 - j_index: 0.933333'
     assert expected_info == measurements.get_info()
 
     expected_last_true = (1.0, 1.0, 1.0)
     expected_last_pred = (1.0, 0.0, 1.0)
     assert np.alltrue(expected_last_true == measurements.get_last()[0])
     assert np.alltrue(expected_last_pred == measurements.get_last()[1])
+
+    measurements.reset()
+    assert measurements.sample_count == 0
+
+    assert measurements.get_class_type() == 'measurement'
 
 
 def test_window_multi_target_classification_measurements():
@@ -148,6 +163,11 @@ def test_window_multi_target_classification_measurements():
     assert np.alltrue(expected_last_true == measurements.get_last()[0])
     assert np.alltrue(expected_last_pred == measurements.get_last()[1])
 
+    measurements.reset()
+    assert measurements.sample_count == 0
+
+    assert measurements.get_class_type() == 'measurement'
+
 
 def test_regression_measurements():
     y_true = np.sin(range(100))
@@ -170,6 +190,11 @@ def test_regression_measurements():
     expected_last = (-0.9992068341863537, -0.9492068341863537)
     assert np.alltrue(expected_last == measurements.get_last())
 
+    measurements.reset()
+    assert measurements.sample_count == 0
+
+    assert measurements.get_class_type() == 'measurement'
+
 
 def test_window_regression_measurements():
     y_true = np.sin(range(100))
@@ -191,6 +216,11 @@ def test_window_regression_measurements():
 
     expected_last = (-0.9992068341863537, -0.9492068341863537)
     assert np.alltrue(expected_last == measurements.get_last())
+
+    measurements.reset()
+    assert measurements.sample_count == 0
+
+    assert measurements.get_class_type() == 'measurement'
 
 
 def test_multi_target_regression_measurements():
@@ -231,6 +261,11 @@ def test_multi_target_regression_measurements():
     for exp, obs in zip(expected_last, measurements.get_last()):
         assert np.isclose(exp, obs).all()
 
+    measurements.reset()
+    assert measurements.sample_count == 0
+
+    assert measurements.get_class_type() == 'measurement'
+
 
 def test_window_multi_target_regression_measurements():
     y_true = np.zeros((100, 3))
@@ -269,3 +304,8 @@ def test_window_multi_target_regression_measurements():
                      np.array([-0.94920683, -0.89920683, -0.84920683]))
     for exp, obs in zip(expected_last, measurements.get_last()):
         assert np.isclose(exp, obs).all()
+
+    measurements.reset()
+    assert np.isclose(measurements.total_square_error, 0.0)
+
+    assert measurements.get_class_type() == 'measurement'
