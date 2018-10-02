@@ -5,9 +5,7 @@ from skmultiflow.utils import check_weights
 
 
 class ClassificationMeasurements(BaseObject):
-    """ ClassificationMeasurements
-
-    Class used to keep updated statistics about a classifier, in order
+    """ Class used to keep updated statistics about a classifier, in order
     to be able to provide, at any given moment, any relevant metric about
     that classifier.
 
@@ -53,15 +51,16 @@ class ClassificationMeasurements(BaseObject):
             self.n_targets = len(self.targets)
         else:
             self.n_targets = 0
+        self.last_true_label = None
+        self.last_prediction = None
+        self.last_sample = None
         self.sample_count = 0
         self.majority_classifier = 0
         self.correct_no_change = 0
         self.confusion_matrix.restart(self.n_targets)
 
     def add_result(self, y_true, y_pred, weight=1.0):
-        """ add_result
-
-        Updates its statistics with the results of a prediction.
+        """ Updates its statistics with the results of a prediction.
 
         Parameters
         ----------
@@ -94,14 +93,12 @@ class ClassificationMeasurements(BaseObject):
         return self.last_true_label, self.last_prediction
 
     def get_majority_class(self):
-        """ get_majority_class
-
-        Computes the true majority class.
+        """ Computes the true majority class.
 
         Returns
         -------
         int
-            Returns the true majority class.
+            The true majority class.
 
         """
         if (self.n_targets is None) or (self.n_targets == 0):
@@ -120,14 +117,12 @@ class ClassificationMeasurements(BaseObject):
         return majority_class
 
     def get_accuracy(self):
-        """ get_accuracy
-
-        Computes the accuracy.
+        """ Computes the accuracy.
 
         Returns
         -------
         float
-            Returns the accuracy.
+            The accuracy.
 
         """
         sum_value = 0.0
@@ -143,9 +138,7 @@ class ClassificationMeasurements(BaseObject):
         return 1.0 - self.get_accuracy()
 
     def _get_target_index(self, target, add_label=False):
-        """ _get_target_index
-
-        Computes the index of an element in the self.targets list.
+        """ Computes the index of an element in the self.targets list.
         Also reshapes the ConfusionMatrix and adds new found targets
         if add is True.
 
@@ -180,14 +173,12 @@ class ClassificationMeasurements(BaseObject):
         return None
 
     def get_kappa(self):
-        """ get_kappa
-
-        Computes the Cohen's kappa coefficient.
+        """ Computes the Cohen's kappa coefficient.
 
         Returns
         -------
         float
-            Returns the Cohen's kappa coefficient.
+            The Cohen's kappa coefficient.
 
         """
         p0 = self.get_accuracy()
@@ -206,15 +197,13 @@ class ClassificationMeasurements(BaseObject):
         return (p0 - pc) / (1.0 - pc)
 
     def get_kappa_t(self):
-        """ get_kappa_t
-
-        Computes the Cohen's kappa T coefficient. This measures the
+        """ Computes the Cohen's kappa T coefficient. This measures the
         temporal correlation between samples.
 
         Returns
         -------
         float
-            Returns the Cohen's kappa T coefficient.
+            The Cohen's kappa T coefficient.
 
         """
         p0 = self.get_accuracy()
@@ -227,14 +216,12 @@ class ClassificationMeasurements(BaseObject):
         return (p0 - pc) / (1.0 - pc)
 
     def get_kappa_m(self):
-        """ get_kappa_t
-
-        Computes the Cohen's kappa M coefficient.
+        """ Computes the Cohen's kappa M coefficient.
 
         Returns
         -------
         float
-            Returns the Cohen's kappa M coefficient.
+            The Cohen's kappa M coefficient.
 
         """
         p0 = self.get_accuracy()
@@ -260,13 +247,11 @@ class ClassificationMeasurements(BaseObject):
                ' - majority_class: {}'.format(self.get_majority_class())
 
     def get_class_type(self):
-        return 'collection'
+        return 'measurement'
 
 
 class WindowClassificationMeasurements(BaseObject):
-    """ WindowClassificationMeasurements
-
-    This class will maintain a fixed sized window of the newest information
+    """ This class will maintain a fixed sized window of the newest information
     about one classifier. It can provide, as requested, any of the relevant
     current metrics about the classifier, measured inside the window.
 
@@ -327,6 +312,14 @@ class WindowClassificationMeasurements(BaseObject):
             self.n_targets = len(self.targets)
         else:
             self.n_targets = 0
+
+        self.true_labels = FastBuffer(self.window_size)
+        self.predictions = FastBuffer(self.window_size)
+        self.temp = 0
+        self.last_prediction = None
+        self.last_true_label = None
+        self.last_sample = None
+
         self.majority_classifier = 0
         self.correct_no_change = 0
         self.confusion_matrix.restart(self.n_targets)
@@ -334,10 +327,8 @@ class WindowClassificationMeasurements(BaseObject):
         self.correct_no_change_correction = FastBuffer(self.window_size)
 
     def add_result(self, y_true, y_pred):
-        """ add_result
-
-        Updates its statistics with the results of a prediction. If needed it
-        will remove samples from the observation window.
+        """ Updates its statistics with the results of a prediction.
+        If needed it will remove samples from the observation window.
 
         Parameters
         ----------
@@ -385,14 +376,12 @@ class WindowClassificationMeasurements(BaseObject):
         return self.last_true_label, self.last_prediction
 
     def get_majority_class(self):
-        """ get_majority_class
-
-        Computes the window/local true majority class.
+        """ Computes the window/current true majority class.
 
         Returns
         -------
         int
-            Returns the true window/local majority class.
+            The true window/current majority class.
 
         """
         if (self.n_targets is None) or (self.n_targets == 0):
@@ -411,14 +400,12 @@ class WindowClassificationMeasurements(BaseObject):
         return majority_class
 
     def get_accuracy(self):
-        """ get_accuracy
-
-        Computes the window/local accuracy.
+        """ Computes the window/current accuracy.
 
         Returns
         -------
         float
-            Returns the window/local accuracy.
+            The window/current accuracy.
 
         """
         sum_value = 0.0
@@ -434,9 +421,7 @@ class WindowClassificationMeasurements(BaseObject):
         return 1.0 - self.get_accuracy()
 
     def _get_target_index(self, target, add=False):
-        """ _get_target_index
-
-        Computes the index of an element in the self.targets list.
+        """ Computes the index of an element in the self.targets list.
         Also reshapes the ConfusionMatrix and adds new found targets
         if add is True.
 
@@ -471,14 +456,12 @@ class WindowClassificationMeasurements(BaseObject):
         return None
 
     def get_kappa(self):
-        """ get_kappa
-
-        Computes the window/local Cohen's kappa coefficient.
+        """ Computes the window/current Cohen's kappa coefficient.
 
         Returns
         -------
         float
-            Returns the window/local Cohen's kappa coefficient.
+            The window/current Cohen's kappa coefficient.
 
         """
         p0 = self.get_accuracy()
@@ -498,15 +481,13 @@ class WindowClassificationMeasurements(BaseObject):
         return (p0 - pc) / (1.0 - pc)
 
     def get_kappa_t(self):
-        """ get_kappa_t
-
-        Computes the window/local Cohen's kappa T coefficient. This measures
+        """ Computes the window/current Cohen's kappa T coefficient. This measures
         the temporal correlation between samples.
 
         Returns
         -------
         float
-            Returns the window/local Cohen's kappa T coefficient.
+            The window/current Cohen's kappa T coefficient.
 
         """
         p0 = self.get_accuracy()
@@ -519,14 +500,12 @@ class WindowClassificationMeasurements(BaseObject):
         return (p0 - pc) / (1.0 - pc)
 
     def get_kappa_m(self):
-        """ get_kappa_t
-
-        Computes the window/local Cohen's kappa M coefficient.
+        """ Computes the window/current Cohen's kappa M coefficient.
 
         Returns
         -------
         float
-            Returns the window/local Cohen's kappa M coefficient.
+            The window/current Cohen's kappa M coefficient.
 
         """
         p0 = self.get_accuracy()
@@ -547,7 +526,7 @@ class WindowClassificationMeasurements(BaseObject):
         return self.true_labels.get_current_size()
 
     def get_class_type(self):
-        return 'collection'
+        return 'measurement'
 
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
@@ -561,12 +540,9 @@ class WindowClassificationMeasurements(BaseObject):
 
 
 class MultiTargetClassificationMeasurements(BaseObject):
-    """ MultiTargetClassificationMeasurements
-
-    This class will keep updated statistics about a multi output classifier,
+    """ This class will keep updated statistics about a multi output classifier,
     using a confusion matrix adapted to multi output problems, the
-    MOLConfusionMatrix, alongside other of the classifier's relevant
-    attributes.
+    MOLConfusionMatrix, alongside other relevant attributes.
 
     The performance metrics for multi output tasks are different from those used
     for normal classification tasks. Thus, the statistics provided by this class
@@ -608,16 +584,15 @@ class MultiTargetClassificationMeasurements(BaseObject):
             self.n_targets = len(self.targets)
         else:
             self.n_targets = 0
-        self.sample_count = 0
         self.confusion_matrix.restart(self.n_targets)
+        self.last_true_label = None
+        self.last_prediction = None
+        self.sample_count = 0
         self.exact_match_count = 0
         self.j_sum = 0
-        pass
 
     def add_result(self, y_true, y_pred):
-        """ add_result
-
-        Updates its statistics with the results of a prediction.
+        """ Updates its statistics with the results of a prediction.
 
         Adds the result to the MOLConfusionMatrix and update exact_matches and
         j-index sum counts.
@@ -664,10 +639,8 @@ class MultiTargetClassificationMeasurements(BaseObject):
         return self.last_true_label, self.last_prediction
 
     def get_hamming_loss(self):
-        """ get_hamming_loss
-
-        Computes the Hamming loss, which is the complement of the hamming
-        score metric.
+        """ Computes the Hamming loss, which is the complement of the
+        Hamming score metric.
 
         Returns
         -------
@@ -678,15 +651,13 @@ class MultiTargetClassificationMeasurements(BaseObject):
         return 1.0 - self.get_hamming_score()
 
     def get_hamming_score(self):
-        """ get_hamming_score
-
-        Computes the hamming score, defined as the number of correctly classified
-        labels divided by the total number of labels classified.
+        """ Computes the Hamming score, defined as the number of correctly
+        classified labels divided by the total number of labels classified.
 
         Returns
         -------
         float
-            The hamming score.
+            The Hamming score.
 
         """
         try:
@@ -695,9 +666,7 @@ class MultiTargetClassificationMeasurements(BaseObject):
             return 0.0
 
     def get_exact_match(self):
-        """ get_exact_match
-
-        Computes the exact match metric.
+        """ Computes the exact match metric.
 
         This is the most strict multi output metric, defined as the number of
         samples that have all their labels correctly classified, divided by the
@@ -706,15 +675,13 @@ class MultiTargetClassificationMeasurements(BaseObject):
         Returns
         -------
         float
-            Returns the exact match metric.
+            The exact match metric.
 
         """
         return self.exact_match_count / self.sample_count
 
     def get_j_index(self):
-        """ get_j_index
-
-        Computes the Jaccard index, also known as the intersection over union
+        """ Computes the Jaccard index, also known as the intersection over union
         metric. It is calculated by dividing the number of correctly classified
         labels by the union of predicted and true labels.
 
@@ -742,13 +709,11 @@ class MultiTargetClassificationMeasurements(BaseObject):
                ' - j_index: {:.6f}'.format(self.get_j_index())
 
     def get_class_type(self):
-        return 'collection'
+        return 'measurement'
 
 
 class WindowMultiTargetClassificationMeasurements(BaseObject):
-    """ MultiTargetClassificationMeasurements
-
-    This class will maintain a fixed sized window of the newest information
+    """ This class will maintain a fixed sized window of the newest information
     about one classifier. It can provide, as requested, any of the relevant
     current metrics about the classifier, measured inside the window.
 
@@ -806,15 +771,15 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         else:
             self.n_targets = 0
         self.confusion_matrix.restart(self.n_targets)
+        self.last_true_label = None
+        self.last_prediction = None
         self.exact_match_count = 0
         self.j_sum = 0
         self.true_labels = FastComplexBuffer(self.window_size, self.n_targets)
         self.predictions = FastComplexBuffer(self.window_size, self.n_targets)
 
     def add_result(self, y_true, y_pred):
-        """ add_result
-
-        Updates its statistics with the results of a prediction.
+        """ Updates its statistics with the results of a prediction.
 
         Adds the result to the MOLConfusionMatrix, and updates the
         ComplexFastBuffer objects.
@@ -850,38 +815,32 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         return self.last_true_label, self.last_prediction
 
     def get_hamming_loss(self):
-        """ get_hamming_loss
-
-        Computes the window/local Hamming loss, which is the complement of
-        the hamming score metric.
+        """ Computes the window/current Hamming loss, which is the
+        complement of the Hamming score metric.
 
         Returns
         -------
         float
-            The window/local hamming loss.
+            The window/current hamming loss.
 
         """
         return 1.0 - self.get_hamming_score()
 
     def get_hamming_score(self):
-        """ get_hamming_score
-
-        Computes the window/local hamming score, defined as the number of
+        """ Computes the window/current Hamming score, defined as the number of
         correctly classified labels divided by the total number of labels
         classified.
 
         Returns
         -------
         float
-            The window/local hamming score.
+            The window/current hamming score.
 
         """
         return hamming_score(self.true_labels.get_queue(), self.predictions.get_queue())
 
     def get_exact_match(self):
-        """ get_exact_match
-
-        Computes the window/local exact match metric.
+        """ Computes the window/current exact match metric.
 
         This is the most strict multi output metric, defined as the number of
         samples that have all their labels correctly classified, divided by the
@@ -890,22 +849,20 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         Returns
         -------
         float
-            Returns the window/local exact match metric.
+            The window/current exact match metric.
 
         """
         return exact_match(self.true_labels.get_queue(), self.predictions.get_queue())
 
     def get_j_index(self):
-        """ get_j_index
-
-        Computes the window/local Jaccard index, also known as the intersection
+        """ Computes the window/current Jaccard index, also known as the intersection
         over union metric. It is calculated by dividing the number of correctly
         classified labels by the union of predicted and true labels.
 
         Returns
         -------
         float
-            The window/local Jaccard index.
+            The window/current Jaccard index.
 
         """
         return j_index(self.true_labels.get_queue(), self.predictions.get_queue())
@@ -930,13 +887,11 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
                ' - j_index: {:.6f}'.format(self.get_j_index())
 
     def get_class_type(self):
-        return 'collection'
+        return 'measurement'
 
 
 class RegressionMeasurements(BaseObject):
-    """ RegressionMeasurements
-
-    This class is used to keep updated statistics over a regression
+    """ This class is used to keep updated statistics over a regression
     learner in a regression problem context.
 
     It will keep track of global metrics, that can be provided at
@@ -961,17 +916,15 @@ class RegressionMeasurements(BaseObject):
         self.last_prediction = None
 
     def add_result(self, y_true, y_pred):
-        """ add_result
-
-        Use the true label and the prediction to update the statistics.
+        """ Use the true value and the prediction to update the statistics.
 
         Parameters
         ----------
-        y_true: int
-            The true label.
+        y_true: float
+            The true value.
 
-        y_pred: int
-            The classifier's prediction
+        y_pred: float
+            The predicted value.
 
         """
         self.last_true_label = y_true
@@ -982,14 +935,12 @@ class RegressionMeasurements(BaseObject):
         self.sample_count += 1
 
     def get_mean_square_error(self):
-        """ get_mean_square_error
-
-        Computes the mean square error.
+        """ Computes the mean square error.
 
         Returns
         -------
         float
-            Returns the mean square error.
+            The mean square error.
 
         """
         if self.sample_count == 0:
@@ -998,14 +949,12 @@ class RegressionMeasurements(BaseObject):
             return self.total_square_error / self.sample_count
 
     def get_average_error(self):
-        """ get_average_error
-
-        Computes the mean absolute error.
+        """ Computes the average error.
 
         Returns
         -------
         float
-            Returns the mean absolute error.
+            The average error.
 
         """
         if self.sample_count == 0:
@@ -1017,7 +966,7 @@ class RegressionMeasurements(BaseObject):
         return self.last_true_label, self.last_prediction
 
     def get_class_type(self):
-        return 'collection'
+        return 'measurement'
 
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
@@ -1027,9 +976,7 @@ class RegressionMeasurements(BaseObject):
 
 
 class WindowRegressionMeasurements(BaseObject):
-    """ WindowRegressionMeasurements
-
-    This class is used to keep updated statistics over a regression
+    """ This class is used to keep updated statistics over a regression
     learner in a regression problem context inside a fixed sized window.
     It uses FastBuffer objects to simulate the fixed sized windows.
 
@@ -1058,17 +1005,15 @@ class WindowRegressionMeasurements(BaseObject):
         self.average_error_correction = FastBuffer(self.window_size)
 
     def add_result(self, y_true, y_pred):
-        """ add_result
-
-        Use the true label and the prediction to update the statistics.
+        """ Use the true value and the prediction to update the statistics.
 
         Parameters
         ----------
-        y_true: int
-            The true label.
+        y_true: float
+            The true value.
 
-        y_pred: int
-            The classifier's prediction
+        y_pred: float
+            The predicted value.
 
         """
         self.last_true_label = y_true
@@ -1085,14 +1030,12 @@ class WindowRegressionMeasurements(BaseObject):
             self.average_error += old_average[0]
 
     def get_mean_square_error(self):
-        """ get_mean_square_error
-
-        Computes the window/local mean square error.
+        """ Computes the window/current mean square error.
 
         Returns
         -------
         float
-            Returns the window/local mean square error.
+            The window/current mean square error.
 
         """
         if self.sample_count == 0:
@@ -1101,14 +1044,12 @@ class WindowRegressionMeasurements(BaseObject):
             return self.total_square_error / self.sample_count
 
     def get_average_error(self):
-        """ get_average_error
-
-        Computes the window/local mean absolute error.
+        """ Computes the window/current average error.
 
         Returns
         -------
         float
-            Returns the window/local mean absolute error.
+            The window/current average error.
 
         """
         if self.sample_count == 0:
@@ -1124,7 +1065,7 @@ class WindowRegressionMeasurements(BaseObject):
         return self.total_square_error_correction.get_current_size()
 
     def get_class_type(self):
-        return 'collection'
+        return 'measurement'
 
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
@@ -1134,9 +1075,7 @@ class WindowRegressionMeasurements(BaseObject):
 
 
 class MultiTargetRegressionMeasurements(BaseObject):
-    """ MultiTargetRegressionMeasurements
-
-    This class is used to keep updated statistics over a multi-target regression
+    """ This class is used to keep updated statistics over a multi-target regression
     learner in a multi-target regression problem context.
 
     It will keep track of global metrics, that can be provided at
@@ -1147,6 +1086,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
     def __init__(self):
         super().__init__()
+        self.n_targets = 0
         self.total_square_error = 0.0
         self.average_error = 0.0
         self.sample_count = 0
@@ -1161,17 +1101,15 @@ class MultiTargetRegressionMeasurements(BaseObject):
         self.last_prediction = None
 
     def add_result(self, y, prediction):
-        """ add_result
-
-        Use the true label and the prediction to update the statistics.
+        """ Use the true value and the prediction to update the statistics.
 
         Parameters
         ----------
-        y: int
-            The true label.
+        y: float or list or np.ndarray
+            The true value(s).
 
-        prediction: int
-            The classifier's prediction
+        prediction: float or list or np.ndarray
+            The predicted value(s).
 
         """
         self.last_true_label = y
@@ -1189,31 +1127,26 @@ class MultiTargetRegressionMeasurements(BaseObject):
         self.sample_count += 1
 
     def get_average_mean_square_error(self):
-        """ get_average_mean_square_error
-
-        Computes the mean square error.
+        """ Computes the average mean square error.
 
         Returns
         -------
         float
-            Returns the average mean square error.
+            The average mean square error.
 
         """
         if self.sample_count == 0:
             return 0.0
         else:
-            return np.sum(self.total_square_error / self.sample_count) \
-                / self.n_targets
+            return np.sum(self.total_square_error / self.sample_count) / self.n_targets
 
     def get_average_absolute_error(self):
-        """ get_average_absolute_error
-
-        Computes the average mean absolute error.
+        """ Computes the average mean absolute error.
 
         Returns
         -------
         float
-            Returns the average mean absolute error.
+            The average absolute error.
 
         """
         if self.sample_count == 0:
@@ -1223,14 +1156,12 @@ class MultiTargetRegressionMeasurements(BaseObject):
                 / self.n_targets
 
     def get_average_root_mean_square_error(self):
-        """ get_average_root_mean_square_error
-
-        Computes the mean square error.
+        """ Computes the mean square error.
 
         Returns
         -------
         float
-            Returns the average mean square error.
+            The average mean square error.
 
         """
         if self.sample_count == 0:
@@ -1248,7 +1179,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
         return self.sample_count
 
     def get_class_type(self):
-        return 'collection'
+        return 'measurement'
 
     def get_info(self):
         return 'MultiTargetRegressionMeasurements: sample_count: ' + \
@@ -1259,9 +1190,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
 
 class WindowMultiTargetRegressionMeasurements(BaseObject):
-    """ WindowMultiTargetRegressionMeasurements
-
-    This class is used to keep updated statistics over a multi-target regression
+    """ This class is used to keep updated statistics over a multi-target regression
     learner in a multi-target regression problem context inside a fixed sized
     window. It uses FastBuffer objects to simulate the fixed sized windows.
 
@@ -1273,6 +1202,7 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
 
     def __init__(self, window_size=200):
         super().__init__()
+        self.n_targets = 0
         self.total_square_error = 0.0
         self.average_error = 0.0
         self.last_true_label = None
@@ -1290,17 +1220,15 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         self.average_error_correction = FastBuffer(self.window_size)
 
     def add_result(self, y, prediction):
-        """ add_result
-
-        Use the true label and the prediction to update the statistics.
+        """ Use the true value and the prediction to update the statistics.
 
         Parameters
         ----------
-        y: int
-            The true label.
+        y: float or list or np.ndarray
+            The true value(s).
 
-        prediction: int
-            The classifier's prediction
+        prediction: float or list or np.ndarray
+            The predicted value(s).
 
         """
         self.last_true_label = y
@@ -1328,14 +1256,12 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
             self.average_error += old_average[0]
 
     def get_average_mean_square_error(self):
-        """ get_average_mean_square_error
-
-        Computes the window/local average mean square error.
+        """ Computes the window/current average mean square error.
 
         Returns
         -------
         float
-            Returns the window/local average mean square error.
+            The window/current average mean square error.
 
         """
         if self._sample_count == 0:
@@ -1345,14 +1271,12 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
                 / self.n_targets
 
     def get_average_absolute_error(self):
-        """ get_average_absolute_error
-
-        Computes the window/local average mean absolute error.
+        """ Computes the window/current average mean absolute error.
 
         Returns
         -------
         float
-            Returns the window/local average mean absolute error.
+            The window/current average mean absolute error.
 
         """
         if self._sample_count == 0:
@@ -1362,14 +1286,12 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
                 / self.n_targets
 
     def get_average_root_mean_square_error(self):
-        """ get_average_root_mean_square_error
-
-        Computes the mean square error.
+        """ Computes the mean square error.
 
         Returns
         -------
         float
-            Returns the average mean square error.
+            The average mean square error.
 
         """
         if self._sample_count == 0:
@@ -1387,7 +1309,7 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         return self.total_square_error_correction.get_current_size()
 
     def get_class_type(self):
-        return 'collection'
+        return 'measurement'
 
     def get_info(self):
         return 'MultiTargetRegressionMeasurements: sample_count: ' + \
@@ -1398,9 +1320,7 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
 
 
 def hamming_score(true_labels, predicts):
-    """ hamming_score
-
-    Computes de hamming score, which is known as the label-based accuracy,
+    """ Computes de hamming score, which is known as the label-based accuracy,
     designed for multi-label problems. It's defined as the number of correctly
     predicted labels divided by all classified labels.
 
@@ -1437,9 +1357,7 @@ def hamming_score(true_labels, predicts):
 
 
 def j_index(true_labels, predicts):
-    """ j_index
-
-    Computes the Jaccard Index of the given set, which is also called the
+    """ Computes the Jaccard Index of the given set, which is also called the
     'intersection over union' in multi-label settings. It's defined as the
     intersection between the true label's set and the prediction's set,
     divided by the sum, or union, of those two sets.
@@ -1485,9 +1403,7 @@ def j_index(true_labels, predicts):
 
 
 def exact_match(true_labels, predicts):
-    """ exact_match
-
-    This is the most strict metric for the multi label setting. It's defined
+    """ This is the most strict metric for the multi label setting. It's defined
     as the percentage of samples that have all their labels correctly classified.
 
     Parameters
