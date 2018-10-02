@@ -15,7 +15,7 @@ coverage:
     changes: no
 
   ignore:
-    - visualization/*  # ignore visualization until a practical test approach is available
+    - "**/visualization/*.py"  # ignore visualization until a practical test approach is available
 
 parsers:
   gcov:
