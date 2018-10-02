@@ -14,6 +14,9 @@ coverage:
     patch: yes
     changes: no
 
+  ignore:
+    - "visualization/"  # ignore visualization until a practical test approach is available
+
 parsers:
   gcov:
     branch_detection:
@@ -26,6 +29,3 @@ comment:
   layout: "header, diff, changes, uncovered, tree"
   behavior: default
   require_changes: no
-
-ignore:
-  - "visualization/"  # ignore visualization until a practical test approach is available
