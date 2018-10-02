@@ -232,6 +232,17 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
         return self._valid_configuration
 
+    def _check_progress(self, logging, n_samples):
+        progress = self.global_sample_count - self.batch_size
+
+        # Update progress
+        try:
+            if (progress % (n_samples // 20)) == 0:
+                logging.info('{}%'.format(progress // (n_samples / 20) * 5))
+        except ZeroDivisionError:
+            raise ZeroDivisionError("The stream is too small to evaluate. The minimum size is 20 samples.")
+
+
     def _init_metrics(self):
         """ Starts up the metrics and statistics watchers. One watcher is created
         for each of the learners to be evaluated.
