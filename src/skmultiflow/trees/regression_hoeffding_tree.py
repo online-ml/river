@@ -338,7 +338,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
         self.learning_ratio_perceptron = learning_ratio_perceptron
         self.learning_ratio_decay = learning_ratio_decay
         self.learning_ratio_const = learning_ratio_const
-        self.examples_seen = 0
+        self.samples_seen = 0
         self.sum_of_values = 0.0
         self.sum_of_squares = 0.0
         self.sum_of_attribute_values = []
@@ -372,7 +372,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
 
     def normalize_sample(self, X):
         """
-        Normalize the features in order to ave the same influence during the process of
+        Normalize the features in order to have the same influence during
         training.
 
         Parameters
@@ -386,22 +386,22 @@ class RegressionHoeffdingTree(HoeffdingTree):
         """
         normalized_sample = []
         for i in range(len(X)):
-            mean = self.sum_of_attribute_values[i] / self.examples_seen
+            mean = self.sum_of_attribute_values[i] / self.samples_seen
             sd = np.sqrt((self.sum_of_attribute_squares[i] - self.sum_of_attribute_values[i] ** 2
-                          / self.examples_seen) / self.examples_seen)
-            if self.examples_seen > 1 and sd > 0:
+                          / self.samples_seen) / self.samples_seen)
+            if self.samples_seen > 1 and sd > 0:
                 normalized_sample.append((X[i] - mean) / (3 * sd))
             else:
-                normalized_sample.append(0)
-        if self.examples_seen > 1:
-            normalized_sample.append(1.0)
+                normalized_sample.append(0.0)
+        if self.samples_seen > 1:
+            normalized_sample.append(1.0)  # Value to be multiplied with the constant factor
         else:
             normalized_sample.append(0.0)
         return normalized_sample
 
     def normalized_target_value(self, y):
         """
-        Normalize the target in order to ave the same influence during the process of
+        Normalize the target in order to have the same influence during the process of
         training.
         Parameters
         ----------
@@ -413,10 +413,10 @@ class RegressionHoeffdingTree(HoeffdingTree):
         float:
             normalized target value
         """
-        if self.examples_seen > 1:
-            mean = self.sum_of_values / self.examples_seen
+        if self.samples_seen > 1:
+            mean = self.sum_of_values / self.samples_seen
             sd = np.sqrt((self.sum_of_squares - self.sum_of_values ** 2
-                          / self.examples_seen) / self.examples_seen)
+                          / self.samples_seen) / self.samples_seen)
             if sd > 0:
                 return (y - mean) / (3 * sd)
             else:
@@ -511,7 +511,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
 
         """
 
-        self.examples_seen += weight
+        self.samples_seen += weight
         self.sum_of_values += weight * y
         self.sum_of_squares += weight * y * y
 
@@ -560,26 +560,30 @@ class RegressionHoeffdingTree(HoeffdingTree):
 
         """
         predictions = []
-        r, _ = get_dimensions(X)
-        for i in range(r):
-            if self.leaf_prediction == _TARGET_MEAN:
-                votes = self.get_votes_for_instance(X[i]).copy()
-                if votes == {}:
-                    # Tree is empty, all target_values equal, default to zero
-                    predictions.append(0)
-                else:
-                    number_of_examples_seen = votes[0]
-                    sum_of_values = votes[1]
-                    predictions.append(sum_of_values / number_of_examples_seen)
-            elif self.leaf_prediction == _PERCEPTRON:
-                normalized_sample = self.normalize_sample(X[i])
-                normalized_prediction = np.dot(self.get_weights_for_instance(X[i]), normalized_sample)
-                mean = self.sum_of_values / self.examples_seen
-                sd = np.sqrt((self.sum_of_squares - self.sum_of_values ** 2/ self.examples_seen) / self.examples_seen)
-                if self.examples_seen > 1:
-                    predictions.append(normalized_prediction * sd * 3 + mean)
-                else:
-                    predictions.append(0)
+        if self.samples_seen > 0:
+            r, _ = get_dimensions(X)
+            for i in range(r):
+                if self.leaf_prediction == _TARGET_MEAN:
+                    votes = self.get_votes_for_instance(X[i]).copy()
+                    if votes == {}:
+                        # Tree is empty, all target_values equal, default to zero
+                        predictions.append(0)
+                    else:
+                        number_of_samples_seen = votes[0]
+                        sum_of_values = votes[1]
+                        predictions.append(sum_of_values / number_of_samples_seen)
+                elif self.leaf_prediction == _PERCEPTRON:
+                    normalized_sample = self.normalize_sample(X[i])
+                    normalized_prediction = np.dot(self.get_weights_for_instance(X[i]), normalized_sample)
+                    mean = self.sum_of_values / self.samples_seen
+                    sd = np.sqrt((self.sum_of_squares - self.sum_of_values ** 2 / self.samples_seen) / self.samples_seen)
+                    if self.samples_seen > 1:
+                        predictions.append(normalized_prediction * sd * 3 + mean)
+                    else:
+                        predictions.append(0.0)
+        else:
+            # Model is empty
+            predictions.append(0.0)
         return predictions
 
     def predict_proba(self, X):
