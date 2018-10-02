@@ -241,7 +241,7 @@ class EvaluateHoldout(StreamEvaluator):
                         for i in range(self.n_models):
                             self.model[i].partial_fit(X, y)
 
-                    self._check_progress(n_samples)   # TODO Confirm place
+                    self._check_progress(logging, n_samples)   # TODO Confirm place
 
                     # Test on holdout set
                     if self.dynamic_test_set:
@@ -353,13 +353,6 @@ class EvaluateHoldout(StreamEvaluator):
                 predictions.append(self.model[i].predict(X))
 
         return predictions
-
-    def _check_progress(self, n_samples):
-        progress = self.global_sample_count - self.batch_size
-
-        # Update progress
-        if (progress % (n_samples // 20)) == 0:
-            logging.info('{}%'.format(progress // (n_samples / 20) * 5))
 
     def set_params(self, parameter_dict):
         """ set_params
