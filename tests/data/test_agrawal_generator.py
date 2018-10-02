@@ -53,3 +53,38 @@ def test_agrawal_generator(test_path):
     assert stream.n_targets == np.array(y).ndim
 
     assert stream.n_features == X.shape[1]
+
+
+def test_agrawal_generator_all_functions(test_path):
+    for f in range(10):
+        stream = AGRAWALGenerator(classification_function=f, random_state=1)
+        stream.prepare_for_use()
+
+        # Load test data corresponding to first 10 instances
+        test_file = os.path.join(test_path, 'agrawal_stream_{}.npz'.format(f))
+        data = np.load(test_file)
+        X_expected = data['X']
+        y_expected = data['y']
+
+        X, y = stream.next_sample(10)
+        assert np.alltrue(X == X_expected)
+        assert np.alltrue(y == y_expected)
+
+
+def test_agrawal_drift(test_path):
+    stream = AGRAWALGenerator(random_state=1)
+    stream.prepare_for_use()
+    X, y = stream.next_sample(10)
+    stream.generate_drift()
+    X_drift, y_drift = stream.next_sample(10)
+
+    # Load test data corresponding to first 10 instances
+    test_file = os.path.join(test_path, 'agrawal_stream_drift.npz')
+    data = np.load(test_file)
+    X_expected = data['X']
+    y_expected = data['y']
+
+    X = np.concatenate((X, X_drift))
+    y = np.concatenate((y, y_drift))
+    assert np.alltrue(X == X_expected)
+    assert np.alltrue(y == y_expected)
