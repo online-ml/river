@@ -505,9 +505,12 @@ class STMSizer(object):
                 numSamplesRange.append(numSamplesRange[-1]/2)
 
             accuracies = []
+            keys_to_remove = []
             for key in predictionHistories.keys():
                 if key not in (numSamples - np.array(numSamplesRange)):
-                    predictionHistories.pop(key, None)
+                    keys_to_remove.append(key)
+            for key in keys_to_remove:
+                predictionHistories.pop(key, None)
 
             for numSamplesIt in numSamplesRange:
                 idx = int(numSamples - numSamplesIt)
