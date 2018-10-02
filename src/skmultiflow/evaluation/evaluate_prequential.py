@@ -278,7 +278,7 @@ class EvaluatePrequential(StreamEvaluator):
                             else:
                                 self.mean_eval_measurements[j].add_result(y[i], prediction[j][i])
                                 self.current_eval_measurements[j].add_result(y[i], prediction[j][i])
-                    self._check_progress(n_samples)
+                    self._check_progress(logging, n_samples)
 
                     # Train
                     if first_run:
@@ -371,13 +371,6 @@ class EvaluatePrequential(StreamEvaluator):
                 predictions.append(self.model[i].predict(X))
 
         return predictions
-
-    def _check_progress(self, n_samples):
-        progress = self.global_sample_count - self.batch_size
-
-        # Update progress
-        if (progress % (n_samples // 20)) == 0:
-            logging.info('{}%'.format(progress // (n_samples / 20) * 5))
 
     def set_params(self, parameter_dict):
         """ set_params
