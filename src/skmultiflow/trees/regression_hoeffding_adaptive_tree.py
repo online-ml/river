@@ -415,7 +415,7 @@ class RegressionHAT(RegressionHoeffdingTree):
 
         """
 
-        self.examples_seen += weight
+        self.samples_seen += weight
         self.sum_of_values += weight * y
         self.sum_of_squares += weight * y * y
 
