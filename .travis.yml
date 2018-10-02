@@ -13,5 +13,6 @@ install:
 # command to run tests
 script:
   - pytest tests --showlocals --cov=src/skmultiflow
+
 after_success:
-- codecov
+  - codecov
