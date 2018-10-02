@@ -30,7 +30,6 @@ def test_sam_knn(package_path):
         # Test every n samples
         if (cnt % wait_samples == 0) and (cnt != 0):
             predictions.append(learner.predict(X)[0])
-
         learner.partial_fit(X, y)
         cnt += 1
 
@@ -43,4 +42,44 @@ def test_sam_knn(package_path):
     assert np.alltrue(predictions == expected_predictions)
 
 
+def test_sam_knn_coverage(package_path):
 
+    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_big.csv')
+
+    stream = FileStream(test_file)
+    stream.prepare_for_use()
+
+    hyperParams = {'maxSize': 50,
+                   'n_neighbors': 3,
+                   'weighting': 'uniform',
+                   'stm_size_option': 'maxACC',
+                   'min_stm_size': 10,
+                   'useLTM': True}
+
+    learner = SAMKNN(n_neighbors=hyperParams['n_neighbors'],
+                     max_window_size=hyperParams['maxSize'],
+                     weighting=hyperParams['weighting'],
+                     stm_size_option=hyperParams['stm_size_option'],
+                     min_stm_size=hyperParams['min_stm_size'],
+                     use_ltm=hyperParams['useLTM'])
+
+    cnt = 0
+    max_samples = 1000
+    predictions = array('i')
+
+    wait_samples = 20
+
+    while cnt < max_samples:
+        X, y = stream.next_sample()
+        # Test every n samples
+        if (cnt % wait_samples == 0) and (cnt != 0):
+            predictions.append(learner.predict(X)[0])
+        learner.partial_fit(X, y)
+        cnt += 1
+
+    expected_predictions = array('i', [1, 1, 1, 1, 1, 0, 0, 1, 1, 0,
+                                       0, 1, 1, 0, 0, 1, 1, 1, 1, 1,
+                                       1, 1, 1, 0, 0, 1, 0, 1, 0, 0,
+                                       1, 1, 1, 1, 1, 1, 1, 0, 0, 1,
+                                       0, 1, 0, 1, 1, 0, 1, 1, 1])
+    assert np.alltrue(predictions == expected_predictions)
