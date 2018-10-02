@@ -6,13 +6,11 @@ coverage:
   precision: 2
   round: down
   range: "70...100"
+
   status:
     project:
       default:
         threshold: 0.2    # Allow the coverage to drop by .2%, and posting a success status.
-
-  status:
-    project: yes
     patch: yes
     changes: no
 
@@ -30,4 +28,4 @@ comment:
   require_changes: no
 
 ignore:
-  - "visualization/*.py"  # ignore visualization until a practical test approach is available
+  - "visualization/"  # ignore visualization until a practical test approach is available
