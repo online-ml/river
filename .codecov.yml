@@ -27,5 +27,4 @@ comment:
   require_changes: no
 
 ignore:
-  - "src/skmultiflow/visualization/*.py"  # ignore visualization until a practical test approach is available
-  - "tests/"
+  - "visualization"  # ignore visualization until a practical test approach is available
