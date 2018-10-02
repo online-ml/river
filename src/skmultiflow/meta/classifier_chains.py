@@ -22,7 +22,73 @@ class ClassifierChain(StreamModel):
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
 
-    TODO: much of this can be shared with Regressor Chains, probably should use a base class to inherit here.
+    Examples
+    --------
+    >>> from skmultiflow.data import make_logical
+    >>>
+    >>> X, Y = make_logical(random_state=1)
+    >>>
+    >>> print("TRUE: ")
+    >>> print(Y)
+    >>> print("vs")
+    >>>
+    >>> print("CC")
+    >>> cc = ClassifierChain(SGDClassifier(max_iter=100, loss='log', random_state=1))
+    >>> cc.fit(X, Y)
+    >>> print(cc.predict(X))
+    >>>
+    >>> print("RCC")
+    >>> cc = ClassifierChain(SGDClassifier(max_iter=100, loss='log', random_state=1), order='random', random_state=1)
+    >>> cc.fit(X, Y)
+    >>> print(cc.predict(X))
+    >>>
+    >>> print("MCC")
+    >>> mcc = MCC(SGDClassifier(max_iter=100, loss='log', random_state=1), M=1000)
+    >>> mcc.fit(X, Y)
+    >>> Yp = mcc.predict(X, M=50)
+    >>> print("with 50 iterations ...")
+    >>> print(Yp)
+    >>> Yp = mcc.predict(X, 'default')
+    >>> print("with default (%d) iterations ..." % 1000)
+    >>> print(Yp)
+    >>>
+    >>> print("PCC")
+    >>> pcc = ProbabilisticClassifierChain(SGDClassifier(max_iter=100, loss='log', random_state=1))
+    >>> pcc.fit(X, Y)
+    >>> print(pcc.predict(X))
+    TRUE:
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+    vs
+    CC
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+    RCC
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+    MCC
+    with 50 iterations ...
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+    with default (1000) iterations ...
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+    PCC
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+
 
     Notes
     -----
@@ -37,7 +103,11 @@ class ClassifierChain(StreamModel):
     .. [1] Read, Jesse, Bernhard Pfahringer, Geoff Holmes, and Eibe Frank. "Classifier chains for multi-label
        classification." In Joint European Conference on Machine Learning and Knowledge Discovery in Databases,
        pp. 254-269. Springer, Berlin, Heidelberg, 2009.
+
     """
+
+    # TODO: much of this can be shared with Regressor Chains, probably should use a base class to inherit here.
+
     def __init__(self, base_estimator=LogisticRegression(), order=None, random_state=None):
         super().__init__()
         self.base_estimator = base_estimator
@@ -329,45 +399,3 @@ class MCC(ProbabilisticClassifierChain):
                     w_max = w_
 
         return Yp
-
-
-def demo():
-    import sys
-    sys.path.append('../data')
-    from skmultiflow.data.synth import make_logical
-
-    X, Y = make_logical()
-    # N, L = Y.shape
-
-    print("TRUE: ")
-    print(Y)
-    print("vs")
-
-    print("CC")
-    cc = ClassifierChain(SGDClassifier(max_iter=100, loss='log'))
-    cc.fit(X, Y)
-    print(cc.predict(X))
-
-    print("RCC")
-    cc = ClassifierChain(SGDClassifier(max_iter=100, loss='log'), order='random', random_state=1)
-    cc.fit(X, Y)
-    print(cc.predict(X))
-
-    print("MCC")
-    mcc = MCC(SGDClassifier(max_iter=100, loss='log'), M=1000)
-    mcc.fit(X, Y)
-    Yp = mcc.predict(X, M=50)
-    print("with 50 iterations ...")
-    print(Yp)
-    Yp = mcc.predict(X, 'default')
-    print("with default (%d) iterations ..." % 1000)
-    print(Yp)
-
-    print("PCC")
-    pcc = ProbabilisticClassifierChain(SGDClassifier(max_iter=100, loss='log'))
-    pcc.fit(X, Y)
-    print(pcc.predict(X))
-
-
-if __name__ == '__main__':
-    demo()

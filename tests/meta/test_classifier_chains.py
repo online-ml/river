@@ -1,6 +1,7 @@
 
 from skmultiflow.data import MultilabelGenerator
-from skmultiflow.meta.classifier_chains import ClassifierChain
+from skmultiflow.meta.classifier_chains import ClassifierChain, MCC, ProbabilisticClassifierChain
+from skmultiflow.data import make_logical
 from sklearn.linear_model import SGDClassifier
 
 import numpy as np
@@ -88,3 +89,39 @@ def test_classifier_chains():
 
     assert np.alltrue(np.array_equal(predictions, expected_predictions))
     assert correct_predictions == expected_correct_predictions
+
+
+def test_classifier_chains_all():
+    seed = 1
+    X, Y = make_logical(random_state=seed)
+
+    # CC
+    cc = ClassifierChain(SGDClassifier(max_iter=100, loss='log', random_state=seed))
+    cc.fit(X, Y)
+    y_predicted = cc.predict(X)
+    y_expected = [[1, 0, 1], [1, 1, 0], [0, 0, 0], [1, 1, 0]]
+    assert np.alltrue(y_predicted == y_expected)
+
+    # RCC
+    rcc = ClassifierChain(SGDClassifier(max_iter=100, loss='log', random_state=seed), order='random', random_state=seed)
+    rcc.fit(X, Y)
+    rcc.fit(X, Y)
+    y_predicted = rcc.predict(X)
+    y_expected = [[1, 1, 0], [1, 1, 0], [1, 1, 0], [1, 1, 0]]
+    assert np.alltrue(y_predicted == y_expected)
+
+    # MCC
+    mcc = MCC(SGDClassifier(max_iter=100, loss='log', random_state=seed), M=1000)
+    mcc.fit(X, Y)
+    mcc.fit(X, Y)
+    y_predicted = mcc.predict(X)
+    y_expected = [[1, 0, 1], [1, 1, 0], [0, 0, 0], [1, 1, 0]]
+    assert np.alltrue(y_predicted == y_expected)
+
+    # PCC
+    pcc = ProbabilisticClassifierChain(SGDClassifier(max_iter=100, loss='log', random_state=seed))
+    pcc.fit(X, Y)
+    pcc.fit(X, Y)
+    y_predicted = pcc.predict(X)
+    y_expected = [[1, 0, 1], [1, 1, 0], [0, 0, 0], [1, 1, 0]]
+    assert np.alltrue(y_predicted == y_expected)
