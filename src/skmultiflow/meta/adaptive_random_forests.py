@@ -494,7 +494,10 @@ class ARFBaseLearner(BaseObject):
 
     def predict(self, X):
         return self.classifier.predict(X)
-    
+
+    def predict_proba(self, X):
+        return self.classifier.predict_proba(X)
+
     def get_votes_for_instance(self, X):
         return self.classifier.get_votes_for_instance(X)
 
