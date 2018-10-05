@@ -164,6 +164,7 @@ class AdaptiveRandomForest(StreamModel):
         else:
             self.warning_detection_method = None
         self.instances_seen = 0
+        self.classes = None
         self._train_weight_seen_by_model = 0.0
         self.ensemble = None
         self._init_random_state = random_state
@@ -192,6 +193,9 @@ class AdaptiveRandomForest(StreamModel):
         raise NotImplementedError
     
     def partial_fit(self, X, y, classes=None, weight=1.0):
+        if self.classes is None and classes is not None:
+            self.classes = classes
+
         if y is not None:
             row_cnt, _ = get_dimensions(X)
             weight = check_weights(weight, expand_length=row_cnt)
