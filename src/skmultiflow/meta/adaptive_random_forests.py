@@ -258,11 +258,14 @@ class AdaptiveRandomForest(StreamModel):
             If class labels were specified in a `partial_fit` call, the order of the columns matches `self.classes`.
             If classes were not specified, they are assumed to be 0-indexed.
         """
-        # TODO: Replace with version which works for unspecified classes
-        yhat = np.zeros((X.shape[0], len(self.classes), self.n_estimators))
+        y_proba_mean = None
         for i in range(self.n_estimators):
-            yhat[:, :, i] = self.ensemble[i].predict_proba(X)
-        return yhat.mean(axis=2)
+            y_proba = self.ensemble[i].predict_proba(X)
+            if y_proba_mean is None:
+                y_proba_mean = y_proba
+            else:
+                y_proba_mean = y_proba_mean + (y_proba - y_proba_mean) / (i+1)
+        return y_proba_mean
         
     def reset(self):        
         """Reset ARF."""
