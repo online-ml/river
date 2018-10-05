@@ -33,9 +33,9 @@ def test_adaptive_random_forests():
         cnt += 1
 
     performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0,
-                            0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1,
-                            1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1]
+    expected_predictions = [1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
+                            1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0,
+                            1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0]
 
     expected_correct_predictions = 32
     expected_performance = expected_correct_predictions / len(predictions)
