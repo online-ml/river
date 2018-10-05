@@ -243,7 +243,21 @@ class AdaptiveRandomForest(StreamModel):
         return predictions
 
     def predict_proba(self, X):
-        raise NotImplementedError
+        """ Predicts the class probabilities for the X instance(s).
+
+        Class probabilities are calculated as the mean predicted class probabilities per base estimator.
+
+        Parameters
+        ----------
+         X: numpy.ndarray of shape (n_samples, n_features)
+            Samples for which we want to predict the class probabilities.
+        Returns
+        -------
+        numpy.ndarray of shape (n_samples, n_classes)
+            Predicted class probabilities for all instances in X.
+            If class labels were specified in a `partial_fit` call, the order of the columns matches `self.classes`.
+            If classes were not specified, they are assumed to be 0-indexed.
+        """
         # TODO: Replace with version which works for unspecified classes
         yhat = np.zeros((X.shape[0], len(self.classes), self.n_estimators))
         for i in range(self.n_estimators):
