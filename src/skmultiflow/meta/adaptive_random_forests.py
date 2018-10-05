@@ -202,7 +202,7 @@ class AdaptiveRandomForest(StreamModel):
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
-                    self._partial_fit(X[i], y[i], classes, weight[i])
+                    self._partial_fit(X[i], y[i], self.classes, weight[i])
         
     def _partial_fit(self, X, y, classes=None, weight=1.0):
         self.instances_seen += 1
