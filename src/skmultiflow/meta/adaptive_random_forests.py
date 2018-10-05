@@ -202,9 +202,9 @@ class AdaptiveRandomForest(StreamModel):
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
-                    self._partial_fit(X[i], y[i], weight[i])
+                    self._partial_fit(X[i], y[i], classes, weight[i])
         
-    def _partial_fit(self, X, y, weight):
+    def _partial_fit(self, X, y, classes=None, weight=1.0):
         self.instances_seen += 1
         
         if self.ensemble is None:
@@ -215,7 +215,10 @@ class AdaptiveRandomForest(StreamModel):
             self.ensemble[i].evaluator.add_result(y_predicted, y, weight)
             k = self.random_state.poisson(self.lambda_value)
             if k > 0:
-                self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]), np.asarray([k]), self.instances_seen)
+                self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]),
+                                             classes=classes,
+                                             weight=np.asarray([k]),
+                                             instances_seen=self.instances_seen)
     
     def predict(self, X):
         """Predicts the label of the X instance(s)
@@ -241,6 +244,11 @@ class AdaptiveRandomForest(StreamModel):
 
     def predict_proba(self, X):
         raise NotImplementedError
+        # TODO: Replace with version which works for unspecified classes
+        yhat = np.zeros((X.shape[0], len(self.classes), self.n_estimators))
+        for i in range(self.n_estimators):
+            yhat[:, :, i] = self.ensemble[i].predict_proba(X)
+        return yhat.mean(axis=2)
         
     def reset(self):        
         """Reset ARF."""
@@ -429,11 +437,11 @@ class ARFBaseLearner(BaseObject):
             self.drift_detection.reset()
         self.evaluator = self.evaluator_method()
 
-    def partial_fit(self, X, y, weight, instances_seen):
-        self.classifier.partial_fit(X, y, weight)
+    def partial_fit(self, X, y, classes, weight, instances_seen):
+        self.classifier.partial_fit(X, y, classes=classes, weight=weight)
 
         if self.background_learner:
-            self.background_learner.classifier.partial_fit(X, y, weight)
+            self.background_learner.classifier.partial_fit(X, y, classes=classes, weight=weight)
 
         correctly_classifies = False
         if self._use_drift_detector and not self.is_background_learner:
