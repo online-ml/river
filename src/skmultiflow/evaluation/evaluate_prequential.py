@@ -1,6 +1,7 @@
 import os
 import logging
 import warnings
+from numpy import unique
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
 from skmultiflow.utils import constants
@@ -241,10 +242,10 @@ class EvaluatePrequential(StreamEvaluator):
             X, y = self.stream.next_sample(self.pretrain_size)
 
             for i in range(self.n_models):
-                if self._task_type != constants.REGRESSION and \
-                   self._task_type != constants.MULTI_TARGET_REGRESSION:
-                    self.model[i].partial_fit(X=X, y=y, classes=self.stream.
-                                              target_values)
+                if self._task_type == constants.CLASSIFICATION:
+                    self.model[i].partial_fit(X=X, y=y, classes=self.stream.target_values)
+                elif self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
+                    self.model[i].partial_fit(X=X, y=y, classes=unique(self.stream.target_values))
                 else:
                     self.model[i].partial_fit(X=X, y=y)
             self.global_sample_count += self.pretrain_size
@@ -272,12 +273,8 @@ class EvaluatePrequential(StreamEvaluator):
 
                     for j in range(self.n_models):
                         for i in range(len(prediction[0])):
-                            if self._task_type == constants.CLASSIFICATION:
-                                self.mean_eval_measurements[j].add_result(y[i], prediction[j][i])
-                                self.current_eval_measurements[j].add_result(y[i], prediction[j][i])
-                            else:
-                                self.mean_eval_measurements[j].add_result(y[i], prediction[j][i])
-                                self.current_eval_measurements[j].add_result(y[i], prediction[j][i])
+                            self.mean_eval_measurements[j].add_result(y[i], prediction[j][i])
+                            self.current_eval_measurements[j].add_result(y[i], prediction[j][i])
                     self._check_progress(logging, n_samples)
 
                     # Train
