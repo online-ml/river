@@ -20,7 +20,7 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
 
     # Setup evaluator
     max_samples = 1000
-    metrics = ['kappa', 'kappa_t', 'accuracy']
+    metrics = ['accuracy', 'kappa', 'kappa_t']
     output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
     evaluator = EvaluatePrequential(max_samples=max_samples,
                                     metrics=metrics,
