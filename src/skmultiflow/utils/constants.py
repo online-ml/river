@@ -28,19 +28,16 @@ PLOT_TYPES = [ACCURACY,
               AMAE,
               ARMSE,
               TRUE_VS_PREDICTED,
-
               DATA_POINTS]
 CLASSIFICATION_METRICS = [ACCURACY,
                           KAPPA,
                           KAPPA_T,
                           KAPPA_M,
                           TRUE_VS_PREDICTED,
-
                           DATA_POINTS]
 REGRESSION_METRICS = [MSE,
                       MAE,
-                      TRUE_VS_PREDICTED
-                      ]
+                      TRUE_VS_PREDICTED]
 MULTI_TARGET_CLASSIFICATION_METRICS = [HAMMING_SCORE,
                                        HAMMING_LOSS,
                                        EXACT_MATCH,
@@ -62,3 +59,7 @@ TASK_TYPES = [CLASSIFICATION,
               MULTI_TARGET_CLASSIFICATION,
               MULTI_TARGET_REGRESSION,
               UNDEFINED]
+MEAN = 'mean'
+CURRENT = 'current'
+Y_TRUE = 'y_true'
+Y_PRED = 'y_pred'
