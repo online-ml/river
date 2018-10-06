@@ -1,7 +1,7 @@
 # TEST CONFIGURATION BEGIN
 # RandomTreeGenerator: _original_tree_random_state: 23 - _original_sample_random_state: 12 - n_classes: 4 - n_nominal_attributes: 2 - n_numerical_attributes: 5 - n_values_per_nominal_attribute: 5 - max_depth: 6 - min_leaf_depth: 3 - fraction_leaves_per_level: 0.15
 # [M0] HoeffdingTree: max_byte_size: 33554432 - memory_estimate_period: 1000000 - grace_period: 200 - split_criterion: info_gain - split_confidence: 1e-07 - tie_threshold: 0.05 - binary_split: False - stop_mem_management: False - remove_poor_atts: False - no_pre_prune: False - leaf_prediction: nba - nb_threshold: 0 - nominal_attributes: [] - 
-# Holdout Evaluator: n_wait: 200 - max_samples: 1000 - max_time: inf - output_file: holdout_summary.csv - batch_size: 1 - task_type: classification - show_plot: False - metrics: ['kappa', 'kappa_t', 'accuracy'] - test_size: 50 - dynamic_test_set: False
+# Holdout Evaluator: n_wait: 200 - max_samples: 1000 - max_time: inf - output_file: holdout_summary.csv - batch_size: 1 - task_type: classification - show_plot: False - metrics: ['accuracy', 'kappa', 'kappa_t'] - test_size: 50 - dynamic_test_set: False
 # TEST CONFIGURATION END
 id,mean_acc_[M0],current_acc_[M0],mean_kappa_[M0],current_kappa_[M0],mean_kappa_t_[M0],current_kappa_t_[M0]
 250,0.340000,0.340000,0.127907,0.127907,0.175000,0.175000
