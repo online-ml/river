@@ -1,6 +1,7 @@
 import os
 import warnings
 import logging
+from numpy import unique
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
 from skmultiflow.utils import constants
@@ -231,11 +232,12 @@ class EvaluateHoldout(StreamEvaluator):
                     # Train
                     if first_run:
                         for i in range(self.n_models):
-                            if self._task_type != constants.REGRESSION and \
-                               self._task_type != constants.MULTI_TARGET_REGRESSION:
-                                self.model[i].partial_fit(X, y, self.stream.target_values)
+                            if self._task_type == constants.CLASSIFICATION:
+                                self.model[i].partial_fit(X=X, y=y, classes=self.stream.target_values)
+                            elif self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
+                                self.model[i].partial_fit(X=X, y=y, classes=unique(self.stream.target_values))
                             else:
-                                self.model[i].partial_fit(X, y)
+                                self.model[i].partial_fit(X=X, y=y)
                         first_run = False
                     else:
                         for i in range(self.n_models):
@@ -269,16 +271,11 @@ class EvaluateHoldout(StreamEvaluator):
                             if prediction is not None:
                                 for j in range(self.n_models):
                                     for i in range(len(prediction[0])):
-                                        if self._task_type == constants.CLASSIFICATION:
-                                            self.mean_eval_measurements[j].add_result(self.y_test[i],
-                                                                                      prediction[j][i])
-                                            self.current_eval_measurements[j].add_result(self.y_test[i],
-                                                                                         prediction[j][i])
-                                        else:
-                                            self.mean_eval_measurements[j].add_result(self.y_test[i],
-                                                                                      prediction[j][i])
-                                            self.current_eval_measurements[j].add_result(self.y_test[i],
-                                                                                         prediction[j][i])
+                                        self.mean_eval_measurements[j].add_result(self.y_test[i],
+                                                                                  prediction[j][i])
+                                        self.current_eval_measurements[j].add_result(self.y_test[i],
+                                                                                     prediction[j][i])
+
                                 self._update_metrics()
                             performance_sampling_cnt += 1
 
