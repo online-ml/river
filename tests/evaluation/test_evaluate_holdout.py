@@ -21,7 +21,7 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
     # Setup evaluator
     n_wait = 200
     max_samples = 1000
-    metrics = ['kappa', 'kappa_t', 'accuracy']
+    metrics = ['accuracy', 'kappa', 'kappa_t']
     output_file = os.path.join(str(tmpdir), "holdout_summary.csv")
     evaluator = EvaluateHoldout(n_wait=n_wait,
                                 max_samples=max_samples,
