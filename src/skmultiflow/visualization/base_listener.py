@@ -3,9 +3,7 @@ from skmultiflow.core.base_object import BaseObject
 
 
 class BaseListener(BaseObject, metaclass=ABCMeta):
-    """ BaseListener
-    
-    An abstract class that defines the constraints for all the listener 
+    """ An abstract class that defines the constraints for all the listener
     type objects in this framework.
     
     This class should not be instantiated, as its functions are not 
@@ -22,19 +20,17 @@ class BaseListener(BaseObject, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def on_new_train_step(self, current_sample_id, metrics_dict):
-        """ on new_train_step
-        
-        At each relevant update (usually at each n_wait samples) this function 
+    def on_new_train_step(self, sample_id, data_buffer):
+        """ At each relevant update (usually at each n_wait samples) this function
         should be called to enable the plot update.
         
         Parameters
         ----------
-        current_sample_id: int
+        sample_id: int
             The current sample id.
-        
-        metrics_dict: dictionary
-            A dictionary containing metric values for to current sample.
+
+        data_buffer: EvaluationDataBuffer
+            A buffer containing evaluation data for a single training / visualization step.
          
         """
         raise NotImplementedError
