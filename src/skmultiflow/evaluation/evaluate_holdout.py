@@ -8,31 +8,30 @@ from skmultiflow.utils import constants
 
 
 class EvaluateHoldout(StreamEvaluator):
-    """ EvaluateHoldout
-
-    The holdout evaluation method, or periodic holdout evaluation method, analyses
-    each arriving sample, without computing performance metrics, nor predicting
-    labels or regressing values, but by updating its statistics.
+    """ The holdout evaluation method, or periodic holdout evaluation method,
+    analyses each arriving sample by updating its statistics, without computing
+    performance metrics, nor predicting labels or regression values.
 
     The performance evaluation happens at every n_wait analysed samples, at which
     moment the evaluator will test the learners performance on a test set, formed
     by yet unseen samples, which will be used to evaluate performance, but not to
     train the model.
 
-    It's possible to use the same test set for every test made, but it's also
-    possible to dynamically create test sets, so that they differ from each other.
-    If dynamic test sets are enabled, we use the data stream to create test sets
-    on the go. This process is more likely to generate test sets that follow the
-    current concept, in comparison to static test sets.
+    It's possible to use the same test set for every test made or to dynamically
+    create test sets, so that they differ from each other. If dynamic test sets
+    are enabled, we use the data stream to create test sets on the go. This process
+    is more likely to generate test sets that follow the current concept, in
+    comparison to static test sets.
 
-    Thus, if concept drift is known to be present in the dataset/generator enabling
-    dynamic test sets is highly recommended. If no concept drift is expected,
-    disabling this parameter will speed up the evaluation process.
+    Thus, if concept drift is known to be present in the stream, using dynamic
+    test sets is recommended. If no concept drift is expected, disabling this
+    parameter will speed up the evaluation process.
 
     Parameters
     ----------
     n_wait: int (Default: 10000)
         The number of samples to process between each test. Also defines when to update the plot if `show_plot=True`.
+        Note that setting `n_wait` too small can significantly slow the evaluation process.
 
     max_samples: int (Default: 100000)
         The maximum number of samples to process during the evaluation.
@@ -45,72 +44,97 @@ class EvaluateHoldout(StreamEvaluator):
 
     metrics: list, optional (Default: ['accuracy', 'kappa'])
         The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
-        and/or logged into the output file. Valid options are 'accuracy', 'kappa', 'kappa_t', 'kappa_m',
-        'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
-        'true_vs_predicts', 'average_mean_squared_error', 'average_mean_absolute_error'.
+        and/or logged into the output file. Valid options are
+        | The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
+          and/or logged into the output file. Valid options are
+        | *Classification*
+        | 'accuracy'
+        | 'kappa'
+        | 'kappa_t'
+        | 'kappa_m'
+        | 'true_vs_predicted'
+        | *Multi-target Classification*
+        | 'hamming_score'
+        | 'hamming_loss'
+        | 'exact_match'
+        | 'j_index'
+        | *Regression*
+        | 'mean_square_error'
+        | 'mean_absolute_error'
+        | 'true_vs_predicted'
+        | *Multi-target Regression*
+        | 'average_mean_squared_error'
+        | 'average_mean_absolute_error'
+        | 'average_root_mean_square_error'
 
     output_file: string, optional (Default: None)
         File name to save the summary of the evaluation.
 
     show_plot: bool (Default: False)
-        If True, a plot will show the progress of the evaluation. Warning: Plotting will slow down the evaluation
+        If True, a plot will show the progress of the evaluation. Warning: Plotting can slow down the evaluation
         process.
 
-    restart_stream: bool, optional (default=True)
+    restart_stream: bool, optional (Default=True)
         If True, the stream is restarted once the evaluation is complete.
 
-    test_size: int (Default: 20000)
+    test_size: int (Default: 5000)
         The size of the test set.
 
     dynamic_test_set: bool (Default: False)
-        If True, will continuously change the test set, otherwise will use the same test set for all tests.
+        If `True`, will continuously change the test set, otherwise will use the same test set for all tests.
 
     Notes
     -----
-    It's important to note that testing the model too often, which means choosing
-    a `n_wait` parameter too small, will significantly slow the evaluation process,
-    depending on the test size.
-
-    This evaluator accepts to types of evaluation processes. It can either evaluate
-    a single learner while computing its metrics or it can evaluate multiple learners
-    at a time, as a means of comparing different approaches to the same problem.
+    1. This evaluator can process a single learner to track its performance; or multiple learners  at a time, to
+       compare different models on the same stream.
 
     Examples
     --------
-    >>> # The first example demonstrates how to use the evaluator to evaluate one learner
-    >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-    >>> from skmultiflow.core.pipeline import Pipeline
-    >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.evaluation.evaluate_holdout import EvaluateHoldout
-    >>> # Setup the File Stream
-    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
-    >>> stream.prepare_for_use()
-    >>> # Setup the classifier
-    >>> classifier = PassiveAggressiveClassifier()
-    >>> # Setup the pipeline
-    >>> pipe = Pipeline([('Classifier', classifier)])
-    >>> # Setup the evaluator
-    >>> evaluator = EvaluateHoldout(max_samples=100000, batch_size=1, n_wait=10000, max_time=1000,
-    >>>                             output_file=None, show_plot=True, metrics=['kappa', 'performance'],
-    >>>                             test_size=5000, dynamic_test_set=True)
-    >>> # Evaluate
-    >>> evaluator.evaluate(stream=stream, model=pipe)
-
-    >>> # The second example will demonstrate how to compare two classifiers with
-    >>> # the EvaluateHoldout
-    >>> from skmultiflow.data import WaveformGenerator
-    >>> from sklearn.linear_model.stochastic_gradient import SGDClassifier
+    >>> # The first example demonstrates how to evaluate one model
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.trees import HoeffdingTree
     >>> from skmultiflow.evaluation import EvaluateHoldout
-    >>> from skmultiflow.lazy import KNNAdwin
-    >>> stream = WaveformGenerator()
+    >>>
+    >>> # Set the stream
+    >>> stream = SEAGenerator(random_state=1)
     >>> stream.prepare_for_use()
-    >>> clf_one = SGDClassifier()
-    >>> clf_two = KNNAdwin(n_neighbors=8,max_window_size=2000)
-    >>> classifier = [clf_one, clf_two]
-    >>> evaluator = EvaluateHoldout(test_size=5000, dynamic_test_set=True, max_samples=100000, batch_size=1,
-    >>>                             n_wait=10000, max_time=1000, output_file=None, show_plot=True,
-    >>>                             metrics=['kappa', 'accuracy'])
-    >>> evaluator.evaluate(stream=stream, model=classifier)
+    >>>
+    >>> # Set the model
+    >>> ht = HoeffdingTree()
+    >>>
+    >>> # Set the evaluator
+    >>> evaluator = EvaluateHoldout(max_samples=100000,
+    >>>                             max_time=1000,
+    >>>                             show_plot=True,
+    >>>                             metrics=['accuracy', 'kappa'],
+    >>>                             dynamic_test_set=True)
+    >>>
+    >>> # Run evaluation
+    >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
+
+    >>> # The second example demonstrates how to compare two models
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.bayes import NaiveBayes
+    >>> from skmultiflow.evaluation import EvaluateHoldout
+    >>>
+    >>> # Set the stream
+    >>> stream = SEAGenerator(random_state=1)
+    >>> stream.prepare_for_use()
+    >>>
+    >>> # Set the model
+    >>> ht = HoeffdingTree()
+    >>> nb = NaiveBayes()
+    >>>
+    >>> # Set the evaluator
+    >>> evaluator = EvaluateHoldout(max_samples=100000,
+    >>>                             max_time=1000,
+    >>>                             show_plot=True,
+    >>>                             metrics=['accuracy', 'kappa'],
+    >>>                             dynamic_test_set=True)
+    >>>
+    >>> # Run evaluation
+    >>> evaluator.evaluate(stream=stream, model=[ht, nb], model_names=['HT', 'NB'])
 
     """
 
@@ -370,14 +394,16 @@ class EvaluateHoldout(StreamEvaluator):
                 self.n_wait = value
             elif name == 'max_samples':
                 self.max_samples = value
+            elif name == 'pretrain_size':
+                self.pretrain_size = value
+            elif name == 'batch_size':
+                self.batch_size = value
             elif name == 'max_time':
                 self.max_time = value
             elif name == 'output_file':
                 self.output_file = value
-            elif name == 'batch_size':
-                self.batch_size = value
-            elif name == 'pretrain_size':
-                self.pretrain_size = value
+            elif name == 'show_plot':
+                self.show_plot = value
             elif name == 'test_size':
                 self.test_size = value
 
