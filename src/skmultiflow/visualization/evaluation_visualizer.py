@@ -1,4 +1,5 @@
 import warnings
+import time
 from skmultiflow.visualization.base_listener import BaseListener
 from matplotlib.rcsetup import cycler
 import matplotlib.pyplot as plt
@@ -6,24 +7,20 @@ from skmultiflow.utils import FastBuffer, constants
 
 
 class EvaluationVisualizer(BaseListener):
-    """ EvaluationVisualizer
-    
-    This class is responsible for maintaining and updating the plot modules 
-    for all the evaluators in scikit-multiflow. 
+    """ This class is responsible for maintaining and updating the plot modules
+    for the evaluators in scikit-multiflow.
     
     It uses `matplotlib.pyplot` modules to create the main plot, which
     depending on the options passed to it as parameter, will create multiple 
     subplots to better display all requested metrics.
     
-    The plots are updated on the go, at each n_wait samples. The plot is 
-    redrawn at each step, which may cause significant slow down, depending on 
-    the processor used and the plotting options.
+    The plots are dynamically updated depending on frame counts amd time elapsed
+    since last update. This strategy account for fast and slow methods.
     
     Line objects are used to describe performance measurements.
     
-    It supports the visualization of multiple learners per subplot as a way 
-    of comparing the performance of different learning algorithms facing the 
-    same data stream.
+    It supports multiple models per subplot as a way of comparing the performance
+    of different learning algorithms.
     
     Parameters
     ----------
@@ -47,8 +44,8 @@ class EvaluationVisualizer(BaseListener):
     
     Notes
     -----
-    Using more than 3 plot types at a time is not recommended, as it will 
-    significantly slow down processing. Also, for the same reason comparing 
+    Using more than 3 plot types at a time is not recommended, as it can
+    significantly slow down the evaluation time. For the same reason comparing
     more than 3 learners at a time is not recommended.
     
     """
@@ -59,9 +56,10 @@ class EvaluationVisualizer(BaseListener):
         # Default values
         self._sample_ids = []
         self._is_legend_set = False
-        self._draw_cnt = 0
+        self._frame_cnt = 0
         self._plot_trackers = {}
         self._text_annotations = []
+        self._last_draw_timestamp = 0
 
         # Configuration
         self._data_dict = data_dict
@@ -108,8 +106,8 @@ class EvaluationVisualizer(BaseListener):
     def on_new_train_step(self, sample_id, data_buffer):
         """ This is the listener main function, which gives it the ability to
         'listen' for the caller. Whenever the EvaluationVisualiser should 
-        be aware of some new data, the caller will call this function, 
-        passing the new data as parameter.
+        be aware of some new data, the caller will invoke this function,
+        passing the new data buffer.
         
         Parameters
         ----------
@@ -121,30 +119,32 @@ class EvaluationVisualizer(BaseListener):
             
         Raises
         ------
-        ValueError: If wrong data formats are passed as parameter this error 
-        is raised.
+        ValueError: If an exception is raised during the draw operation.
          
         """
 
         try:
+            current_time = time.time()
             self._clear_annotations()
             self._update_plots(sample_id, data_buffer)
 
-            if self._draw_cnt == 4:  # Refresh rate to mitigate re-drawing overhead for small changes
+            # To mitigate re-drawing overhead for fast models use frame counter (default = 5 frames).
+            # To avoid slow refresh rate in slow models use a time limit (default = 1 sec).
+            if (self._frame_cnt < 5) or (current_time - self._last_draw_timestamp > 1):
                 plt.subplots_adjust(right=0.72)  # Adjust subplots to include metrics annotations
                 self.fig.canvas.draw()
                 plt.pause(1e-9)
-                self._draw_cnt = 0
+                self._frame_cnt = 0
+                self._last_draw_timestamp = current_time
             else:
-                self._draw_cnt += 1
+                self._frame_cnt += 1
         except BaseException as exception:
             raise ValueError('Failed when trying to draw plot. Exception: {} | Type: {}'.
                              format(exception, type(exception).__name__))
 
     def __configure(self):
-        """  This function will verify which subplots it should create. For each one
-        of those, it will initialize all relevant objects to keep track of the 
-        plotting points.
+        """  This function will verify which subplots should be create. Initializing
+        all relevant objects to keep track of the plotting points.
         
         Basic structures needed to keep track of plot values (for each subplot) 
         are: lists of values and matplot line objects.
@@ -231,7 +231,7 @@ class EvaluationVisualizer(BaseListener):
                 plot_tracker.data['buffer_size'] = 100
                 plot_tracker.data['X'] = FastBuffer(plot_tracker.data['buffer_size'])
                 plot_tracker.data['target_values'] = None
-                plot_tracker.data['predictions'] = []
+                plot_tracker.data['predictions'] = FastBuffer(plot_tracker.data['buffer_size'])
                 plot_tracker.data['clusters'] = []
                 plot_tracker.data['clusters_initialized'] = False
 
@@ -316,29 +316,10 @@ class EvaluationVisualizer(BaseListener):
             self.fig.legend(handles=handles, ncol=self.n_models, bbox_to_anchor=(0.02, 0.0), loc="lower left")
             self._is_legend_set = True
 
-    def _draw(self, data_buffer):
-        """ Updates and redraws the plot.
-        
-        Parameters
-        ----------
-        data_buffer: EvaluationDataBuffer
-            A buffer containing evaluation data for a single training/visualization step.
-             
-        """
-        self._clear_annotations()
-        self._update_plots(data_buffer)
-
-        if self._draw_cnt == 4:  # Refresh rate to mitigate re-drawing overhead for small changes
-            plt.subplots_adjust(right=0.72)   # Adjust subplots to include metrics annotations
-            self.fig.canvas.draw()
-            plt.pause(1e-9)
-            self._draw_cnt = 0
-        else:
-            self._draw_cnt += 1
-
     def _update_plots(self, sample_id, data_buffer):
         self._sample_ids.append(sample_id)
         for metric_id, data_ids in data_buffer.data_dict.items():
+            update_xy_limits = True
             y_min = 0.0
             y_max = 1.0
             pad = 0.1  # Default padding to set above and bellow plots
@@ -357,14 +338,15 @@ class EvaluationVisualizer(BaseListener):
                     y_min = min([plot_tracker.data[data_id][i][-1], plot_tracker.data[constants.Y_TRUE][-1], y_min])
                     y_max = max([plot_tracker.data[data_id][i][-1], plot_tracker.data[constants.Y_TRUE][-1], y_max])
             elif metric_id == constants.DATA_POINTS:
+                update_xy_limits = False
                 # Process features
                 data_id = 'X'
                 features_dict = data_buffer.get_data(metric_id=metric_id, data_id=data_id)
                 feature_indices = list(features_dict.keys())
                 feature_indices.sort()
                 # Store tuple of feature values into the buffer, sorted by index
-                plot_tracker.data[data_id].add_element((features_dict[feature_indices[0]],
-                                                        features_dict[feature_indices[1]]))
+                plot_tracker.data[data_id].add_element([[features_dict[feature_indices[0]],
+                                                        features_dict[feature_indices[1]]]])
 
                 plot_tracker.sub_plot_obj.set_xlabel('Feature {}'.format(feature_indices[0]))
                 plot_tracker.sub_plot_obj.set_ylabel('Feature {}'.format(feature_indices[1]))
@@ -377,20 +359,21 @@ class EvaluationVisualizer(BaseListener):
                 data_id = 'target_values'
                 plot_tracker.data[data_id] = data_buffer.get_data(metric_id=metric_id, data_id=data_id)
                 if not plot_tracker.data['clusters_initialized']:
-                    for j in range(plot_tracker.data[data_id]):
+                    for j in range(len(plot_tracker.data[data_id])):
                         plot_tracker.data['clusters'].append(FastBuffer(plot_tracker.data['buffer_size']))
 
                 # Process predictions
                 data_id = 'predictions'
-                plot_tracker.data[data_id].append(data_buffer.get_data(metric_id=metric_id, data_id=data_id))
+                plot_tracker.data[data_id].add_element([data_buffer.get_data(metric_id=metric_id, data_id=data_id)])
 
-                for k, cluster in enumerate(self.clusters):
-                    if plot_tracker.data[data_id][-1] == k:
-                        plot_tracker.data['clusters'].add_element([(X1, X2)])
+                for k, cluster in enumerate(plot_tracker.data['clusters']):
+                    if plot_tracker.data[data_id].get_queue()[-1] == k:
+                        plot_tracker.data['clusters'][k].add_element([(X1, X2)])
+                        # TODO confirm buffer update inside the loop
                     if cluster.get_queue():
                         temp = cluster.get_queue()
-                        plot_tracker.sub_plot_obj.scatter(*zip(*temp), label="class {k}".format(k=k))
-                        plot_tracker.sub_plot_obj.legend(loc="best")
+                        plot_tracker.sub_plot_obj.scatter(*zip(*temp), label="Class {k}".format(k=k))
+                plot_tracker.sub_plot_obj.legend(loc=2, bbox_to_anchor=(1.01, 1.))
 
             else:
                 # Default case, 'mean' and 'current' performance
@@ -415,8 +398,9 @@ class EvaluationVisualizer(BaseListener):
                         y_max = max([plot_tracker.data[constants.MEAN][i][-1],
                                      plot_tracker.data[constants.CURRENT][i][-1], y_max])
                         pad = 0.5 * y_max  # Padding bellow and above thresholds
-            plot_tracker.sub_plot_obj.set_ylim((y_min-pad, y_max+pad))
-            plot_tracker.sub_plot_obj.set_xlim(0, self._sample_ids[-1])
+            if update_xy_limits:
+                plot_tracker.sub_plot_obj.set_ylim((y_min-pad, y_max+pad))
+                plot_tracker.sub_plot_obj.set_xlim(0, self._sample_ids[-1])
 
     def _clear_annotations(self):
         """ Clear annotations, so next frame is correctly rendered. """
