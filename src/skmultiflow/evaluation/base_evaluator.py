@@ -380,24 +380,20 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
             elif metric == constants.DATA_POINTS:
                 target_values = self.stream.target_values
-                y_pred = []
                 features = {}  # Dictionary containing feature values, using index as key
 
-                for i in range(self.n_models):
-                    _, p = self.mean_eval_measurements[i].get_last()
-                    X, _ = self.stream.last_sample()
+                y_pred, p = self.mean_eval_measurements[0].get_last()  # Only track one model (first) by default
 
-                    y_pred.append(p)
-                    idx_1 = 0  # TODO let the user choose the feature indices of interest
-                    idx_2 = 1
-                    features[idx_1] = X[idx_1]
-                    features[idx_2] = X[idx_2]
+                X, _ = self.stream.last_sample()
+                idx_1 = 0  # TODO let the user choose the feature indices of interest
+                idx_2 = 1
+                features[idx_1] = X[0][idx_1]
+                features[idx_2] = X[0][idx_2]
 
-                values = [[], [], []]
+                values = [None, None, None]
                 values[0] = features
                 values[1] = target_values
-                for i in range(self.n_models):
-                    values[2].append(y_pred[i])
+                values[2] = y_pred
 
             else:
                 raise ValueError('Unknown metric {}'.format(metric))
