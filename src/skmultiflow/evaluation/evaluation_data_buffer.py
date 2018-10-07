@@ -2,25 +2,22 @@ class EvaluationDataBuffer(object):
     """ Stores evaluation data at a given time. It is used to track and distribute
     data across evaluators and visualizers.
     """
-    def __init__(self, data_dict, n_models):
+    def __init__(self, data_dict):
         """
 
         Parameters
         ----------
         data_dict: dict
-            Dictionary containing metrics as keys and data identifiers as values
+            Dictionary containing metrics as keys and data identifiers as values.
 
-        n_models: int
-            Number of models to track
         """
         self.data_dict = None
-        self.n_models = None
         self.data = {}
         self.sample_id = -1
-        self._validate(data_dict, n_models)
+        self._validate(data_dict)
         self._clear_data()
 
-    def _validate(self, data_dict, n_models):
+    def _validate(self, data_dict):
         if isinstance(data_dict, dict):
             if len(data_dict.keys()) > 0:
                 self.data_dict = data_dict
@@ -28,10 +25,6 @@ class EvaluationDataBuffer(object):
                 raise ValueError('data_dict is empty')
         else:
             raise TypeError('data_dict must be a dictionary, received: {}'.format(type(data_dict)))
-        if n_models > 0:
-            self.n_models = n_models
-        else:
-            raise ValueError('n_models must be at least 1, received: {}'.format(n_models))
 
     def _clear_data(self):
         for metric_id, data_ids in self.data_dict.items():
