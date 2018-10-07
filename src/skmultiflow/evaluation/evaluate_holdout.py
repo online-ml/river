@@ -43,8 +43,6 @@ class EvaluateHoldout(StreamEvaluator):
         The maximum duration of the simulation (in seconds).
 
     metrics: list, optional (Default: ['accuracy', 'kappa'])
-        The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
-        and/or logged into the output file. Valid options are
         | The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
           and/or logged into the output file. Valid options are
         | *Classification*
