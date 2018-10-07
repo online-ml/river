@@ -283,7 +283,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 data_ids = ['X', 'target_values', 'prediction']
             self._data_dict[metric] = data_ids
 
-        self._data_buffer = EvaluationDataBuffer(data_dict=self._data_dict, n_models=self.n_models)
+        self._data_buffer = EvaluationDataBuffer(data_dict=self._data_dict)
 
     def _update_metrics(self):
         """ Updates the metrics of interest. This function updates the evaluation data buffer
