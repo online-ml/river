@@ -8,26 +8,25 @@ from skmultiflow.utils import constants
 
 
 class EvaluatePrequential(StreamEvaluator):
-    """ EvaluatePrequential
-
-    The prequential evaluation method, or interleaved test-then-train method,
+    """ The prequential evaluation method, or interleaved test-then-train method,
     is an alternative to the traditional holdout evaluation, inherited from
     batch setting problems.
 
     The prequential evaluation is designed specifically for stream settings,
     in the sense that each sample serves two purposes, and that samples are
     analysed sequentially, in order of arrival, and become immediately
-    inaccessible by the means of the stream.
+    inaccessible.
 
     This method consists of using each sample to test the model, which means
-    to make a predictions or a regression, and then the same sample is used
-    to train the learner (partial fit it). This way the learner is always
-    being tested on samples that it hasn't seen yet.
+    to make a predictions, and then the same sample is used to train the model
+    (partial fit). This way the model is always tested on samples that it
+    hasn't seen yet.
 
     Parameters
     ----------
     n_wait: int (Default: 200)
         The number of samples to process between each test. Also defines when to update the plot if `show_plot=True`.
+        Note that setting `n_wait` too small can significantly slow the evaluation process.
 
     max_samples: int (Default: 100000)
         The maximum number of samples to process during the evaluation.
@@ -42,23 +41,40 @@ class EvaluatePrequential(StreamEvaluator):
         The maximum duration of the simulation (in seconds).
 
     metrics: list, optional (Default: ['accuracy', 'kappa'])
-        The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
-        and/or logged into the output file. Valid options are 'accuracy', 'kappa', 'kappa_t', 'kappa_m',
-        'hamming_score', 'hamming_loss', 'exact_match', 'j_index', 'mean_square_error', 'mean_absolute_error',
-        'true_vs_predicted', 'average_mean_square_error', 'average_mean_absolute_error'.
+        | The list of metrics to track during the evaluation. Also defines the metrics that will be displayed in plots
+          and/or logged into the output file. Valid options are
+        | *Classification*
+        | 'accuracy'
+        | 'kappa'
+        | 'kappa_t'
+        | 'kappa_m'
+        | 'true_vs_predicted'
+        | *Multi-target Classification*
+        | 'hamming_score'
+        | 'hamming_loss'
+        | 'exact_match'
+        | 'j_index'
+        | *Regression*
+        | 'mean_square_error'
+        | 'mean_absolute_error'
+        | 'true_vs_predicted'
+        | *Multi-target Regression*
+        | 'average_mean_squared_error'
+        | 'average_mean_absolute_error'
+        | 'average_root_mean_square_error'
 
     output_file: string, optional (Default: None)
         File name to save the summary of the evaluation.
 
     show_plot: bool (Default: False)
-        If True, a plot will show the progress of the evaluation. Warning: Plotting will slow down the evaluation
+        If True, a plot will show the progress of the evaluation. Warning: Plotting can slow down the evaluation
         process.
 
     restart_stream: bool, optional (default: True)
         If True, the stream is restarted once the evaluation is complete.
 
     data_points_for_classification: bool(Default: False)
-        If True , the plot type is a data points
+        If True , the visualization used is a cloud of data points
         (only works for classification)
 
     Notes
@@ -71,67 +87,75 @@ class EvaluatePrequential(StreamEvaluator):
 
     Examples
     --------
-    >>> # The first example demonstrates how to use the evaluator to evaluate one learner
-    >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-    >>> from skmultiflow.core.pipeline import Pipeline
-    >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-    >>> # Setup the File Stream
-    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
+    >>> # The first example demonstrates how to evaluate one model
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.evaluation import EvaluatePrequential
+    >>>
+    >>> # Set the stream
+    >>> stream = SEAGenerator(random_state=1)
     >>> stream.prepare_for_use()
-    >>> # Setup the classifier
-    >>> classifier = PassiveAggressiveClassifier()
-    >>> # Setup the pipeline
-    >>> pipe = Pipeline([('Classifier', classifier)])
-    >>> # Setup the evaluator
-    >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
-    ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'performance'])
-    >>> # Evaluate
-    >>> evaluator.evaluate(stream=stream, model=pipe)
+    >>>
+    >>> # Set the model
+    >>> ht = HoeffdingTree()
+    >>>
+    >>> # Set the evaluator
+    >>>
+    >>> evaluator = EvaluatePrequential(max_samples=10000,
+    >>>                                 max_time=1000,
+    >>>                                 show_plot=True,
+    >>>                                 metrics=['accuracy', 'kappa'])
+    >>>
+    >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
+    >>>
+    >>> # Run evaluation
+    >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
 
-    >>> # The second example will demonstrate how to compare two classifiers with
-    >>> # the EvaluatePrequential
-    >>> from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
-    >>> from skmultiflow.lazy.knn_adwin import KNNAdwin
-    >>> from skmultiflow.core.pipeline import Pipeline
-    >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-    >>> # Setup the File Stream
-    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
+    >>> # The second example demonstrates how to compare two models
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.bayes import NaiveBayes
+    >>> from skmultiflow.evaluation import EvaluateHoldout
+    >>>
+    >>> # Set the stream
+    >>> stream = SEAGenerator(random_state=1)
     >>> stream.prepare_for_use()
-    >>> # Setup the classifiers
-    >>> clf_one = PassiveAggressiveClassifier()
-    >>> clf_two = KNNAdwin(n_neighbors=8)
-    >>> # Setup the pipeline for clf_one
-    >>> pipe = Pipeline([('Classifier', clf_one)])
-    >>> # Create the list to hold both classifiers
-    >>> classifier = [pipe, clf_two]
-    >>> # Setup the evaluator
-    >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
-    ... output_file=None, show_plot=True, metrics=['kappa', 'kappa_t', 'accuracy'])
-    >>> # Evaluate
-    >>> evaluator.evaluate(stream=stream, model=classifier)
+    >>>
+    >>> # Set the models
+    >>> ht = HoeffdingTree()
+    >>> nb = NaiveBayes()
+    >>>
+    >>> evaluator = EvaluatePrequential(max_samples=10000,
+    >>>                                 max_time=1000,
+    >>>                                 show_plot=True,
+    >>>                                 metrics=['accuracy', 'kappa'])
+    >>>
+    >>> # Run evaluation
+    >>> evaluator.evaluate(stream=stream, model=[ht, nb], model_names=['HT', 'NB'])
 
-    >>> # The third example will demonstrate how to plot data points for a classifier with
-    >>> # the EvaluatePrequential
-    >>> #PS: You can not in this case compare two classifiers , the evaluator only takes
-    >>> #one classifier
-    >>> from skmultiflow.trees.hoeffding_tree import HoeffdingTree
-    >>> from skmultiflow.core.pipeline import Pipeline
-    >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-    >>> # Setup the File Stream
-    >>> stream = FileStream("skmultiflow/data/datasets/sea_big.csv", -1, 1)
+    >>> # The third example demonstrates how to evaluate one model
+    >>> # and visualize the predictions using data points.
+    >>> # Note: You can not in this case compare multiple models
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.evaluation import EvaluatePrequential
+    >>> # Set the stream
+    >>> stream = SEAGenerator(random_state=1)
     >>> stream.prepare_for_use()
-    >>> # Setup the classifier
-    >>> classifier = HoeffdingTree()
-    >>> # Setup the pipeline for clf_one
-    >>> pipe = Pipeline([('Classifier', classifier)])
-    >>> # Setup the evaluator
-    >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=10000, batch_size=1, n_wait=200, max_time=1000,
-    ... output_file=None, show_plot=True, data_points_for_classification=True)
-    >>> # Evaluate
-    >>> evaluator.evaluate(stream=stream, model=pipe)
+    >>> # Set the model
+    >>> ht = HoeffdingTree()
+    >>> # Set the evaluator
+    >>> evaluator = EvaluatePrequential(max_samples=200,
+    >>>                                 n_wait=1,
+    >>>                                 pretrain_size=1,
+    >>>                                 max_time=1000,
+    >>>                                 show_plot=True,
+    >>>                                 metrics=['accuracy'],
+    >>>                                 data_points_for_classification=True)
+    >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
+    >>> # Run evaluation
+    >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
+
     """
 
     def __init__(self,
@@ -173,9 +197,7 @@ class EvaluatePrequential(StreamEvaluator):
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
     def evaluate(self, stream, model, model_names=None):
-        """ evaluate
-
-        Evaluates a learner or set of learners on samples from a stream.
+        """ Evaluates a learner or set of learners on samples from a stream.
 
         Parameters
         ----------
@@ -312,9 +334,7 @@ class EvaluatePrequential(StreamEvaluator):
         return self.model
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-
-        Partially fit all the learners on the given data.
+        """ Partially fit all the learners on the given data.
 
         Parameters
         ----------
@@ -344,9 +364,7 @@ class EvaluatePrequential(StreamEvaluator):
             return self
 
     def predict(self, X):
-        """ predict
-
-        Predicts the labels of the X samples, by calling the predict
+        """ Predicts the labels of the X samples, by calling the predict
         function of all the learners.
 
         Parameters
@@ -370,9 +388,7 @@ class EvaluatePrequential(StreamEvaluator):
         return predictions
 
     def set_params(self, parameter_dict):
-        """ set_params
-
-        This function allows the users to change some of the evaluator's parameters,
+        """ This function allows the users to change some of the evaluator's parameters,
         by passing a dictionary where keys are the parameters names, and values are
         the new parameters' values.
 
@@ -388,14 +404,16 @@ class EvaluatePrequential(StreamEvaluator):
                 self.n_wait = value
             elif name == 'max_samples':
                 self.max_samples = value
+            elif name == 'pretrain_size':
+                self.pretrain_size = value
+            elif name == 'batch_size':
+                self.batch_size = value
             elif name == 'max_time':
                 self.max_time = value
             elif name == 'output_file':
                 self.output_file = value
-            elif name == 'batch_size':
-                self.batch_size = value
-            elif name == 'pretrain_size':
-                self.pretrain_size = value
+            elif name == 'show_plot':
+                self.show_plot = value
 
     def get_info(self):
         filename = "None"
