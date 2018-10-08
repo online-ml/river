@@ -1112,6 +1112,9 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
         prediction: float or list or np.ndarray
             The predicted value(s).
+
+        prediction: float or list or np.ndarray
+            The predicted value(s).
         """
         self.last_true_label = y
         self.last_prediction = prediction
@@ -1224,6 +1227,9 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         ----------
         y: float or list or np.ndarray
             The true value(s).
+
+        prediction: float or list or np.ndarray
+            The predicted value(s).
 
         prediction: float or list or np.ndarray
             The predicted value(s).
