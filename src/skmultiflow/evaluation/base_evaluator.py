@@ -274,6 +274,11 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 self.current_eval_measurements.append(WindowMultiTargetRegressionMeasurements(
                     window_size=self.n_sliding))
 
+        # Running time
+        self.running_time_measurements = []
+        for i in range(self.n_models):
+            self.running_time_measurements.append(RunningTimeMeasurements())
+
         # Evaluation data buffer
         self._data_dict = {}
         for metric in self.metrics:
@@ -282,14 +287,13 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 data_ids = [constants.Y_TRUE, constants.Y_PRED]
             elif metric == constants.DATA_POINTS:
                 data_ids = ['X', 'target_values', 'prediction']
+            elif metric == constants.RUNNING_TIME:
+                data_ids = ['training_time', 'testing_time', 'total_running_time']
+            elif metric == constants.MODEL_SIZE:
+                data_ids = ['model_size']
             self._data_dict[metric] = data_ids
 
         self._data_buffer = EvaluationDataBuffer(data_dict=self._data_dict)
-
-        # Running time
-        self.running_time_measurements = []
-        for i in range(self.n_models):
-            self.running_time_measurements.append(RunningTimeMeasurements())
 
 
     def _update_metrics(self):
