@@ -234,7 +234,24 @@ class EvaluationVisualizer(BaseListener):
                 plot_tracker.data['predictions'] = FastBuffer(plot_tracker.data['buffer_size'])
                 plot_tracker.data['clusters'] = []
                 plot_tracker.data['clusters_initialized'] = False
+            elif metric_id == constants.RUNNING_TIME:
+                # Only the current time measurement must be saved
+                for data_id in data_ids:
+                    plot_tracker.data[data_id] = [0.0 for _ in range(self.n_models)]
+                
+                plot_tracker.sub_plot_obj.set_title('Running time (s)')
+                plot_tracker.sub_plot_obj.axis('off')
 
+                self._update_running_time_annotations(plot_tracker.sub_plot_obj, 
+                                                      plot_tracker.data)
+            elif metric_id == constants.MODEL_SIZE:
+                plot_tracker.data['model_size'] = [0.0 for _ in range(self.n_models)]
+                
+                plot_tracker.sub_plot_obj.set_title('Model size (MB)')
+                plot_tracker.sub_plot_obj.axis('off')
+
+                self._update_model_size_annotations(plot_tracker.sub_plot_obj,
+                                                    plot_tracker.data['model_size'])
             else:
                 # Default case, 'mean' and 'current' performance
                 handle = []
@@ -374,7 +391,26 @@ class EvaluationVisualizer(BaseListener):
                         temp = cluster.get_queue()
                         plot_tracker.sub_plot_obj.scatter(*zip(*temp), label="Class {k}".format(k=k))
                 plot_tracker.sub_plot_obj.legend(loc=2, bbox_to_anchor=(1.01, 1.))
+            elif metric_id == constants.RUNNING_TIME:
+                # Only the current time measurement must be saved
+                print_data = {}
+                for data_id in data_ids:
+                    plot_tracker.data[data_id] = data_buffer.get_data(
+                        metric_id=metric_id,
+                        data_id=data_id
+                    )
+                    print_data[data_id] = plot_tracker.data[data_id]
 
+                self._update_running_time_annotations(plot_tracker.sub_plot_obj, 
+                                                      print_data)
+            elif metric_id == constants.MODEL_SIZE:
+                plot_tracker.data['model_size'] = data_buffer.get_data(
+                    metric_id=metric_id,
+                    data_id='model_size'
+                )
+
+                self._update_model_size_annotations(plot_tracker.sub_plot_obj,
+                                                    plot_tracker.data['model_size'])
             else:
                 # Default case, 'mean' and 'current' performance
                 for data_id in data_ids:
@@ -422,6 +458,46 @@ class EvaluationVisualizer(BaseListener):
         self._text_annotations.append(subplot.annotate('{: ^16.4f}  {: ^16.4f}'.format(mean_value, current_value),
                                                        xy=xy_pos, xycoords='axes fraction',
                                                        xytext=(50, -shift_y), textcoords='offset points'))
+
+    def _update_running_time_annotations(self, subplot_obj, running_time):
+        text_header = '{: <12} | {: ^16} | {: ^16} | {: ^16}'.\
+                      format('Model', 'Training', 'Testing',
+                             'Total')
+        self._text_annotations.append(
+            subplot_obj.annotate(text_header, xy=(0.5, 0.98), ha='center',
+                                 va='center', xycoords='axes fraction')
+        )
+
+        training = running_time['training_time']
+        testing = running_time['testing_time']
+        total = running_time['total_running_time']
+
+        place_increment = 0.9/(self.n_models + 1)
+        for i, mn in enumerate(self.model_names):
+            time_values = '{: ^12}     {: ^16.4f}   {: ^16.4f}   {: ^16.4f}'.\
+                          format(
+                            mn[:6], training[i], testing[i], total[i]
+                          )
+            self._text_annotations.append(
+                subplot_obj.annotate(time_values,
+                                     xy=(0.5, 0.9 - (i+1) * place_increment),
+                                     ha='center', va='center',
+                                     xycoords='axes fraction')
+            )
+            
+    def _update_model_size_annotations(self, subplot_obj, model_size):
+        place_increment = 1.0/(self.n_models + 1)
+        for i, mn in enumerate(self.model_names):
+            time_values = '{: ^12}: {:.4f}'.\
+                          format(
+                            mn[:6], model_size[i]
+                          )
+            self._text_annotations.append(
+                subplot_obj.annotate(time_values,
+                                     xy=(0.5, 1.0 - (i+1) * place_increment),
+                                     ha='center', va='center',
+                                     xycoords='axes fraction')
+            )
 
     @staticmethod
     def hold():

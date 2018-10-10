@@ -628,7 +628,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     self.model_names[i], self._data_buffer.get_data(metric_id=constants.RUNNING_TIME,
                                                                     data_id='total_running_time')[i]))
             if constants.MODEL_SIZE in self.metrics:
-                logging.info('{} - Size (kB)          : {:.4f}'.format(
+                logging.info('{} - Size (MB)          : {:.4f}'.format(
                     self.model_names[i], self._data_buffer.get_data(metric_id=constants.MODEL_SIZE,
                                                                     data_id='model_size')[i]))
 
