@@ -57,12 +57,13 @@ def test_normalize_values_in_dict():
 
 
 def test_calculate_object_size():
-    dict = {}
+    elems = []
     array_length = 10
 
-    for i in range(200):
-        dict[i] = np.ones((array_length), np.float64)
+    for i in range(100):
+        elems.append(np.ones((array_length), np.int8))
+        elems.append('testing_string')
 
-    assert calculate_object_size(dict, 'byte') == 114116
-    assert calculate_object_size(dict, 'kB') == 111.44140625
-    assert calculate_object_size(dict, 'MB'), 0.10882949829101562
+    assert calculate_object_size(elems, 'byte') == 37335
+    assert calculate_object_size(elems, 'kB') == 36.4599609375
+    assert calculate_object_size(elems, 'MB') == 0.035605430603027344
