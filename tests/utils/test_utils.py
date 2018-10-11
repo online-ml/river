@@ -60,10 +60,9 @@ def test_calculate_object_size():
     dict = {}
     array_length = 10
 
-    for i in range(100):
+    for i in range(200):
         dict[i] = np.ones((array_length), np.float64)
-        dict[i + 100] = 'testing_string'
 
-    assert calculate_object_size(dict, 'byte') == 64579
-    assert calculate_object_size(dict, 'kB') == 63.0654296875
-    assert calculate_object_size(dict, 'MB') == 0.06158733367919922
+    assert calculate_object_size(dict, 'byte') == 114116
+    assert calculate_object_size(dict, 'kB') == 111.44140625
+    assert calculate_object_size(dict, 'MB'), 0.10882949829101562
