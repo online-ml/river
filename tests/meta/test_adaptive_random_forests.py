@@ -32,14 +32,14 @@ def test_adaptive_random_forests():
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = [1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
+        last_version_predictions = [1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
                             1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0,
                             1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0]
 
     # Performance below does not need to be guaranteed. This check is set up so that anything that changes
     # to predictions are caught in the unit test. This helps prevent accidental changes.
     # If these tests fail, make sure that what is worked on *should* change the predictions of ARF.
-    assert np.alltrue(predictions == expected_predictions)
+    assert np.alltrue(predictions == last_version_predictions)
 
 
 def test_adaptive_random_forests_labels_given():
@@ -71,17 +71,13 @@ def test_adaptive_random_forests_labels_given():
         learner.partial_fit(X, y)
         cnt += 1
     
-    assert np.alltrue([np.isclose(y_proba.sum(), 1) for y_proba in predictions])
+    assert np.alltrue([np.isclose(y_proba.sum(), 1) for y_proba in predictions]), "Probabilities should sum to 1."
 
-    performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
-                            1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0,
-                            1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0]
+    class_probabilities = np.asarray(predictions).squeeze()
+    assert class_probabilities.shape == (49, 2)
 
-    expected_correct_predictions = 32
-    expected_performance = expected_correct_predictions / len(predictions)
-
+    predictions = class_probabilities.argmax(axis=1)
+    last_version_predictions = [1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1,
+                                1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0]
     # See comment in test `test_adaptive_random_forests`
-    assert np.alltrue(predictions == expected_predictions)
-    assert np.isclose(expected_performance, performance)
-    assert correct_predictions == expected_correct_predictions
+    assert np.alltrue(predictions == last_version_predictions)
