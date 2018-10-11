@@ -265,6 +265,8 @@ class AdaptiveRandomForest(StreamModel):
                 y_proba_mean = y_proba
             else:
                 y_proba_mean = y_proba_mean + (y_proba - y_proba_mean) / (i+1)
+        if y_proba_mean.sum(axis=1) != 0:
+            y_proba_mean = y_proba_mean / y_proba_mean.sum(axis=1)
         return y_proba_mean
         
     def reset(self):        
