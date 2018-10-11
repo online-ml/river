@@ -32,17 +32,14 @@ def test_adaptive_random_forests():
         learner.partial_fit(X, y)
         cnt += 1
 
-    performance = correct_predictions / len(predictions)
     expected_predictions = [1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
                             1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0,
                             1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0]
 
-    expected_correct_predictions = 32
-    expected_performance = expected_correct_predictions / len(predictions)
-
+    # Performance below does not need to be guaranteed. This check is set up so that anything that changes
+    # to predictions are caught in the unit test. This helps prevent accidental changes.
+    # If these tests fail, make sure that what is worked on *should* change the predictions of ARF.
     assert np.alltrue(predictions == expected_predictions)
-    assert np.isclose(expected_performance, performance)
-    assert correct_predictions == expected_correct_predictions
 
 
 def test_adaptive_random_forests_labels_given():
@@ -84,6 +81,7 @@ def test_adaptive_random_forests_labels_given():
     expected_correct_predictions = 32
     expected_performance = expected_correct_predictions / len(predictions)
 
+    # See comment in test `test_adaptive_random_forests`
     assert np.alltrue(predictions == expected_predictions)
     assert np.isclose(expected_performance, performance)
     assert correct_predictions == expected_correct_predictions
