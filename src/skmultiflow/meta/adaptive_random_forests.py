@@ -1,4 +1,5 @@
 from copy import deepcopy
+from sklearn.utils.validation import check_is_fitted
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.trees.hoeffding_tree import *
@@ -257,6 +258,8 @@ class AdaptiveRandomForest(StreamModel):
             Predicted class probabilities for all instances in X.
             If class labels were specified in a `partial_fit` call, the order of the columns matches `self.classes`.
             If classes were not specified, they are assumed to be 0-indexed.
+            Class probabilities for a sample shall sum to 1 as long as at least one estimators has non-zero predictions.
+            If no estimator can predict probabilities, probabilities of 0 are returned.
         """
         y_proba_mean = None
         for i in range(self.n_estimators):
@@ -265,6 +268,7 @@ class AdaptiveRandomForest(StreamModel):
                 y_proba_mean = y_proba
             else:
                 y_proba_mean = y_proba_mean + (y_proba - y_proba_mean) / (i+1)
+
         if y_proba_mean.sum(axis=1) != 0:
             y_proba_mean = y_proba_mean / y_proba_mean.sum(axis=1)
         return y_proba_mean
