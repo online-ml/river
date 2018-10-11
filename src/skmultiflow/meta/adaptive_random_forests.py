@@ -164,6 +164,7 @@ class AdaptiveRandomForest(StreamModel):
         else:
             self.warning_detection_method = None
         self.instances_seen = 0
+        self.classes = None
         self._train_weight_seen_by_model = 0.0
         self.ensemble = None
         self._init_random_state = random_state
@@ -192,15 +193,18 @@ class AdaptiveRandomForest(StreamModel):
         raise NotImplementedError
     
     def partial_fit(self, X, y, classes=None, weight=1.0):
+        if self.classes is None and classes is not None:
+            self.classes = classes
+
         if y is not None:
             row_cnt, _ = get_dimensions(X)
             weight = check_weights(weight, expand_length=row_cnt)
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
-                    self._partial_fit(X[i], y[i], weight[i])
-        
-    def _partial_fit(self, X, y, weight):
+                    self._partial_fit(X[i], y[i], self.classes, weight[i])
+
+    def _partial_fit(self, X, y, classes=None, weight=1.0):
         self.instances_seen += 1
         
         if self.ensemble is None:
@@ -211,7 +215,10 @@ class AdaptiveRandomForest(StreamModel):
             self.ensemble[i].evaluator.add_result(y_predicted, y, weight)
             k = self.random_state.poisson(self.lambda_value)
             if k > 0:
-                self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]), np.asarray([k]), self.instances_seen)
+                self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]),
+                                             classes=classes,
+                                             weight=np.asarray([k]),
+                                             instances_seen=self.instances_seen)
     
     def predict(self, X):
         """Predicts the label of the X instance(s)
@@ -236,7 +243,34 @@ class AdaptiveRandomForest(StreamModel):
         return predictions
 
     def predict_proba(self, X):
-        raise NotImplementedError
+        """ Predicts the class probabilities for the X instance(s).
+
+        Class probabilities are calculated as the mean predicted class probabilities per base estimator.
+
+        Parameters
+        ----------
+         X: numpy.ndarray of shape (n_samples, n_features)
+            Samples for which we want to predict the class probabilities.
+        Returns
+        -------
+        numpy.ndarray of shape (n_samples, n_classes)
+            Predicted class probabilities for all instances in X.
+            If class labels were specified in a `partial_fit` call, the order of the columns matches `self.classes`.
+            If classes were not specified, they are assumed to be 0-indexed.
+            Class probabilities for a sample shall sum to 1 as long as at least one estimators has non-zero predictions.
+            If no estimator can predict probabilities, probabilities of 0 are returned.
+        """
+        y_proba_mean = None
+        for i in range(self.n_estimators):
+            y_proba = self.ensemble[i].predict_proba(X)
+            if y_proba_mean is None:
+                y_proba_mean = y_proba
+            else:
+                y_proba_mean = y_proba_mean + (y_proba - y_proba_mean) / (i+1)
+
+        if y_proba_mean.sum(axis=1) != 0:
+            y_proba_mean = y_proba_mean / y_proba_mean.sum(axis=1)
+        return y_proba_mean
         
     def reset(self):        
         """Reset ARF."""
@@ -425,11 +459,11 @@ class ARFBaseLearner(BaseObject):
             self.drift_detection.reset()
         self.evaluator = self.evaluator_method()
 
-    def partial_fit(self, X, y, weight, instances_seen):
-        self.classifier.partial_fit(X, y, weight)
+    def partial_fit(self, X, y, classes, weight, instances_seen):
+        self.classifier.partial_fit(X, y, classes=classes, weight=weight)
 
         if self.background_learner:
-            self.background_learner.classifier.partial_fit(X, y, weight)
+            self.background_learner.classifier.partial_fit(X, y, classes=classes, weight=weight)
 
         correctly_classifies = False
         if self._use_drift_detector and not self.is_background_learner:
@@ -465,7 +499,10 @@ class ARFBaseLearner(BaseObject):
 
     def predict(self, X):
         return self.classifier.predict(X)
-    
+
+    def predict_proba(self, X):
+        return self.classifier.predict_proba(X)
+
     def get_votes_for_instance(self, X):
         return self.classifier.get_votes_for_instance(X)
 
