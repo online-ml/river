@@ -1,5 +1,4 @@
 from copy import deepcopy
-from sklearn.utils.validation import check_is_fitted
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.trees.hoeffding_tree import *
