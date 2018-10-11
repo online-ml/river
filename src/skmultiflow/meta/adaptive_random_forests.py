@@ -203,7 +203,7 @@ class AdaptiveRandomForest(StreamModel):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
                     self._partial_fit(X[i], y[i], self.classes, weight[i])
-        
+
     def _partial_fit(self, X, y, classes=None, weight=1.0):
         self.instances_seen += 1
         
@@ -217,7 +217,7 @@ class AdaptiveRandomForest(StreamModel):
             if k > 0:
                 self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]),
                                              classes=classes,
-                                             weight=np.asarray([k]),
+                                             weight=1,  #np.asarray([k]),
                                              instances_seen=self.instances_seen)
     
     def predict(self, X):
