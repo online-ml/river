@@ -1,4 +1,6 @@
 from copy import deepcopy
+from sklearn.preprocessing import normalize
+
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.trees.hoeffding_tree import *
@@ -268,9 +270,7 @@ class AdaptiveRandomForest(StreamModel):
             else:
                 y_proba_mean = y_proba_mean + (y_proba - y_proba_mean) / (i+1)
 
-        if y_proba_mean.sum(axis=1) != 0:
-            y_proba_mean = y_proba_mean / y_proba_mean.sum(axis=1)
-        return y_proba_mean
+        return normalize(y_proba_mean, norm='l1')
         
     def reset(self):        
         """Reset ARF."""
