@@ -488,14 +488,14 @@ class ARFBaseLearner(BaseObject):
                     # (this effectively resets changes made to the object while it was still a bkg learner).
                     self.warning_detection.reset()
 
-        # Update the drift detection
-        self.drift_detection.add_element(int(not correctly_classifies))
+            # Update the drift detection
+            self.drift_detection.add_element(int(not correctly_classifies))
 
-        # Check if there was a change
-        if self.drift_detection.detected_change():
-            self.last_drift_on = instances_seen
-            self.nb_drifts_detected += 1
-            self.reset(instances_seen)
+            # Check if there was a change
+            if self.drift_detection.detected_change():
+                self.last_drift_on = instances_seen
+                self.nb_drifts_detected += 1
+                self.reset(instances_seen)
 
     def predict(self, X):
         return self.classifier.predict(X)
