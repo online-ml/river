@@ -173,11 +173,13 @@ class EvaluationVisualizer(BaseListener):
         warnings.filterwarnings("ignore", ".*Passing 1d.*")
 
         self._sample_ids = []
+        memory_time = {}
 
         plt.ion()
         self.fig = plt.figure(figsize=(9, 5))
         self.fig.suptitle(self.dataset_name)
-        base = 11 + len(self.metrics) * 100  # 3-digit integer describing the position of the subplot.
+        plot_metrics = [m for m in self.metrics if m not in [constants.RUNNING_TIME, constants.MODEL_SIZE]]
+        base = 11 + len(plot_metrics) * 100  # 3-digit integer describing the position of the subplot.
         self.fig.canvas.set_window_title('scikit-multiflow')
 
         # Subplots handler
@@ -185,7 +187,8 @@ class EvaluationVisualizer(BaseListener):
             data_ids = self._data_dict[metric_id]
             self._plot_trackers[metric_id] = PlotDataTracker(data_ids)
             plot_tracker = self._plot_trackers[metric_id]
-            plot_tracker.sub_plot_obj = self.fig.add_subplot(base)
+            if metric_id not in [constants.RUNNING_TIME, constants.MODEL_SIZE]:
+                plot_tracker.sub_plot_obj = self.fig.add_subplot(base)
             base += 1
             if metric_id == constants.TRUE_VS_PREDICTED:
                 handle = []
@@ -238,20 +241,13 @@ class EvaluationVisualizer(BaseListener):
                 # Only the current time measurement must be saved
                 for data_id in data_ids:
                     plot_tracker.data[data_id] = [0.0 for _ in range(self.n_models)]
-                
-                plot_tracker.sub_plot_obj.set_title('Running time (s)')
-                plot_tracker.sub_plot_obj.axis('off')
+                # To make the annotations
+                memory_time.update(plot_tracker.data)
 
-                self._update_running_time_annotations(plot_tracker.sub_plot_obj, 
-                                                      plot_tracker.data)
             elif metric_id == constants.MODEL_SIZE:
                 plot_tracker.data['model_size'] = [0.0 for _ in range(self.n_models)]
-                
-                plot_tracker.sub_plot_obj.set_title('Model size (MB)')
-                plot_tracker.sub_plot_obj.axis('off')
 
-                self._update_model_size_annotations(plot_tracker.sub_plot_obj,
-                                                    plot_tracker.data['model_size'])
+                memory_time['model_size'] = plot_tracker.data['model_size']
             else:
                 # Default case, 'mean' and 'current' performance
                 handle = []
@@ -324,6 +320,9 @@ class EvaluationVisualizer(BaseListener):
 
         if constants.DATA_POINTS not in self.metrics:
             plt.xlabel('Samples')
+        if constants.RUNNING_TIME in self.metrics or \
+                constants.MODEL_SIZE in self.metrics:
+            self._update_time_and_memory_annotations(memory_time)
 
         self.fig.subplots_adjust(hspace=.5)
         self.fig.tight_layout(rect=[0, .04, 1, 0.98], pad=2.6, w_pad=0.5, h_pad=1.0)
@@ -335,8 +334,10 @@ class EvaluationVisualizer(BaseListener):
 
     def _update_plots(self, sample_id, data_buffer):
         self._sample_ids.append(sample_id)
+        memory_time = {}
         for metric_id, data_ids in data_buffer.data_dict.items():
-            update_xy_limits = True
+            # update_xy_limits = True
+            update_xy_limits = metric_id not in [constants.RUNNING_TIME, constants.MODEL_SIZE]
             y_min = 0.0
             y_max = 1.0
             pad = 0.1  # Default padding to set above and bellow plots
@@ -393,24 +394,19 @@ class EvaluationVisualizer(BaseListener):
                 plot_tracker.sub_plot_obj.legend(loc=2, bbox_to_anchor=(1.01, 1.))
             elif metric_id == constants.RUNNING_TIME:
                 # Only the current time measurement must be saved
-                print_data = {}
                 for data_id in data_ids:
                     plot_tracker.data[data_id] = data_buffer.get_data(
                         metric_id=metric_id,
                         data_id=data_id
                     )
-                    print_data[data_id] = plot_tracker.data[data_id]
+                memory_time.update(plot_tracker.data)
 
-                self._update_running_time_annotations(plot_tracker.sub_plot_obj, 
-                                                      print_data)
             elif metric_id == constants.MODEL_SIZE:
                 plot_tracker.data['model_size'] = data_buffer.get_data(
                     metric_id=metric_id,
                     data_id='model_size'
                 )
-
-                self._update_model_size_annotations(plot_tracker.sub_plot_obj,
-                                                    plot_tracker.data['model_size'])
+                memory_time['model_size'] = plot_tracker.data['model_size']
             else:
                 # Default case, 'mean' and 'current' performance
                 for data_id in data_ids:
@@ -437,6 +433,9 @@ class EvaluationVisualizer(BaseListener):
             if update_xy_limits:
                 plot_tracker.sub_plot_obj.set_ylim((y_min-pad, y_max+pad))
                 plot_tracker.sub_plot_obj.set_xlim(0, self._sample_ids[-1])
+        if constants.RUNNING_TIME in self.metrics or \
+                constants.MODEL_SIZE in self.metrics:
+            self._update_time_and_memory_annotations(memory_time)
 
     def _clear_annotations(self):
         """ Clear annotations, so next frame is correctly rendered. """
@@ -459,44 +458,38 @@ class EvaluationVisualizer(BaseListener):
                                                        xy=xy_pos, xycoords='axes fraction',
                                                        xytext=(50, -shift_y), textcoords='offset points'))
 
-    def _update_running_time_annotations(self, subplot_obj, running_time):
-        text_header = '{: <12} | {: ^16} | {: ^16} | {: ^16}'.\
-                      format('Model', 'Training', 'Testing',
-                             'Total')
+    def _update_time_and_memory_annotations(self, memory_time):
+        text_header = '{: <12s}'.format('Model')
+        if constants.RUNNING_TIME in self.metrics:
+            text_header += ' | {: ^16s} | {: ^16s} | {: ^16s}'.\
+                      format('Train (s)', 'Predict (s)', 'Total (s)')
+        if constants.MODEL_SIZE in self.metrics:
+            text_header += ' | {: ^16}'.format('Mem (MB)')
+
+        last_plot = self.fig.get_axes()[-1]
+        pos = last_plot.get_position()
         self._text_annotations.append(
-            subplot_obj.annotate(text_header, xy=(0.5, 0.98), ha='center',
-                                 va='center', xycoords='axes fraction')
+            self.fig.text(s=text_header, x=pos.x0 + pos.width/3,
+                          y=pos.y0 - 0.32*pos.height)
         )
 
-        training = running_time['training_time']
-        testing = running_time['testing_time']
-        total = running_time['total_running_time']
+        for i, m_name in enumerate(self.model_names):
+            text_info = '{: <15s}'.format(m_name[:6])
+            if constants.RUNNING_TIME in self.metrics:
+                text_info += '{: ^19.2f}  {: ^19.2f}  {: ^19.2f}  '.\
+                             format(
+                                memory_time['training_time'][i],
+                                memory_time['testing_time'][i],
+                                memory_time['total_running_time'][i]
+                             )
+            if constants.MODEL_SIZE in self.metrics:
+                text_info += '{: ^19.2f}'.format(
+                    memory_time['model_size'][i]
+                )
 
-        place_increment = 0.9/(self.n_models + 1)
-        for i, mn in enumerate(self.model_names):
-            time_values = '{: ^12}     {: ^16.4f}   {: ^16.4f}   {: ^16.4f}'.\
-                          format(
-                            mn[:6], training[i], testing[i], total[i]
-                          )
             self._text_annotations.append(
-                subplot_obj.annotate(time_values,
-                                     xy=(0.5, 0.9 - (i+1) * place_increment),
-                                     ha='center', va='center',
-                                     xycoords='axes fraction')
-            )
-            
-    def _update_model_size_annotations(self, subplot_obj, model_size):
-        place_increment = 1.0/(self.n_models + 1)
-        for i, mn in enumerate(self.model_names):
-            time_values = '{: ^12}: {:.4f}'.\
-                          format(
-                            mn[:6], model_size[i]
-                          )
-            self._text_annotations.append(
-                subplot_obj.annotate(time_values,
-                                     xy=(0.5, 1.0 - (i+1) * place_increment),
-                                     ha='center', va='center',
-                                     xycoords='axes fraction')
+                self.fig.text(s=text_info, x=pos.x0 + pos.width/3,
+                              y=pos.y0 - (0.32 + (i+1)/10)*pos.height)
             )
 
     @staticmethod
