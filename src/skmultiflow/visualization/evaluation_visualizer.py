@@ -131,7 +131,7 @@ class EvaluationVisualizer(BaseListener):
             # To mitigate re-drawing overhead for fast models use frame counter (default = 5 frames).
             # To avoid slow refresh rate in slow models use a time limit (default = 1 sec).
             if (self._frame_cnt < 5) or (current_time - self._last_draw_timestamp > 1):
-                plt.subplots_adjust(right=0.72)  # Adjust subplots to include metrics annotations
+                plt.subplots_adjust(right=0.72, bottom=0.22)  # Adjust subplots to include metrics annotations
                 self.fig.canvas.draw()
                 plt.pause(1e-9)
                 self._frame_cnt = 0
@@ -470,7 +470,7 @@ class EvaluationVisualizer(BaseListener):
         pos = last_plot.get_position()
         self._text_annotations.append(
             self.fig.text(s=text_header, x=pos.x0,  # + pos.width/3,
-                          y=pos.y0 - 0.32*pos.height)
+                          y=pos.y0 - 0.4*pos.height)
         )
 
         for i, m_name in enumerate(self.model_names):
@@ -489,7 +489,7 @@ class EvaluationVisualizer(BaseListener):
 
             self._text_annotations.append(
                 self.fig.text(s=text_info, x=pos.x0,  # + pos.width/3,
-                              y=pos.y0 - (0.32 + (i+1)/10)*pos.height)
+                              y=pos.y0 - (0.4 + (i+1)/10)*pos.height)
             )
 
     @staticmethod
