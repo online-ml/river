@@ -329,7 +329,7 @@ class EvaluationVisualizer(BaseListener):
 
     def _set_fig_legend(self, handles=None):
         if not self._is_legend_set:
-            self.fig.legend(handles=handles, ncol=self.n_models, bbox_to_anchor=(0.02, 0.0), loc="lower left")
+            self.fig.legend(handles=handles, ncol=self.n_models, bbox_to_anchor=(0.98, 0.0), loc="lower right")
             self._is_legend_set = True
 
     def _update_plots(self, sample_id, data_buffer):
@@ -469,7 +469,7 @@ class EvaluationVisualizer(BaseListener):
         last_plot = self.fig.get_axes()[-1]
         pos = last_plot.get_position()
         self._text_annotations.append(
-            self.fig.text(s=text_header, x=pos.x0 + pos.width/3,
+            self.fig.text(s=text_header, x=pos.x0,  # + pos.width/3,
                           y=pos.y0 - 0.32*pos.height)
         )
 
@@ -488,7 +488,7 @@ class EvaluationVisualizer(BaseListener):
                 )
 
             self._text_annotations.append(
-                self.fig.text(s=text_info, x=pos.x0 + pos.width/3,
+                self.fig.text(s=text_info, x=pos.x0,  # + pos.width/3,
                               y=pos.y0 - (0.32 + (i+1)/10)*pos.height)
             )
 
