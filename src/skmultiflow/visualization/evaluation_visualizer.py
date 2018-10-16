@@ -464,7 +464,7 @@ class EvaluationVisualizer(BaseListener):
             text_header += ' | {: ^16s} | {: ^16s} | {: ^16s}'.\
                       format('Train (s)', 'Predict (s)', 'Total (s)')
         if constants.MODEL_SIZE in self.metrics:
-            text_header += ' | {: ^16}'.format('Mem (MB)')
+            text_header += ' | {: ^16}'.format('Mem (kB)')
 
         last_plot = self.fig.get_axes()[-1]
         pos = last_plot.get_position()

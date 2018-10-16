@@ -79,7 +79,7 @@ def get_max_value_key(dictionary):
         return 0
 
 
-def calculate_object_size(obj, unit='MB'):
+def calculate_object_size(obj, unit='kB'):
     """Iteratively calculates the `obj` size in bytes.
 
     Visits all the elements related to obj accounting for their respective
@@ -91,7 +91,7 @@ def calculate_object_size(obj, unit='MB'):
         Object to evaluate.
     string: unit
         The unit in which the accounted value is going to be returned.
-        Values: 'byte', 'kB', 'MB' (Default: 'MB').
+        Values: 'byte', 'kB', 'MB' (Default: 'kB').
 
     Returns
     -------
