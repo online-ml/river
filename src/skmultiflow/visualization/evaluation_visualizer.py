@@ -132,7 +132,6 @@ class EvaluationVisualizer(BaseListener):
             # To avoid slow refresh rate in slow models use a time limit (default = 1 sec).
             if (self._frame_cnt < 5) or (current_time - self._last_draw_timestamp > 1):
                 plt.subplots_adjust(right=0.72, bottom=0.22)  # Adjust subplots to include metrics annotations
-                self.fig.canvas.draw()
                 plt.pause(1e-9)
                 self._frame_cnt = 0
                 self._last_draw_timestamp = current_time
@@ -237,6 +236,7 @@ class EvaluationVisualizer(BaseListener):
                 plot_tracker.data['predictions'] = FastBuffer(plot_tracker.data['buffer_size'])
                 plot_tracker.data['clusters'] = []
                 plot_tracker.data['clusters_initialized'] = False
+
             elif metric_id == constants.RUNNING_TIME:
                 # Only the current time measurement must be saved
                 for data_id in data_ids:
@@ -325,11 +325,11 @@ class EvaluationVisualizer(BaseListener):
             self._update_time_and_memory_annotations(memory_time)
 
         self.fig.subplots_adjust(hspace=.5)
-        self.fig.tight_layout(rect=[0, .04, 1, 0.98], pad=2.6, w_pad=0.5, h_pad=1.0)
+        self.fig.tight_layout(rect=[0, .04, 1, 0.98], pad=2.6, w_pad=0.4, h_pad=1.0)
 
     def _set_fig_legend(self, handles=None):
         if not self._is_legend_set:
-            self.fig.legend(handles=handles, ncol=self.n_models, bbox_to_anchor=(0.98, 0.0), loc="lower right")
+            self.fig.legend(handles=handles, ncol=2, bbox_to_anchor=(0.98, 0.04), loc="lower right")
             self._is_legend_set = True
 
     def _update_plots(self, sample_id, data_buffer):
@@ -467,30 +467,20 @@ class EvaluationVisualizer(BaseListener):
             text_header += ' | {: ^16}'.format('Mem (kB)')
 
         last_plot = self.fig.get_axes()[-1]
-        pos = last_plot.get_position()
-        self._text_annotations.append(
-            self.fig.text(s=text_header, x=pos.x0,  # + pos.width/3,
-                          y=pos.y0 - 0.4*pos.height)
-        )
+        x0, y0, width, height = last_plot.get_position().bounds
+        annotation_xy = (.1, .1)
+        self._text_annotations.append(self.fig.text(s=text_header, x=annotation_xy[0], y=annotation_xy[1]))
 
         for i, m_name in enumerate(self.model_names):
             text_info = '{: <15s}'.format(m_name[:6])
             if constants.RUNNING_TIME in self.metrics:
-                text_info += '{: ^19.2f}  {: ^19.2f}  {: ^19.2f}  '.\
-                             format(
-                                memory_time['training_time'][i],
-                                memory_time['testing_time'][i],
-                                memory_time['total_running_time'][i]
-                             )
+                text_info += '{: ^19.2f}  {: ^19.2f}  {: ^19.2f}  '.format(memory_time['training_time'][i],
+                                                                           memory_time['testing_time'][i],
+                                                                           memory_time['total_running_time'][i])
             if constants.MODEL_SIZE in self.metrics:
-                text_info += '{: ^19.2f}'.format(
-                    memory_time['model_size'][i]
-                )
-
-            self._text_annotations.append(
-                self.fig.text(s=text_info, x=pos.x0,  # + pos.width/3,
-                              y=pos.y0 - (0.4 + (i+1)/10)*pos.height)
-            )
+                text_info += '{: ^19.2f}'.format(memory_time['model_size'][i])
+            shift_y = .03 * (i + 1)  # y axis shift for plot annotations
+            self._text_annotations.append(self.fig.text(s=text_info, x=annotation_xy[0], y=annotation_xy[1] - shift_y))
 
     @staticmethod
     def hold():

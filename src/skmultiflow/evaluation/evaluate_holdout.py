@@ -1,6 +1,5 @@
 import os
 import warnings
-import logging
 from numpy import unique
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
@@ -224,26 +223,25 @@ class EvaluateHoldout(StreamEvaluator):
         class as well.
 
         """
-        logging.basicConfig(format='%(message)s', level=logging.INFO)
-        start_time = timer()
-        end_time = timer()
-        logging.info('Holdout Evaluation')
-        logging.info('Evaluating %s target(s).', str(self.stream.n_targets))
+        self._start_time = timer()
+        self._end_time = timer()
+        print('Holdout Evaluation')
+        print('Evaluating {} target(s).'.format(self.stream.n_targets))
 
-        n_samples = self.stream.n_remaining_samples()
-        if n_samples == -1 or n_samples > self.max_samples:
-            n_samples = self.max_samples
+        actual_max_samples = self.stream.n_remaining_samples()
+        if actual_max_samples == -1 or actual_max_samples > self.max_samples:
+            actual_max_samples = self.max_samples
 
         first_run = True
 
         if not self.dynamic_test_set:
-            logging.info('Separating %s holdout samples.', str(self.test_size))
+            print('Separating {} holdout samples.'.format(self.test_size))
             self.X_test, self.y_test = self.stream.next_sample(self.test_size)
             self.global_sample_count += self.test_size
 
         performance_sampling_cnt = 0
-        logging.info('Evaluating...')
-        while ((self.global_sample_count < self.max_samples) & (end_time - start_time < self.max_time)
+        print('Evaluating...')
+        while ((self.global_sample_count < self.max_samples) & (self._end_time - self._start_time < self.max_time)
                & (self.stream.has_more_samples())):
             try:
                 X, y = self.stream.next_sample(self.batch_size)
@@ -276,7 +274,7 @@ class EvaluateHoldout(StreamEvaluator):
                             self.running_time_measurements[i].compute_training_time_end()
                             self.running_time_measurements[i].update_time_measurements(self.batch_size)
 
-                    self._check_progress(logging, n_samples)   # TODO Confirm place
+                    self._check_progress(actual_max_samples)   # TODO Confirm place
 
                     # Test on holdout set
                     if self.dynamic_test_set:
@@ -288,7 +286,7 @@ class EvaluateHoldout(StreamEvaluator):
                     if perform_test | (self.global_sample_count >= self.max_samples):
 
                         if self.dynamic_test_set:
-                            logging.info('Separating %s holdout samples.', str(self.test_size))
+                            print('Separating {} holdout samples.'.format(self.test_size))
                             self.X_test, self.y_test = self.stream.next_sample(self.test_size)
                             self.global_sample_count += self.test_size
 
@@ -315,14 +313,14 @@ class EvaluateHoldout(StreamEvaluator):
                                 self._update_metrics()
                             performance_sampling_cnt += 1
 
-                end_time = timer()
+                self._end_time = timer()
             except BaseException as exc:
                 print(exc)
                 if exc is KeyboardInterrupt:
                     self._update_metrics()
                 break
 
-        self.evaluation_summary(logging, start_time, end_time)
+        self.evaluation_summary()
 
         if self.restart_stream:
             self.stream.restart()
