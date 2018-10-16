@@ -10,6 +10,7 @@ from .measure_collection import WindowClassificationMeasurements
 from .measure_collection import WindowRegressionMeasurements
 from .measure_collection import WindowMultiTargetClassificationMeasurements
 from .measure_collection import WindowMultiTargetRegressionMeasurements
+from .measure_collection import RunningTimeMeasurements
 from .measure_collection import ConfusionMatrix
 from .measure_collection import MOLConfusionMatrix
 from .measure_collection import hamming_score
@@ -21,5 +22,6 @@ __all__ = ["ClassificationMeasurements", "RegressionMeasurements",
            "WindowClassificationMeasurements", "WindowRegressionMeasurements",
            "WindowMultiTargetClassificationMeasurements",
            "WindowMultiTargetRegressionMeasurements",
+           "RunningTimeMeasurements",
            "ConfusionMatrix", "MOLConfusionMatrix", "hamming_score",
            "exact_match", "j_index"]

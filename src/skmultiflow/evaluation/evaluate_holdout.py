@@ -255,15 +255,26 @@ class EvaluateHoldout(StreamEvaluator):
                     if first_run:
                         for i in range(self.n_models):
                             if self._task_type == constants.CLASSIFICATION:
+                                self.running_time_measurements[i].compute_training_time_begin()
                                 self.model[i].partial_fit(X=X, y=y, classes=self.stream.target_values)
+                                self.running_time_measurements[i].compute_training_time_end()
                             elif self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
+                                self.running_time_measurements[i].compute_training_time_begin()
                                 self.model[i].partial_fit(X=X, y=y, classes=unique(self.stream.target_values))
+                                self.running_time_measurements[i].compute_training_time_end()
                             else:
+                                self.running_time_measurements[i].compute_training_time_begin()
                                 self.model[i].partial_fit(X=X, y=y)
+                                self.running_time_measurements[i].compute_training_time_end()
+                            self.running_time_measurements[i].update_time_measurements(self.batch_size)
                         first_run = False
                     else:
                         for i in range(self.n_models):
+                            # Compute running time
+                            self.running_time_measurements[i].compute_training_time_begin()
                             self.model[i].partial_fit(X, y)
+                            self.running_time_measurements[i].compute_training_time_end()
+                            self.running_time_measurements[i].update_time_measurements(self.batch_size)
 
                     self._check_progress(logging, n_samples)   # TODO Confirm place
 
@@ -286,7 +297,10 @@ class EvaluateHoldout(StreamEvaluator):
                             prediction = [[] for _ in range(self.n_models)]
                             for i in range(self.n_models):
                                 try:
+                                    self.running_time_measurements[i].compute_testing_time_begin()
                                     prediction[i].extend(self.model[i].predict(self.X_test))
+                                    self.running_time_measurements[i].compute_testing_time_end()
+                                    self.running_time_measurements[i].update_time_measurements(self.test_size)
                                 except TypeError:
                                     raise TypeError("Unexpected prediction value from {}"
                                                     .format(type(self.model[i]).__name__))

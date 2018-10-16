@@ -2,6 +2,7 @@ import numpy as np
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.utils.data_structures import FastBuffer, FastComplexBuffer, ConfusionMatrix, MOLConfusionMatrix
 from skmultiflow.utils import check_weights
+from timeit import default_timer as timer
 
 
 class ClassificationMeasurements(BaseObject):
@@ -1080,8 +1081,8 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
     It will keep track of global metrics, that can be provided at
     any moment. The relevant metrics kept by an instance of this class
-    are: AMSE (average mean square error) and AMAE (average mean absolute error).
-
+    are: AMSE (average mean square error), AMAE (average mean absolute error),
+    and ARMSE (average root mean square error).
     """
 
     def __init__(self):
@@ -1094,6 +1095,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
         self.last_prediction = None
 
     def reset(self):
+        self.n_targets = 0
         self.total_square_error = 0.0
         self.average_error = 0.0
         self.sample_count = 0
@@ -1111,6 +1113,8 @@ class MultiTargetRegressionMeasurements(BaseObject):
         prediction: float or list or np.ndarray
             The predicted value(s).
 
+        prediction: float or list or np.ndarray
+            The predicted value(s).
         """
         self.last_true_label = y
         self.last_prediction = prediction
@@ -1133,7 +1137,6 @@ class MultiTargetRegressionMeasurements(BaseObject):
         -------
         float
             The average mean square error.
-
         """
         if self.sample_count == 0:
             return 0.0
@@ -1147,7 +1150,6 @@ class MultiTargetRegressionMeasurements(BaseObject):
         -------
         float
             The average absolute error.
-
         """
         if self.sample_count == 0:
             return 0.0
@@ -1162,7 +1164,6 @@ class MultiTargetRegressionMeasurements(BaseObject):
         -------
         float
             The average mean square error.
-
         """
         if self.sample_count == 0:
             return 0.0
@@ -1196,8 +1197,8 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
 
     It will keep track of partial metrics, that can be provided at
     any moment. The relevant metrics kept by an instance of this class
-    are: AMSE (average mean square error) and AMAE (average mean absolute error).
-
+    are: AMSE (average mean square error), AMAE (average mean absolute error),
+    and ARMSE (average root mean square error).
     """
 
     def __init__(self, window_size=200):
@@ -1230,6 +1231,8 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         prediction: float or list or np.ndarray
             The predicted value(s).
 
+        prediction: float or list or np.ndarray
+            The predicted value(s).
         """
         self.last_true_label = y
         self.last_prediction = prediction
@@ -1262,7 +1265,6 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         -------
         float
             The window/current average mean square error.
-
         """
         if self._sample_count == 0:
             return 0.0
@@ -1277,7 +1279,6 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         -------
         float
             The window/current average mean absolute error.
-
         """
         if self._sample_count == 0:
             return 0.0
@@ -1292,7 +1293,6 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         -------
         float
             The average mean square error.
-
         """
         if self._sample_count == 0:
             return 0.0
@@ -1317,6 +1317,94 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
                 str(self.get_average_mean_square_error()) + ' - average_mean_absolute_error: ' + \
                 str(self.get_average_absolute_error()) + ' - average_root_mean_square_error: ' + \
                 str(self.get_average_root_mean_square_error())
+
+
+class RunningTimeMeasurements(BaseObject):
+    """ Class used to compute the running time for each evaluated prediction
+        model.
+
+        The training, prediction, and total time are considered separately. The
+        class accounts for the amount of time each model effectively expent
+        traning and testing. To do so, timers for each of the actions are
+        considered.
+
+        Besides the properties getters, the available compute time methods
+        must be used as follows:
+
+        - `compute_{training, testing}_time_begin`
+        - Perform training/action
+        - `compute_{training, testing}_time_end`
+
+        Additionally, the `update_time_measurements` method updates the total
+        running time accounting, as well as, the total seen samples count.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self._training_time = 0
+        self._testing_time = 0
+        self._sample_count = 0
+        self._total_time = 0
+
+    def reset(self):
+        self._training_time = 0
+        self._testing_time = 0
+        self._sample_count = 0
+        self._total_time = 0
+
+    def compute_training_time_begin(self):
+        """ Initiates the training time accounting.
+        """
+        self._training_start = timer()
+
+    def compute_training_time_end(self):
+        """ Finishes the training time accounting. Updates current total
+            training time.
+        """
+        self._training_time += timer() - self._training_start
+
+    def compute_testing_time_begin(self):
+        """ Initiates the testing time accounting.
+        """
+        self._testing_start = timer()
+
+    def compute_testing_time_end(self):
+        """ Finishes the testing time accounting. Updates current total
+            testing time.
+        """
+        self._testing_time += timer() - self._testing_start
+
+    def update_time_measurements(self, increment=1):
+        """ Updates the current total running time. Updates the number of seen
+        samples by `increment`.
+        """
+        if increment > 0:
+            self._sample_count += increment
+        else:
+            self._sample_count += 1
+
+        self._total_time = self._training_time + self._testing_time
+
+    def get_current_training_time(self):
+        return self._training_time
+
+    def get_current_testing_time(self):
+        return self._testing_time
+
+    def get_current_total_running_time(self):
+        return self._total_time
+
+    def get_class_type(self):
+        return 'measurement'
+
+    def get_info(self):
+        return 'RunningTimeMeasurements: sample_count: ' + \
+                str(self._sample_count) + ' - Total running time: ' + \
+                str(self.get_current_total_running_time()) + \
+                ' - training_time: ' + \
+                str(self.get_current_training_time()) + \
+                ' - testing_time: ' + \
+                str(self.get_current_testing_time())
 
 
 def hamming_score(true_labels, predicts):
