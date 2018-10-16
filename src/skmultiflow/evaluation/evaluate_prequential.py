@@ -265,11 +265,19 @@ class EvaluatePrequential(StreamEvaluator):
 
             for i in range(self.n_models):
                 if self._task_type == constants.CLASSIFICATION:
+                    # Training time computation
+                    self.running_time_measurements[i].compute_training_time_begin()
                     self.model[i].partial_fit(X=X, y=y, classes=self.stream.target_values)
+                    self.running_time_measurements[i].compute_training_time_end()
                 elif self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
+                    self.running_time_measurements[i].compute_training_time_begin()
                     self.model[i].partial_fit(X=X, y=y, classes=unique(self.stream.target_values))
+                    self.running_time_measurements[i].compute_training_time_end()
                 else:
+                    self.running_time_measurements[i].compute_training_time_begin()
                     self.model[i].partial_fit(X=X, y=y)
+                    self.running_time_measurements[i].compute_training_time_end()
+                self.running_time_measurements[i].update_time_measurements(self.pretrain_size)
             self.global_sample_count += self.pretrain_size
             first_run = False
         else:
@@ -287,7 +295,10 @@ class EvaluatePrequential(StreamEvaluator):
                     prediction = [[] for _ in range(self.n_models)]
                     for i in range(self.n_models):
                         try:
+                            # Testing time
+                            self.running_time_measurements[i].compute_testing_time_begin()
                             prediction[i].extend(self.model[i].predict(X))
+                            self.running_time_measurements[i].compute_testing_time_end()
                         except TypeError:
                             raise TypeError("Unexpected prediction value from {}"
                                             .format(type(self.model[i]).__name__))
@@ -304,13 +315,25 @@ class EvaluatePrequential(StreamEvaluator):
                         for i in range(self.n_models):
                             if self._task_type != constants.REGRESSION and \
                                self._task_type != constants.MULTI_TARGET_REGRESSION:
+                                # Accounts for the moment of training beginning
+                                self.running_time_measurements[i].compute_training_time_begin()
                                 self.model[i].partial_fit(X, y, self.stream.target_values)
+                                # Accounts the ending of training
+                                self.running_time_measurements[i].compute_training_time_end()
                             else:
+                                self.running_time_measurements[i].compute_training_time_begin()
                                 self.model[i].partial_fit(X, y)
+                                self.running_time_measurements[i].compute_training_time_end()
+
+                            # Update total running time
+                            self.running_time_measurements[i].update_time_measurements(self.batch_size)
                         first_run = False
                     else:
                         for i in range(self.n_models):
+                            self.running_time_measurements[i].compute_training_time_begin()
                             self.model[i].partial_fit(X, y)
+                            self.running_time_measurements[i].compute_training_time_end()
+                            self.running_time_measurements[i].update_time_measurements(self.batch_size)
 
                     if ((self.global_sample_count % self.n_wait) == 0 or
                             (self.global_sample_count >= self.max_samples) or
