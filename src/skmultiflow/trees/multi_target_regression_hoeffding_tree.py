@@ -78,7 +78,50 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
        Information Systems 50.2 (2018): 315-339.
     """
 
-    class LearningNodePerceptron(RegressionHoeffdingTree.ActiveLearningNode):
+    class ActiveLearningNodeForRegression(RegressionHoeffdingTree.
+                                          ActiveLearningNodeForRegression):
+
+        def __init__(self, initial_class_observations):
+            """ ActiveLearningNode class constructor. """
+            super().__init__(initial_class_observations)
+
+        def learn_from_instance(self, X, y, weight, ht):
+            """Update the node with the provided instance.
+
+            Parameters
+            ----------
+            X: numpy.ndarray of length equal to the number of features.
+                Instance attributes for updating the node.
+            y: int
+                Instance class.
+            weight: float
+                Instance weight.
+            ht: HoeffdingTree
+                Hoeffding Tree to update.
+
+            """
+            try:
+                self._observed_class_distribution[0] += weight
+                self._observed_class_distribution[1] += y * weight
+                self._observed_class_distribution[2] += y * y * weight
+            except KeyError:
+                self._observed_class_distribution[0] = weight
+                self._observed_class_distribution[1] = y * weight
+                self._observed_class_distribution[2] = y * y * weight
+
+            for i, x in enumerate(X.tolist()):
+                try:
+                    obs = self._attribute_observers[i]
+                except KeyError:
+                    if i in ht.nominal_attributes:
+                        obs = NominalAttributeRegressionObserver()
+                    else:
+                        obs = NumericAttributeRegressionObserverMultiTarget()
+                    self._attribute_observers[i] = obs
+                obs.observe_attribute_class(x, y, weight)
+
+    class LearningNodePerceptron(RegressionHoeffdingTree.
+                                 LearningNodePerceptron):
 
         def __init__(self, initial_class_observations, perceptron_weight=None,
                      random_state=None):
@@ -258,7 +301,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             )
 
     class InactiveLearningNodePerceptron(RegressionHoeffdingTree.
-                                         InactiveLearningNode):
+                                         InactiveLearningNodePerceptron):
 
         def __init__(self, initial_class_observations, perceptron_weight=None,
                      random_state=None):
@@ -709,6 +752,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     active_learning_node.\
                         set_weight_seen_at_last_split_evaluation(weight_seen)
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
+            # TODO Check with new functionalities
             self.estimate_model_byte_size()
 
     def predict(self, X):
@@ -757,7 +801,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     votes = self.get_votes_for_instance(X[i]).copy()
                     number_of_examples_seen = votes[0]
                     sum_of_values = votes[1]
-
                     pred_M = sum_of_values / number_of_examples_seen
 
                     # Perceptron
@@ -773,7 +816,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                                  where=variance >= 0.0)
 
                     pred_P = normalized_prediction * sd + mean
-
                     fmae = self._get_predictors_faded_error(X[i])
 
                     for j in range(self._n_targets):
@@ -842,6 +884,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     / best_suggestion.merit
 
                 # Add any poor attribute to set
+                # TODO reactivation procedure???
                 for i in range(len(best_split_suggestions)):
                     if best_split_suggestions[i].split_test is not None:
                         split_atts = best_split_suggestions[i].\
@@ -865,7 +908,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                     split_decision.split_test,
                     node.get_observed_class_distribution()
                 )
-
                 for i in range(split_decision.num_splits()):
                     if self.leaf_prediction == _PERCEPTRON:
                         new_child = self._new_learning_node(
