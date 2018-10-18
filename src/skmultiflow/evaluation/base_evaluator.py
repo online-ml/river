@@ -1,4 +1,6 @@
+import sys
 from abc import ABCMeta, abstractmethod
+from timeit import default_timer as timer
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.data.base_stream import Stream
 from .evaluation_data_buffer import EvaluationDataBuffer
@@ -55,6 +57,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self.model = None
         self.n_models = 0
         self.stream = None
+        self._start_time = -1
+        self._end_time = -1
 
         self.visualizer = None
         self.n_sliding = 0
@@ -235,15 +239,26 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
 
         return self._valid_configuration
 
-    def _check_progress(self, logging, n_samples):
-        progress = self.global_sample_count - self.batch_size
+    def _check_progress(self, total_samples):
+        current_sample = self.global_sample_count - self.batch_size
 
         # Update progress
         try:
-            if (progress % (n_samples // 20)) == 0:
-                logging.info('{}%'.format(progress // (n_samples / 20) * 5))
+            if (current_sample % (total_samples // 20)) == 0:
+                self.update_progress_bar(current_sample, total_samples, 20, timer() - self._start_time)
+            if self.global_sample_count >= total_samples:
+                self.update_progress_bar(current_sample, total_samples, 20, timer() - self._start_time)
+                print()
         except ZeroDivisionError:
             raise ZeroDivisionError("The stream is too small to evaluate. The minimum size is 20 samples.")
+
+    @staticmethod
+    def update_progress_bar(curr, total, steps, time):
+        progress = curr / total
+        progress_bar = round(progress * steps)
+        print('\r', '#' * progress_bar + '-' * (steps - progress_bar),
+              '[{:.0%}] [{:.2f}s]'.format(progress, time), end='')
+        sys.stdout.flush()    # Force flush to stdout
 
     def _init_metrics(self):
         """ Starts up the metrics and statistics watchers. One watcher is created
@@ -268,6 +283,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             for i in range(self.n_models):
                 self.mean_eval_measurements.append(RegressionMeasurements())
                 self.current_eval_measurements.append(WindowRegressionMeasurements(window_size=self.n_sliding))
+
         elif self._task_type == constants.MULTI_TARGET_REGRESSION:
             for i in range(self.n_models):
                 self.mean_eval_measurements.append(MultiTargetRegressionMeasurements())
@@ -294,7 +310,6 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             self._data_dict[metric] = data_ids
 
         self._data_buffer = EvaluationDataBuffer(data_dict=self._data_dict)
-
 
     def _update_metrics(self):
         """ Updates the metrics of interest. This function updates the evaluation data buffer
@@ -405,17 +420,19 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                 values[0] = features
                 values[1] = target_values
                 values[2] = y_pred
-            # Running time
+
             elif metric == constants.RUNNING_TIME:
                 values = [[], [], []]
                 for i in range(self.n_models):
                     values[0].append(self.running_time_measurements[i].get_current_training_time())
                     values[1].append(self.running_time_measurements[i].get_current_testing_time())
                     values[2].append(self.running_time_measurements[i].get_current_total_running_time())
+
             elif metric == constants.MODEL_SIZE:
                 values = []
                 for i in range(self.n_models):
                     values.append(calculate_object_size(self.model[i]))
+
             else:
                 raise ValueError('Unknown metric {}'.format(metric))
 
@@ -461,7 +478,6 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             self.visualizer.on_new_train_step(sample_id, self._data_buffer)
 
     def _init_file(self):
-
         if self.output_file is not None:
             with open(self.output_file, 'w+') as f:
                 f.write("# TEST CONFIGURATION BEGIN")
@@ -498,7 +514,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                             header += ',predicted_value_[{0}]'.format(self.model_names[i])
                     elif metric == constants.RUNNING_TIME:
                         for i in range(self.n_models):
-                            header += ',training_time_[{0}],testing_time_[{0}],total_running_time_[{0}]'.format(self.model_names[i])
+                            header += ',training_time_[{0}],testing_time_[{0}],total_running_time_[{0}]'.\
+                                format(self.model_names[i])
                     elif metric == constants.MODEL_SIZE:
                         for i in range(self.n_models):
                             header += ',model_size_[{0}]'.format(self.model_names[i])
@@ -519,9 +536,12 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     for i in range(self.n_models):
                         line += ',{:.6f}'.format(pred_values[i])
                 elif metric == constants.RUNNING_TIME:
-                    training_time_values = self._data_buffer.get_data(metric_id=metric, data_id='training_time')
-                    testing_time_values = self._data_buffer.get_data(metric_id=metric, data_id='testing_time')
-                    total_running_time_values = self._data_buffer.get_data(metric_id=metric, data_id='total_running_time')
+                    training_time_values = self._data_buffer.get_data(metric_id=metric,
+                                                                      data_id='training_time')
+                    testing_time_values = self._data_buffer.get_data(metric_id=metric,
+                                                                     data_id='testing_time')
+                    total_running_time_values = self._data_buffer.get_data(metric_id=metric,
+                                                                           data_id='total_running_time')
                     values = (training_time_values, testing_time_values, total_running_time_values)
                     for i in range(self.n_models):
                         line += ',{:.6f},{:.6f},{:.6f}'.format(values[0][i], values[1][i], values[2][i])
@@ -555,83 +575,79 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
     def _reset_globals(self):
         self.global_sample_count = 0
 
-    def evaluation_summary(self, logging, start_time, end_time):
-        if end_time - start_time > self.max_time:
-            logging.info('Time limit reached. Evaluation stopped.')
-            logging.info('Evaluation time         : {:.2f} s'.format(self.max_time))
-        else:
-            logging.info('Evaluation time         : {:.2f} s'.format(end_time - start_time))
-        logging.info('Processed samples       : {}'.format(self.global_sample_count))
-        logging.info('Mean performance:')
+    def evaluation_summary(self):
+        if self._end_time - self._start_time > self.max_time:
+            print('\nTime limit reached ({:.2f}s). Evaluation stopped.'.format(self.max_time))
+        print('Processed samples: {}'.format(self.global_sample_count))
+        print('Mean performance:')
         for i in range(self.n_models):
             if constants.ACCURACY in self.metrics:
-                logging.info('{} - Accuracy     : {:.4f}'.format(
+                print('{} - Accuracy     : {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.ACCURACY, data_id=constants.MEAN)[i]))
             if constants.KAPPA in self.metrics:
-                logging.info('{} - Kappa        : {:.4f}'.format(
+                print('{} - Kappa        : {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.KAPPA, data_id=constants.MEAN)[i]))
             if constants.KAPPA_T in self.metrics:
-                logging.info('{} - Kappa T      : {:.4f}'.format(
+                print('{} - Kappa T      : {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.KAPPA_T, data_id=constants.MEAN)[i]))
             if constants.KAPPA_M in self.metrics:
-                logging.info('{} - Kappa M      : {:.4f}'.format(
+                print('{} - Kappa M      : {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.KAPPA_M, data_id=constants.MEAN)[i]))
             if constants.HAMMING_SCORE in self.metrics:
-                logging.info('{} - Hamming score: {:.4f}'.format(
+                print('{} - Hamming score: {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.HAMMING_SCORE, data_id=constants.MEAN)[i]))
             if constants.HAMMING_LOSS in self.metrics:
-                logging.info('{} - Hamming loss : {:.4f}'.format(
+                print('{} - Hamming loss : {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.HAMMING_LOSS, data_id=constants.MEAN)[i]))
             if constants.EXACT_MATCH in self.metrics:
-                logging.info('{} - Exact matches: {:.4f}'.format(
+                print('{} - Exact matches: {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.EXACT_MATCH, data_id=constants.MEAN)[i]))
             if constants.J_INDEX in self.metrics:
-                logging.info('{} - Jaccard index: {:.4f}'.format(
+                print('{} - Jaccard index: {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.J_INDEX, data_id=constants.MEAN)[i]))
             if constants.MSE in self.metrics:
-                logging.info('{} - MSE          : {:.4f}'.format(
+                print('{} - MSE          : {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.MSE, data_id=constants.MEAN)[i]))
             if constants.MAE in self.metrics:
-                logging.info('{} - MAE          : {:4f}'.format(
+                print('{} - MAE          : {:4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.MAE, data_id=constants.MEAN)[i]))
             if constants.AMSE in self.metrics:
-                logging.info('{} - AMSE          : {:4f}'.format(
+                print('{} - AMSE          : {:4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.AMSE, data_id=constants.MEAN)[i]))
             if constants.AMAE in self.metrics:
-                logging.info('{} - AMAE          : {:4f}'.format(
+                print('{} - AMAE          : {:4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.AMAE, data_id=constants.MEAN)[i]))
             if constants.ARMSE in self.metrics:
-                logging.info('{} - ARMSE          : {:4f}'.format(
+                print('{} - ARMSE          : {:4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.ARMSE, data_id=constants.MEAN)[i]))
             if constants.RUNNING_TIME in self.metrics:
                 # Running time
-                logging.info('{} - Training time (s)  : {:.2f}'.format(
+                print('{} - Training time (s)  : {:.2f}'.format(
                     self.model_names[i], self._data_buffer.get_data(metric_id=constants.RUNNING_TIME,
                                                                     data_id='training_time')[i]))
-                logging.info('{} - Testing time  (s)  : {:.2f}'.format(
+                print('{} - Testing time  (s)  : {:.2f}'.format(
                     self.model_names[i], self._data_buffer.get_data(metric_id=constants.RUNNING_TIME,
                                                                     data_id='testing_time')[i]))
-                logging.info('{} - Total time    (s)  : {:.2f}'.format(
+                print('{} - Total time    (s)  : {:.2f}'.format(
                     self.model_names[i], self._data_buffer.get_data(metric_id=constants.RUNNING_TIME,
                                                                     data_id='total_running_time')[i]))
             if constants.MODEL_SIZE in self.metrics:
-                logging.info('{} - Size (kB)          : {:.4f}'.format(
+                print('{} - Size (kB)          : {:.4f}'.format(
                     self.model_names[i], self._data_buffer.get_data(metric_id=constants.MODEL_SIZE,
                                                                     data_id='model_size')[i]))
-
 
     def get_measurements(self, model_idx=None):
         """ Get measurements from the evaluation.
