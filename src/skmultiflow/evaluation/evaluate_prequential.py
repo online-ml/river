@@ -1,5 +1,4 @@
 import os
-import logging
 import warnings
 from numpy import unique
 from timeit import default_timer as timer
@@ -247,19 +246,18 @@ class EvaluatePrequential(StreamEvaluator):
         class as well.
 
         """
-        logging.basicConfig(format='%(message)s', level=logging.INFO)
-        start_time = timer()
-        end_time = timer()
-        logging.info('Prequential Evaluation')
-        logging.info('Evaluating %s target(s).', str(self.stream.n_targets))
+        self._start_time = timer()
+        self._end_time = timer()
+        print('Prequential Evaluation')
+        print('Evaluating {} target(s).'.format(self.stream.n_targets))
 
-        n_samples = self.stream.n_remaining_samples()
-        if n_samples == -1 or n_samples > self.max_samples:
-            n_samples = self.max_samples
+        actual_max_samples = self.stream.n_remaining_samples()
+        if actual_max_samples == -1 or actual_max_samples > self.max_samples:
+            actual_max_samples = self.max_samples
 
         first_run = True
         if self.pretrain_size > 0:
-            logging.info('Pre-training on %s samples.', str(self.pretrain_size))
+            print('Pre-training on {} sample(s).'.format(self.pretrain_size))
 
             X, y = self.stream.next_sample(self.pretrain_size)
 
@@ -280,12 +278,10 @@ class EvaluatePrequential(StreamEvaluator):
                 self.running_time_measurements[i].update_time_measurements(self.pretrain_size)
             self.global_sample_count += self.pretrain_size
             first_run = False
-        else:
-            logging.info('No pre-training.')
 
         update_count = 0
-        logging.info('Evaluating...')
-        while ((self.global_sample_count < self.max_samples) & (end_time - start_time < self.max_time)
+        print('Evaluating...')
+        while ((self.global_sample_count < self.max_samples) & (self._end_time - self._start_time < self.max_time)
                & (self.stream.has_more_samples())):
             try:
                 X, y = self.stream.next_sample(self.batch_size)
@@ -308,7 +304,7 @@ class EvaluatePrequential(StreamEvaluator):
                         for i in range(len(prediction[0])):
                             self.mean_eval_measurements[j].add_result(y[i], prediction[j][i])
                             self.current_eval_measurements[j].add_result(y[i], prediction[j][i])
-                    self._check_progress(logging, n_samples)
+                    self._check_progress(actual_max_samples)
 
                     # Train
                     if first_run:
@@ -342,14 +338,14 @@ class EvaluatePrequential(StreamEvaluator):
                             self._update_metrics()
                         update_count += 1
 
-                end_time = timer()
+                self._end_time = timer()
             except BaseException as exc:
                 print(exc)
                 if exc is KeyboardInterrupt:
                     self._update_metrics()
                 break
 
-        self.evaluation_summary(logging, start_time, end_time)
+        self.evaluation_summary()
 
         if self.restart_stream:
             self.stream.restart()
