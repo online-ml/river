@@ -359,23 +359,24 @@ class DataStream(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def has_more_samples(self):
+        """ Checks if stream has more samples.
+
+        Returns
+        -------
+        Boolean
+            True if stream has more samples.
+
+        """
+        return (self.n_samples - self.sample_idx) > 0
+
+    def n_remaining_samples(self):
         """ Returns the estimated number of remaining samples.
 
         Returns
         -------
         int
             Remaining number of samples.
-        """
-        return (self.n_samples - self.sample_idx) > 0
 
-    def n_remaining_samples(self):
-        """
-        Checks if stream has more samples.
-
-        Returns
-        -------
-        Boolean
-            True if stream has more samples.
         """
         return self.n_samples - self.sample_idx
 
