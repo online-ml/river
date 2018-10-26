@@ -87,6 +87,8 @@ class NaiveBayes(StreamModel):
             A list containing the predicted labels for all instances in X.
         
         """
+        if not hasattr(self.classifier, "classes_"):
+            return [0]
         return self.classifier.predict(X)
 
     def predict_proba(self, X):
@@ -109,6 +111,8 @@ class NaiveBayes(StreamModel):
             the probability that the i-th sample of X belongs to a certain label.
         
         """
+        if not hasattr(self.classifier, "classes_"):
+            return [0.0]
         return self.classifier.predict_proba(X)
 
     def score(self, X, y):
