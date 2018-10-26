@@ -200,9 +200,9 @@ class STAGGERGenerator(Stream):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                size = self.random_state.randint(2)
-                color = self.random_state.randint(2)
-                shape = self.random_state.randint(2)
+                size = self.random_state.randint(3)
+                color = self.random_state.randint(3)
+                shape = self.random_state.randint(3)
 
                 group = self._classification_functions[self.classification_function_idx](size, color, shape)
 
@@ -313,6 +313,6 @@ class STAGGERGenerator(Stream):
         return 1 if (size == 1 or size == 2) else 0
 
     def get_info(self):
-        return 'SineGenerator: classification_function: ' + str(self.classification_function_idx) + \
+        return 'STAGGERGenerator: classification_function: ' + str(self.classification_function_idx) + \
                ' - random_state: ' + str(self._original_random_state) + \
                ' - balance_classes: ' + str(self.balance_classes)
