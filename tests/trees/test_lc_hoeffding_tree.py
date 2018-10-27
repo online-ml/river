@@ -1,7 +1,6 @@
 import numpy as np
 from skmultiflow.trees import LCHT
 from skmultiflow.data import MultilabelGenerator
-import os
 
 def test_lc_hoeffding_tree(test_path):
     stream = MultilabelGenerator(n_samples=10000, n_features=15, n_targets=3, n_labels=4, random_state=112)
@@ -35,3 +34,5 @@ def test_lc_hoeffding_tree(test_path):
                            [1, 1, 1]]
 
     assert np.alltrue(predictions == expected_predictions)
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray

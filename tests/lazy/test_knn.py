@@ -58,3 +58,6 @@ def test_knn():
     correct_predictions = sum(predictions == y_batch[4501:4550])
     expected_correct_predictions = 49
     assert correct_predictions == expected_correct_predictions
+
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray

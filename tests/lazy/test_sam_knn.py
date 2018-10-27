@@ -41,6 +41,9 @@ def test_sam_knn(package_path):
 
     assert np.alltrue(predictions == expected_predictions)
 
+    assert type(learner.predict(X)) == np.ndarray
+    #  assert type(learner.predict_proba(X)) == np.ndarray  predict_proba not implemented.
+
 
 def test_sam_knn_coverage(package_path):
 
