@@ -17,7 +17,7 @@ class Pipeline(BaseObject):
     The last step should be an estimator (learner), so it should implement
     partial_fit, and predict at least.
 
-    Since it has an estimator as the last step, the Pipeline will act like as
+    Since it has an estimator as the last step, the Pipeline will act like
     an estimator itself, in a way that it can be directly passed to evaluation
     objects, as if it was a learner.
 
