@@ -250,7 +250,6 @@ class Pipeline(BaseObject):
         """
 
         names, estimators = zip(*self.steps)
-        transforms = classifier = None
         classifier = estimators[-1]
         transforms = estimators[:-1]
 
