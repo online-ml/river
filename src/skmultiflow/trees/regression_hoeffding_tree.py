@@ -555,7 +555,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
 
         Returns
         -------
-        list
+        numpy.ndarray
             Predicted target values.
 
         """
@@ -584,7 +584,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
         else:
             # Model is empty
             predictions.append(0.0)
-        return predictions
+        return np.asarray(predictions)
 
     def predict_proba(self, X):
         pass
