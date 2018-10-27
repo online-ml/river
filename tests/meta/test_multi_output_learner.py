@@ -92,4 +92,5 @@ def test_multi_output_learner():
     assert np.isclose(expected_performance, perf)
     assert correct_predictions == expected_correct_predictions
 
-
+    assert type(classifier.predict(X)) == np.ndarray
+    assert type(classifier.predict_proba(X)) == np.ndarray

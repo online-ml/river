@@ -54,3 +54,6 @@ def test_naive_bayes(test_path):
     assert np.isclose(expected_score, learner.score(X=X_batch[4501:], y=y_batch[4501:]))
 
     assert 'estimator' == learner.get_class_type()
+
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray

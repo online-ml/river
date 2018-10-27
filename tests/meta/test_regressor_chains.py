@@ -81,8 +81,9 @@ def test_regressor_chains():
                             [-113.86249490223707, 2634310697909.643, 1.580428629322546e+23],
                             [-35.92856878407447, -5410985463428.589, 2.522168862637753e+23]]
 
-
     print(predictions)
     assert np.allclose(np.array(predictions).all(), np.array(expected_predictions).all())
+    assert type(learner.predict(X)) == np.ndarray
+
 
 test_regressor_chains()
