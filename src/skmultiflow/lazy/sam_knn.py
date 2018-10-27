@@ -376,7 +376,7 @@ class SAMKNN(StreamModel):
         for i in range(r):
             distancesSTM = SAMKNN.get_distances(X[i], self._STMSamples)
             predictedLabel.append(self.predictFct(X[i], None, distancesSTM))
-        return predictedLabel
+        return np.asarray(predictedLabel)
 
     def predict_proba(self, X):
         raise NotImplementedError

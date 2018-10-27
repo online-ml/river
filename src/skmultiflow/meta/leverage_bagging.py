@@ -316,8 +316,8 @@ class LeverageBagging(StreamModel):
         
         Returns
         -------
-        list
-            A list with the label prediction for all the samples in X.
+        numpy.ndarray
+            A numpy.ndarray with the label prediction for all the samples in X.
         
         """
         r, c = get_dimensions(X)
@@ -328,7 +328,7 @@ class LeverageBagging(StreamModel):
             proba = np.zeros((r, 1))
         for i in range(r):
             predictions.append(np.argmax(proba[i]))
-        return predictions
+        return np.asarray(predictions)
 
     def predict_proba(self, X):
         """ predict_proba
@@ -392,7 +392,7 @@ class LeverageBagging(StreamModel):
                 aux.append([x / sum_proba[i] for x in proba[i]])
             else:
                 aux.append(proba[i])
-        return aux
+        return np.asarray(aux)
 
     def predict_binary_proba(self, X):
         """ predict_binary_proba
