@@ -5,8 +5,8 @@ class BaseObject(metaclass=ABCMeta):
     """ BaseObject
     
     The most basic object, from which classes in scikit-multiflow
-    derive from. It guarantees that all classes have at least the
-    two basic functions described in this base class.
+    derive. It guarantees that all classes have at least the two
+    basic functions described in this base class.
     
     """
 
@@ -28,7 +28,7 @@ class BaseObject(metaclass=ABCMeta):
     def get_info(self):
         """ get_info
         
-        A sum up of all important characteristics of a class. 
+        A sum-up of all important characteristics of a class.
         
         The default format of the return string is as follows: 
         ClassName: attribute_one: value_one - attribute_two: value_two \ 
