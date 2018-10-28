@@ -90,6 +90,9 @@ def test_classifier_chains():
     assert np.alltrue(np.array_equal(predictions, expected_predictions))
     assert correct_predictions == expected_correct_predictions
 
+    assert type(learner.predict(X)) == np.ndarray
+    #  assert type(learner.predict_proba(X)) == np.ndarray  Not available because default loss is set to 'hinge'
+
 
 def test_classifier_chains_all():
     seed = 1

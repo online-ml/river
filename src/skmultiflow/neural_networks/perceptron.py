@@ -1,3 +1,4 @@
+import numpy as np
 from skmultiflow.core.base import StreamModel
 from sklearn.linear_model.perceptron import Perceptron
 
@@ -107,11 +108,11 @@ class PerceptronMask(StreamModel):
 
         Returns
         -------
-        list
-            A list containing the predicted labels for all instances in X.
+        numpy.ndarray
+            A numpy.ndarray containing the predicted labels for all instances in X.
 
         """
-        return self.classifier.predict(X)
+        return np.asarray(self.classifier.predict(X))
 
     def predict_proba(self, X):
         """ predict_proba

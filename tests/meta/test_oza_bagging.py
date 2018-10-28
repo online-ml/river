@@ -41,3 +41,5 @@ def test_oza_bagging():
     assert np.isclose(expected_performance, performance)
     assert correct_predictions == expected_correct_predictions
 
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray

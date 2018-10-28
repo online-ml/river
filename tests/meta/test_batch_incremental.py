@@ -48,3 +48,5 @@ def test_batch_incremental():
     assert np.alltrue(predictions == expected_predictions)
     assert np.isclose(expected_performance, performance)
     assert correct_predictions == expected_correct_predictions
+
+    assert type(learner.predict(X)) == np.ndarray

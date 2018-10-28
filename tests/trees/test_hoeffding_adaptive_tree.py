@@ -59,6 +59,9 @@ def test_hat_mc(test_path):
            or  (learner.get_model_description() == expected_model_4) \
 
 
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray
+
     stream.restart()
     X, y = stream.next_sample(5000)
 
@@ -108,6 +111,8 @@ def test_hat_nb(test_path):
                     ' - nominal_attributes: [] - '
 
     assert learner.get_info() == expected_info
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray
 
 
 def test_hat_nba(test_path):
@@ -150,3 +155,5 @@ def test_hat_nba(test_path):
                     ' - nominal_attributes: [] - '
 
     assert learner.get_info() == expected_info
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray

@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 from sklearn.preprocessing import normalize
 
 from skmultiflow.core.base_object import BaseObject
@@ -230,7 +231,7 @@ class AdaptiveRandomForest(StreamModel):
             Samples for which we want to predict the labels.
         Returns
         -------
-        list
+        numpy.ndarray
             Predicted labels for all instances in X.
         """
         r, _ = get_dimensions(X)
@@ -242,7 +243,7 @@ class AdaptiveRandomForest(StreamModel):
                 predictions.append(0)
             else:
                 predictions.append(max(votes, key=votes.get))
-        return predictions
+        return np.asarray(predictions)
 
     def predict_proba(self, X):
         """ Predicts the class probabilities for the X instance(s).

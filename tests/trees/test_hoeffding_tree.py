@@ -53,6 +53,8 @@ def test_hoeffding_tree(test_path):
     expected_model_2 = 'Leaf = Class 1.0 | {1.0: 1745.0, 2.0: 978.0, 0.0: 1423.0, 3.0: 854.0}\n'
     assert (learner.get_model_description() == expected_model_1) \
            or (learner.get_model_description() == expected_model_2)
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray
 
 
 def test_hoeffding_tree_coverage():
