@@ -54,6 +54,7 @@ def test_hoeffding_tree():
     assert learner.get_info() == expected_info
 
     assert isinstance(learner.get_model_description(), type(''))
+    assert type(learner.predict(X)) == np.ndarray
 
 
 def test_hoeffding_tree_perceptron():
@@ -104,6 +105,7 @@ def test_hoeffding_tree_perceptron():
     assert learner.get_info() == expected_info
 
     assert isinstance(learner.get_model_description(), type(''))
+    assert type(learner.predict(X)) == np.ndarray
 
 
 def test_hoeffding_tree_coverage(test_path):

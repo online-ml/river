@@ -49,6 +49,7 @@ def test_multi_target_regression_hoeffding_tree_mean(test_path):
         'nominal_attributes: [] - '
     assert learner.get_info() == expected_info
     assert isinstance(learner.get_model_description(), type(''))
+    assert type(learner.predict(X)) == np.ndarray
 
 
 def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
