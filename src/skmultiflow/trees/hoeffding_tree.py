@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class HoeffdingTree(StreamModel):
-    """Hoeffding Tree or VFDT.
+    """ Hoeffding Tree or VFDT.
 
     Parameters
     ----------
@@ -87,7 +87,7 @@ class HoeffdingTree(StreamModel):
     """
 
     class FoundNode(object):
-        """Base class for tree nodes.
+        """ Base class for tree nodes.
 
         Parameters
         ----------
@@ -106,7 +106,7 @@ class HoeffdingTree(StreamModel):
             self.parent_branch = parent_branch
 
     class Node(metaclass=ABCMeta):
-        """Base class for nodes in a Hoeffding Tree.
+        """ Base class for nodes in a Hoeffding Tree.
 
         Parameters
         ----------
@@ -123,7 +123,7 @@ class HoeffdingTree(StreamModel):
 
         @staticmethod
         def is_leaf():
-            """Determine if the node is a leaf.
+            """ Determine if the node is a leaf.
 
             Returns
             -------
@@ -133,7 +133,7 @@ class HoeffdingTree(StreamModel):
             return True
 
         def filter_instance_to_leaf(self, X, parent, parent_branch):
-            """Travers down the tree to locate the corresponding leaf for an instance.
+            """ Traverse down the tree to locate the corresponding leaf for an instance.
 
             Parameters
             ----------
@@ -153,7 +153,7 @@ class HoeffdingTree(StreamModel):
             return HoeffdingTree.FoundNode(self, parent, parent_branch)
 
         def get_observed_class_distribution(self):
-            """Get the current observed class distribution at the node.
+            """ Get the current observed class distribution at the node.
 
             Returns
             -------
@@ -164,7 +164,7 @@ class HoeffdingTree(StreamModel):
             return self._observed_class_distribution
 
         def get_class_votes(self, X, ht):
-            """Get the votes per class for a given instance.
+            """ Get the votes per class for a given instance.
 
             Parameters
             ----------
@@ -182,7 +182,7 @@ class HoeffdingTree(StreamModel):
             return self._observed_class_distribution
 
         def observed_class_distribution_is_pure(self):
-            """Check if observed class distribution is pure, i.e. if all samples belong to the same class.
+            """ Check if observed class distribution is pure, i.e. if all samples belong to the same class.
 
             Returns
             -------
@@ -199,7 +199,7 @@ class HoeffdingTree(StreamModel):
             return count < 2
 
         def subtree_depth(self):
-            """Calculate the depth of the subtree from this node.
+            """ Calculate the depth of the subtree from this node.
 
             Returns
             -------
@@ -210,7 +210,7 @@ class HoeffdingTree(StreamModel):
             return 0
 
         def calculate_promise(self):
-            """Calculate node's promise.
+            """ Calculate node's promise.
 
             Returns
             -------
@@ -225,7 +225,7 @@ class HoeffdingTree(StreamModel):
                 return 0
 
         def __sizeof__(self):
-            """Calculate the size of the node.
+            """ Calculate the size of the node.
 
             Returns
             -------
@@ -236,7 +236,7 @@ class HoeffdingTree(StreamModel):
             return object.__sizeof__(self) + sys.getsizeof(self._observed_class_distribution)
 
         def calc_byte_size_including_subtree(self):
-            """Calculate the size of the node including its subtree.
+            """ Calculate the size of the node including its subtree.
 
             Returns
             -------
@@ -247,7 +247,7 @@ class HoeffdingTree(StreamModel):
             return self.__sizeof__()
 
         def describe_subtree(self, ht, buffer, indent=0):
-            """Walk the tree and write its structure to a buffer string.
+            """ Walk the tree and write its structure to a buffer string.
 
             Parameters
             ----------
@@ -272,7 +272,7 @@ class HoeffdingTree(StreamModel):
             pass
 
     class SplitNode(Node):
-        """Node that splits the data in a Hoeffding Tree.
+        """ Node that splits the data in a Hoeffding Tree.
 
         Parameters
         ----------
@@ -284,18 +284,18 @@ class HoeffdingTree(StreamModel):
         """
 
         def __init__(self, split_test, class_observations):
-            """SplitNode class constructor."""
+            """ SplitNode class constructor."""
             super().__init__(class_observations)
             self._split_test = split_test
             # Dict of tuples (branch, child)
             self._children = {}
 
         def num_children(self):
-            """Count the number of children for a node."""
+            """ Count the number of children for a node."""
             return len(self._children)
 
         def set_child(self, index, node):
-            """Set node as child.
+            """ Set node as child.
 
             Parameters
             ----------
@@ -311,7 +311,7 @@ class HoeffdingTree(StreamModel):
             self._children[index] = node
 
         def get_child(self, index):
-            """Retrieve a node's child given its branch index.
+            """ Retrieve a node's child given its branch index.
 
             Parameters
             ----------
@@ -330,7 +330,7 @@ class HoeffdingTree(StreamModel):
                 return None
 
         def instance_child_index(self, X):
-            """Get the branch index for a given instance at the current node.
+            """ Get the branch index for a given instance at the current node.
 
             Returns
             -------
@@ -342,7 +342,7 @@ class HoeffdingTree(StreamModel):
 
         @staticmethod
         def is_leaf():
-            """Determine if the node is a leaf.
+            """ Determine if the node is a leaf.
 
             Returns
             -------
@@ -353,7 +353,7 @@ class HoeffdingTree(StreamModel):
             return False
 
         def filter_instance_to_leaf(self, X, parent, parent_branch):
-            """Travers down the tree to locate the corresponding leaf for an instance.
+            """ Traverse down the tree to locate the corresponding leaf for an instance.
 
             Parameters
             ----------
@@ -381,7 +381,7 @@ class HoeffdingTree(StreamModel):
                 return HoeffdingTree.FoundNode(self, parent, parent_branch)
 
         def subtree_depth(self):
-            """Calculate the depth of the subtree from this node.
+            """ Calculate the depth of the subtree from this node.
 
             Returns
             -------
@@ -397,7 +397,7 @@ class HoeffdingTree(StreamModel):
             return max_child_depth + 1
 
         def __sizeof__(self):
-            """Calculate the size of the node.
+            """ Calculate the size of the node.
 
             Returns
             -------
@@ -407,7 +407,7 @@ class HoeffdingTree(StreamModel):
             return object.__sizeof__(self) + sys.getsizeof(self._children) + sys.getsizeof(self._split_test)
 
         def calc_byte_size_including_subtree(self):
-            """Calculate the size of the node including its subtree.
+            """ Calculate the size of the node including its subtree.
 
             Returns
             -------
@@ -422,7 +422,7 @@ class HoeffdingTree(StreamModel):
             return byte_size
 
         def describe_subtree(self, ht, buffer, indent=0):
-            """Walk the tree and write its structure to a buffer string.
+            """ Walk the tree and write its structure to a buffer string.
 
             Parameters
             ----------
@@ -443,7 +443,7 @@ class HoeffdingTree(StreamModel):
                     child.describe_subtree(ht, buffer, indent + 2)
 
     class LearningNode(Node):
-        """Base class for Learning Nodes in a Hoeffding Tree.
+        """ Base class for Learning Nodes in a Hoeffding Tree.
 
         Parameters
         ----------
@@ -473,7 +473,7 @@ class HoeffdingTree(StreamModel):
             pass
 
     class InactiveLearningNode(LearningNode):
-        """Inactive learning node that does not grow.
+        """ Inactive learning node that does not grow.
 
         Parameters
         ----------
@@ -486,7 +486,7 @@ class HoeffdingTree(StreamModel):
             super().__init__(initial_class_observations)
 
         def learn_from_instance(self, X, y, weight, ht):
-            """Update the node with the provided instance.
+            """ Update the node with the provided instance.
 
             Parameters
             ----------
@@ -506,7 +506,7 @@ class HoeffdingTree(StreamModel):
                 self._observed_class_distribution[y] = weight
 
     class ActiveLearningNode(LearningNode):
-        """Learning node that supports growth.
+        """ Learning node that supports growth.
 
         Parameters
         ----------
@@ -521,7 +521,7 @@ class HoeffdingTree(StreamModel):
             self._attribute_observers = {}
 
         def learn_from_instance(self, X, y, weight, ht):
-            """Update the node with the provided instance.
+            """ Update the node with the provided instance.
 
             Parameters
             ----------
@@ -552,7 +552,7 @@ class HoeffdingTree(StreamModel):
                 obs.observe_attribute_class(X[i], int(y), weight)
 
         def get_weight_seen(self):
-            """Calculate the total weight seen by the node.
+            """ Calculate the total weight seen by the node.
 
             Returns
             -------
@@ -563,7 +563,7 @@ class HoeffdingTree(StreamModel):
             return sum(self._observed_class_distribution.values())
 
         def get_weight_seen_at_last_split_evaluation(self):
-            """Retrieve the weight seen at last split evaluation.
+            """ Retrieve the weight seen at last split evaluation.
 
             Returns
             -------
@@ -574,7 +574,7 @@ class HoeffdingTree(StreamModel):
             return self._weight_seen_at_last_split_evaluation
 
         def set_weight_seen_at_last_split_evaluation(self, weight):
-            """Retrieve the weight seen at last split evaluation.
+            """ Retrieve the weight seen at last split evaluation.
 
             Parameters
             ----------
@@ -585,7 +585,7 @@ class HoeffdingTree(StreamModel):
             self._weight_seen_at_last_split_evaluation = weight
 
         def get_best_split_suggestions(self, criterion, ht):
-            """Find possible split candidates.
+            """ Find possible split candidates.
 
             Parameters
             ----------
@@ -615,7 +615,7 @@ class HoeffdingTree(StreamModel):
             return best_suggestions
 
         def disable_attribute(self, att_idx):
-            """Disable an attribute observer.
+            """ Disable an attribute observer.
 
             Parameters
             ----------
@@ -627,7 +627,7 @@ class HoeffdingTree(StreamModel):
                 self._attribute_observers[att_idx] = AttributeClassObserverNull()
 
     class LearningNodeNB(ActiveLearningNode):
-        """Learning node that uses Naive Bayes models.
+        """ Learning node that uses Naive Bayes models.
 
         Parameters
         ----------
@@ -640,7 +640,7 @@ class HoeffdingTree(StreamModel):
             super().__init__(initial_class_observations)
 
         def get_class_votes(self, X, ht):
-            """Get the votes per class for a given instance.
+            """ Get the votes per class for a given instance.
 
             Parameters
             ----------
@@ -661,7 +661,7 @@ class HoeffdingTree(StreamModel):
                 return super().get_class_votes(X, ht)
 
         def disable_attribute(self, att_index):
-            """Disable an attribute observer.
+            """ Disable an attribute observer.
 
             Disabled in Nodes using Naive Bayes, since poor attributes are used in Naive Bayes calculation.
 
@@ -674,7 +674,7 @@ class HoeffdingTree(StreamModel):
             pass
 
     class LearningNodeNBAdaptive(LearningNodeNB):
-        """Learning node that uses Adaptive Naive Bayes models.
+        """ Learning node that uses Adaptive Naive Bayes models.
 
         Parameters
         ----------
@@ -683,13 +683,13 @@ class HoeffdingTree(StreamModel):
 
         """
         def __init__(self, initial_class_observations):
-            """LearningNodeNBAdaptive class constructor. """
+            """ LearningNodeNBAdaptive class constructor. """
             super().__init__(initial_class_observations)
             self._mc_correct_weight = 0.0
             self._nb_correct_weight = 0.0
 
         def learn_from_instance(self, X, y, weight, ht):
-            """Update the node with the provided instance.
+            """ Update the node with the provided instance.
 
             Parameters
             ----------
@@ -715,7 +715,7 @@ class HoeffdingTree(StreamModel):
             super().learn_from_instance(X, y, weight, ht)
 
         def get_class_votes(self, X, ht):
-            """Get the votes per class for a given instance.
+            """ Get the votes per class for a given instance.
 
             Parameters
             ----------
@@ -751,7 +751,7 @@ class HoeffdingTree(StreamModel):
                  leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None):
-        """HoeffdingTree class constructor."""
+        """ HoeffdingTree class constructor."""
         super().__init__()
         self.max_byte_size = max_byte_size
         self.memory_estimate_period = memory_estimate_period
@@ -893,7 +893,7 @@ class HoeffdingTree(StreamModel):
     def nominal_attributes(self, nominal_attributes):
         if nominal_attributes is None:
             nominal_attributes = []
-            logger.debug("No Nominal attributes have been defined, will consider all attributes as numerical")
+            logger.debug("No Nominal attributes have been defined, will consider all attributes as numerical.")
         self._nominal_attributes = nominal_attributes
 
     @property
@@ -905,7 +905,7 @@ class HoeffdingTree(StreamModel):
         self._classes = value
 
     def __sizeof__(self):
-        """Calculate the size of the tree.
+        """ Calculate the size of the tree.
 
         Returns
         -------
@@ -919,7 +919,7 @@ class HoeffdingTree(StreamModel):
         return size
 
     def measure_byte_size(self):
-        """Calculate the size of the tree.
+        """ Calculate the size of the tree.
 
         Returns
         -------
@@ -930,7 +930,7 @@ class HoeffdingTree(StreamModel):
         return self.__sizeof__()
 
     def reset(self):
-        """Reset the Hoeffding Tree to default values."""
+        """ Reset the Hoeffding Tree to default values."""
         self._tree_root = None
         self._decision_node_cnt = 0
         self._active_leaf_node_cnt = 0
@@ -947,7 +947,7 @@ class HoeffdingTree(StreamModel):
         raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        """Incrementally trains the model. Train samples (instances) are compossed of X attributes and their
+        """ Incrementally trains the model. Train samples (instances) are composed of X attributes and their
         corresponding targets y.
 
         Tasks performed before training:
@@ -992,7 +992,7 @@ class HoeffdingTree(StreamModel):
                     self._partial_fit(X[i], y[i], weight[i])
 
     def _partial_fit(self, X, y, weight):
-        """Trains the model on samples X and corresponding targets y.
+        """ Trains the model on samples X and corresponding targets y.
 
         Private function where actual training is carried on.
 
@@ -1051,7 +1051,7 @@ class HoeffdingTree(StreamModel):
             return {}
 
     def predict(self, X):
-        """Predicts the label of the X instance(s)
+        """ Predicts the label of the X instance(s)
 
         Parameters
         ----------
@@ -1073,7 +1073,7 @@ class HoeffdingTree(StreamModel):
         return np.array(predictions)
 
     def predict_proba(self, X):
-        """Predicts probabilities of all label of the X instance(s)
+        """ Predicts probabilities of all label of the X instance(s)
 
         Parameters
         ----------
@@ -1107,7 +1107,7 @@ class HoeffdingTree(StreamModel):
 
     @property
     def get_model_measurements(self):
-        """Collect metrics corresponding to the current status of the tree.
+        """ Collect metrics corresponding to the current status of the tree.
 
         Returns
         -------
@@ -1126,7 +1126,7 @@ class HoeffdingTree(StreamModel):
         return measurements
 
     def measure_tree_depth(self):
-        """Calculate the depth of the tree.
+        """ Calculate the depth of the tree.
 
         Returns
         -------
@@ -1138,7 +1138,7 @@ class HoeffdingTree(StreamModel):
         return 0
 
     def _new_learning_node(self, initial_class_observations=None):
-        """Create a new learning node. The type of learning node depends on the tree configuration."""
+        """ Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
         if self._leaf_prediction == MAJORITY_CLASS:
@@ -1149,7 +1149,7 @@ class HoeffdingTree(StreamModel):
             return self.LearningNodeNBAdaptive(initial_class_observations)
 
     def get_model_description(self):
-        """Walk the tree and return its structure in a buffer.
+        """ Walk the tree and return its structure in a buffer.
 
         Returns
         -------
@@ -1167,7 +1167,7 @@ class HoeffdingTree(StreamModel):
 
     @staticmethod
     def compute_hoeffding_bound(range_val, confidence, n):
-        r"""Compute the Hoeffding bound, used to decide how many samples are necessary at each node.
+        r""" Compute the Hoeffding bound, used to decide how many samples are necessary at each node.
 
         Notes
         -----
@@ -1206,11 +1206,11 @@ class HoeffdingTree(StreamModel):
         return np.sqrt((range_val * range_val * np.log(1.0 / confidence)) / (2.0 * n))
 
     def new_split_node(self, split_test, class_observations):
-        """Create a new split node."""
+        """ Create a new split node."""
         return self.SplitNode(split_test, class_observations)
 
     def _attempt_to_split(self, node: ActiveLearningNode, parent: SplitNode, parent_idx: int):
-        """Attempt to split a node.
+        """ Attempt to split a node.
 
         If the samples seen so far are not from the same class then:
 
@@ -1293,7 +1293,7 @@ class HoeffdingTree(StreamModel):
                 self.enforce_tracker_limit()
 
     def enforce_tracker_limit(self):
-        """Track the size of the tree and disable/enable nodes if required."""
+        """ Track the size of the tree and disable/enable nodes if required."""
         byte_size = (self._active_leaf_byte_size_estimate
                      + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate) \
                     * self._byte_size_estimate_overhead_fraction
@@ -1324,7 +1324,7 @@ class HoeffdingTree(StreamModel):
                                              learning_nodes[i].parent_branch)
 
     def estimate_model_byte_size(self):
-        """Calculate the size of the model and trigger tracker function if the actual model size exceeds the max size
+        """ Calculate the size of the model and trigger tracker function if the actual model size exceeds the max size
         in the configuration."""
         learning_nodes = self._find_learning_nodes()
         total_active_size = 0
@@ -1346,7 +1346,7 @@ class HoeffdingTree(StreamModel):
             self.enforce_tracker_limit()
 
     def deactivate_all_leaves(self):
-        """Deactivate all leaves."""
+        """ Deactivate all leaves. """
         learning_nodes = self._find_learning_nodes()
         for i in range(len(learning_nodes)):
             if isinstance(learning_nodes[i], self.ActiveLearningNode):
@@ -1355,7 +1355,7 @@ class HoeffdingTree(StreamModel):
                                                learning_nodes[i].parent_branch)
 
     def _deactivate_learning_node(self, to_deactivate: ActiveLearningNode, parent: SplitNode, parent_branch: int):
-        """Deactivate a learning node.
+        """ Deactivate a learning node.
 
         Parameters
         ----------
@@ -1376,7 +1376,7 @@ class HoeffdingTree(StreamModel):
         self._inactive_leaf_node_cnt += 1
 
     def _activate_learning_node(self, to_activate: InactiveLearningNode, parent: SplitNode, parent_branch: int):
-        """Activate a learning node.
+        """ Activate a learning node.
 
         Parameters
         ----------
@@ -1397,7 +1397,7 @@ class HoeffdingTree(StreamModel):
         self._inactive_leaf_node_cnt -= 1
 
     def _find_learning_nodes(self):
-        """Find learning nodes in the tree.
+        """ Find learning nodes in the tree.
 
         Returns
         -------
@@ -1409,7 +1409,7 @@ class HoeffdingTree(StreamModel):
         return found_list
 
     def __find_learning_nodes(self, node, parent, parent_branch, found):
-        """Find learning nodes in the tree from a given node.
+        """ Find learning nodes in the tree from a given node.
 
         Parameters
         ----------
@@ -1437,7 +1437,7 @@ class HoeffdingTree(StreamModel):
         raise NotImplementedError
 
     def get_info(self):
-        """Collect information about the Hoeffding Tree configuration.
+        """ Collect information about the Hoeffding Tree configuration.
 
         Returns
         -------

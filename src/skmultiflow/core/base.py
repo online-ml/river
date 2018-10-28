@@ -78,7 +78,7 @@ class StreamModel(BaseObject, metaclass=ABCMeta):
         Parameters
         ----------
         X : Numpy.ndarray of shape (n_samples, n_features)
-            The matrix of samples one wants to predict.
+            The matrix of samples one wants to predict the labels for.
 
         Returns
         -------
@@ -94,7 +94,7 @@ class StreamModel(BaseObject, metaclass=ABCMeta):
         Parameters
         ----------
         X : Numpy.ndarray of shape (n_samples, n_features)
-            The matrix of samples one wants to predict.
+            The matrix of samples one wants to predict the class probabilities for.
 
         Returns
         -------

@@ -7,8 +7,8 @@ class NaiveBayes(StreamModel):
     
     A mask for scikit-learn's Naive Bayes classifier.
     
-    Because scikit-multiflow's framework require a few interfaces, not present 
-    int scikit-learn, this mask allows the first to use classifiers native to 
+    Because scikit-multiflow's framework requires a few interfaces, not present
+    in scikit-learn, this mask allows the first to use classifiers native to
     the latter.
     
     """
