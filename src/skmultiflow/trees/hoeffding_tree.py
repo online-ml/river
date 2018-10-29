@@ -1,9 +1,9 @@
-import sys
 import logging
 import textwrap
 from abc import ABCMeta
 from operator import attrgetter
-from skmultiflow.utils.utils import *
+import numpy as np
+from skmultiflow.utils.utils import get_dimensions, normalize_values_in_dict, calculate_object_size
 from skmultiflow.core.base import StreamModel
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
@@ -12,7 +12,6 @@ from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestio
 from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
 from skmultiflow.trees.utils import do_naive_bayes_prediction
-from skmultiflow.utils.utils import normalize_values_in_dict
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
@@ -224,28 +223,6 @@ class HoeffdingTree(StreamModel):
             else:
                 return 0
 
-        def __sizeof__(self):
-            """ Calculate the size of the node.
-
-            Returns
-            -------
-            int
-                Size of the node in bytes.
-
-            """
-            return object.__sizeof__(self) + sys.getsizeof(self._observed_class_distribution)
-
-        def calc_byte_size_including_subtree(self):
-            """ Calculate the size of the node including its subtree.
-
-            Returns
-            -------
-            int
-                Size of the node and its subtree in bytes.
-
-            """
-            return self.__sizeof__()
-
         def describe_subtree(self, ht, buffer, indent=0):
             """ Walk the tree and write its structure to a buffer string.
 
@@ -395,31 +372,6 @@ class HoeffdingTree(StreamModel):
                     if depth > max_child_depth:
                         max_child_depth = depth
             return max_child_depth + 1
-
-        def __sizeof__(self):
-            """ Calculate the size of the node.
-
-            Returns
-            -------
-            int
-                Size of the node in bytes.
-            """
-            return object.__sizeof__(self) + sys.getsizeof(self._children) + sys.getsizeof(self._split_test)
-
-        def calc_byte_size_including_subtree(self):
-            """ Calculate the size of the node including its subtree.
-
-            Returns
-            -------
-            int
-                Size of the node and its subtree in bytes.
-
-            """
-            byte_size = self.__sizeof__()
-            for child in self._children.values():
-                if child is not None:
-                    byte_size += child.calc_byte_size_including_subtree()
-            return byte_size
 
         def describe_subtree(self, ht, buffer, indent=0):
             """ Walk the tree and write its structure to a buffer string.
@@ -904,20 +856,6 @@ class HoeffdingTree(StreamModel):
     def classes(self, value):
         self._classes = value
 
-    def __sizeof__(self):
-        """ Calculate the size of the tree.
-
-        Returns
-        -------
-        int
-            Size of the tree in bytes.
-
-        """
-        size = object.__sizeof__(self)
-        if self._tree_root is not None:
-            size += self._tree_root.calc_byte_size_including_subtree()
-        return size
-
     def measure_byte_size(self):
         """ Calculate the size of the tree.
 
@@ -927,7 +865,7 @@ class HoeffdingTree(StreamModel):
             Size of the tree in bytes.
 
         """
-        return self.__sizeof__()
+        return calculate_object_size(self)
 
     def reset(self):
         """ Reset the Hoeffding Tree to default values."""
@@ -1331,14 +1269,14 @@ class HoeffdingTree(StreamModel):
         total_inactive_size = 0
         for found_node in learning_nodes:
             if isinstance(found_node.node, self.ActiveLearningNode):
-                total_active_size += sys.getsizeof(found_node.node)
+                total_active_size += calculate_object_size(found_node.node)
             else:
-                total_inactive_size += sys.getsizeof(found_node.node)
+                total_inactive_size += calculate_object_size(found_node.node)
         if total_active_size > 0:
             self._active_leaf_byte_size_estimate = total_active_size / self._active_leaf_node_cnt
         if total_inactive_size > 0:
             self._inactive_leaf_byte_size_estimate = total_inactive_size / self._inactive_leaf_node_cnt
-        actual_model_size = self.measure_byte_size()
+        actual_model_size = calculate_object_size(self)
         estimated_model_size = (self._active_leaf_node_cnt * self._active_leaf_byte_size_estimate
                                 + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate)
         self._byte_size_estimate_overhead_fraction = actual_model_size / estimated_model_size

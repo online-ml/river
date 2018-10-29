@@ -5,7 +5,7 @@ from skmultiflow.trees.multi_target_regression_hoeffding_tree import \
     MultiTargetRegressionHoeffdingTree
 
 
-def demo(input_file, output_file=None):
+def demo(output_file=None):
     """ _test_mtr_regression
 
     This demo demonstrates how to evaluate a Multi-Target Regressor. The
@@ -43,5 +43,5 @@ def demo(input_file, output_file=None):
 
 
 if __name__ == '__main__':
-    demo('../data/datasets/mtr/scm1d.csv',
-         'mtr_test_adaptive.csv')
+    # demo('mtr_test_adaptive.csv')
+    demo()
