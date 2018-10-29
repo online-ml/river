@@ -40,3 +40,6 @@ def test_leverage_bagging():
     assert np.alltrue(predictions == expected_predictions)
     assert np.isclose(expected_performance, performance)
     assert correct_predictions == expected_correct_predictions
+
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray

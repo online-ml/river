@@ -52,3 +52,6 @@ def test_knn_adwin():
     correct_predictions = sum(np.array(predictions) == y[951:])
     expected_correct_predictions = 47
     assert correct_predictions == expected_correct_predictions
+
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray
