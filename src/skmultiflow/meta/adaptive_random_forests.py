@@ -1,13 +1,14 @@
 from copy import deepcopy
 import numpy as np
 from sklearn.preprocessing import normalize
-
+import math
+from skmultiflow.core.base import StreamModel
 from skmultiflow.core.base_object import BaseObject
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
-from skmultiflow.trees.hoeffding_tree import *
 from skmultiflow.drift_detection.adwin import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree import ARFHoeffdingTree
 from skmultiflow.metrics.measure_collection import ClassificationMeasurements
+from skmultiflow.utils.utils import get_dimensions, normalize_values_in_dict
 from skmultiflow.utils import check_random_state, check_weights
 
 
@@ -153,7 +154,7 @@ class AdaptiveRandomForest(StreamModel):
                  nominal_attributes=None,
                  random_state=None):
         """AdaptiveRandomForest class constructor."""
-        super().__init__()          
+        super().__init__()
         self.n_estimators = n_estimators
         self.max_features = max_features
         self.disable_weighted_vote = disable_weighted_vote
@@ -273,7 +274,7 @@ class AdaptiveRandomForest(StreamModel):
 
         return normalize(y_proba_mean, norm='l1')
         
-    def reset(self):        
+    def reset(self):
         """Reset ARF."""
         self.ensemble = None
         self.max_features = 0
@@ -380,7 +381,7 @@ class AdaptiveRandomForest(StreamModel):
 
     @staticmethod
     def is_randomizable():
-        return True                  
+        return True
 
 
 class ARFBaseLearner(BaseObject):
@@ -415,7 +416,7 @@ class ARFBaseLearner(BaseObject):
                  warning_detection_method: BaseDriftDetector,
                  is_background_learner):
         self.index_original = index_original
-        self.classifier = classifier 
+        self.classifier = classifier
         self.created_on = instances_seen
         self.is_background_learner = is_background_learner
         self.evaluator_method = ClassificationMeasurements
@@ -427,7 +428,7 @@ class ARFBaseLearner(BaseObject):
         self.last_drift_on = 0
         self.last_warning_on = 0
         self.nb_drifts_detected = 0
-        self.nb_warnings_detected = 0            
+        self.nb_warnings_detected = 0
 
         self.drift_detection = None
         self.warning_detection = None
@@ -452,7 +453,7 @@ class ARFBaseLearner(BaseObject):
             self.warning_detection = self.background_learner.warning_detection
             self.drift_detection = self.background_learner.drift_detection
             self.evaluator_method = self.background_learner.evaluator_method
-            self.created_on = self.background_learner.created_on                
+            self.created_on = self.background_learner.created_on
             self.background_learner = None
         else:
             self.classifier.reset()

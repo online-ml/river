@@ -431,7 +431,7 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
             elif metric == constants.MODEL_SIZE:
                 values = []
                 for i in range(self.n_models):
-                    values.append(calculate_object_size(self.model[i]))
+                    values.append(calculate_object_size(self.model[i], 'kB'))
 
             else:
                 raise ValueError('Unknown metric {}'.format(metric))

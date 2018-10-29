@@ -3,6 +3,7 @@ from skmultiflow.trees.numeric_attribute_binary_test import \
     NumericAttributeBinaryTest
 from skmultiflow.trees.attribute_split_suggestion import \
     AttributeSplitSuggestion
+import numpy as np
 
 
 class NumericAttributeRegressionObserverMultiTarget(AttributeClassObserver):
@@ -22,12 +23,11 @@ class NumericAttributeRegressionObserverMultiTarget(AttributeClassObserver):
     """
 
     class Node:
-
         def __init__(self, att_val, target):
             self.att_val = att_val
 
             self.k = 1
-            self.sum_target = target
+            self.sum_target = target.copy()
             self.sum_sq_target = target * target
 
             self._left = None
@@ -41,7 +41,7 @@ class NumericAttributeRegressionObserverMultiTarget(AttributeClassObserver):
 
             while current is not None:
                 antecedent = current
-                if current.att_val == att_val:
+                if att_val == current.att_val:
                     current.k += 1
                     current.sum_target += target
                     current.sum_sq_target += target * target
@@ -87,13 +87,12 @@ class NumericAttributeRegressionObserverMultiTarget(AttributeClassObserver):
     def get_best_evaluated_split_suggestion(self, criterion, pre_split_dist,
                                             att_idx, binary_only=True):
         self._criterion = criterion
-        # self._pre_split_dist = list(pre_split_dist.values())
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
 
         self._aux_k = 0
-        self._aux_sum = 0.0
-        self._aux_sq_sum = 0.0
+        self._aux_sum = np.zeros_like(pre_split_dist[1])
+        self._aux_sq_sum = np.zeros_like(pre_split_dist[2])
 
         candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
 
