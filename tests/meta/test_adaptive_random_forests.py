@@ -45,6 +45,8 @@ def test_adaptive_random_forests():
         #  Temporary disable as pre-3.6 give different predictions than 3.6+
         assert np.alltrue(predictions == last_version_predictions)
 
+    assert type(learner.predict(X)) == np.ndarray
+
 
 def test_adaptive_random_forests_labels_given():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112, n_classes=2)
@@ -128,3 +130,5 @@ def test_adaptive_random_forests_batch_predict_proba():
     if sys.version_info.major == 3 and sys.version_info.minor >= 6:
         #  Temporary disable as pre-3.6 give different predictions than 3.6+
         assert np.alltrue(all_predictions.argmax(axis=1) == last_version_predictions)
+
+    assert type(learner.predict_proba(X)) == np.ndarray

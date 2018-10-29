@@ -59,3 +59,6 @@ def test_perceptron(test_path):
     # assert np.isclose(expected_accuracy, accuracy)  # Removed due to npn-replicable error in Travis build
 
     assert 'estimator' == learner.get_class_type()
+
+    assert type(learner.predict(X)) == np.ndarray
+    assert type(learner.predict_proba(X)) == np.ndarray
