@@ -145,20 +145,6 @@ class HAT(HoeffdingTree):
             self._random_seed = 1
             self._classifier_random = check_random_state(self._random_seed)
 
-        # Override SplitNode
-        def calc_byte_size_including_subtree(self):
-            byte_size = self.__sizeof__()
-            if self._alternate_tree is not None:
-                byte_size += self._alternate_tree.calc_byte_size_including_subtree()
-            if self._estimation_error_weight is not None:
-                byte_size += self._estimation_error_weight.get_length_estimation()
-
-            for child in self._children:
-                if child is not None:
-                    byte_size += child.calc_byte_size_including_subtree()
-
-            return byte_size
-
         # Override NewNode
         def number_leaves(self):
             num_of_leaves = 0
@@ -302,12 +288,6 @@ class HAT(HoeffdingTree):
             self.error_change = False
             self._randomSeed = 1
             self._classifier_random = check_random_state(self._randomSeed)
-
-        def calc_byte_size(self):
-            byte_size = self.__sizeof__()
-            if self._estimation_error_weight is not None:
-                byte_size += self._estimation_error_weight.get_length_estimation()
-            return byte_size
 
         # Override NewNode
         def number_leaves(self):

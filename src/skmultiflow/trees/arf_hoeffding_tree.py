@@ -1,5 +1,10 @@
-from skmultiflow.trees.hoeffding_tree import *
+import numpy as np
+from skmultiflow.trees.hoeffding_tree import HoeffdingTree, MAJORITY_CLASS, NAIVE_BAYES
 from skmultiflow.utils import check_random_state
+from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
+from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
+from skmultiflow.utils.utils import get_dimensions
+from skmultiflow.trees.utils import do_naive_bayes_prediction
 
 
 class ARFHoeffdingTree(HoeffdingTree):
