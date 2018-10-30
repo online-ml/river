@@ -10,6 +10,7 @@ Submodules
    skmultiflow.evaluation.evaluate_holdout
    skmultiflow.evaluation.evaluate_prequential
    skmultiflow.evaluation.evaluate_stream_gen_speed
+   skmultiflow.evaluation.evaluation_data_buffer
 
 Module contents
 ---------------
