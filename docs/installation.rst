@@ -4,7 +4,7 @@ Installation
 
 **Notice:** `scikit-multiflow` works with Python 3.4+ **only**.
 
-First, you need to make a copy of the ``scikit-multiflow`` project. On the `project's github page <https://github.com/scikit-multiflow/scikit-multiflow>`_ you will find on the top-right side of the page a green button with the label "Clone or download". By clicking on it you will get two options: clone with SSH, HTTPS or download a zip. If you opt to get a zip file then you have to unzip the project into the desired local destination before continuing.
+First, you need to make a copy of the ``scikit-multiflow`` project. On the `project's github page <https://github.com/scikit-multiflow/scikit-multiflow>`_ you will find on the top-right side of the page a green button with the label "Clone or download". By clicking on it you will get two options: clone with SSH or download a zip. If you opt to get a zip file then you have to unzip the project into the desired local destination before continuing.
 
 In a terminal, navigate to the local path of the project.
 
