@@ -873,15 +873,17 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
 
-            if (second_best_suggestion.merit / best_suggestion.merit <
+            if (second_best_suggestion.merit /
+                (1 if best_suggestion.merit == 0 else best_suggestion.merit) <
                     1 - hoeffding_bound or hoeffding_bound <
                     self.tie_threshold):
                 should_split = True
             if self.remove_poor_atts is not None and self.remove_poor_atts \
-                    and not should_split:
+                    and not should_split and best_suggestion.merit > 0:
                 poor_atts = set()
                 best_ratio = second_best_suggestion.merit \
-                    / best_suggestion.merit
+                    / (1 if best_suggestion.merit == 0 else
+                       best_suggestion.merit)
 
                 # Add any poor attribute to set
                 # TODO reactivation procedure???
