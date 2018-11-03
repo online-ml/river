@@ -83,9 +83,9 @@ class ClassificationMeasurements(BaseObject):
         self.sample_count += weight
 
         if self.get_majority_class() == y_true:
-            self.majority_classifier = self.majority_classifier + weight
+            self.majority_classifier += weight
         if self.last_true_label == y_true:
-            self.correct_no_change = self.correct_no_change + weight
+            self.correct_no_change += weight
 
         self.last_true_label = y_true
         self.last_prediction = y_pred
@@ -359,19 +359,19 @@ class WindowClassificationMeasurements(BaseObject):
 
         # Verify if it's needed to decrease the majority_classifier count
         if (self.get_majority_class() == y_true) and (self.get_majority_class() is not None):
-            self.majority_classifier += 1
+            self.majority_classifier += weight
             self.majority_classifier_correction.add_element([-1])
         else:
             self.majority_classifier_correction.add_element([0])
 
         # Verify if it's needed to decrease the correct_no_change
         if (self.last_true_label == y_true) and (self.last_true_label is not None):
-            self.correct_no_change += 1
+            self.correct_no_change += weight
             self.correct_no_change_correction.add_element([-1])
         else:
             self.correct_no_change_correction.add_element([0])
 
-        self.confusion_matrix.update(true_y, pred)
+        self.confusion_matrix.update(true_y, pred, weight=weight)
 
         self.last_true_label = y_true
         self.last_prediction = y_pred
@@ -624,7 +624,7 @@ class MultiTargetClassificationMeasurements(BaseObject):
         self.n_targets = m
         equal = True
         for i in range(m):
-            self.confusion_matrix.update(i, y_true[i], y_pred[i])
+            self.confusion_matrix.update(i, y_true[i], y_pred[i], weight=weight)
             # update exact_match count
             if y_true[i] != y_pred[i]:
                 equal = False
@@ -641,7 +641,7 @@ class MultiTargetClassificationMeasurements(BaseObject):
         elif np.sum(y_true) == 0:
             self.j_sum += 1
 
-        self.sample_count += 1
+        self.sample_count += weight
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
@@ -815,7 +815,7 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         self.n_targets = m
 
         for i in range(m):
-            self.confusion_matrix.update(i, y_true[i], y_pred[i])
+            self.confusion_matrix.update(i, y_true[i], y_pred[i],weight=weight)
 
         old_true = self.true_labels.add_element(y_true)
         old_predict = self.predictions.add_element(y_pred)
@@ -948,7 +948,7 @@ class RegressionMeasurements(BaseObject):
 
         self.total_square_error += (y_true - y_pred) * (y_true - y_pred)
         self.average_error += np.absolute(y_true - y_pred)
-        self.sample_count += 1
+        self.sample_count += weight
 
     def get_mean_square_error(self):
         """ Computes the mean square error.
@@ -1020,7 +1020,7 @@ class WindowRegressionMeasurements(BaseObject):
         self.total_square_error_correction = FastBuffer(self.window_size)
         self.average_error_correction = FastBuffer(self.window_size)
 
-    def add_result(self, y_true, y_pred, weight=1.0):
+    def add_result(self, y_true, y_pred):
         """ Use the true value and the prediction to update the statistics.
 
         Parameters
@@ -1031,11 +1031,8 @@ class WindowRegressionMeasurements(BaseObject):
         y_pred: float
             The predicted value.
 
-        weight: float
-            Sample's weight
-
         """
-        check_weights(weight)
+
         self.last_true_label = y_true
         self.last_prediction = y_pred
         self.total_square_error += (y_true - y_pred) * (y_true - y_pred)
@@ -1152,7 +1149,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
         self.total_square_error += (y - prediction) ** 2
         self.average_error += np.absolute(y - prediction)
-        self.sample_count += 1
+        self.sample_count += weight
 
     def get_average_mean_square_error(self):
         """ Computes the average mean square error.
@@ -1244,7 +1241,7 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         self.total_square_error_correction = FastBuffer(self.window_size)
         self.average_error_correction = FastBuffer(self.window_size)
 
-    def add_result(self, y, prediction, weight=1.0):
+    def add_result(self, y, prediction):
         """ Use the true value and the prediction to update the statistics.
 
         Parameters
@@ -1258,11 +1255,8 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         prediction: float or list or np.ndarray
             The predicted value(s).
 
-        weight: float
-            Sample's weight
-
         """
-        check_weights(weight)
+
         self.last_true_label = y
         self.last_prediction = prediction
 
