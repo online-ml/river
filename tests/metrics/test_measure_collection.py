@@ -115,7 +115,7 @@ def test_multi_target_classification_measurements():
     expected_total_sum = 300
     assert expected_total_sum == measurements.get_total_sum()
 
-    expected_info = 'MultiTargetClassificationMeasurements: - sample_count: 100 - hamming_loss: 0.066667 - ' \
+    expected_info = 'MultiTargetClassificationMeasurements: - sample_count: 100.0 - hamming_loss: 0.066667 - ' \
                     'hamming_score: 0.933333 - exact_match: 0.850000 - j_index: 0.933333'
     assert expected_info == measurements.get_info()
 
@@ -185,7 +185,7 @@ def test_regression_measurements():
     expected_ae = 0.049999999999999906
     assert np.isclose(expected_ae, measurements.get_average_error())
 
-    expected_info = 'RegressionMeasurements: - sample_count: 100 - mean_square_error: 0.002500 ' \
+    expected_info = 'RegressionMeasurements: - sample_count: 100.0 - mean_square_error: 0.002500 ' \
                     '- mean_absolute_error: 0.050000'
     assert expected_info == measurements.get_info()
 
@@ -248,7 +248,7 @@ def test_multi_target_regression_measurements():
     assert np.isclose(expected_armse,
                       measurements.get_average_root_mean_square_error())
 
-    expected_info = 'MultiTargetRegressionMeasurements: sample_count: 100 - ' \
+    expected_info = 'MultiTargetRegressionMeasurements: sample_count: 100.0 - ' \
                     'average_mean_square_error: {} - ' \
                     'average_mean_absolute_error: {} - ' \
                     'average_root_mean_square_error: {}'.format(
