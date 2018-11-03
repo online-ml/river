@@ -327,7 +327,7 @@ class WindowClassificationMeasurements(BaseObject):
         self.majority_classifier_correction = FastBuffer(self.window_size)
         self.correct_no_change_correction = FastBuffer(self.window_size)
 
-    def add_result(self, y_true, y_pred):
+    def add_result(self, y_true, y_pred, weight=1.0):
         """ Updates its statistics with the results of a prediction.
         If needed it will remove samples from the observation window.
 
@@ -339,7 +339,10 @@ class WindowClassificationMeasurements(BaseObject):
         y_pred: int
             The classifier's prediction
 
+        weight: float
+            Sample's weight
         """
+        check_weights(weight)
         true_y = self._get_target_index(y_true, True)
         pred = self._get_target_index(y_pred, True)
         old_true = self.true_labels.add_element(np.array([y_true]))
@@ -592,7 +595,7 @@ class MultiTargetClassificationMeasurements(BaseObject):
         self.exact_match_count = 0
         self.j_sum = 0
 
-    def add_result(self, y_true, y_pred):
+    def add_result(self, y_true, y_pred, weight=1.0):
         """ Updates its statistics with the results of a prediction.
 
         Adds the result to the MOLConfusionMatrix and update exact_matches and
@@ -606,7 +609,11 @@ class MultiTargetClassificationMeasurements(BaseObject):
         y_pred: list or numpy.ndarray
             The classifier's prediction
 
+        weight: float
+            Sample's weight
+
         """
+        check_weights(weight)
         self.last_true_label = y_true
         self.last_prediction = y_pred
         m = 0
@@ -779,7 +786,7 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         self.true_labels = FastComplexBuffer(self.window_size, self.n_targets)
         self.predictions = FastComplexBuffer(self.window_size, self.n_targets)
 
-    def add_result(self, y_true, y_pred):
+    def add_result(self, y_true, y_pred, weight=1.0):
         """ Updates its statistics with the results of a prediction.
 
         Adds the result to the MOLConfusionMatrix, and updates the
@@ -793,7 +800,11 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         y_pred: list or numpy.ndarray
             The classifier's prediction
 
+        weight: float
+            Sample's weight
+
         """
+        check_weights(weight)
         self.last_true_label = y_true
         self.last_prediction = y_pred
         m = 0
@@ -916,7 +927,7 @@ class RegressionMeasurements(BaseObject):
         self.last_true_label = None
         self.last_prediction = None
 
-    def add_result(self, y_true, y_pred):
+    def add_result(self, y_true, y_pred, weight=1.0):
         """ Use the true value and the prediction to update the statistics.
 
         Parameters
@@ -927,7 +938,11 @@ class RegressionMeasurements(BaseObject):
         y_pred: float
             The predicted value.
 
+        weight: float
+            Sample's weight
+
         """
+        check_weights(weight)
         self.last_true_label = y_true
         self.last_prediction = y_pred
 
@@ -1005,7 +1020,7 @@ class WindowRegressionMeasurements(BaseObject):
         self.total_square_error_correction = FastBuffer(self.window_size)
         self.average_error_correction = FastBuffer(self.window_size)
 
-    def add_result(self, y_true, y_pred):
+    def add_result(self, y_true, y_pred, weight=1.0):
         """ Use the true value and the prediction to update the statistics.
 
         Parameters
@@ -1016,7 +1031,11 @@ class WindowRegressionMeasurements(BaseObject):
         y_pred: float
             The predicted value.
 
+        weight: float
+            Sample's weight
+
         """
+        check_weights(weight)
         self.last_true_label = y_true
         self.last_prediction = y_pred
         self.total_square_error += (y_true - y_pred) * (y_true - y_pred)
@@ -1102,7 +1121,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
         self.last_true_label = None
         self.last_prediction = None
 
-    def add_result(self, y, prediction):
+    def add_result(self, y, prediction, weight=1.0):
         """ Use the true value and the prediction to update the statistics.
 
         Parameters
@@ -1115,7 +1134,12 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
         prediction: float or list or np.ndarray
             The predicted value(s).
+
+        weight: float
+            Sample's weight
+
         """
+        check_weights(weight)
         self.last_true_label = y
         self.last_prediction = prediction
 
@@ -1220,7 +1244,7 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
         self.total_square_error_correction = FastBuffer(self.window_size)
         self.average_error_correction = FastBuffer(self.window_size)
 
-    def add_result(self, y, prediction):
+    def add_result(self, y, prediction, weight=1.0):
         """ Use the true value and the prediction to update the statistics.
 
         Parameters
@@ -1233,7 +1257,12 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
 
         prediction: float or list or np.ndarray
             The predicted value(s).
+
+        weight: float
+            Sample's weight
+
         """
+        check_weights(weight)
         self.last_true_label = y
         self.last_prediction = prediction
 
