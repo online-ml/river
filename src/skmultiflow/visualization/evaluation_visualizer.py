@@ -3,6 +3,7 @@ import time
 from skmultiflow.visualization.base_listener import BaseListener
 from matplotlib.rcsetup import cycler
 import matplotlib.pyplot as plt
+from matplotlib import get_backend
 from skmultiflow.utils import FastBuffer, constants
 
 
@@ -129,9 +130,11 @@ class EvaluationVisualizer(BaseListener):
             self._update_plots(sample_id, data_buffer)
 
             # To mitigate re-drawing overhead for fast models use frame counter (default = 5 frames).
-            # To avoid slow refresh rate in slow models use a time limit (default = 1 sec).
-            if (self._frame_cnt < 5) or (current_time - self._last_draw_timestamp > 1):
+            # To avoid slow refresh rate in slow models use a time limit (default = .1 sec).
+            if (self._frame_cnt == 5) or (current_time - self._last_draw_timestamp > 1):
                 plt.subplots_adjust(right=0.72, bottom=0.22)  # Adjust subplots to include metrics annotations
+                if get_backend() == 'nbAgg':
+                    self.fig.canvas.draw()    # Force draw in'notebook' backend
                 plt.pause(1e-9)
                 self._frame_cnt = 0
                 self._last_draw_timestamp = current_time
