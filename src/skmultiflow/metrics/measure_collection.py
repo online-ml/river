@@ -1149,7 +1149,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
         self.total_square_error += (y - prediction) ** 2
         self.average_error += np.absolute(y - prediction)
-        self.sample_count += weight
+        self.sample_count += 1
 
     def get_average_mean_square_error(self):
         """ Computes the average mean square error.
