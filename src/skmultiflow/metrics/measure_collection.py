@@ -641,7 +641,7 @@ class MultiTargetClassificationMeasurements(BaseObject):
         elif np.sum(y_true) == 0:
             self.j_sum += 1
 
-        self.sample_count += weight
+        self.sample_count += 1
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
