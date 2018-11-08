@@ -80,7 +80,7 @@ class ClassificationMeasurements(BaseObject):
         true_y = self._get_target_index(y_true, True)
         pred = self._get_target_index(y_pred, True)
         self.confusion_matrix.update(true_y, pred)
-        self.sample_count += weight
+        self.sample_count += 1
 
         if self.get_majority_class() == y_true:
             self.majority_classifier += weight
