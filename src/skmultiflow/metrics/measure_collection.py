@@ -948,7 +948,7 @@ class RegressionMeasurements(BaseObject):
 
         self.total_square_error += (y_true - y_pred) * (y_true - y_pred)
         self.average_error += np.absolute(y_true - y_pred)
-        self.sample_count += weight
+        self.sample_count += 1
 
     def get_mean_square_error(self):
         """ Computes the mean square error.
