@@ -595,7 +595,7 @@ class MultiTargetClassificationMeasurements(BaseObject):
         self.exact_match_count = 0
         self.j_sum = 0
 
-    def add_result(self, y_true, y_pred, weight=1.0):
+    def add_result(self, y_true, y_pred):
         """ Updates its statistics with the results of a prediction.
 
         Adds the result to the MOLConfusionMatrix and update exact_matches and
@@ -609,11 +609,8 @@ class MultiTargetClassificationMeasurements(BaseObject):
         y_pred: list or numpy.ndarray
             The classifier's prediction
 
-        weight: float
-            Sample's weight
-
         """
-        check_weights(weight)
+
         self.last_true_label = y_true
         self.last_prediction = y_pred
         m = 0
@@ -624,7 +621,7 @@ class MultiTargetClassificationMeasurements(BaseObject):
         self.n_targets = m
         equal = True
         for i in range(m):
-            self.confusion_matrix.update(i, y_true[i], y_pred[i], weight=weight)
+            self.confusion_matrix.update(i, y_true[i], y_pred[i])
             # update exact_match count
             if y_true[i] != y_pred[i]:
                 equal = False
@@ -786,7 +783,7 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         self.true_labels = FastComplexBuffer(self.window_size, self.n_targets)
         self.predictions = FastComplexBuffer(self.window_size, self.n_targets)
 
-    def add_result(self, y_true, y_pred, weight=1.0):
+    def add_result(self, y_true, y_pred):
         """ Updates its statistics with the results of a prediction.
 
         Adds the result to the MOLConfusionMatrix, and updates the
@@ -800,11 +797,8 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         y_pred: list or numpy.ndarray
             The classifier's prediction
 
-        weight: float
-            Sample's weight
-
         """
-        check_weights(weight)
+
         self.last_true_label = y_true
         self.last_prediction = y_pred
         m = 0
@@ -815,7 +809,7 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
         self.n_targets = m
 
         for i in range(m):
-            self.confusion_matrix.update(i, y_true[i], y_pred[i],weight=weight)
+            self.confusion_matrix.update(i, y_true[i], y_pred[i])
 
         old_true = self.true_labels.add_element(y_true)
         old_predict = self.predictions.add_element(y_pred)
@@ -927,7 +921,7 @@ class RegressionMeasurements(BaseObject):
         self.last_true_label = None
         self.last_prediction = None
 
-    def add_result(self, y_true, y_pred, weight=1.0):
+    def add_result(self, y_true, y_pred):
         """ Use the true value and the prediction to update the statistics.
 
         Parameters
@@ -938,11 +932,7 @@ class RegressionMeasurements(BaseObject):
         y_pred: float
             The predicted value.
 
-        weight: float
-            Sample's weight
-
         """
-        check_weights(weight)
         self.last_true_label = y_true
         self.last_prediction = y_pred
 
@@ -1118,7 +1108,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
         self.last_true_label = None
         self.last_prediction = None
 
-    def add_result(self, y, prediction, weight=1.0):
+    def add_result(self, y, prediction):
         """ Use the true value and the prediction to update the statistics.
 
         Parameters
@@ -1132,11 +1122,8 @@ class MultiTargetRegressionMeasurements(BaseObject):
         prediction: float or list or np.ndarray
             The predicted value(s).
 
-        weight: float
-            Sample's weight
-
         """
-        check_weights(weight)
+
         self.last_true_label = y
         self.last_prediction = prediction
 
