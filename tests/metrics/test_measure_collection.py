@@ -34,7 +34,7 @@ def test_classification_measurements():
     expected_kappa_t = (expected_acc - .97) / (1 - 0.97)
     assert expected_kappa_t == measurements.get_kappa_t()
 
-    expected_info = 'ClassificationMeasurements: - sample_count: 100.0 - accuracy: 0.900000 - kappa: 0.444444 ' \
+    expected_info = 'ClassificationMeasurements: - sample_count: 100 - accuracy: 0.900000 - kappa: 0.444444 ' \
                     '- kappa_t: -2.333333 - kappa_m: 0.888889 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
