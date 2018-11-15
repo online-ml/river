@@ -130,7 +130,7 @@ class EvaluationVisualizer(BaseListener):
             self._update_plots(sample_id, data_buffer)
 
             # To mitigate re-drawing overhead for fast models use frame counter (default = 5 frames).
-            # To avoid slow refresh rate in slow models use a time limit (default = .1 sec).
+            # To avoid slow refresh rate in slow models use a time limit (default = 1 sec).
             if (self._frame_cnt == 5) or (current_time - self._last_draw_timestamp > 1):
                 plt.subplots_adjust(right=0.72, bottom=0.22)  # Adjust subplots to include metrics annotations
                 if get_backend() == 'nbAgg':
