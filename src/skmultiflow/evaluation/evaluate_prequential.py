@@ -281,7 +281,7 @@ class EvaluatePrequential(StreamEvaluator):
 
         update_count = 0
         print('Evaluating...')
-        while ((self.global_sample_count < self.max_samples) & (self._end_time - self._start_time < self.max_time)
+        while ((self.global_sample_count < actual_max_samples) & (self._end_time - self._start_time < self.max_time)
                & (self.stream.has_more_samples())):
             try:
                 X, y = self.stream.next_sample(self.batch_size)
