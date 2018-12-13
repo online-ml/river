@@ -104,6 +104,9 @@ class LCHT(HoeffdingTree):
             raise ValueError('The number of labels must be specified')
         self._n_labels = n_labels
 
+    def partial_fit(self, X, y, classes=None, weight=None):
+        super().partial_fit(X, y, weight=weight)    # Override HT, infer the classes
+
     class LCActiveLearningNode(HoeffdingTree.ActiveLearningNode):
 
         def __init__(self, initial_class_observations):

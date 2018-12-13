@@ -392,12 +392,12 @@ class ConfusionMatrix(BaseObject):
         self.sample_count = 0
         pass
 
-    def _update(self, i, j):
-        self.confusion_matrix[i, j] += 1
+    def _update(self, i, j, weight=1.0):
+        self.confusion_matrix[i, j] += weight
         self.sample_count += 1
         return True
 
-    def update(self, i=None, j=None):
+    def update(self, i=None, j=None, weight=1.0):
         """ update
 
         Increases by one the count of occurrences in one of the ConfusionMatrix's
@@ -410,6 +410,9 @@ class ConfusionMatrix(BaseObject):
 
         j: int
             The index of the column to be updated.
+
+        weight: float
+            Sample's weight
 
         Returns
         -------
@@ -428,7 +431,7 @@ class ConfusionMatrix(BaseObject):
         else:
             m, n = self.confusion_matrix.shape
             if (i <= m) and (i >= 0) and (j <= n) and (j >= 0):
-                return self._update(i, j)
+                return self._update(i, j, weight)
 
             else:
                 max_value = np.max(i, j)
@@ -437,7 +440,7 @@ class ConfusionMatrix(BaseObject):
 
                 else:
                     self.reshape(max_value, max_value)
-                    return self._update(i, j)
+                    return self._update(i, j, weight)
 
     def remove(self, i=None, j=None):
         """ remove
@@ -644,11 +647,11 @@ class MOLConfusionMatrix(BaseObject):
         self.confusion_matrix = np.zeros((self.n_targets, 2, 2), dtype=self.dtype)
         pass
 
-    def _update(self, target, true, pred):
-        self.confusion_matrix[int(target), int(true), int(pred)] += 1
+    def _update(self, target, true, pred, weight=1.0):
+        self.confusion_matrix[int(target), int(true), int(pred)] += weight
         return True
 
-    def update(self, target=None, true=None, pred=None):
+    def update(self, target=None, true=None, pred=None, weight=1.0):
         """ update
 
         Increases by one the occurrence count in one of the matrix's positions.
@@ -665,8 +668,12 @@ class MOLConfusionMatrix(BaseObject):
         true: int
             A true label's index.
 
+        weight: float
+            Sample's weight
+
         pred: int
             A prediction's index
+
 
         Returns
         -------
@@ -679,7 +686,7 @@ class MOLConfusionMatrix(BaseObject):
         else:
             m, n, p = self.confusion_matrix.shape
             if (target < m) and (target >= 0) and (true < n) and (true >= 0) and (pred < p) and (pred >= 0):
-                return self._update(target, true, pred)
+                return self._update(target, true, pred, weight)
             else:
                 if (true > 1) or (true < 0) or (pred > 1) or (pred < 0):
                     return False
@@ -687,7 +694,7 @@ class MOLConfusionMatrix(BaseObject):
                     return False
                 else:
                     self.reshape(target+1, 2, 2)
-                    return self._update(target, true, pred)
+                    return self._update(target, true, pred, weight)
 
     def remove(self, target=None, true=None, pred=None):
         """ remove
