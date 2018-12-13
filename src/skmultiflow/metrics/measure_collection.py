@@ -80,12 +80,12 @@ class ClassificationMeasurements(BaseObject):
         true_y = self._get_target_index(y_true, True)
         pred = self._get_target_index(y_pred, True)
         self.confusion_matrix.update(true_y, pred)
-        self.sample_count += weight
+        self.sample_count += 1
 
         if self.get_majority_class() == y_true:
-            self.majority_classifier = self.majority_classifier + weight
+            self.majority_classifier += weight
         if self.last_true_label == y_true:
-            self.correct_no_change = self.correct_no_change + weight
+            self.correct_no_change += weight
 
         self.last_true_label = y_true
         self.last_prediction = y_pred
@@ -327,7 +327,7 @@ class WindowClassificationMeasurements(BaseObject):
         self.majority_classifier_correction = FastBuffer(self.window_size)
         self.correct_no_change_correction = FastBuffer(self.window_size)
 
-    def add_result(self, y_true, y_pred):
+    def add_result(self, y_true, y_pred, weight=1.0):
         """ Updates its statistics with the results of a prediction.
         If needed it will remove samples from the observation window.
 
@@ -339,7 +339,10 @@ class WindowClassificationMeasurements(BaseObject):
         y_pred: int
             The classifier's prediction
 
+        weight: float
+            Sample's weight
         """
+        check_weights(weight)
         true_y = self._get_target_index(y_true, True)
         pred = self._get_target_index(y_pred, True)
         old_true = self.true_labels.add_element(np.array([y_true]))
@@ -356,19 +359,19 @@ class WindowClassificationMeasurements(BaseObject):
 
         # Verify if it's needed to decrease the majority_classifier count
         if (self.get_majority_class() == y_true) and (self.get_majority_class() is not None):
-            self.majority_classifier += 1
+            self.majority_classifier += weight
             self.majority_classifier_correction.add_element([-1])
         else:
             self.majority_classifier_correction.add_element([0])
 
         # Verify if it's needed to decrease the correct_no_change
         if (self.last_true_label == y_true) and (self.last_true_label is not None):
-            self.correct_no_change += 1
+            self.correct_no_change += weight
             self.correct_no_change_correction.add_element([-1])
         else:
             self.correct_no_change_correction.add_element([0])
 
-        self.confusion_matrix.update(true_y, pred)
+        self.confusion_matrix.update(true_y, pred, weight=weight)
 
         self.last_true_label = y_true
         self.last_prediction = y_pred
@@ -607,6 +610,7 @@ class MultiTargetClassificationMeasurements(BaseObject):
             The classifier's prediction
 
         """
+
         self.last_true_label = y_true
         self.last_prediction = y_pred
         m = 0
@@ -794,6 +798,7 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
             The classifier's prediction
 
         """
+
         self.last_true_label = y_true
         self.last_prediction = y_pred
         m = 0
@@ -1017,6 +1022,7 @@ class WindowRegressionMeasurements(BaseObject):
             The predicted value.
 
         """
+
         self.last_true_label = y_true
         self.last_prediction = y_pred
         self.total_square_error += (y_true - y_pred) * (y_true - y_pred)
@@ -1115,7 +1121,9 @@ class MultiTargetRegressionMeasurements(BaseObject):
 
         prediction: float or list or np.ndarray
             The predicted value(s).
+
         """
+
         self.last_true_label = y
         self.last_prediction = prediction
 
@@ -1233,7 +1241,9 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
 
         prediction: float or list or np.ndarray
             The predicted value(s).
+
         """
+
         self.last_true_label = y
         self.last_prediction = prediction
 

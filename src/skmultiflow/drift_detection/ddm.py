@@ -88,10 +88,9 @@ class DDM(BaseDriftDetector):
         
         Parameters
         ----------
-        prediction: int. Either 0 or 1.
+        prediction: int (either 0 or 1)
             This parameter indicates whether the last sample analyzed was
-            correctly classified or not. 1 indicates a good classification 
-            and 0 a wrong classification.
+            correctly classified or not. 1 indicates an error (miss-classification).
         
         Notes
         -----
