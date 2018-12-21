@@ -5,7 +5,7 @@ class AttributeClassObserver(metaclass=ABCMeta):
     """Abstract class for observing the class data distribution for an attribute.
     This observer monitors the class distribution of a given attribute.
 
-    This class should not me instantiated, as none of its methods are implemented.
+    This class should not be instantiated, as none of its methods are implemented.
 
     Raises
     ------
