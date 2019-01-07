@@ -162,6 +162,19 @@ class HoeffdingTree(StreamModel):
             """
             return self._observed_class_distribution
 
+
+        def set_observed_class_distribution(self, observed_class_distribution):
+            """ Set the observed class distribution at the node.
+
+            Parameters
+            -------
+            dict (class_value, weight)
+                Class distribution at the node.
+
+            """
+            self._observed_class_distribution = observed_class_distribution
+
+
         def get_class_votes(self, X, ht):
             """ Get the votes per class for a given instance.
 
@@ -270,6 +283,20 @@ class HoeffdingTree(StreamModel):
         def num_children(self):
             """ Count the number of children for a node."""
             return len(self._children)
+
+
+        def get_split_test(self):
+            """ Retrieve the split test of this node.
+
+                        Returns
+                        -------
+                        InstanceConditionalTest
+                            Split test.
+
+                        """
+
+            return self._split_test
+
 
         def set_child(self, index, node):
             """ Set node as child.
@@ -526,7 +553,7 @@ class HoeffdingTree(StreamModel):
             return self._weight_seen_at_last_split_evaluation
 
         def set_weight_seen_at_last_split_evaluation(self, weight):
-            """ Retrieve the weight seen at last split evaluation.
+            """ Set the weight seen at last split evaluation.
 
             Parameters
             ----------
@@ -577,6 +604,30 @@ class HoeffdingTree(StreamModel):
             """
             if att_idx in self._attribute_observers:
                 self._attribute_observers[att_idx] = AttributeClassObserverNull()
+
+
+        def get_attribute_observers(self):
+            """ Get attribute observers at this node.
+
+                        Returns
+                        -------
+                        dict (attribute id, attribute observer object)
+                            Attribute observers of this node.
+
+                        """
+            return self._attribute_observers
+
+
+        def set_attribute_observers(self,attribute_observers):
+            """ set attribute observers.
+
+                        Parameters
+                        ----------
+                        attribute_observers: dict (attribute id, attribute observer object)
+                            new attribute observers.
+
+                        """
+            self._attribute_observers = attribute_observers
 
     class LearningNodeNB(ActiveLearningNode):
         """ Learning node that uses Naive Bayes models.
