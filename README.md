@@ -51,11 +51,13 @@ in beta it can display plots with some caveats. If you use JupyterLab then the c
 If you want to cite `scikit-multiflow` in a publication, please use the following Bibtex entry:
 ```bibtex
 @article{skmultiflow,
-    author  = {Montiel, Jacob and Read, Jesse and Bifet, Albert and Abdessalem, Talel },
-    title   = {{Scikit-Multiflow: A Multi-output Streaming Framework}},
-    url     = {https://github.com/scikit-multiflow/scikit-multiflow},
-    journal = {CoRR},
-    volume  = {abs/1807.04662},
-    year    = {2018}
+  author  = {Jacob Montiel and Jesse Read and Albert Bifet and Talel Abdessalem},
+  title   = {Scikit-Multiflow: A Multi-output Streaming Framework },
+  journal = {Journal of Machine Learning Research},
+  year    = {2018},
+  volume  = {19},
+  number  = {72},
+  pages   = {1-5},
+  url     = {http://jmlr.org/papers/v19/18-251.html}
 }
 ```
