@@ -1,5 +1,7 @@
 from operator import attrgetter
 
+import numpy as np
+
 from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
 from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.trees.hoeffding_adaptive_tree import HAT
@@ -8,7 +10,7 @@ from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.utils import do_naive_bayes_prediction
-from skmultiflow.utils.utils import get_dimensions
+from skmultiflow.utils.utils import get_dimensions, calculate_object_size
 
 Node = HoeffdingTree.Node
 SplitNode = HoeffdingTree.SplitNode
@@ -24,13 +26,15 @@ NAIVE_BAYES_ADAPTIVE = 'nba'
 error_width_threshold = 300
 
 
-
-# Todo : Add memory management
 class HoeffdingAnytimeTree(HoeffdingTree):
     """ Hoeffding Anytime Tree or EVDT.
 
     Parameters
     ----------
+    max_byte_size: int (default=33554432)
+        Maximum memory consumed by the tree.
+    memory_estimate_period: int (default=1000000)
+        Number of instances between memory consumption checks.
     grace_period: int (default=200)
         Number of instances a leaf should observe between split attempts.
     min_samples_reevaluate: int (default=20)
@@ -41,8 +45,12 @@ class HoeffdingAnytimeTree(HoeffdingTree):
         | 'info_gain' - Information Gain
     split_confidence: float (default=0.0000001)
         Allowed error in split decision, a value closer to 0 takes longer to decide.
+    tie_threshold: float (default=0.05)
+        Threshold below which a split will be forced to break ties.
     binary_split: boolean (default=False)
         If True, only allow binary splits.
+    stop_mem_management: boolean (default=False)
+        If True, stop growing as soon as memory limit is hit.
     leaf_prediction: string (default='nba')
         | Prediction mechanism used at leafs.
         | 'mc' - Majority Class
@@ -147,6 +155,81 @@ class HoeffdingAnytimeTree(HoeffdingTree):
 
             """
             return np.array([split_node_cnt, 1])
+
+    class AnyTimeInactiveLearningNode(InactiveLearningNode):
+        """ Inactive learning node that does not grow.
+
+        Parameters
+        ----------
+        initial_class_observations: dict (class_value, weight) or None
+            Initial class observations
+
+        """
+
+        def __init__(self, initial_class_observations=None):
+            """ InactiveLearningNode class constructor. """
+            super().__init__(initial_class_observations)
+
+        # Override
+        def get_best_split_suggestions(self, criterion, ht):
+            """ Find possible split candidates without taking into account the the null split.
+
+            Parameters
+            ----------
+            criterion: SplitCriterion
+                The splitting criterion to be used.
+            ht: HoeffdingTree
+                Hoeffding Tree.
+
+            Returns
+            -------
+            list
+                Split candidates.
+
+            """
+            best_suggestions = []
+            pre_split_dist = self._observed_class_distribution
+
+            for i, obs in self._attribute_observers.items():
+                best_suggestion = obs.get_best_evaluated_split_suggestion(criterion, pre_split_dist,
+                                                                          i, ht.binary_split)
+                if best_suggestion is not None:
+                    best_suggestions.append(best_suggestion)
+
+            return best_suggestions
+
+        def get_null_split(self, criterion):
+            """ Compute the null split (don't split).
+
+            Parameters
+            ----------
+            criterion: SplitCriterion
+                The splitting criterion to be used.
+
+
+            Returns
+            -------
+            list
+                Split candidates.
+
+            """
+
+            pre_split_dist = self._observed_class_distribution
+
+            null_split = AttributeSplitSuggestion(None, [{}],
+                                                  criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
+            return null_split
+
+        def count_nodes(self):
+            """ Calculate the number of split node and leaf starting from this node as a root.
+
+            Returns
+            -------
+            list[int int]
+                [number of split node, number of leaf node].
+
+            """
+            return np.array([0, 1])
 
     class AnyTimeLearningNodeNB(AnyTimeActiveLearningNode):
 
@@ -402,7 +485,7 @@ class HoeffdingAnytimeTree(HoeffdingTree):
             """ Update weight seen at the last split in the reevaluation. """
             self._weight_seen_at_last_split_reevaluation = sum(self._observed_class_distribution.values())
 
-        def count_nodes(self, split_node_cnt=0):
+        def count_nodes(self):
             """ Calculate the number of split node and leaf starting from this node as a root.
 
             Returns
@@ -417,8 +500,8 @@ class HoeffdingAnytimeTree(HoeffdingTree):
             for branch_idx in range(self.num_children()):
                 child = self.get_child(branch_idx)
                 if child is not None:
-                    count += child.count_nodes(split_node_cnt)
-                    split_node_cnt = 0
+                    count += child.count_nodes()
+
             return count
 
     # Override _new_learning_node
@@ -443,35 +526,35 @@ class HoeffdingAnytimeTree(HoeffdingTree):
     # =============================================
 
     def __init__(self,
+                 max_byte_size=33554432,
+                 memory_estimate_period=1000000,
                  grace_period=200,
                  min_samples_reevaluate=20,
                  split_criterion='info_gain',
                  split_confidence=0.0000001,
                  tie_threshold=0.05,
                  binary_split=False,
+                 stop_mem_management=False,
                  leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None
                  ):
 
-        super(HoeffdingAnytimeTree, self).__init__(max_byte_size=33554432,
-                                                   memory_estimate_period=1000000,
+        super(HoeffdingAnytimeTree, self).__init__(max_byte_size=max_byte_size,
+                                                   memory_estimate_period=memory_estimate_period,
                                                    grace_period=grace_period,
                                                    split_criterion=split_criterion,
                                                    split_confidence=split_confidence,
                                                    tie_threshold=tie_threshold,
                                                    binary_split=binary_split,
-                                                   stop_mem_management=False,
+                                                   stop_mem_management=stop_mem_management,
                                                    remove_poor_atts=False,
                                                    no_preprune=False,
                                                    leaf_prediction=leaf_prediction,
                                                    nb_threshold=nb_threshold,
                                                    nominal_attributes=nominal_attributes,
                                                    )
-        self.alternate_trees_cnt = 0
-        self.pruned_alternate_trees_cnt = 0
-        self.switch_alternate_trees_cnt = 0
-        self._tree_root = None
+
         self.min_samples_reevaluate = min_samples_reevaluate
 
     # Override partial_fit
@@ -588,22 +671,26 @@ class HoeffdingAnytimeTree(HoeffdingTree):
             # get new statics
             new_weight = node.get_weight_seen()
 
+            stop_flag = False
+
             if (new_weight - old_weight) >= self.min_samples_reevaluate:
                 # Reevaluate the best split
-                self._reevaluate_best_split(node, parent, branch_index)
+                stop_flag = self._reevaluate_best_split(node, parent, branch_index)
 
+            if not stop_flag:
                 # Move in depth
-            child_index = node.instance_child_index(X)
-            if child_index >= 0:
-                child = node.get_child(child_index)
-                if child is not None:
+                child_index = node.instance_child_index(X)
+                if child_index >= 0:
+                    child = node.get_child(child_index)
+                    if child is not None:
 
-                    return self._process_nodes(X, y, weight, child, node, child_index)
-                else:
-                    # Todo : raise error for nominal attribute
-                    # This possible if there is a problem with child_index : it returns float in case of nominal attribute
-                    pass
-        else:
+                        self._process_nodes(X, y, weight, child, node, child_index)
+                    else:
+                        # Todo : raise error for nominal attribute
+                        # This possible if there is a problem with child_index, it returns float in case of
+                        # nominal attribute
+                        pass
+        elif self._growth_allowed and isinstance(node, self.AnyTimeActiveLearningNode):
             weight_seen = node.get_weight_seen()
             weight_diff = weight_seen - node.get_weight_seen_at_last_split_evaluation()
             if weight_diff >= self.grace_period:
@@ -646,7 +733,6 @@ class HoeffdingAnytimeTree(HoeffdingTree):
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self.estimate_model_byte_size()
 
-
     def _reevaluate_best_split(self, node: AnyTimeSplitNode, parent, branch_index):
         """ Reevaluate the best split for a node.
 
@@ -658,11 +744,13 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                     3.1 Kill subtree and replace it with a leaf.
                     3.2 Update the tree.
                     3.3 Update tree's metrics
-                4. If the difference between the top split candidate and the current split is larger than the Hoeffding bound:
+                4. If the difference between the top split candidate and the current split is larger than
+                the Hoeffding bound:
                    4.1 Create a new split node.
                    4.2 Update the tree.
                    4.3 Update tree's metrics
-
+                5. If the top split candidate is the current split but with different split test:
+                   5.1 Update the split test of the current split.
 
                 Parameters
                 ----------
@@ -672,9 +760,13 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                     The node's parent.
                 branch_index: int
                     Parent node's branch index.
-
+                Returns
+                -------
+                boolean
+                    flag to stop moving in depth.
                 """
 
+        stop_flag = False
         if not node.observed_class_distribution_is_pure():
             if self._split_criterion == GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
@@ -700,6 +792,10 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                 # Get x_null
                 x_null = node.get_null_split(split_criterion)
 
+                # Force x_null merit to get 0 instead of -infinity
+                if x_null.merit == -np.inf:
+                    x_null.merit = 0.0
+
                 #  Compute Hoeffding bound
                 hoeffding_bound = self.compute_hoeffding_bound(
                     split_criterion.get_range_of_merit(node.get_observed_class_distribution()), self.split_confidence,
@@ -712,16 +808,24 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                     best_split = self._kill_subtree(node)
 
                     # update HATT
-                    parent.set_child(branch_index, best_split)
+                    if parent is None:
+                        # Root case : replace the root node by a new split node
+                        self._tree_root = best_split
+                    else:
+                        parent.set_child(branch_index, best_split)
 
                     deleted_node_cnt = node.count_nodes()
 
                     self._active_leaf_node_cnt += 1
                     self._active_leaf_node_cnt -= deleted_node_cnt[1]
                     self._decision_node_cnt -= deleted_node_cnt[0]
+                    stop_flag = True
 
+                    # Manage memory
+                    self.enforce_tracker_limit()
 
-                elif (x_best.merit - x_current.merit > hoeffding_bound) and (id_current != id_best):
+                elif (x_best.merit - x_current.merit > hoeffding_bound or hoeffding_bound < self.tie_threshold) and (
+                        id_current != id_best):
 
                     # Create a new branch
                     new_split = self.new_split_node(x_best.split_test,
@@ -730,18 +834,34 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                     # Update weights in new_split
                     new_split.update_weight_seen_at_last_split_reevaluation()
 
-                    # Update HAAT
+                    # Update HATT
                     for i in range(x_best.num_splits()):
                         new_child = self._new_learning_node(x_best.resulting_class_distribution_from_split(i))
                         new_split.set_child(i, new_child)
-                    self._active_leaf_node_cnt -= 1
+
+                    deleted_node_cnt = node.count_nodes()
+
+                    self._active_leaf_node_cnt -= deleted_node_cnt[1]
+                    self._decision_node_cnt -= deleted_node_cnt[0]
                     self._decision_node_cnt += 1
                     self._active_leaf_node_cnt += x_best.num_splits()
+
                     if parent is None:
                         # Root case : replace the root node by a new split node
                         self._tree_root = new_split
                     else:
                         parent.set_child(branch_index, new_split)
+
+                    stop_flag = True
+
+                    # Manage memory
+                    self.enforce_tracker_limit()
+
+                elif (x_best.merit - x_current.merit > hoeffding_bound or hoeffding_bound < self.tie_threshold) and (
+                        id_current == id_best):
+                    node._split_test = x_best.split_test
+
+        return stop_flag
 
     #  Override _attempt_to_split
     def _attempt_to_split(self, node, parent, branch_index):
@@ -787,11 +907,16 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                 # Get x_null
                 x_null = node.get_null_split(split_criterion)
 
+                # Force x_null merit to get 0 instead of -infinity
+                if x_null.merit == -np.inf:
+                    x_null.merit = 0.0
+
                 hoeffding_bound = self.compute_hoeffding_bound(
                     split_criterion.get_range_of_merit(node.get_observed_class_distribution()), self.split_confidence,
                     node.get_weight_seen())
 
-                if x_best.merit - x_null.merit > hoeffding_bound:
+                if x_best.merit - x_null.merit > hoeffding_bound or hoeffding_bound < self.tie_threshold:
+
                     # Split
                     new_split = self.new_split_node(x_best.split_test,
                                                     node.get_observed_class_distribution(),
@@ -813,6 +938,9 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                     else:
                         parent.set_child(branch_index, new_split)
 
+                    # Manage memory
+                    self.enforce_tracker_limit()
+
     def _kill_subtree(self, node: AnyTimeSplitNode):
         """ Kill subtree that starts from node.
 
@@ -833,6 +961,130 @@ class HoeffdingAnytimeTree(HoeffdingTree):
         leaf.set_attribute_observers(node.get_attribute_observers())
 
         return leaf
+
+    # Override enforce_tracker_limit
+    def enforce_tracker_limit(self):
+        """ Track the size of the tree and disable/enable nodes if required."""
+        byte_size = (self._active_leaf_byte_size_estimate
+                     + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate) \
+                    * self._byte_size_estimate_overhead_fraction
+
+        if self._inactive_leaf_node_cnt > 0 or byte_size > self.max_byte_size:
+            if self.stop_mem_management:
+                self._growth_allowed = False
+                return
+        learning_nodes = self._find_learning_nodes()
+        learning_nodes.sort(key=lambda n: n.node.calculate_promise())
+        max_active = 0
+        while max_active < len(learning_nodes):
+            max_active += 1
+            if ((max_active * self._active_leaf_byte_size_estimate + (len(learning_nodes) - max_active)
+                 * self._inactive_leaf_byte_size_estimate) * self._byte_size_estimate_overhead_fraction) \
+                    > self.max_byte_size:
+                max_active -= 1
+                break
+        cutoff = len(learning_nodes) - max_active
+        for i in range(cutoff):
+            if isinstance(learning_nodes[i].node, self.AnyTimeActiveLearningNode):
+                self._deactivate_learning_node(learning_nodes[i].node,
+                                               learning_nodes[i].parent,
+                                               learning_nodes[i].parent_branch)
+        for i in range(cutoff, len(learning_nodes)):
+            if isinstance(learning_nodes[i].node, self.AnyTimeInactiveLearningNode):
+                self._activate_learning_node(learning_nodes[i].node,
+                                             learning_nodes[i].parent,
+                                             learning_nodes[i].parent_branch)
+
+    # Override _estimate_model_byte_size
+    def estimate_model_byte_size(self):
+        """ Calculate the size of the model and trigger tracker function if the actual model size exceeds the max size
+        in the configuration."""
+        learning_nodes = self._find_learning_nodes()
+        total_active_size = 0
+        total_inactive_size = 0
+        for found_node in learning_nodes:
+            if isinstance(found_node.node, self.AnyTimeActiveLearningNode):
+                total_active_size += calculate_object_size(found_node.node)
+            else:
+                total_inactive_size += calculate_object_size(found_node.node)
+        if total_active_size > 0:
+            self._active_leaf_byte_size_estimate = total_active_size / self._active_leaf_node_cnt
+        if total_inactive_size > 0:
+            self._inactive_leaf_byte_size_estimate = total_inactive_size / self._inactive_leaf_node_cnt
+        actual_model_size = calculate_object_size(self)
+        estimated_model_size = (self._active_leaf_node_cnt * self._active_leaf_byte_size_estimate
+                                + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate)
+        self._byte_size_estimate_overhead_fraction = actual_model_size / estimated_model_size
+        if actual_model_size > self.max_byte_size:
+            self.enforce_tracker_limit()
+
+    #  Override deactivate_all_leaves
+    def deactivate_all_leaves(self):
+        """ Deactivate all leaves. """
+        learning_nodes = self._find_learning_nodes()
+        for i in range(len(learning_nodes)):
+            if isinstance(learning_nodes[i], self.AnyTimeActiveLearningNode):
+                self._deactivate_learning_node(learning_nodes[i].node,
+                                               learning_nodes[i].parent,
+                                               learning_nodes[i].parent_branch)
+
+    # Override _deactivate_learning_node
+    def _deactivate_learning_node(self, to_deactivate: AnyTimeActiveLearningNode, parent: AnyTimeSplitNode,
+                                  parent_branch: int):
+        """ Deactivate a learning node.
+
+        Parameters
+        ----------
+        to_deactivate: AnyTimeActiveLearningNode
+            The node to deactivate.
+        parent:  AnyTimeSplitNode
+            The node's parent.
+        parent_branch: int
+            Parent node's branch index.
+
+        """
+        new_leaf = self.AnyTimeInactiveLearningNode(to_deactivate.get_observed_class_distribution())
+        if parent is None:
+            self._tree_root = new_leaf
+        else:
+            parent.set_child(parent_branch, new_leaf)
+        self._active_leaf_node_cnt -= 1
+        self._inactive_leaf_node_cnt += 1
+
+    # Override _activate_learning_node
+    def _activate_learning_node(self, to_activate: AnyTimeInactiveLearningNode, parent: AnyTimeSplitNode,
+                                parent_branch: int):
+        """ Activate a learning node.
+
+        Parameters
+        ----------
+        to_activate: AnyTimeInactiveLearningNode
+            The node to activate.
+        parent: AnyTimeSplitNode
+            The node's parent.
+        parent_branch: int
+            Parent node's branch index.
+
+        """
+        new_leaf = self._new_learning_node(to_activate.get_observed_class_distribution())
+        if parent is None:
+            self._tree_root = new_leaf
+        else:
+            parent.set_child(parent_branch, new_leaf)
+        self._active_leaf_node_cnt += 1
+        self._inactive_leaf_node_cnt -= 1
+
+    # Override measure_byte_size
+    def measure_byte_size(self):
+        """ Calculate the size of the tree.
+
+        Returns
+        -------
+        int
+            Size of the tree in bytes.
+
+        """
+        return calculate_object_size(self)
 
     # Override rest
     def reset(self):
@@ -874,11 +1126,15 @@ class HoeffdingAnytimeTree(HoeffdingTree):
             Configuration for the Hoeffding Tree.
         """
         description = type(self).__name__ + ': '
+        description += 'max_byte_size: {} - '.format(self.max_byte_size)
+        description += 'memory_estimate_period: {} - '.format(self.memory_estimate_period)
         description += 'grace_period: {} - '.format(self.grace_period)
         description += 'min_samples_reevaluate: {} - '.format(self.min_samples_reevaluate)
         description += 'split_criterion: {} - '.format(self.split_criterion)
         description += 'split_confidence: {} - '.format(self.split_confidence)
+        description += 'tie_threshold: {} - '.format(self.tie_threshold)
         description += 'binary_split: {} - '.format(self.binary_split)
+        description += 'stop_mem_management: {} - '.format(self.stop_mem_management)
         description += 'leaf_prediction: {} - '.format(self.leaf_prediction)
         description += 'nb_threshold: {} - '.format(self.nb_threshold)
         description += 'nominal_attributes: {} - '.format(self.nominal_attributes)
