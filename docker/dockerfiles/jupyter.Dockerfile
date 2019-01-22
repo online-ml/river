@@ -1,29 +1,9 @@
-
-
-
 FROM ubuntu:18.04
-#LABEL maintainer="Walid Gara"
+
 RUN mkdir /app
 
 WORKDIR /app
 
-# Install some dependencies
-#RUN apt-get update && apt-get install -y --no-install-recommends \
-#        build-essential \
-#        curl \
-#        libfreetype6-dev \
-#        libhdf5-serial-dev \
-#        libpng-dev \
-#        libzmq3-dev \
-#        pkg-config \
-#        python \
-#        python-dev \
-#        rsync \
-#        software-properties-common \
-#        unzip \
-#        && \
-#    apt-get clean && \
-#    rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
