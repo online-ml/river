@@ -70,9 +70,9 @@ In this example, we will use a data stream to train a :class:`HoeffdingTree` cla
 .. code-block:: python
    :linenos:
 
-   from skmultiflow.data.generators.waveform_generator import WaveformGenerator
-   from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
-   from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+   from skmultiflow.data import WaveformGenerator
+   from skmultiflow.trees import HoeffdingTree
+   from skmultiflow.evaluation import EvaluatePrequential
 
    # 1. Create a stream
    stream = WaveformGenerator()
@@ -181,9 +181,9 @@ And data related to performance during the evaluation:
 .. code-block:: python
    :linenos:
 
-   from skmultiflow.data.file_stream import FileStream
-   from skmultiflow.classification.trees.hoeffding_tree import HoeffdingTree
-   from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+   from skmultiflow.data import FileStream
+   from skmultiflow.trees import HoeffdingTree
+   from skmultiflow.evaluation import EvaluatePrequential
 
    # 1. Create a stream
    stream = FileStream("../datasets/elec.csv")
