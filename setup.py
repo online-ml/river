@@ -11,6 +11,7 @@ DESCRIPTION = 'A multi-output/multi-label and stream data mining framework.'
 MAINTAINER = 'Jacob Montiel'
 MAINTAINER_EMAIL = ''
 URL = 'https://scikit-multiflow.github.io/'
+DOWNLOAD_URL = 'https://pypi.org/project/scikit-multiflow/#files'
 LICENSE = '3-Clause BSD'
 VERSION = '0.1.0'
 
