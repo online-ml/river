@@ -11,12 +11,10 @@ before_install:
   - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
   - source activate testenv
 
-install:
-  - python setup.py -q install
-
 jobs:
   include:
     - stage: test
+      install: python setup.py -q install
       script: pytest
 
 stages:
