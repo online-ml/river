@@ -1,7 +1,11 @@
 import abc
 
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+    PANDAS_INSTALLED = True
+except ImportError:
+    PANDAS_INSTALLED = False
 from sklearn import base
 from sklearn import utils
 
@@ -9,9 +13,11 @@ from . import stream
 
 
 STREAM_METHODS = {
-    np.ndarray: stream.iter_numpy,
-    pd.DataFrame: stream.iter_pandas
+    np.ndarray: stream.iter_numpy
 }
+
+if PANDAS_INSTALLED:
+    STREAM_METHODS[pd.DataFrame] = stream.iter_pandas
 
 
 class Regressor(base.BaseEstimator, base.RegressorMixin):
