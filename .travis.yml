@@ -9,8 +9,7 @@ before_install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda update --yes conda
-  - echo $TRAVIS_PYTHON_VERSION
-  - conda create -n testenv python=$TRAVIS_PYTHON_VERSION
+  - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
   - source activate testenv
 
 jobs:
