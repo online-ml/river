@@ -9,7 +9,8 @@ before_install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda update --yes conda
-  - conda env create -n testenv python=$TRAVIS_PYTHON_VERSION
+  - echo $TRAVIS_PYTHON_VERSION
+  - conda env create --name testenv python=$TRAVIS_PYTHON_VERSION
   - source activate testenv
 
 jobs:
@@ -20,4 +21,4 @@ jobs:
 stages:
   - test
   - name: pypi
-    if: branch = master
+    if: tag IS present
