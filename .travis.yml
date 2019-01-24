@@ -10,7 +10,9 @@ before_install:
   - conda update --yes conda
   - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
   - source activate testenv
-  - pip install -e .
+
+install:
+  - python setup.py -q install
 
 jobs:
   include:
