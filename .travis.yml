@@ -1,0 +1,23 @@
+language: python
+
+python:
+  - 3.5
+  - 3.6
+
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda update --yes conda
+  - conda env create -n testenv python=$TRAVIS_PYTHON_VERSION
+  - source activate testenv
+
+jobs:
+  include:
+    - stage: test
+      script: pytest
+
+stages:
+  - test
+  - name: pypi
+    if: branch = master
