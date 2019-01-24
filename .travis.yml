@@ -1,8 +1,8 @@
 language: python
 
 python:
-  - 3.5
   - 3.6
+  - 3.7
 
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -11,6 +11,9 @@ before_install:
   - conda update --yes conda
   - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
   - source activate testenv
+
+instal:
+  - pip install -e .
 
 jobs:
   include:
