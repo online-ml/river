@@ -35,11 +35,11 @@ jobs:
     after_success:
     - git config --global user.email "maxhalford25@gmail.com"
     - git config --global user.name "MaxHalford"
-    - git add docs/creme/*
-    - git commit --message "Travis build: $TRAVIS_BUILD_NUMBER"
+    - git checkout -b gh-pages
+    - git add --force docs/creme/*
+    - git commit --message "Travis build: ${TRAVIS_BUILD_NUMBER}"
     - git remote add origin-pages https://${GH_TOKEN}@github.com/creme-ml/creme.github.io.git > /dev/null 2>&1
-    - git push
-    - rm -r docs/
+    - git push --set-upstream master gh-pages
     on:
       branch: master
 
