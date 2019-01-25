@@ -17,6 +17,7 @@ jobs:
         - source activate testenv
       install:
         - conda install --name testenv --yes --file requirements.txt
+        - conda install --name testenv --yes coveralls
         - conda install --name testenv --yes pytest
       script:
         - pytest --cov=creme
