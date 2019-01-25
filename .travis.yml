@@ -7,21 +7,23 @@ python:
 
 jobs:
   include:
-    - stage: test
-      before_install:
-        - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-        - bash miniconda.sh -b -p $HOME/miniconda
-        - export PATH="$HOME/miniconda/bin:$PATH"
-        - conda update --yes conda
-        - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
-        - source activate testenv
-      install:
-        - conda install --name testenv --yes --file requirements.txt
-        - conda install --name testenv --yes coveralls pytest pytest-cov
-      script:
-        - pytest --cov=creme
-      after_success:
-        - coveralls
-
-stages:
-  - test
+  - stage: test
+    before_install:
+    - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
+    - conda update --yes conda
+    - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
+    - source activate testenv
+    install: conda install --name testenv --yes --file requirements.txt coveralls pytest pytest-cov
+    script: pytest --cov=creme
+    after_success: coveralls
+  - stage: pypi
+    deploy:
+      provider: pypi
+      user: MaxHalford
+      password:
+        secure: P7PR6pLKE6uoN6cMEENkXZmKnsiFG07Jj8Aw5GprslhlSVidPJNn6Ejl+9pleAzQpKByyF9tdpMIC0uRLaH4lnYp5xkLaXhYU/qzWxqiEPxDREFgYf2wl0C+N6fiBAXjFLDr5Br8RN1ZLuRYwxuxxqTYLg4SmhoaJgayO/SOHps1K4QHNPnFaSc4uMUb/9g2DMEvHOlWj+cjzzxOGbxENDdnGNpgYQCLKuMnausM8uNckv3MU324Z9bVwI+8IqfBAIE47oasmpfw7RKCpaOEAEFjo57JUq3X2Dyk+XKyHrSQchh1LMTPAnf3E446v60xDV1QdrvIyfi7N8id2aEgCf9OSN3zI4xdj17OKg4DCejTks8KMc6UIELqtcohryyMh7XuS0vF6NSJs0PoA7D8R5IBCpf9x81b0T8pFKadFaRifKOd5xCZ9s64zagl5sg22f9UXz5ielHJSG12OXZZQSAQe2M6AeLPxYDoW0JFzfsgfkLI76LoU7qjs2Xlo3oD7VLl9c0G/8ZLN0xy6wq53nAjtAwVEL5yk36JW4rCUl+/XHVyo4Gbmszn8s37fZwYFd2tPRnvJQIkCIlDt0L3pUt0ibxWGAmAJlQpJ0io7/YwRKUSlHFVpyYKFGTmum1nYhAWAYHGjC9AbkTBHRA/A44i7+jZC+IzzRkJ6+1qbfU=
+      skip_existing: true
+      on:
+        tags: true
