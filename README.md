@@ -7,6 +7,10 @@
   <a href="https://travis-ci.org/MaxHalford/creme">
     <img src="https://img.shields.io/travis/MaxHalford/creme/master.svg?style=flat-square" alt="build_status" />
   </a>
+  <!-- PyPI -->
+  <a href="https://pypi.org/project/creme">
+    <img src="https://shields.mitmproxy.org/pypi/v/creme.svg?style=flat-square" alt="pypi" />
+  </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license"/>
@@ -22,7 +26,7 @@
 - Documentation
 - Example notebooks
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
-- Releases
+- [Releases](https://pypi.org/project/creme/#history)
 
 ## Installation
 
