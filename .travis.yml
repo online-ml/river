@@ -35,7 +35,6 @@ jobs:
       - pip install pdoc
     script: pdoc creme --html --html-dir docs --html-no-source
     after_success:
-      - ls docs/
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
       - git config --global push.default matching
@@ -45,7 +44,7 @@ jobs:
       - cp -r ../docs/creme/* .
       - git add -A
       - git commit --allow-empty -m $TRAVIS_BUILD_NUMBER
-      - git push
+      - git push --set-upstream origin master
     on:
       branch: master
 
