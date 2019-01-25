@@ -1,6 +1,19 @@
 <div align="center">
-  <img height="260px" src="https://docs.google.com/drawings/d/e/2PACX-1vSl80T4MnWRsPX3KvlB2kn6zVdHdUleG_w2zBiLS7RxLGAHxiSYTnw3LZtXh__YMv6KcIOYOvkSt9PB/pub?w=841&h=350" alt="creme_logo"/>
+  <img height="240px" src="https://docs.google.com/drawings/d/e/2PACX-1vSl80T4MnWRsPX3KvlB2kn6zVdHdUleG_w2zBiLS7RxLGAHxiSYTnw3LZtXh__YMv6KcIOYOvkSt9PB/pub?w=841&h=350" alt="creme_logo"/>
 </div>
+
+<div align="center">
+  <!-- Build status -->
+  <a href="https://travis-ci.org/MaxHalford/creme">
+    <img src="https://img.shields.io/travis/MaxHalford/creme/master.svg?style=flat-square" alt="build_status" />
+  </a>
+  <!-- License -->
+  <a href="https://opensource.org/licenses/BSD-3-Clause">
+    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license"/>
+  </a>
+</div>
+
+<br/>
 
 `creme` is a library for in**creme**ntal learning. Incremental learning is a machine learning regime where the observations are made available one by one. It is also known as online learning, iterative learning, or sequential learning. This is in contrast to batch learning where all the data is processed at once. Incremental learning is desirable when the data is too big to fit in memory, or simply when it isn't available all at once. `creme`'s API is heavily inspired from that of [scikit-learn](https://scikit-learn.org/stable/), enough so that users who are familiar with scikit-learn should feel right at home.
 
