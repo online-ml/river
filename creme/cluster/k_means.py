@@ -30,6 +30,7 @@ class KMeans(base.Clusterer):
     In the following example the cluster assignments are exactly the same as when using `sklearn`'s
     batch implementation.
 
+        #!python
         >>> import creme.cluster
         >>> import numpy as np
         >>> X = np.array([[1, 2], [1, 4], [1, 0],

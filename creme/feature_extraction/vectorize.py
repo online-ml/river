@@ -64,6 +64,7 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
     Example
     -------
 
+        #!python
         >>> import creme
         >>> corpus = [
         ...     'This is the first document.',

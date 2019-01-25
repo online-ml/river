@@ -38,12 +38,12 @@ jobs:
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
       - git config --global push.default matching
-      - git clone https://${GH_TOKEN}@github.com/creme-ml/creme.github.io.git creme.github.io
-      - cd creme.github.io
+      - git clone https://${GH_TOKEN}@github.com/creme-ml/creme-ml.github.io.git creme-ml.github.io
+      - cd creme-ml.github.io
       - rm -r *.html
       - cp -r ../docs/creme/* .
       - git add -A
-      - git commit --allow-empty -m $TRAVIS_BUILD_NUMBER
+      - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
       - git push --set-upstream origin master
     on:
       branch: master

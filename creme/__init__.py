@@ -61,6 +61,7 @@ For more information please check out the [documentation](https://creme.github.i
 
 ## Installation
 
+    #!shell
     pip install creme
 
 ## Quick example
@@ -73,6 +74,7 @@ scaling and the logistic regression are combined using a pipeline. We'll be usin
 [Wisconsin breast cancer dataset](http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+%28diagnostic%29).
 We'll measure the ROC AUC using [progressive validation](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.153.3925&rep=rep1&type=pdf).
 
+    #!python
     >>> from creme import linear_model
     >>> from creme import model_selection
     >>> from creme import optim
@@ -108,6 +110,7 @@ __all__ = [
     'linear_model',
     'losses',
     'model_selection',
+    'multiclass',
     'naive_bayes',
     'optim',
     'pipeline',
