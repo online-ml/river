@@ -30,10 +30,12 @@ jobs:
       on:
         tags: true
   - stage: docs
-    install: pip install pdoc
+    install:
+      - python setup.py install
+      - pip install pdoc
     script: pdoc creme --html --html-dir docs --html-no-source
     after_success:
-      - ls
+      - ls docs/
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
       - git config --global push.default matching
