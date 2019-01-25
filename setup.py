@@ -11,9 +11,14 @@ DESCRIPTION = 'A multi-output/multi-label and stream data mining framework.'
 MAINTAINER = 'Jacob Montiel'
 MAINTAINER_EMAIL = ''
 URL = 'https://scikit-multiflow.github.io/'
+PROJECT_URLS = {'Packaging tutorial': 'https://packaging.python.org/tutorials/distributing-packages/',
+                'Travis CI': 'https://travis-ci.org/scikit-multiflow/scikit-multiflow',
+                'Documentation': 'https://scikit-multiflow.github.io/scikit-multiflow/',
+                'Source code': 'https://github.com/scikit-multiflow/scikit-multiflow',
+                }
 DOWNLOAD_URL = 'https://pypi.org/project/scikit-multiflow/#files'
 LICENSE = '3-Clause BSD'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 
 # read the contents of README file
@@ -43,6 +48,9 @@ if __name__ == "__main__":
     setup(name=DIST_NAME,
           version=VERSION,
           license=LICENSE,
+          url=URL,
+          download_url=DOWNLOAD_URL,
+          project_urls=PROJECT_URLS,
           maintainer=MAINTAINER,
           maintainer_email=MAINTAINER_EMAIL,
           description=DESCRIPTION,
