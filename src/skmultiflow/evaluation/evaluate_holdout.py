@@ -63,6 +63,9 @@ class EvaluateHoldout(StreamEvaluator):
         | 'average_mean_squared_error'
         | 'average_mean_absolute_error'
         | 'average_root_mean_square_error'
+        | *Experimental*
+        | 'running_time'
+        | 'model_size'
 
     output_file: string, optional (Default: None)
         File name to save the summary of the evaluation.
