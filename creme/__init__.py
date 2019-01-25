@@ -61,9 +61,7 @@ For more information please check out the [documentation](https://creme.github.i
 
 ## Installation
 
-```sh
-pip install creme
-```
+    pip install creme
 
 ## Quick example
 
@@ -75,32 +73,29 @@ scaling and the logistic regression are combined using a pipeline. We'll be usin
 [Wisconsin breast cancer dataset](http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+%28diagnostic%29).
 We'll measure the ROC AUC using [progressive validation](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.153.3925&rep=rep1&type=pdf).
 
-```python
->>> from creme import linear_model
->>> from creme import model_selection
->>> from creme import optim
->>> from creme import pipeline
->>> from creme import preprocessing
->>> from creme import stream
->>> from sklearn import datasets
->>> from sklearn import metrics
+    >>> from creme import linear_model
+    >>> from creme import model_selection
+    >>> from creme import optim
+    >>> from creme import pipeline
+    >>> from creme import preprocessing
+    >>> from creme import stream
+    >>> from sklearn import datasets
+    >>> from sklearn import metrics
 
->>> X_y = stream.iter_sklearn_dataset(
-...     load_dataset=datasets.load_breast_cancer,
-...     shuffle=True,
-...     random_state=42
-... )
->>> optimizer = optim.AdaGrad()
->>> model = pipeline.Pipeline([
-...     ('scale', preprocessing.StandardScaler()),
-...     ('learn', linear_model.LogisticRegression(optimizer))
-... ])
->>> metric = metrics.roc_auc_score
+    >>> X_y = stream.iter_sklearn_dataset(
+    ...     load_dataset=datasets.load_breast_cancer,
+    ...     shuffle=True,
+    ...     random_state=42
+    ... )
+    >>> optimizer = optim.AdaGrad()
+    >>> model = pipeline.Pipeline([
+    ...     ('scale', preprocessing.StandardScaler()),
+    ...     ('learn', linear_model.LogisticRegression(optimizer))
+    ... ])
+    >>> metric = metrics.roc_auc_score
 
->>> model_selection.online_score(X_y, model, metric)
-0.992977...
-
-```
+    >>> model_selection.online_score(X_y, model, metric)
+    0.992977...
 
 """
 from .__version__ import __version__
