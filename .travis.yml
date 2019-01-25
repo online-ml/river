@@ -18,7 +18,10 @@ jobs:
       install:
         - conda install --name testenv --yes --file requirements.txt
         - conda install --name testenv --yes pytest
-      script: pytest
+      script:
+        - pytest --cov=creme
+      after_success:
+        - coveralls
 
 stages:
   - test
