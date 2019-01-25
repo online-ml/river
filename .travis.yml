@@ -15,7 +15,8 @@ jobs:
         - conda update --yes conda
         - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
         - source activate testenv
-      script: pytest
+      install: conda install --name testenv --file requirements.txt
+      script: pip -V && pytest
 
 stages:
   - test
