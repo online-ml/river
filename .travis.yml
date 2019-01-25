@@ -11,10 +11,8 @@ jobs:
         - bash miniconda.sh -b -p $HOME/miniconda
         - export PATH="$HOME/miniconda/bin:$PATH"
         - conda update --yes conda
-        - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
-        - source activate testenv
-      install: pip install -r requirements.txt
-      script: pytest
+        - conda create --yes --name testenv --file requirements.txt python=$TRAVIS_PYTHON_VERSION
+      script: source activate testenv && pytest
 
 stages:
   - test
