@@ -22,11 +22,7 @@ REQUIRES_PYTHON = '>=3.5.0'
 VERSION = None
 
 # What packages are required for this module to be executed?
-REQUIRED = [
-    'numpy>=1.14.0',
-    'scipy>=1.0.1',
-    'scikit-learn>=0.19.0'
-]
+REQUIRED = open('requirements.txt').read().splitlines()
 
 # The rest you shouldn't have to touch too much :)
 # ------------------------------------------------
