@@ -23,7 +23,7 @@
 
 ## Useful links
 
-- Documentation
+- [Documentation](https://creme-ml.github.io/)
 - Example notebooks
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Releases](https://pypi.org/project/creme/#history)

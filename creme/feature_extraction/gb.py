@@ -14,6 +14,7 @@ class GroupBy(base.Transformer):
     Example
     -------
 
+        #!python
         >>> import creme
 
         >>> X = [

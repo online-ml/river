@@ -44,6 +44,7 @@ class FeatureUnion(base.Transformer):
     Example
     -------
 
+        #!python
         >>> import creme.feature_extraction
         >>> import creme.pipeline
 

@@ -14,49 +14,50 @@ class MultinomialNB(base.MultiClassifier):
     Example
     -------
 
-    >>> import math
-    >>> import creme.feature_extraction
-    >>> import creme.naive_bayes
-    >>> import creme.pipeline
+        #!python
+        >>> import math
+        >>> import creme.feature_extraction
+        >>> import creme.naive_bayes
+        >>> import creme.pipeline
 
-    >>> docs = [
-    ...     ('Chinese Beijing Chinese', 'yes'),
-    ...     ('Chinese Chinese Shanghai', 'yes'),
-    ...     ('Chinese Macao', 'yes'),
-    ...     ('Tokyo Japan Chinese', 'no')
-    ... ]
-    >>> model = creme.pipeline.Pipeline([
-    ...     ('tokenize', creme.feature_extraction.CountVectorizer(on='text', lowercase=False)),
-    ...     ('nb', creme.naive_bayes.MultinomialNB(alpha=1))
-    ... ])
-    >>> for x, y in docs:
-    ...     y_pred = model.fit_one({'text': x}, y)
+        >>> docs = [
+        ...     ('Chinese Beijing Chinese', 'yes'),
+        ...     ('Chinese Chinese Shanghai', 'yes'),
+        ...     ('Chinese Macao', 'yes'),
+        ...     ('Tokyo Japan Chinese', 'no')
+        ... ]
+        >>> model = creme.pipeline.Pipeline([
+        ...     ('tokenize', creme.feature_extraction.CountVectorizer(on='text', lowercase=False)),
+        ...     ('nb', creme.naive_bayes.MultinomialNB(alpha=1))
+        ... ])
+        >>> for x, y in docs:
+        ...     y_pred = model.fit_one({'text': x}, y)
 
-    >>> model.steps[-1][1].p_class('yes')
-    0.75
-    >>> cp = model.steps[-1][1].p_term_given_class
-    >>> cp('Chinese', 'yes') ==  3 / 7
-    True
-    >>> cp('Tokyo', 'yes') ==  1 / 14
-    True
-    >>> cp('Japan', 'yes') ==  1 / 14
-    True
-    >>> cp('Chinese', 'no') ==  2 / 9
-    True
-    >>> cp('Tokyo', 'no') ==  2 / 9
-    True
-    >>> cp('Japan', 'no') ==  2 / 9
-    True
+        >>> model.steps[-1][1].p_class('yes')
+        0.75
+        >>> cp = model.steps[-1][1].p_term_given_class
+        >>> cp('Chinese', 'yes') ==  3 / 7
+        True
+        >>> cp('Tokyo', 'yes') ==  1 / 14
+        True
+        >>> cp('Japan', 'yes') ==  1 / 14
+        True
+        >>> cp('Chinese', 'no') ==  2 / 9
+        True
+        >>> cp('Tokyo', 'no') ==  2 / 9
+        True
+        >>> cp('Japan', 'no') ==  2 / 9
+        True
 
-    >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
-    >>> tokens = model.steps[0][1].transform_one({'text': new_text})
-    >>> llh = model.steps[-1][1].calc_log_likelihoods(tokens)
-    >>> math.exp(llh['yes'])
-    0.0003...
-    >>> math.exp(llh['no'])
-    0.0001...
-    >>> model.predict_one({'text': new_text})
-    'yes'
+        >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
+        >>> tokens = model.steps[0][1].transform_one({'text': new_text})
+        >>> llh = model.steps[-1][1].calc_log_likelihoods(tokens)
+        >>> math.exp(llh['yes'])
+        0.0003...
+        >>> math.exp(llh['no'])
+        0.0001...
+        >>> model.predict_one({'text': new_text})
+        'yes'
 
     """
 
