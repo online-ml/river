@@ -35,7 +35,7 @@ if SURPRISE_INSTALLED:
 
 else:
 
-    class Recommender(abc.ABC, surprise.AlgoBase):
+    class Recommender(abc.ABC):
 
         @abc.abstractmethod
         def fit_one(self, row_id, col_id, value):
