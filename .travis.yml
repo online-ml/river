@@ -19,6 +19,8 @@ jobs:
     script: pytest --cov=creme
     after_success: coveralls
   - stage: pypi
+    install: echo "skipping install"
+    script: echo "skipping tests"
     deploy:
       provider: pypi
       user: MaxHalford
