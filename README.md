@@ -4,8 +4,8 @@
 
 <div align="center">
   <!-- Build status -->
-  <a href="https://travis-ci.org/MaxHalford/creme">
-    <img src="https://img.shields.io/travis/MaxHalford/creme/master.svg?style=flat-square" alt="build_status" />
+  <a href="https://travis-ci.org/creme-ml/creme">
+    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=flat-square" alt="build_status" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">
