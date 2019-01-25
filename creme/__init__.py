@@ -99,6 +99,7 @@ We'll measure the ROC AUC using [progressive validation](http://citeseerx.ist.ps
 
 >>> model_selection.online_score(X_y, model, metric)
 0.992977...
+
 ```
 
 """
