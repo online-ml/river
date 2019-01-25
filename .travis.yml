@@ -37,9 +37,9 @@ jobs:
     - git config --global user.name "MaxHalford"
     - git checkout -b gh-pages
     - git add --force docs/creme/*
-    - git commit --message "Travis build: ${TRAVIS_BUILD_NUMBER}"
+    - git commit --message $TRAVIS_BUILD_NUMBER
     - git remote add origin-pages https://${GH_TOKEN}@github.com/creme-ml/creme.github.io.git > /dev/null 2>&1
-    - git push --set-upstream master gh-pages
+    - git push --set-upstream origin-pages gh-pages
     on:
       branch: master
 
