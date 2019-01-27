@@ -1,6 +1,5 @@
 import collections
 
-from .. import losses
 from .. import stats
 from .. import optim
 
@@ -20,7 +19,7 @@ class SGDBaseline(base.Recommender):
     """
 
     def __init__(self, row_optimizer=optim.VanillaSGD(), col_optimizer=optim.VanillaSGD(),
-                 loss=losses.SquaredLoss(), l2=0):
+                 loss=optim.SquaredLoss(), l2=0):
         super().__init__()
         self.row_optimizer = row_optimizer
         self.col_optimizer = col_optimizer

@@ -1,18 +1,19 @@
-from . import function
+from .. import base
 
 
 __all__ = ['OneHotEncoder']
 
 
-class OneHotEncoder(function.FunctionTransformer):
-    """
+class OneHotEncoder(base.Transformer):
+    """One-hot encoding.
+
     Example
     -------
 
         #!python
         >>> import pprint as pp
         >>> import string
-        >>> import creme
+        >>> import creme.preprocessing
         >>> import numpy as np
 
         >>> rng = np.random.RandomState(42)
@@ -34,11 +35,14 @@ class OneHotEncoder(function.FunctionTransformer):
 
     """
 
-    def __init__(self):
-        super().__init__(self._one_hot)
-
     def _one_hot(self, x):
         for i, xi in x.items():
             if isinstance(xi, str):
                 x[f'{i}_{x.pop(i)}'] = True
         return x
+
+    def fit_one(self, x, y=None):
+        return self._one_hot(x)
+
+    def transform_one(self, x, y=None):
+        return self._one_hot(x)

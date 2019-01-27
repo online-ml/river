@@ -1,6 +1,10 @@
-from . import base
-
 import numpy as np
+
+from .. import base
+from .. import stats
+
+
+__all__ = ['StandardScaleRegressor']
 
 
 class StandardScaleRegressor(base.Regressor):
@@ -14,24 +18,20 @@ class StandardScaleRegressor(base.Regressor):
 
     def __init__(self, regressor=None, eps=None):
         self.regressor = regressor
-        self.count = 0
-        self.mean = 0
-        self.sos = 0
+        """An instance of `creme.base.Regressor`."""
+        self.variance = stats.Variance()
+        """An instance of `creme.stats.Variance`."""
         self.eps = eps or np.finfo(float).eps
+        """Used for avoiding divisions by zero."""
 
     def _rescale(self, y):
-        return (y - self.mean) / (self.eps + self.sos / self.count) ** 0.5
+        return (y - self.variance.mean.get()) / (self.variance.get() ** 0.5 + self.eps)
 
     def _unscale(self, y):
-        return y * (self.eps + self.sos / self.count) ** 0.5 + self.mean
+        return y * self.variance.get() ** 0.5 + self.variance.mean.get()
 
     def fit_one(self, x, y):
-
-        self.count += 1
-        mean = self.mean
-        self.mean += (y - mean) / self.count
-        self.sos += (y - mean) * (y - self.mean)
-
+        self.variance.update(y)
         return self._unscale(self.regressor.fit_one(x, self._rescale(y)))
 
     def predict_one(self, x):

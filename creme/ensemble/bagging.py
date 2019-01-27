@@ -21,12 +21,15 @@ class BaggingClassifier(base.BinaryClassifier):
     In the following example three logistic regressions are bagged together. The performance is
     slightly better than when one using a single logistic regression.
 
+    Example
+    -------
+
         #!python
+        >>> import creme.compose
         >>> import creme.ensemble
         >>> import creme.linear_model
         >>> import creme.model_selection
         >>> import creme.optim
-        >>> import creme.pipeline
         >>> import creme.preprocessing
         >>> import creme.stream
         >>> from sklearn import datasets
@@ -38,7 +41,7 @@ class BaggingClassifier(base.BinaryClassifier):
         ...     random_state=42
         ... )
         >>> optimiser = creme.optim.VanillaSGD()
-        >>> model = creme.pipeline.Pipeline([
+        >>> model = creme.compose.Pipeline([
         ...     ('scale', creme.preprocessing.StandardScaler()),
         ...     ('learn', creme.linear_model.LogisticRegression(optimiser))
         ... ])
@@ -48,6 +51,8 @@ class BaggingClassifier(base.BinaryClassifier):
         >>> creme.model_selection.online_score(X_y, model, metric)
         0.991563...
 
+    References
+    ----------
     - [Online Bagging and Boosting](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
 
     """

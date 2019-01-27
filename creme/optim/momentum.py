@@ -7,12 +7,18 @@ __all__ = ['Momentum']
 
 
 class Momentum(base.Optimizer):
-    """
+    """Momentum optimizer.
+
     Example
     -------
 
         #!python
-        >>> import creme
+        >>> import creme.compose
+        >>> import creme.linear_model
+        >>> import creme.model_selection
+        >>> import creme.optim
+        >>> import creme.preprocessing
+        >>> import creme.stream
         >>> from sklearn import datasets
         >>> from sklearn import metrics
 
@@ -22,7 +28,7 @@ class Momentum(base.Optimizer):
         ...     random_state=42
         ... )
         >>> optimiser = creme.optim.Momentum()
-        >>> model = creme.pipeline.Pipeline([
+        >>> model = creme.compose.Pipeline([
         ...     ('scale', creme.preprocessing.StandardScaler()),
         ...     ('learn', creme.linear_model.LogisticRegression(optimiser))
         ... ])

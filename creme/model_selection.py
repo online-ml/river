@@ -1,5 +1,8 @@
+"""
+Utilities for measuring the performance of online learning algorithms.
+"""
 from . import base
-from . import pipeline
+from . import compose
 
 
 __all__ = ['iter_online_score', 'online_score']
@@ -24,7 +27,7 @@ def online_score(X_y, model, metric, use_proba=False):
 
     get_pred = _identity
 
-    if isinstance(model, pipeline.Pipeline):
+    if isinstance(model, compose.Pipeline):
 
         if isinstance(model._final_estimator, base.MultiClassifier):
             get_pred = _get_probas_as_list if use_proba else _get_class

@@ -1,13 +1,13 @@
 """
-To be clear, online gradient descent and stochastic gradient descent are the same thing.
-
-- http://ruder.io/optimizing-gradient-descent/
-- https://keras.io/optimisers/
+A set of sequential optimizers and learning rate schedulers. Also contains loss functions commonly
+used in machine learning.
 """
 from .ada_delta import AdaDelta
 from .ada_grad import AdaGrad
 from .adam import Adam
 from .ftrl import FTRLProximal
+from .losses import SquaredLoss
+from .losses import LogLoss
 from .lr_schedule import ConstantLR
 from .lr_schedule import LinearDecreaseLR
 from .momentum import Momentum
@@ -23,8 +23,10 @@ __all__ = [
     'ConstantLR',
     'FTRLProximal',
     'LinearDecreaseLR',
+    'LogLoss',
     'Momentum',
     'NesterovMomentum',
     'RMSProp',
+    'SquaredLoss',
     'VanillaSGD'
 ]

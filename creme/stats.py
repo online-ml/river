@@ -1,8 +1,10 @@
-"""Module for computing running statistics such as the mean and the variance.
-
-Each running statistic has an `update` method and a `get` method.
+"""
+Module for computing running statistics
 """
 import abc
+
+
+__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance']
 
 
 class RunningStatistic(abc.ABC):

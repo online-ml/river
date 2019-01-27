@@ -1,14 +1,14 @@
-from .constant import BiasAppender
-from .function import FunctionTransformer
+"""
+Module for preparing data to make it compatible with certain machine learning algorithms.
+information
+"""
 from .hash import FeatureHasher
 from .one_hot import OneHotEncoder
 from .scale import StandardScaler
 
 
 __all__ = [
-    'BiasAppender',
     'FeatureHasher',
-    'FunctionTransformer',
     'OneHotEncoder',
     'StandardScaler'
 ]

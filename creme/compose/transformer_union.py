@@ -1,52 +1,23 @@
 import collections
 
-from sklearn import pipeline
-from sklearn.utils import metaestimators
-
-from . import base
+from .. import base
 
 
-__all__ = ['Pipeline']
+__all__ = ['TransformerUnion']
 
 
-class Pipeline(pipeline.Pipeline):
+class TransformerUnion(base.Transformer):
+    """Groups multiple transformers into a single one.
 
-    @property
-    def _final_estimator(self):
-        return self.steps[-1][1]
+    Calling `transform_one` will concatenate each transformer's output using a
+    `collections.ChainMap`.
 
-    def fit_one(self, x, y):
-        for _, step in self.steps:
-            x = step.fit_one(x, y)
-        return x
-
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
-    def transform_one(self, x):
-        for _, step in self.steps:
-            x = step.transform_one(x)
-        return x
-
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
-    def predict_one(self, x):
-        for _, step in self.steps[:-1]:
-            x = step.transform_one(x)
-        return self.steps[-1][1].predict_one(x)
-
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
-    def predict_proba_one(self, x):
-        for _, step in self.steps[:-1]:
-            x = step.transform_one(x)
-        return self.steps[-1][1].predict_proba_one(x)
-
-
-class FeatureUnion(base.Transformer):
-    """
     Example
     -------
 
         #!python
+        >>> import creme.compose
         >>> import creme.feature_extraction
-        >>> import creme.pipeline
 
         >>> X = [
         ...     {'place': 'Taco Bell', 'revenue': 42},
@@ -67,7 +38,7 @@ class FeatureUnion(base.Transformer):
         ...     by='place',
         ...     how=creme.stats.Count()
         ... )
-        >>> agg = creme.pipeline.FeatureUnion([mean, count])
+        >>> agg = creme.compose.TransformerUnion(mean, count)
 
         >>> for x in X:
         ...     print(sorted(agg.fit_one(x).items()))
@@ -80,7 +51,7 @@ class FeatureUnion(base.Transformer):
 
     """
 
-    def __init__(self, transformers):
+    def __init__(self, *transformers):
         self.transformers = transformers
 
     def fit_one(self, x, y=None):

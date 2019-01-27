@@ -10,7 +10,12 @@ __all__ = ['StandardScaler']
 
 
 class StandardScaler(base.Transformer):
-    """
+    """Scales the data so that it has mean 0 and variance 1.
+
+    Under the hood a running mean and a running variance are maintained. The scaling is slightly
+    different than when using scikit-learn but this doesn't seem to have any impact learning
+    performance.
+
     Example
     -------
 
@@ -63,7 +68,9 @@ class StandardScaler(base.Transformer):
 
     def __init__(self, eps=None):
         self.variances = collections.defaultdict(lambda: stats.Variance())
+        """`dict` mapping feature names to instances of `creme.stats.Variance`."""
         self.eps = eps or np.finfo(float).eps
+        """Used for avoiding divisions by zero."""
 
     def fit_one(self, x, y=None):
 
