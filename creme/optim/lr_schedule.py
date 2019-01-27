@@ -23,8 +23,8 @@ class ConstantLR(LRScheduler):
 class LinearDecreaseLR(LRScheduler):
     """Implements the decreasing LR schedule proposed by Léon Bottou.
 
-    See somewhere around line 64 of https://leon.bottou.org/git/?p=sgd.git;a=blob;f=README.txt for
-    some details.
+    See somewhere around line 64 of [Léon Bottou's code](https://leon.bottou.org/git/?p=sgd.git;a=blob;f=README.txt)
+    for some details.
 
     """
 

@@ -1,3 +1,6 @@
+"""
+Naive Bayes algorithms.
+"""
 import collections
 import math
 
@@ -5,20 +8,18 @@ from . import base
 
 
 class MultinomialNB(base.MultiClassifier):
-    """
+    """Naive Bayes classifier for multinomial models.
 
     The input vector has to contain positive values, such as counts or TF-IDF values.
-
-    https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html
 
     Example
     -------
 
         #!python
         >>> import math
+        >>> import creme.compose
         >>> import creme.feature_extraction
         >>> import creme.naive_bayes
-        >>> import creme.pipeline
 
         >>> docs = [
         ...     ('Chinese Beijing Chinese', 'yes'),
@@ -26,7 +27,7 @@ class MultinomialNB(base.MultiClassifier):
         ...     ('Chinese Macao', 'yes'),
         ...     ('Tokyo Japan Chinese', 'no')
         ... ]
-        >>> model = creme.pipeline.Pipeline([
+        >>> model = creme.compose.Pipeline([
         ...     ('tokenize', creme.feature_extraction.CountVectorizer(on='text', lowercase=False)),
         ...     ('nb', creme.naive_bayes.MultinomialNB(alpha=1))
         ... ])
@@ -59,25 +60,34 @@ class MultinomialNB(base.MultiClassifier):
         >>> model.predict_one({'text': new_text})
         'yes'
 
+    References
+    ----------
+    - [Naive Bayes text classification](https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html)
+
     """
 
     def __init__(self, alpha=1.0):
         self.alpha = alpha
+        """Smoothing parameter used for avoiding nil probabilities."""
         self.n = 0
+        """Number of seen observations."""
         self.class_counts = collections.defaultdict(lambda: 0)
+        """Number of times each class has been seen."""
         self.term_counts = collections.defaultdict(lambda: collections.defaultdict(lambda: 0))
+        """Number of times each term has been seen."""
         self.class_term_counts = collections.defaultdict(lambda: 0)
+        """Number of times each term has been seen per class."""
 
     @property
     def n_terms(self):
         return len(self.term_counts)
 
     def p_class(self, c):
-        """Return P(class)."""
+        """Returns P(class)."""
         return self.class_counts.get(c, 0) / self.n
 
     def p_term_given_class(self, term, c):
-        """Return P(term | class)."""
+        """Returns P(term | class)."""
         numerator = self.term_counts[term][c] + self.alpha
         denominator = self.class_term_counts[c] + self.alpha * self.n_terms
         return numerator / denominator

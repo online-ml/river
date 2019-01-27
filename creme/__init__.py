@@ -69,16 +69,16 @@ For more information please check out the [documentation](https://creme.github.i
 In the following snippet we'll be fitting an online logistic regression. The weights of the model
 will be optimized with the [AdaGrad](http://akyrillidis.github.io/notes/AdaGrad) algorithm. We'll
 scale the data so that each variable has a mean of 0 and a standard deviation of 1. The standard
-scaling and the logistic regression are combined using a pipeline. We'll be using the
+scaling and the logistic regression are combined using a compose. We'll be using the
 `stream.iter_sklearn_dataset` function for streaming over the
 [Wisconsin breast cancer dataset](http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+%28diagnostic%29).
 We'll measure the ROC AUC using [progressive validation](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.153.3925&rep=rep1&type=pdf).
 
     #!python
+    >>> from creme import compose
     >>> from creme import linear_model
     >>> from creme import model_selection
     >>> from creme import optim
-    >>> from creme import pipeline
     >>> from creme import preprocessing
     >>> from creme import stream
     >>> from sklearn import datasets
@@ -90,7 +90,7 @@ We'll measure the ROC AUC using [progressive validation](http://citeseerx.ist.ps
     ...     random_state=42
     ... )
     >>> optimizer = optim.AdaGrad()
-    >>> model = pipeline.Pipeline([
+    >>> model = compose.Pipeline([
     ...     ('scale', preprocessing.StandardScaler()),
     ...     ('learn', linear_model.LogisticRegression(optimizer))
     ... ])
@@ -108,12 +108,10 @@ __all__ = [
     'ensemble',
     'feature_extraction',
     'linear_model',
-    'losses',
     'model_selection',
     'multiclass',
     'naive_bayes',
     'optim',
-    'pipeline',
     'preprocessing',
     'reco',
     'stats',

@@ -23,7 +23,8 @@ class KMeans(base.Clusterer):
 
     In this implementation we start by finding the cluster that is closest to the current
     observation. We then move the cluster's central position towards the new observation. The
-    `halflife` parameter determines by how much the movement should be.
+    `halflife` parameter determines by how much to move the cluster toward the new observation.
+    You will get better results if you scale your data appropriately.
 
     Example
     -------
@@ -49,7 +50,7 @@ class KMeans(base.Clusterer):
         ...    [3.4742213 , 1.84015401]])
 
     References
-    -------
+    ----------
     - [Sequential k-Means Clustering](http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm)
 
     """

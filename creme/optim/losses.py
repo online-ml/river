@@ -1,7 +1,3 @@
-"""
-
-- https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/lm/sgd_fast.pyx
-"""
 import abc
 import math
 

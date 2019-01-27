@@ -12,11 +12,11 @@ class OneVsRestClassifier(base.MultiClassifier):
     --------
 
         #!python
+        >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection
         >>> import creme.multiclass
         >>> import creme.optim
-        >>> import creme.pipeline
         >>> import creme.preprocessing
         >>> import creme.stream
         >>> from sklearn import datasets
@@ -28,7 +28,7 @@ class OneVsRestClassifier(base.MultiClassifier):
         ...     random_state=42
         ... )
         >>> optimr = creme.optim.RMSProp()
-        >>> model = creme.pipeline.Pipeline([
+        >>> model = creme.compose.Pipeline([
         ...     ('scale', creme.preprocessing.StandardScaler()),
         ...     ('learn', creme.multiclass.OneVsRestClassifier(
         ...         base_estimator=creme.linear_model.LogisticRegression(optimr))

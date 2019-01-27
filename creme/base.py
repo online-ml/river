@@ -1,3 +1,7 @@
+"""
+Base classes used throughout the library.
+"""
+
 import abc
 
 import numpy as np

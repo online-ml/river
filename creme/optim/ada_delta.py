@@ -1,7 +1,3 @@
-"""
-
-- https://arxiv.org/pdf/1212.5701.pdf
-"""
 import collections
 
 from . import base
@@ -11,15 +7,16 @@ __all__ = ['AdaDelta']
 
 
 class AdaDelta(base.Optimizer):
-    """
+    """AdaDelta optimizer.
+
     Example
     -------
 
         #!python
+        >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection
         >>> import creme.optim
-        >>> import creme.pipeline
         >>> import creme.preprocessing
         >>> import creme.stream
         >>> from sklearn import datasets
@@ -31,7 +28,7 @@ class AdaDelta(base.Optimizer):
         ...     random_state=42
         ... )
         >>> optimiser = creme.optim.AdaDelta()
-        >>> model = creme.pipeline.Pipeline([
+        >>> model = creme.compose.Pipeline([
         ...     ('scale', creme.preprocessing.StandardScaler()),
         ...     ('learn', creme.linear_model.LogisticRegression(optimiser))
         ... ])
@@ -39,6 +36,10 @@ class AdaDelta(base.Optimizer):
 
         >>> creme.model_selection.online_score(X_y, model, metric)
         0.977016...
+
+    References
+    ----------
+    - [AdaDelta: an adaptive learning rate method](https://arxiv.org/pdf/1212.5701.pdf)
 
     """
 

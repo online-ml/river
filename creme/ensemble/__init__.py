@@ -1,5 +1,5 @@
 """
-A module for ensemble-based regression and classification.
+A module for ensemble learning.
 """
 from .bagging import BaggingClassifier
 

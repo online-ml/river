@@ -9,7 +9,12 @@ __all__ = ['GroupBy']
 
 
 class GroupBy(base.Transformer):
-    """
+    """Computes a streaming group by.
+
+    At each step, the running statistic `how` of group `by` is updated with the value of `on`. You
+    can combine this with a `creme.compose.TransformerUnion` to extract many aggregate statistics
+    in one go. The keys of the `dict` containing the aggregates is automatically guesses from
+    `how`, `by`, and `on`.
 
     Example
     -------
@@ -41,17 +46,25 @@ class GroupBy(base.Transformer):
         {'revenue_mean_by_place': 20.0}
         {'revenue_mean_by_place': 50.0}
 
+    References
+    ----------
+    - [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
+
     """
 
     def __init__(self, on: str, by: str, how: stats.RunningStatistic):
         self.on = on
+        """The feature on which to group."""
         self.by = by
+        """The feature on which to group."""
         self.how = how
-        self.stats = collections.defaultdict(lambda: copy.deepcopy(how))
+        """An instance of `creme.stats.RunningStatistic`."""
+        self.groups = collections.defaultdict(lambda: copy.deepcopy(how))
+        """Maps grouping keys to instances of `creme.stats.RunningStatistic`."""
 
     def fit_one(self, x, y=None):
-        self.stats[x[self.by]].update(x[self.on])
+        self.groups[x[self.by]].update(x[self.on])
         return self.transform_one(x)
 
     def transform_one(self, x):
-        return {f'{self.on}_{self.how.name}_by_{self.by}': self.stats[x[self.by]].get()}
+        return {f'{self.on}_{self.how.name}_by_{self.by}': self.groups[x[self.by]].get()}

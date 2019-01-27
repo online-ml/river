@@ -1,7 +1,6 @@
 import collections
 
 from .. import base
-from .. import losses
 from .. import optim
 
 from . import util
@@ -11,8 +10,38 @@ __all__ = ['LogisticRegression']
 
 
 class LogisticRegression(base.BinaryClassifier):
+    """Logistic regression for binary classification.
 
-    def __init__(self, optimizer=optim.VanillaSGD(), loss=losses.LogLoss(), l2=0):
+    Example
+    -------
+
+        #!python
+        >>> import creme.compose
+        >>> import creme.linear_model
+        >>> import creme.model_selection
+        >>> import creme.optim
+        >>> import creme.preprocessing
+        >>> import creme.stream
+        >>> from sklearn import datasets
+        >>> from sklearn import metrics
+
+        >>> X_y = creme.stream.iter_sklearn_dataset(
+        ...     load_dataset=datasets.load_breast_cancer,
+        ...     shuffle=True,
+        ...     random_state=42
+        ... )
+        >>> model = creme.compose.Pipeline([
+        ...     ('scale', creme.preprocessing.StandardScaler()),
+        ...     ('learn', creme.linear_model.LogisticRegression())
+        ... ])
+        >>> metric = metrics.roc_auc_score
+
+        >>> creme.model_selection.online_score(X_y, model, metric)
+        0.990625...
+
+    """
+
+    def __init__(self, optimizer=optim.VanillaSGD(), loss=optim.LogLoss(), l2=0):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2

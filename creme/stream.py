@@ -1,3 +1,6 @@
+"""
+Utilities for streaming data from various sources.
+"""
 from sklearn import utils
 import itertools
 
