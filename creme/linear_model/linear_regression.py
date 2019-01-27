@@ -1,8 +1,8 @@
 import collections
 
 from .. import base
-from .. import losses
 from .. import optim
+from .. import stats
 
 from . import util
 
@@ -11,52 +11,73 @@ __all__ = ['LinearRegression']
 
 
 class LinearRegression(base.Regressor):
-    """
-    Examples
-    --------
+    """Linear regression.
+
+    A linear regression is simply a dot product between some features and some weights. The weights
+    are found by using an online optimizer. In the current implementation the intercept is computed
+    independently by maintaining a running mean and adding it to each prediction.
+
+    Example
+    -------
 
         #!python
+        >>> import creme.compose
         >>> import creme.linear_model
-        >>> import creme.pipeline
+        >>> import creme.model_selection
+        >>> import creme.optim
         >>> import creme.preprocessing
         >>> import creme.stream
         >>> from sklearn import datasets
         >>> from sklearn import metrics
 
         >>> X_y = creme.stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_diabetes,
+        ...     load_dataset=datasets.load_boston,
         ...     shuffle=True,
         ...     random_state=42
         ... )
-        >>> model = model = creme.pipeline.Pipeline([
+        >>> model = creme.compose.Pipeline([
         ...     ('scale', creme.preprocessing.StandardScaler()),
-        ...     ('bias', creme.preprocessing.BiasAppender()),
         ...     ('learn', creme.linear_model.LinearRegression())
         ... ])
         >>> metric = metrics.mean_squared_error
 
-        >>> #creme.model_selection.online_score(X_y, model, metric)
+        >>> creme.model_selection.online_score(X_y, model, metric)
+        29.561837...
+
+        >>> model.steps[-1][1].intercept.get()
+        22.532806...
 
     """
 
-    def __init__(self, optimizer=optim.VanillaSGD(0.01), loss=losses.SquaredLoss()):
+    def __init__(self, optimizer=optim.VanillaSGD(0.01), loss=optim.SquaredLoss(), l2=0):
         self.optimizer = optimizer
         self.loss = loss
+        self.l2 = l2
         self.weights = collections.defaultdict(lambda: 0.)
+        self.intercept = stats.Mean()
+
+    def _predict_with_weights(self, x, w):
+        return util.dot(x, w) + self.intercept.get()
+
+    def _calc_gradient(self, y_true, y_pred, x, w):
+        loss_gradient = self.loss.gradient(y_true, y_pred)
+        return {i: xi * loss_gradient + self.l2 * w.get(i, 0) for i, xi in x.items()}
 
     def fit_one(self, x, y):
 
-        # Predict the output of the given features
-        y_pred = self.predict_one(x)
-
-        # Compute the error gradient
-        loss_gradient = self.loss.gradient(y, y_pred)
-        gradient = {i: xi * loss_gradient for i, xi in x.items()}
-
         # Update the weights with the error gradient
-        self.weights = self.optimizer.update_weights(self.weights, gradient)
+        self.weights, y_pred = self.optimizer.update_weights(
+            x=x,
+            y=y,
+            w=self.weights,
+            f_pred=self._predict_with_weights,
+            f_grad=self._calc_gradient
+        )
+
+        # The intercept is the running mean of the target
+        self.intercept.update(y)
 
         return y_pred
 
     def predict_one(self, x):
-        return util.dot(x, self.weights)
+        return self._predict_with_weights(x, self.weights)
