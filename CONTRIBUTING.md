@@ -22,7 +22,7 @@ You're now ready to make some changes. How you make the changes is up to you of 
 
 ### Adding your change to the documentation
 
-If you've added a new functionality, then you will have to add it to the documentation. To do so you can edit the `docs/api.rst` file accordingly. Feel free to ask for help.
+If you've added a new functionality, then you will have to write a docstring and add it to the documentation. To do so you can edit the `docs/api.rst` file accordingly. Feel free to ask for help. If you've made a change to an existing class then you have to make sure that you've updated it's docstring accordingly. To make sure your modifications to the documentation are okay go to the `docs` directory and run `make html`.
 
 
 ## Making a pull request
