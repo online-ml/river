@@ -94,7 +94,7 @@ class MinMaxScaler(base.Transformer):
 
     Attributes:
         min (dict): Mapping between features and instances of ``stats.Min``.
-        p2p (dict): Mapping between features and instances of ``stats.Peak2Peak``.
+        p2p (dict): Mapping between features and instances of ``stats.PeakToPeak``.
         eps (float): Used for avoiding divisions by zero.
 
     Example:
@@ -147,7 +147,7 @@ class MinMaxScaler(base.Transformer):
     
     def __init__(self):
         self.min = collections.defaultdict(lambda : stats.Min())
-        self.p2p = collections.defaultdict(lambda : stats.Peak2Peak())
+        self.p2p = collections.defaultdict(lambda : stats.PeakToPeak())
         self.eps = np.finfo(float).eps
     
     def fit_one(self, x, y=None):

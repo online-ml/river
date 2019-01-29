@@ -5,7 +5,7 @@ import abc
 import math
 
 
-__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance','Max','Min','Peak2Peak']
+__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance','Max','Min','PeakToPeak']
 
 
 class RunningStatistic(abc.ABC):
@@ -180,7 +180,7 @@ class Min(RunningStatistic):
     def get(self):
         return self.min
 
-class Peak2Peak(RunningStatistic):
+class PeakToPeak(RunningStatistic):
     """Computes a running peak to peak (max - min).
 
     Attributes:
