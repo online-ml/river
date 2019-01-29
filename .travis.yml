@@ -30,7 +30,7 @@ jobs:
       on:
         tags: true
   - stage: docs
-    install: pip install -r docs/requirements.txt
+    install: python setup.py install && pip install -r docs/requirements.txt
     script: cd docs && make html && cd ..
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
