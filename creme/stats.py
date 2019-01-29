@@ -24,6 +24,7 @@ class RunningStatistic(abc.ABC):
 
 
 class Count(RunningStatistic):
+    """Simply counts the number of times ``update`` is called."""
 
     def __init__(self):
         super().__init__()
@@ -42,6 +43,13 @@ class Count(RunningStatistic):
 
 
 class Mean(RunningStatistic):
+    """Computes a running mean.
+
+    Attributes:
+        count (stats.Count)
+        mu (float): The current estimated mean.
+
+    """
 
     def __init__(self):
         super().__init__()
@@ -61,9 +69,20 @@ class Mean(RunningStatistic):
 
 
 class SmoothMean(Mean):
-    """Computes the running mean using additive smoothing.
+    """Computes a running mean using additive smoothing.
 
-    - https://www.wikiwand.com/en/Additive_smoothing
+    Parameters:
+        prior (float): Prior mean.
+        prior_weight (float): Strengh of the prior mean.
+
+    Attributes:
+        count (stats.Count)
+        mu (float): The current estimated mean.
+
+    References:
+
+    - `Additive smoothing <https://www.wikiwand.com/en/Additive_smoothing>`_
+
     """
 
     def __init__(self, prior, prior_weight):
@@ -82,6 +101,17 @@ class SmoothMean(Mean):
 
 
 class Variance(RunningStatistic):
+    """Computes a running variance using Welford's algorithm.
+
+    Attributes:
+        mean (stats.Mean)
+        sos (float): The running sum of squares.
+
+    References:
+
+    - `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+
+    """
 
     def __init__(self):
         super().__init__()

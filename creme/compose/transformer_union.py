@@ -9,13 +9,14 @@ __all__ = ['TransformerUnion']
 class TransformerUnion(base.Transformer):
     """Groups multiple transformers into a single one.
 
-    Calling `transform_one` will concatenate each transformer's output using a
-    `collections.ChainMap`.
+    Calling ``transform_one`` will concatenate each transformer's output using a
+    ``collections.ChainMap``.
 
-    Example
-    -------
+    Args:
+        transformers (list)
 
-        #!python
+    Example:
+
         >>> import creme.compose
         >>> import creme.feature_extraction
 
@@ -38,7 +39,7 @@ class TransformerUnion(base.Transformer):
         ...     by='place',
         ...     how=creme.stats.Count()
         ... )
-        >>> agg = creme.compose.TransformerUnion(mean, count)
+        >>> agg = creme.compose.TransformerUnion([mean, count])
 
         >>> for x in X:
         ...     print(sorted(agg.fit_one(x).items()))
@@ -51,7 +52,7 @@ class TransformerUnion(base.Transformer):
 
     """
 
-    def __init__(self, *transformers):
+    def __init__(self, transformers):
         self.transformers = transformers
 
     def fit_one(self, x, y=None):

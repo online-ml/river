@@ -10,11 +10,22 @@ __all__ = ['SGDBaseline']
 
 
 class SGDBaseline(base.Recommender):
-    """
+    """Stochastic gradient descent baseline.
 
-    This is somewhat equivalent to `surprise.BaselineOnly` with `method='sgd'`. The difference is
-    that `surprise` always uses plain SGD whereas with `creme` you can use any SGD method, for
-    example Adam.
+    This is somewhat equivalent to ``surprise.BaselineOnly`` with ``method='sgd'``. The difference
+    is that ``surprise`` always uses plain SGD whereas with ``creme`` you can use any SGD method,
+    for example Adam.
+
+    Parameters:
+        row_optimizer (optim.Optimizer): Optimizer used to tune the row weights.
+        col_optimizer (optim.Optimizer): Optimizer used to tune the column weights.
+        loss (optim.Loss): Loss function to optimize for.
+        l2 (float): regularization amount used to push weights towards 0.
+        global_mean (stats.Mean)
+
+    Attributes:
+        row_biases (collections.defaultdict)
+        col_biases (collections.defaultdict)
 
     """
 

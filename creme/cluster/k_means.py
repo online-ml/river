@@ -23,15 +23,30 @@ class KMeans(base.Clusterer):
 
     In this implementation we start by finding the cluster that is closest to the current
     observation. We then move the cluster's central position towards the new observation. The
-    `halflife` parameter determines by how much to move the cluster toward the new observation.
+    ``halflife`` parameter determines by how much to move the cluster toward the new observation.
     You will get better results if you scale your data appropriately.
 
-    Example
-    -------
+    Parameters:
+        n_clusters (int): Maximum number of clusters to assign.
+        halflife (float): Amount by which to move the cluster centers, a reasonable value if
+            between 0 and 1.
+        mu (float): Mean of the normal distribution used to instantiate cluster positions.
+        sigma (float): Standard deviation of the normal distribution used to instantiate cluster
+            positions.
+        distance (callable): Metric used to compute distances between an observation and a cluster.
+        random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
+            the seed used by the random number generator; if ``RandomState`` instance,
+            ``random_state`` is the random number generator; if ``None``, the random number
+            generator is the ``RandomState`` instance used by ``np.random``.
+
+    Attributes:
+        centers (dict): Central positions of each cluster.
+
+    Example:
+
     In the following example the cluster assignments are exactly the same as when using `sklearn`'s
     batch implementation.
 
-        #!python
         >>> import creme.cluster
         >>> import numpy as np
         >>> X = np.array([[1, 2], [1, 4], [1, 0],
@@ -49,8 +64,7 @@ class KMeans(base.Clusterer):
         array([[1.17645129, 1.93067455],
         ...    [3.4742213 , 1.84015401]])
 
-    References
-    ----------
+    References:
     - [Sequential k-Means Clustering](http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm)
 
     """
@@ -58,18 +72,13 @@ class KMeans(base.Clusterer):
     def __init__(self, n_clusters=8, halflife=0.5, mu=0, sigma=1, distance=euclidean_distance,
                  random_state=None):
         self.n_clusters = n_clusters
-        """Maximum number of clusters to assign."""
         self.halflife = halflife
-        """Amount by which to move the cluster centers, a reasonable value if between 0 and 1."""
         self.mu = mu
-        """Mean of the normal distribution used to instantiate cluster positions."""
         self.sigma = sigma
-        """Standard deviation of the normal distribution used to instantiate cluster positions."""
         self.distance = distance
-        """Metric used to compute distances between an observation and a cluster."""
-        self.rng = utils.check_random_state(random_state)
+        self.random_state = utils.check_random_state(random_state)
         self.centers = {
-            i: collections.defaultdict(lambda: self.rng.normal(self.mu, self.sigma))
+            i: collections.defaultdict(lambda: self.random_state.normal(self.mu, self.sigma))
             for i in range(n_clusters)
         }
 

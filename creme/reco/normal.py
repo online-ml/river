@@ -9,16 +9,26 @@ __all__ = ['RandomNormal']
 
 
 class RandomNormal(base.Recommender):
+    """Predicts random values sampled from a normal distribution.
+
+    The parameters of the normal distribution are fitted with running statistics. This is
+    equivalent to using ``surprise.NormalPredictor``.
+
+    Parameters:
+        random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
+            the seed used by the random number generator; if ``RandomState`` instance,
+            ``random_state`` is the random number generator; if ``None``, the random number
+            generator is the ``RandomState`` instance used by ``np.random``.
+
+    Attributes:
+        variance (stats.Variance)
+
     """
 
-    This is equivalent to `surprise.NormalPredictor`.
-
-    """
-
-    def __init__(self, random_state=42):
+    def __init__(self, random_state=None):
         super().__init__()
         self.variance = stats.Variance()
-        self.rng = utils.check_random_state(random_state)
+        self.random_state = utils.check_random_state(random_state)
 
     def fit_one(self, r_id, c_id, y):
         y_pred = self.predict_one(r_id, c_id)
@@ -28,4 +38,4 @@ class RandomNormal(base.Recommender):
     def predict_one(self, r_id, c_id):
         μ = self.variance.mean.get()
         σ = self.variance.get() ** 0.5
-        return self.rng.normal(μ, σ)
+        return self.random_state.normal(μ, σ)

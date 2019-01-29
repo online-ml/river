@@ -12,10 +12,16 @@ __all__ = ['LogisticRegression']
 class LogisticRegression(base.BinaryClassifier):
     """Logistic regression for binary classification.
 
-    Example
-    -------
+    Parameters:
+        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
+        loss (optim.Loss): The loss function to optimize for.
+        l2 (float): regularization amount used to push weights towards 0.
 
-        #!python
+    Attributes:
+        weights (collections.defaultdict)
+
+    Example:
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection
@@ -24,7 +30,6 @@ class LogisticRegression(base.BinaryClassifier):
         >>> import creme.stream
         >>> from sklearn import datasets
         >>> from sklearn import metrics
-
         >>> X_y = creme.stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_breast_cancer,
         ...     shuffle=True,

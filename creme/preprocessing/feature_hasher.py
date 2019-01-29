@@ -15,10 +15,20 @@ class FeatureHasher(base.Transformer):
     used to make sure the hash is in a certain range. We use the Murmurhash implementation from
     scikit-learn.
 
-    Example
-    -------
+    Parameters:
+        n_features (int): The number by which each hash will be moduloed by.
+        alternate_sign (bool): Whether or not half of the hashes will be negated.
+        encoding (str): The string encoding used by ``sklearn.utils.murmurhash3_32``.
+        random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
+            the seed used by the random number generator; if ``RandomState`` instance,
+            ``random_state`` is the random number generator; if ``None``, the random number
+            generator is the ``RandomState`` instance used by ``np.random``.
 
-        #!python
+    Arguments:
+        seed (int): Seed used by ``sklearn.utils.murmurhash3_32``.
+
+    Example:
+
         >>> import creme
         >>> hasher = creme.preprocessing.FeatureHasher(n_features=10, random_state=0)
         >>> X = [{'dog': 1, 'cat': 2, 'elephant': 4}, {'dog': 2, 'run': 5}]
@@ -27,8 +37,8 @@ class FeatureHasher(base.Transformer):
         defaultdict(<class 'int'>, {2: -1, 1: 2, 8: 4})
         defaultdict(<class 'int'>, {2: -2, 4: 5})
 
-    References
-    ----------
+    References:
+
     - [Feature vectorization using hashing trick](https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick)
 
     """
@@ -36,15 +46,10 @@ class FeatureHasher(base.Transformer):
     def __init__(self, n_features=1048576, alternate_sign=True, encoding='utf-8',
                  random_state=None):
         self.n_features = n_features
-        """Number by which each hash will be moduloed by."""
         self.alternate_sign = alternate_sign
-        """If `True` half of the hashes will be negated."""
         self.encoding = encoding
-        """String encoding used by `sklearn.utils.murmurhash3_32`."""
-        self.rng = utils.check_random_state(random_state)
-        """Random generator used to instantiate the `seed`."""
-        self.seed = self.rng.randint(0, 2 ** 32 - 1)
-        """Seed used by `sklearn.utils.murmurhash3_32`."""
+        self.random_state = utils.check_random_state(random_state)
+        self.seed = self.random_state.randint(0, 2 ** 32 - 1)
 
     def fit_one(self, x, y=None):
         return self.transform_one(x)

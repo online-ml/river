@@ -32,23 +32,29 @@ def compose(*functions):
 
 
 class VectorizerMixin:
-    """Contains common processing steps used by each vectorizer."""
+    """Contains common processing steps used by each vectorizer.
 
-    def __init__(self, on: str, strip_accents=True, lowercase=True, preprocessor=None,
+    Parameters:
+        on (str): The name of the feature that contains the text to vectorize.
+        strip_accents (bool): Whether or not to strip accent characters.
+        lowercase (bool): Whether or not to convert all characters to lowercase.
+        preprocessor (callable): The function used to preprocess the text. A default one is used
+            if it is not provided by the user.
+        tokenizer (callable): The function used to convert preprocessed text into a ``dict`` of
+            tokens. A default one is used if it is not provided by the user.
+
+    """
+
+    def __init__(self, on=None, strip_accents=True, lowercase=True, preprocessor=None,
                  tokenizer=None):
         self.on = on
-        """The name of the feature that contains the text to vectorize."""
         self.strip_accents = strip_accents
-        """Whether or not to strip accent characters."""
         self.lowercase = lowercase
-        """Whether or not to convert all characters to lowercase."""
         self.preprocessor = preprocessor or self.build_preprocessor()
-        """The function used to preprocess the text."""
         self.tokenizer = tokenizer or self.build_tokenizer()
-        """The function used to convert preprocessed text into a `dict` of tokens."""
 
     def build_preprocessor(self):
-        """Return a function to preprocess the text before tokenization."""
+        """Returns a function to preprocess the text before tokenization."""
         steps = []
 
         if self.strip_accents:
@@ -68,12 +74,19 @@ class VectorizerMixin:
 class CountVectorizer(base.Transformer, VectorizerMixin):
     """Counts the number of occurrences of each token.
 
-    This returns exactly the same results as `sklearn`'s `CountVectorizer`.
+    This returns exactly the same results as ``sklearn``'s ``CountVectorizer``.
 
-    Example
-    -------
+    Parameters:
+        on (str): The name of the feature that contains the text to vectorize.
+        strip_accents (bool): Whether or not to strip accent characters.
+        lowercase (bool): Whether or not to convert all characters to lowercase.
+        preprocessor (callable): The function used to preprocess the text. A default one is used
+            if it is not provided by the user.
+        tokenizer (callable): The function used to convert preprocessed text into a ``dict`` of
+            tokens. A default one is used if it is not provided by the user.
 
-        #!python
+    Example:
+
         >>> import creme
         >>> corpus = [
         ...     'This is the first document.',
@@ -104,10 +117,23 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
     We use the same definition as scikit-learn. The only difference in the results comes the fact
     that the document frequencies have to be computed online.
 
-    Example
-    -------
+    Parameters:
+        on (str): The name of the feature that contains the text to vectorize.
+        strip_accents (bool): Whether or not to strip accent characters.
+        lowercase (bool): Whether or not to convert all characters to lowercase.
+        preprocessor (callable): The function used to preprocess the text. A default one is used
+            if it is not provided by the user.
+        tokenizer (callable): The function used to convert preprocessed text into a ``dict`` of
+            tokens. A default one is used if it is not provided by the user.
+        normalize (bool): Whether or not the TF-IDF values by their L2 norm.
 
-        #!python
+    Attributes:
+        tfs (feature_extraction.CountVectorizer): The term counts.
+        dfs (collections.defaultdict): The document counts.
+        n (int): The number of scanned documents.
+
+    Example:
+
         >>> import creme
         >>> corpus = [
         ...     'This is the first document.',
@@ -125,16 +151,13 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
 
     """
 
-    def __init__(self, normalize=True, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, on=None, strip_accents=True, lowercase=True, preprocessor=None,
+                 tokenizer=None, normalize=True):
+        super().__init__(on, strip_accents, lowercase, preprocessor, tokenizer)
         self.normalize = normalize
-        """Whether or not to normalize the TF-IDF values using their L2 norm."""
-        self.tfs = CountVectorizer(**kwargs)
-        """A `dict` containing the frequencies of each token."""
+        self.tfs = CountVectorizer(on, strip_accents, lowercase, preprocessor, tokenizer)
         self.dfs = collections.defaultdict(int)
-        """A `dict` containing the document frequencies of each token."""
         self.n = 0
-        """The number of documents seen."""
 
     def compute_tfidfs(self, term_counts):
         n_terms = sum(term_counts.values())

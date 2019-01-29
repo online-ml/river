@@ -16,10 +16,12 @@ class StandardScaler(base.Transformer):
     different than when using scikit-learn but this doesn't seem to have any impact learning
     performance.
 
-    Example
-    -------
+    Attributes:
+        variances (dict): Mapping between features and instances of ``stats.Variance``.
+        eps (float): Used for avoiding divisions by zero.
 
-        #!python
+    Example:
+
         >>> import pprint
         >>> import creme
         >>> import numpy as np
@@ -66,11 +68,9 @@ class StandardScaler(base.Transformer):
 
     """
 
-    def __init__(self, eps=None):
+    def __init__(self):
         self.variances = collections.defaultdict(lambda: stats.Variance())
-        """`dict` mapping feature names to instances of `creme.stats.Variance`."""
-        self.eps = eps or np.finfo(float).eps
-        """Used for avoiding divisions by zero."""
+        self.eps = np.finfo(float).eps
 
     def fit_one(self, x, y=None):
 

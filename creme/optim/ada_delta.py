@@ -9,10 +9,8 @@ __all__ = ['AdaDelta']
 class AdaDelta(base.Optimizer):
     """AdaDelta optimizer.
 
-    Example
-    -------
+    Example:
 
-        #!python
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection
@@ -37,8 +35,8 @@ class AdaDelta(base.Optimizer):
         >>> creme.model_selection.online_score(X_y, model, metric)
         0.977016...
 
-    References
-    ----------
+    References:
+
     - [AdaDelta: an adaptive learning rate method](https://arxiv.org/pdf/1212.5701.pdf)
 
     """
