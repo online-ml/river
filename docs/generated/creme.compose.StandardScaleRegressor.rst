@@ -16,6 +16,7 @@ creme.compose.StandardScaleRegressor
       ~StandardScaleRegressor.__init__
       ~StandardScaleRegressor.fit
       ~StandardScaleRegressor.fit_one
+      ~StandardScaleRegressor.fit_predict
       ~StandardScaleRegressor.get_params
       ~StandardScaleRegressor.predict
       ~StandardScaleRegressor.predict_one

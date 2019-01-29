@@ -1,5 +1,6 @@
 # Documentation
 docs/_build/
+docs/generated/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
