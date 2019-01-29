@@ -241,7 +241,7 @@ Loss functions
    stats.Variance
    stats.Min
    stats.Max
-   stats.Peak2Peak
+   stats.PeakToPeak
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
