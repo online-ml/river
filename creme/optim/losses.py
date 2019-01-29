@@ -17,6 +17,17 @@ class Loss(abc.ABC):
 
 
 class SquaredLoss(Loss):
+    """Computes the squared loss, also known as the mean squared error or L2 loss.
+
+    Mathematically, it is defined as
+
+    $$L = \\frac{1}{n} \\sum_i^n (p_i - y_i)^2$$
+
+    It's gradient w.r.t. to $p_i$ is
+
+    $$\\frac{\\partial L}{\\partial p_i} = p_i$$
+
+    """
 
     def __call__(self, y_true, y_pred):
         return (y_pred - y_true) ** 2

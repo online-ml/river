@@ -9,10 +9,8 @@ __all__ = ['AdaGrad']
 class AdaGrad(base.Optimizer):
     """AdaGrad optimizer.
 
-    Example
-    -------
+    Example:
 
-        #!python
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection

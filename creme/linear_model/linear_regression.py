@@ -1,3 +1,7 @@
+"""
+Linear Regression
+-----------------
+"""
 import collections
 
 from .. import base
@@ -17,10 +21,17 @@ class LinearRegression(base.Regressor):
     are found by using an online optimizer. In the current implementation the intercept is computed
     independently by maintaining a running mean and adding it to each prediction.
 
-    Example
-    -------
+    Parameters:
+        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
+        loss (optim.Loss): The loss function to optimize for.
+        l2 (float): L2 loss used to push weights towards 0.
 
-        #!python
+    Attributes:
+        weights (collections.defaultdict)
+        intercept (stats.Mean)
+
+    Example:
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection

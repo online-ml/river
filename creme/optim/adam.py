@@ -9,10 +9,8 @@ __all__ = ['Adam']
 class Adam(base.Optimizer):
     """Adam optimizer.
 
-    Example
-    -------
+    Example:
 
-        #!python
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection

@@ -7,10 +7,8 @@ __all__ = ['OneHotEncoder']
 class OneHotEncoder(base.Transformer):
     """One-hot encoding.
 
-    Example
-    -------
+    Example:
 
-        #!python
         >>> import pprint as pp
         >>> import string
         >>> import creme.preprocessing

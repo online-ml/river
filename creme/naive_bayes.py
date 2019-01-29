@@ -7,15 +7,26 @@ import math
 from . import base
 
 
+__all__ = ['MultinomialNB']
+
+
 class MultinomialNB(base.MultiClassifier):
     """Naive Bayes classifier for multinomial models.
 
     The input vector has to contain positive values, such as counts or TF-IDF values.
 
-    Example
-    -------
+    Parameters:
+        alpha (float): Smoothing parameter used for avoiding zero probabilities.
 
-        #!python
+    Attributes:
+        n (int): Number of seen observations.
+        class_counts (collections.defaultdict): Number of times each class has been seen.
+        term_counts (collections.defaultdict): Number of times each term has been seen.
+        class_term_counts (collections.defaultdict): Number of times each term has been seen per
+            class.
+
+    Example:
+
         >>> import math
         >>> import creme.compose
         >>> import creme.feature_extraction
@@ -60,23 +71,18 @@ class MultinomialNB(base.MultiClassifier):
         >>> model.predict_one({'text': new_text})
         'yes'
 
-    References
-    ----------
+    References:
+
     - [Naive Bayes text classification](https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html)
 
     """
 
     def __init__(self, alpha=1.0):
         self.alpha = alpha
-        """Smoothing parameter used for avoiding nil probabilities."""
         self.n = 0
-        """Number of seen observations."""
         self.class_counts = collections.defaultdict(lambda: 0)
-        """Number of times each class has been seen."""
         self.term_counts = collections.defaultdict(lambda: collections.defaultdict(lambda: 0))
-        """Number of times each term has been seen."""
         self.class_term_counts = collections.defaultdict(lambda: 0)
-        """Number of times each term has been seen per class."""
 
     @property
     def n_terms(self):

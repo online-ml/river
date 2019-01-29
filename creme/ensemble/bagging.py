@@ -18,13 +18,14 @@ class BaggingClassifier(base.BinaryClassifier):
     equal to 3, a 1% chance of being equal to 4, etc. You can do `scipy.stats.poisson(1).pmf(k)`
     for more detailed values.
 
+    Parameters:
+        base_estimator (creme.base.Classifier): The estimator to bag.
+
+    Example:
+
     In the following example three logistic regressions are bagged together. The performance is
-    slightly better than when one using a single logistic regression.
+    slightly better than when using a single logistic regression.
 
-    Example
-    -------
-
-        #!python
         >>> import creme.compose
         >>> import creme.ensemble
         >>> import creme.linear_model
@@ -51,15 +52,14 @@ class BaggingClassifier(base.BinaryClassifier):
         >>> creme.model_selection.online_score(X_y, model, metric)
         0.991563...
 
-    References
-    ----------
+    References:
+
     - [Online Bagging and Boosting](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
 
     """
 
     def __init__(self, base_estimator=None, n_estimators=10, random_state=42):
         self.base_estimator = base_estimator
-        '''The estimator to bag, should implement `creme.base.Classifier`.'''
         self.n_estimators = n_estimators
         self.estimators = [copy.deepcopy(base_estimator) for _ in range(n_estimators)]
         self.rng = utils.check_random_state(random_state)
