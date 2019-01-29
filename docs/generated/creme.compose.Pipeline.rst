@@ -27,6 +27,7 @@ creme.compose.Pipeline
       ~Pipeline.predict_proba_one
       ~Pipeline.score
       ~Pipeline.set_params
+      ~Pipeline.transform
       ~Pipeline.transform_one
    
    
@@ -40,6 +41,5 @@ creme.compose.Pipeline
       ~Pipeline.classes_
       ~Pipeline.inverse_transform
       ~Pipeline.named_steps
-      ~Pipeline.transform
    
    

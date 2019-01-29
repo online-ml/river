@@ -16,6 +16,7 @@ creme.linear\_model.LogisticRegression
       ~LogisticRegression.__init__
       ~LogisticRegression.fit
       ~LogisticRegression.fit_one
+      ~LogisticRegression.fit_predict
       ~LogisticRegression.get_params
       ~LogisticRegression.predict
       ~LogisticRegression.predict_one

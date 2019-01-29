@@ -16,6 +16,7 @@ creme.linear\_model.LinearRegression
       ~LinearRegression.__init__
       ~LinearRegression.fit
       ~LinearRegression.fit_one
+      ~LinearRegression.fit_predict
       ~LinearRegression.get_params
       ~LinearRegression.predict
       ~LinearRegression.predict_one

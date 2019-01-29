@@ -16,6 +16,7 @@ creme.ensemble.BaggingClassifier
       ~BaggingClassifier.__init__
       ~BaggingClassifier.fit
       ~BaggingClassifier.fit_one
+      ~BaggingClassifier.fit_predict
       ~BaggingClassifier.get_params
       ~BaggingClassifier.predict
       ~BaggingClassifier.predict_one
