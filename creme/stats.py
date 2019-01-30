@@ -193,17 +193,16 @@ class PeakToPeak(RunningStatistic):
         super().__init__()
         self.max = Max()
         self.min = Min()
-        self.p2p = 0
     
     @property
     def name(self):
         return 'p2p'
 
     def update(self,x):
-        new_max = self.max.update(x).get()
-        new_min = self.min.update(x).get()
-        self.p2p = new_max - new_min
+        self.max.update(x)
+        self.min.update(x)
+        
         return self 
     
     def get(self):
-        return self.p2p
+        return self.max.get() - self.min.get()
