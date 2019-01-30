@@ -1,0 +1,3 @@
+recursive-include src/skmultiflow *.c *.h *.pyx *.pxd *.pxi
+recursive-include src/skmultiflow/data/datasets *.csv *.csv.gz *.rst *.jpg *.txt *.arff.gz *.json.gz
+include requirements.txt
