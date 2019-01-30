@@ -4,25 +4,51 @@ Installation
 
 **Notice:** `scikit-multiflow` works with Python 3.4+ **only**.
 
-First, you need to make a copy of the ``scikit-multiflow`` project. On the `project's github page <https://github.com/scikit-multiflow/scikit-multiflow>`_ you will find on the top-right side of the page a green button with the label "Clone or download". By clicking on it you will get two options: clone with SSH, HTTPS or download a zip. If you opt to get a zip file then you have to unzip the project into the desired local destination before continuing.
-
-In a terminal, navigate to the local path of the project.
-
 ``scikit-multiflow`` requires `numpy <www.numpy.org>`_ to be already installed in your system. There are multiple ways to install ``numpy``, the easiest is using `pip <https://pip.pypa.io/en/stable/#>`_:
 
 .. code-block:: bash
 
    $ pip install -U numpy
 
+Option 1. Install from source code
+==================================
 
-Once `numpy` is installed, you can proceed with the installation of ``scikit-multiflow`` and its other dependencies. Run the following command (including the dot at the end):
+First, you need to make a copy of the ``scikit-multiflow`` project. On the `project's github page <https://github.com/scikit-multiflow/scikit-multiflow>`_ you will find on the top-right side of the page a green button with the label "Clone or download". By clicking on it you will get two options: clone with SSH, HTTPS or download a zip. If you opt to get a zip file then you have to unzip the project into the desired local destination before continuing.
+
+Once `numpy` is installed, you can proceed with the installation of ``scikit-multiflow`` and its other dependencies.
+
+In a terminal, navigate to the local path of the project and run the following command (including the dot at the end):
 
 .. code-block:: bash
 
    $ pip install -U .
 
+The `-U` option indicates that the package will be installed only for this user.
 
-When the installation is completed (and no errors were reported), then you will be ready to use `scikit-multiflow`.
+Optionally you can indicate to `pip` the remote location of the code:
+
+.. code-block:: bash
+
+   $ pip install -U git+https://github.com/scikit-multiflow/scikit-multiflow
+
+When the installation is completed (and no errors were reported), then you will be ready to use `scikit-multiflow`. The advantage of this option is that you can install the latest version of the code in github.
+
+Option 2. Install from PyPI
+===========================
+
+`scikit-multiflow` is also available in the Python Package Index (PyPI). So you can install it using the following command:
+
+.. code-block:: bash
+
+   $ pip install -U scikit-multiflow
+
+This will install the latest (stable) release of the code.
+
+Option 3. Development version
+====================================
+
+For people interested in contributing to `scikit-multiflow` we recommend to install the project in *editable* mode, please refer to the `contributor's page <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>`_ for further information.
+
 
 matplotlib backend considerations
 =================================
