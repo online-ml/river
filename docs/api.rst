@@ -202,6 +202,7 @@ Loss functions
    preprocessing.FeatureHasher
    preprocessing.OneHotEncoder
    preprocessing.StandardScaler
+   preprocessing.MinMaxScaler
 
 
 :mod:`creme.reco`: Recommendation algorithms
@@ -238,7 +239,9 @@ Loss functions
    stats.Mean
    stats.SmoothMean
    stats.Variance
-
+   stats.Min
+   stats.Max
+   stats.PeakToPeak
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------

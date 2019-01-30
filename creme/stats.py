@@ -2,9 +2,10 @@
 Module for computing running statistics
 """
 import abc
+import math
 
 
-__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance']
+__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance','Max','Min','PeakToPeak']
 
 
 class RunningStatistic(abc.ABC):
@@ -130,3 +131,78 @@ class Variance(RunningStatistic):
 
     def get(self):
         return self.sos / self.mean.count.n if self.sos else 0
+
+class Max(RunningStatistic):
+    """Computes a running max.
+    
+    Attributes:
+        max : The running max.
+
+    """
+    def __init__(self):
+        super().__init__()
+        self.max = - math.inf
+    
+    @property
+    def name(self):
+        return 'max'
+    
+    def update(self,x):
+        if x > self.max:
+            self.max = x 
+
+        return self
+    
+    def get(self):
+        return self.max
+
+class Min(RunningStatistic):
+    """Computes a running min.
+    
+    Attributes:
+        min : The running min.
+
+    """
+    def __init__(self):
+        super().__init__()
+        self.min =  math.inf
+    
+    @property
+    def name(self):
+        return 'min'
+    
+    def update(self,x):
+        if x < self.min:
+            self.min = x 
+            
+        return self
+    
+    def get(self):
+        return self.min
+
+class PeakToPeak(RunningStatistic):
+    """Computes a running peak to peak (max - min).
+
+    Attributes:
+        max (stats.Max) 
+        min (stats.Min)
+        p2p (float): The running peak to peak.
+
+    """
+    def __init__(self):
+        super().__init__()
+        self.max = Max()
+        self.min = Min()
+    
+    @property
+    def name(self):
+        return 'p2p'
+
+    def update(self,x):
+        self.max.update(x)
+        self.min.update(x)
+        
+        return self 
+    
+    def get(self):
+        return self.max.get() - self.min.get()
