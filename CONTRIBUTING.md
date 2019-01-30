@@ -6,7 +6,7 @@
 
 Before starting you want to make sure you have Python 3.6 or above installed.
 
-You first want to fork the repository, which you can do from GitHub. Once you've forked the `creme` repository, you can clone it to your work station. Once this is done navigate to the cloned directory and install the required dependencies:
+You first want to fork the `dev` branch of the repository, which you can do from GitHub. Once you've done the fork, you can clone it to your work station. Once this is done navigate to the cloned directory and install the required dependencies:
 
 ```sh
 pip install -r requirements.txt
