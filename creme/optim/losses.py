@@ -51,9 +51,13 @@ class LogLoss(Loss):
 
     """
 
+    @staticmethod
+    def _clip_proba(p):
+        return max(min(p, 1 - 1e-15), 1e-15)
+
     def __call__(self, y_true, y_pred):
-        y_pred = max(min(y_pred, 1 - 1e-15), 1e-15)
+        y_pred = self._clip_proba(y_pred)
         return -(y_true * math.log(y_pred) + (1 - y_true) * math.log(1 - y_pred))
 
     def gradient(self, y_true, y_pred):
-        return self.clip_proba(y_pred) - y_true
+        return self._clip_proba(y_pred) - y_true
