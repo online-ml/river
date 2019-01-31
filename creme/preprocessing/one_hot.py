@@ -9,6 +9,8 @@ class OneHotEncoder(base.Transformer):
 
     Example:
 
+    ::
+
         >>> import pprint as pp
         >>> import string
         >>> import creme.preprocessing

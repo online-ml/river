@@ -9,10 +9,8 @@ __all__ = ['NesterovMomentum']
 class NesterovMomentum(base.Optimizer):
     """Nesterov Momentum optimizer.
 
-    Example
-    -------
+    Example:
 
-        #!python
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection

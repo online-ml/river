@@ -47,6 +47,8 @@ class KMeans(base.Clusterer):
     In the following example the cluster assignments are exactly the same as when using `sklearn`'s
     batch implementation.
 
+    ::
+
         >>> import creme.cluster
         >>> import numpy as np
         >>> X = np.array([[1, 2], [1, 4], [1, 0],
@@ -65,7 +67,7 @@ class KMeans(base.Clusterer):
         ...    [3.4742213 , 1.84015401]])
 
     References:
-    - [Sequential k-Means Clustering](http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm)
+    - `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
 
     """
 
