@@ -103,14 +103,14 @@ pygments_style = None
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
-html_favicon = 'static/favicon.ico'
+html_favicon = '_static/favicon.ico'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    'logo': 'static/logo.png',
+    'logo': 'logo.png',
     'github_user': 'creme-ml',
     'github_repo': 'creme',
     'github_banner': 'true',
