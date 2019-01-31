@@ -7,9 +7,9 @@
   <a href="https://travis-ci.org/creme-ml/creme">
     <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=flat-square" alt="travis" />
   </a>
-  <!-- Coveralls -->
-  <a href="https://coveralls.io/github/creme-ml/creme?branch=master">
-    <img src="https://coveralls.io/repos/github/creme-ml/creme/badge.svg?branch=master&style=flat-square" alt="coveralls" />
+  <!-- Codecov -->
+  <a href="https://codecov.io/gh/creme-ml/creme">
+    <img src="https://codecov.io/gh/creme-ml/creme/branch/dev/graph/badge.svg&style=flat-square" alt="coveralls" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">

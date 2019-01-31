@@ -110,7 +110,7 @@ html_favicon = 'static/favicon.ico'
 # documentation.
 #
 html_theme_options = {
-    'logo': 'logo.png',
+    'logo': 'static/logo.png',
     'github_user': 'creme-ml',
     'github_repo': 'creme',
     'github_banner': 'true',
