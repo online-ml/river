@@ -7,10 +7,10 @@ __all__ = ['VanillaSGD']
 class VanillaSGD(base.Optimizer):
     """Plain stochastic gradient descent.
 
-    Example
-    -------
+    Example:
 
-        #!python
+    ::
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection
