@@ -49,7 +49,6 @@ class SquaredLoss(Loss):
     $$\\frac{\\partial L}{\\partial p_i} = p_i$$
 
     """
-
     def __call__(self, y_true, y_pred):
         return (y_pred - y_true) ** 2
 
