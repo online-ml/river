@@ -183,6 +183,7 @@ Loss functions
    :nosignatures:
 
    optim.LogLoss
+   optim.AbsoluteLoss
    optim.SquaredLoss
 
 
