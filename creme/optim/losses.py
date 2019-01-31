@@ -2,7 +2,7 @@ import abc
 import math
 
 
-__all__ = ['SquaredLoss', 'LogLoss']
+__all__ = ['SquaredLoss', 'LogLoss','AbsoluteLoss']
 
 
 class Loss(abc.ABC):
@@ -15,6 +15,27 @@ class Loss(abc.ABC):
     def gradient(self, y_true, y_pred) -> dict:
         pass
 
+class AbsoluteLoss(Loss):
+    """Computes the absolute loss, also known as the mean absolute error or L1 loss.
+
+    Mathematically, it is defined as
+
+    $$L = \\frac{1}{n} \\sum_i^n |p_i - y_i|$$
+
+    It's gradient w.r.t. to $p_i$ is
+
+    $$\\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i) $$
+    
+    """
+    def __call__(self,y_true,y_pred):
+        return abs(y_pred - y_true)
+    
+    def gradient(self,y_true,y_pred):
+        if y_pred - y_true > 0:
+            return 1
+        elif y_pred - y_true == 0:
+            return 0
+        return -1
 
 class SquaredLoss(Loss):
     """Computes the squared loss, also known as the mean squared error or L2 loss.
