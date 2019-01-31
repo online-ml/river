@@ -26,6 +26,8 @@ class GroupBy(base.Transformer):
 
     Example:
 
+    ::
+
         >>> import creme
 
         >>> X = [
@@ -54,7 +56,7 @@ class GroupBy(base.Transformer):
 
     References:
 
-    - [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
+    - `Streaming groupbys in pandas for big dataset <(https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
 
     """
 

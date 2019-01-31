@@ -3,9 +3,13 @@
 </div>
 
 <div align="center">
-  <!-- Build status -->
+  <!-- Travis -->
   <a href="https://travis-ci.org/creme-ml/creme">
-    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=flat-square" alt="build_status" />
+    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=flat-square" alt="travis" />
+  </a>
+  <!-- Coveralls -->
+  <a href="https://coveralls.io/github/creme-ml/creme?branch=master">
+    <img src="https://coveralls.io/repos/github/creme-ml/creme/badge.svg?branch=master&style=flat-square" alt="coveralls" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">

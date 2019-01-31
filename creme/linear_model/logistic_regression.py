@@ -22,6 +22,8 @@ class LogisticRegression(base.BinaryClassifier):
 
     Example:
 
+    ::
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection

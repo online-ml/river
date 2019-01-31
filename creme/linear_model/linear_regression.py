@@ -32,6 +32,8 @@ class LinearRegression(base.Regressor):
 
     Example:
 
+    ::
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection

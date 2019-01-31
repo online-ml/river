@@ -15,9 +15,9 @@ jobs:
     - conda update --yes conda
     - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
     - source activate testenv
-    install: conda install --name testenv --yes --file requirements.txt coveralls pytest pytest-cov
+    install: conda install --name testenv --yes --file requirements.txt coveralls pytest pytest-cov codecov
     script: pytest --cov=creme
-    after_success: coveralls
+    after_success: codecov
   - stage: pypi
     install: echo "skipping install"
     script: echo "skipping tests"

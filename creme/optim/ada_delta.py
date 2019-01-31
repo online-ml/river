@@ -11,6 +11,8 @@ class AdaDelta(base.Optimizer):
 
     Example:
 
+    ::
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection
@@ -37,7 +39,7 @@ class AdaDelta(base.Optimizer):
 
     References:
 
-    - [AdaDelta: an adaptive learning rate method](https://arxiv.org/pdf/1212.5701.pdf)
+    - `AdaDelta: an adaptive learning rate method <https://arxiv.org/pdf/1212.5701.pdf>`_
 
     """
 

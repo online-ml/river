@@ -17,6 +17,8 @@ class TransformerUnion(base.Transformer):
 
     Example:
 
+    ::
+
         >>> import creme.compose
         >>> import creme.feature_extraction
 
