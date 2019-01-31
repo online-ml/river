@@ -5,7 +5,7 @@ import abc
 import math
 
 
-__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance','Max','Min','PeakToPeak']
+__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance','Max','Min','PeakToPeak','Sum']
 
 
 class RunningStatistic(abc.ABC):
@@ -206,3 +206,25 @@ class PeakToPeak(RunningStatistic):
     
     def get(self):
         return self.max.get() - self.min.get()
+    
+class Sum(RunningStatistic):
+    """Computes a running Sum.
+    
+    Attributes:
+        sum : The running sum.
+
+    """
+    def __init__(self):
+        super().__init__()
+        self.sum = 0
+    
+    @property
+    def name(self):
+        return 'sum'
+    
+    def update(self,x):
+        self.sum += x
+        return self
+    
+    def get(self):
+        return self.sum
