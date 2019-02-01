@@ -24,11 +24,11 @@ class AbsoluteLoss(Loss):
 
     Mathematically, it is defined as
 
-    .. math:: L = |p_i - y_i|$$
+    .. math:: L = |p_i - y_i|
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math:: \\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i) $$
+    .. math:: \\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i)
     
     """
     def __call__(self,y_true,y_pred):
@@ -97,7 +97,31 @@ class HingeLoss(Loss):
             \\ -p_iy_i & p_iy_i < 1
         \\end{array}
         \\right.
+    
+    Example:
 
+        >>> import numpy as np
+        >>> from sklearn import svm
+        >>> from sklearn.metrics import hinge_loss
+        >>> import creme
+        >>> X = [[0], [1]]
+        >>> y = [-1, 1]
+        >>> est = svm.LinearSVC(random_state=0)
+        >>> est.fit(X, y)
+        LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+             intercept_scaling=1, loss='squared_hinge', max_iter=1000,
+             multi_class='ovr', penalty='l2', random_state=0, tol=0.0001,
+             verbose=0)
+
+        >>> y_true = [-1, 1, 1]
+        >>> pred_decision = est.decision_function([[-2], [3], [0.5]])
+
+        >>> hinge_loss([-1, 1, 1], pred_decision)
+        0.3030367603854425
+
+        >>> loss = creme.optim.HingeLoss()
+        >>> np.mean([loss(y_t,pred) for y_t, pred in zip(y_true, pred_decision)])
+        0.3030367603854425
     """
 
     def __call__(self, y_true, y_pred):
@@ -106,5 +130,4 @@ class HingeLoss(Loss):
     def gradient(self, y_true, y_pred):
         if y_pred * y_true < 1:
             return - y_pred * y_true
-        else:
-            return 0
+        return 0
