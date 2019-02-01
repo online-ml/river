@@ -38,6 +38,26 @@ API reference
    cluster.KMeans
 
 
+:mod:`creme.compat`: Compatibility utilities
+--------------------------------------------
+
+.. automodule:: creme.compat
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+   :nosignatures:
+
+   compat.SKLClassifierWrapper
+   compat.SKLClustererWrapper
+   compat.SKLTransformerWrapper
+   compat.SKLRegressorWrapper
+
+
 :mod:`creme.compose`: Model composition
 ---------------------------------------
 
