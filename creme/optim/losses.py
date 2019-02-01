@@ -93,14 +93,14 @@ class HingeLoss(Loss):
     .. math:: 
         \\frac{\\partial L}{\\partial y_i} = \\left\{
         \\begin{array}{ll}
-            \\ 0  &   p_iy_i >= 1  \\\\
+            \\ 0  &   p_iy_i \geqslant 1  \\\\
             \\ -p_iy_i & p_iy_i < 1
         \\end{array}
         \\right.
 
     """
 
-    def __call__(self,y_true, y_pred):
+    def __call__(self, y_true, y_pred):
         return max(0, 1 - y_pred * y_true)
 
     def gradient(self, y_true, y_pred):
