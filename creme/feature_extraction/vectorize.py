@@ -14,14 +14,13 @@ __all__ = ['CountVectorizer', 'TFIDFVectorizer']
 def compose(*functions):
     """Return a callable that chains multiple functions.
 
-    Example
-    -------
+    Example:
 
-    >>> f = lambda x: x + 1
-    >>> g = lambda x: x * 2
-    >>> h = lambda x: -x
-    >>> compose(f, g, h)(10)
-    -22
+        >>> f = lambda x: x + 1
+        >>> g = lambda x: x * 2
+        >>> h = lambda x: -x
+        >>> compose(f, g, h)(10)
+        -22
 
     """
 

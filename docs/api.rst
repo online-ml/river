@@ -174,6 +174,22 @@ Optimizers
    optim.AdaDelta
    optim.AdaGrad
    optim.Adam
+   optim.FTRLProximal
+   optim.Momentum
+   optim.NesterovMomentum
+   optim.RMSProp
+   optim.VanillaSGD
+
+
+Learning rate schedulers
+++++++++++++++++++++++++
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   optim.ConstantLR
+   optim.LinearDecreaseLR
 
 
 Loss functions

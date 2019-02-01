@@ -9,10 +9,10 @@ __all__ = ['Momentum']
 class Momentum(base.Optimizer):
     """Momentum optimizer.
 
-    Example
-    -------
+    Example:
 
-        #!python
+    ::
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection

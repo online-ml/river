@@ -32,7 +32,7 @@ def iter_numpy(X, y=None, feature_names=None, shuffle=False, random_state=None):
         order = rng.permutation(len(X))
         X, y = X[order], y if y is None else y[order]
 
-    for x, yi in itertools.zip_longest(X, [] if y is None else y):
+    for x, yi in itertools.zip_longest(X, y if hasattr(y, '__iter__') else []):
         yield {i: xi for i, xi in zip(feature_names, x)}, yi
 
 

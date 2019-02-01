@@ -39,7 +39,7 @@ class FeatureHasher(base.Transformer):
 
     References:
 
-    - [Feature vectorization using hashing trick](https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick)
+    - `Feature vectorization using hashing trick <https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick>`_
 
     """
 
