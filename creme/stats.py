@@ -5,7 +5,7 @@ import abc
 import math
 
 
-__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance', 'Max', 'Min', 'PeakToPeak', 'Sum']
+__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance', 'Max', 'Min', 'PeakToPeak', 'Sum', 'Kurtosis', 'Skew']
 
 
 class RunningStatistic(abc.ABC):
