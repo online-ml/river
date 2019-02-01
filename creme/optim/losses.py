@@ -4,7 +4,7 @@ import math
 import numpy as np
 
 
-__all__ = ['SquaredLoss', 'LogLoss', 'AbsoluteLoss']
+__all__ = ['SquaredLoss', 'LogLoss', 'AbsoluteLoss', 'HingeLoss']
 
 
 class Loss(abc.ABC):
@@ -79,3 +79,32 @@ class LogLoss(Loss):
 
     def gradient(self, y_true, y_pred):
         return self._clip_proba(y_pred) - y_true
+
+class HingeLoss(Loss):
+    """Computes the hinge loss.
+
+    Mathematically, it is defined as
+
+    .. math:: L = max(0, 1 - p_i * y_i)
+
+
+    It's gradient w.r.t. to $p_i$ is
+
+    .. math:: 
+        \\frac{\\partial L}{\\partial y_i} = \\left\{
+        \\begin{array}{ll}
+            \\ 0  &   p_iy_i >= 1  \\\\
+            \\ -p_iy_i & p_iy_i < 1
+        \\end{array}
+        \\right.
+
+    """
+
+    def __call__(self,y_true, y_pred):
+        return max(0, 1 - y_pred * y_true)
+
+    def gradient(self, y_true, y_pred):
+        if y_pred * y_true < 1:
+            return - y_pred * y_true
+        else:
+            return 0
