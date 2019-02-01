@@ -6,6 +6,7 @@ from .ada_delta import AdaDelta
 from .ada_grad import AdaGrad
 from .adam import Adam
 from .ftrl import FTRLProximal
+from .losses import AbsoluteLoss
 from .losses import SquaredLoss
 from .losses import LogLoss
 from .lr_schedule import ConstantLR
@@ -27,6 +28,7 @@ __all__ = [
     'Momentum',
     'NesterovMomentum',
     'RMSProp',
+    'AbsoluteLoss',
     'SquaredLoss',
     'VanillaSGD'
 ]
