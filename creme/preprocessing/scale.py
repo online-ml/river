@@ -22,6 +22,8 @@ class StandardScaler(base.Transformer):
 
     Example:
 
+    ::
+
         >>> import pprint
         >>> import creme
         >>> import numpy as np

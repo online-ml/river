@@ -22,6 +22,8 @@ class OneVsRestClassifier(base.MultiClassifier):
 
     Example:
 
+    ::
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection

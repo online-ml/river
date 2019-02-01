@@ -32,6 +32,8 @@ class LinearRegression(base.Regressor):
 
     Example:
 
+    ::
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection
@@ -64,7 +66,7 @@ class LinearRegression(base.Regressor):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
-        self.weights = collections.defaultdict(lambda: 0.)
+        self.weights = collections.defaultdict(float)
         self.intercept = stats.Mean()
 
     def _predict_with_weights(self, x, w):

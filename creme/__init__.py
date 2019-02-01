@@ -6,6 +6,7 @@ data is processed at once. Incremental learning is desirable when the data is to
 memory, or simply when it isn't available all at once. creme's API is heavily inspired from that of scikit-learn, enough so that users who are familiar with scikit-learn should feel right at home.
 """
 from . import cluster
+from . import compat
 from . import compose
 from . import ensemble
 from . import feature_extraction
@@ -23,6 +24,7 @@ from .__version__ import __version__
 
 __all__ = [
     'cluster',
+    'compat',
     'compose',
     'ensemble',
     'feature_extraction',

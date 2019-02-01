@@ -11,10 +11,10 @@ __all__ = ['FTRLProximal']
 class FTRLProximal(base.Optimizer):
     """FTRL-Proximal optimizer.
 
-    Example
-    -------
+    Example:
 
-        #!python
+    ::
+
         >>> import creme.compose
         >>> import creme.linear_model
         >>> import creme.model_selection
@@ -39,10 +39,10 @@ class FTRLProximal(base.Optimizer):
         >>> creme.model_selection.online_score(X_y, model, metric)
         0.989859...
 
-    References
-    ----------
-    - [Ad Click Prediction: a View from the Trenches - Research - Google](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf)
-    - [`tf.train.FtrlOptimizer`](https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer)
+    References:
+
+    - `Ad Click Prediction: a View from the Trenches - Research - Google <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
+    - `tf.train.FtrlOptimizer <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
 
     """
 

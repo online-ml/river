@@ -27,6 +27,8 @@ class MultinomialNB(base.MultiClassifier):
 
     Example:
 
+    ::
+
         >>> import math
         >>> import creme.compose
         >>> import creme.feature_extraction
@@ -73,7 +75,7 @@ class MultinomialNB(base.MultiClassifier):
 
     References:
 
-    - [Naive Bayes text classification](https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html)
+    - `Naive Bayes text classification <https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html>`_
 
     """
 

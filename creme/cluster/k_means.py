@@ -47,11 +47,15 @@ class KMeans(base.Clusterer):
     In the following example the cluster assignments are exactly the same as when using `sklearn`'s
     batch implementation.
 
-        >>> import creme.cluster
+    ::
+
+        >>> from creme import cluster
+        >>> from creme import compat
         >>> import numpy as np
         >>> X = np.array([[1, 2], [1, 4], [1, 0],
         ...               [4, 2], [4, 4], [4, 0]])
-        >>> k_means = creme.cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, random_state=42)
+        >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, random_state=42)
+        >>> k_means = compat.SKLClustererWrapper(k_means)
         >>> k_means = k_means.fit(X)
 
         >>> k_means.predict(X)
@@ -60,12 +64,8 @@ class KMeans(base.Clusterer):
         >>> k_means.predict([[0, 0], [4, 4]])
         array([0, 1], dtype=int32)
 
-        >>> k_means.cluster_centers_
-        array([[1.17645129, 1.93067455],
-        ...    [3.4742213 , 1.84015401]])
-
     References:
-    - [Sequential k-Means Clustering](http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm)
+    - `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
 
     """
 
@@ -78,9 +78,13 @@ class KMeans(base.Clusterer):
         self.distance = distance
         self.random_state = utils.check_random_state(random_state)
         self.centers = {
-            i: collections.defaultdict(lambda: self.random_state.normal(self.mu, self.sigma))
+            i: collections.defaultdict(self.random_normal)
             for i in range(n_clusters)
         }
+
+    def random_normal(self):
+        """Returns a random value sampled from a normal distribution."""
+        return self.random_state.normal(self.mu, self.sigma)
 
     @property
     def cluster_centers_(self):
