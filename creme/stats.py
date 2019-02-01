@@ -231,8 +231,8 @@ class Sum(RunningStatistic):
 
 class CentralMoments(RunningStatistic):
     """Computes central moments using Welford's algorithm.
-    Attributes:
-        
+    
+    Attributes:    
         old_count (stats.count).
         new_count (stats.count).
         delta (float): Mean of differences.
