@@ -281,6 +281,8 @@ Loss functions
    stats.Max
    stats.PeakToPeak
    stats.Sum
+   stats.Kurtosis
+   stats.Skew
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
