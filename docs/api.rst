@@ -12,6 +12,7 @@ API reference
 
 .. autosummary::
    :toctree: generated/
+   :template: class.rst
    :nosignatures:
 
    base.BinaryClassifier
