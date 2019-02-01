@@ -78,4 +78,4 @@ class LogisticRegression(base.BinaryClassifier):
         return self._predict_proba_one_with_weights(x, self.weights)
 
     def predict_one(self, x):
-        return self.predict_proba(x) > 0.5
+        return self.predict_proba_one(x) > 0.5

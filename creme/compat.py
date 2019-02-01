@@ -14,6 +14,7 @@ from sklearn import preprocessing
 from sklearn import utils
 
 from . import base
+from . import compose
 from . import stream
 
 
@@ -93,7 +94,10 @@ class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
 
         """
         # Check the estimator is a Regressor
-        if not isinstance(self.creme_estimator, base.Regressor):
+        if isinstance(self.creme_estimator, compose.Pipeline):
+            if not isinstance(self.creme_estimator._final_estimator, base.Regressor):
+                raise ValueError('creme_estimator is not a Regressor')
+        elif not isinstance(self.creme_estimator, base.Regressor):
             raise ValueError('creme_estimator is not a Regressor')
 
         # Check the inputs
@@ -160,6 +164,12 @@ class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
 
 class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
+    @property
+    def is_binary(self):
+        if isinstance(self.creme_estimator, compose.Pipeline):
+            return isinstance(self.creme_estimator._final_estimator, base.BinaryClassifier)
+        return isinstance(self.creme_estimator, base.BinaryClassifier)
+
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
 
@@ -172,7 +182,13 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         """
         # Check the estimator is either a BinaryClassifier or a MultiClassifier
-        if not isinstance(self.creme_estimator, (base.BinaryClassifier, base.MultiClassifier)):
+        if isinstance(self.creme_estimator, compose.Pipeline):
+            if not isinstance(
+                self.creme_estimator._final_estimator,
+                (base.BinaryClassifier, base.MultiClassifier)
+            ):
+                raise ValueError('creme_estimator is not a BinaryClassifier nor a MultiClassifier')
+        elif not isinstance(self.creme_estimator, (base.BinaryClassifier, base.MultiClassifier)):
             raise ValueError('creme_estimator is not a BinaryClassifier nor a MultiClassifier')
 
         # Check the inputs
@@ -180,13 +196,13 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         # Check the number of classes agrees with the type of classifier
         self.classes_ = np.unique(y)
-        if len(self.classes_) > 2 and isinstance(self.creme_estimator, base.BinaryClassifier):
+        if len(self.classes_) > 2 and self.is_binary:
             raise ValueError('n_classes is more than 2 but creme_estimator is a BinaryClassifier')
-        if len(self.classes_) < 3 and isinstance(self.creme_estimator, base.MultiClassifier):
+        if len(self.classes_) < 3 and not self.is_binary:
             raise ValueError('n_classes is less than 3 but creme_estimator is a MultiClassifier')
 
         # creme's BinaryClassifier expects bools or 0/1 values
-        if self.isinstance(self.creme_estimator, base.BinaryClassifier):
+        if self.is_binary:
             self.label_encoder_ = preprocessing.LabelEncoder().fit(y)
             y = self.label_encoder_.transform(y)
 
@@ -217,7 +233,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         # creme's predictions have to converted to follow the scikit-learn conventions
-        if isinstance(self.creme_estimator, base.BinaryClassifier):
+        if self.is_binary:
             def extract_proba(y_pred):
                 return [1 - y_pred, y_pred]
         else:
@@ -225,7 +241,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
                 return [y_pred.get(c, 0) for c in self.classes_]
 
         # Make a prediction for each observation
-        y_pred = np.empty(shape=(len(X), self.n_classes_))
+        y_pred = np.empty(shape=(len(X), len(self.classes_)))
         for i, (x, _) in enumerate(stream.iter_numpy(X)):
             y_pred[i] = extract_proba(self.instance_.predict_proba_one(x))
 
@@ -248,7 +264,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         # Make a prediction for each observation
-        y_pred = np.empty(shape=(len(X), self.n_classes_))
+        y_pred = np.empty(shape=len(X))
         for i, (x, _) in enumerate(stream.iter_numpy(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
@@ -286,7 +302,10 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
 
         """
         # Check the estimator is a Transformer
-        if not isinstance(self.creme_estimator, base.Transformer):
+        if isinstance(self.creme_estimator, compose.Pipeline):
+            if not isinstance(self.creme_estimator._final_estimator, base.Transformer):
+                raise ValueError('creme_estimator is not a Transformer')
+        elif not isinstance(self.creme_estimator, base.Transformer):
             raise ValueError('creme_estimator is not a Transformer')
 
         # Check the inputs
