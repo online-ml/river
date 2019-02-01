@@ -184,6 +184,7 @@ Loss functions
    :nosignatures:
 
    optim.LogLoss
+   optim.AbsoluteLoss
    optim.SquaredLoss
 
 
@@ -243,6 +244,7 @@ Loss functions
    stats.Min
    stats.Max
    stats.PeakToPeak
+   stats.Sum
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
