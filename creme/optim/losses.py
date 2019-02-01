@@ -94,7 +94,7 @@ class HingeLoss(Loss):
         \\frac{\\partial L}{\\partial y_i} = \\left\{
         \\begin{array}{ll}
             \\ 0  &   p_iy_i \geqslant 1  \\\\
-            \\ -p_iy_i & p_iy_i < 1
+            \\ - y_i & p_iy_i < 1
         \\end{array}
         \\right.
     
@@ -129,5 +129,5 @@ class HingeLoss(Loss):
 
     def gradient(self, y_true, y_pred):
         if y_pred * y_true < 1:
-            return - y_pred * y_true
+            return - y_true
         return 0
