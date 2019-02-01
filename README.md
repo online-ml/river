@@ -9,7 +9,7 @@
   </a>
   <!-- Codecov -->
   <a href="https://codecov.io/gh/creme-ml/creme">
-    <img src="https://codecov.io/gh/creme-ml/creme/branch/dev/graph/badge.svg&style=flat-square" alt="codecov" />
+    <img src="https://codecov.io/gh/creme-ml/creme/branch/master/graph/badge.svg&style=flat-square" alt="codecov" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">
