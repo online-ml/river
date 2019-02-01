@@ -147,7 +147,7 @@ class Max(RunningStatistic):
     def name(self):
         return 'max'
     
-    def update(self,x):
+    def update(self, x):
         if x > self.max:
             self.max = x 
 
