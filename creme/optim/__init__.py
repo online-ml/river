@@ -9,6 +9,7 @@ from .ftrl import FTRLProximal
 from .losses import AbsoluteLoss
 from .losses import SquaredLoss
 from .losses import LogLoss
+from .losses import HingeLoss
 from .lr_schedule import ConstantLR
 from .lr_schedule import LinearDecreaseLR
 from .momentum import Momentum
@@ -30,5 +31,6 @@ __all__ = [
     'RMSProp',
     'AbsoluteLoss',
     'SquaredLoss',
-    'VanillaSGD'
+    'VanillaSGD',
+    'HingeLoss'
 ]
