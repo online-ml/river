@@ -220,6 +220,7 @@ Loss functions
    :nosignatures:
 
    optim.LogLoss
+   optim.HingeLoss
    optim.AbsoluteLoss
    optim.SquaredLoss
 
