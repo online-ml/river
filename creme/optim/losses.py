@@ -1,8 +1,10 @@
 import abc
 import math
 
+import numpy as np
 
-__all__ = ['SquaredLoss', 'LogLoss','AbsoluteLoss']
+
+__all__ = ['SquaredLoss', 'LogLoss', 'AbsoluteLoss']
 
 
 class Loss(abc.ABC):
@@ -22,22 +24,18 @@ class AbsoluteLoss(Loss):
 
     Mathematically, it is defined as
 
-    $$L = \\frac{1}{n} \\sum_i^n |p_i - y_i|$$
+    .. math:: L = |p_i - y_i|$$
 
     It's gradient w.r.t. to $p_i$ is
 
-    $$\\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i) $$
+    .. math:: \\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i) $$
     
     """
     def __call__(self,y_true,y_pred):
         return abs(y_pred - y_true)
     
     def gradient(self,y_true,y_pred):
-        if y_pred - y_true > 0:
-            return 1
-        elif y_pred - y_true == 0:
-            return 0
-        return -1
+        return np.sign(y_pred - y_true)
 
 class SquaredLoss(Loss):
     """Computes the squared loss, also known as the L2 loss.
