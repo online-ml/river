@@ -200,6 +200,7 @@ Loss functions
    :nosignatures:
 
    optim.LogLoss
+   optim.AbsoluteLoss
    optim.SquaredLoss
 
 
@@ -219,6 +220,7 @@ Loss functions
    preprocessing.FeatureHasher
    preprocessing.OneHotEncoder
    preprocessing.StandardScaler
+   preprocessing.MinMaxScaler
 
 
 :mod:`creme.reco`: Recommendation algorithms
@@ -255,7 +257,10 @@ Loss functions
    stats.Mean
    stats.SmoothMean
    stats.Variance
-
+   stats.Min
+   stats.Max
+   stats.PeakToPeak
+   stats.Sum
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
