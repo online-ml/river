@@ -5,7 +5,18 @@ import abc
 import math
 
 
-__all__ = ['Count', 'Mean', 'SmoothMean', 'Variance', 'Max', 'Min', 'PeakToPeak', 'Sum', 'Kurtosis', 'Skew']
+__all__ = [
+    'Count',
+    'Kurtosis',
+    'Max',
+    'Mean',
+    'Min',
+    'PeakToPeak',
+    'Skew',
+    'SmoothMean',
+    'Sum',
+    'Variance'
+]
 
 
 class RunningStatistic(abc.ABC):
@@ -132,142 +143,149 @@ class Variance(RunningStatistic):
     def get(self):
         return self.sos / self.mean.count.n if self.sos else 0
 
+
 class Max(RunningStatistic):
     """Computes a running max.
-    
+
     Attributes:
         max : The running max.
 
     """
+
     def __init__(self):
         super().__init__()
         self.max = - math.inf
-    
+
     @property
     def name(self):
         return 'max'
-    
+
     def update(self, x):
         if x > self.max:
-            self.max = x 
+            self.max = x
 
         return self
-    
+
     def get(self):
         return self.max
 
+
 class Min(RunningStatistic):
     """Computes a running min.
-    
+
     Attributes:
         min : The running min.
 
     """
+
     def __init__(self):
         super().__init__()
-        self.min =  math.inf
-    
+        self.min = math.inf
+
     @property
     def name(self):
         return 'min'
-    
-    def update(self,x):
+
+    def update(self, x):
         if x < self.min:
-            self.min = x 
-            
+            self.min = x
+
         return self
-    
+
     def get(self):
         return self.min
+
 
 class PeakToPeak(RunningStatistic):
     """Computes a running peak to peak (max - min).
 
     Attributes:
-        max (stats.Max) 
+        max (stats.Max)
         min (stats.Min)
         p2p (float): The running peak to peak.
 
     """
+
     def __init__(self):
         super().__init__()
         self.max = Max()
         self.min = Min()
-    
+
     @property
     def name(self):
         return 'p2p'
 
-    def update(self,x):
+    def update(self, x):
         self.max.update(x)
         self.min.update(x)
-        
-        return self 
-    
+
+        return self
+
     def get(self):
         return self.max.get() - self.min.get()
-    
+
+
 class Sum(RunningStatistic):
     """Computes a running Sum.
-    
+
     Attributes:
         sum (float) : The running sum.
 
     """
+
     def __init__(self):
         super().__init__()
-        self.sum = 0.0
-    
+        self.sum = 0.
+
     @property
     def name(self):
         return 'sum'
-    
-    def update(self,x):
+
+    def update(self, x):
         self.sum += x
         return self
-    
+
     def get(self):
         return self.sum
 
+
 class CentralMoments(RunningStatistic):
     """Computes central moments using Welford's algorithm.
-    
-    Attributes:    
-        old_count (stats.count).
-        new_count (stats.count).
+
+    Attributes:
+        count (stats.Count)
         delta (float): Mean of differences.
         sum_delta (float): Mean of sum of differences.
         M1 (float): sums of powers of differences from the mean order 1.
         M2 (float): sums of powers of differences from the mean order 2.
         M3 (float): sums of powers of differences from the mean order 3.
         M4 (float): sums of powers of differences from the mean order 4.
-    
+
     References:
         - `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
     """
+
     def __init__(self):
-        super().__init__()
-        self.old_count = Count()
-        self.new_count = Count()
-        
-        self.delta     = 0
+        self.count = Count()
+
+        self.delta = 0
         self.sum_delta = 0
-        
+
         self.M1 = 0
         self.M2 = 0
         self.M3 = 0
         self.M4 = 0
-    
+
     def _update_delta(self, x):
-        self.delta = (x - self.sum_delta) / self.new_count.get()
+        self.delta = (x - self.sum_delta) / self.count.get()
         return self
-        
+
     def _update_sum_delta(self):
         self.sum_delta += self.delta
         return self
 
     def _update_m1(self, x):
-        self.M1 = (x - self.sum_delta) * self.delta * self.old_count.get()
+        self.M1 = (x - self.sum_delta) * self.delta * (self.count.get() - 1)
         return self
 
     def _update_m2(self):
@@ -275,36 +293,28 @@ class CentralMoments(RunningStatistic):
         return self
 
     def _update_m3(self):
-        self.M3 += (self.M1 * self.delta * (self.new_count.get() - 2) - 3 * 
+        self.M3 += (self.M1 * self.delta * (self.count.get() - 2) - 3 *
                     self.delta * self.M2)
         return self
 
     def _update_m4(self):
-        delta_square = self.delta**2
+        delta_square = self.delta ** 2
         self.M4 += (self.M1 * delta_square *
-                   (self.new_count.get()**2 - 3 * self.new_count.get() + 3) +
-                   6 * delta_square * self.M2 - 4 * self.delta * self.M3)
+                    (self.count.get() ** 2 - 3 * self.count.get() + 3) +
+                    6 * delta_square * self.M2 - 4 * self.delta * self.M3)
         return self
 
-    def _update_count(self):
-        if self.old_count.get() < self.new_count.get():
-            self.old_count.update()
-            self.new_count.update()
-        elif self.old_count.get() == self.new_count.get():
-            # Initialize new_count
-            self.new_count.update()
-        return self
 
 class Kurtosis(CentralMoments):
     """Computes a running kurtosis using Welford's algorithm.
-    
+
     Attributes:
         central_moments (stats.CentralMoments)
-        
-    References:
-        - `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
-    
+
     Example:
+
+    ::
+
         >>> import creme
         >>> import pprint
         >>> import scipy.stats
@@ -328,16 +338,18 @@ class Kurtosis(CentralMoments):
 
         >>> pprint.pprint(scipy.stats.kurtosis(array))
         -1.0822836898641714
+
+    References:
+        - `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+
     """
-    def __init__(self):
-        super().__init__()
-    
+
     @property
     def name(self):
         return 'kurtosis'
 
     def update(self, x):
-        self._update_count()
+        self.count.update()
         self._update_delta(x)
         self._update_m1(x)
         self._update_sum_delta()
@@ -347,18 +359,19 @@ class Kurtosis(CentralMoments):
         return self
 
     def get(self):
-        return (self.new_count.get() * self.M4) / self.M2**2 - 3 if self.M2 != 0 else -3
+        return (self.count.get() * self.M4) / self.M2**2 - 3 if self.M2 != 0 else -3
+
 
 class Skew(CentralMoments):
     """Computes a running skew using Welford's algorithm.
-    
+
     Attributes:
         central_moments (stats.CentralMoments)
-    
-    References:
-        - `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
-    
+
     Example:
+
+    ::
+
         >>> import creme
         >>> import pprint
         >>> import scipy.stats
@@ -382,22 +395,24 @@ class Skew(CentralMoments):
 
         >>> pprint.pprint(scipy.stats.skew(array))
         0.34768780738236926
+
+    References:
+        - `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+
     """
-    def __init__(self):
-        super().__init__()
-    
+
     @property
     def name(self):
-        return 'skwew'
+        return 'skew'
 
     def update(self, x):
-        self._update_count()
+        self.count.update()
         self._update_delta(x)
         self._update_m1(x)
         self._update_sum_delta()
         self._update_m3()
         self._update_m2()
         return self
-    
+
     def get(self):
-        return (math.sqrt(self.new_count.get()) * self.M3) / self.M2**(3/2) if self.M2 != 0 else 0
+        return (math.sqrt(self.count.get()) * self.M3) / self.M2**(3 / 2) if self.M2 != 0 else 0
