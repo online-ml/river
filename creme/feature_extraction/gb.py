@@ -60,7 +60,7 @@ class GroupBy(base.Transformer):
 
     """
 
-    def __init__(self, on: str, by: str, how: stats.RunningStatistic):
+    def __init__(self, on, by, how):
         self.on = on
         self.by = by
         self.how = how

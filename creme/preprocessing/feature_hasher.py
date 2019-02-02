@@ -54,7 +54,7 @@ class FeatureHasher(base.Transformer):
     def fit_one(self, x, y=None):
         return self.transform_one(x)
 
-    def hash_str(self, s):
+    def _hash_str(self, s):
         return utils.murmurhash3_32(bytes(s, self.encoding), self.seed)
 
     def transform_one(self, x):
@@ -70,7 +70,7 @@ class FeatureHasher(base.Transformer):
             if value == 0:
                 continue
 
-            h = self.hash_str(feature)
+            h = self._hash_str(feature)
             i = h % self.n_features
 
             if self.alternate_sign:
