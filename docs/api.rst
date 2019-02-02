@@ -274,15 +274,16 @@ Loss functions
    :nosignatures:
 
    stats.Count
+   stats.Kurtosis
    stats.Mean
-   stats.SmoothMean
-   stats.Variance
    stats.Min
    stats.Max
+   stats.NUnique
    stats.PeakToPeak
-   stats.Sum
-   stats.Kurtosis
    stats.Skew
+   stats.SmoothMean
+   stats.Sum
+   stats.Variance
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------

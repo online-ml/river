@@ -8,8 +8,9 @@ from . import base
 class NUnique(base.RunningStatistic):
     """Approximately counts the number of unique values.
 
-    This is basically an implementation of the HyperLogLog algorithm. The code is quite disgusting
-    but it will do for now.
+    This is basically an implementation of the HyperLogLog algorithm. Adapted from
+    `here <https://github.com/clarkduvall/hypy>`_. The code is a bit too terse  but it will do for
+    now.
 
     Example:
 
