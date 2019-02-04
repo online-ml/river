@@ -28,7 +28,7 @@
 ## Useful links
 
 - [Documentation](https://creme-ml.github.io/)
-- Example notebooks
+- [Tutorials](https://github.com/creme-ml/tutorials)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Releases](https://pypi.org/project/creme/#history)
 
