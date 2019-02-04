@@ -1,7 +1,3 @@
-"""
-Linear Regression
------------------
-"""
 import collections
 
 from .. import base
