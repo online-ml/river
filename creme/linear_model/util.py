@@ -20,3 +20,7 @@ def dot(x: dict, y: dict):
 
 def sigmoid(x: float):
     return 1 / (1 + math.exp(-x))
+
+
+def clip(x: float):
+    return max(min(x, 1.), 0.)

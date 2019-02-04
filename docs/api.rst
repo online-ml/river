@@ -125,6 +125,12 @@ API reference
 
    linear_model.LinearRegression
    linear_model.LogisticRegression
+   PassiveAggressiveClassifier
+   PassiveAggressiveRegressor
+   PassiveAggressiveIClassifier
+   PassiveAggressiveIRegressor
+   PassiveAggressiveIIClassifier
+   PassiveAggressiveIIRegressor
 
 
 :mod:`creme.model_selection`: Model selection
@@ -219,6 +225,7 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
+   optim.EpsilonInsensitiveHingeLoss
    optim.LogLoss
    optim.HingeLoss
    optim.AbsoluteLoss
