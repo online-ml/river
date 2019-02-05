@@ -141,12 +141,12 @@ API reference
 
    linear_model.LinearRegression
    linear_model.LogisticRegression
-   PassiveAggressiveClassifier
-   PassiveAggressiveRegressor
-   PassiveAggressiveIClassifier
-   PassiveAggressiveIRegressor
-   PassiveAggressiveIIClassifier
-   PassiveAggressiveIIRegressor
+   linear_model.PassiveAggressiveClassifier
+   linear_model.PassiveAggressiveRegressor
+   linear_model.PassiveAggressiveIClassifier
+   linear_model.PassiveAggressiveIRegressor
+   linear_model.PassiveAggressiveIIClassifier
+   linear_model.PassiveAggressiveIIRegressor
 
 
 :mod:`creme.model_selection`: Model selection
