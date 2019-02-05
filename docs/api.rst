@@ -90,6 +90,7 @@ API reference
    :nosignatures:
 
    ensemble.BaggingClassifier
+   ensemble.HedgeClassifier
 
 
 :mod:`creme.feature_extraction`: Feature extraction

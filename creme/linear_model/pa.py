@@ -12,19 +12,19 @@ from . import util
 class PassiveAggressiveMixin:
 
     def _calculate_tau(self, x, loss):
-        return loss / np.power(np.linalg.norm(list(x.values()), ord=2), 2)
+        return loss / (np.power(np.linalg.norm(list(x.values()), ord=2), 2) + 10e-10)
 
 
 class PassiveAggressiveIMixin:
 
     def _calculate_tau(self, x, loss):
-        return min(self.C, loss / np.power(np.linalg.norm(list(x.values()), ord=2), 2))
+        return min(self.C, loss / (np.power(np.linalg.norm(list(x.values()), ord=2), 2) + 10e-10))
 
 
 class PassiveAggressiveIIMixin:
 
     def _calculate_tau(self, x, loss):
-        return loss / (np.power(np.linalg.norm(list(x.values()), ord=2), 2) + (1 / (2 * self.C)))
+        return loss / (np.power(np.linalg.norm(list(x.values()), ord=2), 2) + (1 / (2 * self.C)) + 10e-10)
 
 
 class BasePassiveAggressiveClassifier(base.BinaryClassifier, abc.ABC):

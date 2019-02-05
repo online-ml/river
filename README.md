@@ -30,7 +30,8 @@
 - [Documentation](https://creme-ml.github.io/)
 - [Tutorials](https://github.com/creme-ml/tutorials)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
-- [Releases](https://pypi.org/project/creme/#history)
+- [Package releases](https://pypi.org/project/creme/#history)
+- [Change history](HISTORY.md)
 
 ## Installation
 
