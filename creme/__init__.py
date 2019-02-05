@@ -11,6 +11,7 @@ from . import compat
 from . import compose
 from . import ensemble
 from . import feature_extraction
+from . import feature_selection
 from . import linear_model
 from . import model_selection
 from . import multiclass
@@ -29,6 +30,7 @@ __all__ = [
     'compose',
     'ensemble',
     'feature_extraction',
+    'feature_selection',
     'linear_model',
     'model_selection',
     'multiclass',

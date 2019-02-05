@@ -110,6 +110,22 @@ API reference
    feature_extraction.TFIDFVectorizer
 
 
+:mod:`creme.feature_selection`: Feature selection
+-------------------------------------------------
+
+.. automodule:: creme.feature_selection
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   feature_selection.RandomDiscarder
+
+
 :mod:`creme.linear_model`: Linear models
 ----------------------------------------
 
