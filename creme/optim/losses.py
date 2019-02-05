@@ -148,9 +148,9 @@ class HingeLoss(Loss):
         return 0
 
 
-class EpsilonInsentitiveHingeLoss(Loss):
+class EpsilonInsensitiveHingeLoss(Loss):
 
-    def __init__(self, eps):
+    def __init__(self, eps=0.1):
         self.eps = eps
 
     def __call__(self, y_true, y_pred):
@@ -162,7 +162,7 @@ class EpsilonInsentitiveHingeLoss(Loss):
     def gradient(self, y_true, y_pred):
         """Returns the gradient with respect to `y_pred`.
 
-        `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p`_
+        `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p>`_
 
         """
         y_true = y_true or -1

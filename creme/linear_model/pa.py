@@ -223,7 +223,7 @@ class BasePassiveAggressiveRegressor(base.Regressor, abc.ABC):
 
     def __init__(self, C=0.01, eps=0.1):
         self.C = C
-        self.loss = optim.EpsilonInsentitiveHingeLoss(eps=0.1)
+        self.loss = optim.EpsilonInsensitiveHingeLoss(eps=0.1)
         self.weights = collections.defaultdict(lambda: 0.)
 
     @abc.abstractmethod

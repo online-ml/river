@@ -33,3 +33,4 @@ Contents
 
    install
    api
+   faq

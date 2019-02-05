@@ -161,6 +161,10 @@ class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
         """
         return super().score(X, y, sample_weight)
 
+    def fit_predict(self, X, y):
+        """Calls ``fit`` and then ``predict`` in one go."""
+        return self.fit(X, y).predict(X)
+
 
 class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
@@ -287,6 +291,10 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         """
         return super().score(X, y, sample_weight)
 
+    def fit_predict(self, X, y):
+        """Calls ``fit`` and then ``predict`` in one go."""
+        return self.fit(X, y).predict(X)
+
 
 class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
 
@@ -350,6 +358,10 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
 
         return np.asarray(X_trans)
 
+    def fit_transform(self, X, y=None):
+        """Calls ``fit`` and then ``transform`` in one go."""
+        return self.fit(X, y).transform(X)
+
 
 class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
 
@@ -408,3 +420,7 @@ class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
             y_pred[i] = self.instance_.predict_one(x)
 
         return y_pred
+
+    def fit_predict(self, X, y=None):
+        """Calls ``fit`` and then ``predict`` in one go."""
+        return self.fit(X, y).predict(X)
