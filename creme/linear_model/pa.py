@@ -67,6 +67,8 @@ class PassiveAggressiveClassifier(PassiveAggressiveMixin, BasePassiveAggressiveC
 
     The following example is taken from `here <https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/>`_.
 
+    ::
+
         >>> from creme import linear_model
         >>> from creme import stream
         >>> import numpy as np
@@ -118,6 +120,8 @@ class PassiveAggressiveIClassifier(PassiveAggressiveIMixin, BasePassiveAggressiv
 
     The following example is taken from `here <https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/>`_.
 
+    ::
+
         >>> from creme import linear_model
         >>> from creme import stream
         >>> import numpy as np
@@ -168,6 +172,8 @@ class PassiveAggressiveIIClassifier(PassiveAggressiveIIMixin, BasePassiveAggress
     Example:
 
     The following example is taken from `here <https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/>`_.
+
+    ::
 
         >>> from creme import linear_model
         >>> from creme import stream
@@ -245,6 +251,8 @@ class PassiveAggressiveRegressor(PassiveAggressiveMixin, BasePassiveAggressiveRe
 
     Example:
 
+    ::
+
         >>> from creme import linear_model
         >>> from creme import stream
         >>> from sklearn import datasets
@@ -267,6 +275,8 @@ class PassiveAggressiveIRegressor(PassiveAggressiveIMixin, BasePassiveAggressive
 
     Example:
 
+    ::
+
         >>> from creme import linear_model
         >>> from creme import stream
         >>> from sklearn import datasets
@@ -288,6 +298,8 @@ class PassiveAggressiveIIRegressor(PassiveAggressiveIIMixin, BasePassiveAggressi
     """Variant II of the passive-aggressive regressor.
 
     Example:
+
+    ::
 
         >>> from creme import linear_model
         >>> from creme import stream
