@@ -35,8 +35,7 @@ class HedgeClassifier(base.BinaryClassifier):
 
         >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_breast_cancer,
-        ...     shuffle=True,
-        ...     random_state=42
+        ...     shuffle=False
         ... )
         >>> model = compose.Pipeline([
         ...     ('scale', preprocessing.StandardScaler()),
@@ -52,14 +51,14 @@ class HedgeClassifier(base.BinaryClassifier):
         >>> metric = metrics.roc_auc_score
 
         >>> model_selection.online_score(X_y, model, metric)
-        0.979130...
+        0.980517...
 
         >>> model.steps[-1][1].weights
-        [5.308299...e-107, 0.999999..., 6.730794...e-08]
+        [3.384108...e-140, 1.759837...e-19, 0.999999...]
 
     References:
 
-        - `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
+    - `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
 
     """
 
