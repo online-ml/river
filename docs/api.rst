@@ -108,6 +108,7 @@ API reference
 
    feature_extraction.CountVectorizer
    feature_extraction.GroupBy
+   feature_extraction.TargetEncoder
    feature_extraction.TFIDFVectorizer
 
 
@@ -306,7 +307,6 @@ Loss functions
    stats.NUnique
    stats.PeakToPeak
    stats.Skew
-   stats.SmoothMean
    stats.Sum
    stats.Variance
 

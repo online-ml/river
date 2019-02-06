@@ -5,7 +5,6 @@ from .count import Count
 from .kurtosis import Kurtosis
 from .max import Max
 from .mean import Mean
-from .mean import SmoothMean
 from .min import Min
 from .n_unique import NUnique
 from .p2p import PeakToPeak
@@ -22,7 +21,6 @@ __all__ = [
     'NUnique',
     'PeakToPeak',
     'Skew',
-    'SmoothMean',
     'Sum',
     'Variance'
 ]

@@ -32,7 +32,7 @@ class BasePassiveAggressiveClassifier(base.BinaryClassifier, abc.ABC):
     def __init__(self, C=0.01):
         self.C = C
         self.loss = optim.HingeLoss()
-        self.weights = collections.defaultdict(lambda: 0.)
+        self.weights = collections.defaultdict(float)
 
     @abc.abstractmethod
     def _calculate_tau(self, x, loss):
@@ -224,7 +224,7 @@ class BasePassiveAggressiveRegressor(base.Regressor, abc.ABC):
     def __init__(self, C=0.01, eps=0.1):
         self.C = C
         self.loss = optim.EpsilonInsensitiveHingeLoss(eps=0.1)
-        self.weights = collections.defaultdict(lambda: 0.)
+        self.weights = collections.defaultdict(float)
 
     @abc.abstractmethod
     def _calculate_tau(self, x, loss):
