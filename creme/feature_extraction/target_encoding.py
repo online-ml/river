@@ -96,10 +96,10 @@ class TargetEncoder(base.Transformer):
 
     def fit_one(self, x, y):
 
-        global_mean = self.global_mean.get()
+        global_mean = self.global_mean.get() or 0
         key = '_'.join(x[i] for i in self.by)
         mean = self.feature_means[key]
-        mu = mean.get()
+        mu = mean.get() or 0
         count = mean.count.get()
         smooth_mean = (mu * count + global_mean * self.prior_weight) / (count + self.prior_weight)
 

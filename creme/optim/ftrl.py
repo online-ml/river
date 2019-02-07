@@ -37,7 +37,7 @@ class FTRLProximal(base.Optimizer):
         >>> metric = metrics.roc_auc_score
 
         >>> creme.model_selection.online_score(X_y, model, metric)
-        0.989859...
+        0.989766...
 
     References:
 

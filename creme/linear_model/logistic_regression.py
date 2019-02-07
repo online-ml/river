@@ -44,7 +44,7 @@ class LogisticRegression(base.BinaryClassifier):
         >>> metric = metrics.roc_auc_score
 
         >>> model_selection.online_score(X_y, model, metric)
-        0.990625...
+        0.990546...
 
     """
 

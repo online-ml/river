@@ -53,4 +53,4 @@ class Variance(base.RunningStatistic):
         return self
 
     def get(self):
-        return self.sos / max(1, self.mean.count.get() - self.ddof)
+        return (self.sos or 0) / max(1, self.mean.count.get() - self.ddof)

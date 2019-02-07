@@ -51,10 +51,10 @@ class HedgeClassifier(base.BinaryClassifier):
         >>> metric = metrics.roc_auc_score
 
         >>> model_selection.online_score(X_y, model, metric)
-        0.980517...
+        0.980193...
 
         >>> model.steps[-1][1].weights
-        [3.384108...e-140, 1.759837...e-19, 0.999999...]
+        [7.411846...e-129, 9.795003...e-07, 0.999999...]
 
     References:
 
