@@ -7,21 +7,41 @@ class Mean(base.RunningStatistic):
 
     Attributes:
         count (stats.Count)
-        mu (float): The current estimated mean.
+        mean (float)
+
+    Example:
+
+        >>> from creme import stats
+
+        >>> X = [-5, -3, -1, 1, 3, 5]
+        >>> mean = stats.Mean()
+        >>> for x in X:
+        ...     print(mean.update(x).get())
+        -5.0
+        -4.0
+        -3.0
+        -2.0
+        -1.0
+        0.0
+
+    Attributes:
+        count (stats.Count)
+        mean (float): The current estimated mean.
 
     """
 
     def __init__(self):
         self.count = count.Count()
-        self.mu = 0
+        self.mean = None
 
     @property
     def name(self):
         return 'mean'
 
     def update(self, x):
-        self.mu += (x - self.mu) / self.count.update().get()
+        n = self.count.update(x).get()
+        self.mean = self.mean + (x - self.mean) / n if self.mean else float(x)
         return self
 
     def get(self):
-        return self.mu
+        return self.mean
