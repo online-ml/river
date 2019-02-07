@@ -5,19 +5,19 @@
 <div align="center">
   <!-- Travis -->
   <a href="https://travis-ci.org/creme-ml/creme">
-    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=flat-square" alt="travis" />
+    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=for-the-badge" alt="travis" />
   </a>
   <!-- Codecov -->
   <a href="https://codecov.io/gh/creme-ml/creme">
-    <img src="https://codecov.io/gh/creme-ml/creme/branch/master/graph/badge.svg" alt="codecov" />
+    <img src="https://img.shields.io/codecov/c/gh/creme-ml/creme.svg?style=for-the-badge" alt="codecov" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">
-    <img src="https://shields.mitmproxy.org/pypi/v/creme.svg?style=flat-square" alt="pypi" />
+    <img src="https://img.shields.io/pypi/v/creme.svg?style=for-the-badge" alt="pypi" />
   </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
-    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license"/>
+    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=for-the-badge" alt="bsd_3_license"/>
   </a>
 </div>
 
