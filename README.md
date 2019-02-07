@@ -70,7 +70,7 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 >>> metric = metrics.roc_auc_score
 
 >>> model_selection.online_score(X_y, model, metric)
-0.992977...
+0.993030...
 
 ```
 

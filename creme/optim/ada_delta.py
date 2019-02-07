@@ -35,7 +35,7 @@ class AdaDelta(base.Optimizer):
         >>> metric = metrics.roc_auc_score
 
         >>> creme.model_selection.online_score(X_y, model, metric)
-        0.977016...
+        0.977386...
 
     References:
 
