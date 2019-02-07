@@ -300,6 +300,7 @@ Loss functions
    :nosignatures:
 
    stats.Count
+   stats.EWMean
    stats.Kurtosis
    stats.Mean
    stats.Min
