@@ -1,0 +1,110 @@
+import creme.stats
+
+from .constant import Constant
+
+
+class NumericalImputer:
+    '''
+    Imputer allow to replace missing values with descriptive statistics.
+
+    Args:
+        strategy (string): Name of the function to replace missing values.
+        constant (float): Constant to replace missing values.
+
+    Attributes:
+        allowed_strategies (list): List of allowed strategies to impute missing values.
+        functions_dictionnary (dic): Mapping between allowed strategies and creme functions.
+        impute_function (creme.stats): Function to impute missing values.
+
+    >>> import pprint
+    >>> import creme
+    >>> import numpy as np
+    >>> from sklearn import preprocessing
+
+    >>> np.random.seed(42)
+    >>> X = [{'x': v} for v in np.random.normal(loc=0, scale=1, size=5)]
+    >>> X.append({'x': None})
+
+    >>> imputer_mean = creme.imputer.NumericalImputer(strategy = 'mean')
+    >>> pprint.pprint([imputer_mean.impute(x) for x in X])
+    [{'x': 0.4967141530112327},
+     {'x': -0.13826430117118466},
+     {'x': 0.6476885381006925},
+     {'x': 1.5230298564080254},
+     {'x': -0.23415337472333597},
+     {'x': 0.45900297432508597}]
+
+    >>> imputer_min = creme.imputer.NumericalImputer(strategy = 'min')
+    >>> pprint.pprint([imputer_min.impute(x) for x in X])
+    [{'x': 0.4967141530112327},
+     {'x': -0.13826430117118466},
+     {'x': 0.6476885381006925},
+     {'x': 1.5230298564080254},
+     {'x': -0.23415337472333597},
+     {'x': -0.23415337472333597}]
+
+    >>> imputer_min = creme.imputer.NumericalImputer(strategy = 'max')
+    >>> pprint.pprint([imputer_min.impute(x) for x in X])
+    [{'x': 0.4967141530112327},
+     {'x': -0.13826430117118466},
+     {'x': 0.6476885381006925},
+     {'x': 1.5230298564080254},
+     {'x': -0.23415337472333597},
+     {'x': 1.5230298564080254}]
+
+    >>> imputer_min = creme.imputer.NumericalImputer(strategy = 'constant', constant_value = 0)
+    >>> pprint.pprint([imputer_min.impute(x) for x in X])
+    [{'x': 0.4967141530112327},
+     {'x': -0.13826430117118466},
+     {'x': 0.6476885381006925},
+     {'x': 1.5230298564080254},
+     {'x': -0.23415337472333597},
+     {'x': 0}]
+    '''
+    # TODO: Fix me when first value is 0, it return weird_result
+
+    def __init__(self, strategy, constant_value=None, aggregate=None):
+
+        self.allowed_strategies = [
+            'mean',
+            'max',
+            'min',
+            'constant',
+        ]
+
+        if strategy not in self.allowed_strategies:
+            raise ValueError(
+                f'Can only use these strategies: {self.allowed_strategies}\
+                got strategy = {strategy}'
+            )
+
+        self.functions_dictionnary = {
+            'mean': creme.stats.Mean(),
+            'max': creme.stats.Max(),
+            'min': creme.stats.Min(),
+            'constant': Constant(constant_value=constant_value),
+        }
+
+        self.impute_function = self.functions_dictionnary[
+            strategy
+        ]
+
+    def impute(self, x):
+        for i, xi in x.items():
+            # TODO: Check if value is missing, find nice way to do it.
+            if xi is None:
+                imputed_value = self._get(i)
+            else:
+                imputed_value = self._update(i=i, xi=xi)
+        return imputed_value
+
+    def _update(self, i, xi):
+        self.impute_function.update(xi)
+        return {
+            i: xi
+        }
+
+    def _get(self, i):
+        return {
+            i: self.impute_function.get()
+        }

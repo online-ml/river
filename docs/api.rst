@@ -327,3 +327,18 @@ Loss functions
    stream.iter_numpy
    stream.iter_sklearn_dataset
    stream.iter_pandas
+
+:mod:`creme.imputer`: Running Imputer
+-------------------------------------
+
+.. automodule:: creme.stream
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   imputer.NumericalImputer
