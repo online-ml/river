@@ -22,6 +22,7 @@ from . import reco
 from . import stats
 from . import stream
 from . import tree
+from . import imputer
 from .__version__ import __version__
 
 __all__ = [
@@ -40,5 +41,6 @@ __all__ = [
     'reco',
     'stats',
     'stream',
-    'tree'
+    'tree',
+    'imputer',
 ]
