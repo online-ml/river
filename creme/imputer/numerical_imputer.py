@@ -27,7 +27,11 @@ class NumericalImputer:
     >>> X = [{'x': v} for v in np.random.normal(loc=0, scale=1, size=5)]
     >>> X.append({'x': 'NaN'})
 
-    >>> imputer_mean = creme.imputer.NumericalImputer(strategy='mean', missing_values='NaN')
+    >>> imputer_mean = creme.imputer.NumericalImputer(
+    ...     strategy='mean',
+    ...     missing_values='NaN',
+    ... )
+
     >>> pprint.pprint([imputer_mean.impute(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
@@ -36,7 +40,11 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': 0.45900297432508597}]
 
-    >>> imputer_min = creme.imputer.NumericalImputer(strategy='min', missing_values='NaN')
+    >>> imputer_min = creme.imputer.NumericalImputer(
+    ...    strategy='min',
+    ...    missing_values='NaN',
+    ... )
+
     >>> pprint.pprint([imputer_min.impute(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
@@ -45,7 +53,10 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': -0.23415337472333597}]
 
-    >>> imputer_max = creme.imputer.NumericalImputer(strategy='max', missing_values='NaN')
+    >>> imputer_max = creme.imputer.NumericalImputer(
+    ...    strategy='max',
+    ...    missing_values='NaN',
+    ... )
 
     >>> pprint.pprint([imputer_max.impute(x) for x in X])
     [{'x': 0.4967141530112327},
@@ -55,7 +66,11 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': 1.5230298564080254}]
 
-    >>> imputer_constant = creme.imputer.NumericalImputer(strategy='constant', missing_values='NaN', constant_value=0)
+    >>> imputer_constant = creme.imputer.NumericalImputer(
+    ...     strategy='constant',
+    ...     missing_values='NaN',
+    ...     constant_value=0
+    ... )
 
     >>> pprint.pprint([imputer_constant.impute(x) for x in X])
     [{'x': 0.4967141530112327},
