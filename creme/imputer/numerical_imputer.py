@@ -8,6 +8,7 @@ class NumericalImputer:
     Imputer allow to replace missing values with descriptive statistics.
 
     Args:
+        missing_values (string): Shape of the missing values.
         strategy (string): Name of the function to replace missing values.
         constant (float): Constant to replace missing values.
 
@@ -23,9 +24,9 @@ class NumericalImputer:
 
     >>> np.random.seed(42)
     >>> X = [{'x': v} for v in np.random.normal(loc=0, scale=1, size=5)]
-    >>> X.append({'x': None})
+    >>> X.append({'x': 'NaN'})
 
-    >>> imputer_mean = creme.imputer.NumericalImputer(strategy = 'mean')
+    >>> imputer_mean = creme.imputer.NumericalImputer(strategy='mean', missing_values='NaN')
     >>> pprint.pprint([imputer_mean.impute(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
@@ -34,7 +35,7 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': 0.45900297432508597}]
 
-    >>> imputer_min = creme.imputer.NumericalImputer(strategy = 'min')
+    >>> imputer_min = creme.imputer.NumericalImputer(strategy='min', missing_values='NaN')
     >>> pprint.pprint([imputer_min.impute(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
@@ -43,7 +44,8 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': -0.23415337472333597}]
 
-    >>> imputer_min = creme.imputer.NumericalImputer(strategy = 'max')
+    >>> imputer_min = creme.imputer.NumericalImputer(strategy = 'max', missing_values = 'NaN')
+
     >>> pprint.pprint([imputer_min.impute(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
@@ -52,7 +54,8 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': 1.5230298564080254}]
 
-    >>> imputer_min = creme.imputer.NumericalImputer(strategy = 'constant', constant_value = 0)
+    >>> imputer_min = creme.imputer.NumericalImputer(strategy='constant', missing_values='NaN', constant_value = 0)
+
     >>> pprint.pprint([imputer_min.impute(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
@@ -63,7 +66,9 @@ class NumericalImputer:
     '''
     # TODO: Fix me when first value is 0, it return weird_result
 
-    def __init__(self, strategy, constant_value=None, aggregate=None):
+    def __init__(self, strategy, missing_values="NaN", constant_value=None, aggregate=None):
+
+        self.missing_values = missing_values
 
         self.allowed_strategies = [
             'mean',
@@ -92,7 +97,7 @@ class NumericalImputer:
     def impute(self, x):
         for i, xi in x.items():
             # TODO: Check if value is missing, find nice way to do it.
-            if xi is None:
+            if xi == self.missing_values:
                 imputed_value = self._get(i)
             else:
                 imputed_value = self._update(i=i, xi=xi)
