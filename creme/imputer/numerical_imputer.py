@@ -13,6 +13,7 @@ class NumericalImputer:
         constant (float): Constant to replace missing values.
 
     Attributes:
+        missing_values (string): Shape of the missing values.
         allowed_strategies (list): List of allowed strategies to impute missing values.
         functions_dictionnary (dic): Mapping between allowed strategies and creme functions.
         impute_function (creme.stats): Function to impute missing values.
@@ -44,7 +45,7 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': -0.23415337472333597}]
 
-    >>> imputer_min = creme.imputer.NumericalImputer(strategy = 'max', missing_values = 'NaN')
+    >>> imputer_min = creme.imputer.NumericalImputer(strategy='max', missing_values='NaN')
 
     >>> pprint.pprint([imputer_min.impute(x) for x in X])
     [{'x': 0.4967141530112327},
@@ -54,7 +55,7 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': 1.5230298564080254}]
 
-    >>> imputer_min = creme.imputer.NumericalImputer(strategy='constant', missing_values='NaN', constant_value = 0)
+    >>> imputer_min = creme.imputer.NumericalImputer(strategy='constant', missing_values='NaN', constant_value=0)
 
     >>> pprint.pprint([imputer_min.impute(x) for x in X])
     [{'x': 0.4967141530112327},
@@ -64,7 +65,6 @@ class NumericalImputer:
      {'x': -0.23415337472333597},
      {'x': 0}]
     '''
-    # TODO: Fix me when first value is 0, it return weird_result
 
     def __init__(self, strategy, missing_values="NaN", constant_value=None, aggregate=None):
 
@@ -96,7 +96,6 @@ class NumericalImputer:
 
     def impute(self, x):
         for i, xi in x.items():
-            # TODO: Check if value is missing, find nice way to do it.
             if xi == self.missing_values:
                 imputed_value = self._get(i)
             else:
