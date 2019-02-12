@@ -40,7 +40,8 @@ class Mean(base.RunningStatistic):
 
     def update(self, x):
         n = self.count.update(x).get()
-        self.mean = self.mean + (x - self.mean) / n if self.mean else float(x)
+        self.mean = float(
+            x) if self.mean is None else self.mean + (x - self.mean) / n
         return self
 
     def get(self):
