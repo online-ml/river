@@ -12,6 +12,7 @@ from . import compose
 from . import ensemble
 from . import feature_extraction
 from . import feature_selection
+from . import impute
 from . import linear_model
 from . import model_selection
 from . import multiclass
@@ -22,6 +23,7 @@ from . import reco
 from . import stats
 from . import stream
 from . import tree
+
 from .__version__ import __version__
 
 __all__ = [
@@ -31,6 +33,7 @@ __all__ = [
     'ensemble',
     'feature_extraction',
     'feature_selection',
+    'impute',
     'linear_model',
     'model_selection',
     'multiclass',
@@ -40,5 +43,5 @@ __all__ = [
     'reco',
     'stats',
     'stream',
-    'tree'
+    'tree',
 ]
