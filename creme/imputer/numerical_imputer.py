@@ -1,6 +1,8 @@
+from .constant import Constant
+
 import creme.stats
 
-from .constant import Constant
+__all__ = ['NumericalImputer']
 
 
 class NumericalImputer:
@@ -13,7 +15,6 @@ class NumericalImputer:
         constant (float): Constant to replace missing values.
 
     Attributes:
-        missing_values (string): Shape of the missing values.
         allowed_strategies (list): List of allowed strategies to impute missing values.
         functions_dictionnary (dic): Mapping between allowed strategies and creme functions.
         impute_function (creme.stats): Function to impute missing values.
@@ -22,68 +23,60 @@ class NumericalImputer:
     >>> import creme
     >>> import numpy as np
     >>> from sklearn import preprocessing
-
     >>> np.random.seed(42)
+
     >>> X = [{'x': v} for v in np.random.normal(loc=0, scale=1, size=5)]
-    >>> X.append({'x': 'NaN'})
+    >>> X.append({'y':10})
 
-    >>> imputer_mean = creme.imputer.NumericalImputer(
-    ...     strategy='mean',
-    ...     missing_values='NaN',
-    ... )
-
-    >>> pprint.pprint([imputer_mean.impute(x) for x in X])
+    >>> imputer_mean = creme.imputer.NumericalImputer(on='x', strategy='mean')
+    >>> pprint.pprint([imputer_mean.fit_one(x).transform_one(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
      {'x': 0.6476885381006925},
      {'x': 1.5230298564080254},
      {'x': -0.23415337472333597},
-     {'x': 0.45900297432508597}]
+     {'x': 0.45900297432508597, 'y': 10}]
 
-    >>> imputer_min = creme.imputer.NumericalImputer(
-    ...    strategy='min',
-    ...    missing_values='NaN',
-    ... )
-
-    >>> pprint.pprint([imputer_min.impute(x) for x in X])
+    >>> imputer_min = creme.imputer.NumericalImputer(on='x', strategy='min')
+    >>> pprint.pprint([imputer_min.fit_one(x).transform_one(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
      {'x': 0.6476885381006925},
      {'x': 1.5230298564080254},
      {'x': -0.23415337472333597},
-     {'x': -0.23415337472333597}]
+     {'x': -0.23415337472333597, 'y': 10}]
 
     >>> imputer_max = creme.imputer.NumericalImputer(
+    ...    on='x',
     ...    strategy='max',
-    ...    missing_values='NaN',
     ... )
 
-    >>> pprint.pprint([imputer_max.impute(x) for x in X])
+    >>> pprint.pprint([imputer_max.fit_one(x).transform_one(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
      {'x': 0.6476885381006925},
      {'x': 1.5230298564080254},
      {'x': -0.23415337472333597},
-     {'x': 1.5230298564080254}]
+     {'x': 1.5230298564080254, 'y': 10}]
 
     >>> imputer_constant = creme.imputer.NumericalImputer(
+    ...     on='x',
     ...     strategy='constant',
-    ...     missing_values='NaN',
-    ...     constant_value=0
+    ...     constant_value=0,
     ... )
 
-    >>> pprint.pprint([imputer_constant.impute(x) for x in X])
+    >>> pprint.pprint([imputer_constant.fit_one(x).transform_one(x) for x in X])
     [{'x': 0.4967141530112327},
      {'x': -0.13826430117118466},
      {'x': 0.6476885381006925},
      {'x': 1.5230298564080254},
      {'x': -0.23415337472333597},
-     {'x': 0}]
+     {'x': 0, 'y': 10}]
     '''
 
-    def __init__(self, strategy, missing_values="NaN", constant_value=None, aggregate=None):
+    def __init__(self, on, strategy, constant_value=None, aggregate=None):
 
-        self.missing_values = missing_values
+        self.on = on
 
         self.allowed_strategies = [
             'mean',
@@ -95,7 +88,7 @@ class NumericalImputer:
         if strategy not in self.allowed_strategies:
             raise ValueError(
                 f'Can only use these strategies: {self.allowed_strategies}\
-                got strategy = {strategy}'
+                    got strategy = {strategy}'
             )
 
         self.functions_dictionnary = {
@@ -105,25 +98,22 @@ class NumericalImputer:
             'constant': Constant(constant_value=constant_value),
         }
 
-        self.impute_function = self.functions_dictionnary[
-            strategy
-        ]
+        self.impute_function = self.functions_dictionnary[strategy]
 
-    def impute(self, x):
-        for i, xi in x.items():
-            if xi == self.missing_values:
-                imputed_value = self._get(i)
-            else:
-                imputed_value = self._update(i=i, xi=xi)
-        return imputed_value
-
-    def _update(self, i, xi):
-        self.impute_function.update(xi)
-        return {
+    def _impute(self, x):
+        x_imputed = {
             i: xi
+            for i, xi in x.items()
         }
+        x_imputed[self.on] = self.impute_function.get()
+        return x_imputed
 
-    def _get(self, i):
-        return {
-            i: self.impute_function.get()
-        }
+    def fit_one(self, x):
+        if self.on in x:
+            self.impute_function.update(x[self.on])
+        return self
+
+    def transform_one(self, x):
+        if self.on not in x:
+            x = self._impute(x)
+        return x
