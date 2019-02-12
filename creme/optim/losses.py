@@ -69,7 +69,7 @@ class LogLoss(Loss):
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math:: \\frac{\\partial L}{\\partial y_i} = sign(p_i - y_i)
+    .. math:: \\frac{\\partial L}{\\partial p_i} = sign(p_i - y_i)
 
     """
 
