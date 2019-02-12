@@ -128,6 +128,22 @@ API reference
    feature_selection.RandomDiscarder
 
 
+:mod:`creme.imput`: Running imputation
+--------------------------------------
+
+.. automodule:: creme.impute
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   impute.NumericImputer
+
+
 :mod:`creme.linear_model`: Linear models
 ----------------------------------------
 
