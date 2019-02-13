@@ -3,7 +3,7 @@ import warnings
 from numpy import unique
 from timeit import default_timer as timer
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
-from skmultiflow.utils import constants
+from skmultiflow.utils import constants, get_dimensions
 
 
 class EvaluateHoldout(StreamEvaluator):
@@ -214,17 +214,6 @@ class EvaluateHoldout(StreamEvaluator):
     def _periodic_holdout(self):
         """ Method to control the holdout evaluation.
 
-        Returns
-        -------
-        BaseClassifier extension or list of BaseClassifier extensions
-            The trained classifiers.
-
-        Notes
-        -----
-        The classifier parameter should be an extension from the BaseClassifier. In
-        the future, when BaseRegressor is created, it could be an axtension from that
-        class as well.
-
         """
         self._start_time = timer()
         self._end_time = timer()
@@ -281,7 +270,7 @@ class EvaluateHoldout(StreamEvaluator):
 
                     # Test on holdout set
                     if self.dynamic_test_set:
-                        perform_test = self.global_sample_count == (self.n_wait * (performance_sampling_cnt + 1)
+                        perform_test = self.global_sample_count >= (self.n_wait * (performance_sampling_cnt + 1)
                                                                     + (self.test_size * performance_sampling_cnt))
                     else:
                         perform_test = (self.global_sample_count - self.test_size) % self.n_wait == 0
@@ -291,7 +280,7 @@ class EvaluateHoldout(StreamEvaluator):
                         if self.dynamic_test_set:
                             print('Separating {} holdout samples.'.format(self.test_size))
                             self.X_test, self.y_test = self.stream.next_sample(self.test_size)
-                            self.global_sample_count += self.test_size
+                            self.global_sample_count += get_dimensions(self.X_test)[0]
 
                         # Test
                         if (self.X_test is not None) and (self.y_test is not None):
