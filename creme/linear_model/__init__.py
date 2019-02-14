@@ -2,6 +2,7 @@
 Generalized linear models optimized through stochastic gradient descent using
 the :mod:`creme.optim` module.
 """
+from .fm import FMRegressor
 from .linear_regression import LinearRegression
 from .logistic_regression import LogisticRegression
 from .pa import PassiveAggressiveClassifier
@@ -13,6 +14,7 @@ from .pa import PassiveAggressiveIIRegressor
 
 
 __all__ = [
+    'FMRegressor',
     'LinearRegression',
     'LogisticRegression',
     'PassiveAggressiveClassifier',
