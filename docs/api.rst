@@ -183,6 +183,8 @@ API reference
    :nosignatures:
 
    metrics.MSE
+   metrics.RMSE
+   metrics.RMSLE
 
 
 :mod:`creme.model_selection`: Model selection
