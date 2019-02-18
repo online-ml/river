@@ -62,10 +62,7 @@ class CategoryImputer(imputer.Imputer):
     ... ]
 
     >>> for x in X:
-    ...     try :
-    ...         print(imputer_by_town.fit_one(x))
-    ...     except:
-    ...         print(x)
+    ...     print(imputer_by_town.fit_one(x))
     {'town': 'New York', 'weather': 'sunny'}
     {'town': 'New York', 'weather': 'sunny'}
     {'town': 'New York', 'weather': 'rainy'}
