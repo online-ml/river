@@ -101,9 +101,7 @@ class NumericImputer(imputer.Imputer):
     def __init__(self, on, by=None, how='mean', constant_value=None):
 
         super().__init__()
-
         self.on = on
-
         self.by = by
 
         allowed_imputers = {
