@@ -1,9 +1,8 @@
 class TopK:
     """Compute online top k.
 
-    TopK allow to compute most frequent value in .
-    K first value of a given series of value will be stored.
-    Increase K allow to increase confidence.
+    This class store in a dictionnary modalities and frequency of k first value of a given series.
+    Topk allow to get modality value which have the higher frequency.
 
     Args:
         k (int): Number of modalities in the target variable.
