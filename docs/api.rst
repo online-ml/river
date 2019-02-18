@@ -182,6 +182,8 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   metrics.Accuracy
+   metrics.MAE
    metrics.MSE
    metrics.RMSE
    metrics.RMSLE

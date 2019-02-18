@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Discarder` to `preprocessing`
 - `FMRegressor` to `linear_model`
 - `FuncTransformer` to `preprocessing`
-- `MSE`, `RMSE`, `RMSLE` to `metrics`
+- `Accuracy`, `MAE`, `MSE`, `RMSE`, `RMSLE` to `metrics`
 
 ## [0.0.2] - 2019-02-13
 

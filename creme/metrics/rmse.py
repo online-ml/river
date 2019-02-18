@@ -2,7 +2,7 @@ from . import mse
 
 
 class RMSE(mse.MSE):
-    """Exact root mean squared error.
+    """Root mean squared error.
 
     Example:
 
@@ -13,9 +13,9 @@ class RMSE(mse.MSE):
         >>> y_true = [3, -0.5, 2, 7]
         >>> y_pred = [2.5, 0.0, 2, 8]
 
-        >>> mse = metrics.RMSE()
+        >>> metric = metrics.RMSE()
         >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     print(mse.update(y_t, y_p).get())
+        ...     print(metric.update(y_t, y_p).get())
         0.5
         0.5
         0.408248...
