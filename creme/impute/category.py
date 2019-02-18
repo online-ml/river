@@ -81,9 +81,7 @@ class CategoryImputer(imputer.Imputer):
     def __init__(self, on, by=None, how='top_k', k=None):
 
         super().__init__()
-
         self.on = on
-
         self.by = by
 
         allowed_imputers = {
