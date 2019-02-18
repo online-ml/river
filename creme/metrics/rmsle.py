@@ -4,7 +4,7 @@ from . import rmse
 
 
 class RMSLE(rmse.RMSE):
-    """Exact root mean squared logarithmic error.
+    """Root mean squared logarithmic error.
 
     Example:
 
@@ -15,9 +15,9 @@ class RMSLE(rmse.RMSE):
         >>> y_true = [3, -0.5, 2, 7]
         >>> y_pred = [2.5, 0.0, 2, 8]
 
-        >>> mse = metrics.RMSLE()
+        >>> metric = metrics.RMSLE()
         >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     print(mse.update(y_t, y_p).get())
+        ...     print(metric.update(y_t, y_p).get())
         0.133531...
         0.499141...
         0.407546...
