@@ -142,6 +142,7 @@ API reference
    :nosignatures:
 
    impute.NumericImputer
+   impute.CategoryImputer
 
 
 :mod:`creme.linear_model`: Linear models
