@@ -107,6 +107,7 @@ API reference
    :nosignatures:
 
    feature_extraction.CountVectorizer
+   feature_extraction.FuncExtractor
    feature_extraction.GroupBy
    feature_extraction.TargetEncoder
    feature_extraction.TFIDFVectorizer
@@ -157,6 +158,7 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   linear_model.FMRegressor
    linear_model.LinearRegression
    linear_model.LogisticRegression
    linear_model.PassiveAggressiveClassifier
@@ -165,6 +167,22 @@ API reference
    linear_model.PassiveAggressiveIRegressor
    linear_model.PassiveAggressiveIIClassifier
    linear_model.PassiveAggressiveIIRegressor
+
+
+:mod:`creme.metrics`: Streaming metrics
+---------------------------------------
+
+.. automodule:: creme.metrics
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   metrics.MSE
 
 
 :mod:`creme.model_selection`: Model selection
@@ -279,8 +297,11 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
+   preprocessing.Discarder
    preprocessing.FeatureHasher
+   preprocessing.FuncTransformer
    preprocessing.OneHotEncoder
+   preprocessing.PolynomialExtender
    preprocessing.StandardScaler
    preprocessing.MinMaxScaler
 
