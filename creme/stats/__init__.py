@@ -2,7 +2,7 @@
 Module for computing running statistics
 """
 from .count import Count
-from .ewm import EWMean
+from .ewmean import EWMean
 from .kurtosis import Kurtosis
 from .max import Max
 from .mean import Mean
