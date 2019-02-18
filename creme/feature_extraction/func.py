@@ -2,7 +2,7 @@ from .. import base
 
 
 class FuncExtractor(base.Transformer):
-    """Constructs a transformer from an arbitrary callable.
+    """Extracts one or more feature(s) following a given callable.
 
     The provided function has to take as input a ``dict`` of features and produce a new ``dict`` of
     computed features.
