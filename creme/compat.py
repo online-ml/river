@@ -202,8 +202,6 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         self.classes_ = np.unique(y)
         if len(self.classes_) > 2 and self.is_binary:
             raise ValueError('n_classes is more than 2 but creme_estimator is a BinaryClassifier')
-        if len(self.classes_) < 3 and not self.is_binary:
-            raise ValueError('n_classes is less than 3 but creme_estimator is a MultiClassifier')
 
         # creme's BinaryClassifier expects bools or 0/1 values
         if self.is_binary:
@@ -268,11 +266,11 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         # Make a prediction for each observation
-        y_pred = np.empty(shape=len(X))
+        y_pred = [None] * len(X)
         for i, (x, _) in enumerate(stream.iter_numpy(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
-        return y_pred
+        return np.asarray(y_pred)
 
     def score(self, X, y, sample_weight=None):
         """Returns the mean accuracy on the given test data and labels.
