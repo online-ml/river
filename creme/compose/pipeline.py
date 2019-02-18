@@ -26,7 +26,7 @@ class Pipeline:
         """Returns the final estimator."""
         return self.steps[-1][1]
 
-    def fit_one(self, x, y):
+    def fit_one(self, x, y=None):
         """Fits each steps with ``x``."""
         for _, step in self.steps:
             x = step.fit_one(x, y)
