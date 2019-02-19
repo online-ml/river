@@ -143,6 +143,7 @@ API reference
    :nosignatures:
 
    impute.NumericImputer
+   impute.CategoryImputer
 
 
 :mod:`creme.linear_model`: Linear models
@@ -346,6 +347,7 @@ Loss functions
    stats.Mean
    stats.Min
    stats.Max
+   stats.Mode
    stats.NUnique
    stats.PeakToPeak
    stats.Skew

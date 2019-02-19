@@ -3,17 +3,20 @@ import copy
 
 from .. import stats
 
-from . import constant
+from . import _constant
+from . import imputer
 
 
 __all__ = ['NumericalImputer']
 
 
-class NumericImputer:
+class NumericImputer(imputer.Imputer):
     """ Imputer allow to replace missing values with descriptive statistics.
 
     Args:
         on (str): Name of the field to impute.
+        by (str): Name of the field to impute with aggregatation.
+        how (str): Method to fill missing values.
         constant (float): Constant to replace missing values, when using strategy='constant'.
 
     Attributes:
@@ -97,15 +100,15 @@ class NumericImputer:
 
     def __init__(self, on, by=None, how='mean', constant_value=None):
 
+        super().__init__()
         self.on = on
-
         self.by = by
 
         allowed_imputers = {
             'mean': stats.Mean(),
             'max': stats.Max(),
             'min': stats.Min(),
-            'constant': constant.Constant(constant_value=constant_value),
+            'constant': _constant.Constant(constant_value=constant_value),
         }
 
         if how not in allowed_imputers:
@@ -113,19 +116,3 @@ class NumericImputer:
 
         self.imputers = collections.defaultdict(
             lambda: copy.deepcopy(allowed_imputers[how]))
-
-    def fit_one(self, x):
-        if self.on in x:
-            key = x[self.by] if self.by else None
-            self.imputers[key].update(x[self.on])
-            return x
-        return self.transform_one(x)
-
-    def transform_one(self, x):
-        if self.on not in x:
-            key = x[self.by] if self.by else None
-            return {
-                **x,
-                self.on: self.imputers[key].get()
-            }
-        return x
