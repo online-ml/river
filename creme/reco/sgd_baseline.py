@@ -45,7 +45,7 @@ class SGDBaseline(base.Recommender):
         # Predict the value
         y_pred = self.predict_one(r_id, c_id)
 
-        # Compute the gradient of the loss
+        # Compute the gradient of the loss with respect to the prediction
         loss_gradient = self.loss.gradient(y, y_pred)
 
         # Update the row biases

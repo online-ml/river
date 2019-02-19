@@ -161,6 +161,10 @@ class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
         """
         return super().score(X, y, sample_weight)
 
+    def fit_predict(self, X, y):
+        """Calls ``fit`` and then ``predict`` in one go."""
+        return self.fit(X, y).predict(X)
+
 
 class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
@@ -198,8 +202,6 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         self.classes_ = np.unique(y)
         if len(self.classes_) > 2 and self.is_binary:
             raise ValueError('n_classes is more than 2 but creme_estimator is a BinaryClassifier')
-        if len(self.classes_) < 3 and not self.is_binary:
-            raise ValueError('n_classes is less than 3 but creme_estimator is a MultiClassifier')
 
         # creme's BinaryClassifier expects bools or 0/1 values
         if self.is_binary:
@@ -264,11 +266,11 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         # Make a prediction for each observation
-        y_pred = np.empty(shape=len(X))
+        y_pred = [None] * len(X)
         for i, (x, _) in enumerate(stream.iter_numpy(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
-        return y_pred
+        return np.asarray(y_pred)
 
     def score(self, X, y, sample_weight=None):
         """Returns the mean accuracy on the given test data and labels.
@@ -286,6 +288,10 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         """
         return super().score(X, y, sample_weight)
+
+    def fit_predict(self, X, y):
+        """Calls ``fit`` and then ``predict`` in one go."""
+        return self.fit(X, y).predict(X)
 
 
 class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
@@ -350,6 +356,10 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
 
         return np.asarray(X_trans)
 
+    def fit_transform(self, X, y=None):
+        """Calls ``fit`` and then ``transform`` in one go."""
+        return self.fit(X, y).transform(X)
+
 
 class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
 
@@ -408,3 +418,7 @@ class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
             y_pred[i] = self.instance_.predict_one(x)
 
         return y_pred
+
+    def fit_predict(self, X, y=None):
+        """Calls ``fit`` and then ``predict`` in one go."""
+        return self.fit(X, y).predict(X)

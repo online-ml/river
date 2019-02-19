@@ -2,7 +2,6 @@ import collections
 import copy
 
 from .. import base
-from .. import stats
 
 
 __all__ = ['GroupBy']
@@ -56,7 +55,7 @@ class GroupBy(base.Transformer):
 
     References:
 
-    - `Streaming groupbys in pandas for big dataset <(https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
+    - `Streaming groupbys in pandas for big datasets <(https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
 
     """
 

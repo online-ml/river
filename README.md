@@ -5,19 +5,19 @@
 <div align="center">
   <!-- Travis -->
   <a href="https://travis-ci.org/creme-ml/creme">
-    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=flat-square" alt="travis" />
+    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=for-the-badge" alt="travis" />
   </a>
   <!-- Codecov -->
   <a href="https://codecov.io/gh/creme-ml/creme">
-    <img src="https://codecov.io/gh/creme-ml/creme/branch/master/graph/badge.svg&style=flat-square" alt="codecov" />
+    <img src="https://img.shields.io/codecov/c/gh/creme-ml/creme.svg?style=for-the-badge" alt="codecov" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">
-    <img src="https://shields.mitmproxy.org/pypi/v/creme.svg?style=flat-square" alt="pypi" />
+    <img src="https://img.shields.io/pypi/v/creme.svg?style=for-the-badge" alt="pypi" />
   </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
-    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license"/>
+    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=for-the-badge" alt="bsd_3_license"/>
   </a>
 </div>
 
@@ -28,9 +28,10 @@
 ## Useful links
 
 - [Documentation](https://creme-ml.github.io/)
-- Example notebooks
+- [Tutorials](https://github.com/creme-ml/tutorials)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
-- [Releases](https://pypi.org/project/creme/#history)
+- [Package releases](https://pypi.org/project/creme/#history)
+- [Change history](HISTORY.md)
 
 ## Installation
 
@@ -69,7 +70,7 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 >>> metric = metrics.roc_auc_score
 
 >>> model_selection.online_score(X_y, model, metric)
-0.992977...
+0.993030...
 
 ```
 
@@ -77,6 +78,7 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 
 - [scikit-learn](https://scikit-learn.org/stable/): Some of it's estimators have a `partial_fit` method which allows them to update themselves with new observations. However, online learning isn't a first class citizen, which can make it a bit awkward to put a streaming pipeline in place. You should definitely use scikit-learn if your data fits in memory and that you can afford retraining your model from scratch when you have new data to train on.
 - [Vowpal Wabbit](https://github.com/VowpalWabbit/vowpal_wabbit/wiki): VW is probably the fastest out-of-core learning system available. At it's core it implements a state-of-the-art adaptive gradient descent algorithm with many tricks. It also has some mechanisms for doing [active learning](https://www.wikiwand.com/en/Active_learning_(machine_learning)) and using [bandits](https://www.wikiwand.com/en/Multi-armed_bandit). However it isn't a "true" online learning system as it assumes the data is available in a file and can looped over multiple times. Also it is somewhat difficult to [grok](https://www.wikiwand.com/en/Grok) for newcomers.
+- [LIBOL](https://github.com/LIBOL/SOL): This is very good library written by academics with some great documentation. It's written in C++ and seems to be pretty fast. However it only focuses on the learning aspect of online learning, not on other mundane yet useful tasks such as feature extraction and preprocessing. Moreover it hasn't been updated for a few years.
 - [Spark Streaming](https://spark.apache.org/docs/latest/streaming-programming-guide.html): This is an extension of [Apache Spark](https://www.wikiwand.com/en/Apache_Spark) which caters to big data practitioners. It provides a lot of practical tools for manipulating streaming data in it's true sense. It also has some compatibility with the [MLlib](https://spark.apache.org/docs/latest/ml-guide.html) for implementing online learning algorithms, such as [streaming linear regression](https://spark.apache.org/docs/latest/mllib-linear-methods.html#streaming-linear-regression) and [streaming k-means](https://spark.apache.org/docs/latest/mllib-clustering.html#streaming-k-means). However it is a somewhat overwhelming solution which might be a bit overkill for certain use cases.
 - [TensorFlow](https://www.wikiwand.com/en/TensorFlow): Deep learning systems are in some sense online learning systems. Indeed it is possible to put in place a DL pipeline for learning from incoming observations. Because frameworks such as [Keras](https://keras.io/) and [PyTorch](https://pytorch.org/) are popular and well-backed, there is no real point in implementing neural networks in creme. For a lot of problems neural networks might not be the right tool, and you might want to use a simple logistic regression or a decision tree (for which online algorithms exist).
 

@@ -83,3 +83,6 @@ dmypy.json
 
 # Python Patch
 .venv/
+
+# IDE
+.vscode

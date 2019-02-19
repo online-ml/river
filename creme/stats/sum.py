@@ -2,7 +2,7 @@ from . import base
 
 
 class Sum(base.RunningStatistic):
-    """Computes a running Sum.
+    """Computes a running sum.
 
     Attributes:
         sum (float) : The running sum.

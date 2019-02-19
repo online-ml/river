@@ -24,27 +24,27 @@ class LogisticRegression(base.BinaryClassifier):
 
     ::
 
-        >>> import creme.compose
-        >>> import creme.linear_model
-        >>> import creme.model_selection
-        >>> import creme.optim
-        >>> import creme.preprocessing
-        >>> import creme.stream
+        >>> from creme import compose
+        >>> from creme import linear_model
+        >>> from creme import model_selection
+        >>> from creme import preprocessing
+        >>> from creme import stream
         >>> from sklearn import datasets
         >>> from sklearn import metrics
-        >>> X_y = creme.stream.iter_sklearn_dataset(
+
+        >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_breast_cancer,
         ...     shuffle=True,
         ...     random_state=42
         ... )
-        >>> model = creme.compose.Pipeline([
-        ...     ('scale', creme.preprocessing.StandardScaler()),
-        ...     ('learn', creme.linear_model.LogisticRegression())
+        >>> model = compose.Pipeline([
+        ...     ('scale', preprocessing.StandardScaler()),
+        ...     ('learn', linear_model.LogisticRegression())
         ... ])
         >>> metric = metrics.roc_auc_score
 
-        >>> creme.model_selection.online_score(X_y, model, metric)
-        0.990625...
+        >>> model_selection.online_score(X_y, model, metric)
+        0.990546...
 
     """
 
@@ -52,7 +52,7 @@ class LogisticRegression(base.BinaryClassifier):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
-        self.weights = collections.defaultdict(lambda: 0.)
+        self.weights = collections.defaultdict(float)
 
     def _predict_proba_one_with_weights(self, x, w):
         return util.sigmoid(util.dot(x, w))

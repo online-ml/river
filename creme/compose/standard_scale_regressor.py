@@ -8,7 +8,7 @@ __all__ = ['StandardScaleRegressor']
 
 
 class StandardScaleRegressor(base.Regressor):
-    """Meta-regressor that rescales the target variable nefore fitting.
+    """Meta-regressor that rescales the target variable before fitting.
 
     A running mean and standard deviation are maintained and used to modify the target variable
     before feeding it to the underlying regressor. The output of the regressor is unscaled before

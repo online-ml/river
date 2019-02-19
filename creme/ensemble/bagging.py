@@ -52,7 +52,7 @@ class BaggingClassifier(base.BinaryClassifier):
         >>> metric = metrics.roc_auc_score
 
         >>> creme.model_selection.online_score(X_y, model, metric)
-        0.991563...
+        0.991497...
 
     References:
 
