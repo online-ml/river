@@ -1,4 +1,3 @@
-from skmultiflow.core.pipeline import Pipeline
 from skmultiflow.data import RandomTreeGenerator
 from skmultiflow.meta.learn_pp import LearnPP
 from sklearn.tree import DecisionTreeClassifier
@@ -42,5 +41,3 @@ def test_learn_pp():
     assert np.isclose(expected_acc, acc)
     assert corrects == expected_correct_predictions
     assert type(classifier.predict(X)) == np.ndarray
-
-test_learn_pp()

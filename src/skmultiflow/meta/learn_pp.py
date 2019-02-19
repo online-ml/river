@@ -8,47 +8,45 @@ from skmultiflow.utils import check_random_state
 
 
 class LearnPP(StreamModel):
-    """ Learn++ Classifier
-    Learn++ is an ensemble learning method introduced by Robi Polikar,
-    Lalita Udpa, Satish S. Udpa and Vasant Honavar which is an algorithm
-    for incremental training of classifier. The algorithm does not require access to previously
-    used data during subsequent incremental learning sessions. At
-    the same time, it does not forget previously acquired knowledge.
-    Learn++ utilizes ensemble of classifiers by generating multiple
+    """
+    Learn++ [1]_ is an ensemble learning. Learn++ does not require
+    access to previously used data during subsequent incremental learning
+    steps. At the same time, it does not forget previously acquired knowledge.
+    Learn++ utilizes an ensemble of classifiers by generating multiple
     hypotheses using training data sampled according to carefully
-    tailored distributions
+    tailored distributions.
 
-    "Polikar, Robi & Udpa, Lalita & S Udpa, Satish & Member, Senior & Honavar, Vasant.
-    (2002). Learn++: An Incremental Learning Algorithm for Supervised Neural Networks.
-    IEEE Transactions on Systems Man and Cybernetics Part C (Applications and Reviews). "
+    References
+    ----------
+    .. [1] Polikar, Robi and Upda, Lalita and Upda, Satish S and Honavar, Vasant.
+       Learn++: An Incremental Learning Algorithm for Supervised Neural Networks.
+       IEEE Transactions on Systems Man and Cybernetics Part C (Applications and Reviews), 2002.
+
     Parameters
     ----------
-    base_estimator: StreamModel
-        This is the ensemble classifier type, each ensemble classifier is going
-        to be a copy of the base_estimator.
+    base_estimator: StreamModel or sklearn.BaseEstimator (default=DecisionTreeClassifier)
+        This is the base estimator, each member of the ensemble is an instance of the base estimator.
     n_estimators: int (default=30)
         The number of classifiers per ensemble
-
     n_ensembles: int (default=10)
         The number of ensembles to keep.
-
-    window_size (int)
+    window_size: int (default=100)
         The size of the training window (batch), in other words, how many instances are kept for training.
-
     error_threshold: float (default=0.5)
         Only keep the learner with the error smaller than error_threshold
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
+
     Raises
     ------
     RuntimeError:
-        A RuntimeError is raised if the base_estimator is too weak. In other word,
-        it has too low accuracy on the dataset.
-        A RuntimeError is raised if the 'classes' parameter is not
-        passed in the first partial_fit call, or if they are passed in further
-        calls but differ from the initial classes list passed.
+        A RuntimeError is raised if the base_estimator is too weak. In other words,
+        it has too low accuracy on the dataset. A RuntimeError is also raised if the
+        'classes' parameter is not passed in the first partial_fit call, or if they
+        are passed in further calls but differ from the initial classes.
+
     Examples
     --------
     >>> # Imports
@@ -79,6 +77,7 @@ class LearnPP(StreamModel):
     >>> # Displaying the results
     >>> print('Learn++ classifier performance: ' + str(corrects / sample_count))
     Learn++ classifier performance: 0.9555
+
     """
 
     def __init__(self, base_estimator=DecisionTreeClassifier(),
@@ -87,6 +86,7 @@ class LearnPP(StreamModel):
                  n_ensembles=10,
                  window_size=100,
                  random_state=None):
+        super().__init__()
         self.base_estimator = base_estimator
         self.n_estimators = n_estimators
         self.ensembles = []
@@ -110,7 +110,6 @@ class LearnPP(StreamModel):
 
     def partial_fit(self, X, y, classes=None, weight=None):
         """
-        partial_fit
         Partially fits the model, based on the X and y matrix.
         Parameters
         ----------
@@ -130,7 +129,7 @@ class LearnPP(StreamModel):
                 A RuntimeError is raised if the base_estimator is too weak. In other word,
                 it has too low accuracy on the dataset.
         Returns
-        _______
+        -------
         LearnPP
             self
         """
@@ -159,7 +158,6 @@ class LearnPP(StreamModel):
         return self
 
     def __fit_batch(self, X, y):
-
         ensemble = [copy.deepcopy(self.base_estimator) for _ in range(self.n_estimators)]
         normalized_errors = [1.0 for _ in range(self.n_estimators)]
 
@@ -231,7 +229,8 @@ class LearnPP(StreamModel):
 
         return self
 
-    def __compute_error(self, Dt, y_true, y_predict):
+    @staticmethod
+    def __compute_error(Dt, y_true, y_predict):
         total_error = np.sum(Dt[y_predict != y_true]) / np.sum(Dt)
         return total_error
 
@@ -309,6 +308,10 @@ class LearnPP(StreamModel):
         raise NotImplementedError
 
     def get_info(self):
-        return 'Learn++ Classifier: base_estimator: ' + str(self.base_estimator) + \
-               ' - n_estimators: ' + str(self.n_estimators) + " - n_ensembles: " + str(self.n_ensembles) + \
-               '- error_threshold: ' + str(self.error_threshold)
+        description = type(self).__name__ + ': '
+        description += 'base_estimator: {} - '.format(type(self.base_estimator))
+        description += 'n_estimators: {} - '.format(type(self.base_estimator))
+        description += 'n_ensembles: {} - '.format(type(self.n_ensembles))
+        description += 'window_size: {} - '.format(type(self.window_size))
+        description += 'error_threshold: {} - '.format(type(self.error_threshold))
+        return description
