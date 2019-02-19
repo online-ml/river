@@ -18,7 +18,7 @@ PROJECT_URLS = {'Packaging tutorial': 'https://packaging.python.org/tutorials/di
                 }
 DOWNLOAD_URL = 'https://pypi.org/project/scikit-multiflow/#files'
 LICENSE = '3-Clause BSD'
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 
 # read the contents of README file
