@@ -46,6 +46,3 @@ def test_learn_pp():
     assert np.isclose(expected_acc, acc)
     assert corrects == expected_correct_predictions
     assert type(learner.predict(X)) == np.ndarray
-
-
-test_learn_pp()

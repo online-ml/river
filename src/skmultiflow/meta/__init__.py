@@ -10,6 +10,7 @@ from .oza_bagging_adwin import OzaBaggingAdwin
 from .classifier_chains import ClassifierChain
 from .regressor_chains import RegressorChain
 from .multi_output_learner import MultiOutputLearner
+from .learn_pp import LearnPP
 
 __all__ = ["AdaptiveRandomForest", "BatchIncremental", "LeverageBagging", "OzaBagging", "OzaBaggingAdwin",
-           "ClassifierChain", "RegressorChain", "MultiOutputLearner"]
+           "ClassifierChain", "RegressorChain", "MultiOutputLearner", "LearnPP"]
