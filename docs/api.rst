@@ -322,6 +322,7 @@ Loss functions
    stats.Mean
    stats.Min
    stats.Max
+   stats.Mode
    stats.NUnique
    stats.PeakToPeak
    stats.Skew

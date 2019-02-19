@@ -2,7 +2,7 @@ import collections
 import copy
 
 from . import imputer
-from . import _top_k
+from .. import stats
 
 
 class CategoryImputer(imputer.Imputer):
@@ -28,7 +28,7 @@ class CategoryImputer(imputer.Imputer):
     ...     {},
     ... ]
 
-    >>> imputer_top_k = creme.impute.CategoryImputer(on='x', how='top_k', k=6)
+    >>> imputer_top_k = creme.impute.CategoryImputer(on='x', exact=True)
     >>> for x in X:
     ...     print(imputer_top_k.fit_one(x))
     {'x': 'sunny'}
@@ -44,7 +44,6 @@ class CategoryImputer(imputer.Imputer):
     >>> imputer_by_town = creme.impute.CategoryImputer(
     ...    on='weather',
     ...    by='town',
-    ...    how='top_k',
     ...    k=10,
     ... )
 
@@ -75,18 +74,12 @@ class CategoryImputer(imputer.Imputer):
     {'town': 'Pekin', 'weather': 'sunny'}
     """
 
-    def __init__(self, on, by=None, how='top_k', k=None):
+    def __init__(self, on, by=None, k=25, exact=False):
 
         super().__init__()
         self.on = on
         self.by = by
 
-        allowed_imputers = {
-            'top_k': _top_k.TopK(k=k),
-        }
-
-        if how not in allowed_imputers:
-            raise ValueError(f'Can only use one of: {allowed_imputers.keys()}')
-
         self.imputers = collections.defaultdict(
-            lambda: copy.deepcopy(allowed_imputers[how]))
+            lambda: copy.deepcopy(stats.Mode(k=k, exact=exact))
+        )
