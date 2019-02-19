@@ -12,15 +12,16 @@ class Quantile(base.RunningStatistic):
 
     References:
 
-    - `text <url>`_
-    - `text <url>`
+    - `The P2 Algorithm for Dynamic Statistical Computing Calculation of Quantiles and Editor Histograms Without Storing Observations  <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
+    - `Python implementation <https://github.com/cxxr/LiveStats/blob/master/livestats/livestats.py>`
 
     """
     def __init__(self, percentile=0.5):
+
         if 0 < percentile < 1:
             self.percentile = percentile
         else:
-            raise ValueError('percentile be must be between 0 and 1 excluded')
+            raise ValueError('percentile must be between 0 and 1 excluded')
 
 
         self.dn = [0, self.percentile/2,
