@@ -90,6 +90,7 @@ API reference
    :nosignatures:
 
    ensemble.BaggingClassifier
+   ensemble.HedgeClassifier
 
 
 :mod:`creme.feature_extraction`: Feature extraction
@@ -106,8 +107,43 @@ API reference
    :nosignatures:
 
    feature_extraction.CountVectorizer
+   feature_extraction.FuncExtractor
    feature_extraction.GroupBy
+   feature_extraction.TargetEncoder
    feature_extraction.TFIDFVectorizer
+
+
+:mod:`creme.feature_selection`: Feature selection
+-------------------------------------------------
+
+.. automodule:: creme.feature_selection
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   feature_selection.RandomDiscarder
+
+
+:mod:`creme.imput`: Running imputation
+--------------------------------------
+
+.. automodule:: creme.impute
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   impute.NumericImputer
+   impute.CategoryImputer
 
 
 :mod:`creme.linear_model`: Linear models
@@ -123,8 +159,35 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   linear_model.FMRegressor
    linear_model.LinearRegression
    linear_model.LogisticRegression
+   linear_model.PassiveAggressiveClassifier
+   linear_model.PassiveAggressiveRegressor
+   linear_model.PassiveAggressiveIClassifier
+   linear_model.PassiveAggressiveIRegressor
+   linear_model.PassiveAggressiveIIClassifier
+   linear_model.PassiveAggressiveIIRegressor
+
+
+:mod:`creme.metrics`: Streaming metrics
+---------------------------------------
+
+.. automodule:: creme.metrics
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   metrics.Accuracy
+   metrics.MAE
+   metrics.MSE
+   metrics.RMSE
+   metrics.RMSLE
 
 
 :mod:`creme.model_selection`: Model selection
@@ -219,6 +282,7 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
+   optim.EpsilonInsensitiveHingeLoss
    optim.LogLoss
    optim.HingeLoss
    optim.AbsoluteLoss
@@ -238,8 +302,11 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
+   preprocessing.Discarder
    preprocessing.FeatureHasher
+   preprocessing.FuncTransformer
    preprocessing.OneHotEncoder
+   preprocessing.PolynomialExtender
    preprocessing.StandardScaler
    preprocessing.MinMaxScaler
 
@@ -275,14 +342,15 @@ Loss functions
    :nosignatures:
 
    stats.Count
+   stats.EWMean
    stats.Kurtosis
    stats.Mean
    stats.Min
    stats.Max
+   stats.Mode
    stats.NUnique
    stats.PeakToPeak
    stats.Skew
-   stats.SmoothMean
    stats.Sum
    stats.Variance
 

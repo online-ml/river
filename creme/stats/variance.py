@@ -5,9 +5,29 @@ from . import mean
 class Variance(base.RunningStatistic):
     """Computes a running variance using Welford's algorithm.
 
+    Parameters:
+        ddof (int): Delta Degrees of Freedom. The divisor used in calculations is $n$ - ddof,
+            where $n$ represents the number of seen elements.
+
     Attributes:
         mean (stats.Mean)
         sos (float): The running sum of squares.
+
+    Example:
+
+        >>> import creme.stats
+
+        >>> X = [3, 5, 4, 7, 10, 12]
+
+        >>> var = creme.stats.Variance()
+        >>> for x in X:
+        ...     print(var.update(x).get())
+        0.0
+        2.0
+        1.0
+        2.9166666666666665
+        7.7
+        12.566666666666668
 
     References:
 
@@ -15,19 +35,22 @@ class Variance(base.RunningStatistic):
 
     """
 
-    def __init__(self):
+    def __init__(self, ddof=1):
+        self.ddof = ddof
         self.mean = mean.Mean()
-        self.sos = 0
+        self.sos = None
 
     @property
     def name(self):
         return 'variance'
 
     def update(self, x):
-        old_mean = self.mean.get()
-        new_mean = self.mean.update(x).get()
-        self.sos += (x - old_mean) * (x - new_mean)
+        if self.sos is None:
+            self.mean.update(x)
+            self.sos = 0
+        else:
+            self.sos += (x - self.mean.get()) * (x - self.mean.update(x).get())
         return self
 
     def get(self):
-        return self.sos / self.mean.count.n if self.sos else 0
+        return (self.sos or 0) / max(1, self.mean.count.get() - self.ddof)

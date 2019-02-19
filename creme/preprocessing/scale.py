@@ -35,20 +35,21 @@ class StandardScaler(base.Transformer):
         >>> scaler = creme.preprocessing.StandardScaler()
         >>> pprint.pprint([scaler.fit_one(x) for x in X])
         [{'x': 0.0},
-         {'x': 0.999999...},
-         {'x': 0.194726...},
-         {'x': -0.312383...},
-         {'x': -1.471527...},
-         {'x': -1.151552...},
-         {'x': -1.198587...},
-         {'x': 1.166769...},
-         {'x': 0.329765...},
-         {'x': 0.627171...},
-         {'x': -1.420187...},
-         {'x': 1.353541...},
-         {'x': 0.877070...},
-         {'x': -0.917724...},
-         {'x': -0.943887...}]
+         {'x': 0.7071067811865472},
+         {'x': 0.15899361505958232},
+         {'x': -0.2705322151649623},
+         {'x': -1.3161741269825997},
+         {'x': -1.0512188309398107},
+         {'x': -1.1096762396286515},
+         {'x': 1.09141268517007},
+         {'x': 0.3109060850298578},
+         {'x': 0.5949866915752465},
+         {'x': -1.3540960661327461},
+         {'x': 1.2959176347038681},
+         {'x': 0.8426620966002304},
+         {'x': -0.8843412116857523},
+         {'x': -0.91188180555936}]
+
 
         >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
         >>> preprocessing.StandardScaler().fit_transform(X)
@@ -83,9 +84,10 @@ class StandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: (xi - self.variances[i].mean.get()) / (self.variances[i].get() + self.eps) ** 0.5
+            i: (xi - (self.variances[i].mean.get() or 0)) / (self.variances[i].get() + self.eps) ** 0.5
             for i, xi in x.items()
         }
+
 
 class MinMaxScaler(base.Transformer):
     """Scales the data to a fixed range 0 to 1.
@@ -105,10 +107,10 @@ class MinMaxScaler(base.Transformer):
         >>> import creme
         >>> import numpy as np
         >>> from sklearn import preprocessing
-        
+
         >>> rng = np.random.RandomState(42)
         >>> X = [{'x': v} for v in rng.uniform(low=8, high=12, size=15)]
-        
+
         >>> scaler = creme.preprocessing.MinMaxScaler()
         >>> pprint.pprint([scaler.fit_one(x) for x in X])
         [{'x': 0.0},
@@ -126,7 +128,7 @@ class MinMaxScaler(base.Transformer):
          {'x': 0.855194...},
          {'x': 0.201990...},
          {'x': 0.169847...}]
-        
+
         >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
         >>> preprocessing.MinMaxScaler().fit_transform(X)
         array([[0.37284965],
@@ -146,21 +148,22 @@ class MinMaxScaler(base.Transformer):
                [0.16984743]])
 
     """
-    
+
     def __init__(self):
-        self.min = collections.defaultdict(lambda : stats.Min())
-        self.max = collections.defaultdict(lambda : stats.Max())
+        self.min = collections.defaultdict(stats.Min)
+        self.max = collections.defaultdict(stats.Max)
         self.eps = np.finfo(float).eps
-    
+
     def fit_one(self, x, y=None):
 
         for i, xi in x.items():
             self.min[i].update(xi)
             self.max[i].update(xi)
+
         return self.transform_one(x)
 
     def transform_one(self, x):
         return {
-            i: (xi - self.min[i].get()) / (self.max[i].get() - self.min[i].get() + self.eps) 
+            i: (xi - self.min[i].get()) / (self.max[i].get() - self.min[i].get() + self.eps)
             for i, xi in x.items()
         }

@@ -11,7 +11,10 @@ from . import compat
 from . import compose
 from . import ensemble
 from . import feature_extraction
+from . import feature_selection
+from . import impute
 from . import linear_model
+from . import metrics
 from . import model_selection
 from . import multiclass
 from . import naive_bayes
@@ -21,6 +24,7 @@ from . import reco
 from . import stats
 from . import stream
 from . import tree
+
 from .__version__ import __version__
 
 __all__ = [
@@ -29,7 +33,10 @@ __all__ = [
     'compose',
     'ensemble',
     'feature_extraction',
+    'feature_selection',
+    'impute',
     'linear_model',
+    'metrics',
     'model_selection',
     'multiclass',
     'naive_bayes',
@@ -38,5 +45,5 @@ __all__ = [
     'reco',
     'stats',
     'stream',
-    'tree'
+    'tree',
 ]

@@ -19,12 +19,11 @@ class PeakToPeak(base.RunningStatistic):
 
     @property
     def name(self):
-        return 'p2p'
+        return 'ptp'
 
     def update(self, x):
         self.max.update(x)
         self.min.update(x)
-
         return self
 
     def get(self):

@@ -1,7 +1,3 @@
-"""
-Linear Regression
------------------
-"""
 import collections
 
 from .. import base
@@ -55,7 +51,7 @@ class LinearRegression(base.Regressor):
         >>> metric = metrics.mean_squared_error
 
         >>> creme.model_selection.online_score(X_y, model, metric)
-        29.561837...
+        29.648045...
 
         >>> model.steps[-1][1].intercept.get()
         22.532806...
@@ -70,7 +66,7 @@ class LinearRegression(base.Regressor):
         self.intercept = stats.Mean()
 
     def _predict_with_weights(self, x, w):
-        return util.dot(x, w) + self.intercept.get()
+        return util.dot(x, w) + (self.intercept.get() or 0)
 
     def _calc_gradient(self, y_true, y_pred, x, w):
         loss_gradient = self.loss.gradient(y_true, y_pred)
