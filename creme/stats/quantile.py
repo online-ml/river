@@ -3,9 +3,25 @@ from math import copysign
 
 
 class Quantile(base.RunningStatistic):
+    """Compute the running quantile.
 
+    Parameters:
+        percentile (float): Percentile you want compute.
+
+    Example:
+
+    References:
+
+    - `text <url>`_
+    - `text <url>`
+
+    """
     def __init__(self, percentile=0.5):
-        self.percentile = percentile
+        if 0 < percentile < 1:
+            self.percentile = percentile
+        else:
+            raise ValueError('percentile be must be between 0 and 1 excluded')
+
 
         self.dn = [0, self.percentile/2,
                    self.percentile, (1 + self.percentile)/2, 1]
@@ -19,6 +35,21 @@ class Quantile(base.RunningStatistic):
     @property
     def name(self):
         return 'quantile'
+
+    def _find_k(self,x):
+        if x < self.heights[0]:
+            self.heights[0] = x
+            k = 1
+        else:
+            for i in range(1, 5):
+                if self.heights[i - 1] <= x and x < self.heights[i]:
+                    k = i
+                    break
+            else:
+                k = 4
+                if self.heights[-1] < x:
+                    self.heights[-1] = x
+        return self, k 
 
     def _compute_P2(self,qp1, q, qm1, d, np1, n, nm1):
 
@@ -69,20 +100,9 @@ class Quantile(base.RunningStatistic):
             if self.heights_sorted == False:
                 self.heights.sort()
                 self.heights_sorted = True
-
-            if x < self.heights[0]:
-                self.heights[0] = x
-                k = 1
-            else:
-                for i in range(1, 5):
-                    if self.heights[i - 1] <= x and x < self.heights[i]:
-                        k = i
-                        break
-                else:
-                    k = 4
-                    if self.heights[-1] < x:
-                        self.heights[-1] = x
-
+            
+            #Find cell k such that qk < Xj <= qk+i and adjust extreme values (q1 and q) if necessary
+            _, k = self._find_k(x)
             # increment all positions greater than k
             self.position = [j if i < k else j + 1 for i,j in enumerate(self.position)]
             self.marker_position = [x + y for x,y in zip(self.marker_position, self.dn)]
