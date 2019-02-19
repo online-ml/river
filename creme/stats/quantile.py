@@ -49,9 +49,10 @@ class Quantile(base.RunningStatistic):
                 k = 4
                 if self.heights[-1] < x:
                     self.heights[-1] = x
-        return self, k 
+        return k 
 
-    def _compute_P2(self,qp1, q, qm1, d, np1, n, nm1):
+    @classmethod
+    def _compute_P2(cls,qp1, q, qm1, d, np1, n, nm1):
 
         d = float(d)
         n = float(n)
@@ -102,7 +103,8 @@ class Quantile(base.RunningStatistic):
                 self.heights_sorted = True
             
             #Find cell k such that qk < Xj <= qk+i and adjust extreme values (q1 and q) if necessary
-            _, k = self._find_k(x)
+            k = self._find_k(x)
+
             # increment all positions greater than k
             self.position = [j if i < k else j + 1 for i,j in enumerate(self.position)]
             self.marker_position = [x + y for x,y in zip(self.marker_position, self.dn)]
