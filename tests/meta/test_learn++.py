@@ -13,10 +13,6 @@ def test_learn_pp():
 
     m = 200
 
-    learner = Pipeline([('classifier', classifier)])
-    X, y = stream.next_sample(m)
-    learner.partial_fit(X, y, classes=stream.target_values)
-
     # Keeping track of sample count and correct prediction count
     sample_count = 0
     corrects = 0
@@ -38,11 +34,13 @@ def test_learn_pp():
 
     acc = corrects / sample_count
 
-    expected_correct_predictions = 1136
-    expected_acc = 0.568
-    expected_predictions = [1, 0, 0, 1, 1, 0, 0, 0, 0, 1]
+    expected_correct_predictions = 1138
+    expected_acc = 0.569
+    expected_predictions = [0, 1, 0, 0, 1, 1, 0, 0, 0, 0]
 
     assert np.alltrue(predictions == expected_predictions)
     assert np.isclose(expected_acc, acc)
     assert corrects == expected_correct_predictions
-    assert type(learner.predict(X)) == np.ndarray
+    assert type(classifier.predict(X)) == np.ndarray
+
+test_learn_pp()
