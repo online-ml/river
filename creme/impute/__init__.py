@@ -1,10 +1,10 @@
 """
-Module for computing running imputer.
+Module for imputing values online.
 """
+from .categorical import CategoricalImputer
 from .numeric import NumericImputer
-from .category import CategoryImputer
 
 __all__ = [
+    'CategoricalImputer',
     'NumericImputer',
-    'CategoryImputer',
 ]
