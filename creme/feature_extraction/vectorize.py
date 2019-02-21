@@ -140,13 +140,13 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
         ...     'And this is the third one.',
         ...     'Is this the first document?',
         ... ]
-        >>> vectorizer = creme.feature_extraction.CountVectorizer(on='sentence')
+        >>> vectorizer = creme.feature_extraction.TFIDFVectorizer(on='sentence')
         >>> for sentence in corpus:
         ...     print(vectorizer.fit_one({'sentence': sentence}))
-        Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
-        Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
-        Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
-        Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
+        {'this': 0.447..., 'is': 0.447..., 'the': 0.447..., 'first': 0.447..., 'document': 0.447...}
+        {'this': 0.333..., 'document': 0.667..., 'is': 0.333..., 'the': 0.333..., 'second': 0.469...}
+        {'and': 0.497..., 'this': 0.293..., 'is': 0.293..., 'the': 0.293..., 'third': 0.497..., 'one': 0.497...}
+        {'is': 0.384..., 'this': 0.384..., 'the': 0.384..., 'first': 0.580..., 'document': 0.469...}
 
     """
 

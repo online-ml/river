@@ -6,7 +6,7 @@ from .. import base
 from .. import stats
 
 
-__all__ = ['StandardScaler','MinMaxScaler']
+__all__ = ['MinMaxScaler', 'StandardScaler']
 
 
 class StandardScaler(base.Transformer):
@@ -72,7 +72,7 @@ class StandardScaler(base.Transformer):
     """
 
     def __init__(self):
-        self.variances = collections.defaultdict(lambda: stats.Variance())
+        self.variances = collections.defaultdict(stats.Variance)
         self.eps = np.finfo(float).eps
 
     def fit_one(self, x, y=None):
