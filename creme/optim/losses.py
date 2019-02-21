@@ -31,6 +31,20 @@ class AbsoluteLoss(Loss):
 
     .. math:: \\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i)
 
+    Example:
+
+    ::
+
+        >>> from creme import optim
+
+        >>> loss = optim.AbsoluteLoss()
+        >>> loss(-42, 42)
+        84
+        >>> loss.gradient(1, 2)
+        1
+        >>> loss.gradient(2, 1)
+        -1
+
     """
 
     def __call__(self, y_true, y_pred):
@@ -51,6 +65,20 @@ class SquaredLoss(Loss):
 
     .. math:: \\frac{\\partial L}{\\partial p_i} = 2(p_i - y_i)
 
+    Example:
+
+    ::
+
+        >>> from creme import optim
+
+        >>> loss = optim.SquaredLoss()
+        >>> loss(-4, 5)
+        81
+        >>> loss.gradient(1, 4)
+        6
+        >>> loss.gradient(4, 1)
+        -6
+
     """
 
     def __call__(self, y_true, y_pred):
@@ -70,6 +98,22 @@ class LogLoss(Loss):
     It's gradient w.r.t. to $p_i$ is
 
     .. math:: \\frac{\\partial L}{\\partial p_i} = sign(p_i - y_i)
+
+    Example:
+
+    ::
+
+        >>> from creme import optim
+
+        >>> loss = optim.LogLoss()
+        >>> loss(1, 0.5)
+        0.693147...
+        >>> loss(1, 0)
+        34.53877...
+        >>> loss.gradient(1, 0.2)
+        -0.8
+        >>> loss.gradient(0, 0.2)
+        0.2
 
     """
 

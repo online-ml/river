@@ -23,7 +23,6 @@ from . import preprocessing
 from . import reco
 from . import stats
 from . import stream
-from . import tree
 
 from .__version__ import __version__
 
@@ -44,6 +43,5 @@ __all__ = [
     'preprocessing',
     'reco',
     'stats',
-    'stream',
-    'tree',
+    'stream'
 ]

@@ -1,3 +1,0 @@
-"""
-Online decision trees.
-"""
