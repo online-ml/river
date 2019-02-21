@@ -10,10 +10,10 @@ from .min import Min
 from .mode import Mode
 from .n_unique import NUnique
 from .ptp import PeakToPeak
+from .quantile import Quantile
 from .skew import Skew
 from .sum import Sum
 from .variance import Variance
-from .quantile import Quantile
 
 __all__ = [
     'Count',
@@ -25,8 +25,8 @@ __all__ = [
     'Mode',
     'NUnique',
     'PeakToPeak',
+    'Quantile',
     'Skew',
     'Sum',
-    'Variance',
-    'Quantile'
+    'Variance'
 ]
