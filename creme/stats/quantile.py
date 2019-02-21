@@ -8,7 +8,8 @@ class Quantile(base.RunningStatistic):
     We based the code on LiveStat implementation [2].
 
     Attributes:
-        percentile (float): Percentile you want compute.
+        percentile (float): Percentile you want compute the value 
+        must be between 0 and 1 excluded.
 
     Example:
 
