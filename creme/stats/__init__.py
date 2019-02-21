@@ -13,6 +13,7 @@ from .ptp import PeakToPeak
 from .skew import Skew
 from .sum import Sum
 from .variance import Variance
+from .quantile import Quantile
 
 __all__ = [
     'Count',
@@ -26,5 +27,6 @@ __all__ = [
     'PeakToPeak',
     'Skew',
     'Sum',
-    'Variance'
+    'Variance',
+    'Quantile'
 ]
