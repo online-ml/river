@@ -4,11 +4,40 @@ from math import copysign
 
 class Quantile(base.RunningStatistic):
     """Compute the running quantile.
+    We used the P-square algorithm to calculate the percentage.
+    We based the code on implementation[2].
 
     Parameters:
         percentile (float): Percentile you want compute.
 
     Example:
+
+    ::
+        >>> from creme import stats
+        >>> import numpy as np
+
+        >>> np.random.seed(42*1337)
+        >>> mu, sigma = 0, 1 
+        >>> s = np.random.normal(mu, sigma, 1337*42)
+
+        >>> median = stats.Quantile(0.5)
+        >>> for x in s:
+        ...    _ = median.update(x)
+
+        >>> print(f'The estimated value of the 50th (median) percentile is {median.get():.4f}')
+        The estimated value of the 50th (median) percentile is -0.0006
+        >>> print(f'The real value of the 50th (median) percentile is {np.median(s):.4f}')
+        The real value of the 50th (median) percentile is -0.0002
+        
+        >>> percentile_17 = stats.Quantile(0.17)
+        >>> for x in s:
+        ...    _ = percentile_17.update(x)
+
+        >>> print(f'The estimated value of the 17th percentile is  {percentile_17.get():.4f}')
+        The estimated value of the 17th percentile is  -0.9522
+        >>> print(f'The real value of the 17th percentile is {np.percentile(s,17):.4f}')
+        The real value of the 17th percentile is -0.9510
+
 
     References:
 
