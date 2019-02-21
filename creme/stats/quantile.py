@@ -7,7 +7,7 @@ class Quantile(base.RunningStatistic):
     We used the P-square algorithm to calculate the percentile.
     We based the code on LiveStat implementation [2].
 
-    Parameters:
+    Attributes:
         percentile (float): Percentile you want compute.
 
     Example:
