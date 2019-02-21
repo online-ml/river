@@ -5,7 +5,7 @@ from math import copysign
 class Quantile(base.RunningStatistic):
     """Compute the running quantile.
     We used the P-square algorithm to calculate the percentage.
-    We based the code on implementation[2].
+    We based the code on LiveStat implementation [2].
 
     Parameters:
         percentile (float): Percentile you want compute.
