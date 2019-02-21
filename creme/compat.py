@@ -331,6 +331,8 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
         # predict needs some way to know if fit has been called
         self.is_fitted_ = True
 
+        self.n_fit_features_ = X.shape[1]
+
         return self
 
     def transform(self, X):
@@ -348,6 +350,9 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
+
+        if X.shape[1] != self.n_fit_features_:
+            raise ValueError(f'Expected {self.n_fit_features_} features, got {X.shape[1]}')
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)

@@ -7,7 +7,7 @@ from . import _constant
 from .. import stats
 
 
-class CategoryImputer(imputer.Imputer):
+class CategoricalImputer(imputer.Imputer):
     """ Imputer allow to replace missing values with descriptive statistics.
 
     Args:
@@ -31,7 +31,7 @@ class CategoryImputer(imputer.Imputer):
     ...     {},
     ... ]
 
-    >>> imputer_top_k = creme.impute.CategoryImputer(on='x', exact=True)
+    >>> imputer_top_k = creme.impute.CategoricalImputer(on='x', exact=True)
     >>> for x in X:
     ...     print(imputer_top_k.fit_one(x))
     {'x': 'sunny'}
@@ -44,7 +44,7 @@ class CategoryImputer(imputer.Imputer):
     {'x': 'rainy'}
     {'x': 'rainy'}
 
-    >>> imputer_top_k = creme.impute.CategoryImputer(
+    >>> imputer_top_k = creme.impute.CategoricalImputer(
     ...     on='x',
     ...     how='constant',
     ...     constant_value='unknown',
@@ -62,7 +62,7 @@ class CategoryImputer(imputer.Imputer):
     {'x': 'unknown'}
     {'x': 'unknown'}
 
-    >>> imputer_by_town = creme.impute.CategoryImputer(
+    >>> imputer_by_town = creme.impute.CategoricalImputer(
     ...    on='weather',
     ...    by='town',
     ...    k=10,
