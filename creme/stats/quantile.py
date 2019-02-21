@@ -12,7 +12,7 @@ class Quantile(base.RunningStatistic):
 
     Example:
 
-    ::
+
         >>> from creme import stats
         >>> import numpy as np
 
@@ -42,7 +42,7 @@ class Quantile(base.RunningStatistic):
     References:
 
     - `The P2 Algorithm for Dynamic Statistical Computing Calculation of Quantiles and Editor Histograms Without Storing Observations  <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
-    - `Python implementation <https://github.com/cxxr/LiveStats/blob/master/livestats/livestats.py>`
+    - `Python implementation <https://github.com/cxxr/LiveStats/blob/master/livestats/livestats.py>`_
 
     """
     def __init__(self, percentile=0.5):
