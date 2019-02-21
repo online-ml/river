@@ -53,7 +53,7 @@ class Quantile(base.RunningStatistic):
             raise ValueError('percentile must be between 0 and 1 excluded')
 
 
-        self.dn = [0, self.percentile/2,
+        self.desired_marker_position = [0, self.percentile/2,
                    self.percentile, (1 + self.percentile)/2, 1]
         self.marker_position = [1, 1 + 2*self.percentile, 1 + 4 *
                      self.percentile, 3 + 2*self.percentile, 5]
@@ -137,7 +137,7 @@ class Quantile(base.RunningStatistic):
 
             # increment all positions greater than k
             self.position = [j if i < k else j + 1 for i,j in enumerate(self.position)]
-            self.marker_position = [x + y for x,y in zip(self.marker_position, self.dn)]
+            self.marker_position = [x + y for x,y in zip(self.marker_position, self.desired_marker_position)]
             # Adjust heights of markers 2-4 if necessary
             self._adjust()
         return self
