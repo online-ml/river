@@ -353,6 +353,7 @@ Loss functions
    stats.Skew
    stats.Sum
    stats.Variance
+   stats.Quantile
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
