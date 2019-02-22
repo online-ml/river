@@ -70,14 +70,15 @@ Ensemble methods
 .. autosummary::
    :toctree: _autosummary
 
-   skmultiflow.meta.batch_incremental
+   skmultiflow.meta.adaptive_random_forests
+   skmultiflow.meta.leverage_bagging
    skmultiflow.meta.oza_bagging
    skmultiflow.meta.oza_bagging_adwin
-   skmultiflow.meta.leverage_bagging
-   skmultiflow.meta.adaptive_random_forests
    skmultiflow.meta.multi_output_learner
    skmultiflow.meta.classifier_chains
    skmultiflow.meta.regressor_chains
+   skmultiflow.meta.batch_incremental
+   skmultiflow.meta.learn_pp
 
 .. currentmodule:: skmultiflow
 

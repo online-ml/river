@@ -348,6 +348,9 @@ class EvaluatePrequential(StreamEvaluator):
                     self._update_metrics()
                 break
 
+        # Flush file buffer, in case it contains data
+        self._flush_file_buffer()
+
         self.evaluation_summary()
 
         if self.restart_stream:
