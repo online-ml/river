@@ -14,6 +14,10 @@ from .quantile import Quantile
 from .skew import Skew
 from .sum import Sum
 from .variance import Variance
+from .quantile import Quantile
+from .rolling_quantile import RollingQuantile
+from .categorical_count import CategoricalCount
+from .entropy import Entropy
 
 __all__ = [
     'Count',
@@ -28,5 +32,9 @@ __all__ = [
     'Quantile',
     'Skew',
     'Sum',
-    'Variance'
+    'Variance',
+    'Quantile',
+    'RollingQuantile',
+    'CategoricalCount',
+    'Entropy'
 ]
