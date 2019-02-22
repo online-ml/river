@@ -354,7 +354,8 @@ Loss functions
    stats.Sum
    stats.Variance
    stats.Quantile
-
+   stats.RollingQuantile
+   stats.Entropy
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
 
