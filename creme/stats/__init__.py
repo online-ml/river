@@ -18,6 +18,7 @@ from .quantile import Quantile
 from .rolling_quantile import RollingQuantile
 from .categorical_count import CategoricalCount
 from .entropy import Entropy
+from .gini_index import GiniIndex
 
 __all__ = [
     'Count',
@@ -36,5 +37,6 @@ __all__ = [
     'Quantile',
     'RollingQuantile',
     'CategoricalCount',
-    'Entropy'
+    'Entropy',
+    'GiniIndex'
 ]
