@@ -11,6 +11,7 @@ from .classifier_chains import ClassifierChain
 from .regressor_chains import RegressorChain
 from .multi_output_learner import MultiOutputLearner
 from .learn_pp import LearnPP
+from .learn_nse import LearnNSE
 
 __all__ = ["AdaptiveRandomForest", "BatchIncremental", "LeverageBagging", "OzaBagging", "OzaBaggingAdwin",
-           "ClassifierChain", "RegressorChain", "MultiOutputLearner", "LearnPP"]
+           "ClassifierChain", "RegressorChain", "MultiOutputLearner", "LearnPP", "LearnNSE"]
