@@ -191,7 +191,10 @@ class LearnPP(StreamModel):
 
                 # Train a weak learner
                 ensemble[t] = copy.deepcopy(self.base_estimator)
-                ensemble[t].fit(X_train, y_train)
+                try:
+                    ensemble[t].fit(X_train, y_train)
+                except NotImplementedError:
+                    ensemble[t].partial_fit(X_train, y_train)
 
                 # predict on the data
                 y_predict = ensemble[t].predict(X_test)
@@ -310,7 +313,7 @@ class LearnPP(StreamModel):
     def get_info(self):
         description = type(self).__name__ + ': '
         description += 'base_estimator: {} - '.format(type(self.base_estimator))
-        description += 'n_estimators: {} - '.format(type(self.base_estimator))
+        description += 'n_estimators: {} - '.format(type(self.n_estimators))
         description += 'n_ensembles: {} - '.format(type(self.n_ensembles))
         description += 'window_size: {} - '.format(type(self.window_size))
         description += 'error_threshold: {} - '.format(type(self.error_threshold))

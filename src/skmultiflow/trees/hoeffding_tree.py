@@ -918,12 +918,11 @@ class HoeffdingTree(StreamModel):
         if self.classes is None and classes is not None:
             self.classes = classes
         if y is not None:
-            if weight is None:
-                weight = np.array([1.0])
             row_cnt, _ = get_dimensions(X)
-            wrow_cnt, _ = get_dimensions(weight)
-            if row_cnt != wrow_cnt:
-                weight = [weight[0]] * row_cnt
+            if weight is None:
+                weight = np.ones(row_cnt)
+            if row_cnt != len(weight):
+                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt, len(weight)))
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
