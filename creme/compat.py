@@ -47,6 +47,24 @@ SKLEARN_INPUT_Y_PARAMS = {
 }
 
 
+def wrap_sklearn(estimator):
+    """Wraps a creme estimator to make it compatible with scikit-learn."""
+
+    wrappers = [
+        (base.BinaryClassifier, SKLClassifierWrapper),
+        (base.Clusterer, SKLClustererWrapper),
+        (base.MultiClassifier, SKLClassifierWrapper),
+        (base.Regressor, SKLRegressorWrapper),
+        (base.Transformer, SKLTransformerWrapper)
+    ]
+
+    for base_type, wrapper in wrappers:
+        if isinstance(estimator, base_type):
+            return wrapper(estimator)
+
+    raise ValueError("Couldn't find an appropriate wrapper")
+
+
 class SKLBaseWrapper(sklearn_base.BaseEstimator):
     """This class exists for adapting the documentation styling."""
 
