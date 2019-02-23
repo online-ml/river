@@ -21,15 +21,16 @@ AUTHOR = 'Max Halford'
 REQUIRES_PYTHON = '>=3.5.0'
 VERSION = None
 
-# What packages are required for this module to be executed?
-REQUIRED = open('requirements.txt').read().splitlines()
-
 # The rest you shouldn't have to touch too much :)
 # ------------------------------------------------
 # Except, perhaps the License and Trove Classifiers!
 # If you do change the License, remember to change the Trove Classifier for that!
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+# What packages are required for this module to be executed?
+with io.open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+    install_requires = f.read().splitlines()
 
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.rst' is present in your MANIFEST.in file!
@@ -100,13 +101,13 @@ setup(
     # entry_points={
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
-    install_requires=REQUIRED,
+    install_requires=install_requires,
     include_package_data=True,
-    license='MIT',
+    license='BSD-3',
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: BSD-3 License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',

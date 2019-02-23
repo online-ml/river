@@ -56,6 +56,7 @@ API reference
    compat.SKLClustererWrapper
    compat.SKLTransformerWrapper
    compat.SKLRegressorWrapper
+   compat.wrap_sklearn
 
 
 :mod:`creme.compose`: Model composition
@@ -143,7 +144,7 @@ API reference
    :nosignatures:
 
    impute.NumericImputer
-   impute.CategoryImputer
+   impute.CategoricalImputer
 
 
 :mod:`creme.linear_model`: Linear models
@@ -350,10 +351,10 @@ Loss functions
    stats.Mode
    stats.NUnique
    stats.PeakToPeak
+   stats.Quantile
    stats.Skew
    stats.Sum
    stats.Variance
-   stats.Quantile
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
