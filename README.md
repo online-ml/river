@@ -1,8 +1,9 @@
-<img src="docs/_static/images/skmultiflow-logo-wide.png" height="100"/>
+<img src="https://scikit-multiflow.github.io/scikit-multiflow/_images/skmultiflow-logo-wide.png" height="100"/>
 
 [![Build Status](https://travis-ci.org/scikit-multiflow/scikit-multiflow.svg?branch=master)](https://travis-ci.org/scikit-multiflow/scikit-multiflow)
 [![codecov](https://codecov.io/gh/scikit-multiflow/scikit-multiflow/branch/master/graph/badge.svg)](https://codecov.io/gh/scikit-multiflow/scikit-multiflow)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Django.svg)
+![PyPI - Python Version](https://img.shields.io/badge/python-3.5%20%7C%203.6-blue.svg)
+[![PyPI version](https://badge.fury.io/py/scikit-multiflow.svg)](https://badge.fury.io/py/scikit-multiflow)
 
 A multi-output/multi-label and stream data framework.
 Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourceforge.net/),
@@ -51,11 +52,13 @@ in beta it can display plots with some caveats. If you use JupyterLab then the c
 If you want to cite `scikit-multiflow` in a publication, please use the following Bibtex entry:
 ```bibtex
 @article{skmultiflow,
-    author  = {Montiel, Jacob and Read, Jesse and Bifet, Albert and Abdessalem, Talel },
-    title   = {{Scikit-Multiflow: A Multi-output Streaming Framework}},
-    url     = {https://github.com/scikit-multiflow/scikit-multiflow},
-    journal = {CoRR},
-    volume  = {abs/1807.04662},
-    year    = {2018}
+  author  = {Jacob Montiel and Jesse Read and Albert Bifet and Talel Abdessalem},
+  title   = {Scikit-Multiflow: A Multi-output Streaming Framework },
+  journal = {Journal of Machine Learning Research},
+  year    = {2018},
+  volume  = {19},
+  number  = {72},
+  pages   = {1-5},
+  url     = {http://jmlr.org/papers/v19/18-251.html}
 }
 ```

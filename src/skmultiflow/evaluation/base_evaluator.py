@@ -1,4 +1,5 @@
 import sys
+import io
 from abc import ABCMeta, abstractmethod
 from timeit import default_timer as timer
 from skmultiflow.core.base_object import BaseObject
@@ -47,6 +48,8 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
         self.current_eval_measurements = None
         self._data_dict = None
         self._data_buffer = None
+        self._file_buffer = ''
+        self._file_buffer_size = 0
 
         # Misc
         self._method = None
@@ -556,8 +559,20 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     for i in range(self.n_models):
                         line += ',{:.6f},{:.6f}'.format(values[0][i], values[1][i])
 
+            line = '\n' + line
+            if sys.getsizeof(line) + self._file_buffer_size > io.DEFAULT_BUFFER_SIZE:
+                # Appending the next line will make the buffer to exceed the system's default buffer size
+                # flush the content of the buffer
+                self._flush_file_buffer()
+            self._file_buffer += line
+            self._file_buffer_size += sys.getsizeof(line)
+
+    def _flush_file_buffer(self):
+        if self._file_buffer_size > 0 and self.output_file is not None:
             with open(self.output_file, 'a') as f:
-                f.write('\n' + line)
+                f.write(self._file_buffer)
+            self._file_buffer = ''
+            self._file_buffer_size = 0
 
     def _init_plot(self):
         """ Initialize plot to display the evaluation results.

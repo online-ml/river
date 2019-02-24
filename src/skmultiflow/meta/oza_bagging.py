@@ -47,16 +47,7 @@ class OzaBagging(StreamModel):
     
     ValueError: A ValueError is raised if the 'classes' parameter is
     not passed in the first partial_fit call.
-    
-    Notes
-    -----
-    To choose the correct n_estimators (a value too high or too low may
-    deteriorate performance) there are different techniques. One of them is 
-    called 'The law of diminishing returns in ensemble construction' by Bonab 
-    and Can. This theoretical framework claims, with experimental results, that 
-    the optimal number of classifiers in an online ensemble method is equal to 
-    the number of labels in the classification task. Thus we chose a default 
-    value of 2, adapted to binary classification tasks.
+
     
     Examples
     --------
@@ -92,7 +83,7 @@ class OzaBagging(StreamModel):
     
     """
 
-    def __init__(self, base_estimator=KNNAdwin(), n_estimators=2, random_state=None):
+    def __init__(self, base_estimator=KNNAdwin(), n_estimators=10, random_state=None):
         super().__init__()
         # default values
         self.ensemble = None
