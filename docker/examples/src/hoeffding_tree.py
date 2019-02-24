@@ -1,5 +1,4 @@
 from skmultiflow.data import WaveformGenerator
-
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
