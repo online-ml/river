@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         python3.6-dev \
         python3-distutils \
-        git \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -32,10 +31,8 @@ RUN python3.6 -m pip install -U numpy
 # Install Jupyter
 RUN python3.6 -m pip install -U jupyter
 
-# Clone scikit-multiflow
-RUN git clone https://github.com/scikit-multiflow/scikit-multiflow.git
 # Install scikit-multiflow
-RUN cd scikit-multiflow && python3.6 -m pip install -U . && cd .. && rm -rf scikit-multiflow
+RUN python3.6 -m pip install -U scikit-multiflow
 
 # Copy QuickStart Notebook
 COPY /examples/notebooks /app
