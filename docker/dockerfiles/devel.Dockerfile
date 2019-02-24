@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN python -m pip install -U numpy
 # Clone scikit-multiflow
-RUN git clone https://github.com/scikit-multiflow/scikit-multiflow.git
+RUN git clone https://github.com/garawalid/scikit-multiflow.git
 # Install scikit-multiflow
 RUN cd scikit-multiflow && python -m pip install -U . && cd .. &&
 # Copy examples and dataset
