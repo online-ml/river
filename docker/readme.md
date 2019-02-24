@@ -7,7 +7,7 @@ scikit-multiflow Docker images  are located in the [skmultiflow/scikit-multiflow
 make build-jupyter
 ```
 
-+ Build scikit-multiflow:python
++ Build scikit-multiflow:latest
 ```
 make build-python
 ```
@@ -16,7 +16,7 @@ make build-python
 ```
 make push-jupyter
 ```
-+ push scikit-multiflow:python
++ push scikit-multiflow:latest
 ```
 make push-python
 ```
