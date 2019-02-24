@@ -16,7 +16,7 @@ RUN python -m pip install -U numpy
 # Clone scikit-multiflow
 RUN git clone https://github.com/garawalid/scikit-multiflow.git
 # Install scikit-multiflow
-RUN cd scikit-multiflow && python -m pip install -U . && cd .. &&
+RUN cd scikit-multiflow && python -m pip install -U . && cd ..
 # Copy examples and dataset
 RUN cp scikit-multiflow/docker/examples/src/* .
 RUN cp scikit-multiflow/docker/examples/data/* .
