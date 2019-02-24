@@ -34,6 +34,7 @@ RUN python3.6 -m pip install -U jupyter
 
 # Clone scikit-multiflow
 RUN git clone https://github.com/garawalid/scikit-multiflow.git
+
 # Install scikit-multiflow
 RUN cd scikit-multiflow && python3.6 -m pip install -U . && cd ..
 
