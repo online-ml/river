@@ -679,13 +679,11 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree):
                 _, self._n_targets = get_dimensions(y)
                 self._n_targets_set = True
 
-            if weight is None:
-                weight = np.array([1.0], dtype=np.float64)
             row_cnt, _ = get_dimensions(X)
-            wrow_cnt, _ = get_dimensions(weight)
-            if row_cnt != wrow_cnt:
-                weight = np.array([weight[0]] * row_cnt, dtype=np.float64)
-
+            if weight is None:
+                weight = np.ones(row_cnt)
+            if row_cnt != len(weight):
+                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt, len(weight)))
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
