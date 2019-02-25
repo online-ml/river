@@ -11,8 +11,7 @@ DESCRIPTION = 'A multi-output/multi-label and stream data mining framework.'
 MAINTAINER = 'Jacob Montiel'
 MAINTAINER_EMAIL = ''
 URL = 'https://scikit-multiflow.github.io/'
-PROJECT_URLS = {'Packaging tutorial': 'https://packaging.python.org/tutorials/distributing-packages/',
-                'Travis CI': 'https://travis-ci.org/scikit-multiflow/scikit-multiflow',
+PROJECT_URLS = {'Travis CI': 'https://travis-ci.org/scikit-multiflow/scikit-multiflow',
                 'Documentation': 'https://scikit-multiflow.github.io/scikit-multiflow/',
                 'Source code': 'https://github.com/scikit-multiflow/scikit-multiflow',
                 }
