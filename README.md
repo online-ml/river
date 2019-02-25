@@ -4,6 +4,8 @@
 [![codecov](https://codecov.io/gh/scikit-multiflow/scikit-multiflow/branch/master/graph/badge.svg)](https://codecov.io/gh/scikit-multiflow/scikit-multiflow)
 ![PyPI - Python Version](https://img.shields.io/badge/python-3.5%20%7C%203.6-blue.svg)
 [![PyPI version](https://badge.fury.io/py/scikit-multiflow.svg)](https://badge.fury.io/py/scikit-multiflow)
+[![DockerHub](https://img.shields.io/badge/docker-available-blue.svg?logo=docker)](https://hub.docker.com/r/skmultiflow/scikit-multiflow)
+[![license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)  
 
 A multi-output/multi-label and stream data framework.
 Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourceforge.net/),
@@ -43,9 +45,6 @@ in beta it can display plots with some caveats. If you use JupyterLab then the c
 ```python
 %matplotlib ipympl
 ```
-
-### License
-* 3-Clause BSD License
 
 ### Citing `scikit-multiflow`
 
