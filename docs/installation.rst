@@ -44,7 +44,34 @@ Option 2. Install from PyPI
 
 This will install the latest (stable) release of the code.
 
-Option 3. Development version
+Option 3. Install with Docker
+=============================
+`scikit-multiflow` is also available in Docker. Docker images are located in the `skmultiflow/scikit-multiflow <https://hub.docker.com/r/skmultiflow/scikit-multiflow>`_ Docker Hub repository.
+
+You can download the image and start using `scikit-multiflow`.
+
+Download `scikit-multiflow` Docker image
+
+.. code-block:: bash
+
+    $ docker pull skmultiflow/scikit-multiflow:latest
+
+Start `scikit-multiflow` Docker container
+
+.. code-block:: bash
+
+    $ docker run -it skmultiflow/scikit-multiflow:latest
+
+Run the Hoeffding Tree example
+
+.. code-block:: bash
+
+    $ python hoeffding_tree.py
+
+
+Also, we provide images with `Jupyter Notebook <http://jupyter.org/>`_. For more details, see `skmultiflow/scikit-multiflow <https://hub.docker.com/r/skmultiflow/scikit-multiflow>`_ Docker Hub repository.
+
+Option 4. Development version
 ====================================
 
 For people interested in contributing to `scikit-multiflow` we recommend to install the project in *editable* mode, please refer to the `contributor's page <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>`_ for further information.
