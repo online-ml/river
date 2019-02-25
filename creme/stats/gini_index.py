@@ -23,13 +23,12 @@ class GiniIndex(base.RunningStatistic):
 
     """
 
-    def __init__(self, alpha=1, eps=1e-8):
+    def __init__(self, alpha=1):
 
         if 0 < alpha <= 1:
             self.alpha = alpha
         else:
             raise ValueError('alpha must be between 0  excluded and 1')
-        self.eps = eps
         self.gini_index = 0
         self.count = count.Count()
         self.count_category = categorical_count.CategoricalCount()
@@ -44,7 +43,10 @@ class GiniIndex(base.RunningStatistic):
             self.count_category.cat_count[x] = 0
         n = self.count.get()
         ni = self.count_category.get()[x]
-        self.gini_index = 1 - ( ( (n**2) * (1 - self.alpha * self.gini_index) + 2*ni + 1 ) / (n + 1 )**2 )
+        numerator = ( ( n**2 ) * ( 1 - ( self.alpha * self.gini_index ) ) ) + 2*ni + 1
+        denominator = (n + 1) **2
+        self.gini_index = 1 - (numerator / denominator)
+        
         self.count.update()
         self.count_category.update(x)
         return self
