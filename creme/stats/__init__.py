@@ -19,7 +19,7 @@ from .rolling_quantile import RollingQuantile
 from .categorical_count import CategoricalCount
 from .entropy import Entropy
 from .gini_index import GiniIndex
-
+from .sorted_window import _SortedWindow
 __all__ = [
     'Count',
     'EWMean',
@@ -38,5 +38,6 @@ __all__ = [
     'RollingQuantile',
     'CategoricalCount',
     'Entropy',
-    'GiniIndex'
+    'GiniIndex',
+    '_SortedWindow'
 ]

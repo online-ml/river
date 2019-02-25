@@ -358,6 +358,8 @@ Loss functions
    stats.Quantile
    stats.RollingQuantile
    stats.Entropy
+   stats._SortedWindow
+   
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
 

@@ -1,9 +1,8 @@
-import collections
 import bisect
+import collections
 
 from . import base
-
-
+from . import sorted_window
 
 class RollingQuantile(base.RunningStatistic):
     """Calculate the rolling quantile with a given window size.
@@ -15,7 +14,7 @@ class RollingQuantile(base.RunningStatistic):
         current_window (collections.deque): Store values that are in the current window.
 
     Example:
-
+ 
         ::
             >>> from creme import stats
             >>> import numpy as np
@@ -57,8 +56,7 @@ class RollingQuantile(base.RunningStatistic):
 
         self.percentile = percentile
         self.window_size = window_size
-        self.current_window = collections.deque([])
-        self.sorted_window = []
+        self.sorted_window = sorted_window._SortedWindow(window_size =self.window_size)
 
         self.idx_percentile = int(round(self.percentile * self.window_size + 0.5)) - 1
 
@@ -68,32 +66,13 @@ class RollingQuantile(base.RunningStatistic):
 
     def update(self, x):
         # Update current window.
-        self.current_window, self.sorted_window = self._update_window(
-            x=x,
-            current_window=self.current_window,
-            sorted_window=self.sorted_window,
-            window_size=self.window_size,
-        )
+        self.sorted_window.update(x)
 
         return self
 
     def get(self):
-        if len(self.current_window) < self.window_size:
-            _idx_percentile = int(round(self.percentile * len(self.current_window) + 0.5)) - 1
-            return self.sorted_window[_idx_percentile]
+        if len(self.sorted_window.get()) < self.window_size:
+            _idx_percentile = int(round(self.percentile * len(self.sorted_window.get()) + 0.5)) - 1
+            return self.sorted_window.get()[_idx_percentile]
 
-        return self.sorted_window[self.idx_percentile]
-
-    @classmethod
-    def _update_window(cls, x, current_window, sorted_window, window_size):
-        if len(current_window) < window_size:
-            current_window.append(x)
-            bisect.insort_left(sorted_window, x)
-
-        else:
-            remove_sorted = current_window[0]
-            sorted_window.remove(remove_sorted)
-            bisect.insort_left(sorted_window, x)
-            current_window.popleft()
-            current_window.append(x)
-        return current_window, sorted_window
+        return self.sorted_window.get()[self.idx_percentile]
