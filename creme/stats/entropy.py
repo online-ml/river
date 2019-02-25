@@ -40,10 +40,10 @@ class Entropy(base.RunningStatistic):
             >>> for animal in list_animal:
             ...     _ = entro.update(animal)
 
-            >>> print(f'{entro.get()}:.6f')
-            1.058092
-            >>> print(f'entropy_list(list_animal):.6f')
-            1.058092
+            >>> print(f'{entro.get():.6f}')
+            1.058093
+            >>> print(f'{entropy_list(list_animal):.6f}')
+            1.058093
        
 
     References :
