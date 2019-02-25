@@ -1,10 +1,7 @@
 from operator import attrgetter
-
 import numpy as np
-
 from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
 from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
-from skmultiflow.trees.hoeffding_adaptive_tree import HAT
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
@@ -16,7 +13,6 @@ Node = HoeffdingTree.Node
 SplitNode = HoeffdingTree.SplitNode
 ActiveLearningNode = HoeffdingTree.ActiveLearningNode
 InactiveLearningNode = HoeffdingTree.InactiveLearningNode
-NewNode = HAT.NewNode
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
@@ -26,7 +22,7 @@ NAIVE_BAYES_ADAPTIVE = 'nba'
 error_width_threshold = 300
 
 
-class HoeffdingAnytimeTree(HoeffdingTree):
+class HATT(HoeffdingTree):
     """ Hoeffding Anytime Tree or EVDT.
 
     Parameters
@@ -145,7 +141,8 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                                                   criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
             return null_split
 
-        def count_nodes(self, split_node_cnt=0):
+        @staticmethod
+        def count_nodes():
             """ Calculate the number of split node and leaf starting from this node as a root.
 
             Returns
@@ -154,7 +151,7 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                 [number of split node, number of leaf node].
 
             """
-            return np.array([split_node_cnt, 1])
+            return np.array([0, 1])
 
     class AnyTimeInactiveLearningNode(InactiveLearningNode):
         """ Inactive learning node that does not grow.
@@ -220,7 +217,8 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                                                   criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
             return null_split
 
-        def count_nodes(self):
+        @staticmethod
+        def count_nodes():
             """ Calculate the number of split node and leaf starting from this node as a root.
 
             Returns
@@ -392,7 +390,8 @@ class HoeffdingAnytimeTree(HoeffdingTree):
 
             return best_suggestions
 
-        def find_attribute(self, id_att, split_suggestions):
+        @staticmethod
+        def find_attribute(id_att, split_suggestions):
             """ Find the attribute given the id.
 
             Parameters
@@ -540,20 +539,20 @@ class HoeffdingAnytimeTree(HoeffdingTree):
                  nominal_attributes=None
                  ):
 
-        super(HoeffdingAnytimeTree, self).__init__(max_byte_size=max_byte_size,
-                                                   memory_estimate_period=memory_estimate_period,
-                                                   grace_period=grace_period,
-                                                   split_criterion=split_criterion,
-                                                   split_confidence=split_confidence,
-                                                   tie_threshold=tie_threshold,
-                                                   binary_split=binary_split,
-                                                   stop_mem_management=stop_mem_management,
-                                                   remove_poor_atts=False,
-                                                   no_preprune=False,
-                                                   leaf_prediction=leaf_prediction,
-                                                   nb_threshold=nb_threshold,
-                                                   nominal_attributes=nominal_attributes,
-                                                   )
+        super(HATT, self).__init__(max_byte_size=max_byte_size,
+                                   memory_estimate_period=memory_estimate_period,
+                                   grace_period=grace_period,
+                                   split_criterion=split_criterion,
+                                   split_confidence=split_confidence,
+                                   tie_threshold=tie_threshold,
+                                   binary_split=binary_split,
+                                   stop_mem_management=stop_mem_management,
+                                   remove_poor_atts=False,
+                                   no_preprune=False,
+                                   leaf_prediction=leaf_prediction,
+                                   nb_threshold=nb_threshold,
+                                   nominal_attributes=nominal_attributes,
+                                   )
 
         self.min_samples_reevaluate = min_samples_reevaluate
 
