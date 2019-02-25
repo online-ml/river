@@ -33,25 +33,27 @@ def test_naive_bayes(test_path):
         learner.partial_fit(X, y, classes=stream.target_values)
         cnt += 1
 
-    expected_predictions = array('i', [1, 1, 1, 0, 1, 1, 0, 1, 0, 1,
-                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                                       1, 0, 1, 1, 1, 0, 0, 0, 1, 0,
-                                       0, 1, 1, 1, 0, 0, 1, 1, 1])
+    expected_predictions = array('i', [1, 1, 1, 0, 1, 1, 1, 0, 0, 1,
+                                       1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+                                       0, 0, 1, 1, 0, 0, 1, 0, 1, 1,
+                                       1, 1, 0, 1, 0, 0, 1, 1, 1])
+
     assert np.alltrue(y_pred == expected_predictions)
 
     test_file = os.path.join(test_path, 'data_naive_bayes_proba.npy')
     y_proba_expected = np.load(test_file)
     assert np.allclose(y_proba, y_proba_expected)
 
-    expected_info = 'Multinomial Naive Bayes classifier'
+    expected_info = 'NaiveBayes: nominal attributes: [] - '
     assert learner.get_info() == expected_info
 
     learner.reset()
-    learner.fit(X=X_batch[:4500], y=y_batch[:4500])
+    learner.fit(X=np.array(X_batch[:4500]), y=np.array(y_batch[:4500]))
 
-    expected_score = 0.751503006012024
-    assert np.isclose(expected_score, learner.score(X=X_batch[4501:], y=y_batch[4501:]))
+    expected_score = 0.9378757515030061
+    assert np.isclose(expected_score, learner.score(X=np.array(X_batch[4501:]),
+                                                    y=np.array(y_batch[4501:])))
 
     assert 'estimator' == learner.get_class_type()
 
