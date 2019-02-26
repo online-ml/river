@@ -1,6 +1,7 @@
 """
 Module for computing running statistics
 """
+from .categorical_count import CategoricalCount
 from .count import Count
 from .ewmean import EWMean
 from .kurtosis import Kurtosis
@@ -11,9 +12,14 @@ from .mode import Mode
 from .n_unique import NUnique
 from .ptp import PeakToPeak
 from .quantile import Quantile
+from .quantile import RollingQuantile
 from .skew import Skew
 from .sum import Sum
 from .variance import Variance
+
+from .entropy import Entropy
+from .sorted_window import _SortedWindow
+
 
 __all__ = [
     'Count',
@@ -28,5 +34,10 @@ __all__ = [
     'Quantile',
     'Skew',
     'Sum',
-    'Variance'
+    'Variance',
+    'Quantile',
+    'RollingQuantile',
+    'CategoricalCount',
+    'Entropy',
+    '_SortedWindow'
 ]
