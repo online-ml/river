@@ -13,7 +13,7 @@ class Entropy(base.RunningStatistic):
         entropy (float) : The running entropy.
         alpha (int) : Fading factor
     
-    Examples : 
+    Example: 
 
     ::
 
