@@ -28,20 +28,39 @@ def test_hoeffding_anytime_tree(test_path):
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('i',
-                                 [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0,
-                                  1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
-                                  0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0,
-                                  0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0,
-                                  0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1,
-                                  1, 0, 1, 1])
+    # Case: python 3.6
+    expected_predictions_1 = array('i',
+                                   [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0,
+                                    0,
+                                    1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,
+                                    0,
+                                    0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1,
+                                    0,
+                                    0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+                                    0,
+                                    0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0,
+                                    1,
+                                    1, 0, 1, 1])
+
+    # Case: python 3.5 and python 3.4
+    expected_predictions_2 = array('i',
+                                   [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0,
+                                    0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0,
+                                    0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+                                    0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0,
+                                    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1,
+                                    0, 0, 0, 0, 1, 1, 0, 1, 1])
 
     test_file = os.path.join(test_path, 'test_hoeffding_anytime_tree.npy')
 
     data = np.load(test_file)
 
-    assert np.alltrue(predictions == expected_predictions)
-    assert np.allclose(proba_predictions, data)
+    # Possibilities depends on the version of python
+    data_1 = data[0]
+    data_2 = data[1]
+
+    assert np.alltrue((predictions == expected_predictions_1) or (predictions == expected_predictions_2))
+    assert np.allclose(proba_predictions, data_2) or np.allclose(proba_predictions, data_1)
 
     expected_info = 'HATT: max_byte_size: 33554432 - memory_estimate_period: 1000000 - grace_period: 200 - ' \
                     'min_samples_reevaluate: 20 - split_criterion: info_gain - split_confidence: 1e-07 - ' \
@@ -49,12 +68,12 @@ def test_hoeffding_anytime_tree(test_path):
                     'nba - nb_threshold: 0 - nominal_attributes: [1, 2, 3, 4, 5, 6, 7, 8] - '
     assert learner.get_info() == expected_info
 
-    expected_model_1 = 'if Attribute 1 = 0: if Attribute 3 = 0: Leaf = Class 1 | {0: 896.0, 1: 947.0} ' \
-                       'if Attribute 3 = 1: Leaf = Class 0 | {0: 500.0, 1: 388.0} if Attribute 1 = 1: ' \
-                       'if Attribute 5 = 0: Leaf = Class 0 | {0: 404.0, 1: 259.0} if Attribute 5 = 1: ' \
-                       'Leaf = Class 0 | {0: 166.0, 1: 82.0}'
+    expected_model = 'if Attribute 1 = 0: if Attribute 3 = 0: Leaf = Class 1 | {0: 896.0, 1: 947.0} ' \
+                     'if Attribute 3 = 1: Leaf = Class 0 | {0: 500.0, 1: 388.0} if Attribute 1 = 1: ' \
+                     'if Attribute 5 = 0: Leaf = Class 0 | {0: 404.0, 1: 259.0} if Attribute 5 = 1: ' \
+                     'Leaf = Class 0 | {0: 166.0, 1: 82.0}'
 
-    assert (learner.get_model_description().replace("\n", " ").replace(" ", "") == expected_model_1.replace(" ", ""))
+    assert (learner.get_model_description().replace("\n", " ").replace(" ", "") == expected_model.replace(" ", ""))
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
 
