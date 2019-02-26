@@ -13,7 +13,7 @@ class CategoricalCount(base.RunningStatistic):
 
     ::
         >>> from creme import stats
-        >>> test = ['Rob','Abdil','Raph','Geo','Rob',None,'Max','My life is creme']
+        >>> test = ['Rob', 'Abdil', 'Raph', 'Geo', 'Rob', None, 'Max', 'My life is creme']
         >>> cat_count = stats.CategoricalCount()
         >>> for val in test:
         ...     _ = cat_count.update(val)
