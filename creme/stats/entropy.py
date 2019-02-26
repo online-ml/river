@@ -10,40 +10,40 @@ class Entropy(base.RunningStatistic):
     """Computes a running entropy.
 
     Attributes:
-        entropy : The running entropy.
+        entropy (float) : The running entropy.
         alpha (int) : Fading factor
     
-    Exemples : 
+    Examples : 
 
-        ::
+    ::
 
-            >>> import math
-            >>> import random
-            >>> import numpy as np
-            >>> from scipy.stats import entropy
-            >>> from creme import stats
-            
-            >>> def entropy_list(labels, base=None):
-            ...   value,counts = np.unique(labels, return_counts=True)
-            ...   return entropy(counts, base=base)
+        >>> import math
+        >>> import random
+        >>> import numpy as np
+        >>> from scipy.stats import entropy
+        >>> from creme import stats
+        
+        >>> def entropy_list(labels, base=None):
+        ...   value,counts = np.unique(labels, return_counts=True)
+        ...   return entropy(counts, base=base)
 
-            >>> SEED = 42 * 1337
-            >>> random.seed(SEED)
+        >>> SEED = 42 * 1337
+        >>> random.seed(SEED)
 
-            >>> entro = stats.Entropy(alpha=1) 
+        >>> entro = stats.Entropy(alpha=1) 
 
-            >>> list_animal = []
-            >>> for animal, num_val in zip(['cat', 'dog', 'bird'],[301, 401, 601]): 
-            ...     list_animal += [animal for i in range(num_val)]
-            >>> random.shuffle(list_animal)
+        >>> list_animal = []
+        >>> for animal, num_val in zip(['cat', 'dog', 'bird'],[301, 401, 601]): 
+        ...     list_animal += [animal for i in range(num_val)]
+        >>> random.shuffle(list_animal)
 
-            >>> for animal in list_animal:
-            ...     _ = entro.update(animal)
+        >>> for animal in list_animal:
+        ...     _ = entro.update(animal)
 
-            >>> print(f'{entro.get():.6f}')
-            1.058093
-            >>> print(f'{entropy_list(list_animal):.6f}')
-            1.058093
+        >>> print(f'{entro.get():.6f}')
+        1.058093
+        >>> print(f'{entropy_list(list_animal):.6f}')
+        1.058093
        
 
     References :
