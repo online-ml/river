@@ -73,7 +73,6 @@ API reference
    :nosignatures:
 
    compose.Pipeline
-   compose.StandardScaleRegressor
    compose.TransformerUnion
 
 
@@ -306,9 +305,11 @@ Loss functions
    preprocessing.Discarder
    preprocessing.FeatureHasher
    preprocessing.FuncTransformer
+   preprocessing.MinMaxScaler
    preprocessing.OneHotEncoder
    preprocessing.PolynomialExtender
-   preprocessing.MinMaxScaler
+   preprocessing.StandardScaler
+
 
 
 :mod:`creme.reco`: Recommendation algorithms
