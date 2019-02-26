@@ -6,11 +6,11 @@ from . import base
 class Quantile(base.RunningStatistic):
     """Compute the running quantile.
 
-    Uses the P-square algorithm to calculate the percentile. The code is inspired by
+    Uses the P-square algorithm to calculate the quantile. The code is inspired by
     LiveStat's implementation [2].
 
     Attributes:
-        percentile (float): Percentile you want compute the value
+        quantile (float): quantile you want compute the value
         must be between 0 and 1 excluded.
 
     Example:
@@ -28,19 +28,19 @@ class Quantile(base.RunningStatistic):
         >>> for x in s:
         ...    _ = median.update(x)
 
-        >>> print(f'The estimated value of the 50th (median) percentile is {median.get():.4f}')
-        The estimated value of the 50th (median) percentile is -0.0006
-        >>> print(f'The real value of the 50th (median) percentile is {np.median(s):.4f}')
-        The real value of the 50th (median) percentile is -0.0002
+        >>> print(f'The estimated value of the 50th (median) quantile is {median.get():.4f}')
+        The estimated value of the 50th (median) quantile is -0.0006
+        >>> print(f'The real value of the 50th (median) quantile is {np.median(s):.4f}')
+        The real value of the 50th (median) quantile is -0.0002
 
         >>> percentile_17 = stats.Quantile(0.17)
         >>> for x in s:
         ...    _ = percentile_17.update(x)
 
-        >>> print(f'The estimated value of the 17th percentile is  {percentile_17.get():.4f}')
-        The estimated value of the 17th percentile is  -0.9522
-        >>> print(f'The real value of the 17th percentile is {np.percentile(s,17):.4f}')
-        The real value of the 17th percentile is -0.9510
+        >>> print(f'The estimated value of the 17th quantile is  {percentile_17.get():.4f}')
+        The estimated value of the 17th quantile is  -0.9522
+        >>> print(f'The real value of the 17th quantile is {np.percentile(s,17):.4f}')
+        The real value of the 17th quantile is -0.9510
 
     References:
 
@@ -49,25 +49,25 @@ class Quantile(base.RunningStatistic):
 
     """
 
-    def __init__(self, percentile=0.5):
+    def __init__(self, quantile=0.5):
 
-        if 0 < percentile < 1:
-            self.percentile = percentile
+        if 0 < quantile < 1:
+            self.quantile = quantile
         else:
-            raise ValueError('percentile must be between 0 and 1 excluded')
+            raise ValueError('quantile must be between 0 and 1 excluded')
 
         self.desired_marker_position = [
             0,
-            self.percentile / 2,
-            self.percentile,
-            (1 + self.percentile) / 2,
+            self.quantile / 2,
+            self.quantile,
+            (1 + self.quantile) / 2,
             1
         ]
         self.marker_position = [
             1,
-            1 + 2 * self.percentile,
-            1 + 4 * self.percentile,
-            3 + 2 * self.percentile,
+            1 + 2 * self.quantile,
+            1 + 4 * self.quantile,
+            3 + 2 * self.quantile,
             5
         ]
         self.position = list(range(1, 6))
@@ -168,4 +168,4 @@ class Quantile(base.RunningStatistic):
         else:
             self.heights.sort()
             length = len(self.heights)
-            return self.heights[int(min(max(length - 1, 0), length * self.percentile))]
+            return self.heights[int(min(max(length - 1, 0), length * self.quantile))]
