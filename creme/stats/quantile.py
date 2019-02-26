@@ -1,9 +1,7 @@
 import math
-import bisect
-import collections
 
 from . import base
-from . import sorted_window
+from . import _sorted_window
 
 
 class Quantile(base.RunningStatistic):
@@ -177,13 +175,13 @@ class RollingQuantile(base.RunningStatistic):
     """Calculate the rolling quantile with a given window size.
 
     Attributes:
-        quantile (float): quantile you want compute the value 
+        quantile (float): quantile you want compute the value
             must be between 0 and 1 excluded.
         window_size (int): size of the window to compute the rolling quantile.
         current_window (collections.deque): Store values that are in the current window.
 
     Example:
- 
+
     ::
 
         >>> from creme import stats
@@ -195,7 +193,7 @@ class RollingQuantile(base.RunningStatistic):
         >>> for i in range(0,1001):
         ...     _ = rolling_quantile.update(i)
         ...     if i%100 == 0:
-        ...         print(rolling_quantile.get()) 
+        ...         print(rolling_quantile.get())
         0
         50
         150
@@ -224,7 +222,7 @@ class RollingQuantile(base.RunningStatistic):
 
         self.quantile = quantile
         self.window_size = window_size
-        self.sorted_window = sorted_window._SortedWindow(window_size =self.window_size)
+        self.sorted_window = _sorted_window._SortedWindow(window_size=self.window_size)
 
         self.idx_percentile = int(round(self.quantile * self.window_size + 0.5)) - 1
 

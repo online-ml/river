@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `FuncTransformer` to `preprocessing`
 - `Accuracy`, `MAE`, `MSE`, `RMSE`, `RMSLE` to `metrics`
 - `CategoricalImputer` to `impute`
-- `Mode` and `Quantile` to `stats`
+- `Mode`, `Quantile`, `RollingQuantile`, `CategoricalCount`, `Entropy` to `stats`
 - `wrap_sklearn` to `compat`
 
 ## [0.0.2] - 2019-02-13
