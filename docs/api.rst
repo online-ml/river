@@ -73,7 +73,6 @@ API reference
    :nosignatures:
 
    compose.Pipeline
-   compose.StandardScaleRegressor
    compose.TransformerUnion
 
 
@@ -306,10 +305,11 @@ Loss functions
    preprocessing.Discarder
    preprocessing.FeatureHasher
    preprocessing.FuncTransformer
+   preprocessing.MinMaxScaler
    preprocessing.OneHotEncoder
    preprocessing.PolynomialExtender
    preprocessing.StandardScaler
-   preprocessing.MinMaxScaler
+
 
 
 :mod:`creme.reco`: Recommendation algorithms
@@ -355,7 +355,11 @@ Loss functions
    stats.Skew
    stats.Sum
    stats.Variance
-
+   stats.Quantile
+   stats.RollingQuantile
+   stats.Entropy
+   stats._SortedWindow
+   
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
 
