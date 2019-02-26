@@ -9,7 +9,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - `PolynomialExtender` to `preprocessing`
-- `FuncExtractor` to `feature_extraction`
 - `Discarder` to `preprocessing`
 - `FMRegressor` to `linear_model`
 - `FuncTransformer` to `preprocessing`

@@ -18,11 +18,12 @@ class FuncTransformer(base.Transformer):
 
         >>> def parse_date(x):
         ...     x['date'] = dt.datetime.strptime(x['date'], '%Y-%m-%d')
+        ...     x['is_weekend'] = x['date'].day in (5, 6)
         ...     return x
 
         >>> transformer = preprocessing.FuncTransformer(parse_date)
         >>> transformer.fit_one(x)
-        {'date': datetime.datetime(2019, 2, 14, 0, 0), 'x': 42}
+        {'date': datetime.datetime(2019, 2, 14, 0, 0), 'x': 42, 'is_weekend': False}
 
     """
 
