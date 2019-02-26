@@ -308,7 +308,6 @@ Loss functions
    preprocessing.FuncTransformer
    preprocessing.OneHotEncoder
    preprocessing.PolynomialExtender
-   preprocessing.StandardScaler
    preprocessing.MinMaxScaler
 
 
