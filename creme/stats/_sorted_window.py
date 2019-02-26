@@ -15,8 +15,8 @@ class _SortedWindow(base.RunningStatistic):
 
     ::
 
-        >>> from creme import stats
-        >>> sorted_win = stats._SortedWindow(window_size=3)
+        >>> from creme.stats import _sorted_window
+        >>> sorted_win = _sorted_window._SortedWindow(window_size=3)
         >>> for i in range(21):
         ...     sorted_win.update(i).get()
         [0]
