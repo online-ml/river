@@ -43,7 +43,7 @@ class _SortedWindow(base.RunningStatistic):
 
     References:
 
-    - `Left sorted <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
+    1. `Left sorted <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
 
     """
 
