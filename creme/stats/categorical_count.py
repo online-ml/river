@@ -20,7 +20,9 @@ class CategoricalCount(base.RunningStatistic):
         ... 
         >>> print(cat_count.get())
         {'Rob': 2, 'Abdil': 1, 'Raph': 1, 'Geo': 1, None: 1, 'Max': 1, 'My life is creme': 1}
+
     """
+
     def __init__(self):
         self.cat_count = defaultdict(int)
 
