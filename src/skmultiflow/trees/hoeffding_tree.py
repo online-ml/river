@@ -98,6 +98,7 @@ class HoeffdingTree(StreamModel):
             The parent node's branch.
 
         """
+
         def __init__(self, node=None, parent=None, parent_branch=None):
             """ FoundNode class constructor. """
             self.node = node
@@ -162,7 +163,6 @@ class HoeffdingTree(StreamModel):
             """
             return self._observed_class_distribution
 
-
         def set_observed_class_distribution(self, observed_class_distribution):
             """ Set the observed class distribution at the node.
 
@@ -173,7 +173,6 @@ class HoeffdingTree(StreamModel):
 
             """
             self._observed_class_distribution = observed_class_distribution
-
 
         def get_class_votes(self, X, ht):
             """ Get the votes per class for a given instance.
@@ -284,19 +283,17 @@ class HoeffdingTree(StreamModel):
             """ Count the number of children for a node."""
             return len(self._children)
 
-
         def get_split_test(self):
             """ Retrieve the split test of this node.
 
-                        Returns
-                        -------
-                        InstanceConditionalTest
-                            Split test.
+            Returns
+            -------
+            InstanceConditionalTest
+                Split test.
 
-                        """
+            """
 
             return self._split_test
-
 
         def set_child(self, index, node):
             """ Set node as child.
@@ -430,6 +427,7 @@ class HoeffdingTree(StreamModel):
             Initial class observations
 
         """
+
         def __init__(self, initial_class_observations=None):
             """ LearningNode class constructor. """
             super().__init__(initial_class_observations)
@@ -460,6 +458,7 @@ class HoeffdingTree(StreamModel):
             Initial class observations
 
         """
+
         def __init__(self, initial_class_observations=None):
             """ InactiveLearningNode class constructor. """
             super().__init__(initial_class_observations)
@@ -493,6 +492,7 @@ class HoeffdingTree(StreamModel):
             Initial class observations
 
         """
+
         def __init__(self, initial_class_observations):
             """ ActiveLearningNode class constructor. """
             super().__init__(initial_class_observations)
@@ -605,28 +605,26 @@ class HoeffdingTree(StreamModel):
             if att_idx in self._attribute_observers:
                 self._attribute_observers[att_idx] = AttributeClassObserverNull()
 
-
         def get_attribute_observers(self):
             """ Get attribute observers at this node.
 
-                        Returns
-                        -------
-                        dict (attribute id, attribute observer object)
-                            Attribute observers of this node.
+            Returns
+            -------
+            dict (attribute id, attribute observer object)
+                Attribute observers of this node.
 
-                        """
+            """
             return self._attribute_observers
 
-
-        def set_attribute_observers(self,attribute_observers):
+        def set_attribute_observers(self, attribute_observers):
             """ set attribute observers.
 
-                        Parameters
-                        ----------
-                        attribute_observers: dict (attribute id, attribute observer object)
-                            new attribute observers.
+            Parameters
+            ----------
+            attribute_observers: dict (attribute id, attribute observer object)
+                new attribute observers.
 
-                        """
+            """
             self._attribute_observers = attribute_observers
 
     class LearningNodeNB(ActiveLearningNode):
@@ -638,6 +636,7 @@ class HoeffdingTree(StreamModel):
             Initial class observations
 
         """
+
         def __init__(self, initial_class_observations):
             """ LearningNodeNB class constructor. """
             super().__init__(initial_class_observations)
@@ -685,6 +684,7 @@ class HoeffdingTree(StreamModel):
             Initial class observations
 
         """
+
         def __init__(self, initial_class_observations):
             """ LearningNodeNBAdaptive class constructor. """
             super().__init__(initial_class_observations)
@@ -1104,8 +1104,8 @@ class HoeffdingTree(StreamModel):
             A string buffer containing the measurements of the tree.
         """
         measurements = {'Tree size (nodes)': self._decision_node_cnt
-                                               + self._active_leaf_node_cnt
-                                               + self._inactive_leaf_node_cnt,
+                                             + self._active_leaf_node_cnt
+                                             + self._inactive_leaf_node_cnt,
                         'Tree size (leaves)': self._active_leaf_node_cnt + self._inactive_leaf_node_cnt,
                         'Active learning nodes': self._active_leaf_node_cnt, 'Tree depth': self.measure_tree_depth(),
                         'Active leaf byte size estimate': self._active_leaf_byte_size_estimate,
@@ -1240,7 +1240,7 @@ class HoeffdingTree(StreamModel):
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
                 if (best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
-                        or hoeffding_bound < self.tie_threshold):    # best_suggestion.merit > 1e-10 and \
+                        or hoeffding_bound < self.tie_threshold):  # best_suggestion.merit > 1e-10 and \
                     should_split = True
                 if self.remove_poor_atts is not None and self.remove_poor_atts:
                     poor_atts = set()
@@ -1296,7 +1296,7 @@ class HoeffdingTree(StreamModel):
         while max_active < len(learning_nodes):
             max_active += 1
             if ((max_active * self._active_leaf_byte_size_estimate + (len(learning_nodes) - max_active)
-                * self._inactive_leaf_byte_size_estimate) * self._byte_size_estimate_overhead_fraction) \
+                 * self._inactive_leaf_byte_size_estimate) * self._byte_size_estimate_overhead_fraction) \
                     > self.max_byte_size:
                 max_active -= 1
                 break
