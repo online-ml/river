@@ -2,8 +2,6 @@ import collections
 import math
 
 from . import base
-from . import count
-from . import categorical_count
 
 
 class Entropy(base.RunningStatistic):
@@ -70,16 +68,14 @@ class Entropy(base.RunningStatistic):
 
         cx = self.counter.get(x, 0)
         n = self.n
+        eps = self.eps
+        alpha = self.alpha
 
-        updated_entropy = ((n + self.eps) / (n + 1)) * ((self.alpha * self.entropy) - math.log(((n + self.eps) / (n + 1))))
-
-        updated_entropy -= ((cx + 1) / (n + 1)) * math.log(
-            ((cx + 1) / (n + 1)))
-
-        updated_entropy += ((cx + self.eps) / (n + 1)) * math.log(
-            ((cx + self.eps) / (n + 1)))
-
-        self.entropy = updated_entropy
+        entropy = self.entropy
+        entropy = (n + eps) / (n + 1) * (alpha * entropy - math.log((n + eps) / (n + 1)))
+        entropy -= (cx + 1) / (n + 1) * math.log((cx + 1) / (n + 1))
+        entropy += (cx + eps) / (n + 1) * math.log((cx + eps) / (n + 1))
+        self.entropy = entropy
 
         self.n += 1
         self.counter.update([x])
