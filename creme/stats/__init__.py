@@ -1,8 +1,8 @@
 """
 Module for computing running statistics
 """
-from .categorical_count import CategoricalCount
 from .count import Count
+from .entropy import Entropy
 from .ewmean import EWMean
 from .kurtosis import Kurtosis
 from .max import Max
@@ -17,12 +17,10 @@ from .skew import Skew
 from .sum import Sum
 from .variance import Variance
 
-from .entropy import Entropy
-from .sorted_window import _SortedWindow
-
 
 __all__ = [
     'Count',
+    'Entropy',
     'EWMean',
     'Kurtosis',
     'Max',
@@ -32,12 +30,8 @@ __all__ = [
     'NUnique',
     'PeakToPeak',
     'Quantile',
+    'RollingQuantile',
     'Skew',
     'Sum',
-    'Variance',
-    'Quantile',
-    'RollingQuantile',
-    'CategoricalCount',
-    'Entropy',
-    '_SortedWindow'
+    'Variance'
 ]
