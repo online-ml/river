@@ -13,4 +13,9 @@ COPY /examples/src /app
 
 COPY /examples/data /app
 
+# Download elec dataset
+RUN python data.py
+
+RUN rm data.py
+
 CMD /bin/bash

@@ -38,6 +38,11 @@ RUN python3.6 -m pip install -U scikit-multiflow
 COPY /examples/notebooks /app
 COPY /examples/data /app
 
+# Download elec dataset
+RUN python3.6 data.py
+
+RUN rm data.py
+
 # Jupyter port
 EXPOSE 8888
 
