@@ -1,10 +1,10 @@
 build-jupyter:
 	    docker build -t skmultiflow/scikit-multiflow:jupyter -f dockerfiles/jupyter.Dockerfile .
 
-build-skmultiflow:
+build-python:
 	    docker build -t skmultiflow/scikit-multiflow:latest -f dockerfiles/Dockerfile .
 
-push-skmultiflow:
+push-python:
 	    docker push skmultiflow/scikit-multiflow:latest
 
 push-jupyter:
