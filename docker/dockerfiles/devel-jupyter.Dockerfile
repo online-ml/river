@@ -42,9 +42,13 @@ RUN cd scikit-multiflow && python3.6 -m pip install -U . && cd ..
 RUN cp scikit-multiflow/docker/examples/notebooks/* .
 RUN cp scikit-multiflow/docker/examples/data/* .
 
+# Download elec dataset
+RUN python3.6 data.py
+
 
 # Clean directory
 RUN rm -rf scikit-multiflow
+RUN rm data.py
 
 # Jupyter port
 EXPOSE 8888
