@@ -52,6 +52,9 @@ class TransformerUnion(base.Transformer):
         [('revenue_count_by_place', 3), ('revenue_mean_by_place', 20.0)]
         [('revenue_count_by_place', 3), ('revenue_mean_by_place', 50.0)]
 
+        >>> sorted(agg.transform_one({'place': 'Taco Bell'}).items())
+        [('revenue_count_by_place', 3), ('revenue_mean_by_place', 50.0)]
+
     """
 
     def __init__(self, transformers):

@@ -18,7 +18,6 @@ class Regressor:
             float: The estimated target value of ``x`` before seeing ``y``.
 
         """
-        pass
 
     @abc.abstractmethod
     def predict_one(x: dict) -> float:
@@ -31,7 +30,6 @@ class Regressor:
             float
 
         """
-        pass
 
 
 class BinaryClassifier:
@@ -48,7 +46,6 @@ class BinaryClassifier:
             float: The estimated probability of ``x`` before seeing ``y``.
 
         """
-        pass
 
     @abc.abstractmethod
     def predict_proba_one(x: dict) -> float:
@@ -61,7 +58,6 @@ class BinaryClassifier:
             float
 
         """
-        pass
 
     @abc.abstractmethod
     def predict_one(x: dict) -> bool:
@@ -74,7 +70,6 @@ class BinaryClassifier:
             bool
 
         """
-        pass
 
 
 class MultiClassifier:
@@ -91,7 +86,6 @@ class MultiClassifier:
             float: The estimated class probabilities of ``x`` before seeing ``y``.
 
         """
-        pass
 
     @abc.abstractmethod
     def predict_proba_one(x: dict) -> dict:
@@ -104,7 +98,6 @@ class MultiClassifier:
             dict: A ``dict`` mapping classes to probabilities.
 
         """
-        pass
 
     @abc.abstractmethod
     def predict_one(x: dict) -> str:
@@ -117,7 +110,6 @@ class MultiClassifier:
             str
 
         """
-        pass
 
 
 class Transformer:
@@ -134,7 +126,6 @@ class Transformer:
             dict: The transformation applied to ``x``.
 
         """
-        pass
 
     @abc.abstractmethod
     def transform_one(x: dict) -> dict:
@@ -147,7 +138,6 @@ class Transformer:
             dict
 
         """
-        pass
 
 
 class Clusterer:
@@ -164,7 +154,6 @@ class Clusterer:
             int: The number of the cluster ``x`` belongs to.
 
         """
-        pass
 
     @abc.abstractmethod
     def predict_one(x: dict) -> int:
@@ -177,4 +166,3 @@ class Clusterer:
             int
 
         """
-        pass

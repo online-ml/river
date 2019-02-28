@@ -56,6 +56,7 @@ API reference
    compat.SKLClustererWrapper
    compat.SKLTransformerWrapper
    compat.SKLRegressorWrapper
+   compat.wrap_sklearn
 
 
 :mod:`creme.compose`: Model composition
@@ -72,7 +73,6 @@ API reference
    :nosignatures:
 
    compose.Pipeline
-   compose.StandardScaleRegressor
    compose.TransformerUnion
 
 
@@ -107,6 +107,7 @@ API reference
    :nosignatures:
 
    feature_extraction.CountVectorizer
+   feature_extraction.FuncExtractor
    feature_extraction.GroupBy
    feature_extraction.TargetEncoder
    feature_extraction.TFIDFVectorizer
@@ -142,7 +143,7 @@ API reference
    :nosignatures:
 
    impute.NumericImputer
-   impute.CategoryImputer
+   impute.CategoricalImputer
 
 
 :mod:`creme.linear_model`: Linear models
@@ -158,6 +159,7 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   linear_model.FMRegressor
    linear_model.LinearRegression
    linear_model.LogisticRegression
    linear_model.PassiveAggressiveClassifier
@@ -166,6 +168,26 @@ API reference
    linear_model.PassiveAggressiveIRegressor
    linear_model.PassiveAggressiveIIClassifier
    linear_model.PassiveAggressiveIIRegressor
+
+
+:mod:`creme.metrics`: Streaming metrics
+---------------------------------------
+
+.. automodule:: creme.metrics
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   metrics.Accuracy
+   metrics.MAE
+   metrics.MSE
+   metrics.RMSE
+   metrics.RMSLE
 
 
 :mod:`creme.model_selection`: Model selection
@@ -280,10 +302,13 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
+   preprocessing.Discarder
    preprocessing.FeatureHasher
-   preprocessing.OneHotEncoder
-   preprocessing.StandardScaler
+   preprocessing.FuncTransformer
    preprocessing.MinMaxScaler
+   preprocessing.OneHotEncoder
+   preprocessing.PolynomialExtender
+   preprocessing.StandardScaler
 
 
 :mod:`creme.reco`: Recommendation algorithms
@@ -301,6 +326,7 @@ Loss functions
 
    reco.RandomNormal
    reco.SGDBaseline
+   reco.SVD
 
 :mod:`creme.imput`: Running rolling statistics
 --------------------------------------
@@ -339,9 +365,14 @@ Loss functions
    stats.Mode
    stats.NUnique
    stats.PeakToPeak
+   stats.Quantile
    stats.Skew
    stats.Sum
    stats.Variance
+   stats.Quantile
+   stats.RollingQuantile
+   stats.Entropy
+
 
 :mod:`creme.stream`: Streaming utilities
 ----------------------------------------
