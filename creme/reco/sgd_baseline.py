@@ -54,7 +54,7 @@ class SGDBaseline(base.Recommender):
         ...     _ = model.fit_one(user, movie, rating)
 
         >>> model.predict_one('Bob', 'Harry Potter')
-        6.825555...
+        6.552432...
 
     """
 
@@ -72,7 +72,7 @@ class SGDBaseline(base.Recommender):
     def fit_one(self, r_id, c_id, y):
 
         # Predict the value
-        y_pred = 0
+        y_pred = self.predict_one(r_id, c_id)
 
         # Compute the gradient of the loss with respect to the prediction
         loss_gradient = self.loss.gradient(y, y_pred)
