@@ -518,6 +518,7 @@ class HoeffdingTree(StreamModel):
                 self._observed_class_distribution[y] += weight
             except KeyError:
                 self._observed_class_distribution[y] = weight
+                self._observed_class_distribution = dict(sorted(self._observed_class_distribution.items()))
 
             for i in range(len(X)):
                 try:
@@ -1268,6 +1269,7 @@ class HoeffdingTree(StreamModel):
                 else:
                     new_split = self.new_split_node(split_decision.split_test,
                                                     node.get_observed_class_distribution())
+
                     for i in range(split_decision.num_splits()):
                         new_child = self._new_learning_node(split_decision.resulting_class_distribution_from_split(i))
                         new_split.set_child(i, new_child)
