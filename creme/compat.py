@@ -47,6 +47,24 @@ SKLEARN_INPUT_Y_PARAMS = {
 }
 
 
+def wrap_sklearn(estimator):
+    """Wraps a creme estimator to make it compatible with scikit-learn."""
+
+    wrappers = [
+        (base.BinaryClassifier, SKLClassifierWrapper),
+        (base.Clusterer, SKLClustererWrapper),
+        (base.MultiClassifier, SKLClassifierWrapper),
+        (base.Regressor, SKLRegressorWrapper),
+        (base.Transformer, SKLTransformerWrapper)
+    ]
+
+    for base_type, wrapper in wrappers:
+        if isinstance(estimator, base_type):
+            return wrapper(estimator)
+
+    raise ValueError("Couldn't find an appropriate wrapper")
+
+
 class SKLBaseWrapper(sklearn_base.BaseEstimator):
     """This class exists for adapting the documentation styling."""
 
@@ -202,8 +220,6 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         self.classes_ = np.unique(y)
         if len(self.classes_) > 2 and self.is_binary:
             raise ValueError('n_classes is more than 2 but creme_estimator is a BinaryClassifier')
-        if len(self.classes_) < 3 and not self.is_binary:
-            raise ValueError('n_classes is less than 3 but creme_estimator is a MultiClassifier')
 
         # creme's BinaryClassifier expects bools or 0/1 values
         if self.is_binary:
@@ -268,11 +284,11 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         # Make a prediction for each observation
-        y_pred = np.empty(shape=len(X))
+        y_pred = [None] * len(X)
         for i, (x, _) in enumerate(stream.iter_numpy(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
-        return y_pred
+        return np.asarray(y_pred)
 
     def score(self, X, y, sample_weight=None):
         """Returns the mean accuracy on the given test data and labels.
@@ -333,6 +349,8 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
         # predict needs some way to know if fit has been called
         self.is_fitted_ = True
 
+        self.n_fit_features_ = X.shape[1]
+
         return self
 
     def transform(self, X):
@@ -350,6 +368,9 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
+
+        if X.shape[1] != self.n_fit_features_:
+            raise ValueError(f'Expected {self.n_fit_features_} features, got {X.shape[1]}')
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)

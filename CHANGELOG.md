@@ -8,23 +8,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- `PolynomialExtender` to the `preprocessing` module
-- `FuncExtractor` to the `feature_extraction` module
-- `Discarder` to the `preprocessing` module
+- `PolynomialExtender` to `preprocessing`
+- `Discarder` to `preprocessing`
 - `FMRegressor` to `linear_model`
+- `FuncTransformer` to `preprocessing`
+- `Accuracy`, `MAE`, `MSE`, `RMSE`, `RMSLE` to `metrics`
+- `CategoricalImputer` to `impute`
+- `Mode`, `Quantile`, `RollingQuantile`, `CategoricalCount`, `Entropy` to `stats`
+- `wrap_sklearn` to `compat`
+- `SVD` to `reco`
 
 ## [0.0.2] - 2019-02-13
 
 ### Added
 
-- Passive-aggressive models to the `linear_model` module
-- `HedgeClassifier` to the `ensemble` module
-- `RandomDiscarder` to the `feature_selection` module
-- `NUnique`, `Min`, `Max`, `PeakToPeak`, `Kurtosis`, `Skew`, `Sum`, `EWMean` to the `stats` module
-- `AbsoluteLoss`, `HingeLoss`, `EpsilonInsensitiveHingeLoss` to the `optim` module
-- `sklearn` wrappers to the `compat` module
-- `TargetEncoder` to the `feature_extraction` module
-- `NumericImputer` to the `impute` module
+- Passive-aggressive models to `linear_model`
+- `HedgeClassifier` to `ensemble`
+- `RandomDiscarder` to `feature_selection`
+- `NUnique`, `Min`, `Max`, `PeakToPeak`, `Kurtosis`, `Skew`, `Sum`, `EWMean` to `stats`
+- `AbsoluteLoss`, `HingeLoss`, `EpsilonInsensitiveHingeLoss` to `optim`
+- `sklearn` wrappers to `compat`
+- `TargetEncoder` to `feature_extraction`
+- `NumericImputer` to `impute`
 
 ### Changed
 

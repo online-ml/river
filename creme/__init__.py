@@ -14,6 +14,7 @@ from . import feature_extraction
 from . import feature_selection
 from . import impute
 from . import linear_model
+from . import metrics
 from . import model_selection
 from . import multiclass
 from . import naive_bayes
@@ -23,7 +24,6 @@ from . import reco
 from . import rolling_stats
 from . import stats
 from . import stream
-from . import tree
 
 from .__version__ import __version__
 
@@ -36,6 +36,7 @@ __all__ = [
     'feature_selection',
     'impute',
     'linear_model',
+    'metrics',
     'model_selection',
     'multiclass',
     'naive_bayes',
@@ -44,6 +45,5 @@ __all__ = [
     'reco',
     'rolling_stats'
     'stats',
-    'stream',
-    'tree',
+    'stream'
 ]

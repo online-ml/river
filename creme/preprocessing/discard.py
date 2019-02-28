@@ -13,12 +13,12 @@ class Discarder(base.Transformer):
 
         >>> from creme import preprocessing
 
-        >>> x = {'a': 42, 'b': 12, 'c': 2}
-        >>> preprocessing.Discarder(black_list=['a', 'b', 'zoidberg']).fit_one(x)
-        {'c': 2}
+        >>> x = {'a': 42, 'b': 12}
+        >>> preprocessing.Discarder(black_list=['a', 'zoidberg']).fit_one(x)
+        {'b': 12}
 
-        >>> preprocessing.Discarder(black_list='c').fit_one(x)
-        {'a': 42, 'b': 12}
+        >>> preprocessing.Discarder(black_list='b').fit_one(x)
+        {'a': 42}
 
     """
 

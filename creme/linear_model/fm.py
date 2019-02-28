@@ -29,7 +29,6 @@ class FMRegressor(base.Regressor):
 
         >>> import datetime as dt
         >>> from creme import compose
-        >>> from creme import feature_extraction
         >>> from creme import linear_model
         >>> from creme import preprocessing
 
@@ -50,7 +49,7 @@ class FMRegressor(base.Regressor):
 
         >>> model = compose.Pipeline([
         ...     ('features', compose.TransformerUnion([
-        ...         feature_extraction.FuncExtractor(get_time_in_months),
+        ...         preprocessing.FuncTransformer(get_time_in_months),
         ...         compose.Pipeline([
         ...             ('drop_date', preprocessing.Discarder('date')),
         ...             ('one_hot', preprocessing.OneHotEncoder())
