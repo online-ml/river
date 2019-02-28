@@ -311,7 +311,6 @@ Loss functions
    preprocessing.StandardScaler
 
 
-
 :mod:`creme.reco`: Recommendation algorithms
 --------------------------------------------
 
@@ -327,6 +326,7 @@ Loss functions
 
    reco.RandomNormal
    reco.SGDBaseline
+   reco.SVD
 
 
 :mod:`creme.stats`: Running statistics
