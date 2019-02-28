@@ -28,22 +28,8 @@ def test_hoeffding_anytime_tree(test_path):
         learner.partial_fit(X, y)
         cnt += 1
 
-    # Case: python 3.6
-    expected_predictions_1 = array('i',
-                                   [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0,
-                                    0,
-                                    1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,
-                                    0,
-                                    0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1,
-                                    0,
-                                    0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-                                    0,
-                                    0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0,
-                                    1,
-                                    1, 0, 1, 1])
 
-    # Case: python 3.5 and python 3.4
-    expected_predictions_2 = array('i',
+    expected_predictions = array('i',
                                    [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0,
                                     0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0,
                                     0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
@@ -53,14 +39,11 @@ def test_hoeffding_anytime_tree(test_path):
 
     test_file = os.path.join(test_path, 'test_hoeffding_anytime_tree.npy')
 
-    data = np.load(test_file)
+    data_prob = np.load(test_file)
 
-    # Possibilities depends on the version of python
-    data_1 = data[0]
-    data_2 = data[1]
 
-    assert np.alltrue((predictions == expected_predictions_1) or (predictions == expected_predictions_2))
-    assert np.allclose(proba_predictions, data_2) or np.allclose(proba_predictions, data_1)
+    assert np.alltrue(predictions == expected_predictions)
+    assert np.alltrue(proba_predictions == data_prob)
 
     expected_info = 'HATT: max_byte_size: 33554432 - memory_estimate_period: 1000000 - grace_period: 200 - ' \
                     'min_samples_reevaluate: 20 - split_criterion: info_gain - split_confidence: 1e-07 - ' \
