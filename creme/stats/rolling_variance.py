@@ -17,6 +17,7 @@ class RollingVariance:
 
     >>> X = pd.Series([1, 4, 2, -4, -8, 0])
 
+    # Pandas:
     >>> print(X.rolling(2).var())
     0     NaN
     1     4.5
@@ -36,7 +37,7 @@ class RollingVariance:
     8.0
     32.0
 
-
+    # Pandas:
     >>> print(X.rolling(3).var())
     0          NaN
     1          NaN
