@@ -328,20 +328,6 @@ Loss functions
    reco.SGDBaseline
    reco.SVD
 
-:mod:`creme.imput`: Running rolling statistics
---------------------------------------
-
-.. automodule:: creme.rolling_stats
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: creme
-
-.. autosummary::
-   :toctree: generated/
-   :nosignatures:
-
-   rolling_stats.RollingMean
 
 :mod:`creme.stats`: Running statistics
 --------------------------------------
@@ -370,7 +356,10 @@ Loss functions
    stats.Sum
    stats.Variance
    stats.Quantile
+   stats.RollingMean
    stats.RollingQuantile
+   stats.RollingVariance
+   stats.RollingWindow
    stats.Entropy
 
 
