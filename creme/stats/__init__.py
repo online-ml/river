@@ -12,7 +12,10 @@ from .mode import Mode
 from .n_unique import NUnique
 from .ptp import PeakToPeak
 from .quantile import Quantile
+from .rolling_mean import RollingMean
 from .quantile import RollingQuantile
+from .rolling_variance import RollingVariance
+from .rolling_window import RollingWindow
 from .skew import Skew
 from .sum import Sum
 from .variance import Variance
@@ -30,7 +33,10 @@ __all__ = [
     'NUnique',
     'PeakToPeak',
     'Quantile',
+    'RollingMean',
     'RollingQuantile',
+    'RollingVariance',
+    'RollingWindow',
     'Skew',
     'Sum',
     'Variance'

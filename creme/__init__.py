@@ -21,7 +21,6 @@ from . import naive_bayes
 from . import optim
 from . import preprocessing
 from . import reco
-from . import rolling_stats
 from . import stats
 from . import stream
 
@@ -43,7 +42,6 @@ __all__ = [
     'optim',
     'preprocessing',
     'reco',
-    'rolling_stats'
     'stats',
     'stream'
 ]
