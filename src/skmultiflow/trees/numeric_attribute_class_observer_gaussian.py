@@ -28,6 +28,7 @@ class NumericAttributeClassObserverGaussian(AttributeClassObserver):
                 self._att_val_dist_per_class[class_val] = val_dist
                 self._min_value_observed_per_class[class_val] = att_val
                 self._max_value_observed_per_class[class_val] = att_val
+                self._att_val_dist_per_class = dict(sorted(self._att_val_dist_per_class.items()))
             else:
                 if att_val < self._min_value_observed_per_class[class_val]:
                     self._min_value_observed_per_class[class_val] = att_val
@@ -40,10 +41,6 @@ class NumericAttributeClassObserverGaussian(AttributeClassObserver):
                     if list(self._max_value_observed_per_class.keys())[0] != 0 and len(
                             self._max_value_observed_per_class) > 1:
                         self._max_value_observed_per_class = dict(sorted(self._max_value_observed_per_class.items()))
-
-            if list(self._att_val_dist_per_class.keys())[0] != 0 and len(self._att_val_dist_per_class) > 1:
-                self._att_val_dist_per_class = dict(sorted(self._att_val_dist_per_class.items()))
-
 
             val_dist = self._att_val_dist_per_class[class_val]
             val_dist.add_observation(att_val, weight)
