@@ -188,6 +188,7 @@ API reference
    metrics.MSE
    metrics.RMSE
    metrics.RMSLE
+   metrics.SMAPE
 
 
 :mod:`creme.model_selection`: Model selection

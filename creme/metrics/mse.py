@@ -25,14 +25,14 @@ class MSE(base.Metric):
 
     def __init__(self):
         self.squared_error = 0
-        self.count = 0
+        self.n = 0
 
     def update(self, y_true, y_pred):
         self.squared_error += (y_true - y_pred) ** 2
-        self.count += 1
+        self.n += 1
         return self
 
     def get(self):
-        if self.count:
-            return self.squared_error / self.count
+        if self.n:
+            return self.squared_error / self.n
         return 0
