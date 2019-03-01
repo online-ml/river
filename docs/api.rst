@@ -72,7 +72,9 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   compose.BoxCoxTransformRegressor
    compose.Pipeline
+   compose.TargetModifierRegressor
    compose.TransformerUnion
 
 
@@ -129,7 +131,7 @@ API reference
    feature_selection.RandomDiscarder
 
 
-:mod:`creme.imput`: Running imputation
+:mod:`creme.impute`: Running imputation
 --------------------------------------
 
 .. automodule:: creme.impute
@@ -374,6 +376,7 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
+   stream.iter_csv
    stream.iter_numpy
    stream.iter_sklearn_dataset
    stream.iter_pandas
