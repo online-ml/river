@@ -1,11 +1,13 @@
 """
 Utilities for streaming data from various sources.
 """
-from sklearn import utils
+import csv
 import itertools
 
+from sklearn import utils
 
-__all__ = ['iter_numpy', 'iter_pandas', 'iter_sklearn_dataset']
+
+__all__ = ['iter_csv' 'iter_numpy', 'iter_pandas', 'iter_sklearn_dataset']
 
 
 def iter_numpy(X, y=None, feature_names=None, shuffle=False, random_state=None):
@@ -69,3 +71,43 @@ def iter_pandas(X, y=None, **kwargs):
     kwargs['feature_names'] = X.columns
     for x, yi in iter_numpy(X, y, **kwargs):
         yield x, yi
+
+
+def iter_csv(filepath_or_buffer, target_name):
+    """Yields rows from a CSV file.
+
+    Parameters:
+        filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer object that has a ``read`` method.
+        target_name (str): The name of the target.
+
+    Yields:
+        tuple: A pair of (dict, target)
+
+    Example:
+
+    ::
+
+        >>> import io
+        >>> from creme import stream
+
+        >>> data = io.StringIO('''name,day,viewers
+        ... Breaking Bad,1,1337
+        ... The Sopranos,1,42
+        ... Breaking Bad,2,7331
+        ... ''')
+        >>> for x, y in stream.iter_csv(data, target_name='viewers'):
+        ...     print(x, y)
+        OrderedDict([('name', 'Breaking Bad'), ('day', '1')]) 1337
+        OrderedDict([('name', 'The Sopranos'), ('day', '1')]) 42
+        OrderedDict([('name', 'Breaking Bad'), ('day', '2')]) 7331
+
+    """
+
+    file = filepath_or_buffer
+
+    if not hasattr(file, 'read'):
+        file = open(file)
+
+    for x in csv.DictReader(file):
+        y = x.pop(target_name)
+        yield x, y
