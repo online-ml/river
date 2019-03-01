@@ -25,15 +25,12 @@ class NominalAttributeClassObserver(AttributeClassObserver):
             if val_dist is None:
                 val_dist = {att_val: 0.0}
                 self._att_val_dist_per_class[class_val] = val_dist
-
+                self._att_val_dist_per_class[class_val] = dict(sorted(self._att_val_dist_per_class[class_val].items()))
             if att_val not in val_dist:
                 val_dist[att_val] = 0.0
-
+                self._att_val_dist_per_class[class_val] = dict(sorted(self._att_val_dist_per_class[class_val].items()))
             self._att_val_dist_per_class[class_val][att_val] += weight
 
-            for class_val, class_dist in self._att_val_dist_per_class.items():
-                if list(class_dist.keys())[0] != 0 and len(class_dist.keys()) > 1:
-                    self._att_val_dist_per_class[class_val] = dict(sorted(class_dist.items()))
         self._total_weight_observed += weight
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):
