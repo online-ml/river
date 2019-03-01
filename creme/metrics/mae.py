@@ -25,14 +25,14 @@ class MAE(base.Metric):
 
     def __init__(self):
         self.absolute_error = 0
-        self.count = 0
+        self.n = 0
 
     def update(self, y_true, y_pred):
         self.absolute_error += abs(y_true - y_pred)
-        self.count += 1
+        self.n += 1
         return self
 
     def get(self):
-        if self.count:
-            return self.absolute_error / self.count
+        if self.n:
+            return self.absolute_error / self.n
         return 0
