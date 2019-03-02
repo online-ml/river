@@ -4,7 +4,7 @@ import collections
 from . import base
 
 
-class _SortedWindow(base.RunningStatistic):
+class _SortedWindow:
     """Compute the sorted running window.
 
     Attributes:
@@ -16,9 +16,9 @@ class _SortedWindow(base.RunningStatistic):
     ::
 
         >>> from creme.stats import _sorted_window
-        >>> sorted_win = _sorted_window._SortedWindow(window_size=3)
+        >>> sorted_window = _sorted_window._SortedWindow(window_size=3)
         >>> for i in range(21):
-        ...     sorted_win.update(i).get()
+        ...     print(sorted_window.append(i).get())
         [0]
         [0, 1]
         [0, 1, 2]
@@ -48,17 +48,15 @@ class _SortedWindow(base.RunningStatistic):
     """
 
     def __init__(self, window_size):
-
         self.window_size = window_size
         self.current_window = collections.deque([])
         self.sorted_window = []
-
 
     @property
     def name(self):
         return 'sorted_window'
 
-    def update(self, x):
+    def append(self, x):
         # Update current window.
         self.current_window, self.sorted_window = self._update_window(
             x=x,
@@ -68,6 +66,9 @@ class _SortedWindow(base.RunningStatistic):
         )
 
         return self
+
+    def __getitem__(self, key):
+        return self.sorted_window[key]
 
     def get(self):
         return self.sorted_window
