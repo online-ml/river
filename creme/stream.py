@@ -7,7 +7,12 @@ import itertools
 from sklearn import utils
 
 
-__all__ = ['iter_csv' 'iter_numpy', 'iter_pandas', 'iter_sklearn_dataset']
+__all__ = [
+    'iter_csv',
+    'iter_numpy',
+    'iter_pandas',
+    'iter_sklearn_dataset'
+]
 
 
 def iter_numpy(X, y=None, feature_names=None, shuffle=False, random_state=None):
@@ -24,7 +29,7 @@ def iter_numpy(X, y=None, feature_names=None, shuffle=False, random_state=None):
             generator is the ``RandomState`` instance used by ``np.random``.
 
     Yields:
-        tuple: A pair of (dict, target)
+        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     """
     feature_names = list(range(X.shape[1])) if feature_names is None else feature_names
@@ -45,7 +50,7 @@ def iter_sklearn_dataset(load_dataset, **kwargs):
         load_dataset (callable): The method used to load the dataset, e.g. ``load_boston``.
 
     Yields:
-        tuple: A pair of (dict, target)
+        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     """
     dataset = load_dataset()
@@ -65,7 +70,7 @@ def iter_pandas(X, y=None, **kwargs):
         y (array-like of shape (n_samples,))
 
     Yields:
-        tuple: A pair of (dict, target)
+        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     """
     kwargs['feature_names'] = X.columns
@@ -81,7 +86,7 @@ def iter_csv(filepath_or_buffer, target_name):
         target_name (str): The name of the target.
 
     Yields:
-        tuple: A pair of (dict, target)
+        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     Example:
 
