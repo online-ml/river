@@ -372,7 +372,9 @@ Loss functions
    stats.Sum
    stats.Variance
    stats.Quantile
+   stats.RollingMean
    stats.RollingQuantile
+   stats.RollingVariance
    stats.Entropy
 
 
