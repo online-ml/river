@@ -12,7 +12,6 @@ API reference
 
 .. autosummary::
    :toctree: generated/
-   :template: class.rst
    :nosignatures:
 
    base.BinaryClassifier
@@ -49,7 +48,6 @@ API reference
 
 .. autosummary::
    :toctree: generated/
-   :template: class.rst
    :nosignatures:
 
    compat.SKLClassifierWrapper
@@ -76,6 +74,22 @@ API reference
    compose.Pipeline
    compose.TargetModifierRegressor
    compose.TransformerUnion
+
+
+:mod:`creme.datasets`: Dataset loading utilities
+------------------------------------------------
+
+.. automodule:: creme.datasets
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   datasets.fetch_restaurants
 
 
 :mod:`creme.ensemble`: Ensemble models
@@ -109,7 +123,6 @@ API reference
    :nosignatures:
 
    feature_extraction.CountVectorizer
-   feature_extraction.FuncExtractor
    feature_extraction.GroupBy
    feature_extraction.TargetEncoder
    feature_extraction.TFIDFVectorizer
@@ -132,7 +145,7 @@ API reference
 
 
 :mod:`creme.impute`: Running imputation
---------------------------------------
+---------------------------------------
 
 .. automodule:: creme.impute
    :no-members:
