@@ -360,6 +360,7 @@ Loss functions
    stats.RollingQuantile
    stats.RollingMax
    stats.RollingMin
+   stats.RollingMode
    stats.RollingVariance
    stats.Entropy
 
