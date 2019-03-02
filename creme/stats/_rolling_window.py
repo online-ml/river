@@ -1,26 +1,26 @@
 import collections
 
 
-class RollingWindow:
+class _RollingWindow:
     """Save k value to update windowed rolling statistics.
 
         Attributes:
             window_size (int): Size of the rolling window.
             rolling_window (deque): Store k current values.
 
-    >>> import creme
+    >>> from creme.stats._rolling_window import _RollingWindow
 
     >>> X = [1, 2, 3, 4, 5, 6]
 
-    >>> rolling_window = creme.stats.RollingWindow(window_size=2)
+    >>> _rolling_window = _RollingWindow(window_size=2)
     >>> for x in X:
-    ...     print(rolling_window.update(x).get())
-    deque([1])
-    deque([1, 2])
-    deque([2, 3])
-    deque([3, 4])
-    deque([4, 5])
-    deque([5, 6])
+    ...     print(_rolling_window.append(x)[0])
+    1
+    1
+    2
+    3
+    4
+    5
 
     """
 
@@ -32,14 +32,10 @@ class RollingWindow:
             raise ValueError(
                 'window_size parameter must be stricly superior to 1.')
 
-    @property
-    def name(self):
-        return 'rolling_window'
+    def __getitem__(self, key):
+        return self.rolling_window[key]
 
-    def get(self):
-        return self.rolling_window
-
-    def update(self, x):
+    def append(self, x):
         if len(self.rolling_window) + 1 <= self.window_size:
             self.rolling_window.append(x)
         else:

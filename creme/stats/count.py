@@ -17,7 +17,3 @@ class Count(base.RunningStatistic):
 
     def get(self):
         return self.n
-
-    def desincrement(self):
-        self.n -= 1
-        return self.n
