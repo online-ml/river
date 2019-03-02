@@ -13,7 +13,6 @@ class RollingVariance:
         rolling_window (RollingWindow): Store K current values.
 
     >>> import creme
-    >>> import pandas as pd
 
     >>> X = pd.Series([1, 4, 2, -4, -8, 0])
 
