@@ -131,7 +131,8 @@ class Quantile(base.RunningStatistic):
                 if qm1 < qn and qn < qp1:
                     self.heights[i] = qn
                 else:
-                    self.heights[i] = q + d * (self.heights[i + d] - q) / (self.position[i + d] - n)
+                    self.heights[i] = q + d * \
+                        (self.heights[i + d] - q) / (self.position[i + d] - n)
 
                 self.position[i] = n + d
 
@@ -152,7 +153,8 @@ class Quantile(base.RunningStatistic):
             k = self._find_k(x)
 
             # Increment all positions greater than k
-            self.position = [j if i < k else j + 1 for i, j in enumerate(self.position)]
+            self.position = [j if i < k else j +
+                             1 for i, j in enumerate(self.position)]
             self.marker_position = [
                 x + y
                 for x, y in zip(self.marker_position, self.desired_marker_position)
@@ -170,6 +172,7 @@ class Quantile(base.RunningStatistic):
             self.heights.sort()
             length = len(self.heights)
             return self.heights[int(min(max(length - 1, 0), length * self.quantile))]
+
 
 class RollingQuantile(base.RunningStatistic):
     """Calculate the rolling quantile with a given window size.
@@ -222,9 +225,11 @@ class RollingQuantile(base.RunningStatistic):
 
         self.quantile = quantile
         self.window_size = window_size
-        self.sorted_window = _sorted_window._SortedWindow(window_size=self.window_size)
+        self.sorted_window = _sorted_window._SortedWindow(
+            window_size=self.window_size)
 
-        self.idx_percentile = int(round(self.quantile * self.window_size + 0.5)) - 1
+        self.idx_percentile = int(
+            round(self.quantile * self.window_size + 0.5)) - 1
 
     @property
     def name(self):
@@ -232,13 +237,14 @@ class RollingQuantile(base.RunningStatistic):
 
     def update(self, x):
         # Update current window.
-        self.sorted_window.update(x)
+        self.sorted_window.append(x)
 
         return self
 
     def get(self):
         if len(self.sorted_window.get()) < self.window_size:
-            _idx_percentile = int(round(self.quantile * len(self.sorted_window.get()) + 0.5)) - 1
-            return self.sorted_window.get()[_idx_percentile]
+            _idx_percentile = int(
+                round(self.quantile * len(self.sorted_window.get()) + 0.5)) - 1
+            return self.sorted_window[_idx_percentile]
 
-        return self.sorted_window.get()[self.idx_percentile]
+        return self.sorted_window[self.idx_percentile]
