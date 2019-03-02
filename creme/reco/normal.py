@@ -36,6 +36,6 @@ class RandomNormal(base.Recommender):
         return y_pred
 
     def predict_one(self, r_id, c_id):
-        μ = self.variance.mean.get()
+        μ = self.variance.mean.get() or 0
         σ = self.variance.get() ** 0.5
         return self.random_state.normal(μ, σ)
