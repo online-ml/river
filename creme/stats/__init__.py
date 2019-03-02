@@ -14,6 +14,9 @@ from .ptp import PeakToPeak
 from .quantile import Quantile
 from .quantile import RollingQuantile
 from .rolling_mean import RollingMean
+from .rolling_max import RollingMax
+from .rolling_min import RollingMin
+from .rolling_mode import RollingMode
 from .rolling_variance import RollingVariance
 from .skew import Skew
 from .sum import Sum
@@ -34,6 +37,9 @@ __all__ = [
     'Quantile',
     'RollingMean',
     'RollingQuantile',
+    'RollingMax',
+    'RollingMin',
+    'RollingMode',
     'RollingVariance',
     'Skew',
     'Sum',
