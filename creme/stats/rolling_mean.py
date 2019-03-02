@@ -1,8 +1,8 @@
 from . import mean
-from . import rolling_window
+from . import _rolling_window
 
 
-class RollingMean(mean.Mean):
+class RollingMean(_rolling_window._RollingWindow):
     """Calculate the rolling average with a given window size.
 
     Attributes:
@@ -57,23 +57,24 @@ class RollingMean(mean.Mean):
     """
 
     def __init__(self, window_size):
-        super().__init__()
+        super().__init__(window_size)
         self.window_size = window_size
-        self.rolling_window = rolling_window.RollingWindow(window_size)
+        self.rolling_sum = 0
+        self.n = 0
 
     @property
     def name(self):
         return 'rolling_mean'
 
     def update(self, x):
-        if len(self.rolling_window.get()) + 1 > self.window_size:
-            self.mean = (self.mean * self.count.get() -
-                         self.rolling_window.get()[0]) / (self.count.get() - 1)
-            self.count.desincrement()
+        if self.n >= self.window_size:
+            self.rolling_sum -= self.rolling_window[0]
+        else:
+            self.n += 1
 
-        self.rolling_window.update(x)
-        super().update(x)
+        self.rolling_sum += x
+        self.append(x)
         return self
 
     def get(self):
-        return self.mean
+        return self.rolling_sum / self.n
