@@ -14,7 +14,7 @@ class RollingVariance:
 
     >>> import creme
 
-    >>> X = pd.Series([1, 4, 2, -4, -8, 0])
+    >>> X = [1, 4, 2, -4, -8, 0]
 
     >>> rolling_variance = creme.stats.RollingVariance(ddof=1, window_size=2)
     >>> for x in X:

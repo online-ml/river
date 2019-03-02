@@ -10,19 +10,8 @@ class RollingMean(_rolling_window._RollingWindow):
         current_window (collections.deque): Store values that are in the current window.
 
     >>> import creme
-    >>> import pandas as pd
 
-    >>> X = pd.Series([1, 2, 3, 4, 5, 6])
-
-    # Pandas:
-    >>> print(X.rolling(2).mean())
-    0    NaN
-    1    1.5
-    2    2.5
-    3    3.5
-    4    4.5
-    5    5.5
-    dtype: float64
+    >>> X = [1, 2, 3, 4, 5, 6]
 
     >>> rolling_mean = creme.stats.RollingMean(window_size=2)
     >>> for x in X:
@@ -33,16 +22,6 @@ class RollingMean(_rolling_window._RollingWindow):
     3.5
     4.5
     5.5
-
-    # Pandas:
-    >>> print(X.rolling(3).mean())
-    0    NaN
-    1    NaN
-    2    2.0
-    3    3.0
-    4    4.0
-    5    5.0
-    dtype: float64
 
     >>> rolling_mean = creme.stats.RollingMean(window_size=3)
     >>> for x in X:
