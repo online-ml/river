@@ -1,7 +1,8 @@
-from . import _sorted_window
+from . import base
+from . import _window
 
 
-class RollingMax(_sorted_window._SortedWindow):
+class RollingMax(base.RunningStatistic, _window.SortedWindow):
     """Computes a windowed running max.
 
     Attributes:
@@ -9,10 +10,12 @@ class RollingMax(_sorted_window._SortedWindow):
 
     Example:
 
+    ::
+
         >>> from creme import stats
 
         >>> X = [1, -4, 3, -2, 2, 1]
-        >>> rolling_max = stats.RollingMax(2)
+        >>> rolling_max = stats.RollingMax(window_size=2)
         >>> for x in X:
         ...     print(rolling_max.update(x).get())
         1
@@ -24,16 +27,13 @@ class RollingMax(_sorted_window._SortedWindow):
 
     """
 
-    def __init__(self, window_size):
-        super().__init__(window_size)
-
     @property
     def name(self):
         return 'rolling_max'
 
     def update(self, x):
-        super().append(x)
+        self.append(x)
         return self
 
     def get(self):
-        return self.sorted_window[-1]
+        return self[-1]

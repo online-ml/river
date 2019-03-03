@@ -1,34 +1,37 @@
 import collections
 
-from . import _rolling_window
+from . import base
+from . import _window
 
 
-class RollingMode(_rolling_window._RollingWindow):
-    """Compute windowed online Mode.
+class RollingMode(base.RunningStatistic, _window.Window):
+    """Computes a running mode over a window.
 
-    Mode allow to get modality value which have the higher frequency with a given window size.
+    The mode is the most common value.
 
     Attributes:
         window_size (int): Size of the rolling window.
-        top (defaultdic): Mapping of frequency of modalities.
+        counts (collections.defaultdict): Value counts.
 
     Example:
 
+    ::
+
         >>> from creme import stats
 
-        >>> X = ['sunny', 'sunny', 'sunny', 'humidity', 'humidity', 'humidity', 'humidity']
-        >>> rolling_mode = stats.rolling_mode.RollingMode(window_size = 2)
+        >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']
+        >>> rolling_mode = stats.rolling_mode.RollingMode(window_size=2)
         >>> for x in X:
         ...     print(rolling_mode.update(x).get())
         sunny
         sunny
         sunny
         sunny
-        humidity
-        humidity
-        humidity
+        rainy
+        rainy
+        rainy
 
-        >>> rolling_mode = stats.rolling_mode.RollingMode(window_size = 5)
+        >>> rolling_mode = stats.rolling_mode.RollingMode(window_size=5)
         >>> for x in X:
         ...     print(rolling_mode.update(x).get())
         sunny
@@ -36,28 +39,33 @@ class RollingMode(_rolling_window._RollingWindow):
         sunny
         sunny
         sunny
-        humidity
-        humidity
+        rainy
+        rainy
 
     """
 
     def __init__(self, window_size):
         super().__init__(window_size)
-        self.top = collections.defaultdict(int)
+        self.counts = collections.defaultdict(int)
 
     @property
     def name(self):
         return 'rolling_mode'
 
     def update(self, x):
-        if len(self.rolling_window) >= self.window_size:
-            self.top[self.rolling_window[0]] -= 1
-            if self.top[self.rolling_window[0]] == 0:
-                self.top.pop(self.rolling_window[0])
+        if len(self.window) >= self.window_size:
 
-        self.top[x] += 1
+            # Subtract the counter of the last element
+            first_in = self.window[0]
+            self.counts[first_in] -= 1
+
+            # No need to store the value if it's counter is 0
+            if self.counts[first_in] == 0:
+                self.counts.pop(first_in)
+
+        self.counts[x] += 1
         super().append(x)
         return self
 
     def get(self):
-        return max(self.top, key=self.top.get)
+        return max(self.counts, key=self.counts.get)
