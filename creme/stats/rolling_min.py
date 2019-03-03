@@ -1,0 +1,39 @@
+from . import base
+from . import _window
+
+
+class RollingMin(base.RunningStatistic, _window.SortedWindow):
+    """Computes a windowed running min.
+
+    Attributes:
+        window_size (int): Size of the rolling window.
+
+    Example:
+
+    ::
+
+        >>> from creme import stats
+
+        >>> X = [1, -4, 3, -2, 2, 1]
+        >>> rolling_min = stats.RollingMin(2)
+        >>> for x in X:
+        ...     print(rolling_min.update(x).get())
+        1
+        -4
+        -4
+        -2
+        -2
+        1
+
+    """
+
+    @property
+    def name(self):
+        return 'rolling_{self.window_size}_min'
+
+    def update(self, x):
+        self.append(x)
+        return self
+
+    def get(self):
+        return self[0]

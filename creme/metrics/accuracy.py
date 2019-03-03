@@ -24,15 +24,15 @@ class Accuracy(base.Metric):
     """
 
     def __init__(self):
-        self.positives = 0
-        self.count = 0
+        self.n_correct = 0
+        self.n = 0
 
     def update(self, y_true, y_pred):
-        self.positives += y_true == y_pred
-        self.count += 1
+        self.n_correct += y_true == y_pred
+        self.n += 1
         return self
 
     def get(self):
-        if self.count:
-            return self.positives / self.count
+        if self.n:
+            return self.n_correct / self.n
         return 0

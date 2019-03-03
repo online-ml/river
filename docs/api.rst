@@ -12,7 +12,6 @@ API reference
 
 .. autosummary::
    :toctree: generated/
-   :template: class.rst
    :nosignatures:
 
    base.BinaryClassifier
@@ -49,7 +48,6 @@ API reference
 
 .. autosummary::
    :toctree: generated/
-   :template: class.rst
    :nosignatures:
 
    compat.SKLClassifierWrapper
@@ -72,8 +70,26 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   compose.BoxCoxTransformRegressor
    compose.Pipeline
+   compose.TargetModifierRegressor
    compose.TransformerUnion
+
+
+:mod:`creme.datasets`: Dataset loading utilities
+------------------------------------------------
+
+.. automodule:: creme.datasets
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   datasets.fetch_restaurants
 
 
 :mod:`creme.ensemble`: Ensemble models
@@ -107,7 +123,6 @@ API reference
    :nosignatures:
 
    feature_extraction.CountVectorizer
-   feature_extraction.FuncExtractor
    feature_extraction.GroupBy
    feature_extraction.TargetEncoder
    feature_extraction.TFIDFVectorizer
@@ -129,8 +144,8 @@ API reference
    feature_selection.RandomDiscarder
 
 
-:mod:`creme.imput`: Running imputation
---------------------------------------
+:mod:`creme.impute`: Running imputation
+---------------------------------------
 
 .. automodule:: creme.impute
    :no-members:
@@ -188,6 +203,7 @@ API reference
    metrics.MSE
    metrics.RMSE
    metrics.RMSLE
+   metrics.SMAPE
 
 
 :mod:`creme.model_selection`: Model selection
@@ -343,21 +359,27 @@ Loss functions
    :nosignatures:
 
    stats.Count
+   stats.Entropy
    stats.EWMean
    stats.Kurtosis
+   stats.Max
    stats.Mean
    stats.Min
-   stats.Max
    stats.Mode
    stats.NUnique
    stats.PeakToPeak
    stats.Quantile
    stats.Skew
    stats.Sum
-   stats.Variance
-   stats.Quantile
+   stats.RollingMax
+   stats.RollingMean
+   stats.RollingMin
+   stats.RollingMode
+   stats.RollingPeakToPeak
    stats.RollingQuantile
-   stats.Entropy
+   stats.RollingSum
+   stats.RollingVariance
+   stats.Variance
 
 
 :mod:`creme.stream`: Streaming utilities
@@ -373,6 +395,7 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
+   stream.iter_csv
    stream.iter_numpy
    stream.iter_sklearn_dataset
    stream.iter_pandas

@@ -7,6 +7,7 @@ from .mae import MAE
 from .mse import MSE
 from .rmse import RMSE
 from .rmsle import RMSLE
+from .smape import SMAPE
 
 
 __all__ = [
@@ -14,5 +15,6 @@ __all__ = [
     'MAE',
     'MSE',
     'RMSE',
-    'RMSLE'
+    'RMSLE',
+    'SMAPE'
 ]

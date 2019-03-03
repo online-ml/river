@@ -12,11 +12,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Discarder` to `preprocessing`
 - `FMRegressor` to `linear_model`
 - `FuncTransformer` to `preprocessing`
-- `Accuracy`, `MAE`, `MSE`, `RMSE`, `RMSLE` to `metrics`
+- `Accuracy`, `MAE`, `MSE`, `RMSE`, `RMSLE`, `SMAPE` to `metrics`
 - `CategoricalImputer` to `impute`
-- `Mode`, `Quantile`, `RollingQuantile`, `CategoricalCount`, `Entropy` to `stats`
+- `stats`:
+    - `Mode`
+    - `Quantile`
+    - `RollingQuantile`
+    - `Entropy`
+    - `RollingMin`
+    - `RollingMax`
+    - `RollingMode`
+    - `RollingSum`
+    - `RollingPeakToPeak`
 - `wrap_sklearn` to `compat`
 - `SVD` to `reco`
+- `BoxCoxTransformRegressor`, `TargetModifierRegressor` to `compose`
+- `iter_csv` to `stream`
+- `fetch_restaurants` to `datasets`
 
 ## [0.0.2] - 2019-02-13
 

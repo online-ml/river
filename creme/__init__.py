@@ -9,6 +9,7 @@ scikit-learn, enough so that users who are familiar with scikit-learn should fee
 from . import cluster
 from . import compat
 from . import compose
+from . import datasets
 from . import ensemble
 from . import feature_extraction
 from . import feature_selection
@@ -30,6 +31,7 @@ __all__ = [
     'cluster',
     'compat',
     'compose',
+    'datasets',
     'ensemble',
     'feature_extraction',
     'feature_selection',
