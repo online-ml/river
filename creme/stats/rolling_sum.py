@@ -33,7 +33,7 @@ class RollingSum(base.RunningStatistic, _window.Window):
 
     @property
     def name(self):
-        return 'rolling_sum'
+        return 'rolling_{self.window_size}_sum'
 
     def update(self, x):
         if len(self) == self.window_size:
