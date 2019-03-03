@@ -1,5 +1,5 @@
 """
-Utilities for compatibility for other libraries such as scikit-learn.
+Utilities for compatibility with other libraries such as scikit-learn.
 """
 import copy
 

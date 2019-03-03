@@ -1,16 +1,17 @@
-from . import _rolling_window
+from . import base
 from . import rolling_mean
 
 
-class RollingVariance:
+class RollingVariance(base.RunningStatistic):
     """Compute the windowed rolling variance.
 
-    Attributes:
+    Parameters:
         window_size (int): Size of the rolling window.
-        ddof (int): Factor to correct variance.
-        sum_square (float): Sum of the square of the value used to update RollingVariance.
-        rolling_mean (RollingMean): Compute rolling windowed mean.
-        rolling_window (RollingWindow): Store K current values.
+        ddof (int): Factor used to correct the variance.
+
+    Attributes:
+        sos (float): Sum of squares.
+        rolling_mean (RollingMean)
 
     >>> import creme
 
@@ -39,9 +40,9 @@ class RollingVariance:
     """
 
     def __init__(self, window_size, ddof=1):
-        self.sum_square = 0
-        self.ddof = ddof
         self.window_size = window_size
+        self.ddof = ddof
+        self.sos = 0
         self.rolling_mean = rolling_mean.RollingMean(window_size)
 
     @property
@@ -49,24 +50,20 @@ class RollingVariance:
         return 'rolling_variance'
 
     def update(self, x):
-        if self.rolling_mean.n >= self.window_size:
-            self.sum_square -= self.rolling_mean.rolling_window[0] ** 2
+        if len(self.rolling_mean) >= self.window_size:
+            self.sos -= self.rolling_mean.window[0] ** 2
 
-        self.sum_square += x**2
+        self.sos += x * x
         self.rolling_mean.update(x)
         return self
 
-    def _get_correction_factor(self):
-        if self.rolling_mean.n > self.ddof:
-            return self.rolling_mean.n / (self.rolling_mean.n - self.ddof)
-        else:
-            return 1
+    @property
+    def correction_factor(self):
+        n = len(self.rolling_mean)
+        if n > self.ddof:
+            return n / (n - self.ddof)
+        return 1
 
     def get(self):
-        correction_factor = self._get_correction_factor()
-        if self.sum_square > 0:
-            variance = ((self.sum_square / self.rolling_mean.n
-                         ) - self.rolling_mean.get() ** 2)
-        else:
-            variance = 0
-        return correction_factor * variance
+        variance = (self.sos / len(self.rolling_mean)) - self.rolling_mean.get() ** 2
+        return self.correction_factor * variance

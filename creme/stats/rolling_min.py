@@ -1,13 +1,16 @@
-from . import _sorted_window
+from . import base
+from . import _window
 
 
-class RollingMin(_sorted_window._SortedWindow):
+class RollingMin(base.RunningStatistic, _window.SortedWindow):
     """Computes a windowed running min.
 
     Attributes:
         window_size (int): Size of the rolling window.
 
     Example:
+
+    ::
 
         >>> from creme import stats
 
@@ -24,16 +27,13 @@ class RollingMin(_sorted_window._SortedWindow):
 
     """
 
-    def __init__(self, window_size):
-        super().__init__(window_size)
-
     @property
     def name(self):
         return 'rolling_min'
 
     def update(self, x):
-        super().append(x)
+        self.append(x)
         return self
 
     def get(self):
-        return self.sorted_window[0]
+        return self[0]

@@ -359,26 +359,27 @@ Loss functions
    :nosignatures:
 
    stats.Count
+   stats.Entropy
    stats.EWMean
    stats.Kurtosis
+   stats.Max
    stats.Mean
    stats.Min
-   stats.Max
    stats.Mode
    stats.NUnique
    stats.PeakToPeak
    stats.Quantile
    stats.Skew
    stats.Sum
-   stats.Variance
-   stats.Quantile
-   stats.RollingMean
-   stats.RollingQuantile
    stats.RollingMax
+   stats.RollingMean
    stats.RollingMin
    stats.RollingMode
+   stats.RollingPeakToPeak
+   stats.RollingQuantile
+   stats.RollingSum
    stats.RollingVariance
-   stats.Entropy
+   stats.Variance
 
 
 :mod:`creme.stream`: Streaming utilities

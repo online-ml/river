@@ -1,51 +1,50 @@
+import collections
+
 from . import base
 
 
 class Mode(base.RunningStatistic):
-    """Compute online Mode.
+    """Computes running mode.
 
-    This class store in a dictionnary modalities and frequency of k first value of a given series.
-    Mode allow to get modality value which have the higher frequency.
-    If Mode set to exact, it will tore all the modalities of the target variable and return
-    the exact mode, it could consume memory.
+    Parameters:
+        k (int): Only the first ``k`` unique values will be included.
+        exact (bool): Whether or not to count the occurrences of each and every value.
 
     Attributes:
-        k (int): Number of modalities in the target variable.
-        top (dic): Mapping of frequency of modalities.
-        exact (bool): Store all the modalities of the target variable and returns the exact mode.
+        counts (collections.defaultdict)
 
     Example:
 
+    ::
+
         >>> from creme import stats
 
-        >>> X = ['sunny', 'sunny', 'sunny', 'humidity', 'humidity', 'humidity', 'humidity']
-        >>> mode = stats.mode.Mode(exact = True)
+        >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
+        >>> mode = stats.mode.Mode(k=2, exact=False)
         >>> for x in X:
         ...     print(mode.update(x).get())
         sunny
         sunny
-        sunny
-        sunny
-        sunny
-        sunny
-        humidity
+        cloudy
+        cloudy
+        cloudy
+        cloudy
 
-        >>> mode = stats.mode.Mode(k=25, exact=False)
+        >>> mode = stats.mode.Mode(k=2, exact=True)
         >>> for x in X:
         ...     print(mode.update(x).get())
         sunny
         sunny
-        sunny
-        sunny
-        sunny
-        sunny
-        humidity
+        cloudy
+        cloudy
+        cloudy
+        rainy
 
     """
 
     def __init__(self, k=25, exact=False):
         self.k = k
-        self.top = {}
+        self.counts = collections.defaultdict(int)
         self.exact = exact
 
     @property
@@ -53,11 +52,9 @@ class Mode(base.RunningStatistic):
         return 'mode'
 
     def update(self, x):
-        if x in self.top:
-            self.top[x] += 1
-        elif len(self.top) <= self.k or self.exact:
-            self.top[x] = 0
+        if x in self.counts or len(self.counts) < self.k or self.exact:
+            self.counts[x] += 1
         return self
 
     def get(self):
-        return max(self.top, key=self.top.get)
+        return max(self.counts, key=self.counts.get)
