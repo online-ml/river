@@ -36,7 +36,7 @@ class RollingMean(rolling_sum.RollingSum):
 
     @property
     def name(self):
-        return 'rolling_mean'
+        return 'rolling_{self.window_size}_mean'
 
     def get(self):
         return super().get() / len(self)

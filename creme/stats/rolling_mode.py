@@ -50,7 +50,7 @@ class RollingMode(base.RunningStatistic, _window.Window):
 
     @property
     def name(self):
-        return 'rolling_mode'
+        return 'rolling_{self.window_size}_mode'
 
     def update(self, x):
         if len(self.window) >= self.window_size:
