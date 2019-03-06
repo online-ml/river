@@ -1,4 +1,4 @@
-from math import pi, sqrt, isinf, exp
+import math
 from skmultiflow.utils.statistics import normal_probability
 
 
@@ -11,7 +11,7 @@ class GaussianEstimator(object):
         self._weight_sum = 0.0
         self._mean = 0.0
         self._variance_sum = 0.0
-        self._NORMAL_CONSTANT = sqrt(2 * pi)
+        self._NORMAL_CONSTANT = math.sqrt(2 * math.pi)
 
     def add_observation(self, value, weight):
         """ add_observation
@@ -28,7 +28,7 @@ class GaussianEstimator(object):
         self
 
         """
-        if value is None or isinf(value):
+        if value is None or math.isinf(value):
             return
         if self._weight_sum > 0.0:
             self._weight_sum += weight
@@ -46,7 +46,7 @@ class GaussianEstimator(object):
         return self._mean
 
     def get_std_dev(self):
-        return sqrt(self.get_variance())
+        return math.sqrt(self.get_variance())
 
     def get_variance(self):
         return self._variance_sum / (self._weight_sum - 1.0) if self._weight_sum > 1.0 else 0.0
@@ -70,7 +70,7 @@ class GaussianEstimator(object):
             mean = self.get_mean()
             if std_dev > 0.0:
                 diff = value - mean
-                return (1.0 / (self._NORMAL_CONSTANT * std_dev)) * exp(-(diff * diff / (2.0 * std_dev * std_dev)))
+                return (1.0 / (self._NORMAL_CONSTANT * std_dev)) * math.exp(-(diff * diff / (2.0 * std_dev * std_dev)))
             if value == mean:
                 return 1.0
         return 0.0
