@@ -10,5 +10,5 @@ from .regression_hoeffding_tree import RegressionHoeffdingTree
 from .regression_hoeffding_adaptive_tree import RegressionHAT
 from .multi_target_regression_hoeffding_tree import MultiTargetRegressionHoeffdingTree
 
-__all__ = ["HoeffdingTree", "HAT","HATT", "LCHT", "RegressionHoeffdingTree", "RegressionHAT",
+__all__ = ["HoeffdingTree", "HAT", "HATT", "LCHT", "RegressionHoeffdingTree", "RegressionHAT",
            "MultiTargetRegressionHoeffdingTree"]
