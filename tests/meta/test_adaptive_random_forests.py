@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 
 from skmultiflow.data import RandomTreeGenerator
@@ -34,18 +33,15 @@ def test_adaptive_random_forests():
         learner.partial_fit(X, y)
         cnt += 1
 
-        last_version_predictions = [1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
-                            1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0,
-                            1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0]
+    last_version_predictions = [1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1,
+                                1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0]
 
     # Performance below does not need to be guaranteed. This check is set up so that anything that changes
     # to predictions are caught in the unit test. This helps prevent accidental changes.
     # If these tests fail, make sure that what is worked on *should* change the predictions of ARF.
-    if sys.version_info.major == 3 and sys.version_info.minor >= 6:
-        #  Temporary disable as pre-3.6 give different predictions than 3.6+
-        assert np.alltrue(predictions == last_version_predictions)
 
     assert type(learner.predict(X)) == np.ndarray
+    assert np.alltrue(predictions == last_version_predictions)
 
 
 def test_adaptive_random_forests_labels_given():
@@ -76,19 +72,17 @@ def test_adaptive_random_forests_labels_given():
 
         learner.partial_fit(X, y)
         cnt += 1
-    
+
     assert np.alltrue([np.isclose(y_proba.sum(), 1) for y_proba in predictions]), "Probabilities should sum to 1."
 
     class_probabilities = np.asarray(predictions).squeeze()
     assert class_probabilities.shape == (49, 2)
 
     predictions = class_probabilities.argmax(axis=1)
-    last_version_predictions = [1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1,
-                                1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0]
-    # See comment in test `test_adaptive_random_forests`
-    if sys.version_info.major == 3 and sys.version_info.minor >= 6:
-        #  Temporary disable as pre-3.6 give different predictions than 3.6+
-        assert np.alltrue(predictions == last_version_predictions)
+    last_version_predictions = [1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1,
+                                1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0]
+
+    assert np.alltrue(predictions == last_version_predictions)
 
 
 def test_adaptive_random_forests_batch_predict_proba():
@@ -123,12 +117,8 @@ def test_adaptive_random_forests_batch_predict_proba():
     # correct_predictions = sum(np.equal(all_true_labels, all_predictions.argmax(axis=1)))
 
     assert np.alltrue([np.isclose(y_proba.sum(), 1) for y_proba in all_predictions]), "Probabilities should sum to 1."
-    assert all_predictions.shape == (4*5, 2)
+    assert all_predictions.shape == (4 * 5, 2)
 
-    last_version_predictions = [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1]
-    # See comment in test `test_adaptive_random_forests`
-    if sys.version_info.major == 3 and sys.version_info.minor >= 6:
-        #  Temporary disable as pre-3.6 give different predictions than 3.6+
-        assert np.alltrue(all_predictions.argmax(axis=1) == last_version_predictions)
-
+    last_version_predictions = [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1]
     assert type(learner.predict_proba(X)) == np.ndarray
+    assert np.alltrue(all_predictions.argmax(axis=1) == last_version_predictions)
