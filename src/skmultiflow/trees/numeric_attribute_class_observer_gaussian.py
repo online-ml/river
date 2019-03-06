@@ -23,7 +23,13 @@ class NumericAttributeClassObserverGaussian(AttributeClassObserver):
         if att_val is None:
             return
         else:
-            if class_val not in self._att_val_dist_per_class:
+            try:
+                val_dist = self._att_val_dist_per_class[class_val]
+                if att_val < self._min_value_observed_per_class[class_val]:
+                    self._min_value_observed_per_class[class_val] = att_val
+                if att_val > self._max_value_observed_per_class[class_val]:
+                    self._max_value_observed_per_class[class_val] = att_val
+            except KeyError:
                 val_dist = GaussianEstimator()
                 self._att_val_dist_per_class[class_val] = val_dist
                 self._min_value_observed_per_class[class_val] = att_val
@@ -31,14 +37,7 @@ class NumericAttributeClassObserverGaussian(AttributeClassObserver):
                 self._att_val_dist_per_class = dict(sorted(self._att_val_dist_per_class.items()))
                 self._max_value_observed_per_class = dict(sorted(self._max_value_observed_per_class.items()))
                 self._min_value_observed_per_class = dict(sorted(self._min_value_observed_per_class.items()))
-            else:
-                if att_val < self._min_value_observed_per_class[class_val]:
-                    self._min_value_observed_per_class[class_val] = att_val
 
-                if att_val > self._max_value_observed_per_class[class_val]:
-                    self._max_value_observed_per_class[class_val] = att_val
-
-            val_dist = self._att_val_dist_per_class[class_val]
             val_dist.add_observation(att_val, weight)
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):

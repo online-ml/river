@@ -21,15 +21,16 @@ class NominalAttributeClassObserver(AttributeClassObserver):
         if att_val is None:
             self._missing_weight_observed += weight
         else:
-            val_dist = self._att_val_dist_per_class.get(class_val, None)
-            if val_dist is None:
-                val_dist = {att_val: 0.0}
-                self._att_val_dist_per_class[class_val] = val_dist
+            try:
+                val_dist = self._att_val_dist_per_class[class_val]
+            except KeyError:
+                self._att_val_dist_per_class[class_val] = {att_val: 0.0}
+                self._att_val_dist_per_class = dict(sorted(self._att_val_dist_per_class.items()))
+            try:
+                self._att_val_dist_per_class[class_val][att_val] += weight
+            except KeyError:
+                self._att_val_dist_per_class[class_val][att_val] = weight
                 self._att_val_dist_per_class[class_val] = dict(sorted(self._att_val_dist_per_class[class_val].items()))
-            if att_val not in val_dist:
-                val_dist[att_val] = 0.0
-                self._att_val_dist_per_class[class_val] = dict(sorted(self._att_val_dist_per_class[class_val].items()))
-            self._att_val_dist_per_class[class_val][att_val] += weight
 
         self._total_weight_observed += weight
 
