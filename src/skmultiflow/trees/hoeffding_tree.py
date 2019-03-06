@@ -11,7 +11,7 @@ from skmultiflow.trees.attribute_class_observer_null import AttributeClassObserv
 from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
 from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
-from skmultiflow.trees.utils import do_naive_bayes_prediction
+from skmultiflow.bayes.naive_bayes import do_naive_bayes_prediction
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
