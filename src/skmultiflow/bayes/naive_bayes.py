@@ -4,6 +4,7 @@ from skmultiflow.core.base import StreamModel
 from skmultiflow.utils import get_dimensions
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
+from skmultiflow.bayes import do_naive_bayes_prediction
 
 
 class NaiveBayes(StreamModel):
@@ -189,19 +190,3 @@ class NaiveBayes(StreamModel):
         description = type(self).__name__ + ': '
         description += 'nominal attributes: {} - '.format(self._nominal_attributes)
         return description
-
-
-def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_observers: dict):
-    if observed_class_distribution == {}:
-        # No observed class distributions, all classes equal
-        return {0: 0.0}
-    votes = {}
-    observed_class_sum = sum(observed_class_distribution.values())
-    for class_index, observed_class_val in observed_class_distribution.items():
-        votes[class_index] = observed_class_val / observed_class_sum
-        if attribute_observers:
-            for att_idx in range(len(X)):
-                if att_idx in attribute_observers:
-                    obs = attribute_observers[att_idx]
-                    votes[class_index] *= obs.probability_of_attribute_value_given_class(X[att_idx], class_index)
-    return votes
