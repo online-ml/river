@@ -16,7 +16,8 @@ class NumericAttributeRegressionObserverMultiTarget(AttributeClassObserver):
 
     In this variant, only the left branch statistics are stored.
 
-    References:
+    References
+    ----------
     .. [1] Osojnik, Aljaž. 2017. Structured output prediction on Data
        Streams (Doctoral Dissertation). Retrieved from:
        http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf
