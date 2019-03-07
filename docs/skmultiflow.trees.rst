@@ -13,6 +13,7 @@ Submodules
    skmultiflow.trees.gaussian_estimator
    skmultiflow.trees.gini_split_criterion
    skmultiflow.trees.hoeffding_adaptive_tree
+   skmultiflow.trees.hoeffding_anytime_tree
    skmultiflow.trees.hoeffding_tree
    skmultiflow.trees.info_gain_split_criterion
    skmultiflow.trees.instance_conditional_test
@@ -31,7 +32,6 @@ Submodules
    skmultiflow.trees.regression_hoeffding_adaptive_tree
    skmultiflow.trees.regression_hoeffding_tree
    skmultiflow.trees.split_criterion
-   skmultiflow.trees.utils
    skmultiflow.trees.variance_reduction_split_criterion
 
 Module contents

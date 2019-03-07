@@ -7,6 +7,7 @@ Submodules
 .. toctree::
 
    skmultiflow.bayes.naive_bayes
+   skmultiflow.bayes.utils
 
 Module contents
 ---------------
