@@ -4,6 +4,7 @@ Module for computing running statistics
 from .count import Count
 from .entropy import Entropy
 from .ewmean import EWMean
+from .histogram import Histogram
 from .kurtosis import Kurtosis
 from .max import Max
 from .mean import Mean
@@ -29,6 +30,7 @@ __all__ = [
     'Count',
     'Entropy',
     'EWMean',
+    'Histogram',
     'Kurtosis',
     'Max',
     'Mean',
