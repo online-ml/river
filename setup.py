@@ -17,7 +17,7 @@ PROJECT_URLS = {'Travis CI': 'https://travis-ci.org/scikit-multiflow/scikit-mult
                 }
 DOWNLOAD_URL = 'https://pypi.org/project/scikit-multiflow/#files'
 LICENSE = '3-Clause BSD'
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 
 
 # read the contents of README file
