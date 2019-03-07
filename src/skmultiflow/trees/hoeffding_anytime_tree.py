@@ -65,15 +65,10 @@ class HATT(HoeffdingTree):
     stationary distribution and eventually it learns the asymptotic batch tree if the distribution from which the data
     are drawn is stationary.
 
-    Implementation based on MOA [2]_.
-
     References
     ----------
     .. [1]  C. Manapragada, G. Webb, and M. Salehi. Extremely fast decision tree.
-        preprint arXiv:1802.08780, 2018.
-
-    .. [2] Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
-       MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+       preprint arXiv:1802.08780, 2018.
 
     """
 
@@ -561,20 +556,6 @@ class HATT(HoeffdingTree):
         """ Incrementally trains the model. Train samples (instances) are composed of X attributes and their
         corresponding targets y.
 
-        Tasks performed before training:
-
-        * Verify instance weight. if not provided, uniform weights (1.0) are assumed.
-        * If more than one instance is passed, loop through X and pass instances one at a time.
-        * Update weight seen by model.
-
-        Training tasks:
-
-        * If the tree is empty, create a leaf node as the root.
-        * If the tree is already initialized, find the path from root to the corresponding leaf for the instance and
-        sort the instance.
-            * Reevaluate the best split for each internal node.
-            * Attempt to split the leaf.
-
         Parameters
         ----------
         X: numpy.ndarray of shape (n_samples, n_features)
@@ -587,6 +568,22 @@ class HATT(HoeffdingTree):
         weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
 
+        Notes
+        -----
+        Tasks performed before training:
+
+        * Verify instance weight. if not provided, uniform weights (1.0) are assumed.
+        * If more than one instance is passed, loop through X and pass instances one at a time.
+        * Update weight seen by model.
+
+        Training tasks:
+
+        * If the tree is empty, create a leaf node as the root.
+        * If the tree is already initialized, find the path from root to the corresponding leaf for the instance and
+          sort the instance.
+
+          * Reevaluate the best split for each internal node.
+          * Attempt to split the leaf.
         """
         if self.classes is None and classes is not None:
             self.classes = classes
@@ -607,7 +604,6 @@ class HATT(HoeffdingTree):
         """ Trains the model on samples X and corresponding targets y.
 
         Private function where actual training is carried on.
-
 
         Parameters
         ----------
@@ -636,10 +632,11 @@ class HATT(HoeffdingTree):
         Private function.
 
         From root to leaf node where instance belongs:
-            1. If the node is internal:
-                1.1 Internal node learn from instance
-                1.2 If new samples seen at last reevaluation are more than min_samples_reevaluate, reevaluate the best split for the internal node
-            2. If the node is leaf, attempt to split leaf node.
+        1. If the node is internal:
+            1.1 Internal node learn from instance
+            1.2 If new samples seen at last reevaluation are more than min_samples_reevaluate,
+                reevaluate the best split for the internal node
+        2. If the node is leaf, attempt to split leaf node.
 
 
         Parameters
@@ -657,7 +654,7 @@ class HATT(HoeffdingTree):
         branch_index: int or None
             Parent node's branch index.
 
-                """
+        """
 
         # skip learning node and update SplitNode because the learning node already learnt from instance.
         if isinstance(node, self.AnyTimeSplitNode):
@@ -700,23 +697,22 @@ class HATT(HoeffdingTree):
     def _sort_instance_into_leaf(self, X, y, weight):
         """ Sort an instance into a leaf.
 
-            Private function where leaf learn from instance:
+        Private function where leaf learn from instance:
 
-            1. Find the node where instance should be.
-            2. If no node have been found, create new learning node.
-            3.1 Update the node with the provided instance
+        1. Find the node where instance should be.
+        2. If no node have been found, create new learning node.
+        3.1 Update the node with the provided instance
 
-            Parameters
-            ----------
-            X: numpy.ndarray of shape (n_samples, n_features)
-                Instance attributes.
-            y: array_like
-                Classes (targets) for all samples in X.
-            weight: float or array-like
-                Instance weight. If not provided, uniform weights are assumed.
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            Instance attributes.
+        y: array_like
+            Classes (targets) for all samples in X.
+        weight: float or array-like
+            Instance weight. If not provided, uniform weights are assumed.
 
-
-                """
+        """
         found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
         leaf_node = found_node.node
 
@@ -735,35 +731,35 @@ class HATT(HoeffdingTree):
     def _reevaluate_best_split(self, node: AnyTimeSplitNode, parent, branch_index):
         """ Reevaluate the best split for a node.
 
-                If the samples seen so far are not from the same class then:
+        If the samples seen so far are not from the same class then:
 
-                1. Find split candidates and select the best one.
-                2. Compute the Hoeffding bound.
-                3. If the don't split candidate is higher than the top split candidate:
-                    3.1 Kill subtree and replace it with a leaf.
-                    3.2 Update the tree.
-                    3.3 Update tree's metrics
-                4. If the difference between the top split candidate and the current split is larger than
-                the Hoeffding bound:
-                   4.1 Create a new split node.
-                   4.2 Update the tree.
-                   4.3 Update tree's metrics
-                5. If the top split candidate is the current split but with different split test:
-                   5.1 Update the split test of the current split.
+        1. Find split candidates and select the best one.
+        2. Compute the Hoeffding bound.
+        3. If the don't split candidate is higher than the top split candidate:
+            3.1 Kill subtree and replace it with a leaf.
+            3.2 Update the tree.
+            3.3 Update tree's metrics
+        4. If the difference between the top split candidate and the current split is larger than
+        the Hoeffding bound:
+           4.1 Create a new split node.
+           4.2 Update the tree.
+           4.3 Update tree's metrics
+        5. If the top split candidate is the current split but with different split test:
+           5.1 Update the split test of the current split.
 
-                Parameters
-                ----------
-                node: AnyTimeSplitNode
-                    The node to reevaluate.
-                parent: AnyTimeSplitNode
-                    The node's parent.
-                branch_index: int
-                    Parent node's branch index.
-                Returns
-                -------
-                boolean
-                    flag to stop moving in depth.
-                """
+        Parameters
+        ----------
+        node: AnyTimeSplitNode
+            The node to reevaluate.
+        parent: AnyTimeSplitNode
+            The node's parent.
+        branch_index: int
+            Parent node's branch index.
+        Returns
+        -------
+        boolean
+            flag to stop moving in depth.
+        """
 
         stop_flag = False
         if not node.observed_class_distribution_is_pure():
@@ -1117,12 +1113,12 @@ class HATT(HoeffdingTree):
 
     # Override
     def get_info(self):
-        """ Collect information about the Hoeffding Anytime Tree configuration.
+        """ Collects information about the model.
 
         Returns
         -------
         string
-            Configuration for the Hoeffding Tree.
+            Configuration for the model.
         """
         description = type(self).__name__ + ': '
         description += 'max_byte_size: {} - '.format(self.max_byte_size)
