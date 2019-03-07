@@ -6,26 +6,26 @@ from sklearn.tree import DecisionTreeClassifier
 
 class LearnNSE(StreamModel):
     """
-    Ensemble of classifiers-based approach for incremental learning of concept
-    drift, characterized by nonstationary environments (NSEs), where the
-    underlying data distributions change over time. It learns from consecutive
-    batches of data that experience constant or variable rate of drift,
-    addition or deletion of concept classes, as well as cyclical drift.</p>
+    Learn++.NSE [1]_ is an ensemble of classifiers for incremental learning
+    from non-stationary environments (NSEs) where the underlying data
+    distributions change over time. It learns from consecutive batches of data
+    that experience constant or variable rate of drift, addition or deletion
+    of concept classes, as well as cyclical drift.
 
     References
     ----------
-    Ryan Elwell and Robi Polikar. Incremental learning of concept drift in
-    non-stationary environments. IEEE Transactions on Neural Networks,
-    22(10):1517-1531, October 2011. ISSN 1045-9227. URL
-    http://dx.doi.org/10.1109/TNN.2011.2160459
+    .. [1] Ryan Elwell and Robi Polikar. Incremental learning of concept drift in
+       non-stationary environments. IEEE Transactions on Neural Networks,
+       22(10):1517-1531, October 2011. ISSN 1045-9227. URL
+       http://dx.doi.org/10.1109/TNN.2011.2160459
 
     Parameters
     ----------
     base_estimator: StreamModel or sklearn.BaseEstimator (default=DecisionTreeClassifier)
         This is the base estimator, each member of the ensemble is an instance of the base estimator.
     ensemble_size: int (default=15)
-        The number of ensembles to keep.
-    period: int (default=250)
+        The number of base estimators in the ensemble.
+    window_size: int (default=250)
         The size of the training window (batch), in other words, how many instances are kept for training.
     crossing_point: float (default=0.5)
         Halfway crossing point of the sigmoid function controlling the number of previous
@@ -42,7 +42,7 @@ class LearnNSE(StreamModel):
 
     def __init__(self,
                  base_estimator=DecisionTreeClassifier(),
-                 period=250,
+                 window_size=250,
                  slope=0.5,
                  crossing_point=10,
                  ensemble_size=15,
@@ -52,7 +52,7 @@ class LearnNSE(StreamModel):
         self.bkts = []
         self.wkts = []
         self.buffer = []
-        self.period = period
+        self.period = window_size
         self.slope = slope
         self.crossing_point = crossing_point
         self.ensemble_size = ensemble_size
@@ -68,13 +68,14 @@ class LearnNSE(StreamModel):
 
     def __fit(self, estimator, X, y, classes=None):
         try:
-            estimator.partial_fit(X, y, classes=classes)
+            estimator.fit(X, y, classes=classes)
         except (NotImplementedError, TypeError):
-            estimator.fit(X, y)
+            estimator.partial_fit(X, y, classes=classes)
 
     def partial_fit(self, X, y=None, classes=None, weight=None):
         """
         Partially fits the model, based on the X and y matrix.
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
@@ -86,17 +87,19 @@ class LearnNSE(StreamModel):
             for the first partial_fit call, when it becomes obligatory.
         Raises
         ------
-            RuntimeError:
-                A RuntimeError is raised if the 'classes' parameter is not
-                passed in the first partial_fit call, or if they are passed in further
-                calls but differ from the initial classes list passed.
-                A RuntimeError is raised if the base_estimator is too weak. In other word,
-                it has too low accuracy on the dataset.
+        RuntimeError:
+            A RuntimeError is raised if the 'classes' parameter is not
+            passed in the first partial_fit call, or if they are passed in further
+            calls but differ from the initial classes list passed.
+            A RuntimeError is raised if the base_estimator is too weak. In other word,
+            it has too low accuracy on the dataset.
+
         Returns
         -------
         LearnNSE
             self
         """
+
         N, _ = X.shape
         if self.classes is None:
             if classes is None:
@@ -216,20 +219,13 @@ class LearnNSE(StreamModel):
         return np.array(res)
 
     def predict_proba(self, X):
-        """ predict_proba
-
-        Predicts the probability of each sample belonging to each one of the
+        """ Predicts the probability of each sample belonging to each one of the
         known classes.
 
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
-
-        Raises
-        ------
-        ValueError: A ValueError is raised if the number of classes in the base_estimator
-        learner differs from that of the ensemble learner.
 
         Returns
         -------
@@ -238,18 +234,17 @@ class LearnNSE(StreamModel):
             associated with the X entry of the same index. And where the list in
             index [i] contains len(self.target_values) elements, each of which represents
             the probability that the i-th sample of X belongs to a certain label.
-
         """
+
         if not self.ensemble:
             return np.zeros((len(X), 1))
 
         return self.__vote_proba(X, len(self.ensemble), self.classes)
 
     def predict(self, X):
-        """
-        predict
-        The predict function will use majority votes from all its learners
-        with their weights to find the most likely prediction for the sample matrix X.
+        """ Predicts the class for a given sample by majority vote from all
+        the members of the ensemble.
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
@@ -259,6 +254,7 @@ class LearnNSE(StreamModel):
         numpy.ndarray
             A numpy.ndarray with the label prediction for all the samples in X.
         """
+
         votes = self.predict_proba(X)
         return np.argmax(votes, axis=1)
 
@@ -274,6 +270,14 @@ class LearnNSE(StreamModel):
         self.y_batch = []
 
     def get_info(self):
+        """ Collects information about the model.
+
+        Returns
+        -------
+        string
+            Configuration for the model.
+        """
+
         description = type(self).__name__ + ': '
         description += 'base_estimator: {} - '.format(type(self.base_estimator))
         description += 'ensemble_size: {} - '.format(type(self.ensemble_size))
