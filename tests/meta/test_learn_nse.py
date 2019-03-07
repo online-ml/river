@@ -9,7 +9,7 @@ from skmultiflow.trees import HoeffdingTree
 
 def run_classifier(estimator, stream, pruning=None, ensemble_size=15, m=200):
     classifier = LearnNSE(base_estimator=estimator,
-                          period=250,
+                          window_size=250,
                           pruning=pruning,
                           slope=0.5,
                           crossing_point=10,
