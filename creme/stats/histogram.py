@@ -62,10 +62,10 @@ class Histogram(base.RunningStatistic):
             # Find the nearest bins
             delta_key = [j - i for i, j in zip(sorted_list_keys[:-1], sorted_list_keys[1:])]
             min_delta = min(delta_key)
-            id_min_delta = delta_key.index(min_delta) + 1
+            id_min_delta = delta_key.index(min_delta)
 
-            key_to_merge_right = sorted_list_keys[id_min_delta]
-            key_to_merge_left = sorted_list_keys[id_min_delta - 1]
+            key_to_merge_right = sorted_list_keys[id_min_delta + 1]
+            key_to_merge_left = sorted_list_keys[id_min_delta]
 
             # Merge the two bins by summing their count and making a weighted average for each one
             total_count = self.histogram[key_to_merge_right] + self.histogram[key_to_merge_left]
