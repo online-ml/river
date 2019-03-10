@@ -51,6 +51,9 @@ class Histogram(base.RunningStatistic):
         return 'histogram'
 
     def update(self, x):
+        if not isinstance(x, (int, float)):
+            raise ValueError('The value must be an int or float')
+
         self.histogram.update([x])
         # Merge histogram
         while len(self.histogram) > self.maxbins:
