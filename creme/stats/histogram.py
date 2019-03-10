@@ -52,13 +52,13 @@ class Histogram(base.RunningStatistic):
 
     def update(self, x):
         if not isinstance(x, (int, float)):
-            raise ValueError('The value must be an int or float')
+            raise ValueError('The value must be an int or float.')
 
         self.histogram.update([x])
         # Merge histogram
         while len(self.histogram) > self.maxbins:
             sorted_list_keys = sorted(list(self.histogram.keys()))
-            # find nearest bin
+            # Find nearest bin
             delta_key = [
                 j - i
                 for i, j in zip(sorted_list_keys[:-1], sorted_list_keys[1:])
@@ -69,7 +69,7 @@ class Histogram(base.RunningStatistic):
             key_to_merge_right = sorted_list_keys[id_min_delta]
             key_to_merge_left = sorted_list_keys[id_min_delta - 1]
 
-            # merge the two bins by summing their count and making a weighted average for each one
+            # Merge the two bins by summing their count and making a weighted average for each one
 
             total_count = self.histogram[key_to_merge_right] + self.histogram[
                 key_to_merge_left]
