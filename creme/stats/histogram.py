@@ -68,7 +68,6 @@ class Histogram(base.RunningStatistic):
             key_to_merge_left = sorted_list_keys[id_min_delta - 1]
 
             # Merge the two bins by summing their count and making a weighted average for each one
-
             total_count = self.histogram[key_to_merge_right] + self.histogram[key_to_merge_left]
 
             merged_key = key_to_merge_left * self.histogram[key_to_merge_left] \
