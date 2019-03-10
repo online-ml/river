@@ -7,8 +7,9 @@ class Histogram(base.RunningStatistic):
     """Computes a running histogram.
 
     Attributes:
-        maxbins (int) : Number of bins
-        histogram (dict) : Running histogram
+        maxbins (int) : Number of bins.
+        histogram (dict) : Running histogram.
+
     Example:
 
     ::
@@ -17,7 +18,7 @@ class Histogram(base.RunningStatistic):
         >>> np.random.seed(42)
         >>> mu, sigma = 0, 1
         >>> s = np.random.normal(mu, sigma, 10000)
-        >>> hist = stats.Histogram(maxbins = 256)
+        >>> hist = stats.Histogram(maxbins=256)
         >>> for x in s:
         ...     _ = hist.update(x)
         >>> h = hist.get()
@@ -25,20 +26,22 @@ class Histogram(base.RunningStatistic):
         >>> for k,v in h.items():
         ...     list_histo += [float(k) for _ in range(v)]
         >>> np.median(list_histo)
-        0.0038825005558860673
+        0.0038...
         >>> np.median(s)
-        -0.0025949757928775408
-        >>> np.percentile(list_histo,84)
-        1.0008870801977727
-        >>> np.percentile(s,84)
-        0.9966166326412649
+        -0.0025...
+        >>> np.percentile(list_histo, 84)
+        1.0008...
+        >>> np.percentile(s, 84)
+        0.9966...
 
 
     References :
     1. `A Streaming Parallel Decision Tree Algorithm <http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf>`_
     2. `Streaming Approximate Histograms in Go <https://www.vividcortex.com/blog/2013/07/08/streaming-approximate-histograms/>`_
     3. `Go implementation <https://github.com/VividCortex/gohistogram>`_
+
     """
+
     def __init__(self, maxbins=256):
         self.maxbins = maxbins
         self.histogram = collections.Counter()
@@ -80,4 +83,3 @@ class Histogram(base.RunningStatistic):
 
     def get(self):
         return dict(sorted(self.histogram.items()))
-

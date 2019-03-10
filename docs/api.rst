@@ -361,6 +361,7 @@ Loss functions
    stats.Count
    stats.Entropy
    stats.EWMean
+   stats.Histogram
    stats.Kurtosis
    stats.Max
    stats.Mean
