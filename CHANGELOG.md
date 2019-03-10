@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `RollingMode`
     - `RollingSum`
     - `RollingPeakToPeak`
+    - `Histogram`
 - `wrap_sklearn` to `compat`
 - `SVD` to `reco`
 - `BoxCoxTransformRegressor`, `TargetModifierRegressor` to `compose`
