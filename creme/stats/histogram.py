@@ -55,10 +55,10 @@ class Histogram(base.RunningStatistic):
             raise ValueError('The value must be an int or float.')
 
         self.histogram.update([x])
-        # Merge histogram
+        # Merge bins
         while len(self.histogram) > self.maxbins:
             sorted_list_keys = sorted(list(self.histogram.keys()))
-            # Find nearest bin
+            # Find the nearest bins
             delta_key = [
                 j - i
                 for i, j in zip(sorted_list_keys[:-1], sorted_list_keys[1:])
