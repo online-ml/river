@@ -58,11 +58,9 @@ class Histogram(base.RunningStatistic):
         # Merge bins
         while len(self.histogram) > self.maxbins:
             sorted_list_keys = sorted(list(self.histogram.keys()))
+
             # Find the nearest bins
-            delta_key = [
-                j - i
-                for i, j in zip(sorted_list_keys[:-1], sorted_list_keys[1:])
-            ]
+            delta_key = [j - i for i, j in zip(sorted_list_keys[:-1], sorted_list_keys[1:])]
             min_delta = min(delta_key)
             id_min_delta = delta_key.index(min_delta) + 1
 
@@ -71,15 +69,14 @@ class Histogram(base.RunningStatistic):
 
             # Merge the two bins by summing their count and making a weighted average for each one
 
-            total_count = self.histogram[key_to_merge_right] + self.histogram[
-                key_to_merge_left]
-            merged_key = key_to_merge_left * self.histogram[
-                key_to_merge_left] + key_to_merge_right * self.histogram[key_to_merge_right]
+            total_count = self.histogram[key_to_merge_right] + self.histogram[key_to_merge_left]
+
+            merged_key = key_to_merge_left * self.histogram[key_to_merge_left] \
+                + key_to_merge_right * self.histogram[key_to_merge_right]
             merged_key /= total_count
-            [
-                self.histogram.pop(key)
-                for key in [key_to_merge_right, key_to_merge_left]
-            ]
+
+            # Deletion of the two bins to replace them with the new one resulting from their merging
+            [self.histogram.pop(key)for key in [key_to_merge_right, key_to_merge_left]]
             self.histogram.update({merged_key: total_count})
 
         return self
