@@ -3,11 +3,13 @@ Base classes used throughout the library.
 """
 import abc
 
+from . import types
+
 
 class Regressor:
 
     @abc.abstractmethod
-    def fit_one(x: dict, y: float) -> float:
+    def fit_one(self, x: dict, y: float) -> float:
         """Fits to a set of features ``x`` and a real-valued target ``y``.
 
         Parameters:
@@ -20,7 +22,7 @@ class Regressor:
         """
 
     @abc.abstractmethod
-    def predict_one(x: dict) -> float:
+    def predict_one(self, x: dict) -> float:
         """Predicts the target value of a set of features ``x``
 
         Parameters:
@@ -35,7 +37,7 @@ class Regressor:
 class BinaryClassifier:
 
     @abc.abstractmethod
-    def fit_one(x: dict, y: bool) -> float:
+    def fit_one(self, x: dict, y: bool) -> float:
         """Fits to a set of features ``x`` and a boolean target ``y``.
 
         Parameters:
@@ -48,7 +50,7 @@ class BinaryClassifier:
         """
 
     @abc.abstractmethod
-    def predict_proba_one(x: dict) -> float:
+    def predict_proba_one(self, x: dict) -> float:
         """Predicts the probability output of a set of features ``x``
 
         Parameters:
@@ -60,7 +62,7 @@ class BinaryClassifier:
         """
 
     @abc.abstractmethod
-    def predict_one(x: dict) -> bool:
+    def predict_one(self, x: dict) -> bool:
         """Predicts the target value of a set of features ``x``
 
         Parameters:
@@ -75,7 +77,7 @@ class BinaryClassifier:
 class MultiClassifier:
 
     @abc.abstractmethod
-    def fit_one(x: dict, y: str) -> dict:
+    def fit_one(self, x: dict, y: types.Label) -> dict:
         """Fits to a set of features ``x`` and a string target ``y``.
 
         Parameters:
@@ -88,7 +90,7 @@ class MultiClassifier:
         """
 
     @abc.abstractmethod
-    def predict_proba_one(x: dict) -> dict:
+    def predict_proba_one(self, x: dict) -> dict:
         """Predicts the class probabilities of a set of features ``x``
 
         Parameters:
@@ -99,8 +101,7 @@ class MultiClassifier:
 
         """
 
-    @abc.abstractmethod
-    def predict_one(x: dict) -> str:
+    def predict_one(self, x: dict) -> types.Label:
         """Predicts the class of a set of features ``x``
 
         Parameters:
@@ -110,12 +111,14 @@ class MultiClassifier:
             str
 
         """
+        y_pred = self.predict_proba_one(x)
+        return max(y_pred, key=y_pred.get)
 
 
 class Transformer:
 
     @abc.abstractmethod
-    def fit_one(x: dict, y=None) -> dict:
+    def fit_one(self, x: dict, y=None) -> dict:
         """Fits to a set of features ``x ` and an optinal target ``y``.
 
         Parameters:
@@ -128,7 +131,7 @@ class Transformer:
         """
 
     @abc.abstractmethod
-    def transform_one(x: dict) -> dict:
+    def transform_one(self, x: dict) -> dict:
         """Transformes a set of features ``x``
 
         Parameters:
@@ -143,7 +146,7 @@ class Transformer:
 class Clusterer:
 
     @abc.abstractmethod
-    def fit_one(x: dict, y=None) -> int:
+    def fit_one(self, x: dict, y=None) -> int:
         """Fits to a set of features ``x``.
 
         Parameters:
@@ -156,7 +159,7 @@ class Clusterer:
         """
 
     @abc.abstractmethod
-    def predict_one(x: dict) -> int:
+    def predict_one(self, x: dict) -> int:
         """Predicts the cluster number of a set of features ``x``
 
         Parameters:

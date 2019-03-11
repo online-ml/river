@@ -251,6 +251,7 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   naive_bayes.GaussianNB
    naive_bayes.MultinomialNB
 
 

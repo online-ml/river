@@ -1,10 +1,7 @@
-"""
-Naive Bayes algorithms.
-"""
 import collections
 import math
 
-from . import base
+from .. import base
 
 
 __all__ = ['MultinomialNB']
@@ -30,9 +27,9 @@ class MultinomialNB(base.MultiClassifier):
     ::
 
         >>> import math
-        >>> import creme.compose
-        >>> import creme.feature_extraction
-        >>> import creme.naive_bayes
+        >>> from creme import compose
+        >>> from creme import feature_extraction
+        >>> from creme import naive_bayes
 
         >>> docs = [
         ...     ('Chinese Beijing Chinese', 'yes'),
@@ -40,9 +37,9 @@ class MultinomialNB(base.MultiClassifier):
         ...     ('Chinese Macao', 'yes'),
         ...     ('Tokyo Japan Chinese', 'no')
         ... ]
-        >>> model = creme.compose.Pipeline([
-        ...     ('tokenize', creme.feature_extraction.CountVectorizer(on='text', lowercase=False)),
-        ...     ('nb', creme.naive_bayes.MultinomialNB(alpha=1))
+        >>> model = compose.Pipeline([
+        ...     ('tokenize', feature_extraction.CountVectorizer(on='text', lowercase=False)),
+        ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
         ... ])
         >>> for x, y in docs:
         ...     y_pred = model.fit_one({'text': x}, y)
