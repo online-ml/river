@@ -12,15 +12,21 @@ class Loss(abc.ABC):
     @abc.abstractmethod
     def __call__(self, y_true, y_pred) -> float:
         """Returns the loss."""
-        pass
 
     @abc.abstractmethod
     def gradient(self, y_true, y_pred) -> float:
         """Returns the gradient with respect to `y_pred`."""
-        pass
 
 
-class AbsoluteLoss(Loss):
+class BinaryClassificationLoss(Loss):
+    """Helper class used for organizing losses."""
+
+
+class RegressionLoss(Loss):
+    """Helper class used for organizing losses."""
+
+
+class AbsoluteLoss(RegressionLoss):
     """Computes the absolute loss, also known as the mean absolute error or L1 loss.
 
     Mathematically, it is defined as
@@ -54,7 +60,7 @@ class AbsoluteLoss(Loss):
         return np.sign(y_pred - y_true)
 
 
-class SquaredLoss(Loss):
+class SquaredLoss(RegressionLoss):
     """Computes the squared loss, also known as the L2 loss.
 
     Mathematically, it is defined as
@@ -88,7 +94,7 @@ class SquaredLoss(Loss):
         return 2 * (y_pred - y_true)
 
 
-class LogLoss(Loss):
+class LogLoss(BinaryClassificationLoss):
     """Computes the logarithmic loss.
 
     Mathematically, it is defined as
@@ -129,7 +135,7 @@ class LogLoss(Loss):
         return self._clip_proba(y_pred) - y_true
 
 
-class HingeLoss(Loss):
+class HingeLoss(BinaryClassificationLoss):
     """Computes the hinge loss.
 
     Mathematically, it is defined as
@@ -192,7 +198,7 @@ class HingeLoss(Loss):
         return 0
 
 
-class EpsilonInsensitiveHingeLoss(Loss):
+class EpsilonInsensitiveHingeLoss(RegressionLoss):
 
     def __init__(self, eps=0.1):
         self.eps = eps

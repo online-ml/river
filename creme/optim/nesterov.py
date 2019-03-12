@@ -40,9 +40,9 @@ class NesterovMomentum(base.Optimizer):
     def __init__(self, lr=0.1, rho=0.9):
         super().__init__(lr)
         self.rho = rho
-        self.s = collections.defaultdict(lambda: 0.)
+        self.s = collections.defaultdict(float)
 
-    def update_weights(self, x, y, w, f_pred, f_grad):
+    def update_weights(self, x, y, w, loss, f_pred, f_grad):
 
         # Move the weights to the future position
         for i in w:
@@ -50,7 +50,7 @@ class NesterovMomentum(base.Optimizer):
 
         # Compute the gradient
         y_pred = f_pred(x, w)
-        gradient = f_grad(y, y_pred, x, w)
+        gradient = f_grad(y, y_pred, loss, x, w)
 
         # Update the step and the weights
         for i, gi in gradient.items():

@@ -1,5 +1,4 @@
 from . import base
-from . import count
 
 
 class Mean(base.RunningStatistic):
@@ -31,17 +30,16 @@ class Mean(base.RunningStatistic):
     """
 
     def __init__(self):
-        self.count = count.Count()
-        self.mean = None
+        self.n = 0
+        self.mean = 0
 
     @property
     def name(self):
         return 'mean'
 
     def update(self, x):
-        n = self.count.update(x).get()
-        self.mean = float(
-            x) if self.mean is None else self.mean + (x - self.mean) / n
+        self.n += 1
+        self.mean += (x - self.mean) / self.n if self.n > 0 else 0
         return self
 
     def get(self):

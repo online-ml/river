@@ -177,12 +177,6 @@ API reference
    linear_model.FMRegressor
    linear_model.LinearRegression
    linear_model.LogisticRegression
-   linear_model.PassiveAggressiveClassifier
-   linear_model.PassiveAggressiveRegressor
-   linear_model.PassiveAggressiveIClassifier
-   linear_model.PassiveAggressiveIRegressor
-   linear_model.PassiveAggressiveIIClassifier
-   linear_model.PassiveAggressiveIIRegressor
 
 
 :mod:`creme.metrics`: Streaming metrics
@@ -277,6 +271,8 @@ Optimizers
    optim.FTRLProximal
    optim.Momentum
    optim.NesterovMomentum
+   optim.PassiveAggressiveI
+   optim.PassiveAggressiveII
    optim.RMSProp
    optim.VanillaSGD
 
@@ -289,7 +285,7 @@ Learning rate schedulers
    :nosignatures:
 
    optim.ConstantLR
-   optim.LinearDecreaseLR
+   optim.InverseScalingLR
 
 
 Loss functions
@@ -299,10 +295,10 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
-   optim.EpsilonInsensitiveHingeLoss
-   optim.LogLoss
-   optim.HingeLoss
    optim.AbsoluteLoss
+   optim.EpsilonInsensitiveHingeLoss
+   optim.HingeLoss
+   optim.LogLoss
    optim.SquaredLoss
 
 

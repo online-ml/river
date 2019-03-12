@@ -45,12 +45,12 @@ class TargetEncoder(base.Transformer):
         [('target_mean_by_city', 2.0), ('target_mean_by_name', 2.0)]
         [('target_mean_by_city', 3.5), ('target_mean_by_name', 3.0)]
         [('target_mean_by_city', 5.0), ('target_mean_by_name', 13.0)]
-        [('target_mean_by_city', 4.333333333333333), ('target_mean_by_name', 7.0)]
-        [('target_mean_by_city', 9.866666666666667), ('target_mean_by_name', 8.8)]
-        [('target_mean_by_city', 7.958333333333333), ('target_mean_by_name', 6.833333333333333)]
-        [('target_mean_by_city', 5.571428571428571), ('target_mean_by_name', 4.642857142857142)]
+        [('target_mean_by_city', 4.333333...), ('target_mean_by_name', 7.0)]
+        [('target_mean_by_city', 9.866666...), ('target_mean_by_name', 8.8)]
+        [('target_mean_by_city', 7.958333...), ('target_mean_by_name', 6.833333...)]
+        [('target_mean_by_city', 5.571428...), ('target_mean_by_name', 4.642857...)]
         [('target_mean_by_city', 6.9), ('target_mean_by_name', 6.5)]
-        [('target_mean_by_city', 6.022222222222222), ('target_mean_by_name', 4.555555555555555)]
+        [('target_mean_by_city', 6.022222...), ('target_mean_by_name', 4.555555...)]
 
         >>> data = [
         ...     {'city': 'Tokyo', 'name': 'Peanut butter', 'price': 2},
@@ -75,10 +75,10 @@ class TargetEncoder(base.Transformer):
         [('target_mean_by_city_and_name', 10.0)]
         [('target_mean_by_city_and_name', 4.5)]
         [('target_mean_by_city_and_name', 7.6)]
-        [('target_mean_by_city_and_name', 6.833333333333333)]
-        [('target_mean_by_city_and_name', 4.642857142857142)]
+        [('target_mean_by_city_and_name', 6.833333...)]
+        [('target_mean_by_city_and_name', 4.642857...)]
         [('target_mean_by_city_and_name', 6.5)]
-        [('target_mean_by_city_and_name', 4.555555555555555)]
+        [('target_mean_by_city_and_name', 4.555555...)]
 
     References:
 
@@ -100,7 +100,7 @@ class TargetEncoder(base.Transformer):
         key = '_'.join(x[i] for i in self.by)
         mean = self.feature_means[key]
         mu = mean.get() or 0
-        count = mean.count.get()
+        count = mean.n
         smooth_mean = (mu * count + global_mean * self.prior_weight) / (count + self.prior_weight)
 
         self.global_mean.update(y)

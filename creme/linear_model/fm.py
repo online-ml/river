@@ -3,12 +3,11 @@ import copy
 import functools
 import itertools
 
-from sklearn import utils
+from sklearn import utils as sk_utils
 
 from .. import base
 from .. import optim
-
-from . import util
+from .. import utils
 
 
 def powerset(iterable, max_size):
@@ -78,7 +77,7 @@ class FMRegressor(base.Regressor):
         self.degree = degree
         self.n_components = n_components
         self.loss = loss
-        self.random_state = utils.check_random_state(random_state)
+        self.random_state = sk_utils.check_random_state(random_state)
         self.bias = 0
         self.weights = collections.defaultdict(float)
         rand_normal = functools.partial(self.random_state.normal, scale=std)
@@ -127,10 +126,10 @@ class FMRegressor(base.Regressor):
 
         y_pred = self.bias
 
-        y_pred += util.dot(self.weights, x)
+        y_pred += utils.dot(self.weights, x)
 
         for combo in powerset(x.keys(), max_size=self.degree):
-            w = util.chain_dot(*[self.latents[i] for i in combo])
-            y_pred += w * util.prod((x[i] for i in combo))
+            w = utils.chain_dot(*[self.latents[i] for i in combo])
+            y_pred += w * utils.prod((x[i] for i in combo))
 
         return y_pred

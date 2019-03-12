@@ -47,8 +47,8 @@ class AdaDelta(base.Optimizer):
         super().__init__(lr=None)
         self.rho = rho
         self.eps = eps
-        self.g2 = collections.defaultdict(lambda: 0.)
-        self.s2 = collections.defaultdict(lambda: 0.)
+        self.g2 = collections.defaultdict(float)
+        self.s2 = collections.defaultdict(float)
 
     def _rms(self, x):
         return (x + self.eps) ** 0.5

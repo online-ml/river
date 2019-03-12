@@ -12,16 +12,17 @@ from . import base
 
 __all__ = ['SVD']
 
+
 class SVD(base.Recommender):
     """ SVD implementation for recommender systems
-    
+
     Here is an implementation of the Funk SVD, the code is based on the SVD from ``surprise``
     but you can choose the optimizer (in ``surprise``, only SGD is available)
 
     Parameters:
         n_factors (default=0): The number of latent factors to compute for each vector
         mu (default=0): The mean of the normal distribution for the random weights initialisation
-        sigma (default=0.1): The standard deviation of the normal distribution for the random 
+        sigma (default=0.1): The standard deviation of the normal distribution for the random
             weights initialisation
         row_optimizer (optim.Optimizer): Optimizer used to tune the rows weights.
         col_optimizer (optim.Optimizer): Optimizer used to tune the column weights.
@@ -36,7 +37,7 @@ class SVD(base.Recommender):
     Attributes:
         row_biases (collections.defaultdict): The biases of the rows elements (users)
         col_biases (collections.defaultdict): The biases of the columns elements (items)
-        row_vec (collections.defaultdict): The latents vectors of the rows elements 
+        row_vec (collections.defaultdict): The latents vectors of the rows elements
             randomly initialized (users)
         col_vec (collections.defaultdict): The latents vectors of the columns elements
             randomly initialized (items)
@@ -69,9 +70,10 @@ class SVD(base.Recommender):
         ...     _ = model.fit_one(user, movie, rating)
 
         >>> model.predict_one('Bob', 'Harry Potter')
-        6.552161...
+        6.552395...
 
     """
+
     def __init__(self, n_factors=20, mu=0, sigma=0.1, row_optimizer=optim.VanillaSGD(),
                  col_optimizer=optim.VanillaSGD(), loss=optim.SquaredLoss(),
                  l2=0., random_state=None):
@@ -121,10 +123,10 @@ class SVD(base.Recommender):
 
         # Add the user bias if the user is known
         y_pred += self.row_biases.get(r_id, 0)
-        
+
         # Add the item bias if the item is known
         y_pred += self.col_biases.get(c_id, 0)
-        
+
         # Add the dot product of the row and the column if both are known
         y_pred += np.dot(self.row_vec.get(r_id, np.zeros(self.n_factors)),
                          self.col_vec.get(c_id, np.zeros(self.n_factors)))

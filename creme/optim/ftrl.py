@@ -51,10 +51,10 @@ class FTRLProximal(base.Optimizer):
         self.beta = beta
         self.l1 = l1
         self.l2 = l2
-        self.z = collections.defaultdict(lambda: 0.)
-        self.n = collections.defaultdict(lambda: 0.)
+        self.z = collections.defaultdict(float)
+        self.n = collections.defaultdict(float)
 
-    def update_weights(self, x, y, w, f_pred, f_grad):
+    def update_weights(self, x, y, w, loss, f_pred, f_grad):
 
         alpha = self.alpha
         beta = self.beta
@@ -69,7 +69,7 @@ class FTRLProximal(base.Optimizer):
                 w[i] = -((beta + n[i] ** 0.5) / alpha + l2) ** -1 * (z[i] - np.sign(z[i]) * l1)
 
         y_pred = f_pred(x, w)
-        gradient = f_grad(y, y_pred, x, w)
+        gradient = f_grad(y_true=y, y_pred=y_pred, loss=loss, x=x, w=w)
 
         for i, gi in gradient.items():
             s = ((n[i] + gi ** 2) ** 0.5 - n[i] ** 0.5) / alpha

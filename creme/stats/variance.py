@@ -38,19 +38,15 @@ class Variance(base.RunningStatistic):
     def __init__(self, ddof=1):
         self.ddof = ddof
         self.mean = mean.Mean()
-        self.sos = None
+        self.sos = 0
 
     @property
     def name(self):
         return 'variance'
 
     def update(self, x):
-        if self.sos is None:
-            self.mean.update(x)
-            self.sos = 0
-        else:
-            self.sos += (x - self.mean.get()) * (x - self.mean.update(x).get())
+        self.sos += (x - self.mean.get()) * (x - self.mean.update(x).get())
         return self
 
     def get(self):
-        return (self.sos or 0) / max(1, self.mean.count.get() - self.ddof)
+        return self.sos / max(1, self.mean.n - self.ddof)

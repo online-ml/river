@@ -41,9 +41,14 @@ class HedgeClassifier(base.BinaryClassifier):
         ...     ('scale', preprocessing.StandardScaler()),
         ...     ('hedge', ensemble.HedgeClassifier(
         ...         models=[
-        ...             linear_model.PassiveAggressiveClassifier(),
-        ...             linear_model.PassiveAggressiveIClassifier(),
-        ...             linear_model.PassiveAggressiveIIClassifier(),
+        ...             linear_model.LogisticRegression(
+        ...                 optimizer=optim.PassiveAggressiveI(),
+        ...                 loss=optim.HingeLoss()
+        ...             ),
+        ...             linear_model.LogisticRegression(
+        ...                 optimizer=optim.PassiveAggressiveII(),
+        ...                 loss=optim.HingeLoss()
+        ...             )
         ...         ],
         ...         learning_rate=0.9
         ...     ))
@@ -51,10 +56,10 @@ class HedgeClassifier(base.BinaryClassifier):
         >>> metric = metrics.roc_auc_score
 
         >>> model_selection.online_score(X_y, model, metric)
-        0.980193...
+        0.984990...
 
         >>> model.steps[-1][1].weights
-        [7.411846...e-129, 9.795003...e-07, 0.999999...]
+        [9.795003...e-07, 0.999999...]
 
     References:
 

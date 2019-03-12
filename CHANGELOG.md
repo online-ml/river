@@ -29,6 +29,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `fetch_restaurants` to `datasets`
 - `GaussianNB` to `naive_bayes`
 - `Multinomial` and `Normal` to `dist`
+- `PassiveAggressiveI` and `PassiveAggressiveII` to `optim`
+
+### Removed
+
+- All the passive-aggressive estimators from `linear_model`
 
 ## [0.0.2] - 2019-02-13
 

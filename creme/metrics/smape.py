@@ -16,8 +16,8 @@ class SMAPE(base.Metric):
         >>> metric = metrics.SMAPE()
         >>> for y_t, y_p in zip(y_true, y_pred):
         ...     print(metric.update(y_t, y_p))
-        SMAPE: 4.76190
-        SMAPE: 5.01253
+        SMAPE: 4.761905
+        SMAPE: 5.012531
 
     """
 

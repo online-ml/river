@@ -43,7 +43,7 @@ class RMSProp(base.Optimizer):
         super().__init__(lr)
         self.rho = rho
         self.eps = eps
-        self.g2 = collections.defaultdict(lambda: 0.)
+        self.g2 = collections.defaultdict(float)
 
     def update_weights_with_gradient(self, w, g):
 

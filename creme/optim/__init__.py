@@ -12,9 +12,11 @@ from .losses import HingeLoss
 from .losses import LogLoss
 from .losses import SquaredLoss
 from .lr_schedule import ConstantLR
-from .lr_schedule import LinearDecreaseLR
+from .lr_schedule import InverseScalingLR
 from .momentum import Momentum
 from .nesterov import NesterovMomentum
+from .pa import PassiveAggressiveI
+from .pa import PassiveAggressiveII
 from .rms_prop import RMSProp
 from .vanilla_sgd import VanillaSGD
 
@@ -28,10 +30,12 @@ __all__ = [
     'EpsilonInsensitiveHingeLoss',
     'FTRLProximal',
     'HingeLoss',
-    'LinearDecreaseLR',
+    'InverseScalingLR',
     'LogLoss',
     'Momentum',
     'NesterovMomentum',
+    'PassiveAggressiveI',
+    'PassiveAggressiveII',
     'RMSProp',
     'SquaredLoss',
     'VanillaSGD'

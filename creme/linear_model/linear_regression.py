@@ -3,8 +3,7 @@ import collections
 from .. import base
 from .. import optim
 from .. import stats
-
-from . import util
+from .. import utils
 
 
 __all__ = ['LinearRegression']
@@ -66,10 +65,10 @@ class LinearRegression(base.Regressor):
         self.intercept = stats.Mean()
 
     def _predict_with_weights(self, x, w):
-        return util.dot(x, w) + (self.intercept.get() or 0)
+        return utils.dot(x, w) + self.intercept.get()
 
-    def _calc_gradient(self, y_true, y_pred, x, w):
-        loss_gradient = self.loss.gradient(y_true, y_pred)
+    def _calc_gradient(self, y_true, y_pred, loss, x, w):
+        loss_gradient = loss.gradient(y_true, y_pred)
         return {i: xi * loss_gradient + self.l2 * w.get(i, 0) for i, xi in x.items()}
 
     def fit_one(self, x, y):
@@ -79,6 +78,7 @@ class LinearRegression(base.Regressor):
             x=x,
             y=y,
             w=self.weights,
+            loss=self.loss,
             f_pred=self._predict_with_weights,
             f_grad=self._calc_gradient
         )

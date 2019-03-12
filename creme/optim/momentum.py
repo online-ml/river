@@ -42,7 +42,7 @@ class Momentum(base.Optimizer):
     def __init__(self, lr=0.1, rho=0.9):
         super().__init__(lr)
         self.rho = rho
-        self.s = collections.defaultdict(lambda: 0.)
+        self.s = collections.defaultdict(float)
 
     def update_weights_with_gradient(self, w, g):
 

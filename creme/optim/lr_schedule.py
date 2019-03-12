@@ -1,36 +1,30 @@
 import abc
 
 
-__all__ = ['ConstantLR', 'LinearDecreaseLR']
+__all__ = ['ConstantLR', 'InverseScalingLR']
 
 
 class LRScheduler(abc.ABC):
 
-    def __init__(self, init_lr):
-        self.init_lr = init_lr
-
     @abc.abstractmethod
-    def get(self, t: int) -> float:
+    def get(self, iteration: int) -> float:
         pass
 
 
 class ConstantLR(LRScheduler):
 
-    def get(self, t):
-        return self.init_lr
+    def __init__(self, learning_rate):
+        self.learning_rate = learning_rate
+
+    def get(self, iteration):
+        return self.learning_rate
 
 
-class LinearDecreaseLR(LRScheduler):
-    """Implements the decreasing LR schedule proposed by Léon Bottou.
+class InverseScalingLR(LRScheduler):
 
-    See somewhere around line 64 of [Léon Bottou's code](https://leon.bottou.org/git/?p=sgd.git;a=blob;f=README.txt)
-    for some details.
+    def __init__(self, learning_rate, power=0.5):
+        self.learning_rate = learning_rate
+        self.power = power
 
-    """
-
-    def __init__(self, init_lr, strengh):
-        super().__init__(init_lr)
-        self.strengh = strengh
-
-    def get(self, t):
-        return self.init_lr / (1 + t) ** self.strengh
+    def get(self, iteration):
+        return self.learning_rate / (iteration + 1) ** self.power

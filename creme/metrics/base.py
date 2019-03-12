@@ -12,4 +12,4 @@ class Metric(abc.ABC):
         pass
 
     def __str__(self):
-        return f'{self.__class__.__name__}: {self.get():.5f}'
+        return f'{self.__class__.__name__}: {self.get():.6f}'
