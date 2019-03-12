@@ -2,24 +2,31 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class PageHinkley(BaseDriftDetector):
-    """ Page Hinkley change detector
-    
+    """ Page-Hinkley method for concept drift detection
+
+    Notes
+    -----
     This change detection method works by computing the observed 
-    values and their mean up to the current moment. Page Hinkley 
+    values and their mean up to the current moment. Page-Hinkley
     won't output warning zone warnings, only change detections. 
-    The method works by means of the Page Hinkley test. In general 
+    The method works by means of the Page-Hinkley test [1]_. In general
     lines it will detect a concept drift if the observed mean at 
     some instant is greater then a threshold value lambda.
+
+    References
+    ----------
+    .. [1] E. S. Page. 1954. Continuous Inspection Schemes.
+       Biometrika 41, 1/2 (1954), 100–115.
     
     Parameters
     ----------
-    min_num_instances: int
+    min_num_instances: int (default=30)
         The minimum number of instances before detecting change.
-    delta: float
+    delta: float (default=0.005)
         The delta factor for the Page Hinkley test.
-    _lambda: int
-        The change detection threshold.
-    alpha: float
+    threshold: int (default=50)
+        The change detection threshold (lambda).
+    alpha: float (default=1 - 0.0001)
         The forgetting factor, used to weight the observed value 
         and the mean.
     
@@ -41,11 +48,11 @@ class PageHinkley(BaseDriftDetector):
     ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
     
     """
-    def __init__(self, min_num_instances=30, delta=0.005, _lambda=50, alpha=1-0.0001):
+    def __init__(self, min_num_instances=30, delta=0.005, threshold=50, alpha=1 - 0.0001):
         super().__init__()
         self.min_instances = min_num_instances
         self.delta = delta
-        self._lambda = _lambda
+        self.threshold = threshold
         self.alpha = alpha
         self.x_mean = None
         self.sample_count = None
@@ -82,7 +89,7 @@ class PageHinkley(BaseDriftDetector):
         if self.in_concept_change:
             self.reset()
 
-        self.x_mean = self.x_mean + (x - self.x_mean) / 1.0 * self.sample_count
+        self.x_mean = self.x_mean + (x - self.x_mean) / float(self.sample_count)
         self.sum = self.alpha * self.sum + (x - self.x_mean - self.delta)
 
         self.sample_count += 1
@@ -96,11 +103,21 @@ class PageHinkley(BaseDriftDetector):
         if self.sample_count < self.min_instances:
             return None
 
-        if self.sum > self._lambda:
+        if self.sum > self.threshold:
             self.in_concept_change = True
 
     def get_info(self):
-        return 'PageHinkley: min_num_instances: ' + str(self.min_instances) + \
-               ' - delta: ' + str(self.delta) + \
-               ' - lambda: ' + str(self._lambda) + \
-               ' - alpha: ' + str(self.alpha)
+        """ Collect information about the concept drift detector.
+
+        Returns
+        -------
+        string
+            Configuration for the concept drift detector.
+        """
+        description = type(self).__name__ + ': '
+        description += 'min_num_instances: {} - '.format(self.min_instances)
+        description += 'delta: {} - '.format(self.delta)
+        description += 'threshold (lambda): {} - '.format(self.threshold)
+        description += 'delta: {} - '.format(self.delta)
+        description += 'alpha: {} - '.format(self.alpha)
+        return description
