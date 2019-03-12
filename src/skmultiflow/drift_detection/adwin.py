@@ -4,14 +4,12 @@ from skmultiflow.core.base_object import BaseObject
 
 
 class ADWIN(BaseDriftDetector):
-    """ ADWIN change detector for concept change detection
+    """ ADWIN method for concept drift detection
     
     Parameters
     ----------
-    delta : float
+    delta : float (default=0.002)
         The delta parameter for the ADWIN algorithm.
-    clock : int
-        The base clock value for the ADWIN algorithm.
 
     Notes
     -----
@@ -55,7 +53,7 @@ class ADWIN(BaseDriftDetector):
     """
     MAX_BUCKETS = 5
 
-    def __init__(self, delta=.002, clock=None):
+    def __init__(self, delta=.002):
         super().__init__()
         # default values affected by init_bucket()
         self.delta = delta
@@ -78,7 +76,7 @@ class ADWIN(BaseDriftDetector):
         self.detect = 0
         self._n_detections = 0
         self.detect_twice = 0
-        self.mint_clock = 32 if clock is None else clock
+        self.mint_clock = 32
 
         self.bln_bucket_deleted = False
         self.bucket_num_max = 0
@@ -176,8 +174,6 @@ class ADWIN(BaseDriftDetector):
         Parameters
         ----------
         value: int or float (a numeric value)
-            For most of scikit-multiflow learners these values are either 
-            1 or 0.
          
         Notes
         -----
@@ -366,13 +362,16 @@ class ADWIN(BaseDriftDetector):
         return np.absolute(abs_value) > epsilon
 
     def get_info(self):
-        return 'ADWIN: delta: ' + str(self.delta) + \
-               ' - clock: ' + str(self.mint_clock) + \
-               ' - total: ' + str(self.total) + \
-               ' - variance: ' + str(self.variance) + \
-               ' - width: ' + str(self.width) + \
-               ' - time: ' + str(self.mint_time) + \
-               ' - n_detections: ' + str(self.n_detections)
+        """ Collect information about the concept drift detector.
+
+        Returns
+        -------
+        string
+            Configuration for the concept drift detector.
+        """
+        description = type(self).__name__ + ': '
+        description += 'delta: {} - '.format(self.delta)
+        return description
 
 
 class List(BaseObject):
