@@ -15,7 +15,7 @@ def test_eddm(test_path):
     expected_indices = [51, 129, 291, 337, 396, 456, 523, 581, 675, 730, 851]
     detected_indices = []
 
-    for i in range(1000):   # Only use the first half of stream (input is 0 or 1)
+    for i in range(data_stream.size):
         eddm.add_element(data_stream[i])
         if eddm.detected_change():
             detected_indices.append(i)
