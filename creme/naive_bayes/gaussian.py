@@ -1,17 +1,20 @@
 import collections
 import functools
-import operator
+import math
 
-from .. import base
 from .. import dist
-from .. import utils
+
+from . import base
 
 
 __all__ = ['GaussianNB']
 
 
-class GaussianNB(base.MultiClassifier):
+class GaussianNB(base.BaseNB):
     """Gaussian Naive Bayes.
+
+    This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
+    ``predict_one`` from ``base.MultiClassifier``.
 
     Example:
 
@@ -33,6 +36,7 @@ class GaussianNB(base.MultiClassifier):
     """
 
     def __init__(self):
+        self.class_dist = dist.Multinomial()
         dd = collections.defaultdict
         self.gaussians = dd(functools.partial(dd, dist.Normal))
 
@@ -40,17 +44,18 @@ class GaussianNB(base.MultiClassifier):
 
         y_pred = self.predict_proba_one(x)
 
+        self.class_dist.update(y)
+
         for i, xi in x.items():
             self.gaussians[y][i].update(xi)
 
         return y_pred
 
-    def predict_proba_one(self, x):
-        return utils.normalize_y_pred({
-            y: functools.reduce(
-                operator.mul,
-                (gaussians[i].pdf(xi) for i, xi in x.items()),
-                1
+    def _joint_log_likelihood(self, x):
+        return {
+            c: math.log(self.class_dist.pmf(c)) + sum(
+                math.log(10e-5 + gaussians[i].pdf(xi))
+                for i, xi in x.items()
             )
-            for y, gaussians in self.gaussians.items()
-        })
+            for c, gaussians in self.gaussians.items()
+        }

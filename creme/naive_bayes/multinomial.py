@@ -1,16 +1,22 @@
 import collections
+import functools
 import math
 
-from .. import base
+from .. import dist
+
+from . import base
 
 
 __all__ = ['MultinomialNB']
 
 
-class MultinomialNB(base.MultiClassifier):
+class MultinomialNB(base.BaseNB):
     """Naive Bayes classifier for multinomial models.
 
     The input vector has to contain positive values, such as counts or TF-IDF values.
+
+    This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
+    ``predict_one`` from ``base.MultiClassifier``.
 
     Parameters:
         alpha (float): Smoothing parameter used for avoiding zero probabilities.
@@ -44,7 +50,7 @@ class MultinomialNB(base.MultiClassifier):
         >>> for x, y in docs:
         ...     y_pred = model.fit_one({'text': x}, y)
 
-        >>> model.steps[-1][1].p_class('yes')
+        >>> model.steps[-1][1].class_dist.pmf('yes')
         0.75
         >>> cp = model.steps[-1][1].p_term_given_class
         >>> cp('Chinese', 'yes') ==  3 / 7
@@ -62,7 +68,7 @@ class MultinomialNB(base.MultiClassifier):
 
         >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
         >>> tokens = model.steps[0][1].transform_one({'text': new_text})
-        >>> llh = model.steps[-1][1].calc_log_likelihoods(tokens)
+        >>> llh = model.steps[-1][1]._joint_log_likelihood(tokens)
         >>> math.exp(llh['yes'])
         0.0003...
         >>> math.exp(llh['no'])
@@ -78,18 +84,13 @@ class MultinomialNB(base.MultiClassifier):
 
     def __init__(self, alpha=1.0):
         self.alpha = alpha
-        self.n = 0
-        self.class_counts = collections.defaultdict(lambda: 0)
-        self.term_counts = collections.defaultdict(lambda: collections.defaultdict(lambda: 0))
-        self.class_term_counts = collections.defaultdict(lambda: 0)
+        self.class_dist = dist.Multinomial()
+        self.term_counts = collections.defaultdict(functools.partial(collections.defaultdict, int))
+        self.class_term_counts = collections.defaultdict(int)
 
     @property
     def n_terms(self):
         return len(self.term_counts)
-
-    def p_class(self, c):
-        """Returns P(class)."""
-        return self.class_counts.get(c, 0) / self.n
 
     def p_term_given_class(self, term, c):
         """Returns P(term | class)."""
@@ -99,27 +100,20 @@ class MultinomialNB(base.MultiClassifier):
 
     def fit_one(self, x, y):
         y_pred = self.predict_proba_one(x)
-        self.n += 1
-        self.class_counts[y] += 1
+
+        self.class_dist.update(y)
+
         for term, frequency in x.items():
             self.term_counts[term][y] += frequency
             self.class_term_counts[y] += frequency
+
         return y_pred
 
-    def calc_log_likelihoods(self, x):
+    def _joint_log_likelihood(self, x):
         return {
-            c: math.log(self.p_class(c)) + sum(
+            c: math.log(self.class_dist.pmf(c)) + sum(
                 frequency * math.log(self.p_term_given_class(term, c))
                 for term, frequency in x.items()
             )
-            for c in self.class_counts
+            for c in self.class_term_counts
         }
-
-    def predict_proba_one(self, x):
-        llh = self.calc_log_likelihoods(x)
-        total = sum(llh.values())
-        return {c: likelihood / total for c, likelihood in llh.items()}
-
-    def predict_one(self, x):
-        llh = self.calc_log_likelihoods(x)
-        return max(llh, key=llh.get)

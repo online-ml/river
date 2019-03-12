@@ -1,12 +1,8 @@
-def normalize_y_pred(y_pred):
+import math
+
+
+def softmax(y_pred):
     """Normalizes a dictionary of predicted probabilities, in-place."""
-    total = sum(y_pred.values())
-
-    if total > 0:
-        for i in y_pred:
-            y_pred[i] /= total
-    else:
-        for i in y_pred:
-            y_pred[i] = 1 / len(y_pred)
-
-    return y_pred
+    exp = {c: math.exp(p) for c, p in y_pred.items()}
+    total = sum(exp.values())
+    return {c: exp[c] / total for c in y_pred}
