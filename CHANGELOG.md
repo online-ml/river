@@ -8,10 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- `PolynomialExtender` to `preprocessing`
-- `Discarder` to `preprocessing`
+- `PolynomialExtender`, `Discarder`, `FuncTransformer` to `preprocessing`
 - `FMRegressor` to `linear_model`
-- `FuncTransformer` to `preprocessing`
 - `Accuracy`, `MAE`, `MSE`, `RMSE`, `RMSLE`, `SMAPE` to `metrics`
 - `CategoricalImputer` to `impute`
 - `stats`:
@@ -30,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `iter_csv` to `stream`
 - `fetch_restaurants` to `datasets`
 - `GaussianNB` to `naive_bayes`
+- `Multinomial` and `Normal` to `dist`
 
 ## [0.0.2] - 2019-02-13
 
