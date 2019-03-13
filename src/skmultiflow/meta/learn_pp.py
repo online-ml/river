@@ -109,8 +109,8 @@ class LearnPP(StreamModel):
         raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        """
-        Partially fits the model, based on the X and y matrix.
+        """ Partially fits the model, based on the X and y matrix.
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
@@ -120,19 +120,22 @@ class LearnPP(StreamModel):
         classes: list
             List of all existing classes. This is an optional parameter, except
             for the first partial_fit call, when it becomes obligatory.
+
         Raises
         ------
-            RuntimeError:
-                A RuntimeError is raised if the 'classes' parameter is not
-                passed in the first partial_fit call, or if they are passed in further
-                calls but differ from the initial classes list passed.
-                A RuntimeError is raised if the base_estimator is too weak. In other word,
-                it has too low accuracy on the dataset.
+        RuntimeError:
+            A RuntimeError is raised if the 'classes' parameter is not
+            passed in the first partial_fit call, or if they are passed in further
+            calls but differ from the initial classes list passed.
+            A RuntimeError is raised if the base_estimator is too weak. In other word,
+            it has too low accuracy on the dataset.
+
         Returns
         -------
         LearnPP
             self
         """
+
         if self.classes is None:
             if classes is None:
                 raise RuntimeError("Should pass the classes in the first partial_fit call")
@@ -311,6 +314,14 @@ class LearnPP(StreamModel):
         raise NotImplementedError
 
     def get_info(self):
+        """ Collects information about the model.
+
+        Returns
+        -------
+        string
+            Configuration for the model.
+        """
+
         description = type(self).__name__ + ': '
         description += 'base_estimator: {} - '.format(type(self.base_estimator))
         description += 'n_estimators: {} - '.format(type(self.n_estimators))

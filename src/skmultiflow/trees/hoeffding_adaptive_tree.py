@@ -2,7 +2,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from skmultiflow.utils.utils import get_max_value_key, normalize_values_in_dict
 from skmultiflow.drift_detection.adwin import ADWIN
-from skmultiflow.trees.utils import do_naive_bayes_prediction
+from skmultiflow.bayes import do_naive_bayes_prediction
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.utils import check_random_state
 import math

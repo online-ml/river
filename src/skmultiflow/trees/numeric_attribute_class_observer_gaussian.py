@@ -11,28 +11,33 @@ class NumericAttributeClassObserverGaussian(AttributeClassObserver):
     using gaussian estimators.
 
     """
+
     def __init__(self):
         super().__init__()
         self._min_value_observed_per_class = {}
         self._max_value_observed_per_class = {}
         self._att_val_dist_per_class = {}
-        self.num_bin_options = 10     # The number of bins, default 10
+        self.num_bin_options = 10  # The number of bins, default 10
 
     def observe_attribute_class(self, att_val, class_val, weight):
         if att_val is None:
             return
         else:
-            if class_val not in self._att_val_dist_per_class:
-                val_dist = GaussianEstimator()
-                self._att_val_dist_per_class[class_val] = val_dist
-                self._min_value_observed_per_class[class_val] = att_val
-                self._max_value_observed_per_class[class_val] = att_val
-            else:
+            try:
+                val_dist = self._att_val_dist_per_class[class_val]
                 if att_val < self._min_value_observed_per_class[class_val]:
                     self._min_value_observed_per_class[class_val] = att_val
                 if att_val > self._max_value_observed_per_class[class_val]:
                     self._max_value_observed_per_class[class_val] = att_val
-            val_dist = self._att_val_dist_per_class[class_val]
+            except KeyError:
+                val_dist = GaussianEstimator()
+                self._att_val_dist_per_class[class_val] = val_dist
+                self._min_value_observed_per_class[class_val] = att_val
+                self._max_value_observed_per_class[class_val] = att_val
+                self._att_val_dist_per_class = dict(sorted(self._att_val_dist_per_class.items()))
+                self._max_value_observed_per_class = dict(sorted(self._max_value_observed_per_class.items()))
+                self._min_value_observed_per_class = dict(sorted(self._min_value_observed_per_class.items()))
+
             val_dist.add_observation(att_val, weight)
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):

@@ -3,35 +3,41 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class EDDM(BaseDriftDetector):
-    """ Early Drift Detection Method
-    
-    This detection method was created to improve the detection 
-    rate of gradual concept drift in DDM, while keeping a good 
-    performance against abrupt concept drift. The implementation 
-    and complete method explanation can be found in Early Drift 
-    Detection Method by Baena-García, Campo-Ávila, Fidalgo, Bifet, 
-    Gavaldà and Morales-Bueno.
-    
-    This method works by keeping track of the average distance 
-    between two errors instead of only the error rate. For this, 
-    it's necessary to keep track of the running average distance 
-    and the running standard deviation, as well as the maximum 
+    """ EDDM method for concept drift detection
+
+    Notes
+    -----
+    EDDM (Early Drift Detection Method) [1]_ aims to improve the
+    detection rate of gradual concept drift in DDM, while keeping
+    a good performance against abrupt concept drift.
+
+    This method works by keeping track of the average distance
+    between two errors instead of only the error rate. For this,
+    it is necessary to keep track of the running average distance
+    and the running standard deviation, as well as the maximum
     distance and the maximum standard deviation.
-    
-    The algorithm works similarly to the DDM algorithm, by keeping 
-    track of statistics only. It works with the running average 
-    distance (pi') and the running standard deviation (si'), as 
-    well as p'max and s'max, which are the values of pi' and si' 
-    when (pi' + 2 * si') reaches its maximum.
-    
-    Like DDM, there are two threshold values that define the 
+
+    The algorithm works similarly to the DDM algorithm, by keeping
+    track of statistics only. It works with the running average
+    distance (`pi'`) and the running standard deviation (`si'`), as
+    well as `p'max` and `s'max`, which are the values of `pi'` and `si'`
+    when `(pi' + 2 * si')` reaches its maximum.
+
+    Like DDM, there are two threshold values that define the
     borderline between no change, warning zone, and drift detected.
     These are as follows:
-    if (pi' + 2 * si')/(p'max + 2 * s'max) < alpha -> Warning zone
-    if (pi' + 2 * si')/(p'max + 2 * s'max) < beta -> Change detected
-    
-    Alpha and beta are set to 0.95 and 0.9, respectively.
-    
+
+    * if `(pi' + 2 * si')/(p'max + 2 * s'max)` < `alpha` -> Warning zone
+    * if `(pi' + 2 * si')/(p'max + 2 * s'max)` < `beta` -> Change detected
+
+    `alpha` and `beta` are set to 0.95 and 0.9, respectively.
+
+    References
+    ----------
+    .. [1] Early Drift Detection Method. Manuel Baena-Garcia, Jose Del Campo-Avila,
+       Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. In Fourth
+       International Workshop on Knowledge Discovery from Data Streams, 2006.
+
     Examples
     --------
     >>> # Imports
@@ -51,7 +57,7 @@ class EDDM(BaseDriftDetector):
     ...         print('Warning zone has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
     ...     if eddm.detected_change():
     ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
-    
+
     """
     FDDM_OUTCONTROL = 0.9
     FDDM_WARNING = 0.95
@@ -124,32 +130,35 @@ class EDDM(BaseDriftDetector):
             self.m_d = self.m_n - 1
             distance = self.m_d - self.m_lastd
             old_mean = self.m_mean
-            self.m_mean = self.m_mean + (1.0*distance - self.m_mean) / self.m_num_errors
+            self.m_mean = self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
             self.estimation = self.m_mean
             self.m_std_temp = self.m_std_temp + (distance - self.m_mean) * (distance - old_mean)
             std = np.sqrt(self.m_std_temp/self.m_num_errors)
             m2s = self.m_mean + 2 * std
 
+            if self.m_n < self.FDDM_MIN_NUM_INSTANCES:
+                return
+
             if m2s > self.m_m2s_max:
-                if self.m_n > self.FDDM_MIN_NUM_INSTANCES:
-                    self.m_m2s_max = m2s
+                self.m_m2s_max = m2s
             else:
                 p = m2s / self.m_m2s_max
-                if (self.m_n > self.FDDM_MIN_NUM_INSTANCES) and \
-                        (self.m_num_errors > self.m_min_num_errors) and \
-                        (p < self.FDDM_OUTCONTROL):
+                if (self.m_num_errors > self.m_min_num_errors) and (p < self.FDDM_OUTCONTROL):
                     self.in_concept_change = True
 
-                elif (self.m_n > self.FDDM_MIN_NUM_INSTANCES) and \
-                        (self.m_num_errors > self.m_min_num_errors) and \
-                        (p < self.FDDM_WARNING):
+                elif (self.m_num_errors > self.m_min_num_errors) and (p < self.FDDM_WARNING):
                     self.in_warning_zone = True
 
                 else:
                     self.in_warning_zone = False
 
     def get_info(self):
-        return 'EDDM: min_num_errors: ' + str(self.m_min_num_errors) + \
-               ' - n_samples: ' + str(self.m_n) + \
-               ' - mean: ' + str(self.m_mean) + \
-               ' - std_dev: ' + str(round(np.sqrt(self.m_std_temp/self.m_num_errors), 3))
+        """ Collect information about the concept drift detector.
+
+        Returns
+        -------
+        string
+            Configuration for the concept drift detector.
+        """
+        description = type(self).__name__
+        return description

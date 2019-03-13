@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.utils.utils import get_dimensions
-from skmultiflow.trees.utils import do_naive_bayes_prediction
+from skmultiflow.bayes.naive_bayes import do_naive_bayes_prediction
 
 
 class ARFHoeffdingTree(HoeffdingTree):
@@ -71,6 +71,7 @@ class ARFHoeffdingTree(HoeffdingTree):
     be considered at each split.
 
     """
+
     class RandomLearningNode(HoeffdingTree.ActiveLearningNode):
         """Random learning node class.
 
@@ -88,6 +89,7 @@ class ARFHoeffdingTree(HoeffdingTree):
             If None, the random number generator is the RandomState instance used by `np.random`.
 
         """
+
         def __init__(self, initial_class_observations, max_features, random_state=None):
             """ RandomLearningNode class constructor. """
             super().__init__(initial_class_observations)
@@ -116,6 +118,8 @@ class ARFHoeffdingTree(HoeffdingTree):
                 self._observed_class_distribution[y] += weight
             except KeyError:
                 self._observed_class_distribution[y] = weight
+                self._observed_class_distribution = dict(sorted(self._observed_class_distribution.items()))
+
             if self.list_attributes.size == 0:
                 self.list_attributes = self._sample_features(get_dimensions(X)[1])
 
@@ -150,6 +154,7 @@ class ARFHoeffdingTree(HoeffdingTree):
             If None, the random number generator is the RandomState instance used by `np.random`.
 
         """
+
         def __init__(self, initial_class_observations, max_features, random_state):
             """ LearningNodeNB class constructor. """
             super().__init__(initial_class_observations, max_features, random_state)
@@ -192,6 +197,7 @@ class ARFHoeffdingTree(HoeffdingTree):
             If None, the random number generator is the RandomState instance used by `np.random`.
 
         """
+
         def __init__(self, initial_class_observations, max_features, random_state):
             """LearningNodeNBAdaptive class constructor. """
             super().__init__(initial_class_observations, max_features, random_state)

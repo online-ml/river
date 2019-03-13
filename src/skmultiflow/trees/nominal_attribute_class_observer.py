@@ -10,6 +10,7 @@ class NominalAttributeClassObserver(AttributeClassObserver):
     Used in naive Bayes and decision trees to monitor data statistics on leaves.
 
     """
+
     def __init__(self):
         super().__init__()
         self._total_weight_observed = 0.0
@@ -20,13 +21,17 @@ class NominalAttributeClassObserver(AttributeClassObserver):
         if att_val is None:
             self._missing_weight_observed += weight
         else:
-            val_dist = self._att_val_dist_per_class.get(class_val, None)
-            if val_dist is None:
-                val_dist = {att_val: 0.0}
-                self._att_val_dist_per_class[class_val] = val_dist
-            if att_val not in val_dist:
-                val_dist[att_val] = 0.0
-            self._att_val_dist_per_class[class_val][att_val] += weight
+            try:
+                val_dist = self._att_val_dist_per_class[class_val]
+            except KeyError:
+                self._att_val_dist_per_class[class_val] = {att_val: 0.0}
+                self._att_val_dist_per_class = dict(sorted(self._att_val_dist_per_class.items()))
+            try:
+                self._att_val_dist_per_class[class_val][att_val] += weight
+            except KeyError:
+                self._att_val_dist_per_class[class_val][att_val] = weight
+                self._att_val_dist_per_class[class_val] = dict(sorted(self._att_val_dist_per_class[class_val].items()))
+
         self._total_weight_observed += weight
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):
@@ -61,7 +66,8 @@ class NominalAttributeClassObserver(AttributeClassObserver):
                 if i not in resulting_dist[j]:
                     resulting_dist[j][i] = 0.0
                 resulting_dist[j][i] += value
-        distributions = [value for value in resulting_dist.values()]
+
+        distributions = [dict(sorted(value.items())) for value in resulting_dist.values()]
         return distributions
 
     def get_class_dist_from_binary_split(self, val_idx):
