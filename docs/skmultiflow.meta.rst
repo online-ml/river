@@ -9,6 +9,7 @@ Submodules
    skmultiflow.meta.adaptive_random_forests
    skmultiflow.meta.batch_incremental
    skmultiflow.meta.classifier_chains
+   skmultiflow.meta.learn_nse
    skmultiflow.meta.learn_pp
    skmultiflow.meta.leverage_bagging
    skmultiflow.meta.multi_output_learner

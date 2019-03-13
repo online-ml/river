@@ -79,6 +79,7 @@ Ensemble methods
    skmultiflow.meta.regressor_chains
    skmultiflow.meta.batch_incremental
    skmultiflow.meta.learn_pp
+   skmultiflow.meta.learn_nse
 
 .. currentmodule:: skmultiflow
 
@@ -125,6 +126,7 @@ Tree methods
 
    skmultiflow.trees.hoeffding_tree
    skmultiflow.trees.hoeffding_adaptive_tree
+   skmultiflow.trees.hoeffding_anytime_tree
    skmultiflow.trees.arf_hoeffding_tree
    skmultiflow.trees.lc_hoeffding_tree
    skmultiflow.trees.regression_hoeffding_tree

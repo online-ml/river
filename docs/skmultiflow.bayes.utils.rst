@@ -1,7 +1,7 @@
-skmultiflow.trees.utils module
+skmultiflow.bayes.utils module
 ==============================
 
-.. automodule:: skmultiflow.trees.utils
+.. automodule:: skmultiflow.bayes.utils
     :members:
     :undoc-members:
     :show-inheritance:
