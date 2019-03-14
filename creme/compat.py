@@ -180,7 +180,7 @@ class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
         return super().score(X, y, sample_weight)
 
     def fit_predict(self, X, y):
-        """Calls ``fit`` and then ``predict`` in one go."""
+        """Calls ``fit`` and ``predict`` one after the other."""
         return self.fit(X, y).predict(X)
 
 
@@ -308,7 +308,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         return super().score(X, y, sample_weight)
 
     def fit_predict(self, X, y):
-        """Calls ``fit`` and then ``predict`` in one go."""
+        """Calls ``fit`` and ``predict`` one after the other."""
         return self.fit(X, y).predict(X)
 
 
@@ -380,7 +380,7 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
         return np.asarray(X_trans)
 
     def fit_transform(self, X, y=None):
-        """Calls ``fit`` and then ``transform`` in one go."""
+        """Calls ``fit`` and ``transform`` one after the other."""
         return self.fit(X, y).transform(X)
 
 
@@ -443,5 +443,6 @@ class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
         return y_pred
 
     def fit_predict(self, X, y=None):
-        """Calls ``fit`` and then ``predict`` in one go."""
-        return self.fit(X, y).predict(X)
+        """Calls ``fit`` and ``predict`` one after the other."""
+        self.fit(X, y)
+        return self.labels_

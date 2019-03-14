@@ -2,6 +2,7 @@ import pytest
 
 from sklearn.utils import estimator_checks
 
+from creme import cluster
 from creme import compat
 from creme import linear_model
 from creme import preprocessing
@@ -12,7 +13,8 @@ from creme import preprocessing
     [
         linear_model.LinearRegression(),
         preprocessing.StandardScaler(),
-        preprocessing.OneHotEncoder()
+        preprocessing.OneHotEncoder(),
+        cluster.KMeans()
     ]
 )
 def test_check_estimator(estimator):

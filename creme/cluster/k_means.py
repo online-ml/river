@@ -45,7 +45,8 @@ class KMeans(base.Clusterer):
     Example:
 
     In the following example the cluster assignments are exactly the same as when using `sklearn`'s
-    batch implementation.
+    batch implementation. However changing the ``halflife`` parameter will produce different
+    outputs.
 
     ::
 
