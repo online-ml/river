@@ -2,7 +2,7 @@ from . import base
 
 
 class Mean(base.RunningStatistic):
-    """Computes a running mean.
+    """Running mean.
 
     Attributes:
         count (stats.Count)

@@ -2,7 +2,7 @@ from . import _moments
 
 
 class Skew(_moments.CentralMoments):
-    """Computes a running skew using Welford's algorithm.
+    """Running skew using Welford's algorithm.
 
     Properties:
         bias (bool): If ``False``, then the calculations are corrected for statistical bias.

@@ -4,7 +4,7 @@ from . import base
 
 
 class Min(base.RunningStatistic):
-    """Computes a running min.
+    """Running min.
 
     Attributes:
         min : The running min.

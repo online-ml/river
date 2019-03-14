@@ -3,7 +3,7 @@ from . import _window
 
 
 class RollingSum(base.RunningStatistic, _window.Window):
-    """Computes a windowed running sum.
+    """Running sum over a window.
 
     Attributes:
         window_size (int): Size of the rolling window.

@@ -4,7 +4,7 @@ from . import rolling_min
 
 
 class RollingPeakToPeak(base.RunningStatistic):
-    """Computes a windowed peak to peak (max - min) over a window.
+    """Running peak to peak (max - min) over a window.
 
     Attributes:
         window_size (int): Size of the rolling window.

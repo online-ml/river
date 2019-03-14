@@ -3,7 +3,7 @@ from . import rolling_mean
 
 
 class RollingVariance(base.RunningStatistic):
-    """Compute the windowed rolling variance.
+    """Running variance over a window.
 
     Parameters:
         window_size (int): Size of the rolling window.

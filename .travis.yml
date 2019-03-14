@@ -48,7 +48,7 @@ jobs:
       - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
       - git push --set-upstream origin master
     on:
-      branch: master
+      tags: true
 
 env:
   global:

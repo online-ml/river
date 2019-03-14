@@ -2,7 +2,7 @@ from . import rolling_sum
 
 
 class RollingMean(rolling_sum.RollingSum):
-    """Calculate the rolling average with a given window size.
+    """Running average over a window.
 
     Attributes:
         window_size (int): Size of the rolling window.

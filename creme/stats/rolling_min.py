@@ -3,7 +3,7 @@ from . import _window
 
 
 class RollingMin(base.RunningStatistic, _window.SortedWindow):
-    """Computes a windowed running min.
+    """Running min over a window.
 
     Attributes:
         window_size (int): Size of the rolling window.

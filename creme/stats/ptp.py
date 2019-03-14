@@ -4,7 +4,7 @@ from . import min
 
 
 class PeakToPeak(base.RunningStatistic):
-    """Computes a running peak to peak (max - min).
+    """Running peak to peak (max - min).
 
     Attributes:
         max (stats.Max)

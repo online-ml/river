@@ -4,7 +4,7 @@ from . import base
 
 
 class Quantile(base.RunningStatistic):
-    """Compute the running quantile. Default value compute median.
+    """Running quantile.
 
     Uses the P-square algorithm to calculate the quantile. The code is inspired by
     LiveStat's implementation [2].

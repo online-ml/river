@@ -4,7 +4,7 @@ from . import base
 
 
 class Mode(base.RunningStatistic):
-    """Computes running mode.
+    """Running mode.
 
     Parameters:
         k (int): Only the first ``k`` unique values will be included.

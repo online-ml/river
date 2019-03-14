@@ -5,7 +5,7 @@ from . import base
 
 
 class Entropy(base.RunningStatistic):
-    """Computes a running entropy.
+    """Running entropy.
 
     Attributes:
         entropy (float) : The running entropy.

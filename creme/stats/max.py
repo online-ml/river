@@ -4,7 +4,7 @@ from . import base
 
 
 class Max(base.RunningStatistic):
-    """Computes a running max.
+    """Running max.
 
     Attributes:
         max : The running max.

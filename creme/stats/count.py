@@ -2,7 +2,7 @@ from . import base
 
 
 class Count(base.RunningStatistic):
-    """Simply counts the number of times ``update`` is called."""
+    """A simple counter."""
 
     def __init__(self):
         self.n = 0

@@ -3,7 +3,7 @@ from . import _window
 
 
 class RollingQuantile(base.RunningStatistic, _window.SortedWindow):
-    """Calculate the rolling quantile with a given window size.
+    """Running quantile over a window.
 
     Parameters:
         window_size (int): Size of the window.

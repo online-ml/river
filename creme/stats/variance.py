@@ -3,7 +3,7 @@ from . import mean
 
 
 class Variance(base.RunningStatistic):
-    """Computes a running variance using Welford's algorithm.
+    """Running variance using Welford's algorithm.
 
     Parameters:
         ddof (int): Delta Degrees of Freedom. The divisor used in calculations is $n$ - ddof,

@@ -6,7 +6,7 @@ from . import base
 
 
 class NUnique(base.RunningStatistic):
-    """Approximately counts the number of unique values.
+    """Approximate number of unique values counter.
 
     This is basically an implementation of the HyperLogLog algorithm. Adapted from
     `here <https://github.com/clarkduvall/hypy>`_. The code is a bit too terse but it will do for

@@ -5,7 +5,7 @@ from . import _window
 
 
 class RollingMode(base.RunningStatistic, _window.Window):
-    """Computes a running mode over a window.
+    """Running mode over a window.
 
     The mode is the most common value.
 

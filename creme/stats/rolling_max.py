@@ -3,7 +3,7 @@ from . import _window
 
 
 class RollingMax(base.RunningStatistic, _window.SortedWindow):
-    """Computes a windowed running max.
+    """Running max over a window.
 
     Attributes:
         window_size (int): Size of the rolling window.
