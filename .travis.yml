@@ -5,6 +5,9 @@ language: python
 python:
   - 3.6
 
+apt_packages:
+  - pandoc
+
 jobs:
   include:
   - stage: test
