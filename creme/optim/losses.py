@@ -65,11 +65,11 @@ class SquaredLoss(RegressionLoss):
 
     Mathematically, it is defined as
 
-    .. math:: L = (p_i - y_i)^2
+    .. math:: L = \\frac{(p_i - y_i)^2}{2}
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math:: \\frac{\\partial L}{\\partial p_i} = 2(p_i - y_i)
+    .. math:: \\frac{\\partial L}{\\partial p_i} = p_i - y_i
 
     Example:
 
@@ -79,19 +79,19 @@ class SquaredLoss(RegressionLoss):
 
         >>> loss = optim.SquaredLoss()
         >>> loss(-4, 5)
-        81
+        40.5
         >>> loss.gradient(1, 4)
-        6
+        3
         >>> loss.gradient(4, 1)
-        -6
+        -3
 
     """
 
     def __call__(self, y_true, y_pred):
-        return (y_pred - y_true) ** 2
+        return .5 * (y_pred - y_true) * (y_pred - y_true)
 
     def gradient(self, y_true, y_pred):
-        return 2 * (y_pred - y_true)
+        return y_pred - y_true
 
 
 class LogLoss(BinaryClassificationLoss):

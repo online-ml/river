@@ -44,7 +44,7 @@ class TargetModifierRegressor(base.Regressor):
         >>> metric = metrics.mean_squared_error
 
         >>> model_selection.online_score(X_y, model, metric)
-        24.985334...
+        26.105649...
 
     """
 
@@ -101,7 +101,7 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
         >>> metric = metrics.mean_squared_error
 
         >>> model_selection.online_score(X_y, model, metric)
-        25.026345...
+        26.186061...
 
     """
 

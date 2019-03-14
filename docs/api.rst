@@ -54,7 +54,7 @@ API reference
    compat.SKLClustererWrapper
    compat.SKLTransformerWrapper
    compat.SKLRegressorWrapper
-   compat.wrap_sklearn
+   compat.creme_to_sklearn
 
 
 :mod:`creme.compose`: Model composition

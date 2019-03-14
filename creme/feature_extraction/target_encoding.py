@@ -35,8 +35,8 @@ class TargetEncoder(base.Transformer):
         ... ]
 
         >>> extractor = compose.TransformerUnion([
-        ...     feature_extraction.TargetEncoder(by='city', prior_weight=1),
-        ...     feature_extraction.TargetEncoder(by='name', prior_weight=1)
+        ...     ('by_city', feature_extraction.TargetEncoder(by='city', prior_weight=1)),
+        ...     ('by_name', feature_extraction.TargetEncoder(by='name', prior_weight=1))
         ... ])
         >>> for x in data:
         ...     y = x.pop('price')

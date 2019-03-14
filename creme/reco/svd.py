@@ -70,18 +70,17 @@ class SVD(base.Recommender):
         ...     _ = model.fit_one(user, movie, rating)
 
         >>> model.predict_one('Bob', 'Harry Potter')
-        6.552395...
+        6.554277...
 
     """
 
-    def __init__(self, n_factors=20, mu=0, sigma=0.1, row_optimizer=optim.VanillaSGD(),
-                 col_optimizer=optim.VanillaSGD(), loss=optim.SquaredLoss(),
-                 l2=0., random_state=None):
+    def __init__(self, n_factors=20, mu=0, sigma=0.1, row_optimizer=None, col_optimizer=None,
+                 loss=None, l2=0., random_state=None):
 
         self.n_factors = n_factors
-        self.row_optimizer = row_optimizer
-        self.col_optimizer = col_optimizer
-        self.loss = loss
+        self.row_optimizer = optim.VanillaSGD() if row_optimizer is None else row_optimizer
+        self.col_optimizer = optim.VanillaSGD() if col_optimizer is None else row_optimizer
+        self.loss = optim.SquaredLoss() if loss is None else row_optimizer
         self.l2 = l2
         self.global_mean = stats.Mean()
         self.random_state = utils.check_random_state(random_state)

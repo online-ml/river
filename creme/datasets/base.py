@@ -16,14 +16,14 @@ def get_data_home(data_home=None):
     return data_home
 
 
-def fetch_dataset(data_home, url, name, target_name):
+def fetch_csv_dataset(data_home, url, name, **iter_csv_params):
 
     data_home = get_data_home(data_home=data_home)
 
     # If the CSV file exists then iterate over it
     csv_path = os.path.join(data_home, f'{name}.csv')
     if os.path.exists(csv_path):
-        return stream.iter_csv(csv_path, target_name=target_name)
+        return stream.iter_csv(csv_path, **iter_csv_params)
 
     # If the ZIP file exists then unzip it
     zip_path = os.path.join(data_home, f'{name}.zip')

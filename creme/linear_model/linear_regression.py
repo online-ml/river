@@ -13,56 +13,57 @@ class LinearRegression(base.Regressor):
     """Linear regression.
 
     A linear regression is simply a dot product between some features and some weights. The weights
-    are found by using an online optimizer. In the current implementation the intercept is computed
-    independently by maintaining a running mean and adding it to each prediction.
+    are found by using an online optimizer. The intercept is computed independently by maintaining
+    a running mean and adding it to each prediction. Although this isn't the textbook way of doing
+    online linear regression, it works just as well if not better.
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
         loss (optim.Loss): The loss function to optimize for.
         l2 (float): L2 loss used to push weights towards 0.
+        intercept (stats.RunningStatistic): The statistic used to compute the intercept online.
 
     Attributes:
         weights (collections.defaultdict)
-        intercept (stats.Mean)
 
     Example:
 
     ::
 
-        >>> import creme.compose
-        >>> import creme.linear_model
-        >>> import creme.model_selection
-        >>> import creme.optim
-        >>> import creme.preprocessing
-        >>> import creme.stream
+        >>> from creme import compose
+        >>> from creme import linear_model
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
+        >>> from creme import stream
         >>> from sklearn import datasets
         >>> from sklearn import metrics
 
-        >>> X_y = creme.stream.iter_sklearn_dataset(
+        >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_boston,
         ...     shuffle=True,
         ...     random_state=42
         ... )
-        >>> model = creme.compose.Pipeline([
-        ...     ('scale', creme.preprocessing.StandardScaler()),
-        ...     ('learn', creme.linear_model.LinearRegression())
+        >>> model = compose.Pipeline([
+        ...     ('scale', preprocessing.StandardScaler()),
+        ...     ('learn', linear_model.LinearRegression())
         ... ])
         >>> metric = metrics.mean_squared_error
 
-        >>> creme.model_selection.online_score(X_y, model, metric)
-        29.648045...
+        >>> model_selection.online_score(X_y, model, metric)
+        29.587859...
 
         >>> model.steps[-1][1].intercept.get()
         22.532806...
 
     """
 
-    def __init__(self, optimizer=optim.VanillaSGD(0.01), loss=optim.SquaredLoss(), l2=0):
-        self.optimizer = optimizer
-        self.loss = loss
+    def __init__(self, optimizer=None, loss=None, l2=0, intercept=None):
+        self.optimizer = optim.VanillaSGD(0.01) if optimizer is None else optimizer
+        self.loss = optim.SquaredLoss() if loss is None else loss
         self.l2 = l2
         self.weights = collections.defaultdict(float)
-        self.intercept = stats.Mean()
+        self.intercept = stats.Mean() if intercept is None else intercept
 
     def _predict_with_weights(self, x, w):
         return utils.dot(x, w) + self.intercept.get()

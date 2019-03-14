@@ -54,16 +54,15 @@ class SGDBaseline(base.Recommender):
         ...     _ = model.fit_one(user, movie, rating)
 
         >>> model.predict_one('Bob', 'Harry Potter')
-        6.552432...
+        6.554288...
 
     """
 
-    def __init__(self, row_optimizer=optim.VanillaSGD(), col_optimizer=optim.VanillaSGD(),
-                 loss=optim.SquaredLoss(), l2=0.):
+    def __init__(self, row_optimizer=None, col_optimizer=None, loss=None, l2=0.):
         super().__init__()
-        self.row_optimizer = row_optimizer
-        self.col_optimizer = col_optimizer
-        self.loss = loss
+        self.row_optimizer = optim.VanillaSGD() if row_optimizer is None else row_optimizer
+        self.col_optimizer = optim.VanillaSGD() if col_optimizer is None else row_optimizer
+        self.loss = optim.SquaredLoss() if loss is None else row_optimizer
         self.l2 = l2
         self.global_mean = stats.Mean()
         self.row_biases = collections.defaultdict(float)

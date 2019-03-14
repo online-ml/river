@@ -47,7 +47,7 @@ SKLEARN_INPUT_Y_PARAMS = {
 }
 
 
-def wrap_sklearn(estimator):
+def creme_to_sklearn(estimator):
     """Wraps a creme estimator to make it compatible with scikit-learn."""
 
     wrappers = [

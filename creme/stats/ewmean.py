@@ -37,7 +37,7 @@ class EWMean(base.RunningStatistic):
 
     def __init__(self, alpha=0.5):
         self.alpha = alpha
-        self.mean = None
+        self.mean = 0
 
     @property
     def name(self):

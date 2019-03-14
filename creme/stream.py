@@ -2,6 +2,7 @@
 Utilities for streaming data from various sources.
 """
 import csv
+import datetime as dt
 import itertools
 
 from sklearn import utils
@@ -78,12 +79,14 @@ def iter_pandas(X, y=None, **kwargs):
         yield x, yi
 
 
-def iter_csv(filepath_or_buffer, target_name):
+def iter_csv(filepath_or_buffer, target_name, types=None, parse_dates=None):
     """Yields rows from a CSV file.
 
     Parameters:
         filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer object that has a ``read`` method.
-        target_name (str): The name of the target.
+        types (dict): The type of each feature.
+        parse_dates (dict): A ``dict`` mapping feature names to a format passed to the ``strptime``
+            method from the ``datetime`` library.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
@@ -96,15 +99,22 @@ def iter_csv(filepath_or_buffer, target_name):
         >>> from creme import stream
 
         >>> data = io.StringIO('''name,day,viewers
-        ... Breaking Bad,1,1337
-        ... The Sopranos,1,42
-        ... Breaking Bad,2,7331
+        ... Breaking Bad,2018-03-14,1337
+        ... The Sopranos,2018-03-14,42
+        ... Breaking Bad,2018-03-15,7331
         ... ''')
-        >>> for x, y in stream.iter_csv(data, target_name='viewers'):
+
+        >>> params = dict(
+        ...     target_name='viewers',
+        ...     types={'viewers': int},
+        ...     parse_dates={'day': '%Y-%m-%d'}
+        ... )
+
+        >>> for x, y in stream.iter_csv(data, **params):
         ...     print(x, y)
-        OrderedDict([('name', 'Breaking Bad'), ('day', '1')]) 1337
-        OrderedDict([('name', 'The Sopranos'), ('day', '1')]) 42
-        OrderedDict([('name', 'Breaking Bad'), ('day', '2')]) 7331
+        OrderedDict([('name', 'Breaking Bad'), ('day', datetime.datetime(2018, 3, 14, 0, 0))]) 1337
+        OrderedDict([('name', 'The Sopranos'), ('day', datetime.datetime(2018, 3, 14, 0, 0))]) 42
+        OrderedDict([('name', 'Breaking Bad'), ('day', datetime.datetime(2018, 3, 15, 0, 0))]) 7331
 
     """
 
@@ -114,5 +124,18 @@ def iter_csv(filepath_or_buffer, target_name):
         file = open(file)
 
     for x in csv.DictReader(file):
+
+        # Cast the values to the given types
+        if types is not None:
+            for i, t in types.items():
+                x[i] = t(x[i])
+
+        # Parse the dates
+        if parse_dates is not None:
+            for i, fmt in parse_dates.items():
+                x[i] = dt.datetime.strptime(x[i], fmt)
+
+        # Separate the target from the features
         y = x.pop(target_name)
+
         yield x, y

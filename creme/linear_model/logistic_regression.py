@@ -43,13 +43,13 @@ class LogisticRegression(base.BinaryClassifier):
         >>> metric = metrics.roc_auc_score
 
         >>> model_selection.online_score(X_y, model, metric)
-        0.990546...
+        0.988854...
 
     """
 
-    def __init__(self, optimizer=optim.VanillaSGD(), loss=optim.LogLoss(), l2=0):
-        self.optimizer = optimizer
-        self.loss = loss
+    def __init__(self, optimizer=None, loss=None, l2=0):
+        self.optimizer = optim.VanillaSGD(0.01) if optimizer is None else optimizer
+        self.loss = optim.LogLoss() if loss is None else loss
         self.l2 = l2
         self.weights = collections.defaultdict(float)
 

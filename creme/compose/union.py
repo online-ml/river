@@ -41,7 +41,10 @@ class TransformerUnion(base.Transformer):
         ...     by='place',
         ...     how=creme.stats.Count()
         ... )
-        >>> agg = creme.compose.TransformerUnion([mean, count])
+        >>> agg = creme.compose.TransformerUnion([
+        ...     ('mean', mean),
+        ...     ('count', count)
+        ... ])
 
         >>> for x in X:
         ...     print(sorted(agg.fit_one(x).items()))
@@ -61,7 +64,7 @@ class TransformerUnion(base.Transformer):
         self.transformers = transformers
 
     def fit_one(self, x, y=None):
-        return dict(collections.ChainMap(*(t.fit_one(x, y) for t in self.transformers)))
+        return dict(collections.ChainMap(*(t.fit_one(x, y) for _, t in self.transformers)))
 
     def transform_one(self, x):
-        return dict(collections.ChainMap(*(t.transform_one(x) for t in self.transformers)))
+        return dict(collections.ChainMap(*(t.transform_one(x) for _, t in self.transformers)))

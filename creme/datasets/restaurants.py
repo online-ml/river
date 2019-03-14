@@ -23,5 +23,7 @@ def fetch_restaurants(data_home=None):
         data_home=data_home,
         url=url,
         name=name,
-        target_name='visitors'
+        target_name='visitors',
+        types={'visitors': int},
+        parse_dates={'date': '%Y-%m-%d'}
     )
