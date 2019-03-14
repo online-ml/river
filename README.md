@@ -89,7 +89,7 @@ Like many subfields of machine learning, online learning is far from being an ex
 
 - Finding bottlenecks and using [Cython](https://cython.org/) when applicable
 - Identifying parts of the documentation that are hard to understand or are not very well written
-- Anything related to the [issue tracker](https://github.com/creme-ml/creme/issues)!
+- Anything related to the [issue tracker](https://github.com/creme-ml/creme/issues)
 
 Last but not least you are more than welcome to share with us how you're using `creme` or online learning in general! We believe that online learning solves a lot of pain points in practice and would love to share experiences.
 
