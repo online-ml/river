@@ -1,4 +1,4 @@
-ipython==6.4.0
+ipykernel==4.8.2
 jupyter-client==5.2.3
 nbsphinx==0.4.2
 Sphinx==1.8.3
