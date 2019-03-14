@@ -27,11 +27,10 @@
 
 ## Useful links
 
-- [Documentation](https://creme-ml.github.io/)
-- [Tutorials](https://github.com/creme-ml/tutorials)
+- [Documentation](https://creme-ml.github.io/) (includes tutorial notebooks)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
-- [Change history](HISTORY.md)
+- [Change history](CHANGELOG.md)
 
 ## Installation
 
@@ -84,14 +83,15 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 
 Feel free to open an issue if you feel like other solutions are worth mentioning.
 
-## Development
+## Contributing
 
-`creme` is very young so there is a lot to do. The broad goals for the near future are to:
+Like many subfields of machine learning, online learning is far from being an exact science and so there is still a lot to do. Feel free to contribute in any way you like, we're always open to new ideas and approaches. Here are some specific points where help would be particularly appreciated:
 
-- implement simple but useful algorithms
-- identify bottlenecks and use Cython when possible
-- write good documentation and write example notebooks
-- make life easier for those who want to put a streaming pipeline in production
+- Finding bottlenecks and using [Cython](https://cython.org/) when applicable
+- Identifying parts of the documentation that are hard to understand or are not very well written
+- Anything related to the [issue tracker](https://github.com/creme-ml/creme/issues)!
+
+Last but not least you are more than welcome to share with us how you're using `creme` or online learning in general! We believe that online learning solves a lot of pain points in practice and would love to share experiences.
 
 ## License
 
