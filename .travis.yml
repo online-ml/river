@@ -5,9 +5,6 @@ language: python
 python:
   - 3.6
 
-apt_packages:
-  - pandoc
-
 jobs:
   include:
   - stage: test
@@ -33,7 +30,10 @@ jobs:
       on:
         tags: true
   - stage: docs
-    install: python setup.py install && pip install -r docs/requirements.txt
+    install:
+      - apt-get install pandoc
+      - python setup.py install
+      - pip install -r docs/requirements.txt
     script: cd docs && make html && cd ..
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
