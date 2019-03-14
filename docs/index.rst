@@ -34,3 +34,4 @@ Contents
    install
    api
    faq
+   notebooks

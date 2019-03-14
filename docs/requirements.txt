@@ -1,1 +1,2 @@
 Sphinx==1.8.3
+nbsphinx==0.4.2

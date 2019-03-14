@@ -11,10 +11,13 @@ from creme import preprocessing
 @pytest.mark.parametrize(
     'estimator',
     [
-        linear_model.LinearRegression(),
-        preprocessing.StandardScaler(),
-        preprocessing.OneHotEncoder(),
-        cluster.KMeans()
+        pytest.param(estimator, id=estimator.__class__.__name__)
+        for estimator in [
+            linear_model.LinearRegression(),
+            preprocessing.StandardScaler(),
+            preprocessing.OneHotEncoder(),
+            cluster.KMeans()
+        ]
     ]
 )
 def test_check_estimator(estimator):

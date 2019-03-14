@@ -443,6 +443,6 @@ class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
         return y_pred
 
     def fit_predict(self, X, y=None):
-        """Calls ``fit`` and ``predict`` one after the other."""
+        """Calls ``fit`` return the ``labels_`` computed attribute."""
         self.fit(X, y)
         return self.labels_
