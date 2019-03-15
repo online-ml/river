@@ -4,4 +4,6 @@ Meta-estimators for performing multi-class classification with binary classifier
 from .ovr import OneVsRestClassifier
 
 
-__all__ = ['OneVsRestClassifier']
+__all__ = [
+    'OneVsRestClassifier'
+]

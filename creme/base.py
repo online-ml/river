@@ -61,7 +61,6 @@ class BinaryClassifier:
 
         """
 
-    @abc.abstractmethod
     def predict_one(self, x: dict) -> bool:
         """Predicts the target value of a set of features ``x``
 
@@ -72,6 +71,7 @@ class BinaryClassifier:
             bool
 
         """
+        return self.predict_proba_one(x) > 0.5
 
 
 class MultiClassifier:

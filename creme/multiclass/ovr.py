@@ -1,76 +1,76 @@
 import copy
 
 from .. import base
-
-
-__all__ = ['OneVsRestClassifier']
+from .. import utils
 
 
 class OneVsRestClassifier(base.MultiClassifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
-    streaming context, the number of classes isn't known from the start, hence it new classifiers
-    are created on the fly. Likewise the predicted probabilities will only include the classes seen
-    up to now.
+    streaming context, the number of classes isn't known from the start, hence new classifiers are
+    instantiated on the fly. Likewise the predicted probabilities will only include the classes
+    seen up to a given point in time.
 
     Parameters:
-        base_estimator (base.BinaryClassifier)
+        binary_classifier (base.BinaryClassifier)
 
     Attributes:
-        estimators (dict): A mapping between classes and estimators.
+        classifiers (dict): A mapping between classes and classifiers.
 
     Example:
 
     ::
 
-        >>> import creme.compose
-        >>> import creme.linear_model
-        >>> import creme.model_selection
-        >>> import creme.multiclass
-        >>> import creme.optim
-        >>> import creme.preprocessing
-        >>> import creme.stream
+        >>> import functools
+        >>> from creme import compose
+        >>> from creme import linear_model
+        >>> from creme import model_selection
+        >>> from creme import multiclass
+        >>> from creme import optim
+        >>> from creme import preprocessing
+        >>> from creme import stream
         >>> from sklearn import datasets
         >>> from sklearn import metrics
 
-        >>> X_y = creme.stream.iter_sklearn_dataset(
+        >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_iris,
         ...     shuffle=True,
         ...     random_state=42
         ... )
-        >>> optimr = creme.optim.RMSProp()
-        >>> model = creme.compose.Pipeline([
-        ...     ('scale', creme.preprocessing.StandardScaler()),
-        ...     ('learn', creme.multiclass.OneVsRestClassifier(
-        ...         base_estimator=creme.linear_model.LogisticRegression(optimr))
+        >>> optimizer = optim.RMSProp()
+        >>> model = compose.Pipeline([
+        ...     ('scale', preprocessing.StandardScaler()),
+        ...     ('learn', multiclass.OneVsRestClassifier(
+        ...         binary_classifier=linear_model.LogisticRegression(optimizer))
         ...     )
         ... ])
-        >>> metric = metrics.accuracy_score
+        >>> metric = functools.partial(metrics.f1_score, average='macro')
 
-        >>> creme.model_selection.online_score(X_y, model, metric)
-        0.813333...
+        >>> model_selection.online_score(X_y, model, metric)
+        0.808782...
 
     """
 
-    def __init__(self, base_estimator):
-        self.base_estimator = base_estimator
-        self.estimators = {}
-
-    def _normalize_preds(self, y):
-        ys = sum(y.values())
-        return {c: p / ys for c, p in y.items()}
+    def __init__(self, binary_classifier: base.BinaryClassifier):
+        self.binary_classifier = binary_classifier
+        self.classifiers = {}
 
     def fit_one(self, x, y):
-        if y not in self.estimators:
-            self.estimators[y] = copy.deepcopy(self.base_estimator)
-        y_pred = {c: model.fit_one(x, y == c) for c, model in self.estimators.items()}
-        return self._normalize_preds(y_pred)
+
+        # Instantiate a new binary classifier if the class is new
+        if y not in self.classifiers:
+            self.classifiers[y] = copy.deepcopy(self.binary_classifier)
+
+        y_pred = {
+            label: model.fit_one(x, y == label)
+            for label, model in self.classifiers.items()
+        }
+        return utils.softmax(y_pred)
 
     def predict_proba_one(self, x):
-        y_pred = {c: model.predict_proba_one(x) for c, model in self.estimators.items()}
-        return self._normalize_preds(y_pred)
-
-    def predict_one(self, x):
-        y_pred = self.predict_proba_one(x)
-        return max(y_pred, key=y_pred.get)
+        y_pred = {
+            label: model.predict_proba_one(x)
+            for label, model in self.classifiers.items()
+        }
+        return utils.softmax(y_pred)
