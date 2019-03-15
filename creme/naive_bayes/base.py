@@ -2,6 +2,7 @@ import abc
 import math
 
 from .. import base
+from .. import utils
 
 
 class BaseNB(base.MultiClassifier, abc.ABC):
@@ -23,4 +24,4 @@ class BaseNB(base.MultiClassifier, abc.ABC):
         """Return probabilities using the log-likelihoods."""
         jlh = self._joint_log_likelihood(x)
         lse = math.log(sum(math.exp(l) for l in jlh.values()) or 1)
-        return {label: l - lse for label, l in jlh.items()}
+        return utils.softmax({label: l - lse for label, l in jlh.items()})

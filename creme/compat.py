@@ -144,6 +144,7 @@ class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
             array of shape (n_samples,): Predicted target values for each row of ``X``.
 
         """
+
         # Check the fit method has been called
         utils.validation.check_is_fitted(self, 'is_fitted_')
 
@@ -203,6 +204,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
             self
 
         """
+
         # Check the estimator is either a BinaryClassifier or a MultiClassifier
         if isinstance(self.creme_estimator, compose.Pipeline):
             if not isinstance(
@@ -215,6 +217,9 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         # Check the inputs
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+
+        # Check the target
+        utils.multiclass.check_classification_targets(y)
 
         # Check the number of classes agrees with the type of classifier
         self.classes_ = np.unique(y)
@@ -234,6 +239,9 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         for x, yi in STREAM_METHODS[type(X)](X, y):
             self.instance_.fit_one(x, yi)
 
+        # Store the number of features so that future inputs can be checked
+        self.n_features_ = X.shape[1]
+
         return self
 
     def predict_proba(self, X):
@@ -246,24 +254,28 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
             array of shape (n_samples,): Predicted target values for each row of ``X``.
 
         """
+
         # Check the fit method has been called
         utils.validation.check_is_fitted(self, 'classes_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
+        if X.shape[1] != self.n_features_:
+            raise ValueError(f'Expected {self.n_features_} features, got {X.shape[1]}')
+
         # creme's predictions have to converted to follow the scikit-learn conventions
         if self.is_binary:
-            def extract_proba(y_pred):
+            def reshape_probas(y_pred):
                 return [1 - y_pred, y_pred]
         else:
-            def extract_proba(y_pred):
+            def reshape_probas(y_pred):
                 return [y_pred.get(c, 0) for c in self.classes_]
 
         # Make a prediction for each observation
         y_pred = np.empty(shape=(len(X), len(self.classes_)))
         for i, (x, _) in enumerate(stream.iter_numpy(X)):
-            y_pred[i] = extract_proba(self.instance_.predict_proba_one(x))
+            y_pred[i] = reshape_probas(self.instance_.predict_proba_one(x))
 
         return y_pred
 
@@ -277,11 +289,15 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
             array of shape (n_samples,): Predicted target values for each row of ``X``.
 
         """
+
         # Check the fit method has been called
         utils.validation.check_is_fitted(self, 'classes_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
+
+        if X.shape[1] != self.n_features_:
+            raise ValueError(f'Expected {self.n_features_} features, got {X.shape[1]}')
 
         # Make a prediction for each observation
         y_pred = [None] * len(X)
@@ -325,6 +341,7 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
             self
 
         """
+
         # Check the estimator is a Transformer
         if isinstance(self.creme_estimator, compose.Pipeline):
             if not isinstance(self.creme_estimator._final_estimator, base.Transformer):
@@ -349,7 +366,8 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
         # predict needs some way to know if fit has been called
         self.is_fitted_ = True
 
-        self.n_fit_features_ = X.shape[1]
+        # Store the number of features so that future inputs can be checked
+        self.n_features_ = X.shape[1]
 
         return self
 
@@ -363,14 +381,15 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
             array: Transformed output.
 
         """
+
         # Check the fit method has been called
         utils.validation.check_is_fitted(self, 'is_fitted_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
-        if X.shape[1] != self.n_fit_features_:
-            raise ValueError(f'Expected {self.n_fit_features_} features, got {X.shape[1]}')
+        if X.shape[1] != self.n_features_:
+            raise ValueError(f'Expected {self.n_features_} features, got {X.shape[1]}')
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)
@@ -397,6 +416,7 @@ class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
             self
 
         """
+
         # Check the estimator is a Clusterer
         if not isinstance(self.creme_estimator, base.Clusterer):
             raise ValueError('creme_estimator is not a Clusterer')
@@ -429,6 +449,7 @@ class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
             array: Transformed output.
 
         """
+
         # Check the fit method has been called
         utils.validation.check_is_fitted(self, 'is_fitted_')
 
