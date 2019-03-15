@@ -11,6 +11,23 @@ class PeakToPeak(base.RunningStatistic):
         min (stats.Min)
         p2p (float): The running peak to peak.
 
+    Example:
+
+    ::
+
+        >>> from creme import stats
+
+        >>> X = [1, -4, 3, -2, 2, 4]
+        >>> ptp = stats.PeakToPeak()
+        >>> for x in X:
+        ...     print(ptp.update(x).get())
+        0
+        5
+        7
+        7
+        7
+        8
+
     """
 
     def __init__(self):

@@ -10,6 +10,8 @@ class Mean(base.RunningStatistic):
 
     Example:
 
+    ::
+
         >>> from creme import stats
 
         >>> X = [-5, -3, -1, 1, 3, 5]
@@ -22,10 +24,6 @@ class Mean(base.RunningStatistic):
         -2.0
         -1.0
         0.0
-
-    Attributes:
-        count (stats.Count)
-        mean (float): The current estimated mean.
 
     """
 

@@ -6,12 +6,12 @@ class RunningStatistic(abc.ABC):
     @property
     @abc.abstractmethod
     def name(self):
-        pass
+        """The name of the statistic is used for naming automatically generated features."""
 
     @abc.abstractmethod
     def update(self):
-        pass
+        """Updates the statistic and returns the called instance."""
 
     @abc.abstractmethod
     def get(self) -> float:
-        pass
+        """Returns the current value of the statistic."""
