@@ -1,7 +1,8 @@
 import copy as cp
 import numpy as np
-from skmultiflow.core.base import StreamModel
 from sklearn.tree import DecisionTreeClassifier
+
+from skmultiflow.core.base import StreamModel
 
 
 class LearnNSE(StreamModel):
@@ -68,7 +69,7 @@ class LearnNSE(StreamModel):
 
     def __fit(self, estimator, X, y, classes=None):
         try:
-            estimator.fit(X, y, classes=classes)
+            estimator.fit(X, y)
         except (NotImplementedError, TypeError):
             estimator.partial_fit(X, y, classes=classes)
 
