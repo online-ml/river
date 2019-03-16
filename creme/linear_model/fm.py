@@ -60,15 +60,8 @@ class FMRegressor(base.Regressor):
 
         >>> for x in X:
         ...     y = x.pop('rating')
-        ...     y_pred = model.fit_one(x, y)
-        ...     print(y_pred)
-        0.0
-        -0.901259...
-        0.412813...
-        4.826101...
-        2.755768...
-        2.278344...
-        0.406779...
+        ...     y_pred = model.predict_one(x)
+        ...     model = model.fit_one(x, y)
 
     """
 
@@ -120,7 +113,7 @@ class FMRegressor(base.Regressor):
                 }
             )
 
-        return y_pred
+        return self
 
     def predict_one(self, x):
 

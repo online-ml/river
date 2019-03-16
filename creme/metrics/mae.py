@@ -1,7 +1,9 @@
+from .. import stats
+
 from . import base
 
 
-class MAE(base.Metric):
+class MAE(stats.Mean, base.RegressionMetric):
     """Mean absolute error.
 
     Example:
@@ -21,18 +23,10 @@ class MAE(base.Metric):
         0.333333...
         0.5
 
+        >>> metric
+        MAE: 0.5
+
     """
 
-    def __init__(self):
-        self.absolute_error = 0
-        self.n = 0
-
     def update(self, y_true, y_pred):
-        self.absolute_error += abs(y_true - y_pred)
-        self.n += 1
-        return self
-
-    def get(self):
-        if self.n:
-            return self.absolute_error / self.n
-        return 0
+        return super().update(abs(y_true - y_pred))

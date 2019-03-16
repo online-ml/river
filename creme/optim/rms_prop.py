@@ -13,29 +13,29 @@ class RMSProp(base.Optimizer):
 
     ::
 
-        >>> import creme.compose
-        >>> import creme.linear_model
-        >>> import creme.model_selection
-        >>> import creme.optim
-        >>> import creme.preprocessing
-        >>> import creme.stream
+        >>> from creme import compose
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
+        >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
-        >>> X_y = creme.stream.iter_sklearn_dataset(
+        >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_breast_cancer,
         ...     shuffle=True,
         ...     random_state=42
         ... )
-        >>> optimiser = creme.optim.RMSProp()
-        >>> model = creme.compose.Pipeline([
-        ...     ('scale', creme.preprocessing.StandardScaler()),
-        ...     ('learn', creme.linear_model.LogisticRegression(optimiser))
+        >>> optimiser = optim.RMSProp()
+        >>> model = compose.Pipeline([
+        ...     ('scale', preprocessing.StandardScaler()),
+        ...     ('learn', linear_model.LogisticRegression(optimiser))
         ... ])
-        >>> metric = metrics.roc_auc_score
+        >>> metric = metrics.F1Score()
 
-        >>> creme.model_selection.online_score(X_y, model, metric)
-        0.991127...
+        >>> model_selection.online_score(X_y, model, metric)
+        F1Score: 0.971989
 
     """
 

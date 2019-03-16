@@ -1,8 +1,10 @@
+from .. import stats
+
 from . import base
 
 
-class Accuracy(base.Metric):
-    """Accuracy score, which is the percentage of exact matches.
+class Accuracy(stats.Mean, base.MultiClassificationMetric):
+    """Accuracy score, which is the ratio of exact matches.
 
     Example:
 
@@ -21,18 +23,13 @@ class Accuracy(base.Metric):
         0.333333...
         0.5
 
+        >>> metric
+        Accuracy: 0.5
+
     """
 
-    def __init__(self):
-        self.n_correct = 0
-        self.n = 0
+    def requires_labels(self):
+        return True
 
     def update(self, y_true, y_pred):
-        self.n_correct += y_true == y_pred
-        self.n += 1
-        return self
-
-    def get(self):
-        if self.n:
-            return self.n_correct / self.n
-        return 0
+        return super().update(y_true == y_pred)

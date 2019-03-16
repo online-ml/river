@@ -13,9 +13,18 @@ from sklearn import base as sklearn_base
 from sklearn import preprocessing
 from sklearn import utils
 
-from . import base
-from . import compose
-from . import stream
+from .. import base
+from .. import compose
+from .. import stream
+
+
+__all__ = [
+    'convert_creme_to_sklearn',
+    'SKLRegressorWrapper',
+    'SKLClassifierWrapper',
+    'SKLClustererWrapper',
+    'SKLTransformerWrapper'
+]
 
 
 STREAM_METHODS = {
@@ -47,7 +56,7 @@ SKLEARN_INPUT_Y_PARAMS = {
 }
 
 
-def creme_to_sklearn(estimator):
+def convert_creme_to_sklearn(estimator):
     """Wraps a creme estimator to make it compatible with scikit-learn."""
 
     wrappers = [
@@ -431,7 +440,7 @@ class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
         # Call fit_one for each observation
         self.labels_ = np.empty(len(X), dtype=np.int32)
         for i, (x, yi) in enumerate(STREAM_METHODS[type(X)](X, y)):
-            label = self.instance_.fit_one(x, yi)
+            label = self.instance_.fit_one(x, yi).predict_one(x)
             self.labels_[i] = label
 
         # predict needs some way to know if fit has been called

@@ -42,14 +42,12 @@ class GaussianNB(base.BaseNB):
 
     def fit_one(self, x, y):
 
-        y_pred = self.predict_proba_one(x)
-
         self.class_dist.update(y)
 
         for i, xi in x.items():
             self.gaussians[y][i].update(xi)
 
-        return y_pred
+        return self
 
     def _joint_log_likelihood(self, x):
         return {

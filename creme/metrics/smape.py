@@ -1,7 +1,9 @@
+from .. import stats
+
 from . import base
 
 
-class SMAPE(base.Metric):
+class SMAPE(stats.Mean, base.RegressionMetric):
     """Symmetric mean absolute percentage error.
 
     Example:
@@ -19,19 +21,13 @@ class SMAPE(base.Metric):
         SMAPE: 4.761905
         SMAPE: 5.012531
 
+        >>> metric
+        SMAPE: 5.012531
+
     """
 
-    def __init__(self):
-        self.sum = 0
-        self.n = 0
-
     def update(self, y_true, y_pred):
-        if y_true != y_pred:
-            self.sum += abs(y_true - y_pred) / (abs(y_true) + abs(y_pred)) / 2
-        self.n += 1
-        return self
+        return super().update(abs(y_true - y_pred) / (abs(y_true) + abs(y_pred)))
 
     def get(self):
-        if self.n:
-            return 200 / self.n * self.sum
-        return 0
+        return 100 * super().get()

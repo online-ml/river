@@ -25,11 +25,11 @@ class LogisticRegression(base.BinaryClassifier):
 
         >>> from creme import compose
         >>> from creme import linear_model
+        >>> from creme import metrics
         >>> from creme import model_selection
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
         >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_breast_cancer,
@@ -40,10 +40,10 @@ class LogisticRegression(base.BinaryClassifier):
         ...     ('scale', preprocessing.StandardScaler()),
         ...     ('learn', linear_model.LogisticRegression())
         ... ])
-        >>> metric = metrics.roc_auc_score
+        >>> metric = metrics.F1Score()
 
         >>> model_selection.online_score(X_y, model, metric)
-        0.988854...
+        F1Score: 0.964739
 
     """
 
@@ -61,6 +61,14 @@ class LogisticRegression(base.BinaryClassifier):
         return {i: xi * loss_gradient + self.l2 * w.get(i, 0) for i, xi in x.items()}
 
     def fit_one(self, x, y):
+        self.fit_predict_proba_one(x, y)
+        return self
+
+    def predict_proba_one(self, x):
+        y_pred = self._predict_proba_one_with_weights(x, self.weights)
+        return {False: 1 - y_pred, True: y_pred}
+
+    def fit_predict_proba_one(self, x, y):
 
         # Update the weights with the error gradient
         self.weights, y_pred = self.optimizer.update_weights(
@@ -72,7 +80,7 @@ class LogisticRegression(base.BinaryClassifier):
             f_grad=self._calc_gradient
         )
 
-        return y_pred
+        return {False: 1 - y_pred, True: y_pred}
 
-    def predict_proba_one(self, x):
-        return self._predict_proba_one_with_weights(x, self.weights)
+    def fit_predict_one(self, x, y):
+        return self.fit_predict_proba_one(x, y)[True] > 0.5

@@ -1,5 +1,6 @@
 import collections
 import copy
+import statistics
 
 from sklearn import utils
 
@@ -28,35 +29,35 @@ class BaggingClassifier(base.BinaryClassifier):
 
     ::
 
-        >>> import creme.compose
-        >>> import creme.ensemble
-        >>> import creme.linear_model
-        >>> import creme.model_selection
-        >>> import creme.optim
-        >>> import creme.preprocessing
-        >>> import creme.stream
+        >>> from creme import compose
+        >>> from creme import ensemble
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
+        >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
-        >>> X_y = creme.stream.iter_sklearn_dataset(
+        >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_breast_cancer,
         ...     shuffle=True,
         ...     random_state=42
         ... )
-        >>> optimiser = creme.optim.VanillaSGD()
-        >>> model = creme.compose.Pipeline([
-        ...     ('scale', creme.preprocessing.StandardScaler()),
-        ...     ('learn', creme.linear_model.LogisticRegression(optimiser))
+        >>> optimiser = optim.VanillaSGD()
+        >>> model = compose.Pipeline([
+        ...     ('scale', preprocessing.StandardScaler()),
+        ...     ('learn', linear_model.LogisticRegression(optimiser))
         ... ])
-        >>> model = creme.ensemble.BaggingClassifier(model, n_estimators=3)
-        >>> metric = metrics.roc_auc_score
+        >>> model = ensemble.BaggingClassifier(model, n_estimators=3)
+        >>> metric = metrics.F1Score()
 
-        >>> creme.model_selection.online_score(X_y, model, metric)
-        0.991497...
+        >>> model_selection.online_score(X_y, model, metric)
+        F1Score: 0.967376
 
     References:
 
-    - `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
+    1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
 
     """
 
@@ -81,4 +82,7 @@ class BaggingClassifier(base.BinaryClassifier):
         return max(votes, key=votes.get)
 
     def predict_proba_one(self, x):
-        return sum(estimator.predict_proba_one(x) for estimator in self.estimators) / len(self.estimators)
+        return statistics.mean(
+            estimator.predict_proba_one(x)[True]
+            for estimator in self.estimators
+        )

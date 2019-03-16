@@ -22,16 +22,13 @@ class FuncTransformer(base.Transformer):
         ...     return x
 
         >>> transformer = preprocessing.FuncTransformer(parse_date)
-        >>> transformer.fit_one(x)
+        >>> transformer.fit_one(x).transform_one(x)
         {'date': datetime.datetime(2019, 2, 14, 0, 0), 'x': 42, 'is_weekend': False}
 
     """
 
     def __init__(self, func):
         self.func = func
-
-    def fit_one(self, x, y=None):
-        return self.transform_one(x)
 
     def transform_one(self, x):
         return self.func(x)

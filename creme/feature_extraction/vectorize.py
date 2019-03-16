@@ -95,16 +95,14 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
         ... ]
         >>> vectorizer = creme.feature_extraction.CountVectorizer(on='sentence')
         >>> for sentence in corpus:
-        ...     print(vectorizer.fit_one({'sentence': sentence}))
+        ...     x = {'sentence': sentence}
+        ...     print(vectorizer.fit_one(x).transform_one(x))
         Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
         Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
         Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
         Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
 
     """
-
-    def fit_one(self, x, y=None):
-        return self.transform_one(x)
 
     def transform_one(self, x):
         return collections.Counter(self.tokenizer(self.preprocessor(x[self.on])))
@@ -142,7 +140,8 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
         ... ]
         >>> vectorizer = creme.feature_extraction.TFIDFVectorizer(on='sentence')
         >>> for sentence in corpus:
-        ...     print(vectorizer.fit_one({'sentence': sentence}))
+        ...     x = {'sentence': sentence}
+        ...     print(vectorizer.fit_one(x).transform_one(x))
         {'this': 0.447..., 'is': 0.447..., 'the': 0.447..., 'first': 0.447..., 'document': 0.447...}
         {'this': 0.333..., 'document': 0.667..., 'is': 0.333..., 'the': 0.333..., 'second': 0.469...}
         {'and': 0.497..., 'this': 0.293..., 'is': 0.293..., 'the': 0.293..., 'third': 0.497..., 'one': 0.497...}
@@ -176,15 +175,16 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
     def fit_one(self, x, y=None):
 
         # Compute the term counts
-        term_counts = self.tfs.fit_one(x)
+        term_counts = self.tfs.fit_one(x).transform_one(x)
 
-        # Increment the document counter
-        self.n += 1
-
+        # Increment the document frequencies of each term
         for term in term_counts:
             self.dfs[term] += 1
 
-        return self.compute_tfidfs(term_counts)
+        # Increment the global document counter
+        self.n += 1
+
+        return self
 
     def transform_one(self, x):
         term_counts = self.tfs.transform_one(x)

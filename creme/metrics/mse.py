@@ -1,7 +1,9 @@
+from .. import stats
+
 from . import base
 
 
-class MSE(base.Metric):
+class MSE(stats.Mean, base.RegressionMetric):
     """Mean squared error.
 
     Example:
@@ -21,18 +23,10 @@ class MSE(base.Metric):
         0.1666666...
         0.375
 
+        >>> metric
+        MSE: 0.375
+
     """
 
-    def __init__(self):
-        self.squared_error = 0
-        self.n = 0
-
     def update(self, y_true, y_pred):
-        self.squared_error += (y_true - y_pred) ** 2
-        self.n += 1
-        return self
-
-    def get(self):
-        if self.n:
-            return self.squared_error / self.n
-        return 0
+        return super().update((y_true - y_pred) ** 2)

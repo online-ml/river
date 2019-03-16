@@ -18,6 +18,7 @@ class TargetEncoder(base.Transformer):
 
     ::
 
+        >>> from pprint import pprint
         >>> from creme import compose
         >>> from creme import feature_extraction
 
@@ -40,17 +41,21 @@ class TargetEncoder(base.Transformer):
         ... ])
         >>> for x in data:
         ...     y = x.pop('price')
-        ...     print(sorted(extractor.fit_one(x, y).items()))
-        [('target_mean_by_city', 0.0), ('target_mean_by_name', 0.0)]
-        [('target_mean_by_city', 2.0), ('target_mean_by_name', 2.0)]
-        [('target_mean_by_city', 3.5), ('target_mean_by_name', 3.0)]
-        [('target_mean_by_city', 5.0), ('target_mean_by_name', 13.0)]
-        [('target_mean_by_city', 4.333333...), ('target_mean_by_name', 7.0)]
-        [('target_mean_by_city', 9.866666...), ('target_mean_by_name', 8.8)]
-        [('target_mean_by_city', 7.958333...), ('target_mean_by_name', 6.833333...)]
-        [('target_mean_by_city', 5.571428...), ('target_mean_by_name', 4.642857...)]
-        [('target_mean_by_city', 6.9), ('target_mean_by_name', 6.5)]
-        [('target_mean_by_city', 6.022222...), ('target_mean_by_name', 4.555555...)]
+        ...     pprint(extractor.transform_one(x))
+        ...     extractor = extractor.fit_one(x, y)
+        {'target_mean_by_city': 0.0, 'target_mean_by_name': 0.0}
+        {'target_mean_by_city': 2.0, 'target_mean_by_name': 2.0}
+        {'target_mean_by_city': 3.5, 'target_mean_by_name': 3.0}
+        {'target_mean_by_city': 5.0, 'target_mean_by_name': 13.0}
+        {'target_mean_by_city': 4.333333..., 'target_mean_by_name': 7.0}
+        {'target_mean_by_city': 9.866666..., 'target_mean_by_name': 8.8}
+        {'target_mean_by_city': 7.958333...,
+         'target_mean_by_name': 6.833333...}
+        {'target_mean_by_city': 5.571428...,
+         'target_mean_by_name': 4.642857...}
+        {'target_mean_by_city': 6.9, 'target_mean_by_name': 6.5}
+        {'target_mean_by_city': 6.022222...,
+         'target_mean_by_name': 4.555555...}
 
         >>> data = [
         ...     {'city': 'Tokyo', 'name': 'Peanut butter', 'price': 2},
@@ -68,17 +73,18 @@ class TargetEncoder(base.Transformer):
         >>> extractor = feature_extraction.TargetEncoder(by=['city', 'name'], prior_weight=1)
         >>> for x in data:
         ...     y = x.pop('price')
-        ...     print(sorted(extractor.fit_one(x, y).items()))
-        [('target_mean_by_city_and_name', 0.0)]
-        [('target_mean_by_city_and_name', 2.0)]
-        [('target_mean_by_city_and_name', 3.5)]
-        [('target_mean_by_city_and_name', 10.0)]
-        [('target_mean_by_city_and_name', 4.5)]
-        [('target_mean_by_city_and_name', 7.6)]
-        [('target_mean_by_city_and_name', 6.833333...)]
-        [('target_mean_by_city_and_name', 4.642857...)]
-        [('target_mean_by_city_and_name', 6.5)]
-        [('target_mean_by_city_and_name', 4.555555...)]
+        ...     pprint(extractor.transform_one(x))
+        ...     extractor = extractor.fit_one(x, y)
+        {'target_mean_by_city_and_name': 0.0}
+        {'target_mean_by_city_and_name': 2.0}
+        {'target_mean_by_city_and_name': 3.5}
+        {'target_mean_by_city_and_name': 10.0}
+        {'target_mean_by_city_and_name': 4.5}
+        {'target_mean_by_city_and_name': 7.6}
+        {'target_mean_by_city_and_name': 6.833333...}
+        {'target_mean_by_city_and_name': 4.642857...}
+        {'target_mean_by_city_and_name': 6.5}
+        {'target_mean_by_city_and_name': 4.555555...}
 
     References:
 
@@ -94,16 +100,23 @@ class TargetEncoder(base.Transformer):
         self.global_mean = stats.Mean()
         self.feature_means = collections.defaultdict(stats.Mean)
 
-    def fit_one(self, x, y):
+    def make_key(self, x):
+        return '_'.join(x[i] for i in self.by)
 
-        global_mean = self.global_mean.get() or 0
-        key = '_'.join(x[i] for i in self.by)
-        mean = self.feature_means[key]
-        mu = mean.get() or 0
+    def fit_one(self, x, y):
+        self.global_mean.update(y)
+        self.feature_means[self.make_key(x)].update(y)
+        return self
+
+    def transform_one(self, x):
+
+        global_mean = self.global_mean.get()
+        mean = self.feature_means[self.make_key(x)]
+        mu = mean.get()
         count = mean.n
         smooth_mean = (mu * count + global_mean * self.prior_weight) / (count + self.prior_weight)
 
-        self.global_mean.update(y)
-        self.feature_means[key].update(y)
-
         return {f'target_mean_by_{"_and_".join(self.by)}': smooth_mean}
+
+    def is_supervised(self):
+        return True

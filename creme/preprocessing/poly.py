@@ -35,14 +35,14 @@ class PolynomialExtender(base.Transformer):
 
         >>> poly = preprocessing.PolynomialExtender(degree=2)
         >>> for x in X:
-        ...     print(poly.fit_one(x))
+        ...     print(poly.fit_one(x).transform_one(x))
         {'x1': 0, 'x2': 1, 'x1*x1': 0, 'x1*x2': 0, 'x2*x2': 1}
         {'x1': 2, 'x2': 3, 'x1*x1': 4, 'x1*x2': 6, 'x2*x2': 9}
         {'x1': 4, 'x2': 5, 'x1*x1': 16, 'x1*x2': 20, 'x2*x2': 25}
 
         >>> poly = preprocessing.PolynomialExtender(degree=2, interaction_only=True)
         >>> for x in X:
-        ...     print(poly.fit_one(x))
+        ...     print(poly.fit_one(x).transform_one(x))
         {'x1': 0, 'x2': 1, 'x1*x2': 0}
         {'x1': 2, 'x2': 3, 'x1*x2': 6}
         {'x1': 4, 'x2': 5, 'x1*x2': 20}
@@ -58,9 +58,6 @@ class PolynomialExtender(base.Transformer):
             max_size=degree,
             with_replacement=not interaction_only
         )
-
-    def fit_one(self, x, y=None):
-        return self.transform_one(x)
 
     def transform_one(self, x):
         return {

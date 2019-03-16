@@ -1,7 +1,5 @@
 import collections
 
-import numpy as np
-
 from .. import base
 from .. import stats
 
@@ -24,7 +22,6 @@ class StandardScaler(base.Transformer):
 
     ::
 
-        >>> import pprint
         >>> import creme
         >>> import numpy as np
         >>> from sklearn import preprocessing
@@ -33,22 +30,23 @@ class StandardScaler(base.Transformer):
         >>> X = [{'x': v} for v in rng.uniform(low=8, high=12, size=15)]
 
         >>> scaler = creme.preprocessing.StandardScaler()
-        >>> pprint.pprint([scaler.fit_one(x) for x in X])
-        [{'x': 0.0},
-         {'x': 0.7071067811865472},
-         {'x': 0.15899361505958232},
-         {'x': -0.2705322151649623},
-         {'x': -1.3161741269825997},
-         {'x': -1.0512188309398107},
-         {'x': -1.1096762396286515},
-         {'x': 1.09141268517007},
-         {'x': 0.3109060850298578},
-         {'x': 0.5949866915752465},
-         {'x': -1.3540960661327461},
-         {'x': 1.2959176347038681},
-         {'x': 0.8426620966002304},
-         {'x': -0.8843412116857523},
-         {'x': -0.91188180555936}]
+        >>> for x in X:
+        ...     print(scaler.fit_one(x).transform_one(x))
+        {'x': 0.0}
+        {'x': 0.707106781053423}
+        {'x': 0.1589936150008511}
+        {'x': -0.27053221501993885}
+        {'x': -1.3161741265511262}
+        {'x': -1.0512188306232884}
+        {'x': -1.1096762393237039}
+        {'x': 1.0914126848882046}
+        {'x': 0.31090608493934085}
+        {'x': 0.5949866913888866}
+        {'x': -1.3540960657565435}
+        {'x': 1.2959176343737868}
+        {'x': 0.8426620963810948}
+        {'x': -0.8843412114527541}
+        {'x': -0.9118818053170898}
 
 
         >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
@@ -73,14 +71,14 @@ class StandardScaler(base.Transformer):
 
     def __init__(self):
         self.variances = collections.defaultdict(stats.Variance)
-        self.eps = np.finfo(float).eps
+        self.eps = 10e-10
 
     def fit_one(self, x, y=None):
 
         for i, xi in x.items():
             self.variances[i].update(xi)
 
-        return self.transform_one(x)
+        return self
 
     def transform_one(self, x):
         return {
@@ -103,7 +101,6 @@ class MinMaxScaler(base.Transformer):
 
     Example:
 
-        >>> import pprint
         >>> import creme
         >>> import numpy as np
         >>> from sklearn import preprocessing
@@ -112,22 +109,23 @@ class MinMaxScaler(base.Transformer):
         >>> X = [{'x': v} for v in rng.uniform(low=8, high=12, size=15)]
 
         >>> scaler = creme.preprocessing.MinMaxScaler()
-        >>> pprint.pprint([scaler.fit_one(x) for x in X])
-        [{'x': 0.0},
-         {'x': 1.0},
-         {'x': 0.620391...},
-         {'x': 0.388976...},
-         {'x': 0.0},
-         {'x': 0.0},
-         {'x': 0.0},
-         {'x': 0.905293...},
-         {'x': 0.608349...},
-         {'x': 0.728172...},
-         {'x': 0.0},
-         {'x': 1.0},
-         {'x': 0.855194...},
-         {'x': 0.201990...},
-         {'x': 0.169847...}]
+        >>> for x in X:
+        ...     print(scaler.fit_one(x).transform_one(x))
+        {'x': 0.0}
+        {'x': 0.999999...}
+        {'x': 0.620391...}
+        {'x': 0.388976...}
+        {'x': 0.0}
+        {'x': 0.0}
+        {'x': 0.0}
+        {'x': 0.905293...}
+        {'x': 0.608349...}
+        {'x': 0.728172...}
+        {'x': 0.0}
+        {'x': 0.999999...}
+        {'x': 0.855194...}
+        {'x': 0.201990...}
+        {'x': 0.169847...}
 
         >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
         >>> preprocessing.MinMaxScaler().fit_transform(X)
@@ -152,7 +150,7 @@ class MinMaxScaler(base.Transformer):
     def __init__(self):
         self.min = collections.defaultdict(stats.Min)
         self.max = collections.defaultdict(stats.Max)
-        self.eps = np.finfo(float).eps
+        self.eps = 10e-10
 
     def fit_one(self, x, y=None):
 
@@ -160,7 +158,7 @@ class MinMaxScaler(base.Transformer):
             self.min[i].update(xi)
             self.max[i].update(xi)
 
-        return self.transform_one(x)
+        return self
 
     def transform_one(self, x):
         return {

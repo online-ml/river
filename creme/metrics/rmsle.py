@@ -23,6 +23,9 @@ class RMSLE(rmse.RMSE):
         0.407546...
         0.357825...
 
+        >>> metric
+        RMSLE: 0.357826
+
     """
 
     def update(self, y_true, y_pred):

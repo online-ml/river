@@ -51,9 +51,6 @@ class FeatureHasher(base.Transformer):
         self.random_state = utils.check_random_state(random_state)
         self.seed = self.random_state.randint(0, 2 ** 32 - 1)
 
-    def fit_one(self, x, y=None):
-        return self.transform_one(x)
-
     def _hash_str(self, s):
         return utils.murmurhash3_32(bytes(s, self.encoding), self.seed)
 

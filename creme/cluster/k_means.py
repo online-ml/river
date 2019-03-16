@@ -96,6 +96,7 @@ class KMeans(base.Clusterer):
         ])
 
     def fit_one(self, x, y=None):
+
         # Find the cluster with the closest center
         closest = self.predict_one(x)
 
@@ -103,7 +104,7 @@ class KMeans(base.Clusterer):
         for i, xi in x.items():
             self.centers[closest][i] += self.halflife * (xi - self.centers[closest][i])
 
-        return closest
+        return self
 
     def predict_one(self, x):
         return min(self.centers, key=lambda c: self.distance(x, self.centers[c]))

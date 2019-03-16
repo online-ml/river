@@ -9,6 +9,15 @@ from .. import utils
 __all__ = ['LinearRegression']
 
 
+class Nil:
+
+    def update(self, x):
+        return self
+
+    def get(self):
+        return 0
+
+
 class LinearRegression(base.Regressor):
     """Linear regression.
 
@@ -32,12 +41,12 @@ class LinearRegression(base.Regressor):
 
         >>> from creme import compose
         >>> from creme import linear_model
+        >>> from creme import metrics
         >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
         >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_boston,
@@ -48,10 +57,10 @@ class LinearRegression(base.Regressor):
         ...     ('scale', preprocessing.StandardScaler()),
         ...     ('learn', linear_model.LinearRegression())
         ... ])
-        >>> metric = metrics.mean_squared_error
+        >>> metric = metrics.MSE()
 
         >>> model_selection.online_score(X_y, model, metric)
-        29.587859...
+        MSE: 29.58786
 
         >>> model.steps[-1][1].intercept.get()
         22.532806...
@@ -63,7 +72,11 @@ class LinearRegression(base.Regressor):
         self.loss = optim.SquaredLoss() if loss is None else loss
         self.l2 = l2
         self.weights = collections.defaultdict(float)
-        self.intercept = stats.Mean() if intercept is None else intercept
+        self.intercept = {
+            False: Nil(),
+            True: stats.Mean(),
+            None: stats.Mean(),
+        }.get(intercept, intercept)
 
     def _predict_with_weights(self, x, w):
         return utils.dot(x, w) + self.intercept.get()
@@ -73,6 +86,13 @@ class LinearRegression(base.Regressor):
         return {i: xi * loss_gradient + self.l2 * w.get(i, 0) for i, xi in x.items()}
 
     def fit_one(self, x, y):
+        self.fit_predict_one(x, y)
+        return self
+
+    def predict_one(self, x):
+        return self._predict_with_weights(x, self.weights)
+
+    def fit_predict_one(self, x, y):
 
         # Update the weights with the error gradient
         self.weights, y_pred = self.optimizer.update_weights(
@@ -88,6 +108,3 @@ class LinearRegression(base.Regressor):
         self.intercept.update(y)
 
         return y_pred
-
-    def predict_one(self, x):
-        return self._predict_with_weights(x, self.weights)

@@ -1,5 +1,7 @@
 from sklearn.utils import metaestimators
 
+from .. import base
+
 
 __all__ = ['Pipeline']
 
@@ -29,8 +31,20 @@ class Pipeline:
     def fit_one(self, x, y=None):
         """Fits each steps with ``x``."""
         for _, step in self.steps:
-            x = step.fit_one(x, y)
-        return x
+
+            if isinstance(step, base.Transformer):
+
+                # If a Transformer is supervised then it has to transform the output before fitting
+                # in order to prevent target leakage
+                if step.is_supervised:
+                    x = step.transform_one(x)
+                    step.fit_one(x, y)
+                else:
+                    x = step.fit_one(x).transform_one(x)
+            else:
+                step.fit_one(x, y)
+
+        return self
 
     @metaestimators.if_delegate_has_method(delegate='_final_estimator')
     def transform_one(self, x):
@@ -61,3 +75,21 @@ class Pipeline:
         for _, step in self.steps[:-1]:
             x = step.transform_one(x)
         return self.steps[-1][1].predict_proba_one(x)
+
+    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
+    def fit_transform_one(self, x, y=None):
+        for _, step in self.steps[:-1]:
+            x = step.fit_transform_one(x, y)
+        return x
+
+    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
+    def fit_predict_one(self, x, y):
+        for _, step in self.steps[:-1]:
+            x = step.fit_transform_one(x, y)
+        return self.steps[-1][1].fit_predict_one(x, y)
+
+    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
+    def fit_predict_proba_one(self, x, y):
+        for _, step in self.steps[:-1]:
+            x = step.fit_transform_one(x, y)
+        return self.steps[-1][1].fit_predict_proba_one(x, y)

@@ -122,12 +122,14 @@ class PassiveAggressiveII(BasePassiveAggressive):
         >>> optimizer = optim.PassiveAggressiveII(C=0.01)
         >>> model = linear_model.LinearRegression(
         ...     optimizer=optimizer,
-        ...     loss=optim.EpsilonInsensitiveHingeLoss(eps=0.1)
+        ...     loss=optim.EpsilonInsensitiveHingeLoss(eps=0.1),
+        ...     intercept=False
         ... )
         >>> metric = metrics.MAE()
 
         >>> for xi, yi in stream.iter_numpy(X, y):
-        ...     y_pred = model.fit_one(xi, yi)
+        ...     y_pred = model.predict_one(xi)
+        ...     model = model.fit_one(xi, yi)
         ...     metric = metric.update(yi, y_pred)
 
         >>> print(metric)

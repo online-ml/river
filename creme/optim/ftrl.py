@@ -15,34 +15,34 @@ class FTRLProximal(base.Optimizer):
 
     ::
 
-        >>> import creme.compose
-        >>> import creme.linear_model
-        >>> import creme.model_selection
-        >>> import creme.optim
-        >>> import creme.preprocessing
-        >>> import creme.stream
+        >>> from creme import compose
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
+        >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
-        >>> X_y = creme.stream.iter_sklearn_dataset(
+        >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_breast_cancer,
         ...     shuffle=True,
         ...     random_state=42
         ... )
-        >>> optimiser = creme.optim.FTRLProximal()
-        >>> model = creme.compose.Pipeline([
-        ...     ('scale', creme.preprocessing.StandardScaler()),
-        ...     ('learn', creme.linear_model.LogisticRegression(optimiser))
+        >>> optimiser = optim.FTRLProximal()
+        >>> model = compose.Pipeline([
+        ...     ('scale', preprocessing.StandardScaler()),
+        ...     ('learn', linear_model.LogisticRegression(optimiser))
         ... ])
-        >>> metric = metrics.roc_auc_score
+        >>> metric = metrics.F1Score()
 
-        >>> creme.model_selection.online_score(X_y, model, metric)
-        0.989766...
+        >>> model_selection.online_score(X_y, model, metric)
+        F1Score: 0.964639
 
     References:
 
-    - `Ad Click Prediction: a View from the Trenches - Research - Google <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
-    - `tf.train.FtrlOptimizer <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
+    1. `Ad Click Prediction: a View from the Trenches - Research - Google <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
+    2. `tf.train.FtrlOptimizer <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
 
     """
 

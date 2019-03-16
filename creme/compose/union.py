@@ -19,6 +19,7 @@ class TransformerUnion(base.Transformer):
 
     ::
 
+        >>> from pprint import pprint
         >>> import creme.compose
         >>> import creme.feature_extraction
 
@@ -47,16 +48,16 @@ class TransformerUnion(base.Transformer):
         ... ])
 
         >>> for x in X:
-        ...     print(sorted(agg.fit_one(x).items()))
-        [('revenue_count_by_place', 1), ('revenue_mean_by_place', 42.0)]
-        [('revenue_count_by_place', 1), ('revenue_mean_by_place', 16.0)]
-        [('revenue_count_by_place', 2), ('revenue_mean_by_place', 20.0)]
-        [('revenue_count_by_place', 2), ('revenue_mean_by_place', 50.0)]
-        [('revenue_count_by_place', 3), ('revenue_mean_by_place', 20.0)]
-        [('revenue_count_by_place', 3), ('revenue_mean_by_place', 50.0)]
+        ...     pprint(agg.fit_one(x).transform_one(x))
+        {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
+        {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
+        {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
+        {'revenue_count_by_place': 2, 'revenue_mean_by_place': 50.0}
+        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 20.0}
+        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
 
-        >>> sorted(agg.transform_one({'place': 'Taco Bell'}).items())
-        [('revenue_count_by_place', 3), ('revenue_mean_by_place', 50.0)]
+        >>> pprint(agg.transform_one({'place': 'Taco Bell'}))
+        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
 
     """
 
@@ -64,7 +65,12 @@ class TransformerUnion(base.Transformer):
         self.transformers = transformers
 
     def fit_one(self, x, y=None):
-        return dict(collections.ChainMap(*(t.fit_one(x, y) for _, t in self.transformers)))
+        for _, transformer in self.transformers:
+            transformer.fit_one(x, y)
+        return self
 
     def transform_one(self, x):
-        return dict(collections.ChainMap(*(t.transform_one(x) for _, t in self.transformers)))
+        return dict(collections.ChainMap(*(
+            transformer.transform_one(x)
+            for _, transformer in self.transformers
+        )))

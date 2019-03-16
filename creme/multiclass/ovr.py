@@ -22,16 +22,15 @@ class OneVsRestClassifier(base.MultiClassifier):
 
     ::
 
-        >>> import functools
         >>> from creme import compose
         >>> from creme import linear_model
+        >>> from creme import metrics
         >>> from creme import model_selection
         >>> from creme import multiclass
         >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
         >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_iris,
@@ -45,10 +44,10 @@ class OneVsRestClassifier(base.MultiClassifier):
         ...         binary_classifier=linear_model.LogisticRegression(optimizer))
         ...     )
         ... ])
-        >>> metric = functools.partial(metrics.f1_score, average='macro')
+        >>> metric = metrics.Accuracy()
 
         >>> model_selection.online_score(X_y, model, metric)
-        0.808782...
+        Accuracy: 0.806667
 
     """
 
@@ -62,15 +61,15 @@ class OneVsRestClassifier(base.MultiClassifier):
         if y not in self.classifiers:
             self.classifiers[y] = copy.deepcopy(self.binary_classifier)
 
-        y_pred = {
-            label: model.fit_one(x, y == label)
-            for label, model in self.classifiers.items()
-        }
-        return utils.softmax(y_pred)
+        # Train each label's associated classifier
+        for label, model in self.classifiers.items():
+            model.fit_one(x, y == label)
+
+        return self
 
     def predict_proba_one(self, x):
         y_pred = {
-            label: model.predict_proba_one(x)
+            label: model.predict_proba_one(x)[True]
             for label, model in self.classifiers.items()
         }
         return utils.softmax(y_pred)

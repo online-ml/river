@@ -21,12 +21,12 @@ class TargetModifierRegressor(base.Regressor):
         >>> import math
         >>> from creme import compose
         >>> from creme import linear_model
+        >>> from creme import metrics
         >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
         >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_boston,
@@ -41,10 +41,10 @@ class TargetModifierRegressor(base.Regressor):
         ...         inverse_func=math.exp
         ...     ))
         ... ])
-        >>> metric = metrics.mean_squared_error
+        >>> metric = metrics.MSE()
 
         >>> model_selection.online_score(X_y, model, metric)
-        26.105649...
+        MSE: 26.105649
 
     """
 
@@ -54,8 +54,8 @@ class TargetModifierRegressor(base.Regressor):
         self.inverse_func = inverse_func
 
     def fit_one(self, x, y):
-        y_pred = self.regressor.fit_one(x, self.func(y))
-        return self.inverse_func(y_pred)
+        self.regressor.fit_one(x, self.func(y))
+        return self
 
     def predict_one(self, x):
         y_pred = self.regressor.predict_one(x)
@@ -79,12 +79,12 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
         >>> import math
         >>> from creme import compose
         >>> from creme import linear_model
+        >>> from creme import metrics
         >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
         >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_boston,
@@ -98,10 +98,10 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
         ...         power=0.05
         ...     ))
         ... ])
-        >>> metric = metrics.mean_squared_error
+        >>> metric = metrics.MSE()
 
         >>> model_selection.online_score(X_y, model, metric)
-        26.186061...
+        MSE: 26.186062
 
     """
 

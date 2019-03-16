@@ -21,6 +21,9 @@ class RMSE(mse.MSE):
         0.408248...
         0.612372...
 
+        >>> metric
+        RMSE: 0.612372
+
     """
 
     def get(self):

@@ -4,7 +4,12 @@ import math
 import numpy as np
 
 
-__all__ = ['SquaredLoss', 'LogLoss', 'AbsoluteLoss', 'HingeLoss']
+__all__ = [
+    'AbsoluteLoss',
+    'HingeLoss',
+    'LogLoss',
+    'SquaredLoss'
+]
 
 
 class Loss(abc.ABC):

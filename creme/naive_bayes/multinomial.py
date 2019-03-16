@@ -48,7 +48,7 @@ class MultinomialNB(base.BaseNB):
         ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
         ... ])
         >>> for x, y in docs:
-        ...     y_pred = model.fit_one({'text': x}, y)
+        ...     model = model.fit_one({'text': x}, y)
 
         >>> model.steps[-1][1].class_dist.pmf('yes')
         0.75
@@ -99,7 +99,6 @@ class MultinomialNB(base.BaseNB):
         return numerator / denominator
 
     def fit_one(self, x, y):
-        y_pred = self.predict_proba_one(x)
 
         self.class_dist.update(y)
 
@@ -107,7 +106,7 @@ class MultinomialNB(base.BaseNB):
             self.term_counts[term][y] += frequency
             self.class_term_counts[y] += frequency
 
-        return y_pred
+        return self
 
     def _joint_log_likelihood(self, x):
         return {

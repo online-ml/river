@@ -26,12 +26,12 @@ class HedgeClassifier(base.BinaryClassifier):
         >>> from creme import compose
         >>> from creme import ensemble
         >>> from creme import linear_model
+        >>> from creme import metrics
         >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets
-        >>> from sklearn import metrics
 
         >>> X_y = stream.iter_sklearn_dataset(
         ...     load_dataset=datasets.load_breast_cancer,
@@ -53,17 +53,17 @@ class HedgeClassifier(base.BinaryClassifier):
         ...         learning_rate=0.9
         ...     ))
         ... ])
-        >>> metric = metrics.roc_auc_score
+        >>> metric = metrics.F1Score()
 
         >>> model_selection.online_score(X_y, model, metric)
-        0.984990...
+        F1Score: 0.921348
 
         >>> model.steps[-1][1].weights
-        [9.795003...e-07, 0.999999...]
+        [0.999999..., 9.978434...e-28]
 
     References:
 
-    - `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
+    1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
 
     """
 
@@ -80,22 +80,17 @@ class HedgeClassifier(base.BinaryClassifier):
         for i, _ in enumerate(self.weights):
             self.weights[i] /= total
 
-        # The consensus is weighted prediction of all the models
-        consensus = 0
-
         for i, (model, weight) in enumerate(zip(self.models, self.weights)):
-            y_pred = model.fit_one(x, y)
-            consensus += weight * y_pred
+            y_pred = model.predict_one(x)
             loss = self.loss(y, y_pred)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
+            model.fit_one(x, y)
 
-        return consensus
+        return self
 
     def predict_proba_one(self, x):
-        return sum(
-            model.predict_proba_one(x) * weight
+        y_pred = sum(
+            model.predict_proba_one(x)[True] * weight
             for model, weight in zip(self.models, self.weights)
         )
-
-    def predict_one(self, x):
-        return self.predict_proba_one(x) > 0.5
+        return {False: 1 - y_pred, True: y_pred}
