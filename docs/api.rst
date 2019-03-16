@@ -50,11 +50,11 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   compat.convert_creme_to_sklearn
    compat.SKLClassifierWrapper
    compat.SKLClustererWrapper
    compat.SKLTransformerWrapper
    compat.SKLRegressorWrapper
-   compat.creme_to_sklearn
 
 
 :mod:`creme.compose`: Model composition
@@ -71,6 +71,7 @@ API reference
    :nosignatures:
 
    compose.BoxCoxTransformRegressor
+   compose.FuncTransformer
    compose.Pipeline
    compose.TargetModifierRegressor
    compose.TransformerUnion
@@ -317,7 +318,6 @@ Loss functions
 
    preprocessing.Discarder
    preprocessing.FeatureHasher
-   preprocessing.FuncTransformer
    preprocessing.MinMaxScaler
    preprocessing.OneHotEncoder
    preprocessing.PolynomialExtender
