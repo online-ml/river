@@ -2,6 +2,8 @@ import collections
 
 from .. import base
 
+from . import func
+
 
 __all__ = ['TransformerUnion']
 
@@ -62,7 +64,27 @@ class TransformerUnion(base.Transformer):
     """
 
     def __init__(self, transformers):
-        self.transformers = transformers
+        self.transformers = []
+
+        for transformer in transformers:
+            self.append(transformer)
+
+    def __add__(self, other):
+        """Append a step and then returns itself."""
+        self.append(other)
+        return self
+
+    def append(self, transformer):
+
+        # Functions are implicitely FuncTransformers
+        if callable(transformer):
+            transformer = func.FuncTransformer(transformer)
+
+        # Infer a name if none is given
+        if not isinstance(transformer, tuple):
+            transformer = (str(transformer), transformer)
+
+        self.transformers.append(transformer)
 
     def fit_one(self, x, y=None):
         for _, transformer in self.transformers:

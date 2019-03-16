@@ -2,6 +2,8 @@ from sklearn.utils import metaestimators
 
 from .. import base
 
+from . import func
+
 
 __all__ = ['Pipeline']
 
@@ -21,7 +23,27 @@ class Pipeline:
     """
 
     def __init__(self, steps):
-        self.steps = steps
+        self.steps = []
+
+        for step in steps:
+            self.append(step)
+
+    def __add__(self, other):
+        """Append a step and then returns itself."""
+        self.append(other)
+        return self
+
+    def append(self, step):
+
+        # Functions are implicitely FuncTransformers
+        if callable(step):
+            step = func.FuncTransformer(step)
+
+        # Infer a name if none is given
+        if not isinstance(step, tuple):
+            step = (str(step), step)
+
+        self.steps.append(step)
 
     @property
     def _final_estimator(self):

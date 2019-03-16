@@ -145,6 +145,10 @@ class Transformer:
             return y_pred
         return self.fit_one(x, y).transform_one(x)
 
+    def __add__(self, other):
+        from . import compose
+        return compose.Pipeline([self, other])
+
 
 class Clusterer:
 
