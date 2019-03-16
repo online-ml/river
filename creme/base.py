@@ -149,6 +149,10 @@ class Transformer:
         from . import compose
         return compose.Pipeline([self, other])
 
+    def __or__(self, other):
+        from . import compose
+        return compose.FeatureUnion([self, other])
+
 
 class Clusterer:
 

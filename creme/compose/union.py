@@ -69,7 +69,7 @@ class TransformerUnion(base.Transformer):
         for transformer in transformers:
             self.append(transformer)
 
-    def __add__(self, other):
+    def __or__(self, other):
         """Append a step and then returns itself."""
         self.append(other)
         return self
