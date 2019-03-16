@@ -49,12 +49,12 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 ```python
 >>> from creme import compose
 >>> from creme import linear_model
+>>> from creme import metrics
 >>> from creme import model_selection
 >>> from creme import optim
 >>> from creme import preprocessing
 >>> from creme import stream
 >>> from sklearn import datasets
->>> from sklearn import metrics
 
 >>> X_y = stream.iter_sklearn_dataset(
 ...     load_dataset=datasets.load_breast_cancer,
@@ -66,10 +66,10 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 ...     ('scale', preprocessing.StandardScaler()),
 ...     ('learn', linear_model.LogisticRegression(optimizer))
 ... ])
->>> metric = metrics.roc_auc_score
+>>> metric = metrics.F1Score()
 
 >>> model_selection.online_score(X_y, model, metric)
-0.993030...
+F1Score: 0.97191
 
 ```
 

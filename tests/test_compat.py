@@ -27,4 +27,4 @@ from creme import preprocessing
     ]
 )
 def test_check_estimator(estimator):
-    estimator_checks.check_estimator(compat.creme_to_sklearn(estimator))
+    estimator_checks.check_estimator(compat.convert_creme_to_sklearn(estimator))

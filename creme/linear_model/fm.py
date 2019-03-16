@@ -48,7 +48,7 @@ class FMRegressor(base.Regressor):
 
         >>> model = compose.Pipeline([
         ...     ('features', compose.TransformerUnion([
-        ...         ('time_in_months', preprocessing.FuncTransformer(get_time_in_months)),
+        ...         ('time_in_months', compose.FuncTransformer(get_time_in_months)),
         ...         ('one_hot', compose.Pipeline([
         ...             ('drop_date', preprocessing.Discarder('date')),
         ...             ('one_hot', preprocessing.OneHotEncoder())
@@ -60,8 +60,15 @@ class FMRegressor(base.Regressor):
 
         >>> for x in X:
         ...     y = x.pop('rating')
-        ...     y_pred = model.predict_one(x)
-        ...     model = model.fit_one(x, y)
+        ...     y_pred = model.fit_predict_one(x, y)
+        ...     print(y_pred)
+        0.0
+        -0.901259...
+        0.412813...
+        4.826101...
+        2.755768...
+        2.278344...
+        0.406779...
 
     """
 

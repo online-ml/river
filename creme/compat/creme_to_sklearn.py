@@ -199,8 +199,8 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
     @property
     def is_binary(self):
         if isinstance(self.creme_estimator, compose.Pipeline):
-            return isinstance(self.creme_estimator._final_estimator, base.BinaryClassifier)
-        return isinstance(self.creme_estimator, base.BinaryClassifier)
+            return not isinstance(self.creme_estimator._final_estimator, base.MultiClassifier)
+        return not isinstance(self.creme_estimator, base.MultiClassifier)
 
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
@@ -274,12 +274,8 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
             raise ValueError(f'Expected {self.n_features_} features, got {X.shape[1]}')
 
         # creme's predictions have to converted to follow the scikit-learn conventions
-        if self.is_binary:
-            def reshape_probas(y_pred):
-                return [1 - y_pred, y_pred]
-        else:
-            def reshape_probas(y_pred):
-                return [y_pred.get(c, 0) for c in self.classes_]
+        def reshape_probas(y_pred):
+            return [y_pred.get(c, 0) for c in self.classes_]
 
         # Make a prediction for each observation
         y_pred = np.empty(shape=(len(X), len(self.classes_)))

@@ -12,7 +12,7 @@ class FuncTransformer(base.Transformer):
     ::
 
         >>> import datetime as dt
-        >>> from creme import preprocessing
+        >>> from creme import compose
 
         >>> x = {'date': '2019-02-14', 'x': 42}
 
@@ -21,7 +21,7 @@ class FuncTransformer(base.Transformer):
         ...     x['is_weekend'] = x['date'].day in (5, 6)
         ...     return x
 
-        >>> transformer = preprocessing.FuncTransformer(parse_date)
+        >>> transformer = compose.FuncTransformer(parse_date)
         >>> transformer.fit_one(x).transform_one(x)
         {'date': datetime.datetime(2019, 2, 14, 0, 0), 'x': 42, 'is_weekend': False}
 
