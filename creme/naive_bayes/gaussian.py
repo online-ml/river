@@ -37,8 +37,8 @@ class GaussianNB(base.BaseNB):
 
     def __init__(self):
         self.class_dist = dist.Multinomial()
-        dd = collections.defaultdict
-        self.gaussians = dd(functools.partial(dd, dist.Normal))
+        defaultdict = collections.defaultdict
+        self.gaussians = defaultdict(functools.partial(defaultdict, dist.Normal))
 
     def fit_one(self, x, y):
 
@@ -52,7 +52,7 @@ class GaussianNB(base.BaseNB):
     def _joint_log_likelihood(self, x):
         return {
             c: math.log(self.class_dist.pmf(c)) + sum(
-                math.log(10e-5 + gaussians[i].pdf(xi))
+                math.log(10e-10 + gaussians[i].pdf(xi))
                 for i, xi in x.items()
             )
             for c, gaussians in self.gaussians.items()

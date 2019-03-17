@@ -1,6 +1,8 @@
 import collections
 import math
 
+from .. import dist
+
 from . import base
 
 
@@ -81,18 +83,22 @@ class MultinomialNB(base.BaseNB):
 
     def __init__(self, alpha=1.0):
         self.alpha = alpha
-        self.class_counts = collections.Counter()
+        self.class_dist = dist.Multinomial()
         self.feature_frequencies = collections.defaultdict(collections.Counter)
         self.class_total_frequencies = collections.Counter()
 
     def fit_one(self, x, y):
-        self.class_counts.update({y: 1})
+        self.class_dist.update(y)
 
         for feature, frequency in x.items():
             self.feature_frequencies[feature].update({y: frequency})
             self.class_total_frequencies.update({y: frequency})
 
         return self
+
+    @property
+    def classes_(self):
+        return list(self.class_total_frequencies.keys())
 
     @property
     def n_terms(self):
@@ -104,7 +110,7 @@ class MultinomialNB(base.BaseNB):
         return num / den
 
     def p_class(self, c):
-        return self.class_counts[c] / sum(self.class_counts.values())
+        return self.class_dist.pmf(c)
 
     def _joint_log_likelihood(self, x):
         return {
@@ -112,5 +118,5 @@ class MultinomialNB(base.BaseNB):
                 frequency * math.log(self.p_feature_given_class(feature, c))
                 for feature, frequency in x.items()
             )
-            for c in self.class_counts
+            for c in self.classes_
         }

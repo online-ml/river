@@ -47,7 +47,7 @@ class Normal(base.ContinuousDistribution):
         return self.mu
 
     def pdf(self, x):
-        variance = self.sigma ** 2
+        variance = self.variance.get()
 
         if variance == 0:
             return 0
