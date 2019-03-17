@@ -23,37 +23,42 @@ class Pipeline(collections.OrderedDict):
     def __init__(self, steps=None):
         if steps is not None:
             for step in steps:
-                self += step
+                self |= step
 
-    def __add__(self, other):
+    def __or__(self, other):
         """Inserts a step at the end of the pipeline."""
         self.add_step(other, at_start=False)
         return self
 
-    def __radd__(self, other):
+    def __ror__(self, other):
         """Inserts a step at the start of the pipeline."""
         self.add_step(other, at_start=True)
         return self
 
     def __str__(self):
-        """Return a human-friendly representation of the pipeline."""
-        return ' -> '.join(self.keys())
+        """Return a human friendly representation of the pipeline."""
+        return ' | '.join(self.keys())
 
     @property
     def __class__(self):
-        """A Pipeline is semantically equivalent to it's final estimator in terms of usage."""
+        """Returns the class of the final estimator for type checking purposes.
+
+        A Pipeline is semantically equivalent to it's final estimator in terms of usage. This is
+        mostly used for deceiving the ``isinstance`` method.
+
+        """
         return self.final_estimator.__class__
 
     def add_step(self, step, at_start):
         """Adds a step to either end of the pipeline while taking care of the input type."""
 
         # Infer a name if none is given
-        if not isinstance(step, collections.abc.Iterable):
+        if not isinstance(step, (list, tuple)):
             step = (str(step), step)
 
         # If a function is given then wrap it in a FuncTransformer
         if callable(step[1]):
-            step[1] = func.FuncTransformer(step[1])
+            step = (step[1].__class__, func.FuncTransformer(step[1]))
 
         # Prefer clarity to magic
         if step[0] in self:

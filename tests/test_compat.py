@@ -4,9 +4,7 @@ from sklearn.utils import estimator_checks
 
 from creme import cluster
 from creme import compat
-from creme import compose
 from creme import linear_model
-from creme import multiclass
 from creme import naive_bayes
 from creme import preprocessing
 
@@ -23,8 +21,10 @@ from creme import preprocessing
             linear_model.LinearRegression(),
             preprocessing.StandardScaler(),
             preprocessing.OneHotEncoder(),
-            cluster.KMeans(),
-            preprocessing.StandardScaler() + linear_model.LinearRegression()
+            cluster.KMeans(random_state=42),
+            preprocessing.MinMaxScaler(),
+            preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
+            preprocessing.StandardScaler() | linear_model.LinearRegression(),
         ]
     ]
 )

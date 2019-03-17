@@ -45,7 +45,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         ...     how=creme.stats.Count()
         ... )
         >>> agg = creme.compose.TransformerUnion([mean])
-        >>> agg |= count
+        >>> agg += count
 
         >>> for x in X:
         ...     pprint(agg.fit_one(x).transform_one(x))
@@ -65,18 +65,22 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         super().__init__()
         if estimators is not None:
             for estimator in estimators:
-                self |= estimator
+                self += estimator
 
-    def __or__(self, other):
+    def __str__(self):
+        """Return a human friendly representation of the pipeline."""
+        return f'{{{", ".join(self.keys())}}}'
+
+    def __add__(self, other):
         """Adds an estimator while taking care of the input type."""
 
         # Infer a name if none is given
-        if not isinstance(other, tuple):
+        if not isinstance(other, (list, tuple)):
             other = (str(other), other)
 
         # If a function is given then wrap it in a FuncTransformer
         if callable(other[1]):
-            other[1] = func.FuncTransformer(other[1])
+            other = (other[1].__name__, func.FuncTransformer(other[1]))
 
         # Prefer clarity to magic
         if other[0] in self:
