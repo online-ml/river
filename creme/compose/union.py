@@ -8,8 +8,8 @@ from . import func
 __all__ = ['TransformerUnion']
 
 
-class TransformerUnion(base.Transformer):
-    """Groups multiple transformers into a single one.
+class TransformerUnion(collections.UserDict, base.Transformer):
+    """Packs multiple transformers into a single one.
 
     Calling ``transform_one`` will concatenate each transformer's output using a
     ``collections.ChainMap``.
@@ -44,10 +44,8 @@ class TransformerUnion(base.Transformer):
         ...     by='place',
         ...     how=creme.stats.Count()
         ... )
-        >>> agg = creme.compose.TransformerUnion([
-        ...     ('mean', mean),
-        ...     ('count', count)
-        ... ])
+        >>> agg = creme.compose.TransformerUnion([mean])
+        >>> agg |= count
 
         >>> for x in X:
         ...     pprint(agg.fit_one(x).transform_one(x))
@@ -63,36 +61,39 @@ class TransformerUnion(base.Transformer):
 
     """
 
-    def __init__(self, transformers):
-        self.transformers = []
-
-        for transformer in transformers:
-            self.append(transformer)
+    def __init__(self, estimators=None):
+        super().__init__()
+        if estimators is not None:
+            for estimator in estimators:
+                self |= estimator
 
     def __or__(self, other):
-        """Append a step and then returns itself."""
-        self.append(other)
-        return self
-
-    def append(self, transformer):
-
-        # Functions are implicitely FuncTransformers
-        if callable(transformer):
-            transformer = func.FuncTransformer(transformer)
+        """Adds an estimator while taking care of the input type."""
 
         # Infer a name if none is given
-        if not isinstance(transformer, tuple):
-            transformer = (str(transformer), transformer)
+        if not isinstance(other, tuple):
+            other = (str(other), other)
 
-        self.transformers.append(transformer)
+        # If a function is given then wrap it in a FuncTransformer
+        if callable(other[1]):
+            other[1] = func.FuncTransformer(other[1])
+
+        # Prefer clarity to magic
+        if other[0] in self:
+            raise KeyError(f'{other[0]} already exists')
+
+        # Store the estimator
+        self[other[0]] = other[1]
+
+        return self
 
     def fit_one(self, x, y=None):
-        for _, transformer in self.transformers:
-            transformer.fit_one(x, y)
+        for estimator in self.values():
+            estimator.fit_one(x, y)
         return self
 
     def transform_one(self, x):
         return dict(collections.ChainMap(*(
-            transformer.transform_one(x)
-            for _, transformer in self.transformers
+            estimator.transform_one(x)
+            for estimator in self.values()
         )))

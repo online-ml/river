@@ -3,7 +3,7 @@ Base classes used throughout the library.
 """
 import abc
 
-from .. import types
+from . import types
 
 
 class Estimator:

@@ -70,4 +70,7 @@ class GroupBy(base.Transformer):
         return self.transform_one(x)
 
     def transform_one(self, x):
-        return {f'{self.on}_{self.how.name}_by_{self.by}': self.groups[x[self.by]].get()}
+        return {str(self): self.groups[x[self.by]].get()}
+
+    def __str__(self):
+        return f'{self.on}_{self.how.name}_by_{self.by}'

@@ -21,7 +21,7 @@ class Pipeline(collections.OrderedDict):
     """
 
     def __init__(self, steps=None):
-        if steps:
+        if steps is not None:
             for step in steps:
                 self += step
 
@@ -54,6 +54,10 @@ class Pipeline(collections.OrderedDict):
         # If a function is given then wrap it in a FuncTransformer
         if callable(step[1]):
             step[1] = func.FuncTransformer(step[1])
+
+        # Prefer clarity to magic
+        if step[0] in self:
+            raise KeyError(f'{step[0]} already exists')
 
         # Store the step
         self[step[0]] = step[1]

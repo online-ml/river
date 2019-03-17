@@ -14,7 +14,7 @@ from creme import preprocessing
 @pytest.mark.parametrize(
     'estimator',
     [
-        pytest.param(estimator, id=estimator.__class__.__name__)
+        pytest.param(estimator, id=str(estimator))
         for estimator in [
             naive_bayes.GaussianNB(),
             # multiclass.OneVsRestClassifier(
