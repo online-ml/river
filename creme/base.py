@@ -4,7 +4,13 @@ Base classes used throughout the library.
 import abc
 
 
-class Regressor:
+class Estimator:
+
+    def __str__(self):
+        return self.__class__.__name__
+
+
+class Regressor(Estimator):
 
     @abc.abstractmethod
     def fit_one(self, x: dict, y: float):
@@ -37,7 +43,7 @@ class Regressor:
         return y_pred
 
 
-class BinaryClassifier:
+class BinaryClassifier(Estimator):
 
     @abc.abstractmethod
     def fit_one(self, x: dict, y: bool):
@@ -94,7 +100,7 @@ class MultiClassifier(BinaryClassifier):
     """A MultiClassifier can handle more than two classes."""
 
 
-class Transformer:
+class Transformer(Estimator):
 
     def fit_one(self, x: dict, y=None) -> dict:
         """Fits to a set of features ``x ` and an optinal target ``y``.
@@ -146,15 +152,26 @@ class Transformer:
         return self.fit_one(x, y).transform_one(x)
 
     def __add__(self, other):
+        """Merges with another Transformer into a Pipeline."""
         from . import compose
+        if isinstance(other, compose.Pipeline):
+            return other.__radd__(self)
         return compose.Pipeline([self, other])
 
-    def __or__(self, other):
+    def __radd__(self, other):
+        """Merges with another Transformer into a Pipeline."""
         from . import compose
-        return compose.FeatureUnion([self, other])
+        if isinstance(other, compose.Pipeline):
+            return other.__add__(self)
+        return compose.Pipeline([other, self])
+
+    def __or__(self, other):
+        """Merges with another Transformer into a TransformerUnion."""
+        from . import compose
+        return compose.TransformerUnion([self, other])
 
 
-class Clusterer:
+class Clusterer(Estimator):
 
     @abc.abstractmethod
     def fit_one(self, x: dict, y=None) -> int:

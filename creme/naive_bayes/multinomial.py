@@ -49,9 +49,9 @@ class MultinomialNB(base.BaseNB):
         >>> for x, y in docs:
         ...     model = model.fit_one({'text': x}, y)
 
-        >>> model.steps[-1][1].p_class('yes')
+        >>> model['nb'].p_class('yes')
         0.75
-        >>> cp = model.steps[-1][1].p_feature_given_class
+        >>> cp = model['nb'].p_feature_given_class
         >>> cp('Chinese', 'yes') ==  3 / 7
         True
         >>> cp('Tokyo', 'yes') ==  1 / 14
@@ -66,11 +66,11 @@ class MultinomialNB(base.BaseNB):
         True
 
         >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
-        >>> tokens = model.steps[0][1].transform_one({'text': new_text})
-        >>> llh = model.steps[-1][1]._joint_log_likelihood(tokens)
-        >>> math.exp(llh['yes'])
+        >>> tokens = model['tokenize'].transform_one({'text': new_text})
+        >>> jlh = model['nb']._joint_log_likelihood(tokens)
+        >>> math.exp(jlh['yes'])
         0.0003...
-        >>> math.exp(llh['no'])
+        >>> math.exp(jlh['no'])
         0.0001...
         >>> model.predict_one({'text': new_text})
         'yes'

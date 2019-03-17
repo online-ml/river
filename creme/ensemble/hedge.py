@@ -58,7 +58,7 @@ class HedgeClassifier(base.BinaryClassifier):
         >>> model_selection.online_score(X_y, model, metric)
         F1Score: 0.921348
 
-        >>> model.steps[-1][1].weights
+        >>> model['hedge'].weights
         [0.999999..., 9.978434...e-28]
 
     References:

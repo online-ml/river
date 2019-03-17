@@ -9,7 +9,7 @@ from .. import utils
 __all__ = ['LinearRegression']
 
 
-class Nil:
+class NilIntercept:
 
     def update(self, x):
         return self
@@ -55,14 +55,14 @@ class LinearRegression(base.Regressor):
         ... )
         >>> model = compose.Pipeline([
         ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('learn', linear_model.LinearRegression())
+        ...     ('lin_reg', linear_model.LinearRegression())
         ... ])
         >>> metric = metrics.MSE()
 
         >>> model_selection.online_score(X_y, model, metric)
         MSE: 29.58786
 
-        >>> model.steps[-1][1].intercept.get()
+        >>> model['lin_reg'].intercept.get()
         22.532806...
 
     """
@@ -73,7 +73,7 @@ class LinearRegression(base.Regressor):
         self.l2 = l2
         self.weights = collections.defaultdict(float)
         self.intercept = {
-            False: Nil(),
+            False: NilIntercept(),
             True: stats.Mean(),
             None: stats.Mean(),
         }.get(intercept, intercept)

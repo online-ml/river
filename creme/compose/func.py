@@ -32,3 +32,6 @@ class FuncTransformer(base.Transformer):
 
     def transform_one(self, x):
         return self.func(x)
+
+    def __str__(self):
+        return self.func.__name__

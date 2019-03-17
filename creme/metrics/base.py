@@ -46,7 +46,7 @@ class BinaryClassificationMetric(ClassificationMetric):
 
     def works_with(self, model):
         if isinstance(model, compose.Pipeline):
-            model = model.steps[-1][1]
+            model = model.final_estimator
         return isinstance(model, base.BinaryClassifier)
 
 
@@ -58,7 +58,7 @@ class MultiClassificationMetric(BinaryClassificationMetric):
 
     def works_with(self, model):
         if isinstance(model, compose.Pipeline):
-            model = model.steps[-1][1]
+            model = model.final_estimator
         return isinstance(model, (base.MultiClassifier, base.BinaryClassifier))
 
 
@@ -70,5 +70,5 @@ class RegressionMetric(BaseMetric):
 
     def works_with(self, model):
         if isinstance(model, compose.Pipeline):
-            model = model.steps[-1][1]
+            model = model.final_estimator
         return isinstance(model, base.Regressor)

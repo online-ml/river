@@ -1,3 +1,6 @@
+import collections
+import itertools
+
 from sklearn.utils import metaestimators
 
 from .. import base
@@ -8,110 +11,145 @@ from . import func
 __all__ = ['Pipeline']
 
 
-class Pipeline:
+class Pipeline(collections.OrderedDict):
     """A sequence of estimators.
 
-    During training each observation is processed in the order in which the steps have been
-    provided. Each observation is processed independently from the others, which means the whole
-    process can act as true producer/consumer pipeline where each estimator can run in parallel
-    with the others.
-
     Parameters:
-        steps (list): List of (name, transform) tuples (implementing fit/transform) that are
-            chained, in the order in which they are chained, with the last object an estimator.
+        steps (list): Ideally a list of (name, estimator) tuples. If an estimator is given without
+            a name then a name is automatically inferred from the estimator.
 
     """
 
-    def __init__(self, steps):
-        self.steps = []
-
-        for step in steps:
-            self.append(step)
+    def __init__(self, steps=None):
+        if steps:
+            for step in steps:
+                self += step
 
     def __add__(self, other):
-        """Append a step and then returns itself."""
-        self.append(other)
+        """Inserts a step at the end of the pipeline."""
+        self.add_step(other, at_start=False)
         return self
 
-    def append(self, step):
+    def __radd__(self, other):
+        """Inserts a step at the start of the pipeline."""
+        self.add_step(other, at_start=True)
+        return self
 
-        # Functions are implicitely FuncTransformers
-        if callable(step):
-            step = func.FuncTransformer(step)
+    def __str__(self):
+        """Return a human-friendly representation of the pipeline."""
+        return ' -> '.join(self.keys())
+
+    def add_step(self, step, at_start):
+        """Adds a step to either end of the pipeline while taking care of the input type."""
 
         # Infer a name if none is given
-        if not isinstance(step, tuple):
+        if not isinstance(step, collections.abc.Iterable):
             step = (str(step), step)
 
-        self.steps.append(step)
+        # If a function is given then wrap it in a FuncTransformer
+        if callable(step[1]):
+            step[1] = func.FuncTransformer(step[1])
+
+        # Store the step
+        self[step[0]] = step[1]
+
+        # Move the step to the start of the pipeline if so instructed
+        if at_start:
+            self.move_to_end(step[0], last=False)
 
     @property
-    def _final_estimator(self):
-        """Returns the final estimator."""
-        return self.steps[-1][1]
+    def final_estimator(self):
+        """The final estimator."""
+        return self[next(reversed(self))]
+
+    @property
+    def n_steps(self):
+        """The number of steps"""
+        return len(self)
 
     def fit_one(self, x, y=None):
-        """Fits each steps with ``x``."""
-        for _, step in self.steps:
+        """Fits each step with ``x``."""
 
-            if isinstance(step, base.Transformer):
+        for estimator in self.values():
+
+            if isinstance(estimator, base.Transformer):
 
                 # If a Transformer is supervised then it has to transform the output before fitting
                 # in order to prevent target leakage
-                if step.is_supervised:
-                    x = step.transform_one(x)
-                    step.fit_one(x, y)
+                if estimator.is_supervised:
+                    x = estimator.transform_one(x)
+                    estimator.fit_one(x, y)
                 else:
-                    x = step.fit_one(x).transform_one(x)
+                    x = estimator.fit_one(x).transform_one(x)
             else:
-                step.fit_one(x, y)
+                estimator.fit_one(x, y)
 
         return self
 
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def transform_one(self, x):
-        """Runs ``x`` through each transformer.
+        """Transform an input.
 
-        Only works if the final estimator is a transformer.
+        Only works if each estimator has a ``transform_one`` method.
 
         """
-
-        for _, step in self.steps:
-            x = step.transform_one(x)
+        for estimator in self.values():
+            x = estimator.transform_one(x)
         return x
 
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def predict_one(self, x):
-        """Predicts the output of ``x``."""
-        for _, step in self.steps[:-1]:
-            x = step.transform_one(x)
-        return self.steps[-1][1].predict_one(x)
+        """Predict output.
 
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
-    def predict_proba_one(self, x):
-        """Predicts the probability outcome of ``x``.
-
-        Only works if the final estimator is a classifier.
+        Only works if each estimator has a ``transform_one`` method and the final estimator has a ``predict_one`` method.
 
         """
-        for _, step in self.steps[:-1]:
-            x = step.transform_one(x)
-        return self.steps[-1][1].predict_proba_one(x)
+        for estimator in itertools.islice(self.values(), self.n_steps - 1):
+            x = estimator.transform_one(x)
+        return self.final_estimator.predict_one(x)
 
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
+    def predict_proba_one(self, x):
+        """Predicts probabilities.
+
+        Only works if each estimator has a ``transform_one`` method and the final estimator has a ``predict_proba_one`` method.
+
+        """
+        for estimator in itertools.islice(self.values(), self.n_steps - 1):
+            x = estimator.transform_one(x)
+        return self.final_estimator.predict_proba_one(x)
+
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def fit_transform_one(self, x, y=None):
-        for _, step in self.steps[:-1]:
-            x = step.fit_transform_one(x, y)
+        """Fit and transform.
+
+        Only works if each estimator has a ``fit_transform_one`` method.
+
+        """
+        for estimator in self.values():
+            x = estimator.fit_transform_one(x, y)
         return x
 
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def fit_predict_one(self, x, y):
-        for _, step in self.steps[:-1]:
-            x = step.fit_transform_one(x, y)
-        return self.steps[-1][1].fit_predict_one(x, y)
+        """Fit and predict.
 
-    @metaestimators.if_delegate_has_method(delegate='_final_estimator')
+        Only works if each estimator has a ``fit_transform_one`` method and the final estimator has
+        a ``fit_predict_one`` method.
+
+        """
+        for estimator in itertools.islice(self.values(), self.n_steps - 1):
+            x = estimator.fit_transform_one(x, y)
+        return self.final_estimator.fit_predict_one(x, y)
+
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def fit_predict_proba_one(self, x, y):
-        for _, step in self.steps[:-1]:
-            x = step.fit_transform_one(x, y)
-        return self.steps[-1][1].fit_predict_proba_one(x, y)
+        """Fit and predict probabilities.
+
+        Only works if each estimator has a ``fit_transform_one`` method and the final estimator has
+        a ``fit_predict_proba_one`` method.
+
+        """
+        for estimator in itertools.islice(self.values(), self.n_steps - 1):
+            x = estimator.fit_transform_one(x, y)
+        return self.final_estimator.fit_predict_proba_one(x, y)
