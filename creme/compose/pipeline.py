@@ -39,6 +39,11 @@ class Pipeline(collections.OrderedDict):
         """Return a human-friendly representation of the pipeline."""
         return ' -> '.join(self.keys())
 
+    @property
+    def __class__(self):
+        """A Pipeline is semantically equivalent to it's final estimator in terms of usage."""
+        return self.final_estimator.__class__
+
     def add_step(self, step, at_start):
         """Adds a step to either end of the pipeline while taking care of the input type."""
 

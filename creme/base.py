@@ -3,6 +3,8 @@ Base classes used throughout the library.
 """
 import abc
 
+from .. import types
+
 
 class Estimator:
 
@@ -96,8 +98,58 @@ class BinaryClassifier(Estimator):
         return y_pred
 
 
-class MultiClassifier(BinaryClassifier):
+class MultiClassifier(Estimator):
     """A MultiClassifier can handle more than two classes."""
+
+    @abc.abstractmethod
+    def fit_one(self, x: dict, y: types.Label):
+        """Fits to a set of features ``x`` and a boolean target ``y``.
+
+        Parameters:
+            x (dict)
+            y (types.Label)
+
+        Returns:
+            self
+
+        """
+
+    @abc.abstractmethod
+    def predict_proba_one(self, x: dict) -> dict:
+        """Predicts the probability output of a set of features ``x``
+
+        Parameters:
+            x (dict)
+
+        Returns:
+            dict
+
+        """
+
+    def predict_one(self, x: dict) -> types.Label:
+        """Predicts the target value of a set of features ``x``
+
+        Parameters:
+            x (dict)
+
+        Returns:
+            types.Label
+
+        """
+        y_pred = self.predict_proba_one(x)
+        if y_pred:
+            return max(self.predict_proba_one(x), key=y_pred.get)
+        return None
+
+    def fit_predict_proba_one(self, x: dict, y: float) -> dict:
+        y_pred = self.predict_proba_one(x)
+        self.fit_one(x, y)
+        return y_pred
+
+    def fit_predict_one(self, x: dict, y: float) -> bool:
+        y_pred = self.predict_one(x)
+        self.fit_one(x, y)
+        return y_pred
 
 
 class Transformer(Estimator):
@@ -145,6 +197,7 @@ class Transformer(Estimator):
         return False
 
     def fit_transform_one(self, x: dict, y=None):
+        """Fits and transforms while ensuring no leakage occurs if the transformer is supervised."""
         if self.is_supervised:
             y_pred = self.transform_one(x)
             self.fit_one(x, y)
