@@ -1,8 +1,9 @@
 import abc
 import math
 
+from scipy import misc
+
 from .. import base
-from .. import utils
 
 
 class BaseNB(base.MultiClassifier, abc.ABC):
@@ -20,8 +21,12 @@ class BaseNB(base.MultiClassifier, abc.ABC):
 
         """
 
+    def predict_one(self, x):
+        jll = self._joint_log_likelihood(x)
+        return max(jll, key=jll.get)
+
     def predict_proba_one(self, x):
         """Return probabilities using the log-likelihoods."""
-        jlh = self._joint_log_likelihood(x)
-        lse = math.log(sum(math.exp(l) for l in jlh.values()) or 1)
-        return utils.softmax({label: l - lse for label, l in jlh.items()})
+        jll = self._joint_log_likelihood(x)
+        lse = misc.logsumexp(list(jll.values()))
+        return {label: math.exp(ll - lse) for label, ll in jll.items()}

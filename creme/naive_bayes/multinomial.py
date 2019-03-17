@@ -1,8 +1,5 @@
 import collections
-import functools
 import math
-
-from .. import dist
 
 from . import base
 
@@ -50,9 +47,9 @@ class MultinomialNB(base.BaseNB):
         >>> for x, y in docs:
         ...     model = model.fit_one({'text': x}, y)
 
-        >>> model.steps[-1][1].class_dist.pmf('yes')
+        >>> model.steps[-1][1].p_class('yes')
         0.75
-        >>> cp = model.steps[-1][1].p_term_given_class
+        >>> cp = model.steps[-1][1].p_feature_given_class
         >>> cp('Chinese', 'yes') ==  3 / 7
         True
         >>> cp('Tokyo', 'yes') ==  1 / 14
@@ -84,35 +81,36 @@ class MultinomialNB(base.BaseNB):
 
     def __init__(self, alpha=1.0):
         self.alpha = alpha
-        self.class_dist = dist.Multinomial()
-        self.term_counts = collections.defaultdict(functools.partial(collections.defaultdict, int))
-        self.class_term_counts = collections.defaultdict(int)
-
-    @property
-    def n_terms(self):
-        return len(self.term_counts)
-
-    def p_term_given_class(self, term, c):
-        """Returns P(term | class)."""
-        numerator = self.term_counts[term][c] + self.alpha
-        denominator = self.class_term_counts[c] + self.alpha * self.n_terms
-        return numerator / denominator
+        self.class_counts = collections.Counter()
+        self.feature_frequencies = collections.defaultdict(collections.Counter)
+        self.class_total_frequencies = collections.Counter()
 
     def fit_one(self, x, y):
+        self.class_counts.update({y: 1})
 
-        self.class_dist.update(y)
-
-        for term, frequency in x.items():
-            self.term_counts[term][y] += frequency
-            self.class_term_counts[y] += frequency
+        for feature, frequency in x.items():
+            self.feature_frequencies[feature].update({y: frequency})
+            self.class_total_frequencies.update({y: frequency})
 
         return self
 
+    @property
+    def n_terms(self):
+        return len(self.feature_frequencies)
+
+    def p_feature_given_class(self, f, c):
+        num = self.feature_frequencies[f][c] + self.alpha
+        den = self.class_total_frequencies[c] + self.alpha * self.n_terms
+        return num / den
+
+    def p_class(self, c):
+        return self.class_counts[c] / sum(self.class_counts.values())
+
     def _joint_log_likelihood(self, x):
         return {
-            c: math.log(self.class_dist.pmf(c)) + sum(
-                frequency * math.log(self.p_term_given_class(term, c))
-                for term, frequency in x.items()
+            c: math.log(self.p_class(c)) + sum(
+                frequency * math.log(self.p_feature_given_class(feature, c))
+                for feature, frequency in x.items()
             )
-            for c in self.class_term_counts
+            for c in self.class_counts
         }
