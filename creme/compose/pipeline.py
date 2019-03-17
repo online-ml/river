@@ -71,11 +71,6 @@ class Pipeline(collections.OrderedDict):
         """The final estimator."""
         return self[next(reversed(self))]
 
-    @property
-    def n_steps(self):
-        """The number of steps"""
-        return len(self)
-
     def fit_one(self, x, y=None):
         """Fits each step with ``x``."""
 
@@ -113,7 +108,7 @@ class Pipeline(collections.OrderedDict):
         Only works if each estimator has a ``transform_one`` method and the final estimator has a ``predict_one`` method.
 
         """
-        for estimator in itertools.islice(self.values(), self.n_steps - 1):
+        for estimator in itertools.islice(self.values(), len(self) - 1):
             x = estimator.transform_one(x)
         return self.final_estimator.predict_one(x)
 
@@ -124,7 +119,7 @@ class Pipeline(collections.OrderedDict):
         Only works if each estimator has a ``transform_one`` method and the final estimator has a ``predict_proba_one`` method.
 
         """
-        for estimator in itertools.islice(self.values(), self.n_steps - 1):
+        for estimator in itertools.islice(self.values(), len(self) - 1):
             x = estimator.transform_one(x)
         return self.final_estimator.predict_proba_one(x)
 
@@ -147,7 +142,7 @@ class Pipeline(collections.OrderedDict):
         a ``fit_predict_one`` method.
 
         """
-        for estimator in itertools.islice(self.values(), self.n_steps - 1):
+        for estimator in itertools.islice(self.values(), len(self) - 1):
             x = estimator.fit_transform_one(x, y)
         return self.final_estimator.fit_predict_one(x, y)
 
@@ -159,6 +154,6 @@ class Pipeline(collections.OrderedDict):
         a ``fit_predict_proba_one`` method.
 
         """
-        for estimator in itertools.islice(self.values(), self.n_steps - 1):
+        for estimator in itertools.islice(self.values(), len(self) - 1):
             x = estimator.fit_transform_one(x, y)
         return self.final_estimator.fit_predict_proba_one(x, y)
