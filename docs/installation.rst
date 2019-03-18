@@ -48,7 +48,17 @@ Option 3. Install with Docker
 =============================
 `scikit-multiflow` is also available in Docker. Docker images are located in the `skmultiflow/scikit-multiflow <https://hub.docker.com/r/skmultiflow/scikit-multiflow>`_ Docker Hub repository.
 
-You can download the image and start using `scikit-multiflow`.
+You can download the image and start using `scikit-multiflow`. Image releases are tagged using the following format:
+
+=============  ==================================================================
+tag            Description
+=============  ==================================================================
+latest         scikit-multiflow image
+jupyter        scikit-multiflow image with Jupyter
+devel          scikit-multiflow image that tracks Github repository
+devel-jupyter  scikit-multiflow image with Jupyter that tracks Github repository
+=============  ==================================================================
+
 
 Download `scikit-multiflow` Docker image
 
@@ -69,7 +79,9 @@ Run the Hoeffding Tree example
     $ python hoeffding_tree.py
 
 
-Also, we provide images with `Jupyter Notebook <http://jupyter.org/>`_. For more details, see `skmultiflow/scikit-multiflow <https://hub.docker.com/r/skmultiflow/scikit-multiflow>`_ Docker Hub repository.
+Also, for more examples see `Quick-Start Guide with Docker <user-guide.quick-start-docker.html>`_
+
+
 
 Option 4. Development version
 ====================================
@@ -111,4 +123,3 @@ In order to display plots from ``scikit-multiflow`` within a `Jupyter Notebook <
 .. code-block:: python
 
    %matplotlib ipympl
-
