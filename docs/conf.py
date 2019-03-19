@@ -115,9 +115,7 @@ html_theme_options = {
     'github_user': 'creme-ml',
     'github_repo': 'creme',
     'github_banner': 'true',
-    'github_button': 'false',
-    'travis_button': 'true',
-    'codecov_button': 'true'
+    'page_width': 1240
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
