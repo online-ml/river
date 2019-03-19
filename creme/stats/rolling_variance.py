@@ -47,7 +47,7 @@ class RollingVariance(base.RunningStatistic):
 
     @property
     def name(self):
-        return 'rolling_{self.window_size}_variance'
+        return f'rolling_{self.window_size}_variance'
 
     def update(self, x):
         if len(self.rolling_mean) >= self.window_size:

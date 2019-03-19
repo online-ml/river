@@ -37,11 +37,11 @@ def fetch_csv_dataset(data_home, url, name, **iter_csv_params):
         # Delete the ZIP file now that the CSV file is available
         os.remove(zip_path)
 
-        return fetch_dataset(data_home, url, name, target_name)
+        return fetch_csv_dataset(data_home, url, name, **iter_csv_params)
 
     # Download the ZIP file
     print('Downloading data...')
     with urllib.request.urlopen(url) as r, open(zip_path, 'wb') as f:
         shutil.copyfileobj(r, f)
 
-    return fetch_dataset(data_home, url, name, target_name)
+    return fetch_csv_dataset(data_home, url, name, **iter_csv_params)

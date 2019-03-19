@@ -48,7 +48,7 @@ class RollingQuantile(base.RunningStatistic, _window.SortedWindow):
 
     @property
     def name(self):
-        return 'rolling_{self.window_size}_quantile'
+        return f'rolling_{self.window_size}_quantile'
 
     def update(self, x):
         self.append(x)

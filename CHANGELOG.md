@@ -39,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `GaussianNB` to `naive_bayes`
 - `Multinomial` and `Normal` to `dist`
 - `PassiveAggressiveI` and `PassiveAggressiveII` to `optim`
+- `TargetGroupBy` to `feature_extraction`
 
 ### Modified
 

@@ -14,7 +14,6 @@ from sklearn import preprocessing
 from sklearn import utils
 
 from .. import base
-from .. import compose
 from .. import stream
 
 

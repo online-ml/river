@@ -126,6 +126,7 @@ API reference
    feature_extraction.CountVectorizer
    feature_extraction.GroupBy
    feature_extraction.TargetEncoder
+   feature_extraction.TargetGroupBy
    feature_extraction.TFIDFVectorizer
 
 

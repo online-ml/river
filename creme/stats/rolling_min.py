@@ -29,7 +29,7 @@ class RollingMin(base.RunningStatistic, _window.SortedWindow):
 
     @property
     def name(self):
-        return 'rolling_{self.window_size}_min'
+        return f'rolling_{self.window_size}_min'
 
     def update(self, x):
         self.append(x)

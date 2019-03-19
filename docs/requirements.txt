@@ -1,3 +1,4 @@
+graphviz==0.10.1
 ipykernel==4.8.2
 jupyter-client==5.2.3
 matplotlib==3.0.2

@@ -88,9 +88,9 @@ class TargetEncoder(base.Transformer):
 
     References:
 
-    - `Additive smoothing <https://www.wikiwand.com/en/Additive_smoothing>`_
-    - `Bayesian average <https://www.wikiwand.com/en/Bayesian_average>`_
-    - `Practical example of Bayes estimators <https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators>`_
+    1. `Additive smoothing <https://www.wikiwand.com/en/Additive_smoothing>`_
+    2. `Bayesian average <https://www.wikiwand.com/en/Bayesian_average>`_
+    3. `Practical example of Bayes estimators <https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators>`_
 
     """
 

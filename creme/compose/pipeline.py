@@ -1,11 +1,17 @@
 import collections
 import itertools
 
+try:
+    import graphviz
+    GRAPHVIZ_INSTALLED = True
+except ImportError:
+    GRAPHVIZ_INSTALLED = False
 from sklearn.utils import metaestimators
 
 from .. import base
 
 from . import func
+from . import union
 
 
 __all__ = ['Pipeline']
@@ -162,3 +168,37 @@ class Pipeline(collections.OrderedDict):
         for estimator in itertools.islice(self.values(), len(self) - 1):
             x = estimator.fit_transform_one(x, y)
         return self.final_estimator.fit_predict_proba_one(x, y)
+
+    def draw(self):
+        """Draws the pipeline using the ``graphviz`` library."""
+
+        if not GRAPHVIZ_INSTALLED:
+            raise ImportError('graphviz is not installed')
+
+        graph = graphviz.Digraph()
+
+        steps = iter(['input'] + list(self.keys()) + ['output'])
+
+        def draw_step(previous_steps=None):
+
+            step = next(steps, None)
+            if step is None:
+                return
+
+            if isinstance(self.get(step), union.TransformerUnion):
+                step = self[step].keys()
+            else:
+                step = [step]
+
+            for substep in step:
+                graph.node(substep)
+
+                for previous_step in previous_steps or []:
+                    graph.edge(previous_step, substep)
+
+            # Recurse
+            draw_step(step)
+
+        draw_step()
+
+        return graph

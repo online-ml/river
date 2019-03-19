@@ -97,7 +97,15 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         return self
 
     def transform_one(self, x):
+        """Passes the data through each transformer and packs the results together."""
         return dict(collections.ChainMap(*(
             estimator.transform_one(x)
+            for estimator in self.values()
+        )))
+
+    def fit_transform_one(self, x: dict, y=None):
+        """Fits and transforms while ensuring no leakage occurs if the transformer is supervised."""
+        return dict(collections.ChainMap(*(
+            estimator.fit_transform_one(x, y)
             for estimator in self.values()
         )))

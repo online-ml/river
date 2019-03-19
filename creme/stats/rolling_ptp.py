@@ -35,7 +35,7 @@ class RollingPeakToPeak(base.RunningStatistic):
 
     @property
     def name(self):
-        return 'rolling_{self.window_size}_ptp'
+        return f'rolling_{self.window_size}_ptp'
 
     def update(self, x):
         self.max.update(x)

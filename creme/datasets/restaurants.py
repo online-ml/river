@@ -19,11 +19,16 @@ def fetch_restaurants(data_home=None):
     name = 'kaggle_recruit_restaurants'
     url = 'https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip'
 
-    return base.fetch_dataset(
+    return base.fetch_csv_dataset(
         data_home=data_home,
         url=url,
         name=name,
         target_name='visitors',
-        types={'visitors': int},
+        types={
+            'latitude': float,
+            'longitude': float,
+            'visitors': int,
+            'is_holiday': bool
+        },
         parse_dates={'date': '%Y-%m-%d'}
     )

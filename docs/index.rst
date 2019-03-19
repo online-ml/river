@@ -33,5 +33,5 @@ Contents
 
    install
    api
+   user-guide
    faq
-   notebooks

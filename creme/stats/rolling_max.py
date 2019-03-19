@@ -29,7 +29,7 @@ class RollingMax(base.RunningStatistic, _window.SortedWindow):
 
     @property
     def name(self):
-        return 'rolling_{self.window_size}_max'
+        return f'rolling_{self.window_size}_max'
 
     def update(self, x):
         self.append(x)
