@@ -46,7 +46,7 @@ class GroupBy(base.Transformer):
         ... )
 
         >>> for x in X:
-        ...     print(agg.fit_one(x))
+        ...     print(agg.fit_transform_one(x))
         {'revenue_mean_by_place': 42.0}
         {'revenue_mean_by_place': 16.0}
         {'revenue_mean_by_place': 20.0}
