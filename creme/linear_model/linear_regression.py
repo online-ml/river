@@ -82,7 +82,7 @@ class LinearRegression(base.Regressor):
         return utils.dot(x, w) + self.intercept.get()
 
     def _calc_gradient(self, y_true, y_pred, loss, x, w):
-        loss_gradient = loss.gradient(y_true, y_pred)
+        loss_gradient = loss.gradient(y_true=y_true, y_pred=y_pred)
         return {i: xi * loss_gradient + self.l2 * w.get(i, 0) for i, xi in x.items()}
 
     def fit_one(self, x, y):

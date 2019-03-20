@@ -8,7 +8,7 @@ from . import recall
 
 
 class F1Score(stats.Mean, base.BinaryClassificationMetric):
-    """
+    """F1-score, which is the harmonic mean of the precision and the recall.
 
     Example:
 

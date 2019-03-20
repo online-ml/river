@@ -1,7 +1,6 @@
 import abc
 
 from .. import base
-from .. import compose
 from .. import types
 
 

@@ -1,6 +1,5 @@
 import collections
 import copy
-import statistics
 
 from sklearn import utils
 
@@ -10,7 +9,7 @@ from .. import base
 __all__ = ['BaggingClassifier']
 
 
-class BaggingClassifier(base.BinaryClassifier):
+class BaggingClassifier(base.BinaryClassifier, base.MultiClassifier):
     """Bagging for classification.
 
     For each incoming observation, each model's `fit_one` method is called `k` times where `k`
@@ -20,7 +19,7 @@ class BaggingClassifier(base.BinaryClassifier):
     for more detailed values.
 
     Parameters:
-        base_estimator (creme.base.Classifier): The estimator to bag.
+        base_classifier (BinaryClassifier or MultiClassifier): The classifier to bag.
 
     Example:
 
@@ -49,11 +48,11 @@ class BaggingClassifier(base.BinaryClassifier):
         ...     ('scale', preprocessing.StandardScaler()),
         ...     ('learn', linear_model.LogisticRegression(optimiser))
         ... ])
-        >>> model = ensemble.BaggingClassifier(model, n_estimators=3)
+        >>> model = ensemble.BaggingClassifier(model, n_classifiers=3)
         >>> metric = metrics.F1Score()
 
         >>> model_selection.online_score(X_y, model, metric)
-        F1Score: 0.967376
+        F1Score: 0.967468
 
     References:
 
@@ -61,28 +60,38 @@ class BaggingClassifier(base.BinaryClassifier):
 
     """
 
-    def __init__(self, base_estimator=None, n_estimators=10, random_state=42):
-        self.base_estimator = base_estimator
-        self.n_estimators = n_estimators
-        self.estimators = [copy.deepcopy(base_estimator) for _ in range(n_estimators)]
+    def __init__(self, base_classifier=None, n_classifiers=10, random_state=42):
+        self.base_classifier = base_classifier
+        self.classifiers = [copy.deepcopy(base_classifier) for _ in range(n_classifiers)]
         self.rng = utils.check_random_state(random_state)
+
+    @property
+    def __class__(self):
+        return self.base_classifier.__class__
+
+    def __str__(self):
+        return f'BaggingClassifier({str(self.base_classifier)})'
 
     def fit_one(self, x, y):
 
-        y_pred = self.predict_proba_one(x)
-
-        for estimator in self.estimators:
+        for classifier in self.classifiers:
             for _ in range(self.rng.poisson(1)):
-                estimator.fit_one(x, y)
+                classifier.fit_one(x, y)
 
-        return y_pred
-
-    def predict_one(self, x):
-        votes = collections.Counter((estimator.predict_one(x) for estimator in self.estimators))
-        return max(votes, key=votes.get)
+        return self
 
     def predict_proba_one(self, x):
-        return statistics.mean(
-            estimator.predict_proba_one(x)[True]
-            for estimator in self.estimators
-        )
+        """Averages the predictions of each classifier."""
+
+        y_pred = collections.defaultdict(float)
+
+        # Sum the predictions
+        for classifier in self.classifiers:
+            for label, proba in classifier.predict_proba_one(x).items():
+                y_pred[label] += proba
+
+        # Divide by the number of predictions
+        for label in y_pred:
+            y_pred[label] /= len(self.classifiers)
+
+        return dict(y_pred)

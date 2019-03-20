@@ -15,3 +15,6 @@ class RunningStatistic(abc.ABC):
     @abc.abstractmethod
     def get(self) -> float:
         """Returns the current value of the statistic."""
+
+    def __str__(self):
+        return f'{self.__class__.__name__}: {self.get():.6f}'.rstrip('0')

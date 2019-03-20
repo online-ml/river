@@ -61,6 +61,6 @@ class PolynomialExtender(base.Transformer):
 
     def transform_one(self, x):
         return {
-            '*'.join(combo): prod(x[c] for c in combo)
+            '*'.join(map(str, combo)): prod(x[c] for c in combo)
             for combo in self.iterator(x.keys())
         }
