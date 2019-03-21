@@ -10,8 +10,12 @@ try:
     GRAPHVIZ_INSTALLED = True
 except ImportError:
     GRAPHVIZ_INSTALLED = False
-from matplotlib import patches
-import matplotlib.pyplot as plt
+try:
+    from matplotlib import patches
+    import matplotlib.pyplot as plt
+    MATPLOTLIB_INSTALLED = True
+except ImportError:
+    MATPLOTLIB_INSTALLED = False
 from sklearn import utils
 
 from .. import base
@@ -288,6 +292,9 @@ class Node(abc.ABC):
         return dot
 
     def plot(self, x=None, y=None, ax=None, colors=None, alpha=1):
+
+        if not MATPLOTLIB_INSTALLED:
+            raise RuntimeError('matplotlib is not installed')
 
         if x is None and y is None:
             raise ValueError('At least one of x and y must be provided')
