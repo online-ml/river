@@ -1,7 +1,7 @@
 import abc
 import math
 
-from scipy import misc
+from scipy import special
 
 from .. import base
 
@@ -28,5 +28,5 @@ class BaseNB(base.MultiClassifier, abc.ABC):
     def predict_proba_one(self, x):
         """Return probabilities using the log-likelihoods."""
         jll = self._joint_log_likelihood(x)
-        lse = misc.logsumexp(list(jll.values()))
+        lse = special.logsumexp(list(jll.values()))
         return {label: math.exp(ll - lse) for label, ll in jll.items()}

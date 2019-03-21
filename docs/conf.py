@@ -59,6 +59,8 @@ extensions = [
     'nbsphinx'
 ]
 
+nbsphinx_timeout = -1
+
 # The value is used as a parameter of MathJax.Hub.Config().
 mathjax_config = {
     'extensions': ['tex2jax.js'],
