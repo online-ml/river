@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.0.3](https://pypi.org/project/creme/0.0.3/) - 2019-03-21
 
 ### Added
 
@@ -40,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Multinomial` and `Normal` to `dist`
 - `PassiveAggressiveI` and `PassiveAggressiveII` to `optim`
 - `TargetGroupBy` to `feature_extraction`
+- `MondrianTreeClassifier` and `MondrianTreeRegressor` to `tree`
+- `BaggingRegressor` to `ensemble`
 
 ### Modified
 
@@ -52,7 +54,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - All the passive-aggressive estimators from `linear_model`
 
-## [0.0.2] - 2019-02-13
+## [0.0.2](https://pypi.org/project/creme/0.0.2/) - 2019-02-13
 
 ### Added
 
