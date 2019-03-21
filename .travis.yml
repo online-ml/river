@@ -33,7 +33,7 @@ jobs:
 
   - stage: docs
     install:
-      - sudo apt-get install pandoc
+      - sudo apt-get install graphviz pandoc
       - python setup.py install
       - pip install -r docs/requirements.txt
     script: cd docs && make html && cd ..
