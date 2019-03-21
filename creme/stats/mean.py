@@ -27,9 +27,9 @@ class Mean(base.RunningStatistic):
 
     """
 
-    def __init__(self):
-        self.n = 0
-        self.mean = 0
+    def __init__(self, n=0, mean=0):
+        self.n = n
+        self.mean = mean
 
     @property
     def name(self):
@@ -42,3 +42,9 @@ class Mean(base.RunningStatistic):
 
     def get(self):
         return self.mean
+
+    def __add__(self, other):
+        return Mean(n=1, mean=self.mean + other.mean)
+
+    def __mul__(self, other):
+        return Mean(n=self.n, mean=self.mean * other)

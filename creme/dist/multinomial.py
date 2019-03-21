@@ -55,7 +55,7 @@ class Multinomial(base.DiscreteDistribution):
     def __copy__(self):
         """Custom copying to make ``copy.copy`` faster."""
         clone = Multinomial()
-        clone.counter = collections.Counter(**self.counter)
+        clone.counter = collections.Counter(self.counter)
         clone.n = self.n
         return clone
 

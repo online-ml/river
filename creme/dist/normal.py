@@ -56,13 +56,12 @@ class Normal(base.ContinuousDistribution):
 
     def __iadd__(self, other):
         if isinstance(other, Normal):
-            self.variance.mean += other.variance.mean
-        else:
-            self.variance.mean += other
+            other = other.variance.mean
+        self.variance.mean += other
         return self
 
     def __imul__(self, constant):
-        self.variance.mean.mean *= constant
+        self.variance.mean *= constant
         return self
 
     def __copy__(self):
