@@ -98,7 +98,7 @@ class BinaryClassifier(Estimator):
         return y_pred
 
 
-class MultiClassifier(Estimator):
+class MultiClassifier(BinaryClassifier):
     """A MultiClassifier can handle more than two classes."""
 
     @abc.abstractmethod

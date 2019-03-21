@@ -217,11 +217,12 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         # Check the number of classes agrees with the type of classifier
         self.classes_ = np.unique(y)
-        if len(self.classes_) > 2 and isinstance(self.creme_estimator, base.BinaryClassifier):
-            raise ValueError('n_classes is more than 2 but creme_estimator is a BinaryClassifier')
+        if len(self.classes_) > 2 and not isinstance(self.creme_estimator, base.MultiClassifier):
+            raise ValueError(f'n_classes is more than 2 but {self.creme_estimator} is a ' +
+                              'BinaryClassifier')
 
         # creme's BinaryClassifier expects bools or 0/1 values
-        if isinstance(self.creme_estimator, base.BinaryClassifier):
+        if not isinstance(self.creme_estimator, base.MultiClassifier):
             self.label_encoder_ = preprocessing.LabelEncoder().fit(y)
             y = self.label_encoder_.transform(y)
 

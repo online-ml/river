@@ -397,3 +397,20 @@ Loss functions
    stream.iter_numpy
    stream.iter_sklearn_dataset
    stream.iter_pandas
+
+
+:mod:`creme.tree`: Incremental decision trees
+-----------------------------------------------
+
+.. automodule:: creme.tree
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   tree.MondrianTreeClassifier
+   tree.MondrianTreeRegressor
