@@ -1,5 +1,5 @@
 """
-The :mod:`skmultiflow.data` module includes data stream methods including methods for batch-to-stream
+The :mod:`skmultiflow.data` module contains data stream methods including methods for batch-to-stream
 conversion and generators.
 """
 
