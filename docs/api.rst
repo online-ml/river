@@ -367,6 +367,7 @@ Loss functions
    stats.NUnique
    stats.PeakToPeak
    stats.Quantile
+   stats.Sem
    stats.Skew
    stats.Sum
    stats.RollingMax
@@ -375,6 +376,7 @@ Loss functions
    stats.RollingMode
    stats.RollingPeakToPeak
    stats.RollingQuantile
+   RollingSem
    stats.RollingSum
    stats.RollingVariance
    stats.Variance
