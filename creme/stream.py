@@ -33,7 +33,7 @@ def iter_numpy(X, y=None, feature_names=None, shuffle=False, random_state=None):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     """
-    feature_names = list(range(X.shape[1])) if feature_names is None else feature_names
+    feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
     rng = utils.check_random_state(random_state)
 
     if shuffle:

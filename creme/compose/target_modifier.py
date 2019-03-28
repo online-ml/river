@@ -23,7 +23,6 @@ class TargetModifierRegressor(base.Regressor):
         >>> from creme import linear_model
         >>> from creme import metrics
         >>> from creme import model_selection
-        >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets
@@ -81,7 +80,6 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
         >>> from creme import linear_model
         >>> from creme import metrics
         >>> from creme import model_selection
-        >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets

@@ -84,21 +84,9 @@ class Pipeline(collections.OrderedDict):
 
     def fit_one(self, x, y=None):
         """Fits each step with ``x``."""
-
-        for estimator in self.values():
-
-            if isinstance(estimator, base.Transformer):
-
-                # If a Transformer is supervised then it has to transform the output before fitting
-                # in order to prevent target leakage
-                if estimator.is_supervised:
-                    x = estimator.transform_one(x)
-                    estimator.fit_one(x, y)
-                else:
-                    x = estimator.fit_one(x).transform_one(x)
-            else:
-                estimator.fit_one(x, y)
-
+        for estimator in itertools.islice(self.values(), len(self) - 1):
+            x = estimator.fit_transform_one(x, y)
+        self.final_estimator.fit_one(x, y)
         return self
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')

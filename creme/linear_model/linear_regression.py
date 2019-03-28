@@ -9,15 +9,6 @@ from .. import utils
 __all__ = ['LinearRegression']
 
 
-class NilIntercept:
-
-    def update(self, x):
-        return self
-
-    def get(self):
-        return 0
-
-
 class LinearRegression(base.Regressor):
     """Linear regression.
 
@@ -72,14 +63,15 @@ class LinearRegression(base.Regressor):
         self.loss = optim.SquaredLoss() if loss is None else loss
         self.l2 = l2
         self.weights = collections.defaultdict(float)
-        self.intercept = {
-            False: NilIntercept(),
-            True: stats.Mean(),
-            None: stats.Mean(),
-        }.get(intercept, intercept)
+        if intercept is None or intercept is True:
+            intercept = stats.Mean()
+        self.intercept = intercept
 
     def _predict_with_weights(self, x, w):
-        return utils.dot(x, w) + self.intercept.get()
+        y = utils.dot(x, w)
+        if self.intercept:
+            y += self.intercept.get()
+        return y
 
     def _calc_gradient(self, y_true, y_pred, loss, x, w):
         loss_gradient = loss.gradient(y_true=y_true, y_pred=y_pred)
@@ -105,6 +97,7 @@ class LinearRegression(base.Regressor):
         )
 
         # The intercept is the running mean of the target
-        self.intercept.update(y)
+        if self.intercept:
+            self.intercept.update(y)
 
         return y_pred
