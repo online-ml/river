@@ -197,8 +197,13 @@ API reference
    :nosignatures:
 
    metrics.Accuracy
+   metrics.ConfusionMatrix
+   metrics.F1Score
+   metrics.LogLoss
    metrics.MAE
    metrics.MSE
+   metrics.Precision
+   metrics.Recall
    metrics.RMSE
    metrics.RMSLE
    metrics.SMAPE
