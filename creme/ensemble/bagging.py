@@ -7,10 +7,10 @@ from sklearn import utils
 from .. import base
 
 
-__all__ = ['BaggingClassifier']
+__all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 
-class BaggingClassifier:
+class BaggingClassifier(base.Classifier):
     """Bagging for classification.
 
     For each incoming observation, each model's `fit_one` method is called `k` times where `k`

@@ -45,7 +45,7 @@ class Regressor(Estimator):
         return y_pred
 
 
-class BinaryClassifier(Estimator):
+class Classifier(Estimator):
 
     @abc.abstractmethod
     def fit_one(self, x: dict, y: bool):
@@ -98,58 +98,12 @@ class BinaryClassifier(Estimator):
         return y_pred
 
 
+class BinaryClassifier(Classifier):
+    """A binary classifier."""
+
+
 class MultiClassifier(BinaryClassifier):
-    """A MultiClassifier can handle more than two classes."""
-
-    @abc.abstractmethod
-    def fit_one(self, x: dict, y: types.Label):
-        """Fits to a set of features ``x`` and a boolean target ``y``.
-
-        Parameters:
-            x (dict)
-            y (types.Label)
-
-        Returns:
-            self
-
-        """
-
-    @abc.abstractmethod
-    def predict_proba_one(self, x: dict) -> dict:
-        """Predicts the probability output of a set of features ``x``
-
-        Parameters:
-            x (dict)
-
-        Returns:
-            dict
-
-        """
-
-    def predict_one(self, x: dict) -> types.Label:
-        """Predicts the target value of a set of features ``x``
-
-        Parameters:
-            x (dict)
-
-        Returns:
-            types.Label
-
-        """
-        y_pred = self.predict_proba_one(x)
-        if y_pred:
-            return max(self.predict_proba_one(x), key=y_pred.get)
-        return None
-
-    def fit_predict_proba_one(self, x: dict, y: float) -> dict:
-        y_pred = self.predict_proba_one(x)
-        self.fit_one(x, y)
-        return y_pred
-
-    def fit_predict_one(self, x: dict, y: float) -> bool:
-        y_pred = self.predict_one(x)
-        self.fit_one(x, y)
-        return y_pred
+    """A multi-class classifier."""
 
 
 class Transformer(Estimator):
