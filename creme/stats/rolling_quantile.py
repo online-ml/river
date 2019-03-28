@@ -1,8 +1,8 @@
 from . import base
-from . import _window
+from . import window
 
 
-class RollingQuantile(base.RunningStatistic, _window.SortedWindow):
+class RollingQuantile(base.RunningStatistic, window.SortedWindow):
     """Running quantile over a window.
 
     Parameters:
@@ -57,5 +57,5 @@ class RollingQuantile(base.RunningStatistic, _window.SortedWindow):
     def get(self):
         if len(self) < self.window_size:
             idx = int(round(self.quantile * len(self) + 0.5)) - 1
-            return self.sorted_window[idx]
-        return self.sorted_window[self.idx]
+            return self.sortedwindow[idx]
+        return self.sortedwindow[self.idx]

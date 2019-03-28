@@ -6,7 +6,7 @@ class RollingMean(rolling_sum.RollingSum):
 
     Attributes:
         window_size (int): Size of the rolling window.
-        current_window (collections.deque): Store values that are in the current window.
+        currentwindow (collections.deque): Store values that are in the current window.
 
     >>> import creme
 

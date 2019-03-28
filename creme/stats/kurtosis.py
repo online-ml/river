@@ -1,14 +1,14 @@
-from . import _moments
+from . import moments
 
 
-class Kurtosis(_moments.CentralMoments):
+class Kurtosis(moments.CentralMoments):
     """Running kurtosis using Welford's algorithm.
 
     Properties:
         bias (bool): If ``False``, then the calculations are corrected for statistical bias.
 
     Attributes:
-        central_moments (stats.CentralMoments)
+        centralmoments (stats.CentralMoments)
 
     Example:
 

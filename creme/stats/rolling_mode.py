@@ -1,10 +1,10 @@
 import collections
 
 from . import base
-from . import _window
+from . import window
 
 
-class RollingMode(base.RunningStatistic, _window.Window):
+class RollingMode(base.RunningStatistic, window.Window):
     """Running mode over a window.
 
     The mode is the most common value.

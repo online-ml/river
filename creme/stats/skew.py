@@ -1,14 +1,14 @@
-from . import _moments
+from . import moments
 
 
-class Skew(_moments.CentralMoments):
+class Skew(moments.CentralMoments):
     """Running skew using Welford's algorithm.
 
     Properties:
         bias (bool): If ``False``, then the calculations are corrected for statistical bias.
 
     Attributes:
-        central_moments (stats.CentralMoments)
+        centralmoments (stats.CentralMoments)
 
     Example:
 

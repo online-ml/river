@@ -1,8 +1,8 @@
 from . import base
-from . import _window
+from . import window
 
 
-class RollingSum(base.RunningStatistic, _window.Window):
+class RollingSum(base.RunningStatistic, window.Window):
     """Running sum over a window.
 
     Attributes:

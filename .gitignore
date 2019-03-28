@@ -87,3 +87,6 @@ dmypy.json
 
 # IDE
 .vscode
+
+# For convenience
+Untitled.ipynb

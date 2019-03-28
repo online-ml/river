@@ -1,8 +1,8 @@
 from . import base
-from . import _window
+from . import window
 
 
-class RollingMax(base.RunningStatistic, _window.SortedWindow):
+class RollingMax(base.RunningStatistic, window.SortedWindow):
     """Running max over a window.
 
     Attributes:
