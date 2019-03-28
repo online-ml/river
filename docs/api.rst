@@ -352,6 +352,9 @@ Loss functions
 
 .. currentmodule:: creme
 
+Univariate statistics
++++++++++++++++++++++
+
 .. autosummary::
    :toctree: generated/
    :nosignatures:
@@ -378,6 +381,16 @@ Loss functions
    stats.RollingSum
    stats.RollingVariance
    stats.Variance
+
+Similarity measures
++++++++++++++++++++
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   stats.Covariance
+   stats.PearsonCorrelation
 
 
 :mod:`creme.stream`: Streaming utilities

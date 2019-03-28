@@ -2,7 +2,7 @@ from . import base
 from . import mean
 
 
-class Variance(base.RunningStatistic):
+class Variance(base.Statistic):
     """Running variance using Welford's algorithm.
 
     Parameters:
@@ -25,13 +25,13 @@ class Variance(base.RunningStatistic):
         0.0
         2.0
         1.0
-        2.9166666666666665
+        2.916666...
         7.7
-        12.566666666666668
+        12.56666...
 
     References:
 
-    - `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+    1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
 
     """
 

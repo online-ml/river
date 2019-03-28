@@ -1,7 +1,7 @@
 from . import base
 
 
-class Mean(base.RunningStatistic):
+class Mean(base.Statistic):
     """Running mean.
 
     Attributes:

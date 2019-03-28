@@ -2,7 +2,7 @@ from . import base
 from . import window
 
 
-class RollingMin(base.RunningStatistic, window.SortedWindow):
+class RollingMin(base.Statistic, window.SortedWindow):
     """Running min over a window.
 
     Attributes:

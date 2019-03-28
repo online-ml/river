@@ -3,7 +3,7 @@ import collections
 from . import base
 
 
-class Mode(base.RunningStatistic):
+class Mode(base.Statistic):
     """Running mode.
 
     Parameters:

@@ -1,7 +1,7 @@
 import abc
 
 
-class RunningStatistic(abc.ABC):
+class Statistic(abc.ABC):
 
     @property
     @abc.abstractmethod
@@ -9,12 +9,26 @@ class RunningStatistic(abc.ABC):
         """The name of the statistic is used for naming automatically generated features."""
 
     @abc.abstractmethod
-    def update(self):
-        """Updates the statistic and returns the called instance."""
+    def update(self, x: float):
+        """Updates and returns the called instance."""
 
     @abc.abstractmethod
     def get(self) -> float:
-        """Returns the current value of the statistic."""
+        """Returns the current value."""
+
+    def __str__(self):
+        return f'{self.__class__.__name__}: {self.get():.6f}'.rstrip('0')
+
+
+class Similarity(abc.ABC):
+
+    @abc.abstractmethod
+    def update(self, x, y):
+        """Updates and returns the called instance."""
+
+    @abc.abstractmethod
+    def get(self) -> float:
+        """Returns the current value."""
 
     def __str__(self):
         return f'{self.__class__.__name__}: {self.get():.6f}'.rstrip('0')

@@ -2,7 +2,7 @@ from . import base
 from . import window
 
 
-class RollingQuantile(base.RunningStatistic, window.SortedWindow):
+class RollingQuantile(base.Statistic, window.SortedWindow):
     """Running quantile over a window.
 
     Parameters:

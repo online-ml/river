@@ -3,7 +3,7 @@ from . import max
 from . import min
 
 
-class PeakToPeak(base.RunningStatistic):
+class PeakToPeak(base.Statistic):
     """Running peak to peak (max - min).
 
     Attributes:

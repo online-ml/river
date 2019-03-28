@@ -3,7 +3,7 @@ import math
 from . import base
 
 
-class Min(base.RunningStatistic):
+class Min(base.Statistic):
     """Running min.
 
     Attributes:

@@ -3,7 +3,7 @@ import math
 from . import base
 
 
-class Quantile(base.RunningStatistic):
+class Quantile(base.Statistic):
     """Running quantile.
 
     Uses the P-square algorithm to calculate the quantile. The code is inspired by

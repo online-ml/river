@@ -2,6 +2,7 @@
 Module for computing running statistics
 """
 from .count import Count
+from .covariance import Covariance
 from .entropy import Entropy
 from .ewmean import EWMean
 from .kurtosis import Kurtosis
@@ -10,6 +11,7 @@ from .mean import Mean
 from .min import Min
 from .mode import Mode
 from .n_unique import NUnique
+from .pearson import PearsonCorrelation
 from .ptp import PeakToPeak
 from .quantile import Quantile
 from .rolling_max import RollingMax
@@ -27,6 +29,7 @@ from .variance import Variance
 
 __all__ = [
     'Count',
+    'Covariance',
     'Entropy',
     'EWMean',
     'Kurtosis',
@@ -36,6 +39,7 @@ __all__ = [
     'Mode',
     'NUnique',
     'PeakToPeak',
+    'PearsonCorrelation',
     'Quantile',
     'RollingMean',
     'RollingQuantile',

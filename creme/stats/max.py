@@ -3,7 +3,7 @@ import math
 from . import base
 
 
-class Max(base.RunningStatistic):
+class Max(base.Statistic):
     """Running max.
 
     Attributes:

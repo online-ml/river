@@ -1,7 +1,7 @@
 from . import base
 
 
-class Count(base.RunningStatistic):
+class Count(base.Statistic):
     """A simple counter."""
 
     def __init__(self):

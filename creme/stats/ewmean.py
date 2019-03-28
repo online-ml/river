@@ -1,7 +1,7 @@
 from . import base
 
 
-class EWMean(base.RunningStatistic):
+class EWMean(base.Statistic):
     """Exponentially weighted mean.
 
     Parameters:

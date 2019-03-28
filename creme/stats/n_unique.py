@@ -5,7 +5,7 @@ from sklearn import utils
 from . import base
 
 
-class NUnique(base.RunningStatistic):
+class NUnique(base.Statistic):
     """Approximate number of unique values counter.
 
     This is basically an implementation of the HyperLogLog algorithm. Adapted from

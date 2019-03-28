@@ -49,10 +49,8 @@ class SDFT(window.Window):
             self.append(x)
             self.fft = np.fft.fft(self.window)
 
-
         # Update the coefficients for subsequent values
         else:
-
             diff = x - self[0]
             for i in range(self.window_size):
                 self.fft[i] = (self.fft[i] + diff) * np.exp(2j * np.pi * i / self.window_size)

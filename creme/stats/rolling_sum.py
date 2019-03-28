@@ -2,7 +2,7 @@ from . import base
 from . import window
 
 
-class RollingSum(base.RunningStatistic, window.Window):
+class RollingSum(base.Statistic, window.Window):
     """Running sum over a window.
 
     Attributes:
