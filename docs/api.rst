@@ -144,6 +144,8 @@ API reference
    :nosignatures:
 
    feature_selection.RandomDiscarder
+   feature_selection.SelectKBest
+   feature_selection.VarianceThreshold
 
 
 :mod:`creme.impute`: Running imputation

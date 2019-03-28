@@ -16,14 +16,21 @@ def make_random_features(estimator, n_observations, n_features):
 
 def make_random_targets(estimator, n_observations):
 
-    random_funcs = {
-        base.Regressor: lambda: random.random(),
-        base.BinaryClassifier: lambda: random.random() > 0.5,
-        base.MultiClassifier: lambda: random.choice(['a', 'b', 'c', 'd']),
-        base.Transformer: lambda: None
-    }
+    random_func = None
 
-    random_func = next(func for typ, func in random_funcs.items() if isinstance(estimator, typ))
+    if isinstance(estimator, base.Regressor):
+        random_func = lambda: random.random()
+    elif isinstance(estimator, base.MultiClassifier):
+        random_func = lambda: random.choice(['a', 'b', 'c', 'd'])
+    elif isinstance(estimator, base.BinaryClassifier):
+        random_func = lambda: random.random() > 0.5
+    elif isinstance(estimator, base.Transformer):
+        if estimator.is_supervised:
+            random_func = lambda: random.random()
+        else:
+            random_func = lambda: None
+    elif isinstance(estimator, base.Clusterer):
+        random_func = lambda: random.choice([0, 1, 2, 3])
 
     for _ in range(n_observations):
         yield random_func()

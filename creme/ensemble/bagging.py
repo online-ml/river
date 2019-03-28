@@ -10,7 +10,7 @@ from .. import base
 __all__ = ['BaggingClassifier']
 
 
-class BaggingClassifier(base.MultiClassifier):
+class BaggingClassifier:
     """Bagging for classification.
 
     For each incoming observation, each model's `fit_one` method is called `k` times where `k`

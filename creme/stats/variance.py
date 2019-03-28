@@ -44,6 +44,10 @@ class Variance(base.Statistic):
     def name(self):
         return 'variance'
 
+    @property
+    def n(self):
+        return self.mean.n
+
     def update(self, x):
         self.sos += (x - self.mean.get()) * (x - self.mean.update(x).get())
         return self

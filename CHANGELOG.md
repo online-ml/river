@@ -6,7 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Added
+
 - `Covariance` and `PearsonCorrelation` to `stats`
+- `VarianceThreshold` to `feature_selection`
 
 ## [0.0.3](https://pypi.org/project/creme/0.0.3/) - 2019-03-21
 
