@@ -20,9 +20,9 @@ class ConfusionMatrix(collections.defaultdict):
 
         >>> cm
                  ant  bird   cat
-           ant     0     0     2
-          bird     1     0     0
-           cat     2     0     1
+           ant     2     0     0
+          bird     0     0     1
+           cat     1     0     2
 
     """
 
@@ -36,7 +36,8 @@ class ConfusionMatrix(collections.defaultdict):
         return self
 
     def __str__(self):
-        table = ''
+
+        # The classes are sorted alphabetically for reproducibility reasons
         classes = sorted(self.classes)
 
         # Determine the required width of each column in the table
@@ -48,14 +49,15 @@ class ConfusionMatrix(collections.defaultdict):
         row_format = '{:>{width}}' * (len(classes) + 1)
 
         # Write down the header
-        table += row_format.format('', *classes, width=width) + '\n'
+        table = row_format.format('', *classes, width=width) + '\n'
 
         # Write down the true labels row by row
-        for y_true in classes:
-            table += row_format.format(y_true, *[self[y_true][y_pred] for y_pred in self.classes], width=width)
-            table += '\n'
+        table += '\n'.join((
+            row_format.format(y_true, *[self[y_true][y_pred] for y_pred in classes], width=width)
+            for y_true in classes
+        ))
 
-        return table.rstrip('\n')
+        return table
 
     def __repr__(self):
         return str(self)

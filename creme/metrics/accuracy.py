@@ -10,21 +10,20 @@ class Accuracy(stats.Mean, base.MultiClassificationMetric):
 
     ::
 
+        >>> import math
         >>> from creme import metrics
+        >>> from sklearn.metrics import accuracy_score
 
-        >>> y_true = [0, 1, 2, 3]
-        >>> y_pred = [0, 2, 1, 3]
+        >>> y_true = [True, False, True, True, True]
+        >>> y_pred = [True, True, False, True, True]
 
         >>> metric = metrics.Accuracy()
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     print(metric.update(y_t, y_p).get())
-        1.0
-        0.5
-        0.333333...
-        0.5
+        >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+        ...     metric = metric.update(y_t, y_p)
+        ...     assert math.isclose(metric.get(), accuracy_score(y_true[:i+1], y_pred[:i+1]))
 
         >>> metric
-        Accuracy: 0.5
+        Accuracy: 0.6
 
     """
 

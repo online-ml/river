@@ -192,18 +192,45 @@ API reference
 
 .. currentmodule:: creme
 
+Binary classification
++++++++++++++++++++++
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   metrics.LogLoss
+   metrics.F1Score
+   metrics.Precision
+   metrics.Recall
+
+Multi-class classification
+++++++++++++++++++++++++++
+
+Note that every multi-class classification metric also works for binary classification. For example you may use the ``Accuracy`` metric in both cases.
+
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
    metrics.Accuracy
    metrics.ConfusionMatrix
-   metrics.F1Score
-   metrics.LogLoss
+   metrics.MacroF1Score
+   metrics.MacroPrecision
+   metrics.MacroRecall
+   metrics.MicroF1Score
+   metrics.MicroPrecision
+   metrics.MicroRecall
+
+Regression
+++++++++++
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
    metrics.MAE
    metrics.MSE
-   metrics.Precision
-   metrics.Recall
    metrics.RMSE
    metrics.RMSLE
    metrics.SMAPE
