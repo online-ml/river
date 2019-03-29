@@ -332,6 +332,7 @@ Loss functions
    :nosignatures:
 
    optim.AbsoluteLoss
+   optim.CauchyLoss
    optim.EpsilonInsensitiveHingeLoss
    optim.HingeLoss
    optim.LogLoss

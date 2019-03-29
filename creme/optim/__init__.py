@@ -7,6 +7,7 @@ from .ada_grad import AdaGrad
 from .adam import Adam
 from .ftrl import FTRLProximal
 from .losses import AbsoluteLoss
+from .losses import CauchyLoss
 from .losses import EpsilonInsensitiveHingeLoss
 from .losses import HingeLoss
 from .losses import LogLoss
@@ -26,6 +27,7 @@ __all__ = [
     'AdaDelta',
     'AdaGrad',
     'Adam',
+    'CauchyLoss',
     'ConstantLR',
     'EpsilonInsensitiveHingeLoss',
     'FTRLProximal',

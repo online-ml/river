@@ -46,12 +46,12 @@ class LinearRegression(base.Regressor):
         ... )
         >>> model = compose.Pipeline([
         ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('lin_reg', linear_model.LinearRegression())
+        ...     ('lin_reg', linear_model.LinearRegression(loss=optim.CauchyLoss()))
         ... ])
-        >>> metric = metrics.MSE()
+        >>> metric = metrics.MAE()
 
         >>> model_selection.online_score(X_y, model, metric)
-        MSE: 29.58786
+        MAE: 3.667428
 
         >>> model['lin_reg'].intercept.get()
         22.532806...
