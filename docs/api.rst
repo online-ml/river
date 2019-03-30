@@ -405,6 +405,7 @@ Univariate statistics
    stats.NUnique
    stats.PeakToPeak
    stats.Quantile
+   stats.Sem
    stats.Skew
    stats.Sum
    stats.RollingMax
@@ -413,6 +414,7 @@ Univariate statistics
    stats.RollingMode
    stats.RollingPeakToPeak
    stats.RollingQuantile
+   stats.RollingSem
    stats.RollingSum
    stats.RollingVariance
    stats.Variance
