@@ -376,7 +376,7 @@ Loss functions
    stats.RollingMode
    stats.RollingPeakToPeak
    stats.RollingQuantile
-   RollingSem
+   stats.RollingSem
    stats.RollingSum
    stats.RollingVariance
    stats.Variance
