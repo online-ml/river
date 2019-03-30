@@ -1,7 +1,7 @@
 from . import variance
 
 
-class Sem(variance.Variance):
+class SEM(variance.Variance):
     """Running standard error of the mean using Welford's algorithm.
 
     Parameters:
@@ -17,7 +17,7 @@ class Sem(variance.Variance):
 
         >>> X = [3, 5, 4, 7, 10, 12]
 
-        >>> sem = creme.stats.Sem()
+        >>> sem = creme.stats.SEM()
         >>> for x in X:
         ...     print(sem.update(x).get())
         0.0
@@ -29,22 +29,13 @@ class Sem(variance.Variance):
 
     References:
 
-    - `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+    1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
 
     """
 
-    def __init__(self, ddof=1):
-        super().__init__(
-            ddof=ddof,
-        )
-
-    def update(self, x):
-        super().update(x)
-        return self
-
     @property
     def name(self):
-        return 'SEM'
+        return 'sem'
 
     def get(self):
-        return (super().get()**0.5) / (self.mean.n ** 0.5)
+        return (super().get() / self.mean.n) ** 0.5

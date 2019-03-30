@@ -20,10 +20,10 @@ from .rolling_min import RollingMin
 from .rolling_mode import RollingMode
 from .rolling_ptp import RollingPeakToPeak
 from .rolling_quantile import RollingQuantile
-from .rolling_sem import RollingSem
+from .rolling_sem import RollingSEM
 from .rolling_sum import RollingSum
 from .rolling_variance import RollingVariance
-from .sem import Sem
+from .sem import SEM
 from .skew import Skew
 from .sum import Sum
 from .variance import Variance
@@ -49,10 +49,10 @@ __all__ = [
     'RollingMin',
     'RollingMode',
     'RollingPeakToPeak',
-    'RollingSem',
+    'RollingSEM',
     'RollingSum',
     'RollingVariance',
-    'Sem',
+    'SEM',
     'Skew',
     'Sum',
     'Variance'

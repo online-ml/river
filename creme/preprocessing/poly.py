@@ -1,12 +1,8 @@
 import itertools
 import functools
-import operator
 
 from .. import base
-
-
-def prod(iterable):
-    return functools.reduce(operator.mul, iterable, 1)
+from .. import utils
 
 
 def powerset(iterable, min_size, max_size, with_replacement=False):
@@ -19,7 +15,13 @@ def powerset(iterable, min_size, max_size, with_replacement=False):
 
 
 class PolynomialExtender(base.Transformer):
-    """
+    """Polynomial feature extender.
+
+    Parameters:
+        degree (int): The maximum degree of the polynomial features.
+        interaction_only (bool): If ``True`` then only combinations that include an element at most
+            once will be computed.
+        include_bias (bool): Whether or not to include a dummy feature which is always equal to 1.
 
     Example:
 
@@ -33,26 +35,34 @@ class PolynomialExtender(base.Transformer):
         ...     {'x1': 4, 'x2': 5}
         ... ]
 
-        >>> poly = preprocessing.PolynomialExtender(degree=2)
+        >>> poly = preprocessing.PolynomialExtender(degree=2, include_bias=True)
         >>> for x in X:
         ...     print(poly.fit_one(x).transform_one(x))
-        {'x1': 0, 'x2': 1, 'x1*x1': 0, 'x1*x2': 0, 'x2*x2': 1}
-        {'x1': 2, 'x2': 3, 'x1*x1': 4, 'x1*x2': 6, 'x2*x2': 9}
-        {'x1': 4, 'x2': 5, 'x1*x1': 16, 'x1*x2': 20, 'x2*x2': 25}
+        {'x1': 0, 'x2': 1, 'x1*x1': 0, 'x1*x2': 0, 'x2*x2': 1, 'bias': 1}
+        {'x1': 2, 'x2': 3, 'x1*x1': 4, 'x1*x2': 6, 'x2*x2': 9, 'bias': 1}
+        {'x1': 4, 'x2': 5, 'x1*x1': 16, 'x1*x2': 20, 'x2*x2': 25, 'bias': 1}
 
-        >>> poly = preprocessing.PolynomialExtender(degree=2, interaction_only=True)
+        >>> X = [
+        ...     {'x1': 0, 'x2': 1, 'x3': 2},
+        ...     {'x1': 2, 'x2': 3, 'x3': 2},
+        ...     {'x1': 4, 'x2': 5, 'x3': 2}
+        ... ]
+
+        >>> poly = preprocessing.PolynomialExtender(degree=3, interaction_only=True)
         >>> for x in X:
         ...     print(poly.fit_one(x).transform_one(x))
-        {'x1': 0, 'x2': 1, 'x1*x2': 0}
-        {'x1': 2, 'x2': 3, 'x1*x2': 6}
-        {'x1': 4, 'x2': 5, 'x1*x2': 20}
+        {'x1': 0, 'x2': 1, 'x3': 2, 'x1*x2': 0, 'x1*x3': 0, 'x2*x3': 2, 'x1*x2*x3': 0}
+        {'x1': 2, 'x2': 3, 'x3': 2, 'x1*x2': 6, 'x1*x3': 4, 'x2*x3': 6, 'x1*x2*x3': 12}
+        {'x1': 4, 'x2': 5, 'x3': 2, 'x1*x2': 20, 'x1*x3': 8, 'x2*x3': 10, 'x1*x2*x3': 40}
 
     """
 
-    def __init__(self, degree=2, interaction_only=False):
+    def __init__(self, degree=2, interaction_only=False, include_bias=False, bias_name='bias'):
         self.degree = degree
         self.interaction_only = interaction_only
-        self.iterator = functools.partial(
+        self.include_bias = include_bias
+        self.bias_name = bias_name
+        self.enumerate = functools.partial(
             powerset,
             min_size=1,
             max_size=degree,
@@ -60,7 +70,10 @@ class PolynomialExtender(base.Transformer):
         )
 
     def transform_one(self, x):
-        return {
-            '*'.join(map(str, combo)): prod(x[c] for c in combo)
-            for combo in self.iterator(x.keys())
+        features = {
+            '*'.join(map(str, combo)): utils.prod(x[c] for c in combo)
+            for combo in self.enumerate(x.keys())
         }
+        if self.include_bias:
+            features[self.bias_name] = 1
+        return features
