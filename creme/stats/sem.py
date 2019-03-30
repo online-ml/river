@@ -1,8 +1,7 @@
-from . import base
-from . import mean
+from . import variance
 
 
-class Sem(base.RunningStatistic):
+class Sem(variance.Variance):
     """Running standard error of the mean using Welford's algorithm.
 
     Parameters:
@@ -10,8 +9,7 @@ class Sem(base.RunningStatistic):
             where $n$ represents the number of seen elements.
 
     Attributes:
-        mean (stats.Mean)
-        sos (float): The running sum of squares.
+        n (int): Number of observations.
 
     Example:
 
@@ -36,19 +34,19 @@ class Sem(base.RunningStatistic):
     """
 
     def __init__(self, ddof=1):
-        self.ddof = ddof
-        self.mean = mean.Mean()
-        self.sos = 0
+        super().__init__(
+            ddof=ddof,
+        )
         self.n = 0
 
-    @property
-    def name(self):
-        return 'Sem'
-
     def update(self, x):
-        self.sos += (x - self.mean.get()) * (x - self.mean.update(x).get())
+        super().update(x)
         self.n += 1
         return self
 
+    @property
+    def name(self):
+        return 'SEM'
+
     def get(self):
-        return (self.sos / max(1, self.mean.n - self.ddof))**0.5 / (self.n ** 0.5)
+        return (super().get()**0.5) / (self.n ** 0.5)
