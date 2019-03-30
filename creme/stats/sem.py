@@ -37,11 +37,9 @@ class Sem(variance.Variance):
         super().__init__(
             ddof=ddof,
         )
-        self.n = 0
 
     def update(self, x):
         super().update(x)
-        self.n += 1
         return self
 
     @property
@@ -49,4 +47,4 @@ class Sem(variance.Variance):
         return 'SEM'
 
     def get(self):
-        return (super().get()**0.5) / (self.n ** 0.5)
+        return (super().get()**0.5) / (self.mean.n ** 0.5)
