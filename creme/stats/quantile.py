@@ -22,25 +22,25 @@ class Quantile(base.Statistic):
 
         >>> np.random.seed(42*1337)
         >>> mu, sigma = 0, 1
-        >>> s = np.random.normal(mu, sigma, 1337*42)
+        >>> s = np.random.normal(mu, sigma, 500)
 
         >>> median = stats.Quantile(0.5)
         >>> for x in s:
         ...    _ = median.update(x)
 
         >>> print(f'The estimated value of the 50th (median) quantile is {median.get():.4f}')
-        The estimated value of the 50th (median) quantile is -0.0006
+        The estimated value of the 50th (median) quantile is -0.0275
         >>> print(f'The real value of the 50th (median) quantile is {np.median(s):.4f}')
-        The real value of the 50th (median) quantile is -0.0002
+        The real value of the 50th (median) quantile is -0.0135
 
         >>> percentile_17 = stats.Quantile(0.17)
         >>> for x in s:
         ...    _ = percentile_17.update(x)
 
-        >>> print(f'The estimated value of the 17th quantile is  {percentile_17.get():.4f}')
-        The estimated value of the 17th quantile is  -0.9522
+        >>> print(f'The estimated value of the 17th quantile is {percentile_17.get():.4f}')
+        The estimated value of the 17th quantile is -0.8652
         >>> print(f'The real value of the 17th quantile is {np.percentile(s,17):.4f}')
-        The real value of the 17th quantile is -0.9510
+        The real value of the 17th quantile is -0.9072
 
     References:
 
