@@ -2,7 +2,7 @@ from . import base
 from . import count
 
 
-class CentralMoments(base.Statistic):
+class CentralMoments(base.Univariate):
     """Computes central moments using Welford's algorithm.
 
     Attributes:

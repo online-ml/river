@@ -2,7 +2,7 @@ from . import base
 from . import rolling_mean
 
 
-class RollingVariance(base.Statistic):
+class RollingVariance(base.Univariate):
     """Running variance over a window.
 
     Parameters:

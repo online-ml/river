@@ -1,7 +1,7 @@
 import abc
 
 
-class Statistic(abc.ABC):
+class Univariate(abc.ABC):
 
     @property
     @abc.abstractmethod
@@ -20,7 +20,7 @@ class Statistic(abc.ABC):
         return f'{self.__class__.__name__}: {self.get():.6f}'.rstrip('0')
 
 
-class Similarity(abc.ABC):
+class Bivariate(abc.ABC):
 
     @abc.abstractmethod
     def update(self, x, y):

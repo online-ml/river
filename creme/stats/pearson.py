@@ -3,7 +3,7 @@ from . import covariance
 from . import variance
 
 
-class PearsonCorrelation(base.Similarity):
+class PearsonCorrelation(base.Bivariate):
     """Online Pearson correlation.
 
     Example:

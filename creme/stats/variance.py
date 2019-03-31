@@ -2,7 +2,7 @@ from . import base
 from . import mean
 
 
-class Variance(base.Statistic):
+class Variance(base.Univariate):
     """Running variance using Welford's algorithm.
 
     Parameters:

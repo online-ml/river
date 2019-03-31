@@ -1,7 +1,7 @@
 from . import base
 
 
-class Count(base.Statistic):
+class Count(base.Univariate):
     """A simple counter."""
 
     def __init__(self):

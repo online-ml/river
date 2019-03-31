@@ -1,7 +1,7 @@
 from . import base
 
 
-class Sum(base.Statistic):
+class Sum(base.Univariate):
     """Running sum.
 
     Attributes:

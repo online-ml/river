@@ -4,7 +4,7 @@ import math
 from . import base
 
 
-class Entropy(base.Statistic):
+class Entropy(base.Univariate):
     """Running entropy.
 
     Attributes:

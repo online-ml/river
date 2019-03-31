@@ -1,7 +1,7 @@
 from . import base
 
 
-class Covariance(base.Similarity):
+class Covariance(base.Bivariate):
     """Running covariance.
 
     Example:

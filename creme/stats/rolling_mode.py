@@ -4,7 +4,7 @@ from . import base
 from . import window
 
 
-class RollingMode(base.Statistic, window.Window):
+class RollingMode(base.Univariate, window.Window):
     """Running mode over a window.
 
     The mode is the most common value.

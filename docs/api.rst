@@ -419,8 +419,8 @@ Univariate statistics
    stats.RollingVariance
    stats.Variance
 
-Similarity measures
-+++++++++++++++++++
+Bivariate statistics
+++++++++++++++++++++
 
 .. autosummary::
    :toctree: generated/
