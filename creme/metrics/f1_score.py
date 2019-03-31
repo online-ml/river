@@ -37,6 +37,10 @@ class F1Score(stats.Mean, base.BinaryClassificationMetric):
         self.recall = recall.Recall()
 
     @property
+    def bigger_is_better(self):
+        return True
+
+    @property
     def requires_labels(self):
         return True
 

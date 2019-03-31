@@ -29,6 +29,10 @@ class LogLoss(stats.Mean, base.BinaryClassificationMetric):
     ll = optim.LogLoss().__call__
 
     @property
+    def bigger_is_better(self):
+        return False
+
+    @property
     def requires_labels(self):
         return False
 

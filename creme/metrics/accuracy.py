@@ -27,6 +27,11 @@ class Accuracy(stats.Mean, base.MultiClassificationMetric):
 
     """
 
+    @property
+    def bigger_is_better(self):
+        return True
+
+    @property
     def requires_labels(self):
         return True
 

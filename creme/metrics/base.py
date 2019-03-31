@@ -21,6 +21,11 @@ class BaseMetric(abc.ABC):
     def works_with(self, model) -> bool:
         """Tells if a metric can work with a given model or not."""
 
+    @property
+    @abc.abstractmethod
+    def bigger_is_better(self) -> bool:
+        """Tells how to interpret the metric."""
+
     def __str__(self):
         """Returns the class name along with the current value of the metric."""
         return f'{self.__class__.__name__}: {self.get():.6f}'.rstrip('0')
@@ -54,7 +59,7 @@ class MultiClassificationMetric(BinaryClassificationMetric):
         """Updates the metric."""
 
     def works_with(self, model):
-        return isinstance(model, (base.MultiClassifier, base.BinaryClassifier))
+        return isinstance(model, (base.BinaryClassifier, base.MultiClassifier))
 
 
 class RegressionMetric(BaseMetric):

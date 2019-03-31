@@ -29,6 +29,10 @@ class Recall(stats.Mean, base.BinaryClassificationMetric):
     """
 
     @property
+    def bigger_is_better(self):
+        return True
+
+    @property
     def requires_labels(self):
         return True
 
@@ -67,6 +71,10 @@ class MacroRecall(base.MultiClassificationMetric):
     def __init__(self):
         self.recalls = collections.defaultdict(Recall)
         self.classes = set()
+
+    @property
+    def bigger_is_better(self):
+        return True
 
     @property
     def requires_labels(self):

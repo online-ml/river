@@ -27,5 +27,9 @@ class MSE(stats.Mean, base.RegressionMetric):
 
     """
 
+    @property
+    def bigger_is_better(self):
+        return False
+
     def update(self, y_true, y_pred):
         return super().update((y_true - y_pred) ** 2)

@@ -28,6 +28,10 @@ class Precision(stats.Mean, base.BinaryClassificationMetric):
     """
 
     @property
+    def bigger_is_better(self):
+        return True
+
+    @property
     def requires_labels(self):
         return True
 
@@ -66,6 +70,10 @@ class MacroPrecision(base.MultiClassificationMetric):
     def __init__(self):
         self.precisions = collections.defaultdict(Precision)
         self.classes = set()
+
+    @property
+    def bigger_is_better(self):
+        return True
 
     @property
     def requires_labels(self):
@@ -114,6 +122,10 @@ class MicroPrecision(stats.Mean, base.MultiClassificationMetric):
     1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
 
     """
+
+    @property
+    def bigger_is_better(self):
+        return True
 
     @property
     def requires_labels(self):
