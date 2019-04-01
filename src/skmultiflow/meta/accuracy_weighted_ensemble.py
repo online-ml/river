@@ -33,10 +33,10 @@ class AccuracyWeightedEnsemble(StreamModel):
     References
     ----------
     .. [1] Haixun Wang, Wei Fan, Philip S. Yu, and Jiawei Han. 2003.
-    Mining concept-drifting data streams using ensemble classifiers.
-    In Proceedings of the ninth ACM SIGKDD international conference
-    on Knowledge discovery and data mining (KDD '03).
-    ACM, New York, NY, USA, 226-235.
+       Mining concept-drifting data streams using ensemble classifiers.
+       In Proceedings of the ninth ACM SIGKDD international conference
+       on Knowledge discovery and data mining (KDD '03).
+       ACM, New York, NY, USA, 226-235.
 
     """
 
@@ -178,7 +178,8 @@ class AccuracyWeightedEnsemble(StreamModel):
         return self
 
     def do_instance_pruning(self):
-        # only has effect if the ensemble is applied in cost-sensitive applications
+        # Only has effect if the ensemble is applied in cost-sensitive applications.
+        # Not used in the current implementation.
         pass
 
     def train_model(self, model, X, y, classes=None, weight=None):
@@ -369,7 +370,8 @@ class AccuracyWeightedEnsemble(StreamModel):
 
     def compute_baseline(self, y):
         """ This method computes the score produced by a random classifier, served as a baseline.
-        The baseline score is MSE_r in case of a normal classifier, b_r in case of a cost-sensitive one
+        The baseline score is MSE\ :sub:`r`\  in case of a normal classifier, b\ :sub:`r`\  in case of a cost-sensitive
+        classifier.
 
         Parameters
         ----------
