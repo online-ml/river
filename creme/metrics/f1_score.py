@@ -84,6 +84,10 @@ class MacroF1Score(base.MultiClassificationMetric):
         self.classes = set()
 
     @property
+    def bigger_is_better(self):
+        return True
+
+    @property
     def requires_labels(self):
         return True
 

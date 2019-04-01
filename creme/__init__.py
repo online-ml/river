@@ -10,6 +10,7 @@ from . import cluster
 from . import compat
 from . import compose
 from . import datasets
+from . import dummy
 from . import ensemble
 from . import feature_extraction
 from . import feature_selection
@@ -32,6 +33,7 @@ __all__ = [
     'compat',
     'compose',
     'datasets',
+    'dummy',
     'ensemble',
     'feature_extraction',
     'feature_selection',

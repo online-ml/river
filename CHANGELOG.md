@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `MicroF1Score`
     - `MicroPrecision`
     - `MicroRecall`
+- Each metric now has a `bigger_is_better` property to indicate if a high value is better than a low one or not
 
 
 ## [0.0.3](https://pypi.org/project/creme/0.0.3/) - 2019-03-21

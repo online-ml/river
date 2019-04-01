@@ -24,7 +24,7 @@ class BaseMetric(abc.ABC):
     @property
     @abc.abstractmethod
     def bigger_is_better(self) -> bool:
-        """Tells how to interpret the metric."""
+        """Indicates if a high value is better than a low one or not."""
 
     def __str__(self):
         """Returns the class name along with the current value of the metric."""

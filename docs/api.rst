@@ -91,6 +91,25 @@ API reference
    :nosignatures:
 
    datasets.fetch_restaurants
+   datasets.load_airline
+
+
+:mod:`creme.dummy`: Dummy models
+--------------------------------
+
+.. automodule:: creme.dummy
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: creme
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dummy.NoChangeClassifier
+   dummy.PriorClassifier
+   dummy.StatisticRegressor
 
 
 :mod:`creme.ensemble`: Ensemble models
