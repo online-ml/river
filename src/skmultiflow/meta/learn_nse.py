@@ -48,6 +48,7 @@ class LearnNSE(StreamModel):
                  crossing_point=10,
                  ensemble_size=15,
                  pruning=None):
+        super().__init__()
         self.ensemble = []
         self.ensemble_weights = []
         self.bkts = []
@@ -67,7 +68,8 @@ class LearnNSE(StreamModel):
     def fit(self, X, y, classes=None, weight=None):
         raise NotImplementedError
 
-    def __fit(self, estimator, X, y, classes=None):
+    @staticmethod
+    def _train_model(estimator, X, y, classes=None):
         try:
             estimator.fit(X, y)
         except (NotImplementedError, TypeError):
@@ -86,6 +88,8 @@ class LearnNSE(StreamModel):
         classes: list
             List of all existing classes. This is an optional parameter, except
             for the first partial_fit call, when it becomes obligatory.
+        weight: None
+            Instance weights. NOT used for this classifier.
         Raises
         ------
         RuntimeError:
@@ -133,13 +137,13 @@ class LearnNSE(StreamModel):
                     self.instance_weights = self.instance_weights / np.sum(self.instance_weights)
 
                     # Train base classifier with Dt
-                    self.__fit(classifier, self.X_batch, self.y_batch, classes=self.classes)
+                    self._train_model(classifier, self.X_batch, self.y_batch, classes=self.classes)
 
                 else:
                     # First run! train the classifier on the instances with the same weight
                     self.instance_weights = np.ones(mt) / mt
 
-                    self.__fit(classifier, self.X_batch, self.y_batch, classes=self.classes)
+                    self._train_model(classifier, self.X_batch, self.y_batch, classes=self.classes)
 
                 self.ensemble.append(classifier)
                 self.bkts.append([])
@@ -158,7 +162,7 @@ class LearnNSE(StreamModel):
                     if k == t and ekt > 0.5:
                         # Generate a new classifier
                         classifier = cp.deepcopy(self.base_estimator)
-                        self.__fit(classifier, self.X_batch, self.y_batch, classes=self.classes)
+                        self._train_model(classifier, self.X_batch, self.y_batch, classes=self.classes)
                         self.ensemble[k - 1] = classifier
                     elif ekt > 0.5:
                         ekt = 0.5
