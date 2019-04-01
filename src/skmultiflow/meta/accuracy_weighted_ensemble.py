@@ -182,7 +182,8 @@ class AccuracyWeightedEnsemble(StreamModel):
         # Not used in the current implementation.
         pass
 
-    def train_model(self, model, X, y, classes=None, weight=None):
+    @staticmethod
+    def train_model(model, X, y, classes=None, weight=None):
         """ Trains a model, taking care of the fact that either fit or partial_fit is implemented
 
         Parameters
@@ -267,7 +268,8 @@ class AccuracyWeightedEnsemble(StreamModel):
     def score(self, X, y):
         raise NotImplementedError
 
-    def compute_score(self, model, X, y):
+    @staticmethod
+    def compute_score(model, X, y):
         """ Computes the mean square error of a classifier, via the predicted probabilities.
 
         This code needs to take into account the fact that a classifier C trained on a
@@ -368,7 +370,8 @@ class AccuracyWeightedEnsemble(StreamModel):
         # w = MSE_r = MSE_i
         return max(0.0, baseline_score - score)
 
-    def compute_baseline(self, y):
+    @staticmethod
+    def compute_baseline(y):
         """ This method computes the score produced by a random classifier, served as a baseline.
         The baseline score is MSE\ :sub:`r`\  in case of a normal classifier, b\ :sub:`r`\  in case of a cost-sensitive
         classifier.
