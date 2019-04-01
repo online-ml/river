@@ -78,6 +78,7 @@ Ensemble methods
    skmultiflow.meta.classifier_chains
    skmultiflow.meta.regressor_chains
    skmultiflow.meta.batch_incremental
+   skmultiflow.meta.accuracy_weighted_ensemble
    skmultiflow.meta.learn_pp
    skmultiflow.meta.learn_nse
 

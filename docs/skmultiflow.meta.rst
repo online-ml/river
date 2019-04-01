@@ -6,6 +6,7 @@ Submodules
 
 .. toctree::
 
+   skmultiflow.meta.accuracy_weighted_ensemble
    skmultiflow.meta.adaptive_random_forests
    skmultiflow.meta.batch_incremental
    skmultiflow.meta.classifier_chains
