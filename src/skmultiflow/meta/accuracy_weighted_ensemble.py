@@ -14,7 +14,7 @@ class AccuracyWeightedEnsemble(StreamModel):
     ----------
     n_estimators: int (default=10)
         Maximum number of estimators to be kept in the ensemble
-    base_estimator: StreamModel or sklearn.BaseEstimator (default=DecisionTreeClassifier)
+    base_estimator: StreamModel or sklearn.BaseEstimator (default=NaiveBayes)
         Each member of the ensemble is an instance of the base estimator
     window_size: int (default=200)
         The size of one chunk to be processed
