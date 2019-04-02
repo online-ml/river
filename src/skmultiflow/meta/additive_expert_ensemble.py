@@ -32,13 +32,6 @@ class AdditiveExpertEnsemble(StreamModel):
         def __lt__(self, other):
             self.weight < other.weight
 
-    # @staticmethod
-    # def from_base_estimator(n_estimators, base_estimator, beta, gamma):
-    #     """
-    #     Cosntructor from a base_estimator.
-    #     """
-    #     return DynamicWeightedEnsemble({base_estimator() for _ in n_estimators}, beta, gamma)
-
     def __init__(self, max_estimators, base_estimator, beta, gamma):
         super().__init__()
 
@@ -51,7 +44,7 @@ class AdditiveExpertEnsemble(StreamModel):
         self.reset()
 
     def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
+        raise NotImplementedError        
 
     def partial_fit(self, X, y, classes=None, weight=None):
         pass
@@ -64,28 +57,20 @@ class AdditiveExpertEnsemble(StreamModel):
         import ipdb; ipdb.set_trace()
         return np.sum(predictions, axis=0) / np.sum(predictions)
 
-    def reset(self):
-        self.experts = [self.WeightedClassifier(self.base_estimator(), 1)]
-
-    def score(self, X, y):
-        pass
-
-    def get_info(self):
-        pass
-
-    def predict_fit(self, X, y):
+    def fit_single_sample(self, x, y, classes=None, weight=None):
         """
         Predict + update weights + modify experts + train on new sample.
         (As was originally described by [1])
         """
+        assert len(x.shape) == 1
         import ipdb; ipdb.set_trace()
 
         ## 1. Get expert predictions:
-        predictions_probs = self.get_expert_predictions_probs(X)
+        predictions_probs = self.get_expert_predictions_probs([x])
 
         ## 2. Output prediction:
         output_pred = np.argmax(np.sum(
-            [pred_probs * w for pred_probs, w in zip(predictions_probs, exp.weight for exp in self.experts)],
+            [pred_probs * w for pred_probs, w in zip(predictions_probs, (exp.weight for exp in self.experts))],
             axis=0
         ))
 
@@ -96,11 +81,11 @@ class AdditiveExpertEnsemble(StreamModel):
         ## new expert's weight is equal to the total weight of the ensemble times the gamma constant
         if output_pred != y:
             ensemble_weight = sum(exp.weight for exp in self.experts)
-            new_exp = WeightedClassifier(self.base_estimator(), ensemble_weight * self.gamma)
+            new_exp = self.WeightedClassifier(self.base_estimator(), ensemble_weight * self.gamma)
 
         ## 5. Train each expert on X
         for exp in self.experts:
-            exp.partial_fit(X, y)
+            exp.estimator.partial_fit(X, y)
 
         ## 6. Pruning
         ## TODO Pruning to max_estimators
@@ -108,7 +93,6 @@ class AdditiveExpertEnsemble(StreamModel):
 
         ## TODO Improve efficieny
         ## there are lots of repeated iterations and O(n) accesses to collections...
-
 
     def get_expert_predictions_probs(self, X):
         """
@@ -124,3 +108,11 @@ class AdditiveExpertEnsemble(StreamModel):
         
         self.experts = sorted(self.experts, key=lambda exp: exp.weight, reverse=True)
     
+    def reset(self):
+        self.experts = [self.WeightedClassifier(self.base_estimator(), 1)]
+
+    def score(self, X, y):
+        raise NotImplementedError
+
+    def get_info(self):
+        pass
