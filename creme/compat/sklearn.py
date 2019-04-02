@@ -10,6 +10,7 @@ try:
 except ImportError:
     PANDAS_INSTALLED = False
 from sklearn import base as sklearn_base
+from sklearn import exceptions
 from sklearn import preprocessing
 from sklearn import utils
 
@@ -19,6 +20,8 @@ from .. import stream
 
 __all__ = [
     'convert_creme_to_sklearn',
+    'convert_sklearn_to_creme',
+    'CremeRegressorWrapper',
     'SKLRegressorWrapper',
     'SKLClassifierWrapper',
     'SKLClustererWrapper',
@@ -73,8 +76,68 @@ def convert_creme_to_sklearn(estimator):
     raise ValueError("Couldn't find an appropriate wrapper")
 
 
+def convert_sklearn_to_creme(estimator):
+    """Wraps an scikit-learn estimator to make it compatible with creme."""
+
+    wrappers = [
+        (sklearn_base.RegressorMixin, CremeRegressorWrapper),
+    ]
+
+    for base_type, wrapper in wrappers:
+        if isinstance(estimator, base_type):
+            return wrapper(estimator)
+
+    raise ValueError("Couldn't find an appropriate wrapper")
+
+
+class CremeBaseWrapper:
+
+    def __init__(self, sklearn_estimator):
+        self.sklearn_estimator = sklearn_estimator
+
+
+class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
+    """
+
+    Example:
+
+        >>> from creme import compat
+        >>> from creme import model_selection
+        >>> from creme import metrics
+        >>> from creme import preprocessing
+        >>> from sklearn import linear_model
+        >>> from sklearn import datasets
+
+        >>> X_y = stream.iter_sklearn_dataset(
+        ...     load_dataset=datasets.load_boston,
+        ...     shuffle=True,
+        ...     random_state=42
+        ... )
+
+        >>> scaler = preprocessing.StandardScaler()
+        >>> sgd_reg = compat.convert_sklearn_to_creme(linear_model.SGDRegressor())
+        >>> model = scaler | sgd_reg
+
+        >>> metric = metrics.MAE()
+
+        >>> model_selection.online_score(X_y, model, metric)
+        MAE: 10.832054
+
+    """
+
+    def fit_one(self, x, y):
+        self.sklearn_estimator.partial_fit([list(x.values())], [y])
+        return self
+
+    def predict_one(self, x):
+        try:
+            return self.sklearn_estimator.predict([list(x.values())])[0]
+        except exceptions.NotFittedError:
+            return 0
+
+
 class SKLBaseWrapper(sklearn_base.BaseEstimator):
-    """This class exists for adapting the documentation styling."""
+    """The purpose of this class is to adapt the Sphinx documentation rendering."""
 
     def __init__(self, creme_estimator):
         self.creme_estimator = creme_estimator
@@ -219,7 +282,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         self.classes_ = np.unique(y)
         if len(self.classes_) > 2 and not isinstance(self.creme_estimator, base.MultiClassifier):
             raise ValueError(f'n_classes is more than 2 but {self.creme_estimator} is a ' +
-                              'BinaryClassifier')
+                             'BinaryClassifier')
 
         # creme's BinaryClassifier expects bools or 0/1 values
         if not isinstance(self.creme_estimator, base.MultiClassifier):

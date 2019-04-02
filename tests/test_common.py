@@ -8,7 +8,6 @@ from sklearn.utils import estimator_checks
 
 from creme import cluster
 from creme import compat
-from creme import ensemble
 from creme import feature_selection
 from creme import linear_model
 from creme import multiclass

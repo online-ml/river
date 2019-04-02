@@ -8,8 +8,6 @@ except ImportError:
     GRAPHVIZ_INSTALLED = False
 from sklearn.utils import metaestimators
 
-from .. import base
-
 from . import func
 from . import union
 
