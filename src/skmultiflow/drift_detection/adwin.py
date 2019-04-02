@@ -81,7 +81,7 @@ class ADWIN(BaseDriftDetector):
         self.bln_bucket_deleted = False
         self.bucket_num_max = 0
         self.mint_min_window_length = 5
-        self.reset()
+        super().reset()
 
     def reset(self):
         """ Reset detectors
@@ -94,7 +94,7 @@ class ADWIN(BaseDriftDetector):
             self
         
         """
-        super().reset()
+        self.__init__(delta=self.delta)
 
     def get_change(self):
         """ Get drift
