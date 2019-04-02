@@ -120,6 +120,8 @@ class LearnPP(StreamModel):
         classes: list
             List of all existing classes. This is an optional parameter, except
             for the first partial_fit call, when it becomes obligatory.
+        weight: None
+            Instance weights. NOT used for this classifier.
 
         Raises
         ------
@@ -259,9 +261,7 @@ class LearnPP(StreamModel):
         return np.argmax(res, axis=1)
 
     def predict_proba(self, X):
-        """ predict_proba
-
-        Predicts the probability of each sample belonging to each one of the
+        """ Predicts the probability of each sample belonging to each one of the
         known classes.
 
         Parameters
@@ -291,9 +291,7 @@ class LearnPP(StreamModel):
         return votes
 
     def predict(self, X):
-        """
-        predict
-        The predict function will use majority votes from all its learners
+        """ The predict function will use majority votes from all its learners
         with their weights to find the most likely prediction for the sample matrix X.
         Parameters
         ----------
