@@ -21,11 +21,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Each metric now has a `bigger_is_better` property to indicate if a high value is better than a low one or not
 - `NoChangeClassifier`, `PriorClassifier`, and `StatisticRegressor` to `dummy`; these are now used in `check_estimator` to check that models are at least as good as "dumb" models
 - `convert_sklearn_to_creme` to `compat`
-- `Whitelister` to `compose`
+- `Blacklister` and `Whitelister` to `compose`
 
 ### Removed
 
 - `Discarder` from `preprocessing`
+
+### Modified
+
+- Added `on` and `sparse` parameters to `preprocessing.OneHotEncoder`
 
 
 ## [0.0.3](https://pypi.org/project/creme/0.0.3/) - 2019-03-21

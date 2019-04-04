@@ -18,7 +18,7 @@ LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
 URL = 'https://github.com/creme-ml/creme'
 EMAIL = 'maxhalford25@gmail.com'
 AUTHOR = 'Max Halford'
-REQUIRES_PYTHON = '>=3.5.0'
+REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
 # The rest you shouldn't have to touch too much :)

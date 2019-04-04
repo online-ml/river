@@ -7,10 +7,15 @@ __all__ = ['OneHotEncoder']
 class OneHotEncoder(base.Transformer):
     """One-hot encoding.
 
+    Attributes:
+        on (``str``): Attribute to one-hot encode.
+        sparse (``bool``): Whether or not 0s should be made explicit or not.
+
     Example:
 
     ::
 
+        >>> import pprint
         >>> import string
         >>> import creme.preprocessing
         >>> import numpy as np
@@ -19,27 +24,44 @@ class OneHotEncoder(base.Transformer):
         >>> alphabet = list(string.ascii_lowercase)
         >>> X = [{'letter': letter} for letter in rng.choice(alphabet, size=10)]
 
-        >>> one_hot = creme.preprocessing.OneHotEncoder()
+        >>> one_hot = creme.preprocessing.OneHotEncoder('letter', sparse=True)
         >>> for x in X:
-        ...     print(one_hot.fit_one(x).transform_one(x))
-        {'letter_g': True}
-        {'letter_t': True}
-        {'letter_o': True}
-        {'letter_k': True}
-        {'letter_h': True}
-        {'letter_u': True}
-        {'letter_g': True}
-        {'letter_z': True}
-        {'letter_s': True}
-        {'letter_w': True}
+        ...     print(one_hot.fit_transform_one(x))
+        {'letter_g': 1}
+        {'letter_t': 1}
+        {'letter_o': 1}
+        {'letter_k': 1}
+        {'letter_h': 1}
+        {'letter_u': 1}
+        {'letter_g': 1}
+        {'letter_z': 1}
+        {'letter_s': 1}
+        {'letter_w': 1}
+
+        >>> one_hot = creme.preprocessing.OneHotEncoder('letter')
+        >>> for letter in ['a', 'b', 'c']:
+        ...     pprint.pprint(one_hot.fit_transform_one({'letter': letter}))
+        {'letter_a': 1}
+        {'letter_a': 0, 'letter_b': 1}
+        {'letter_a': 0, 'letter_b': 0, 'letter_c': 1}
 
     """
 
-    def _one_hot(self, x):
-        for i, xi in x.items():
-            if isinstance(xi, str):
-                x[f'{i}_{x.pop(i)}'] = True
-        return x
+    def __init__(self, on, sparse=False):
+        self.on = on
+        self.sparse = sparse
+        self.values = set()
+
+    def fit_one(self, x, y=None):
+        self.values.add(x[self.on])
+        return self
 
     def transform_one(self, x, y=None):
-        return self._one_hot(x)
+        oh = {}
+        if not self.sparse:
+            oh = {f'{self.on}_{i}': 0 for i in self.values}
+        oh[f'{self.on}_{x[self.on]}'] = 1
+        return oh
+
+    def __str__(self):
+        return f'OneHotEncoder({self.on})'

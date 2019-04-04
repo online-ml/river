@@ -27,7 +27,7 @@
 
 ## Useful links
 
-- [Documentation](https://creme-ml.github.io/) (includes tutorial notebooks)
+- [Documentation](https://creme-ml.github.io/)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
 - [Change history](CHANGELOG.md)
