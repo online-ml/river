@@ -77,6 +77,7 @@ API reference
    compose.Pipeline
    compose.TargetModifierRegressor
    compose.TransformerUnion
+   compose.Whitelister
 
 
 :mod:`creme.datasets`: Dataset loading utilities
@@ -373,7 +374,6 @@ Loss functions
    :toctree: generated/
    :nosignatures:
 
-   preprocessing.Discarder
    preprocessing.FeatureHasher
    preprocessing.MinMaxScaler
    preprocessing.OneHotEncoder
