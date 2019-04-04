@@ -1,0 +1,31 @@
+from .. import base
+
+
+class Blacklister(base.Transformer):
+    """Subsets a set of features by applying a blacklist.
+
+    Parameters:
+        blacklist (``str`` or ``list``): Key(s) to keep.
+
+    Example:
+
+    ::
+
+        >>> from creme import compose
+
+        >>> x = {'a': 42, 'b': 12}
+        >>> compose.Blacklister(['a', 'zoidberg']).fit_transform_one(x)
+        {'b': 12}
+
+        >>> compose.Blacklister('b').fit_transform_one(x)
+        {'a': 42}
+
+    """
+
+    def __init__(self, blacklist=None):
+        if blacklist is None:
+            blacklist = []
+        self.blacklist = set(blacklist if isinstance(blacklist, (list, tuple)) else [blacklist])
+
+    def transform_one(self, x):
+        return {i: x[i] for i in set(x.keys()) - self.blacklist}

@@ -72,6 +72,7 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   compose.Blacklister
    compose.BoxCoxTransformRegressor
    compose.FuncTransformer
    compose.Pipeline
