@@ -76,6 +76,7 @@ API reference
    compose.BoxCoxTransformRegressor
    compose.FuncTransformer
    compose.Pipeline
+   compose.SplitRegressor
    compose.TargetModifierRegressor
    compose.TransformerUnion
    compose.Whitelister

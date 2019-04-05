@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `NoChangeClassifier`, `PriorClassifier`, and `StatisticRegressor` to `dummy`; these are now used in `check_estimator` to check that models are at least as good as "dumb" models
 - `convert_sklearn_to_creme` to `compat`
 - `Blacklister` and `Whitelister` to `compose`
+- `SplitRegressor` to `compose`
 
 ### Removed
 

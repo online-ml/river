@@ -7,6 +7,7 @@ from .pipeline import Pipeline
 from .target_modifier import TargetModifierRegressor
 from .target_modifier import BoxCoxTransformRegressor
 from .union import TransformerUnion
+from .split import SplitRegressor
 from .whitelist import Whitelister
 
 
@@ -15,6 +16,7 @@ __all__ = [
     'BoxCoxTransformRegressor',
     'FuncTransformer',
     'Pipeline',
+    'SplitRegressor',
     'TargetModifierRegressor',
     'TransformerUnion',
     'Whitelister'

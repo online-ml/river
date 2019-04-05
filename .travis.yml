@@ -49,7 +49,7 @@ jobs:
       - git add -A
       - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
       - git push --set-upstream origin master
-
+    if: tag IS present
 
 env:
   global:
