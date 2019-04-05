@@ -63,12 +63,16 @@ class SplitRegressor(base.Regressor):
         self.default_model = copy.deepcopy(default_model)
 
     def fit_one(self, x, y):
+        x = copy.copy(x)
         key = x[self.on]
         x.pop(self.on)
+
         self.models.get(key, self.default_model).fit_one(x, y)
         return self
 
     def predict_one(self, x):
+        x = copy.copy(x)
         key = x[self.on]
         x.pop(self.on)
+
         return self.models.get(key, self.default_model).predict_one(x)
