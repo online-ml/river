@@ -60,10 +60,9 @@ class AdditiveExpertEnsemble(StreamModel):
         self.n_samples += X.shape[0]        
 
     def predict(self, X):
-        return np.argmax(self.predict_proba(X))
+        return np.array([np.argmax(self.predict_proba(X))])
 
     def predict_proba(self, X):
-        import ipdb; ipdb.set_trace()
         return self._aggregate_expert_predictions(self.get_expert_predictions(X))
 
     def fit_single_sample(self, X, y, classes=None, weight=None):
@@ -71,8 +70,6 @@ class AdditiveExpertEnsemble(StreamModel):
         Predict + update weights + modify experts + train on new sample.
         (As was originally described by [1])
         """
-        import ipdb; ipdb.set_trace()
-
         ## 1. Get expert predictions:
         predictions = self.get_expert_predictions(X)
 
