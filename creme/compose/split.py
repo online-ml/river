@@ -46,6 +46,9 @@ class SplitRegressor(base.Regressor):
         >>> model.models['a'].statistic.get()
         3.0
 
+        >>> model.predict_one({'key': 'a'})
+        3.0
+
         >>> model.models['b'].statistic.get()
         42
 
@@ -68,4 +71,4 @@ class SplitRegressor(base.Regressor):
     def predict_one(self, x):
         key = x[self.on]
         x.pop(self.on)
-        return self.models.get(key, self.default_model).predict(x)
+        return self.models.get(key, self.default_model).predict_one(x)
