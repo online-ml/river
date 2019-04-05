@@ -13,6 +13,7 @@ class AdditiveExpertEnsemble(StreamModel):
     base_estimator: constructor for new estimators.
     beta: factor for decreasing weights.
     gamma: factor for new expert weight.
+    n_pretrain_samples: number of samples to train on before starting to update expert weights.
 
     References
     __________
@@ -23,7 +24,6 @@ class AdditiveExpertEnsemble(StreamModel):
     class WeightedClassifier:
         """
         Wrapper that includes an estimator and its weight, for easier ordering.
-        - Inspired by PR #97
         """
         def __init__(self, estimator, weight):
             self.estimator = estimator
@@ -32,7 +32,7 @@ class AdditiveExpertEnsemble(StreamModel):
         def __lt__(self, other):
             self.weight < other.weight
 
-    def __init__(self, max_estimators, base_estimator=NaiveBayes(), beta=0.9, gamma=0.3):
+    def __init__(self, max_estimators, base_estimator=NaiveBayes(), beta=0.9, gamma=0.3, n_pretrain_samples=100):
         super().__init__()
 
         self.max_estimators = max_estimators
@@ -40,6 +40,7 @@ class AdditiveExpertEnsemble(StreamModel):
 
         self.beta = beta
         self.gamma = gamma
+        self.n_pretrain_samples = n_pretrain_samples
 
         self.reset()
 
@@ -47,25 +48,31 @@ class AdditiveExpertEnsemble(StreamModel):
         raise NotImplementedError        
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        for i in range(len(X)):
-            self.fit_single_sample(
-                # np.expand_dims(sample_x, axis=0), np.expand_dims(sample_y, axis=0), classes, weight
-                X[i:i+1, :], y[i:i+1], classes, weight
-            )
+        if self.n_samples < self.n_pretrain_samples:
+            for exp in self.experts:
+                exp.estimator.partial_fit(X, y, classes=classes, weight=weight)
+        else:
+            for i in range(len(X)):
+                self.fit_single_sample(
+                    X[i:i+1, :], y[i:i+1], classes, weight
+                )
+
+        self.n_samples += X.shape[0]        
 
     def predict(self, X):
         return np.argmax(self.predict_proba(X))
 
     def predict_proba(self, X):
+        import ipdb; ipdb.set_trace()
         return self._aggregate_expert_predictions(self.get_expert_predictions(X))
-
-        # return self._aggregate_expert_predictions(self.get_expert_predictions(X))
 
     def fit_single_sample(self, X, y, classes=None, weight=None):
         """
         Predict + update weights + modify experts + train on new sample.
         (As was originally described by [1])
         """
+        import ipdb; ipdb.set_trace()
+
         ## 1. Get expert predictions:
         predictions = self.get_expert_predictions(X)
 
@@ -98,7 +105,7 @@ class AdditiveExpertEnsemble(StreamModel):
         Returns predictions of each class for each expert.
         In shape: (n_experts,)
         """
-        return [exp.estimator.predict(X) for exp in self.experts] ## TODO RIP HERE
+        return [exp.estimator.predict(X) for exp in self.experts]
 
     ## NOTE this aggregate probably doesn't work for multi-output targets
     def _aggregate_expert_predictions(self, predictions):
@@ -135,6 +142,7 @@ class AdditiveExpertEnsemble(StreamModel):
         self.experts = sorted(self.experts, key=lambda exp: exp.weight, reverse=True)
     
     def reset(self):
+        self.n_samples = 0
         self.experts = [
             self.WeightedClassifier(self._construct_base_estimator(), 1)
         ]
