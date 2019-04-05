@@ -32,7 +32,7 @@ class AdditiveExpertEnsemble(StreamModel):
         def __lt__(self, other):
             self.weight < other.weight
 
-    def __init__(self, max_estimators, base_estimator=NaiveBayes(), beta=0.9, gamma=0.3, n_pretrain_samples=100):
+    def __init__(self, max_estimators, base_estimator=NaiveBayes(), beta=0.9, gamma=0.1, n_pretrain_samples=50):
         super().__init__()
 
         self.max_estimators = max_estimators
