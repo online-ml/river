@@ -1,6 +1,7 @@
-from skmultiflow.core.base import StreamModel
+import copy as cp
 import numpy as np
-
+from skmultiflow.core.base import StreamModel
+from skmultiflow.bayes import NaiveBayes
 
 class AdditiveExpertEnsemble(StreamModel):
     """
@@ -15,9 +16,8 @@ class AdditiveExpertEnsemble(StreamModel):
 
     References
     __________
-    [1]
-    Kolter and Maloof, Using additive expert ensembles to cope with Concept
-    drift, Proc. 22 International Conference on Machine Learning, 2005.
+    .. [1] Kolter and Maloof. Using additive expert ensembles to cope with Concept drift.
+        Proc. 22 International Conference on Machine Learning, 2005.
     """
 
     class WeightedClassifier:
@@ -32,7 +32,7 @@ class AdditiveExpertEnsemble(StreamModel):
         def __lt__(self, other):
             self.weight < other.weight
 
-    def __init__(self, max_estimators, base_estimator, beta, gamma):
+    def __init__(self, max_estimators, base_estimator=NaiveBayes(), beta=0.9, gamma=0.3):
         super().__init__()
 
         self.max_estimators = max_estimators
@@ -47,72 +47,105 @@ class AdditiveExpertEnsemble(StreamModel):
         raise NotImplementedError        
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        pass
+        for i in range(len(X)):
+            self.fit_single_sample(
+                # np.expand_dims(sample_x, axis=0), np.expand_dims(sample_y, axis=0), classes, weight
+                X[i:i+1, :], y[i:i+1], classes, weight
+            )
 
     def predict(self, X):
         return np.argmax(self.predict_proba(X))
 
     def predict_proba(self, X):
-        predictions = [exp.estimator.predict(X) * exp.weight for exp in self.experts]
-        import ipdb; ipdb.set_trace()
-        return np.sum(predictions, axis=0) / np.sum(predictions)
+        return self._aggregate_expert_predictions(self.get_expert_predictions(X))
 
-    def fit_single_sample(self, x, y, classes=None, weight=None):
+        # return self._aggregate_expert_predictions(self.get_expert_predictions(X))
+
+    def fit_single_sample(self, X, y, classes=None, weight=None):
         """
         Predict + update weights + modify experts + train on new sample.
         (As was originally described by [1])
         """
-        assert len(x.shape) == 1
-        import ipdb; ipdb.set_trace()
-
         ## 1. Get expert predictions:
-        predictions_probs = self.get_expert_predictions_probs([x])
+        predictions = self.get_expert_predictions(X)
 
-        ## 2. Output prediction:
-        output_pred = np.argmax(np.sum(
-            [pred_probs * w for pred_probs, w in zip(predictions_probs, (exp.weight for exp in self.experts))],
-            axis=0
-        ))
+        ## 2. Get aggregate prediction:
+        output_pred = np.argmax(self._aggregate_expert_predictions(predictions))
 
         ## 3. Update expert weights:
-        self.update_expert_weights(map(np.argmax, predictions_probs), y)
+        self.update_expert_weights(predictions, y)
 
         ## 4. If y_pred != y_true, then add a new expert:
         ## new expert's weight is equal to the total weight of the ensemble times the gamma constant
-        if output_pred != y:
+        if output_pred != np.asscalar(y):
             ensemble_weight = sum(exp.weight for exp in self.experts)
-            new_exp = self.WeightedClassifier(self.base_estimator(), ensemble_weight * self.gamma)
+            new_exp = self.WeightedClassifier(self._construct_base_estimator(), ensemble_weight * self.gamma)
+            self._add_expert(new_exp)
+
+        ## 4.1 Pruning to self.max_estimators if needed
+        if len(self.experts) > self.max_estimators:
+            self.experts.pop()
 
         ## 5. Train each expert on X
         for exp in self.experts:
-            exp.estimator.partial_fit(X, y)
-
-        ## 6. Pruning
-        ## TODO Pruning to max_estimators
-        ## (either by age or weight)
+            exp.estimator.partial_fit(X, y, classes=classes, weight=weight)
 
         ## TODO Improve efficieny
         ## there are lots of repeated iterations and O(n) accesses to collections...
 
-    def get_expert_predictions_probs(self, X):
+    def get_expert_predictions(self, X):
         """
-        Returns prediction probabilities of each class for each expert.
-        In shape: (rows, cols) = (n_experts, n_classes)
+        Returns predictions of each class for each expert.
+        In shape: (n_experts,)
         """
-        return [exp.estimator.predict(X) for exp in self.experts]
+        return [exp.estimator.predict(X) for exp in self.experts] ## TODO RIP HERE
+
+    ## NOTE this aggregate probably doesn't work for multi-output targets
+    def _aggregate_expert_predictions(self, predictions):
+        """
+        Aggregate predictions of all experts according to their weights.
+        Returns array of shape: (n_classes,)
+        """
+        aggregate_preds = np.zeros((np.max(predictions) + 1,))
+        for pred, w in zip(predictions, (exp.weight for exp in self.experts)):
+            aggregate_preds[pred] += w
+
+        return aggregate_preds / sum(exp.weight for exp in self.experts)
+
+    def _add_expert(self, new_exp):
+        """
+        Inserts the new expert on the sorted self.experts list.
+        """
+        idx = 0
+        for exp in self.experts:
+            if exp.weight < new_exp.weight:
+                break
+            idx += 1
+        self.experts.insert(idx, new_exp)
+
+    def _construct_base_estimator(self):
+        return cp.deepcopy(self.base_estimator)
 
     def update_expert_weights(self, expert_predictions, y_true):
         for exp, y_pred in zip(self.experts, expert_predictions):
-            if y_pred != y_true:
-                exp.weight = exp.weight * self.beta
+            if np.all(y_pred == y_true):
+                continue
+            exp.weight = exp.weight * self.beta
         
         self.experts = sorted(self.experts, key=lambda exp: exp.weight, reverse=True)
     
     def reset(self):
-        self.experts = [self.WeightedClassifier(self.base_estimator(), 1)]
+        self.experts = [
+            self.WeightedClassifier(self._construct_base_estimator(), 1)
+        ]
 
     def score(self, X, y):
         raise NotImplementedError
 
     def get_info(self):
-        pass
+        return \
+            type(self).__name__ + ': ' + \
+            "max_estimators: {} - ".format(self.max_estimators) + \
+            "base_estimator: {} - ".format(self.base_estimator.get_info()) + \
+            "beta: {} - ".format(self.beta) + \
+            "gamma: {}".format(self.gamma)
