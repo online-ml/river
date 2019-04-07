@@ -14,6 +14,7 @@ from .losses import LogLoss
 from .losses import SquaredLoss
 from .lr_schedule import ConstantLR
 from .lr_schedule import InverseScalingLR
+from .lr_schedule import OptimalLR
 from .momentum import Momentum
 from .nesterov import NesterovMomentum
 from .pa import PassiveAggressiveI
@@ -36,6 +37,7 @@ __all__ = [
     'LogLoss',
     'Momentum',
     'NesterovMomentum',
+    'OptimalLR',
     'PassiveAggressiveI',
     'PassiveAggressiveII',
     'RMSProp',

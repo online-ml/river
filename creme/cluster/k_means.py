@@ -44,9 +44,9 @@ class KMeans(base.Clusterer):
 
     Example:
 
-    In the following example the cluster assignments are exactly the same as when using `sklearn`'s
-    batch implementation. However changing the ``halflife`` parameter will produce different
-    outputs.
+        In the following example the cluster assignments are exactly the same as when using
+        `sklearn`'s batch implementation. However changing the ``halflife`` parameter will produce
+        different outputs.
 
     ::
 
@@ -66,7 +66,8 @@ class KMeans(base.Clusterer):
         array([0, 1], dtype=int32)
 
     References:
-    - `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
+
+        1. `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
 
     """
 

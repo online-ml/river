@@ -155,7 +155,9 @@ class LogLoss(BinaryClassificationLoss):
 
     def __call__(self, y_true, y_pred):
         y_pred = self._clip_proba(y_pred)
-        return -(y_true * math.log(y_pred) + (1 - y_true) * math.log(1 - y_pred))
+        if y_true:
+            return -math.log(y_pred)
+        return -math.log(1 - y_pred)
 
     def gradient(self, y_true, y_pred):
         return self._clip_proba(y_pred) - y_true

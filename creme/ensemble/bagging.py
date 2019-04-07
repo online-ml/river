@@ -49,7 +49,11 @@ class BaggingClassifier(base.Classifier):
         ...     ('scale', preprocessing.StandardScaler()),
         ...     ('learn', linear_model.LogisticRegression(optimiser))
         ... ])
-        >>> model = ensemble.BaggingClassifier(model, n_classifiers=3)
+        >>> model = ensemble.BaggingClassifier(
+        ...     classifier=model,
+        ...     n_classifiers=3,
+        ...     random_state=42
+        ... )
         >>> metric = metrics.F1Score()
 
         >>> model_selection.online_score(X_y, model, metric)
@@ -61,10 +65,10 @@ class BaggingClassifier(base.Classifier):
 
     """
 
-    def __init__(self, classifier=None, n_classifiers=10, random_state=42):
+    def __init__(self, classifier=None, n_classifiers=10, random_state=None):
         self.classifier = classifier
         self.classifiers = [copy.deepcopy(classifier) for _ in range(n_classifiers)]
-        self.rng = utils.check_random_state(random_state)
+        self.rng = utils.check_random_state(None)
 
     @property
     def __class__(self):

@@ -57,6 +57,7 @@ class LogisticRegression(base.BinaryClassifier):
         return utils.sigmoid(utils.dot(x, w))
 
     def _calc_gradient(self, y_true, y_pred, loss, x, w):
+        """Returns a dictionary containing the gradient w.r.t. each feature."""
         loss_gradient = loss.gradient(y_true=y_true, y_pred=y_pred)
         return {i: xi * loss_gradient + self.l2 * w.get(i, 0) for i, xi in x.items()}
 

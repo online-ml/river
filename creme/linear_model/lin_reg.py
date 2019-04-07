@@ -21,10 +21,10 @@ class LinearRegression(base.Regressor):
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
         loss (optim.Loss): The loss function to optimize for.
         l2 (float): L2 loss used to push weights towards 0.
-        intercept (stats.RunningStatistic): The statistic used to compute the intercept online.
+        intercept (stats.Univariate): The statistic used to compute the intercept online.
 
     Attributes:
-        weights (collections.defaultdict)
+        weights (``collections.defaultdict``)
 
     Example:
 
@@ -96,7 +96,7 @@ class LinearRegression(base.Regressor):
             f_grad=self._calc_gradient
         )
 
-        # The intercept is the running mean of the target
+        # Update the intercept
         if self.intercept:
             self.intercept.update(y)
 

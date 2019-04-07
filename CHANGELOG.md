@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `convert_sklearn_to_creme` to `compat`
 - `Blacklister`, `Whitelister`, and `SplitRegressor` to `compose`
 - `fetch_electricity` to `datasets`
+- `OptimalLR` to `optim`
 
 ### Removed
 

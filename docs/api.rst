@@ -52,6 +52,7 @@ API reference
 
    compat.convert_creme_to_sklearn
    compat.convert_sklearn_to_creme
+   compat.CremeClassifierWrapper
    compat.CremeRegressorWrapper
    compat.SKLClassifierWrapper
    compat.SKLClustererWrapper

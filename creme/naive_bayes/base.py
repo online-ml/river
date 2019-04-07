@@ -21,12 +21,10 @@ class BaseNB(base.MultiClassifier, abc.ABC):
 
         """
 
-    def predict_one(self, x):
-        jll = self._joint_log_likelihood(x)
-        return max(jll, key=jll.get)
-
     def predict_proba_one(self, x):
         """Return probabilities using the log-likelihoods."""
         jll = self._joint_log_likelihood(x)
+        if not jll:
+            return {}
         lse = special.logsumexp(list(jll.values()))
         return {label: math.exp(ll - lse) for label, ll in jll.items()}

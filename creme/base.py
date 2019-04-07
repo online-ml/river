@@ -3,8 +3,6 @@ Base classes used throughout the library.
 """
 import abc
 
-from . import types
-
 
 class Estimator:
 
@@ -13,6 +11,7 @@ class Estimator:
 
 
 class Regressor(Estimator):
+    """A regressor."""
 
     @abc.abstractmethod
     def fit_one(self, x: dict, y: float):
@@ -107,6 +106,7 @@ class MultiClassifier(BinaryClassifier):
 
 
 class Transformer(Estimator):
+    """A transformer."""
 
     def fit_one(self, x: dict, y=None) -> dict:
         """Fits to a set of features ``x ` and an optinal target ``y``.
@@ -188,6 +188,7 @@ class Transformer(Estimator):
 
 
 class Clusterer(Estimator):
+    """A clusterer."""
 
     @abc.abstractmethod
     def fit_one(self, x: dict, y=None) -> int:

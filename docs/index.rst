@@ -15,7 +15,7 @@ online version of gradient descent whilst incremental k-means clustering is the 
 of k-means clustering. In general online algorithms perform slightly worse than their batch
 counterparts, although the gap is usually very small. However, online learning algorithms only
 consume a tiny amount of RAM, which thus makes them scalable and ideal candidates for commodity
-hardware and embedded systems.
+hardware and embedded systems. Moreover, they are much easier to put into production.
 
 ``creme`` provides a nice interface for putting an incremental learning pipeline in place; a bit
 like what scikit-learn does for batch learning. Of course there are other open-source solutions
@@ -34,4 +34,5 @@ Contents
    install
    api
    user-guide
+   benchmarks
    faq

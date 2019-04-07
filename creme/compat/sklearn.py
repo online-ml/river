@@ -2,6 +2,7 @@
 Utilities for compatibility with other libraries such as scikit-learn.
 """
 import copy
+import functools
 
 import numpy as np
 try:
@@ -21,6 +22,7 @@ from .. import stream
 __all__ = [
     'convert_creme_to_sklearn',
     'convert_sklearn_to_creme',
+    'CremeClassifierWrapper',
     'CremeRegressorWrapper',
     'SKLRegressorWrapper',
     'SKLClassifierWrapper',
@@ -76,11 +78,21 @@ def convert_creme_to_sklearn(estimator):
     raise ValueError("Couldn't find an appropriate wrapper")
 
 
-def convert_sklearn_to_creme(estimator):
-    """Wraps an scikit-learn estimator to make it compatible with creme."""
+def convert_sklearn_to_creme(estimator, classes=None):
+    """Wraps an scikit-learn estimator to make it compatible with creme.
+
+    Parameters:
+        estimator (sklearn.base.BaseEstimator)
+        classes (list): Class names necessary for classifiers.
+
+    """
 
     wrappers = [
         (sklearn_base.RegressorMixin, CremeRegressorWrapper),
+        (sklearn_base.ClassifierMixin, functools.partial(
+            CremeClassifierWrapper,
+            classes=classes
+        ))
     ]
 
     for base_type, wrapper in wrappers:
@@ -97,9 +109,11 @@ class CremeBaseWrapper:
 
 
 class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
-    """
+    """Wraps an ``sklearn`` regressor to make it compatible with ``creme``.
 
     Example:
+
+    ::
 
         >>> from creme import compat
         >>> from creme import model_selection
@@ -134,6 +148,63 @@ class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
             return self.sklearn_estimator.predict([list(x.values())])[0]
         except exceptions.NotFittedError:
             return 0
+
+
+class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
+    """Wraps an ``sklearn`` classifier to make it compatible with ``creme``.
+
+    Example:
+
+    ::
+
+        >>> from creme import compat
+        >>> from creme import model_selection
+        >>> from creme import metrics
+        >>> from creme import preprocessing
+        >>> from sklearn import linear_model
+        >>> from sklearn import datasets
+
+        >>> X_y = stream.iter_sklearn_dataset(
+        ...     load_dataset=datasets.load_breast_cancer,
+        ...     shuffle=True,
+        ...     random_state=42
+        ... )
+
+        >>> model = preprocessing.StandardScaler()
+        >>> model |= compat.convert_sklearn_to_creme(
+        ...     estimator=linear_model.SGDClassifier(
+        ...         loss='log',
+        ...         eta0=0.01,
+        ...         learning_rate='constant'
+        ...     ),
+        ...     classes=[False, True]
+        ... )
+
+        >>> metric = metrics.LogLoss()
+
+        >>> model_selection.online_score(X_y, model, metric)
+        LogLoss: 0.203717
+
+    """
+
+    def __init__(self, sklearn_estimator, classes):
+        super().__init__(sklearn_estimator)
+        self.classes = classes
+
+    def fit_one(self, x, y):
+        self.sklearn_estimator = self.sklearn_estimator.partial_fit(
+            X=[list(x.values())],
+            y=[y],
+            classes=self.classes
+        )
+        return self
+
+    def predict_proba_one(self, x):
+        try:
+            y_pred = self.sklearn_estimator.predict_proba([list(x.values())])[0]
+            return {c: y_pred[i] for i, c in enumerate(self.classes)}
+        except exceptions.NotFittedError:
+            return {c: 1 / len(self.classes) for c in self.classes}
 
 
 class SKLBaseWrapper(sklearn_base.BaseEstimator):

@@ -50,6 +50,10 @@ def chain_dot(*xs):
 
 
 def sigmoid(x: float):
+    if x < -30:
+        return 0
+    if x > 30:
+        return 1
     return 1 / (1 + math.exp(-x))
 
 
