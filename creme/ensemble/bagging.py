@@ -61,14 +61,14 @@ class BaggingClassifier(base.Classifier):
 
     References:
 
-    1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
+        1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
 
     """
 
     def __init__(self, classifier=None, n_classifiers=10, random_state=None):
         self.classifier = classifier
         self.classifiers = [copy.deepcopy(classifier) for _ in range(n_classifiers)]
-        self.rng = utils.check_random_state(None)
+        self.rng = utils.check_random_state(random_state)
 
     @property
     def __class__(self):
