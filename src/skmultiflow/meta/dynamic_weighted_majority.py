@@ -3,6 +3,7 @@ import numpy as np
 from skmultiflow.core.base import StreamModel
 from skmultiflow.bayes import NaiveBayes
 
+
 class DynamicWeightedMajority(StreamModel):
     """
     Dynamic Weighted Majority Ensemble [1]_.
@@ -30,8 +31,9 @@ class DynamicWeightedMajority(StreamModel):
 
     References
     ----------
-    .. [1] Kolter and Maloof. Dynamic weighted majority: An ensemble method for drifting concepts.
-        The Journal of Machine Learning Research, 8:2755-2790, December 2007. ISSN 1532-4435.
+    .. [1] Kolter and Maloof. Dynamic weighted majority: An ensemble method
+        for drifting concepts. The Journal of Machine Learning Research,
+        8:2755-2790, December 2007. ISSN 1532-4435.
     """
 
     class WeightedExpert:
@@ -52,7 +54,8 @@ class DynamicWeightedMajority(StreamModel):
         def __lt__(self, other):
             self.weight < other.weight
 
-    def __init__(self, n_estimators=5, base_estimator=NaiveBayes(), period=50, beta=0.5, theta=0.01):
+    def __init__(self, n_estimators=5, base_estimator=NaiveBayes(),
+                 period=50, beta=0.5, theta=0.01):
         """
         Creates a new instance of DynamicWeightedMajority.
         """
@@ -108,8 +111,9 @@ class DynamicWeightedMajority(StreamModel):
     def predict(self, X):
         """ predict
         
-        The predict function will take an average of the precitions of its learners,
-        weighted by their respective weights, and return the most likely class.
+        The predict function will take an average of the precitions of its
+        learners, weighted by their respective weights, and return the most
+        likely class.
         
         Parameters
         ----------
@@ -138,17 +142,19 @@ class DynamicWeightedMajority(StreamModel):
         Returns
         -------
         numpy.ndarray
-            An array of shape (n_samples, n_features), in which each outer entry is 
-            associated with the X entry of the same index.
+            An array of shape (n_samples, n_features), in which each outer
+            entry is associated with the X entry of the same index.
         """
-        return self._aggregate_expert_predictions(self.get_expert_predictions(X))
+        return self._aggregate_expert_predictions(
+                    self.get_expert_predictions(X))
 
     def fit_single_sample(self, X, y, classes=None, weight=None):
         """
-        Fits a single sample of shape X.shape=(1, n_attributes) and y.shape=(1,)
+        Fits a single sample of shape X.shape=(1, n_attributes) and y.shape=(1)
 
         Aggregates all experts' predictions, diminishes weight of experts whose
-        predictions were wrong, and may create or remove experts every n samples.
+        predictions were wrong, and may create or remove experts every _period_
+        samples.
 
         Finally, trains each individual expert on the provided data.
 
@@ -171,7 +177,9 @@ class DynamicWeightedMajority(StreamModel):
             for compliance with the general skmultiflow interface.
         """
         self.epochs += 1
-        self.num_classes = max(len(classes) if classes is not None else 0, (int(np.max(y)) + 1), self.num_classes)
+        self.num_classes = max(
+            len(classes) if classes is not None else 0,
+            (int(np.max(y)) + 1), self.num_classes)
         predictions = np.zeros((self.num_classes,))
         max_weight = 0
         weakest_expert_weight = 1
@@ -198,7 +206,7 @@ class DynamicWeightedMajority(StreamModel):
                     self.experts.pop(weakest_expert_index)
                 self.experts.append(self._construct_new_expert())
 
-        ## Train individual experts
+        # Train individual experts
         for exp in self.experts:
             exp.estimator.partial_fit(X, y, classes, weight)
 
@@ -214,7 +222,7 @@ class DynamicWeightedMajority(StreamModel):
         Reset this ensemble learner.
         """
         self.epochs = 0
-        self.num_classes = 2 ## Minimum of 2 classes
+        self.num_classes = 2    # Minimum of 2 classes
         self.experts = [
             self._construct_new_expert()
         ]
@@ -242,7 +250,7 @@ class DynamicWeightedMajority(StreamModel):
         """
         Removes all experts whose weight is lower than self.theta.
         """
-        self.experts = [exp for exp in self.experts if exp.weight >= self.theta]
+        self.experts = [ex for ex in self.experts if ex.weight >= self.theta]
 
     def _construct_new_expert(self):
         """

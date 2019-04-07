@@ -14,7 +14,7 @@ def test_dynamic_weighted_majority():
     max_samples = 5000
     predictions = []
     wait_samples = 100
-    correct_predictions= 0
+    correct_predictions = 0
     first = True
 
     while cnt < max_samples:
@@ -31,9 +31,9 @@ def test_dynamic_weighted_majority():
             learner.partial_fit(X, y)
         cnt += 1
     performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1,
-                            0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0,
-                            1, 0, 0, 1, 1]
+    expected_predictions = [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1,
+                            0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1,
+                            0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1]
     expected_correct_predictions = 44
     expected_performance = 0.8979591836734694
 
