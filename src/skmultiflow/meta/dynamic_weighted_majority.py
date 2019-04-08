@@ -51,9 +51,6 @@ class DynamicWeightedMajority(StreamModel):
             self.estimator = estimator
             self.weight = weight
 
-        def __lt__(self, other):
-            self.weight < other.weight
-
     def __init__(self, n_estimators=5, base_estimator=NaiveBayes(),
                  period=50, beta=0.5, theta=0.01):
         """
@@ -114,31 +111,30 @@ class DynamicWeightedMajority(StreamModel):
         The predict function will take an average of the precitions of its
         learners, weighted by their respective weights, and return the most
         likely class.
-        
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
-        
+
         Returns
         -------
         numpy.ndarray
             A numpy.ndarray with the label prediction for all the samples in X.
-        
         """
         return np.array([np.argmax(self.predict_proba(X))])
 
     def predict_proba(self, X):
         """ predict_proba
-        
-        Predicts the probability of each sample belonging to each one of the 
+
+        Predicts the probability of each sample belonging to each one of the
         known classes.
-        
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
-        
+
         Returns
         -------
         numpy.ndarray
@@ -163,13 +159,13 @@ class DynamicWeightedMajority(StreamModel):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features) 
+        X: Numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
-            
+
         y: Array-like
             An array-like of all the class labels for the samples in X.
-            
-        classes: list 
+
+        classes: list
             List of all existing classes. This is an optional parameter.
 
         weight: None
@@ -184,24 +180,24 @@ class DynamicWeightedMajority(StreamModel):
         max_weight = 0
         weakest_expert_weight = 1
         weakest_expert_index = None
-        
+
         for i, exp in enumerate(self.experts):
-            yHat = exp.estimator.predict(X)
-            if np.any(yHat != y) and (self.epochs % self.period == 0):
+            y_hat = exp.estimator.predict(X)
+            if np.any(y_hat != y) and (self.epochs % self.period == 0):
                 exp.weight *= self.beta
-            
-            predictions[yHat] += exp.weight
+
+            predictions[y_hat] += exp.weight
             max_weight = max(max_weight, exp.weight)
 
             if exp.weight < weakest_expert_weight:
                 weakest_expert_index = i
                 weakest_expert_weight = exp.weight
 
-        yHat = np.array([np.argmax(predictions)])
+        y_hat = np.array([np.argmax(predictions)])
         if self.epochs % self.period == 0:
             self._scale_weights(max_weight)
             self._remove_experts()
-            if np.any(yHat != y):
+            if np.any(y_hat != y):
                 if len(self.experts) == self.max_experts:
                     self.experts.pop(weakest_expert_index)
                 self.experts.append(self._construct_new_expert())
@@ -227,13 +223,13 @@ class DynamicWeightedMajority(StreamModel):
             self._construct_new_expert()
         ]
 
-    def _scale_weights(self, maxWeight):
+    def _scale_weights(self, max_weight):
         """
         Scales the experts' weights such that the max is 1.
         """
-        scaleFactor = 1 / maxWeight
+        scale_factor = 1 / max_weight
         for exp in self.experts:
-            exp.weight *= scaleFactor
+            exp.weight *= scale_factor
 
     def _aggregate_expert_predictions(self, predictions):
         """
