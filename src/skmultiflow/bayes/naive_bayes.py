@@ -169,7 +169,7 @@ class NaiveBayes(StreamModel):
                 else:
                     y_proba = np.zeros(int(max(votes.keys())) + 1)
                 for key, value in votes.items():
-                    y_proba[int(key)] = value / sum_values
+                    y_proba[int(key)] = value / sum_values if sum_values != 0 else 0.0
                 predictions.append(y_proba)
         return np.array(predictions)
 
