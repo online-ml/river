@@ -71,25 +71,25 @@ class DynamicWeightedMajority(StreamModel):
         self.reset()
 
     def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError        
+        raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None, weight=None):
         """
         Partially fits the model on the supplied X and y matrices.
 
-        Since it's an ensemble learner, if X and y matrix of more than one 
-        sample are passed, the algorithm will partial fit the model one sample 
+        Since it's an ensemble learner, if X and y matrix of more than one
+        sample are passed, the algorithm will partial fit the model one sample
         at a time.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features) 
+        X: Numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
-            
+
         y: Array-like
             An array-like of all the class labels for the samples in X.
-            
-        classes: list 
+
+        classes: list
             List of all existing classes. This is an optional parameter, except
             for the first partial_fit call, when it becomes obligatory.
 
@@ -110,7 +110,7 @@ class DynamicWeightedMajority(StreamModel):
 
     def predict(self, X):
         """ predict
-        
+
         The predict function will take an average of the precitions of its
         learners, weighted by their respective weights, and return the most
         likely class.
