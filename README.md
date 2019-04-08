@@ -28,6 +28,11 @@
 ## Useful links
 
 - [Documentation](https://creme-ml.github.io/)
+  - [Installation](https://creme-ml.github.io/install.html)
+  - [API](https://creme-ml.github.io/api.html)
+  - [User guide](https://creme-ml.github.io/user-guide.html)
+  - [Benchmarks](https://creme-ml.github.io/benchmarks.html)
+  - [FAQ](https://creme-ml.github.io/faq.html)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
 - [Change history](CHANGELOG.md)
@@ -61,14 +66,18 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 ...     shuffle=True,
 ...     random_state=42
 ... )
->>> optimizer = optim.AdaGrad()
->>> model = compose.Pipeline([
-...     ('scale', preprocessing.StandardScaler()),
-...     ('learn', linear_model.LogisticRegression(optimizer))
-... ])
+
+>>> scaler = preprocessing.StandardScaler()
+>>> lin_reg = linear_model.LogisticRegression(optim.AdaGrad())
+>>> model = scaler | lin_reg
+
 >>> metric = metrics.F1Score()
 
->>> model_selection.online_score(X_y, model, metric)
+>>> for x, y in X_y:
+...     y_pred = model.fit_predict_one(x, y)
+...     metric = metric.update(y, y_pred)
+
+>>> metric
 F1Score: 0.97191
 
 ```

@@ -41,7 +41,10 @@ def test_sklearn_check_estimator(estimator):
 
 @pytest.mark.parametrize(
     'estimator',
-    [pytest.param(copy.deepcopy(estimator), id=str(estimator)) for estimator in ESTIMATORS]
+    [
+        pytest.param(copy.deepcopy(estimator), id=str(estimator))
+        for estimator in ESTIMATORS + [linear_model.LogisticRegression()]
+    ]
 )
 def test_creme_check_estimator(estimator):
     utils.check_estimator(estimator)

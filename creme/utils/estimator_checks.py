@@ -14,7 +14,7 @@ from .. import stats
 from .. import stream
 
 
-__all__ = ['check_model']
+__all__ = ['check_estimator']
 
 
 def make_random_features(model, n_observations, n_features):
@@ -106,8 +106,6 @@ def check_a_better_than_b(model_a, model_b, X_y_func, metric):
         metric=copy.deepcopy(metric)
     )
 
-    print(metric_a.get(), metric_b.get())
-
     if metric.bigger_is_better:
         assert metric_a.get() > metric_b.get()
     else:
@@ -174,17 +172,30 @@ def check_better_than_dummy_regression(regressor):
         )
 
 
+def check_predict_proba_one_binary(classifier):
+
+    for x, y in make_random_X_y(classifier, n_observations=20, n_features=4):
+        y_pred = classifier.fit_predict_proba_one(x, y)
+        assert len(y_pred) == 2
+        assert True in y_pred
+        assert False in y_pred
+
+
 def yield_all_checks(model):
     yield check_fit_one
 
-    if isinstance(model, (base.BinaryClassifier, base.MultiClassifier)):
+    if isinstance(model, base.Classifier):
         yield check_predict_proba_one
 
+    # MultiClassifiers are also BinaryClassifiers so binary will apply to both
     if isinstance(model, base.BinaryClassifier):
         yield check_better_than_dummy_binary
 
+        # Some tests work for BinaryClassifiers but not for MultiClassifiers
+        if not isinstance(model, base.MultiClassifier):
+            yield check_predict_proba_one_binary
+
     if isinstance(model, base.MultiClassifier):
-        yield check_better_than_dummy_binary
         yield check_better_than_dummy_multi
 
     if isinstance(model, base.Regressor):
@@ -194,4 +205,4 @@ def yield_all_checks(model):
 def check_estimator(model):
 
     for check in yield_all_checks(model):
-        check(model)
+        check(copy.deepcopy(model))

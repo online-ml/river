@@ -19,3 +19,10 @@ Each classifier that is part of ``creme`` is either a ``BinaryClassifier`` or a 
     True
     >>> isinstance(classifier, base.MultiClassifier)
     False
+
+
+**Why is ``fit_predict_one`` different from ``predict_one`` followed by ``fit_one``?**
+
+This is a tricky question, and the answer sheds a lot of light on how online machine learning works. On the one hand ``predict_one`` makes a prediction for a set of features ``x``. On the other hand ``fit_one`` updates a model given a set of features ``x`` and a target ``y``. If you want to evaluate a model in an online manner then you need to make a prediction and then update the model so as to avoid leakage. In other words you want to call ``predict_one`` followed by ``fit_one``. If you do it the other way round then you're cheating because you're taking a look at the true ``y`` before making predicting the outcome of ``x``. All this works just fine when your model only consists of a classifier or a regressor. However, if your model is a pipeline that contains a transformer then you might want to fit the transformer before making a prediction. If you call ``predict_one`` with a pipeline then it's transformers are not fitted, which isn't necessarily desirable. However, if you call ``fit_predict_one`` then the transformers will be fitted but the final model will not.
+
+In summary ``fit_predict_one`` takes care of calling ``fit_one`` followed by ``transform_one`` for transfomers and ``predict_one`` followed by ``fit_one`` for classifiers and regressors.

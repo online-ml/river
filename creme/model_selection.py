@@ -2,8 +2,6 @@
 Utilities for measuring the performance of online learning algorithms.
 """
 from . import base
-from . import compose
-from . import metrics
 
 
 __all__ = ['online_score']
@@ -29,8 +27,7 @@ def online_score(X_y, model, metric):
 
     # Determine if predict_one or predict_proba_one should be used
     fit_predict = model.fit_predict_one
-    is_classifier = isinstance(model, (base.BinaryClassifier, base.MultiClassifier))
-    if is_classifier and not metric.requires_labels:
+    if isinstance(model, base.Classifier) and not metric.requires_labels:
         fit_predict = model.fit_predict_proba_one
 
     # Train the model and use the out-of-fold predictions to update the metric
