@@ -3,6 +3,7 @@ import numpy as np
 from skmultiflow.core.base import StreamModel
 from skmultiflow.bayes import NaiveBayes
 
+
 class AdditiveExpertEnsemble(StreamModel):
     """
     Additive Expert Ensemble [1].
@@ -13,12 +14,14 @@ class AdditiveExpertEnsemble(StreamModel):
     base_estimator: constructor for new estimators.
     beta: factor for decreasing weights.
     gamma: factor for new expert weight.
-    n_pretrain_samples: number of samples to train on before starting to update expert weights.
+    n_pretrain_samples: number of samples to train on before starting to
+        update expert weights.
 
     References
     __________
-    .. [1] Kolter and Maloof. Using additive expert ensembles to cope with Concept drift.
-        Proc. 22 International Conference on Machine Learning, 2005.
+    .. [1] Kolter and Maloof. Using additive expert ensembles to cope with
+        Concept drift. Proc. 22 International Conference on Machine Learning,
+        2005.
     """
 
     class WeightedClassifier:
@@ -30,9 +33,10 @@ class AdditiveExpertEnsemble(StreamModel):
             self.weight = weight
 
         def __lt__(self, other):
-            self.weight < other.weight
+            return self.weight < other.weight
 
-    def __init__(self, max_estimators, base_estimator=NaiveBayes(), beta=0.9, gamma=0.1, n_pretrain_samples=50):
+    def __init__(self, max_estimators, base_estimator=NaiveBayes(),
+                 beta=0.9, gamma=0.1, n_pretrain_samples=50):
         super().__init__()
 
         self.max_estimators = max_estimators
@@ -45,7 +49,7 @@ class AdditiveExpertEnsemble(StreamModel):
         self.reset()
 
     def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError        
+        raise NotImplementedError
 
     def partial_fit(self, X, y, classes=None, weight=None):
         if self.n_samples < self.n_pretrain_samples:
@@ -63,39 +67,39 @@ class AdditiveExpertEnsemble(StreamModel):
         return np.array([np.argmax(self.predict_proba(X))])
 
     def predict_proba(self, X):
-        return self._aggregate_expert_predictions(self.get_expert_predictions(X))
+        return self._aggregate_expert_predictions(
+                    self.get_expert_predictions(X))
 
     def fit_single_sample(self, X, y, classes=None, weight=None):
         """
         Predict + update weights + modify experts + train on new sample.
         (As was originally described by [1])
         """
-        ## 1. Get expert predictions:
+        # 1. Get expert predictions:
         predictions = self.get_expert_predictions(X)
 
-        ## 2. Get aggregate prediction:
-        output_pred = np.argmax(self._aggregate_expert_predictions(predictions))
+        # 2. Get aggregate prediction:
+        output_pred = np.argmax(
+                        self._aggregate_expert_predictions(predictions))
 
-        ## 3. Update expert weights:
+        # 3. Update expert weights:
         self.update_expert_weights(predictions, y)
 
-        ## 4. If y_pred != y_true, then add a new expert:
-        ## new expert's weight is equal to the total weight of the ensemble times the gamma constant
+        # 4. If y_pred != y_true, then add a new expert:
         if output_pred != np.asscalar(y):
             ensemble_weight = sum(exp.weight for exp in self.experts)
-            new_exp = self.WeightedClassifier(self._construct_base_estimator(), ensemble_weight * self.gamma)
+            new_exp = self.WeightedClassifier(
+                        self._construct_base_estimator(),
+                        ensemble_weight * self.gamma)
             self._add_expert(new_exp)
 
-        ## 4.1 Pruning to self.max_estimators if needed
+        # 4.1 Pruning to self.max_estimators if needed
         if len(self.experts) > self.max_estimators:
             self.experts.pop()
 
-        ## 5. Train each expert on X
+        # 5. Train each expert on X
         for exp in self.experts:
             exp.estimator.partial_fit(X, y, classes=classes, weight=weight)
-
-        ## TODO Improve efficieny
-        ## there are lots of repeated iterations and O(n) accesses to collections...
 
     def get_expert_predictions(self, X):
         """
@@ -104,7 +108,6 @@ class AdditiveExpertEnsemble(StreamModel):
         """
         return [exp.estimator.predict(X) for exp in self.experts]
 
-    ## NOTE this aggregate probably doesn't work for multi-output targets
     def _aggregate_expert_predictions(self, predictions):
         """
         Aggregate predictions of all experts according to their weights.
@@ -136,7 +139,8 @@ class AdditiveExpertEnsemble(StreamModel):
                 continue
             exp.weight = exp.weight * self.beta
         
-        self.experts = sorted(self.experts, key=lambda exp: exp.weight, reverse=True)
+        self.experts = sorted(self.experts, key=lambda exp: exp.weight,
+                              reverse=True)
     
     def reset(self):
         self.n_samples = 0
