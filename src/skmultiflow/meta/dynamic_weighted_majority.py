@@ -122,27 +122,13 @@ class DynamicWeightedMajority(StreamModel):
         numpy.ndarray
             A numpy.ndarray with the label prediction for all the samples in X.
         """
-        return np.array([np.argmax(self.predict_proba(X))])
+        preds = np.array([np.array(exp.estimator.predict(X)) * exp.weight
+                          for exp in self.experts])
+        sum_weights = sum(exp.weight for exp in self.experts)
+        return np.sum(preds / sum_weights, axis=0, dtype=int)
 
     def predict_proba(self, X):
-        """ predict_proba
-
-        Predicts the probability of each sample belonging to each one of the
-        known classes.
-
-        Parameters
-        ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            A matrix of the samples we want to predict.
-
-        Returns
-        -------
-        numpy.ndarray
-            An array of shape (n_samples, n_features), in which each outer
-            entry is associated with the X entry of the same index.
-        """
-        return self._aggregate_expert_predictions(
-                    self.get_expert_predictions(X))
+        raise NotImplementedError
 
     def fit_single_sample(self, X, y, classes=None, weight=None):
         """
@@ -206,10 +192,10 @@ class DynamicWeightedMajority(StreamModel):
         for exp in self.experts:
             exp.estimator.partial_fit(X, y, classes, weight)
 
-    def get_expert_predictions(self, X, classes=None, weight=None):
+    def get_expert_predictions(self, X):
         """
         Returns predictions of each class for each expert.
-        In shape: (n_experts,)
+        In shape: (n_experts, n_samples)
         """
         return [exp.estimator.predict(X) for exp in self.experts]
 
@@ -230,17 +216,6 @@ class DynamicWeightedMajority(StreamModel):
         scale_factor = 1 / max_weight
         for exp in self.experts:
             exp.weight *= scale_factor
-
-    def _aggregate_expert_predictions(self, predictions):
-        """
-        Aggregate predictions of all experts according to their weights.
-        Returns array of shape: (n_classes,)
-        """
-        aggregate_preds = np.zeros((np.max(predictions) + 1,))
-        for pred, w in zip(predictions, (exp.weight for exp in self.experts)):
-            aggregate_preds[pred] += w
-
-        return aggregate_preds / sum(exp.weight for exp in self.experts)
 
     def _remove_experts(self):
         """
