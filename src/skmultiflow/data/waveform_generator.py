@@ -194,7 +194,7 @@ class WaveformGenerator(Stream):
 
             data[j, data[j].size-1] = group
         self.current_sample_x = data[:, :self.n_features]
-        self.current_sample_y = np.ravel(data[:, self.n_features:])
+        self.current_sample_y = np.ravel(data[:, self.n_features:]).astype(int)
 
         return self.current_sample_x, self.current_sample_y
 
