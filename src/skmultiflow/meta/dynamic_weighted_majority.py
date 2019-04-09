@@ -65,6 +65,11 @@ class DynamicWeightedMajority(StreamModel):
         self.theta = theta
         self.period = period
 
+        # Following attributes are set later
+        self.epochs = None
+        self.num_classes = None
+        self.experts = None
+
         self.reset()
 
     def fit(self, X, y, classes=None, weight=None):
