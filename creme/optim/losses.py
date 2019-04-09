@@ -183,27 +183,23 @@ class HingeLoss(BinaryClassificationLoss):
 
     Example:
 
+        >>> from creme import optim
         >>> import numpy as np
         >>> from sklearn import svm
         >>> from sklearn.metrics import hinge_loss
-        >>> import creme
+
         >>> X = [[0], [1]]
         >>> y = [-1, 1]
-        >>> est = svm.LinearSVC(random_state=0)
-        >>> est.fit(X, y)
-        LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
-             intercept_scaling=1, loss='squared_hinge', max_iter=1000,
-             multi_class='ovr', penalty='l2', random_state=0, tol=0.0001,
-             verbose=0)
+        >>> lin_svm = svm.LinearSVC(random_state=0).fit(X, y)
 
         >>> y_true = [0, 1, 1]
-        >>> pred_decision = est.decision_function([[-2], [3], [0.5]])
+        >>> y_pred = lin_svm.decision_function([[-2], [3], [0.5]])
 
-        >>> hinge_loss([0, 1, 1], pred_decision)
+        >>> hinge_loss([0, 1, 1], y_pred)
         0.303036...
 
-        >>> loss = creme.optim.HingeLoss()
-        >>> np.mean([loss(y_t,pred) for y_t, pred in zip(y_true, pred_decision)])
+        >>> loss = optim.HingeLoss()
+        >>> np.mean([loss(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
         0.303036...
 
     """

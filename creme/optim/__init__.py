@@ -5,12 +5,14 @@ used in machine learning.
 from .ada_delta import AdaDelta
 from .ada_grad import AdaGrad
 from .adam import Adam
+from .base import Optimizer
 from .ftrl import FTRLProximal
 from .losses import AbsoluteLoss
 from .losses import CauchyLoss
 from .losses import EpsilonInsensitiveHingeLoss
 from .losses import HingeLoss
 from .losses import LogLoss
+from .losses import Loss
 from .losses import SquaredLoss
 from .lr_schedule import ConstantLR
 from .lr_schedule import InverseScalingLR
@@ -35,9 +37,11 @@ __all__ = [
     'HingeLoss',
     'InverseScalingLR',
     'LogLoss',
+    'Loss',
     'Momentum',
     'NesterovMomentum',
     'OptimalLR',
+    'Optimizer',
     'PassiveAggressiveI',
     'PassiveAggressiveII',
     'RMSProp',

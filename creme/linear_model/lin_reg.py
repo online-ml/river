@@ -19,53 +19,60 @@ class LinearRegression(base.Regressor):
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-        loss (optim.Loss): The loss function to optimize for.
-        l2 (float): L2 loss used to push weights towards 0.
-        intercept (stats.Univariate): The statistic used to compute the intercept online.
+            Defaults to :any:`optim.VanillaSGD`.
+        loss (optim.Loss): The loss function to minimize. Defaults to :any:`optim.SquaredLoss`.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        intercept (stats.Univariate): The univariate statistic used to compute the intercept
+            online. Defaults to :any:`stats.Mean`.
 
     Attributes:
-        weights (``collections.defaultdict``)
+        weights (collections.defaultdict)
+            Coefficients assigned to each feature.
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import compose
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import optim
-        >>> from creme import preprocessing
-        >>> from creme import stream
-        >>> from sklearn import datasets
+            >>> from creme import compose
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import optim
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_boston,
-        ...     shuffle=True,
-        ...     random_state=42
-        ... )
-        >>> model = compose.Pipeline([
-        ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('lin_reg', linear_model.LinearRegression(loss=optim.CauchyLoss()))
-        ... ])
-        >>> metric = metrics.MAE()
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     load_dataset=datasets.load_boston,
+            ...     shuffle=True,
+            ...     random_state=42
+            ... )
+            >>> model = compose.Pipeline([
+            ...     ('scale', preprocessing.StandardScaler()),
+            ...     ('lin_reg', linear_model.LinearRegression(
+            ...         loss=optim.CauchyLoss()
+            ...     ))
+            ... ])
+            >>> metric = metrics.MAE()
 
-        >>> model_selection.online_score(X_y, model, metric)
-        MAE: 3.667428
+            >>> model_selection.online_score(X_y, model, metric)
+            MAE: 3.667428
 
-        >>> model['lin_reg'].intercept.get()
-        22.532806...
+            >>> model['lin_reg'].intercept.get()
+            22.532806...
+
+    Note:
+        Using a feature scaler such as :any:`preprocessing.StandardScaler` upstream helps the
+        optimizer to converge.
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=0, intercept=None):
+    def __init__(self, optimizer=None, loss=None, l2=0., intercept=None):
         self.optimizer = optim.VanillaSGD(0.01) if optimizer is None else optimizer
         self.loss = optim.SquaredLoss() if loss is None else loss
         self.l2 = l2
+        self.intercept = stats.Mean() if intercept is None else intercept
         self.weights = collections.defaultdict(float)
-        if intercept is None or intercept is True:
-            intercept = stats.Mean()
-        self.intercept = intercept
 
     def _predict_with_weights(self, x, w):
         y = utils.dot(x, w)
@@ -75,7 +82,10 @@ class LinearRegression(base.Regressor):
 
     def _calc_gradient(self, y_true, y_pred, loss, x, w):
         loss_gradient = loss.gradient(y_true=y_true, y_pred=y_pred)
-        return {i: xi * loss_gradient + self.l2 * w.get(i, 0) for i, xi in x.items()}
+        return {
+            i: xi * loss_gradient + self.l2 * w.get(i, 0)
+            for i, xi in x.items()
+        }
 
     def fit_one(self, x, y):
         self.fit_predict_one(x, y)

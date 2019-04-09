@@ -22,7 +22,7 @@ class Regressor(Estimator):
             y (float)
 
         Returns:
-            self
+            self: object
 
         """
 
@@ -34,7 +34,7 @@ class Regressor(Estimator):
             x (dict)
 
         Returns:
-            float
+            float: The prediction.
 
         """
 

@@ -332,6 +332,7 @@ Optimizers
    optim.FTRLProximal
    optim.Momentum
    optim.NesterovMomentum
+   optim.Optimizer
    optim.PassiveAggressiveI
    optim.PassiveAggressiveII
    optim.RMSProp
@@ -361,6 +362,7 @@ Loss functions
    optim.EpsilonInsensitiveHingeLoss
    optim.HingeLoss
    optim.LogLoss
+   optim.Loss
    optim.SquaredLoss
 
 
@@ -441,6 +443,7 @@ Univariate statistics
    stats.RollingSEM
    stats.RollingSum
    stats.RollingVariance
+   stats.Univariate
    stats.Variance
 
 Bivariate statistics
@@ -450,6 +453,7 @@ Bivariate statistics
    :toctree: generated/
    :nosignatures:
 
+   stats.Bivariate
    stats.Covariance
    stats.PearsonCorrelation
 

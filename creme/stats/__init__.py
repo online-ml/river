@@ -1,6 +1,8 @@
 """
 Module for computing running statistics
 """
+from .base import Bivariate
+from .base import Univariate
 from .count import Count
 from .covariance import Covariance
 from .entropy import Entropy
@@ -30,6 +32,7 @@ from .variance import Variance
 
 
 __all__ = [
+    'Bivariate',
     'Count',
     'Covariance',
     'Entropy',
@@ -55,5 +58,6 @@ __all__ = [
     'SEM',
     'Skew',
     'Sum',
+    'Univariate',
     'Variance'
 ]

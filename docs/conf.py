@@ -43,8 +43,6 @@ autodoc_default_flags = [
     'show-inheritance'
 ]
 autosummary_generate = True  # Make _autosummary files and include them
-napoleon_numpy_docstring = False  # Force consistency, leave only Google
-napoleon_use_rtype = False  # More legible
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -52,6 +50,7 @@ napoleon_use_rtype = False  # More legible
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
@@ -59,7 +58,16 @@ extensions = [
     'nbsphinx'
 ]
 
-#nbsphinx_execute = 'never'
+# Napoleon settings
+#napoleon_numpy_docstring = False
+napoleon_use_ivar = True
+
+# Intersphinx settings
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None)
+}
+
+nbsphinx_execute = 'never'
 nbsphinx_timeout = -1
 
 # The value is used as a parameter of MathJax.Hub.Config().
