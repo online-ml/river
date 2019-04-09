@@ -125,7 +125,8 @@ class DynamicWeightedMajority(StreamModel):
         preds = np.array([np.array(exp.estimator.predict(X)) * exp.weight
                           for exp in self.experts])
         sum_weights = sum(exp.weight for exp in self.experts)
-        return np.sum(preds / sum_weights, axis=0, dtype=int)
+        aggregate = np.sum(preds / sum_weights, axis=0)
+        return (aggregate + 0.5).astype(int)    # Round to nearest int
 
     def predict_proba(self, X):
         raise NotImplementedError
