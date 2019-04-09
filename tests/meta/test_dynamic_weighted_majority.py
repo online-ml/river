@@ -42,4 +42,3 @@ def test_dynamic_weighted_majority():
     assert correct_predictions == expected_correct_predictions
 
     assert type(learner.predict(X)) == np.ndarray
-    assert type(learner.predict_proba(X)) == np.ndarray
