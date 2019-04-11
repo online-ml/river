@@ -1,6 +1,7 @@
 from skmultiflow.data.base_stream import Stream
 from sklearn.datasets import make_regression
 from skmultiflow.utils import check_random_state
+import numpy as np
 
 
 class RegressionGenerator(Stream):
@@ -137,7 +138,7 @@ class RegressionGenerator(Stream):
                                          n_informative=self.n_informative,
                                          n_targets=self.n_targets,
                                          random_state=self.random_state)
-        self.y.resize((self.y.size, self.n_targets))
+        self.y = np.resize(self.y, (self.y.size, self.n_targets))
 
         self.target_names = ["target_" + str(i) for i in range(self.n_targets)]
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_num_features)]
