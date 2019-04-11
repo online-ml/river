@@ -7,7 +7,7 @@
 [![DockerHub](https://img.shields.io/badge/docker-available-blue.svg?logo=docker)](https://hub.docker.com/r/skmultiflow/scikit-multiflow)
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)  
 
-A multi-output/multi-label and stream data framework.
+A machine learning framework for multi-output/multi-label and stream data.
 Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourceforge.net/),
  following [scikit-learn](http://scikit-learn.org/stable/)'s philosophy.
 
@@ -39,16 +39,16 @@ backend to use. This is done via a magic command at the beginning of the Noteboo
 ```
 
 [JupyterLab](http://jupyterlab.readthedocs.io/en/stable/) is the next-generation user interface for Jupyter, currently
-in beta it can display plots with some caveats. If you use JupyterLab then the current solution is to use the
-[jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) extension:
+in beta, it can display interactive plots with some caveats. If you use JupyterLab then the current solution is to use
+the [jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) extension:
 
 ```python
-%matplotlib ipympl
+%matplotlib widget
 ```
 
 ### Citing `scikit-multiflow`
 
-If you want to cite `scikit-multiflow` in a publication, please use the following Bibtex entry:
+If you want to cite `scikit-multiflow` in a scientific publication, please use the following Bibtex entry:
 ```bibtex
 @article{skmultiflow,
   author  = {Jacob Montiel and Jesse Read and Albert Bifet and Talel Abdessalem},
