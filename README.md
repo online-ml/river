@@ -28,11 +28,9 @@
 ## Useful links
 
 - [Documentation](https://creme-ml.github.io/)
-  - [Installation](https://creme-ml.github.io/install.html)
-  - [API](https://creme-ml.github.io/api.html)
+  - [API reference](https://creme-ml.github.io/api.html)
   - [User guide](https://creme-ml.github.io/user-guide.html)
   - [Benchmarks](https://creme-ml.github.io/benchmarks.html)
-  - [FAQ](https://creme-ml.github.io/faq.html)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
 - [Change history](CHANGELOG.md)
@@ -49,7 +47,7 @@ pip install creme
 
 ## Quick example
 
-In the following snippet we'll be fitting an online logistic regression. The weights of the model will be optimized with the [AdaGrad](http://akyrillidis.github.io/notes/AdaGrad) algorithm. We'll scale the data so that each variable has a mean of 0 and a standard deviation of 1. The standard scaling and the logistic regression are combined using a compose. We'll be using the `stream.iter_sklearn_dataset` function for streaming over the [Wisconsin breast cancer dataset](http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+%28diagnostic%29). We'll measure the ROC AUC using [progressive validation](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.153.3925&rep=rep1&type=pdf).
+In the following snippet we'll be fitting an online logistic regression. The weights of the model will be optimized with the [AdaGrad](http://akyrillidis.github.io/notes/AdaGrad) algorithm. We'll scale the data so that each variable has a mean of 0 and a standard deviation of 1. The standard scaling and the logistic regression are combined into a pipeline using the `|` operator. We'll be using the `stream.iter_sklearn_dataset` function for streaming over the [Wisconsin breast cancer dataset](http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+%28diagnostic%29). We'll measure the [F1-score](https://www.wikiwand.com/en/F1_score) using [progressive validation](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.153.3925&rep=rep1&type=pdf).
 
 ```python
 >>> from creme import compose

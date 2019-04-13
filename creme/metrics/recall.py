@@ -12,19 +12,21 @@ class Recall(stats.Mean, base.BinaryClassificationMetric):
 
     Example:
 
-        >>> from creme import metrics
-        >>> from sklearn.metrics import recall_score
+        ::
 
-        >>> y_true = [True, False, True, True, True]
-        >>> y_pred = [True, True, False, True, True]
+            >>> from creme import metrics
+            >>> from sklearn.metrics import recall_score
 
-        >>> metric = metrics.Recall()
-        >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-        ...     metric = metric.update(y_t, y_p)
-        ...     assert metric.get() == recall_score(y_true[:i+1], y_pred[:i+1])
+            >>> y_true = [True, False, True, True, True]
+            >>> y_pred = [True, True, False, True, True]
 
-        >>> metric
-        Recall: 0.75
+            >>> metric = metrics.Recall()
+            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+            ...     metric = metric.update(y_t, y_p)
+            ...     assert metric.get() == recall_score(y_true[:i+1], y_pred[:i+1])
+
+            >>> metric
+            Recall: 0.75
 
     """
 
@@ -47,24 +49,26 @@ class MacroRecall(base.MultiClassificationMetric):
 
     Example:
 
-        >>> from creme import metrics
-        >>> from sklearn.metrics import recall_score
+        ::
 
-        >>> y_true = [0, 1, 2, 2, 2]
-        >>> y_pred = [0, 0, 2, 2, 1]
+            >>> from creme import metrics
+            >>> from sklearn.metrics import recall_score
 
-        >>> metric = metrics.MacroRecall()
-        >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-        ...     metric = metric.update(y_t, y_p)
-        ...     print(metric.get(), recall_score(y_true[:i+1], y_pred[:i+1], average='macro'))
-        1.0 1.0
-        0.5 0.5
-        0.666666... 0.666666...
-        0.666666... 0.666666...
-        0.555555... 0.555555...
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
 
-        >>> metric
-        MacroRecall: 0.555556
+            >>> metric = metrics.MacroRecall()
+            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+            ...     metric = metric.update(y_t, y_p)
+            ...     print(metric.get(), recall_score(y_true[:i+1], y_pred[:i+1], average='macro'))
+            1.0 1.0
+            0.5 0.5
+            0.666666... 0.666666...
+            0.666666... 0.666666...
+            0.555555... 0.555555...
+
+            >>> metric
+            MacroRecall: 0.555556
 
     """
 
@@ -95,31 +99,34 @@ class MacroRecall(base.MultiClassificationMetric):
 class MicroRecall(precision.MicroPrecision):
     """Micro-average recall score.
 
-    Micro recall and micro precision scores are the same thing.
+    The micro-average recall is exactly equivalent to the micro-average precision as well as the
+    micro-average F1 score.
 
     Example:
 
-        >>> from creme import metrics
-        >>> from sklearn.metrics import recall_score
+        ::
 
-        >>> y_true = [0, 1, 2, 2, 2]
-        >>> y_pred = [0, 0, 2, 2, 1]
+            >>> from creme import metrics
+            >>> from sklearn.metrics import recall_score
 
-        >>> metric = metrics.MicroRecall()
-        >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-        ...     metric = metric.update(y_t, y_p)
-        ...     print(metric.get(), recall_score(y_true[:i+1], y_pred[:i+1], average='micro'))
-        1.0 1.0
-        0.5 0.5
-        0.666666... 0.666666...
-        0.75 0.75
-        0.6 0.6
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
 
-        >>> metric
-        MicroRecall: 0.6
+            >>> metric = metrics.MicroRecall()
+            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+            ...     metric = metric.update(y_t, y_p)
+            ...     print(metric.get(), recall_score(y_true[:i+1], y_pred[:i+1], average='micro'))
+            1.0 1.0
+            0.5 0.5
+            0.666666... 0.666666...
+            0.75 0.75
+            0.6 0.6
+
+            >>> metric
+            MicroRecall: 0.6
 
     References:
 
-    1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
+        1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
 
     """

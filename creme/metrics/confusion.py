@@ -4,25 +4,32 @@ import collections
 class ConfusionMatrix(collections.defaultdict):
     """Confusion matrix.
 
-    Calling ``print`` will pretty-print the confusion matrix.
+    This class is different from the rest of the classes from the :any:`metrics` module in that it
+    doesn't have a ``get`` method. The only use of this class is to be able to elegantly printable.
+
+    Attributes:
+        classes (set): The entire set of seen classes, whether they are part of the predictions or
+            the true values.
 
     Example:
 
-        >>> from creme import metrics
+        ::
 
-        >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
-        >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
+            >>> from creme import metrics
 
-        >>> cm = metrics.ConfusionMatrix()
+            >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
+            >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
 
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     cm = cm.update(y_t, y_p)
+            >>> cm = metrics.ConfusionMatrix()
 
-        >>> cm
-                 ant  bird   cat
-           ant     2     0     0
-          bird     0     0     1
-           cat     1     0     2
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     cm = cm.update(y_t, y_p)
+
+            >>> cm
+                     ant  bird   cat
+               ant     2     0     0
+              bird     0     0     1
+               cat     1     0     2
 
     """
 

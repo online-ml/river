@@ -59,7 +59,6 @@ extensions = [
 ]
 
 # Napoleon settings
-#napoleon_numpy_docstring = False
 napoleon_use_ivar = True
 
 # Intersphinx settings
@@ -67,7 +66,7 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None)
 }
 
-nbsphinx_execute = 'never'
+#nbsphinx_execute = 'never'
 nbsphinx_timeout = -1
 
 # The value is used as a parameter of MathJax.Hub.Config().
