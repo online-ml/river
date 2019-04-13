@@ -1,10 +1,8 @@
 """
 Module for imputing values online.
 """
-from .categorical import CategoricalImputer
-from .numeric import NumericImputer
+from .imputer import Imputer
 
 __all__ = [
-    'CategoricalImputer',
-    'NumericImputer',
+    'Imputer'
 ]

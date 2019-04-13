@@ -186,8 +186,7 @@ API reference
    :toctree: generated/
    :nosignatures:
 
-   impute.NumericImputer
-   impute.CategoricalImputer
+   impute.Imputer
 
 
 :mod:`creme.linear_model`: Linear models
