@@ -109,7 +109,7 @@ class Transformer(Estimator):
     """A transformer."""
 
     def fit_one(self, x: dict, y=None) -> dict:
-        """Fits to a set of features ``x ` and an optinal target ``y``.
+        """Fits to a set of features ``x `` and an optinal target ``y``.
 
         A lot of transformers don't actually have to do anything during the ``fit_one`` step
         because they are stateless. For this reason the default behavior of this function is to do
