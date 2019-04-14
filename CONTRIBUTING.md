@@ -45,15 +45,10 @@ If you are adding new code to `scikit-multiflow`, it is highly encouraged that y
 ## Sphinx documentation
 * We generate our documentation using `sphinx` with the following dependencies: `sphinx_rtd_theme` 
 * To update the documentation, perform in a terminal the steps below:
-    * Make your way to the scikit-multiflow parent directory (outside the project)
-    * Type in:  
-      ``` bash
-      $ sphinx-apidoc -o scikit-multiflow/docs scikit-multiflow/src/skmultiflow -e -f 
-      ```
-
     * Go to scikit-multiflow/docs and type in:  
       ``` bash
       $ make html
       ```
+      This will generate the documentation page in `docs/_build/html`
      
     * The documentation page is hosted in the **gh-pages** branch.
