@@ -187,7 +187,7 @@ API reference
    :toctree: generated/
    :nosignatures:
 
-   impute.Imputer
+   impute.StatImputer
 
 
 :mod:`creme.linear_model`: Linear models

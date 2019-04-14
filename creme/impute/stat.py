@@ -36,9 +36,9 @@ class StatImputer:
     Parameters:
         on (str): Name of the field to impute.
         by (str): Name of the field to impute with aggregatation.
-        stat (stats.Univariate or any value): Univariate statistic used to fill missing
-        values, for example: :any:`stats.Mean`. If stat is not instance of stats.Univariate,
-        missing values will be replaced by stat value.
+        stat (stats.Univariate or any value): Univariate statistic used to fill missing values, for
+            `stats.Mean`. If ``stat`` is not an instance of `stats.Univariate`, then the input will
+            be treated as a constant and all missing values will be replaced by it.
 
     Example:
 
@@ -54,25 +54,25 @@ class StatImputer:
             ...     {}
             ... ]
 
-            >>> imputer_constant_value = impute.StatImputer(
+            >>> const_imp = impute.StatImputer(
             ...     on='x',
             ...     stat=5.0
             ... )
 
             >>> for x in X:
-            ...     print(imputer_constant_value.fit_one(x))
+            ...     print(const_imp.fit_one(x))
             {'x': 1.0}
             {'x': 2.0}
             {'x': 3.0}
             {'x': 5.0}
 
-            >>> imputer_mean = impute.StatImputer(
+            >>> mean_imp = impute.StatImputer(
             ...     on='x',
             ...     stat=stats.Mean()
             ... )
 
             >>> for x in X:
-            ...     print(imputer_mean.fit_one(x))
+            ...     print(mean_imp.fit_one(x))
             {'x': 1.0}
             {'x': 2.0}
             {'x': 3.0}
@@ -90,13 +90,13 @@ class StatImputer:
             ...     {},
             ... ]
 
-            >>> imputer_top_k = impute.StatImputer(
+            >>> mode_imp = impute.StatImputer(
             ...     on='x',
             ...     stat=stats.Mode(k=25),
             ... )
 
             >>> for x in X:
-            ...     print(imputer_top_k.fit_one(x))
+            ...     print(mode_imp.fit_one(x))
             {'x': 'sunny'}
             {'x': 'rainy'}
             {'x': 'humidity'}
@@ -120,14 +120,14 @@ class StatImputer:
             ...   {'town': 'Pekin'},
             ... ]
 
-            >>> imputer_by_town = impute.StatImputer(
+            >>> by_town_imp = impute.StatImputer(
             ...     on='weather',
             ...     by='town',
             ...     stat=stats.Mode(exact=True)
             ... )
 
             >>> for x in X:
-            ...     print(imputer_by_town.fit_one(x))
+            ...     print(by_town_imp.fit_one(x))
             {'town': 'New York', 'weather': 'sunny'}
             {'town': 'New York', 'weather': 'sunny'}
             {'town': 'New York', 'weather': 'rainy'}

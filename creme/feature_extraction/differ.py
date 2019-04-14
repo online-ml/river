@@ -22,7 +22,7 @@ class Differ(base.Transformer):
 
     Attributes:
         last_moments (dict): Indicates the last value for each value in the ``by`` field.
-        name (str): The name of the resulting feature.
+        feature_name (str): The name of the resulting feature.
 
     Example:
 
@@ -70,11 +70,11 @@ class Differ(base.Transformer):
         self.when = always_true if when is True else when
         self.when_name = when.__name__ if when_name is None else when_name
         self.last_moments = {}
-        self.name = f'{self.on}_diff'
+        self.feature_name = f'{self.on}_diff'
         if when is not True:
-            self.name += f'_since_{self.when_name}'
+            self.feature_name += f'_since_{self.when_name}'
         if by is not None:
-            self.name += f'_by_{self.by}'
+            self.feature_name += f'_by_{self.by}'
 
     def fit_one(self, x, y=None):
 
@@ -85,10 +85,7 @@ class Differ(base.Transformer):
 
     def transform_one(self, x):
         if self.when(x):
-            return {self.name: x[self.on] - x[self.on]}
+            return {self.feature_name: x[self.on] - x[self.on]}
         if x[self.by] in self.last_moments:
-            return {self.name: x[self.on] - self.last_moments[x[self.by]]}
+            return {self.feature_name: x[self.on] - self.last_moments[x[self.by]]}
         return {}
-
-    def __str__(self):
-        return self.name

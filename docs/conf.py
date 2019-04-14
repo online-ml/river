@@ -24,9 +24,10 @@ copyright = '2019, Max Halford'
 author = 'Max Halford'
 
 # The short X.Y version
-version = ''
+import creme
+version = creme.__version__
 # The full version, including alpha/beta/rc tags
-release = ''
+release = creme.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -58,15 +59,28 @@ extensions = [
     'nbsphinx'
 ]
 
+# The reST default role (used for this markup: `text`) to use for all
+# documents.
+# sklearn uses a custom extension: `custom_references_resolver` to modify
+# the order of link resolution for the 'any' role. It resolves python class
+# links first before resolving 'std' domain links. Unresolved roles are
+# considered to be <code> blocks.
+default_role = 'any'
+
 # Napoleon settings
 napoleon_use_ivar = True
 
 # Intersphinx settings
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None)
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
+    'sklearn': ('https://scikit-learn.org/stable/', None)
 }
 
-#nbsphinx_execute = 'never'
+nbsphinx_execute = 'never'
 nbsphinx_timeout = -1
 
 # The value is used as a parameter of MathJax.Hub.Config().
@@ -218,3 +232,6 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+def setup(app):
+    # to hide/show the prompt in code examples:
+    app.add_javascript('js/copybutton.js')

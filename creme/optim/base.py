@@ -21,10 +21,10 @@ class Optimizer(abc.ABC):
         """
 
         This method gives more control over the gradient computation than
-        `update_weights_with_gradient`. This is required for optimisation methods that have to
+        ``update_weights_with_gradient``. This is required for optimisation methods that have to
         take a step before actually computing the gradient, such as FTRL-Proximal and Nesterov
         Momentum. However most optimizers could (and should) directly use
-        `update_weights_with_gradient`.
+        ``update_weights_with_gradient``.
 
         """
 

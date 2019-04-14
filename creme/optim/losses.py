@@ -20,7 +20,7 @@ class Loss(abc.ABC):
 
     @abc.abstractmethod
     def gradient(self, y_true, y_pred) -> float:
-        """Returns the gradient with respect to `y_pred`."""
+        """Returns the gradient with respect to ``y_pred``."""
 
 
 class BinaryClassificationLoss(Loss):
@@ -70,8 +70,8 @@ class CauchyLoss(RegressionLoss):
 
     References:
 
-    1. `Effect of MAE <https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163>`_
-    2. `Paris Madness <https://www.kaggle.com/raddar/paris-madness>`_
+        1. `Effect of MAE <https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163>`_
+        2. `Paris Madness <https://www.kaggle.com/raddar/paris-madness>`_
 
     """
 
@@ -99,17 +99,17 @@ class SquaredLoss(RegressionLoss):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import optim
+            >>> from creme import optim
 
-        >>> loss = optim.SquaredLoss()
-        >>> loss(-4, 5)
-        40.5
-        >>> loss.gradient(1, 4)
-        3
-        >>> loss.gradient(4, 1)
-        -3
+            >>> loss = optim.SquaredLoss()
+            >>> loss(-4, 5)
+            40.5
+            >>> loss.gradient(1, 4)
+            3
+            >>> loss.gradient(4, 1)
+            -3
 
     """
 
@@ -211,9 +211,11 @@ class HingeLoss(BinaryClassificationLoss):
         return max(0, 1 - y_true * y_pred)
 
     def gradient(self, y_true, y_pred):
-        """Returns the gradient with respect to `y_pred`.
+        """Returns the gradient with respect to ``y_pred``.
 
-        `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
+        References:
+
+            1. `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
 
         """
         y_true = y_true or -1
@@ -234,9 +236,11 @@ class EpsilonInsensitiveHingeLoss(RegressionLoss):
         return max(0, abs(y_pred - y_true) - self.eps)
 
     def gradient(self, y_true, y_pred):
-        """Returns the gradient with respect to `y_pred`.
+        """Returns the gradient with respect to ``y_pred``.
 
-        `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p>`_
+        References:
+
+            1. `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p>`_
 
         """
         y_true = y_true or -1
