@@ -14,7 +14,7 @@ class AdditiveExpertEnsemble(StreamModel):
         Maximum number of estimators to hold.
     base_estimator: StreamModel or sklearn.BaseEstimator (default=NaiveBayes)
         Each member of the ensemble is an instance of the base estimator.
-    beta: float (default=0.75)
+    beta: float (default=0.8)
         Factor for which to decrease weights by.
     gamma: float (default=0.1)
         Weight of new experts in ratio to total ensemble weight.
@@ -57,7 +57,7 @@ class AdditiveExpertEnsemble(StreamModel):
             self.estimator = estimator
             self.weight = weight
 
-    def __init__(self, n_estimators=5, base_estimator=NaiveBayes(), beta=0.75,
+    def __init__(self, n_estimators=5, base_estimator=NaiveBayes(), beta=0.8,
                  gamma=0.1, pruning='weakest'):
         """
         Creates a new instance of AdditiveExpertEnsemble.
@@ -166,7 +166,8 @@ class AdditiveExpertEnsemble(StreamModel):
         y_hat = np.array([np.argmax(predictions)])
 
         # Update expert weights
-        self.update_experts_order()
+        if self.pruning == 'weakest':
+            self.experts = sorted(self.experts, key=lambda exp: exp.weight)
 
         # If y_hat != y_true, then add a new expert
         if np.any(y_hat != y):
@@ -181,6 +182,12 @@ class AdditiveExpertEnsemble(StreamModel):
         # Train each expert on X
         for exp in self.experts:
             exp.estimator.partial_fit(X, y, classes=classes, weight=weight)
+
+        # Normalize weights (if not will tend to infinity)
+        if self.epochs % 1000:
+            ensemble_weight = sum(exp.weight for exp in self.experts)
+            for exp in self.experts:
+                exp.weight /= ensemble_weight
 
     def get_expert_predictions(self, X):
         """
@@ -208,10 +215,6 @@ class AdditiveExpertEnsemble(StreamModel):
         Constructs a new WeightedExpert from the provided base_estimator.
         """
         return self.WeightedExpert(cp.deepcopy(self.base_estimator), weight)
-
-    def update_experts_order(self):
-        if self.pruning == 'weakest':
-            self.experts = sorted(self.experts, key=lambda exp: exp.weight)
 
     def reset(self):
         self.epochs = 0
