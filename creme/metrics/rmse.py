@@ -6,23 +6,23 @@ class RMSE(mse.MSE):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import metrics
+            >>> from creme import metrics
 
-        >>> y_true = [3, -0.5, 2, 7]
-        >>> y_pred = [2.5, 0.0, 2, 8]
+            >>> y_true = [3, -0.5, 2, 7]
+            >>> y_pred = [2.5, 0.0, 2, 8]
 
-        >>> metric = metrics.RMSE()
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     print(metric.update(y_t, y_p).get())
-        0.5
-        0.5
-        0.408248...
-        0.612372...
+            >>> metric = metrics.RMSE()
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     print(metric.update(y_t, y_p).get())
+            0.5
+            0.5
+            0.408248...
+            0.612372...
 
-        >>> metric
-        RMSE: 0.612372
+            >>> metric
+            RMSE: 0.612372
 
     """
 

@@ -11,23 +11,25 @@ from . import recall
 class F1Score(stats.Mean, base.BinaryClassificationMetric):
     """Binary F1 score.
 
-    This is the harmonic mean of the precision and the recall.
+    The F1 score is the harmonic mean of the precision and the recall.
 
     Example:
 
-        >>> from creme import metrics
-        >>> from sklearn.metrics import f1_score
+        ::
 
-        >>> y_true = [True, False, True, True, True]
-        >>> y_pred = [True, True, False, True, True]
+            >>> from creme import metrics
+            >>> from sklearn.metrics import f1_score
 
-        >>> metric = metrics.F1Score()
-        >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-        ...     metric = metric.update(y_t, y_p)
-        ...     assert metric.get() == f1_score(y_true[:i+1], y_pred[:i+1])
+            >>> y_true = [True, False, True, True, True]
+            >>> y_pred = [True, True, False, True, True]
 
-        >>> metric
-        F1Score: 0.75
+            >>> metric = metrics.F1Score()
+            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+            ...     metric = metric.update(y_t, y_p)
+            ...     assert metric.get() == f1_score(y_true[:i+1], y_pred[:i+1])
+
+            >>> metric
+            F1Score: 0.75
 
     """
 
@@ -54,28 +56,32 @@ class F1Score(stats.Mean, base.BinaryClassificationMetric):
 
 
 class MacroF1Score(base.MultiClassificationMetric):
-    """Macro F1 score.
+    """Macro-average F1 score.
+
+    The macro-average F1 score is the arithmetic average of the binary F1 scores of each label.
 
     Example:
 
-        >>> from creme import metrics
-        >>> from sklearn.metrics import f1_score
+        ::
 
-        >>> y_true = [0, 1, 2, 2, 2]
-        >>> y_pred = [0, 0, 2, 2, 1]
+            >>> from creme import metrics
+            >>> from sklearn.metrics import f1_score
 
-        >>> metric = metrics.MacroF1Score()
-        >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-        ...     metric = metric.update(y_t, y_p)
-        ...     print(metric.get(), f1_score(y_true[:i+1], y_pred[:i+1], average='macro'))
-        1.0 1.0
-        0.333333... 0.333333...
-        0.555555... 0.555555...
-        0.555555... 0.555555...
-        0.488888... 0.488888...
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
 
-        >>> metric
-        MacroF1Score: 0.488889
+            >>> metric = metrics.MacroF1Score()
+            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+            ...     metric = metric.update(y_t, y_p)
+            ...     print(metric.get(), f1_score(y_true[:i+1], y_pred[:i+1], average='macro'))
+            1.0 1.0
+            0.333333... 0.333333...
+            0.555555... 0.555555...
+            0.555555... 0.555555...
+            0.488888... 0.488888...
+
+            >>> metric
+            MacroF1Score: 0.488889
 
     """
 
@@ -102,31 +108,36 @@ class MacroF1Score(base.MultiClassificationMetric):
 
 
 class MicroF1Score(precision.MicroPrecision):
-    """Micro F1 score.
+    """Micro-average F1 score.
+
+    The micro-average F1 score is exactly equivalent to the micro-average precision as well as the
+    micro-average recall score.
 
     Example:
 
-        >>> from creme import metrics
-        >>> from sklearn.metrics import f1_score
+        ::
 
-        >>> y_true = [0, 1, 2, 2, 2]
-        >>> y_pred = [0, 0, 2, 2, 1]
+            >>> from creme import metrics
+            >>> from sklearn.metrics import f1_score
 
-        >>> metric = metrics.MicroF1Score()
-        >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-        ...     metric = metric.update(y_t, y_p)
-        ...     print(metric.get(), f1_score(y_true[:i+1], y_pred[:i+1], average='micro'))
-        1.0 1.0
-        0.5 0.5
-        0.666666... 0.666666...
-        0.75 0.75
-        0.6 0.6
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
 
-        >>> metric
-        MicroF1Score: 0.6
+            >>> metric = metrics.MicroF1Score()
+            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+            ...     metric = metric.update(y_t, y_p)
+            ...     print(metric.get(), f1_score(y_true[:i+1], y_pred[:i+1], average='micro'))
+            1.0 1.0
+            0.5 0.5
+            0.666666... 0.666666...
+            0.75 0.75
+            0.6 0.6
+
+            >>> metric
+            MicroF1Score: 0.6
 
     References:
 
-    1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
+        1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
 
     """

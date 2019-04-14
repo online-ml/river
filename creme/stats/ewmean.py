@@ -10,28 +10,28 @@ class EWMean(base.Univariate):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import stats
+            >>> from creme import stats
 
-        >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
-        >>> ewm = stats.EWMean(alpha=0.5)
-        >>> for x in X:
-        ...     print(ewm.update(x).get())
-        1
-        2.0
-        3.5
-        3.75
-        4.875
-        6.4375
-        6.71875
-        7.859375
-        9.4296875
+            >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
+            >>> ewm = stats.EWMean(alpha=0.5)
+            >>> for x in X:
+            ...     print(ewm.update(x).get())
+            1
+            2.0
+            3.5
+            3.75
+            4.875
+            6.4375
+            6.71875
+            7.859375
+            9.4296875
 
     References:
 
-    - `Incremental calculation of weighted mean and variance <http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf>`_
-    - `Exponential Moving Average on Streaming Data <https://dev.to/nestedsoftware/exponential-moving-average-on-streaming-data-4hhl>`
+        1. `Incremental calculation of weighted mean and variance <http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf>`_
+        2. `Exponential Moving Average on Streaming Data <https://dev.to/nestedsoftware/exponential-moving-average-on-streaming-data-4hhl>`_
 
     """
 

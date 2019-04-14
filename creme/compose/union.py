@@ -34,12 +34,12 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         ...     {'place': 'Taco Bell', 'revenue': 50}
         ... ]
 
-        >>> mean = creme.feature_extraction.GroupBy(
+        >>> mean = creme.feature_extraction.Agg(
         ...     on='revenue',
         ...     by='place',
         ...     how=creme.stats.Mean()
         ... )
-        >>> count = creme.feature_extraction.GroupBy(
+        >>> count = creme.feature_extraction.Agg(
         ...     on='revenue',
         ...     by='place',
         ...     how=creme.stats.Count()

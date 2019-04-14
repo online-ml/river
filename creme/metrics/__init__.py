@@ -1,6 +1,6 @@
 """
-A set of metrics used in machine learning that can be computed in a streaming
-fashion.
+A set of metrics used in machine learning that can be computed in a streaming fashion, without any
+loss in precision.
 """
 from .accuracy import Accuracy
 from .confusion import ConfusionMatrix

@@ -148,10 +148,11 @@ API reference
    :toctree: generated/
    :nosignatures:
 
+   feature_extraction.Agg
    feature_extraction.CountVectorizer
-   feature_extraction.GroupBy
+   feature_extraction.Differ
+   feature_extraction.TargetAgg
    feature_extraction.TargetEncoder
-   feature_extraction.TargetGroupBy
    feature_extraction.TFIDFVectorizer
 
 
@@ -186,8 +187,7 @@ API reference
    :toctree: generated/
    :nosignatures:
 
-   impute.NumericImputer
-   impute.CategoricalImputer
+   impute.StatImputer
 
 
 :mod:`creme.linear_model`: Linear models
