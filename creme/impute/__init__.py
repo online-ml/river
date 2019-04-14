@@ -1,8 +1,9 @@
 """
 Module for imputing values online.
 """
-from .imputer import Imputer
+from .stat import StatImputer
+
 
 __all__ = [
-    'Imputer'
+    'StatImputer'
 ]

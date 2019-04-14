@@ -24,14 +24,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Blacklister`, `Whitelister`, and `SplitRegressor` to `compose`
 - `fetch_electricity` to `datasets`
 - `OptimalLR` to `optim`
+- `Differ` to `feature_extraction`
+- `Imputer` to `impute`
 
 ### Removed
 
 - `Discarder` from `preprocessing`
+- `CategoricalImputer` and `NumericImputer` from `impute`
 
 ### Modified
 
 - Added `on` and `sparse` parameters to `preprocessing.OneHotEncoder`
+- Renamed `GroupBy` to `Agg` and `TargetGroupBy` to `TargetAgg` to `Agg`
 
 
 ## [0.0.3](https://pypi.org/project/creme/0.0.3/) - 2019-03-21
