@@ -8,6 +8,7 @@ __pycache__/
 
 # Sphinx documentation
 docs/_build/
+docs/_autosummary
 
 # Distribution / packaging
 .Python

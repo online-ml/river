@@ -61,7 +61,7 @@ class AdditiveExpertEnsemble(StreamModel):
                     X[i:i+1, :], y[i:i+1], classes, weight
                 )
 
-        self.n_samples += X.shape[0]        
+        self.n_samples += X.shape[0]
 
     def predict(self, X):
         return np.array([np.argmax(self.predict_proba(X))])
@@ -138,10 +138,10 @@ class AdditiveExpertEnsemble(StreamModel):
             if np.all(y_pred == y_true):
                 continue
             exp.weight = exp.weight * self.beta
-        
+
         self.experts = sorted(self.experts, key=lambda exp: exp.weight,
                               reverse=True)
-    
+
     def reset(self):
         self.n_samples = 0
         self.experts = [

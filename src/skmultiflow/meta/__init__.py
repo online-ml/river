@@ -13,8 +13,9 @@ from .multi_output_learner import MultiOutputLearner
 from .learn_pp import LearnPP
 from .learn_nse import LearnNSE
 from .accuracy_weighted_ensemble import AccuracyWeightedEnsemble
+from .dynamic_weighted_majority import DynamicWeightedMajority
 from .additive_expert_ensemble import AdditiveExpertEnsemble
 
 __all__ = ["AdaptiveRandomForest", "BatchIncremental", "LeverageBagging", "OzaBagging", "OzaBaggingAdwin",
            "ClassifierChain", "RegressorChain", "MultiOutputLearner", "LearnPP", "LearnNSE",
-           "AccuracyWeightedEnsemble", "AdditiveExpertEnsemble"]
+           "AccuracyWeightedEnsemble", "DynamicWeightedMajority", "AdditiveExpertEnsemble"]
