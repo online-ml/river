@@ -8,9 +8,8 @@ class Entropy(base.Univariate):
     """Running entropy.
 
     Parameters:
-        alpha (int) : Fading factor. Defaults to 1.
+        alpha (int) : Fading factor.
         eps (float) : Small value that will be added to the denominator to avoid division by zero.
-            Defaults to 1e-8.
 
     Attributes:
         entropy (float): The running entropy.

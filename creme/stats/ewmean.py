@@ -8,6 +8,9 @@ class EWMean(base.Univariate):
         alpha (float): The closer ``alpha`` is to 1 the more the statistic will adapt to recent
             values.
 
+    Attributes:
+        mean (float) : The running exponentially weighted mean.
+
     Example:
 
         ::
