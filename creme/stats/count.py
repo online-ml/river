@@ -2,7 +2,12 @@ from . import base
 
 
 class Count(base.Univariate):
-    """A simple counter."""
+    """A simple counter.
+    
+    Attributes:
+        n (int)
+            The current number of observations.
+    """
 
     def __init__(self):
         self.n = 0
