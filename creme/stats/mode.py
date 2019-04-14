@@ -3,12 +3,18 @@ import collections
 from . import base
 
 
+__all__ = ['Mode']
+
+
 class Mode(base.Univariate):
     """Running mode.
 
+    The mode is simply the most common value. An approximate mode can be computed by setting the
+    number of first unique values to count.
+
     Parameters:
-        k (int): Only the first ``k`` unique values will be included.
-        exact (bool): Whether or not to count the occurrences of each and every value.
+        k (int): Only the first ``k`` unique values will be included. If ``k`` equals -1, the exact
+        mode is computed.
 
     Attributes:
         counts (collections.defaultdict)
@@ -20,7 +26,7 @@ class Mode(base.Univariate):
         >>> from creme import stats
 
         >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
-        >>> mode = stats.mode.Mode(k=2, exact=False)
+        >>> mode = stats.Mode(k=2)
         >>> for x in X:
         ...     print(mode.update(x).get())
         sunny
@@ -30,7 +36,7 @@ class Mode(base.Univariate):
         cloudy
         cloudy
 
-        >>> mode = stats.mode.Mode(k=2, exact=True)
+        >>> mode = stats.Mode(k=-1)
         >>> for x in X:
         ...     print(mode.update(x).get())
         sunny
@@ -42,17 +48,16 @@ class Mode(base.Univariate):
 
     """
 
-    def __init__(self, k=25, exact=False):
+    def __init__(self, k=25):
         self.k = k
         self.counts = collections.defaultdict(int)
-        self.exact = exact
 
     @property
     def name(self):
         return 'mode'
 
     def update(self, x):
-        if x in self.counts or len(self.counts) < self.k or self.exact:
+        if self.k == -1 or x in self.counts or len(self.counts) < self.k:
             self.counts[x] += 1
         return self
 
