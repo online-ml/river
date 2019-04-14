@@ -64,10 +64,10 @@ class KNN(StreamModel):
     Examples
     --------
     >>> # Imports
-    >>> from skmultiflow.lazy.knn import KNN
-    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.lazy import KNN
+    >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
-    >>> stream = FileStream('skmultiflow/data/datasets/sea_big.csv', -1, 1)
+    >>> stream = SEAGenerator(random_state=1, noise_percentage=.1)
     >>> stream.prepare_for_use()
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
@@ -86,10 +86,10 @@ class KNN(StreamModel):
     >>>
     >>> # Displaying results
     >>> print('KNN usage example')
-    >>> print(str(n_samples) + ' samples analyzed.')
+    >>> print('{} samples analyzed.'.format(n_samples))
     5000 samples analyzed.
-    >>> print("KNN's performance: " + str(corrects/n_samples))
-    KNN's performance: 0.868
+    >>> print("KNN's performance: {}".format(corrects/n_samples))
+    KNN's performance: 0.8788
     
     """
 
