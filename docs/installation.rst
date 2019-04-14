@@ -2,7 +2,7 @@
 Installation
 ============
 
-**Notice:** `scikit-multiflow` works with Python 3.4+ **only**.
+**Notice:** `scikit-multiflow` works with Python 3.5+ **only**.
 
 ``scikit-multiflow`` requires `numpy <www.numpy.org>`_ to be already installed in your system. There are multiple ways to install ``numpy``, the easiest is using `pip <https://pip.pypa.io/en/stable/#>`_:
 
@@ -36,17 +36,29 @@ When the installation is completed (and no errors were reported), then you will 
 Option 2. Install from PyPI
 ===========================
 
-`scikit-multiflow` is also available in the Python Package Index (PyPI). So you can install it using the following command:
+`scikit-multiflow` is also available via `PyPI <https://pypi.org/project/scikit-multiflow/>`_ (Python Package Index). So you can install it using the following command:
 
 .. code-block:: bash
 
    $ pip install -U scikit-multiflow
 
-This will install the latest (stable) release of the code.
+**Note:** This will install the latest (stable) release of `scikit-multiflow`.
 
-Option 3. Install with Docker
+Option 3. Install from conda-forge
+==================================
+
+You can install `scikit-multiflow` from `conda-forge <https://anaconda.org/conda-forge/scikit-multiflow>`_ using the following command:
+
+.. code-block:: bash
+
+   $  conda install -c conda-forge scikit-multiflow
+
+**Note:** This will install the latest (stable) release of `scikit-multiflow`.
+
+
+Option 4. Install with Docker
 =============================
-`scikit-multiflow` is also available in Docker. Docker images are located in the `skmultiflow/scikit-multiflow <https://hub.docker.com/r/skmultiflow/scikit-multiflow>`_ Docker Hub repository.
+Docker images are located in the `skmultiflow/scikit-multiflow <https://hub.docker.com/r/skmultiflow/scikit-multiflow>`_ Docker Hub repository.
 
 You can download the image and start using `scikit-multiflow`. Image releases are tagged using the following format:
 
@@ -83,7 +95,7 @@ Also, for more examples see `Quick-Start Guide with Docker <user-guide.quick-sta
 
 
 
-Option 4. Development version
+Option 5. Development version
 ====================================
 
 For people interested in contributing to `scikit-multiflow` we recommend to install the project in *editable* mode, please refer to the `contributor's page <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>`_ for further information.
