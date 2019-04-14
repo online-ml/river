@@ -4,6 +4,10 @@ from . import base
 class Covariance(base.Bivariate):
     """Running covariance.
 
+    Parameters:
+        ddof (int)
+            Delta Degrees of Freedom.
+
     Example:
 
         >>> from creme import stats
