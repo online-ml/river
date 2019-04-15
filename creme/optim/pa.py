@@ -41,55 +41,55 @@ class PassiveAggressiveI(BasePassiveAggressive):
 
     Example:
 
-    The following example is taken from `this blog post <https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/>`_.
+        The following example is taken from `this blog post <https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/>`_.
 
-    ::
+        ::
 
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import stream
-        >>> import numpy as np
-        >>> from sklearn import datasets
-        >>> from sklearn import model_selection
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import optim
+            >>> from creme import stream
+            >>> import numpy as np
+            >>> from sklearn import datasets
+            >>> from sklearn import model_selection
 
-        >>> np.random.seed(1000)
-        >>> X, y = datasets.make_classification(
-        ...     n_samples=5000,
-        ...     n_features=4,
-        ...     n_informative=2,
-        ...     n_redundant=0,
-        ...     n_repeated=0,
-        ...     n_classes=2,
-        ...     n_clusters_per_class=2
-        ... )
+            >>> np.random.seed(1000)
+            >>> X, y = datasets.make_classification(
+            ...     n_samples=5000,
+            ...     n_features=4,
+            ...     n_informative=2,
+            ...     n_redundant=0,
+            ...     n_repeated=0,
+            ...     n_classes=2,
+            ...     n_clusters_per_class=2
+            ... )
 
-        >>> X_train, X_test, y_train, y_test = model_selection.train_test_split(
-        ...     X,
-        ...     y,
-        ...     test_size=0.35,
-        ...     random_state=1000
-        ... )
+            >>> X_train, X_test, y_train, y_test = model_selection.train_test_split(
+            ...     X,
+            ...     y,
+            ...     test_size=0.35,
+            ...     random_state=1000
+            ... )
 
-        >>> optimizer = optim.PassiveAggressiveI(C=0.01)
-        >>> model = linear_model.LogisticRegression(
-        ...     optimizer=optimizer,
-        ...     loss=optim.HingeLoss()
-        ... )
+            >>> optimizer = optim.PassiveAggressiveI(C=0.01)
+            >>> model = linear_model.LogisticRegression(
+            ...     optimizer=optimizer,
+            ...     loss=optim.HingeLoss()
+            ... )
 
-        >>> for xi, yi in stream.iter_numpy(X_train, y_train):
-        ...     y_pred = model.fit_one(xi, yi)
+            >>> for xi, yi in stream.iter_numpy(X_train, y_train):
+            ...     y_pred = model.fit_one(xi, yi)
 
-        >>> metric = metrics.Accuracy()
-        >>> for xi, yi in stream.iter_numpy(X_test, y_test):
-        ...     metric = metric.update(yi, model.predict_one(xi))
+            >>> metric = metrics.Accuracy()
+            >>> for xi, yi in stream.iter_numpy(X_test, y_test):
+            ...     metric = metric.update(yi, model.predict_one(xi))
 
-        >>> print(metric)
-        Accuracy: 0.884571
+            >>> print(metric)
+            Accuracy: 0.884571
 
     References:
 
-    1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
+        1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
 
     """
 

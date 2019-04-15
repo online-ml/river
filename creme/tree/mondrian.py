@@ -447,33 +447,35 @@ class MondrianTreeClassifier(MondrianTree, base.MultiClassifier):
 
     Example:
 
-        >>> from creme import compose
-        >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import preprocessing
-        >>> from creme import stream
-        >>> from creme import tree
-        >>> from sklearn import datasets
+        ::
 
-        >>> X_y = stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_breast_cancer,
-        ...     shuffle=True,
-        ...     random_state=42
-        ... )
-        >>> model = compose.Pipeline([
-        ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('mondrian', tree.MondrianTreeClassifier(random_state=42))
-        ... ])
-        >>> metric = metrics.F1Score()
+            >>> from creme import compose
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> from creme import tree
+            >>> from sklearn import datasets
 
-        >>> model_selection.online_score(X_y, model, metric)
-        F1Score: 0.822309
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     load_dataset=datasets.load_breast_cancer,
+            ...     shuffle=True,
+            ...     random_state=42
+            ... )
+            >>> model = compose.Pipeline([
+            ...     ('scale', preprocessing.StandardScaler()),
+            ...     ('mondrian', tree.MondrianTreeClassifier(random_state=42))
+            ... ])
+            >>> metric = metrics.F1Score()
+
+            >>> model_selection.online_score(X_y, model, metric)
+            F1Score: 0.822309
 
     References:
 
-    1. `Mondrian Forests: Efficient Online Random Forests <https://github.com/balajiln/mondrianforest>`_
-    2. `Decision Trees and Forests: A Probabilistic Perspective <http://www.gatsby.ucl.ac.uk/~balaji/balaji-phd-thesis.pdf>`_
-    3. `scikit-garden <https://github.com/scikit-garden/scikit-garden/tree/master/skgarden/mondrian>`_
+        1. `Mondrian Forests: Efficient Online Random Forests <https://github.com/balajiln/mondrianforest>`_
+        2. `Decision Trees and Forests: A Probabilistic Perspective <http://www.gatsby.ucl.ac.uk/~balaji/balaji-phd-thesis.pdf>`_
+        3. `scikit-garden <https://github.com/scikit-garden/scikit-garden/tree/master/skgarden/mondrian>`_
 
     """
 

@@ -44,17 +44,17 @@ class AbsoluteLoss(RegressionLoss):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import optim
+            >>> from creme import optim
 
-        >>> loss = optim.AbsoluteLoss()
-        >>> loss(-42, 42)
-        84
-        >>> loss.gradient(1, 2)
-        1
-        >>> loss.gradient(2, 1)
-        -1
+            >>> loss = optim.AbsoluteLoss()
+            >>> loss(-42, 42)
+            84
+            >>> loss.gradient(1, 2)
+            1
+            >>> loss.gradient(2, 1)
+            -1
 
     """
 
@@ -133,19 +133,19 @@ class LogLoss(BinaryClassificationLoss):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import optim
+            >>> from creme import optim
 
-        >>> loss = optim.LogLoss()
-        >>> loss(1, 0.5)
-        0.693147...
-        >>> loss(1, 0)
-        34.53877...
-        >>> loss.gradient(1, 0.2)
-        -0.8
-        >>> loss.gradient(0, 0.2)
-        0.2
+            >>> loss = optim.LogLoss()
+            >>> loss(1, 0.5)
+            0.693147...
+            >>> loss(1, 0)
+            34.53877...
+            >>> loss.gradient(1, 0.2)
+            -0.8
+            >>> loss.gradient(0, 0.2)
+            0.2
 
     """
 
@@ -183,24 +183,26 @@ class HingeLoss(BinaryClassificationLoss):
 
     Example:
 
-        >>> from creme import optim
-        >>> import numpy as np
-        >>> from sklearn import svm
-        >>> from sklearn.metrics import hinge_loss
+        ::
 
-        >>> X = [[0], [1]]
-        >>> y = [-1, 1]
-        >>> lin_svm = svm.LinearSVC(random_state=0).fit(X, y)
+            >>> from creme import optim
+            >>> import numpy as np
+            >>> from sklearn import svm
+            >>> from sklearn.metrics import hinge_loss
 
-        >>> y_true = [0, 1, 1]
-        >>> y_pred = lin_svm.decision_function([[-2], [3], [0.5]])
+            >>> X = [[0], [1]]
+            >>> y = [-1, 1]
+            >>> lin_svm = svm.LinearSVC(random_state=0).fit(X, y)
 
-        >>> hinge_loss([0, 1, 1], y_pred)
-        0.303036...
+            >>> y_true = [0, 1, 1]
+            >>> y_pred = lin_svm.decision_function([[-2], [3], [0.5]])
 
-        >>> loss = optim.HingeLoss()
-        >>> np.mean([loss(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
-        0.303036...
+            >>> hinge_loss([0, 1, 1], y_pred)
+            0.303036...
+
+            >>> loss = optim.HingeLoss()
+            >>> np.mean([loss(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
+            0.303036...
 
     """
 

@@ -14,24 +14,26 @@ class GaussianNB(base.BaseNB):
     """Gaussian Naive Bayes.
 
     This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
-    ``predict_one`` from ``base.MultiClassifier``.
+    ``predict_one`` from `base.MultiClassifier`.
 
     Example:
 
-        >>> from creme import naive_bayes
-        >>> from creme import stream
-        >>> import numpy as np
+        ::
 
-        >>> X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
-        >>> Y = np.array([1, 1, 1, 2, 2, 2])
+            >>> from creme import naive_bayes
+            >>> from creme import stream
+            >>> import numpy as np
 
-        >>> model = naive_bayes.GaussianNB()
+            >>> X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
+            >>> Y = np.array([1, 1, 1, 2, 2, 2])
 
-        >>> for x, y in stream.iter_numpy(X, Y):
-        ...     _ = model.fit_one(x, y)
+            >>> model = naive_bayes.GaussianNB()
 
-        >>> model.predict_one({0: -0.8, 1: -1})
-        1
+            >>> for x, y in stream.iter_numpy(X, Y):
+            ...     _ = model.fit_one(x, y)
+
+            >>> model.predict_one({0: -0.8, 1: -1})
+            1
 
     """
 

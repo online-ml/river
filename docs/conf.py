@@ -60,6 +60,9 @@ extensions = [
     'nbsphinx'
 ]
 
+#nbsphinx_execute = 'never'
+nbsphinx_timeout = -1
+
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
 # sklearn uses a custom extension: `custom_references_resolver` to modify
@@ -78,11 +81,9 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-    'sklearn': ('https://scikit-learn.org/stable/', None)
+    'sklearn': ('https://scikit-learn.org/stable/', None),
+    'surprise': ('https://surprise.readthedocs.io/en/stable/', None)
 }
-
-nbsphinx_execute = 'never'
-nbsphinx_timeout = -1
 
 # The value is used as a parameter of MathJax.Hub.Config().
 mathjax_config = {
@@ -120,7 +121,7 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'manni'
+pygments_style = 'friendly'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -136,7 +137,8 @@ html_favicon = '_static/favicon.ico'
 # documentation.
 #
 html_theme_options = {
-    'logo_only': False
+    'logo_only': False,
+    'display_github': True
 }
 github_url = 'https://github.com/creme-ml/creme'
 

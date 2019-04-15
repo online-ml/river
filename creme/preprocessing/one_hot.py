@@ -8,8 +8,8 @@ class OneHotEncoder(base.Transformer):
     """One-hot encoding.
 
     Attributes:
-        on (``str``): Attribute to one-hot encode.
-        sparse (``bool``): Whether or not 0s should be made explicit or not.
+        on (str): Attribute to one-hot encode.
+        sparse (bool): Whether or not 0s should be made explicit or not.
 
     Example:
 

@@ -12,13 +12,13 @@ class RandomNormal(base.Recommender):
     """Predicts random values sampled from a normal distribution.
 
     The parameters of the normal distribution are fitted with running statistics. This is
-    equivalent to using ``surprise.NormalPredictor``.
+    equivalent to using `surprise.prediction_algorithms.random_pred.NormalPredictor`.
 
     Parameters:
         random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
             the seed used by the random number generator; if ``RandomState`` instance,
             ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by ``np.random``.
+            generator is the ``RandomState`` instance used by `numpy.random`.
 
     Attributes:
         variance (stats.Variance)

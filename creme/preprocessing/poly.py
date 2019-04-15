@@ -25,35 +25,35 @@ class PolynomialExtender(base.Transformer):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import preprocessing
+            >>> from creme import preprocessing
 
-        >>> X = [
-        ...     {'x1': 0, 'x2': 1},
-        ...     {'x1': 2, 'x2': 3},
-        ...     {'x1': 4, 'x2': 5}
-        ... ]
+            >>> X = [
+            ...     {'x1': 0, 'x2': 1},
+            ...     {'x1': 2, 'x2': 3},
+            ...     {'x1': 4, 'x2': 5}
+            ... ]
 
-        >>> poly = preprocessing.PolynomialExtender(degree=2, include_bias=True)
-        >>> for x in X:
-        ...     print(poly.fit_one(x).transform_one(x))
-        {'x1': 0, 'x2': 1, 'x1*x1': 0, 'x1*x2': 0, 'x2*x2': 1, 'bias': 1}
-        {'x1': 2, 'x2': 3, 'x1*x1': 4, 'x1*x2': 6, 'x2*x2': 9, 'bias': 1}
-        {'x1': 4, 'x2': 5, 'x1*x1': 16, 'x1*x2': 20, 'x2*x2': 25, 'bias': 1}
+            >>> poly = preprocessing.PolynomialExtender(degree=2, include_bias=True)
+            >>> for x in X:
+            ...     print(poly.fit_one(x).transform_one(x))
+            {'x1': 0, 'x2': 1, 'x1*x1': 0, 'x1*x2': 0, 'x2*x2': 1, 'bias': 1}
+            {'x1': 2, 'x2': 3, 'x1*x1': 4, 'x1*x2': 6, 'x2*x2': 9, 'bias': 1}
+            {'x1': 4, 'x2': 5, 'x1*x1': 16, 'x1*x2': 20, 'x2*x2': 25, 'bias': 1}
 
-        >>> X = [
-        ...     {'x1': 0, 'x2': 1, 'x3': 2},
-        ...     {'x1': 2, 'x2': 3, 'x3': 2},
-        ...     {'x1': 4, 'x2': 5, 'x3': 2}
-        ... ]
+            >>> X = [
+            ...     {'x1': 0, 'x2': 1, 'x3': 2},
+            ...     {'x1': 2, 'x2': 3, 'x3': 2},
+            ...     {'x1': 4, 'x2': 5, 'x3': 2}
+            ... ]
 
-        >>> poly = preprocessing.PolynomialExtender(degree=3, interaction_only=True)
-        >>> for x in X:
-        ...     print(poly.fit_one(x).transform_one(x))
-        {'x1': 0, 'x2': 1, 'x3': 2, 'x1*x2': 0, 'x1*x3': 0, 'x2*x3': 2, 'x1*x2*x3': 0}
-        {'x1': 2, 'x2': 3, 'x3': 2, 'x1*x2': 6, 'x1*x3': 4, 'x2*x3': 6, 'x1*x2*x3': 12}
-        {'x1': 4, 'x2': 5, 'x3': 2, 'x1*x2': 20, 'x1*x3': 8, 'x2*x3': 10, 'x1*x2*x3': 40}
+            >>> poly = preprocessing.PolynomialExtender(degree=3, interaction_only=True)
+            >>> for x in X:
+            ...     print(poly.fit_one(x).transform_one(x))
+            {'x1': 0, 'x2': 1, 'x3': 2, 'x1*x2': 0, 'x1*x3': 0, 'x2*x3': 2, 'x1*x2*x3': 0}
+            {'x1': 2, 'x2': 3, 'x3': 2, 'x1*x2': 6, 'x1*x3': 4, 'x2*x3': 6, 'x1*x2*x3': 12}
+            {'x1': 4, 'x2': 5, 'x3': 2, 'x1*x2': 20, 'x1*x3': 8, 'x2*x3': 10, 'x1*x2*x3': 40}
 
     """
 

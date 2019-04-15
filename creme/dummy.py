@@ -18,29 +18,31 @@ class NoChangeClassifier(base.MultiClassifier):
 
     Example:
 
-    Taken from example 2.1 from `here <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
+        Taken from example 2.1 from `here <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
 
-        >>> import pprint
-        >>> from creme import dummy
+        ::
 
-        >>> sentences = [
-        ...     ('glad happy glad', '+'),
-        ...     ('glad glad joyful', '+'),
-        ...     ('glad pleasant', '+'),
-        ...     ('miserable sad glad', '−')
-        ... ]
+            >>> import pprint
+            >>> from creme import dummy
 
-        >>> model = dummy.NoChangeClassifier()
+            >>> sentences = [
+            ...     ('glad happy glad', '+'),
+            ...     ('glad glad joyful', '+'),
+            ...     ('glad pleasant', '+'),
+            ...     ('miserable sad glad', '−')
+            ... ]
 
-        >>> for sentence, label in sentences:
-        ...     model = model.fit_one(sentence, label)
+            >>> model = dummy.NoChangeClassifier()
 
-        >>> new_sentence = 'glad sad miserable pleasant glad'
-        >>> model.predict_one(new_sentence)
-        '−'
+            >>> for sentence, label in sentences:
+            ...     model = model.fit_one(sentence, label)
 
-        >>> pprint.pprint(model.predict_proba_one(new_sentence))
-        {'+': 0, '−': 1}
+            >>> new_sentence = 'glad sad miserable pleasant glad'
+            >>> model.predict_one(new_sentence)
+            '−'
+
+            >>> pprint.pprint(model.predict_proba_one(new_sentence))
+            {'+': 0, '−': 1}
 
     """
 
@@ -74,27 +76,29 @@ class PriorClassifier(base.MultiClassifier):
 
     Example:
 
-    Taken from example 2.1 from `here <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
+        Taken from example 2.1 from `here <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
 
-        >>> from creme import dummy
+        ::
 
-        >>> sentences = [
-        ...     ('glad happy glad', '+'),
-        ...     ('glad glad joyful', '+'),
-        ...     ('glad pleasant', '+'),
-        ...     ('miserable sad glad', '−')
-        ... ]
+            >>> from creme import dummy
 
-        >>> model = dummy.PriorClassifier()
+            >>> sentences = [
+            ...     ('glad happy glad', '+'),
+            ...     ('glad glad joyful', '+'),
+            ...     ('glad pleasant', '+'),
+            ...     ('miserable sad glad', '−')
+            ... ]
 
-        >>> for sentence, label in sentences:
-        ...     model = model.fit_one(sentence, label)
+            >>> model = dummy.PriorClassifier()
 
-        >>> new_sentence = 'glad sad miserable pleasant glad'
-        >>> model.predict_one(new_sentence)
-        '+'
-        >>> model.predict_proba_one(new_sentence)
-        {'+': 0.75, '−': 0.25}
+            >>> for sentence, label in sentences:
+            ...     model = model.fit_one(sentence, label)
+
+            >>> new_sentence = 'glad sad miserable pleasant glad'
+            >>> model.predict_one(new_sentence)
+            '+'
+            >>> model.predict_proba_one(new_sentence)
+            {'+': 0.75, '−': 0.25}
 
     """
 
@@ -115,29 +119,31 @@ class StatisticRegressor(base.Regressor):
     """Dummy regressor that uses a univariate statistic to make predictions.
 
     Parameters:
-        statistic (``stats.Univariate``)
+        statistic (stats.Univariate)
 
     Example:
 
-        >>> from pprint import pprint
-        >>> from creme import dummy
-        >>> from creme import stats
+        ::
 
-        >>> sentences = [
-        ...     ('glad happy glad', 3),
-        ...     ('glad glad joyful', 3),
-        ...     ('glad pleasant', 2),
-        ...     ('miserable sad glad', -3)
-        ... ]
+            >>> from pprint import pprint
+            >>> from creme import dummy
+            >>> from creme import stats
 
-        >>> model = dummy.StatisticRegressor(stats.Mean())
+            >>> sentences = [
+            ...     ('glad happy glad', 3),
+            ...     ('glad glad joyful', 3),
+            ...     ('glad pleasant', 2),
+            ...     ('miserable sad glad', -3)
+            ... ]
 
-        >>> for sentence, score in sentences:
-        ...     model = model.fit_one(sentence, score)
+            >>> model = dummy.StatisticRegressor(stats.Mean())
 
-        >>> new_sentence = 'glad sad miserable pleasant glad'
-        >>> model.predict_one(new_sentence)
-        1.25
+            >>> for sentence, score in sentences:
+            ...     model = model.fit_one(sentence, score)
+
+            >>> new_sentence = 'glad sad miserable pleasant glad'
+            >>> model.predict_one(new_sentence)
+            1.25
 
     """
 

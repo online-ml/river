@@ -4,6 +4,10 @@
     --gammapy-lightgray: #f2f2f2;
 }
 
+.highlight .go {
+  color: #4070a0;
+}
+
 /* sidebar header (and topbar for mobile) */
  .wy-side-nav-search, .wy-nav-top {
    background: var(--gammapy-secondary);

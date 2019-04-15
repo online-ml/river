@@ -95,8 +95,8 @@ class MinMaxScaler(base.Transformer):
     performance.
 
     Attributes:
-        min (dict): Mapping between features and instances of ``stats.Min``.
-        max (dict): Mapping between features and instances of ``stats.Max``.
+        min (dict): Mapping between features and instances of `stats.Min`.
+        max (dict): Mapping between features and instances of `stats.Max`.
         eps (float): Used for avoiding divisions by zero.
 
     Example:

@@ -44,33 +44,33 @@ class SVD(base.Recommender):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import reco
+            >>> from creme import reco
 
-        >>> ratings = [
-        ...     ('Alice', 'Superman', 8),
-        ...     ('Alice', 'Terminator', 9),
-        ...     ('Alice', 'Star Wars', 8),
-        ...     ('Alice', 'Notting Hill', 2),
-        ...     ('Alice', 'Harry Potter ', 5),
-        ...     ('Bob', 'Superman', 8),
-        ...     ('Bob', 'Terminator', 9),
-        ...     ('Bob', 'Star Wars', 8),
-        ...     ('Bob', 'Notting Hill', 2)
-        ... ]
+            >>> ratings = [
+            ...     ('Alice', 'Superman', 8),
+            ...     ('Alice', 'Terminator', 9),
+            ...     ('Alice', 'Star Wars', 8),
+            ...     ('Alice', 'Notting Hill', 2),
+            ...     ('Alice', 'Harry Potter ', 5),
+            ...     ('Bob', 'Superman', 8),
+            ...     ('Bob', 'Terminator', 9),
+            ...     ('Bob', 'Star Wars', 8),
+            ...     ('Bob', 'Notting Hill', 2)
+            ... ]
 
-        >>> model = reco.SVD(
-        ...     n_factors=10,
-        ...     row_optimizer=optim.VanillaSGD(0.005),
-        ...     col_optimizer=optim.VanillaSGD(0.005)
-        ... )
+            >>> model = reco.SVD(
+            ...     n_factors=10,
+            ...     row_optimizer=optim.VanillaSGD(0.005),
+            ...     col_optimizer=optim.VanillaSGD(0.005)
+            ... )
 
-        >>> for user, movie, rating in ratings:
-        ...     _ = model.fit_one(user, movie, rating)
+            >>> for user, movie, rating in ratings:
+            ...     _ = model.fit_one(user, movie, rating)
 
-        >>> model.predict_one('Bob', 'Harry Potter')
-        6.554277...
+            >>> model.predict_one('Bob', 'Harry Potter')
+            6.554277...
 
     """
 
