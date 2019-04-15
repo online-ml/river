@@ -92,7 +92,7 @@ class StatImputer:
 
             >>> mode_imp = impute.StatImputer(
             ...     on='x',
-            ...     stat=stats.Mode(k=25),
+            ...     stat=stats.Mode(),
             ... )
 
             >>> for x in X:
@@ -123,7 +123,7 @@ class StatImputer:
             >>> by_town_imp = impute.StatImputer(
             ...     on='weather',
             ...     by='town',
-            ...     stat=stats.Mode(exact=True)
+            ...     stat=stats.Mode()
             ... )
 
             >>> for x in X:

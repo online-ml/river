@@ -19,11 +19,11 @@ class LinearRegression(base.Regressor):
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to :any:`optim.VanillaSGD`.
-        loss (optim.Loss): The loss function to minimize. Defaults to :any:`optim.SquaredLoss`.
+            Defaults to `optim.VanillaSGD`.
+        loss (optim.Loss): The loss function to minimize. Defaults to `optim.SquaredLoss`.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (stats.Univariate): The univariate statistic used to compute the intercept
-            online. Defaults to :any:`stats.Mean`.
+            online. Defaults to `stats.Mean`.
 
     Attributes:
         weights (collections.defaultdict)
@@ -88,16 +88,9 @@ class LinearRegression(base.Regressor):
         }
 
     def fit_one(self, x, y):
-        self.fit_predict_one(x, y)
-        return self
-
-    def predict_one(self, x):
-        return self._predict_with_weights(x, self.weights)
-
-    def fit_predict_one(self, x, y):
 
         # Update the weights with the error gradient
-        self.weights, y_pred = self.optimizer.update_weights(
+        self.weights, _ = self.optimizer.update_weights(
             x=x,
             y=y,
             w=self.weights,
@@ -110,4 +103,7 @@ class LinearRegression(base.Regressor):
         if self.intercept:
             self.intercept.update(y)
 
-        return y_pred
+        return self
+
+    def predict_one(self, x):
+        return self._predict_with_weights(x, self.weights)

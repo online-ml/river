@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - `Discarder` from `preprocessing`
 - `CategoricalImputer` and `NumericImputer` from `impute`
+- The `fit_predict_one`, `fit_predict_proba_one`, and `fit_transform_one` have been deprecated
 
 ### Modified
 

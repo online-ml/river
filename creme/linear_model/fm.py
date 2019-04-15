@@ -14,33 +14,33 @@ class FMRegressor(base.Regressor):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import linear_model
-        >>> from creme import stream
+            >>> from creme import linear_model
+            >>> from creme import stream
 
-        >>> features = [
-        ... #     Users  |     Movies     |    Movie Ratings   | Time | Last Movies Rated
-        ... #    A  B  C | TI  NH  SW  ST | TI   NH   SW   ST  |      | TI  NH  SW  ST
-        ...     [1, 0, 0,  1,  0,  0,  0,   0.3, 0.3, 0.3, 0,     13,   0,  0,  0,  0 ],
-        ...     [1, 0, 0,  0,  1,  0,  0,   0.3, 0.3, 0.3, 0,     14,   1,  0,  0,  0 ],
-        ...     [1, 0, 0,  0,  0,  1,  0,   0.3, 0.3, 0.3, 0,     16,   0,  1,  0,  0 ],
-        ...     [0, 1, 0,  0,  0,  1,  0,   0,   0,   0.5, 0.5,   5,    0,  0,  0,  0 ],
-        ...     [0, 1, 0,  0,  0,  0,  1,   0,   0,   0.5, 0.5,   8,    0,  0,  1,  0 ],
-        ...     [0, 0, 1,  1,  0,  0,  0,   0.5, 0,   0.5, 0,     9,    0,  0,  0,  0 ],
-        ...     [0, 0, 1,  0,  0,  1,  0,   0.5, 0,   0.5, 0,     12,   1,  0,  0,  0 ]
-        ... ]
-        >>> target = [5, 3, 1, 4, 5, 1, 5]
+            >>> features = [
+            ... #     Users  |     Movies     |    Movie Ratings   | Time | Last Movies Rated
+            ... #    A  B  C | TI  NH  SW  ST | TI   NH   SW   ST  |      | TI  NH  SW  ST
+            ...     [1, 0, 0,  1,  0,  0,  0,   0.3, 0.3, 0.3, 0,     13,   0,  0,  0,  0 ],
+            ...     [1, 0, 0,  0,  1,  0,  0,   0.3, 0.3, 0.3, 0,     14,   1,  0,  0,  0 ],
+            ...     [1, 0, 0,  0,  0,  1,  0,   0.3, 0.3, 0.3, 0,     16,   0,  1,  0,  0 ],
+            ...     [0, 1, 0,  0,  0,  1,  0,   0,   0,   0.5, 0.5,   5,    0,  0,  0,  0 ],
+            ...     [0, 1, 0,  0,  0,  0,  1,   0,   0,   0.5, 0.5,   8,    0,  0,  1,  0 ],
+            ...     [0, 0, 1,  1,  0,  0,  0,   0.5, 0,   0.5, 0,     9,    0,  0,  0,  0 ],
+            ...     [0, 0, 1,  0,  0,  1,  0,   0.5, 0,   0.5, 0,     12,   1,  0,  0,  0 ]
+            ... ]
+            >>> target = [5, 3, 1, 4, 5, 1, 5]
 
-        >>> fm = linear_model.FMRegressor(random_state=42)
+            >>> fm = linear_model.FMRegressor(random_state=42)
 
-        >>> for x, y in stream.iter_numpy(features[:5], target[:5]):
-        ...     fm = fm.fit_one(x, y)
+            >>> for x, y in stream.iter_numpy(features[:5], target[:5]):
+            ...     fm = fm.fit_one(x, y)
 
-        >>> for x, y in stream.iter_numpy(features[5:], target[5:]):
-        ...     print(fm.predict_one(x), y)
-        5.240102... 1
-        7.303011... 5
+            >>> for x, y in stream.iter_numpy(features[5:], target[5:]):
+            ...     print(fm.predict_one(x), y)
+            5.240102... 1
+            7.303011... 5
 
     """
 
@@ -68,10 +68,6 @@ class FMRegressor(base.Regressor):
         }
 
     def fit_one(self, x, y):
-        self.fit_predict_one(x, y)
-        return self
-
-    def fit_predict_one(self, x, y):
 
         # Start by making a prediction
         y_pred = self.predict_one(x)
@@ -105,7 +101,7 @@ class FMRegressor(base.Regressor):
                 }
             )
 
-        return y_pred
+        return self
 
     def predict_one(self, x):
 

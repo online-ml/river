@@ -175,7 +175,8 @@ def check_better_than_dummy_regression(regressor):
 def check_predict_proba_one_binary(classifier):
 
     for x, y in make_random_X_y(classifier, n_observations=20, n_features=4):
-        y_pred = classifier.fit_predict_proba_one(x, y)
+        y_pred = classifier.predict_proba_one(x)
+        classifier = classifier.fit_one(x, y)
         assert len(y_pred) == 2
         assert True in y_pred
         assert False in y_pred

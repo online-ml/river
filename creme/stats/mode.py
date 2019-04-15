@@ -14,37 +14,37 @@ class Mode(base.Univariate):
 
     Parameters:
         k (int): Only the first ``k`` unique values will be included. If ``k`` equals -1, the exact
-        mode is computed.
+            mode is computed.
 
     Attributes:
         counts (collections.defaultdict)
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import stats
+            >>> from creme import stats
 
-        >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
-        >>> mode = stats.Mode(k=2)
-        >>> for x in X:
-        ...     print(mode.update(x).get())
-        sunny
-        sunny
-        cloudy
-        cloudy
-        cloudy
-        cloudy
+            >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
+            >>> mode = stats.Mode(k=2)
+            >>> for x in X:
+            ...     print(mode.update(x).get())
+            sunny
+            sunny
+            cloudy
+            cloudy
+            cloudy
+            cloudy
 
-        >>> mode = stats.Mode(k=-1)
-        >>> for x in X:
-        ...     print(mode.update(x).get())
-        sunny
-        sunny
-        cloudy
-        cloudy
-        cloudy
-        rainy
+            >>> mode = stats.Mode(k=-1)
+            >>> for x in X:
+            ...     print(mode.update(x).get())
+            sunny
+            sunny
+            cloudy
+            cloudy
+            cloudy
+            rainy
 
     """
 

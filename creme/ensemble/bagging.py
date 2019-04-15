@@ -27,7 +27,7 @@ class BaggingClassifier(base.Classifier):
         In the following example three logistic regressions are bagged together. The performance is
         slightly better than when using a single logistic regression.
 
-    ::
+        ::
 
             >>> from creme import compose
             >>> from creme import ensemble
@@ -57,7 +57,7 @@ class BaggingClassifier(base.Classifier):
             >>> metric = metrics.F1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.967468
+            F1Score: 0.970464
 
     References:
 

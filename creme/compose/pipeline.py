@@ -82,10 +82,40 @@ class Pipeline(collections.OrderedDict):
 
     def fit_one(self, x, y=None):
         """Fits each step with ``x``."""
-        for estimator in itertools.islice(self.values(), len(self) - 1):
-            x = estimator.fit_transform_one(x, y)
-        self.final_estimator.fit_one(x, y)
+        xx = x
+
+        for t in itertools.islice(self.values(), len(self) - 1):
+            xx = t.transform_one(xx)
+
+            # The supervised parts of a TransformerUnion have to be updated
+            if isinstance(t, union.TransformerUnion):
+                for sub_t in t.values():
+                    if sub_t.is_supervised:
+                        sub_t.fit_one(x, y)
+                continue
+
+            # If a transformer is supervised then it has to be updated
+            if t.is_supervised:
+                t.fit_one(x, y)
+
+        self.final_estimator.fit_one(xx, y)
         return self
+
+    def run_transformers(self, x):
+        for t in itertools.islice(self.values(), len(self) - 1):
+
+            if isinstance(t, union.TransformerUnion):
+                for sub_t in t.values():
+                    if not sub_t.is_supervised:
+                        sub_t.fit_one(x)
+                x = t.transform_one(x)
+                continue
+
+            if not t.is_supervised:
+                t.fit_one(x)
+            x = t.transform_one(x)
+
+        return x
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def transform_one(self, x):
@@ -94,19 +124,22 @@ class Pipeline(collections.OrderedDict):
         Only works if each estimator has a ``transform_one`` method.
 
         """
-        for estimator in self.values():
-            x = estimator.transform_one(x)
+        x = self.run_transformers(x)
+        final_tranformer = self.final_estimator
+        if not final_tranformer.is_supervised:
+            final_tranformer.fit_one(x)
+        x = final_tranformer.transform_one(x)
         return x
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def predict_one(self, x):
         """Predict output.
 
-        Only works if each estimator has a ``transform_one`` method and the final estimator has a ``predict_one`` method.
+        Only works if each estimator has a ``transform_one`` method and the final estimator has a
+        ``predict_one`` method.
 
         """
-        for estimator in itertools.islice(self.values(), len(self) - 1):
-            x = estimator.transform_one(x)
+        x = self.run_transformers(x)
         return self.final_estimator.predict_one(x)
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
@@ -116,44 +149,8 @@ class Pipeline(collections.OrderedDict):
         Only works if each estimator has a ``transform_one`` method and the final estimator has a ``predict_proba_one`` method.
 
         """
-        for estimator in itertools.islice(self.values(), len(self) - 1):
-            x = estimator.transform_one(x)
+        x = self.run_transformers(x)
         return self.final_estimator.predict_proba_one(x)
-
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
-    def fit_transform_one(self, x, y=None):
-        """Fit and transform.
-
-        Only works if each estimator has a ``fit_transform_one`` method.
-
-        """
-        for estimator in self.values():
-            x = estimator.fit_transform_one(x, y)
-        return x
-
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
-    def fit_predict_one(self, x, y):
-        """Fit and predict.
-
-        Only works if each estimator has a ``fit_transform_one`` method and the final estimator has
-        a ``fit_predict_one`` method.
-
-        """
-        for estimator in itertools.islice(self.values(), len(self) - 1):
-            x = estimator.fit_transform_one(x, y)
-        return self.final_estimator.fit_predict_one(x, y)
-
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
-    def fit_predict_proba_one(self, x, y):
-        """Fit and predict probabilities.
-
-        Only works if each estimator has a ``fit_transform_one`` method and the final estimator has
-        a ``fit_predict_proba_one`` method.
-
-        """
-        for estimator in itertools.islice(self.values(), len(self) - 1):
-            x = estimator.fit_transform_one(x, y)
-        return self.final_estimator.fit_predict_proba_one(x, y)
 
     def draw(self):
         """Draws the pipeline using the ``graphviz`` library."""

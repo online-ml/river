@@ -5,7 +5,7 @@ class Whitelister(base.Transformer):
     """Subsets a set of features by applying a whitelist.
 
     Parameters:
-        whitelist (``str`` or ``list``): Key(s) to keep.
+        whitelist (`str` or `list`): Key(s) to keep.
 
     Example:
 
@@ -14,10 +14,10 @@ class Whitelister(base.Transformer):
         >>> from creme import compose
 
         >>> x = {'a': 42, 'b': 12}
-        >>> compose.Whitelister(['a', 'zoidberg']).fit_transform_one(x)
+        >>> compose.Whitelister(['a', 'zoidberg']).transform_one(x)
         {'a': 42}
 
-        >>> compose.Whitelister('b').fit_transform_one(x)
+        >>> compose.Whitelister('b').transform_one(x)
         {'b': 12}
 
     """

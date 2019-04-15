@@ -12,10 +12,12 @@ except ImportError:
     PANDAS_INSTALLED = False
 from sklearn import base as sklearn_base
 from sklearn import exceptions
+from sklearn import pipeline
 from sklearn import preprocessing
 from sklearn import utils
 
 from .. import base
+from .. import compose
 from .. import stream
 
 
@@ -63,6 +65,12 @@ SKLEARN_INPUT_Y_PARAMS = {
 def convert_creme_to_sklearn(estimator):
     """Wraps a creme estimator to make it compatible with scikit-learn."""
 
+    if isinstance(estimator, compose.Pipeline):
+        return pipeline.Pipeline([
+            (name, convert_creme_to_sklearn(step))
+            for name, step in estimator.items()
+        ])
+
     wrappers = [
         (base.BinaryClassifier, SKLClassifierWrapper),
         (base.Clusterer, SKLClustererWrapper),
@@ -73,7 +81,7 @@ def convert_creme_to_sklearn(estimator):
 
     for base_type, wrapper in wrappers:
         if isinstance(estimator, base_type):
-            return wrapper(estimator)
+            return wrapper(copy.deepcopy(estimator))
 
     raise ValueError("Couldn't find an appropriate wrapper")
 
@@ -97,7 +105,7 @@ def convert_sklearn_to_creme(estimator, classes=None):
 
     for base_type, wrapper in wrappers:
         if isinstance(estimator, base_type):
-            return wrapper(estimator)
+            return wrapper(copy.deepcopy(estimator))
 
     raise ValueError("Couldn't find an appropriate wrapper")
 
@@ -113,29 +121,29 @@ class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import compat
-        >>> from creme import model_selection
-        >>> from creme import metrics
-        >>> from creme import preprocessing
-        >>> from sklearn import linear_model
-        >>> from sklearn import datasets
+            >>> from creme import compat
+            >>> from creme import model_selection
+            >>> from creme import metrics
+            >>> from creme import preprocessing
+            >>> from sklearn import linear_model
+            >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_boston,
-        ...     shuffle=True,
-        ...     random_state=42
-        ... )
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     load_dataset=datasets.load_boston,
+            ...     shuffle=True,
+            ...     random_state=42
+            ... )
 
-        >>> scaler = preprocessing.StandardScaler()
-        >>> sgd_reg = compat.convert_sklearn_to_creme(linear_model.SGDRegressor())
-        >>> model = scaler | sgd_reg
+            >>> scaler = preprocessing.StandardScaler()
+            >>> sgd_reg = compat.convert_sklearn_to_creme(linear_model.SGDRegressor())
+            >>> model = scaler | sgd_reg
 
-        >>> metric = metrics.MAE()
+            >>> metric = metrics.MAE()
 
-        >>> model_selection.online_score(X_y, model, metric)
-        MAE: 10.832054
+            >>> model_selection.online_score(X_y, model, metric)
+            MAE: 10.832054
 
     """
 
@@ -155,35 +163,35 @@ class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import compat
-        >>> from creme import model_selection
-        >>> from creme import metrics
-        >>> from creme import preprocessing
-        >>> from sklearn import linear_model
-        >>> from sklearn import datasets
+            >>> from creme import compat
+            >>> from creme import model_selection
+            >>> from creme import metrics
+            >>> from creme import preprocessing
+            >>> from sklearn import linear_model
+            >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_breast_cancer,
-        ...     shuffle=True,
-        ...     random_state=42
-        ... )
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     load_dataset=datasets.load_breast_cancer,
+            ...     shuffle=True,
+            ...     random_state=42
+            ... )
 
-        >>> model = preprocessing.StandardScaler()
-        >>> model |= compat.convert_sklearn_to_creme(
-        ...     estimator=linear_model.SGDClassifier(
-        ...         loss='log',
-        ...         eta0=0.01,
-        ...         learning_rate='constant'
-        ...     ),
-        ...     classes=[False, True]
-        ... )
+            >>> model = preprocessing.StandardScaler()
+            >>> model |= compat.convert_sklearn_to_creme(
+            ...     estimator=linear_model.SGDClassifier(
+            ...         loss='log',
+            ...         eta0=0.01,
+            ...         learning_rate='constant'
+            ...     ),
+            ...     classes=[False, True]
+            ... )
 
-        >>> metric = metrics.LogLoss()
+            >>> metric = metrics.LogLoss()
 
-        >>> model_selection.online_score(X_y, model, metric)
-        LogLoss: 0.203717
+            >>> model_selection.online_score(X_y, model, metric)
+            LogLoss: 0.203717
 
     """
 

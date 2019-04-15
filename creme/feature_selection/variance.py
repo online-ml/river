@@ -16,22 +16,24 @@ class VarianceThreshold(base.Transformer):
 
     Example:
 
-        >>> from creme import feature_selection
-        >>> from creme import stream
+        ::
 
-        >>> X = [
-        ...     [0, 2, 0, 3],
-        ...     [0, 1, 4, 3],
-        ...     [0, 1, 1, 3]
-        ... ]
+            >>> from creme import feature_selection
+            >>> from creme import stream
 
-        >>> selector = feature_selection.VarianceThreshold()
+            >>> X = [
+            ...     [0, 2, 0, 3],
+            ...     [0, 1, 4, 3],
+            ...     [0, 1, 1, 3]
+            ... ]
 
-        >>> for x, _ in stream.iter_numpy(X):
-        ...     print(selector.fit_transform_one(x))
-        {0: 0, 1: 2, 2: 0, 3: 3}
-        {1: 1, 2: 4}
-        {1: 1, 2: 1}
+            >>> selector = feature_selection.VarianceThreshold()
+
+            >>> for x, _ in stream.iter_numpy(X):
+            ...     print(selector.fit_one(x).transform_one(x))
+            {0: 0, 1: 2, 2: 0, 3: 3}
+            {1: 1, 2: 4}
+            {1: 1, 2: 1}
 
     """
 
