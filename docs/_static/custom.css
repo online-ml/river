@@ -1,0 +1,43 @@
+:root {
+    --gammapy-primary: #2980B9;
+    --gammapy-secondary: #1f282d;
+    --gammapy-lightgray: #f2f2f2;
+}
+
+/* sidebar header (and topbar for mobile) */
+ .wy-side-nav-search, .wy-nav-top {
+   background: var(--gammapy-secondary);
+ }
+
+/* sidebar */
+ .wy-nav-side {
+   background: var(--gammapy-secondary);
+}
+
+/* links outside nav */
+.rst-content a:link, .rst-content a:visited {
+   color: var(--gammapy-primary);
+   text-decoration: none;
+ }
+
+/* admonitions only */
+.admonition.note {
+   background: var(--gammapy-lightgray);
+}
+
+/* font size smaller and striped cols in notebook tables */
+.output_area {
+    font-size: 12px;
+}
+.output_area tr:nth-child(even) {background-color: var(--gammapy-lightgray);}
+th {
+    background-color: #f2f2f2;
+    padding-right: 8px;
+    text-align: left;
+}
+
+.rst-content table.docutils:not(.field-list) tr:nth-child(2n-1) td,
+.wy-table-striped tr:nth-child(2n-1) td,
+.wy-table-odd td {
+     background-color: #fff;
+}

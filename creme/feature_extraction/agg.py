@@ -108,19 +108,22 @@ class TargetAgg(base.Transformer):
 
             >>> agg = creme.feature_extraction.TargetAgg(
             ...     by='place',
-            ...     how=creme.stats.Mean()
+            ...     how=creme.stats.BayesianMean(
+            ...         prior=3,
+            ...         prior_weight=1
+            ...     )
             ... )
 
             >>> for x in X:
             ...     print(agg.transform_one(x))
             ...     y = x.pop('revenue')
             ...     agg = agg.fit_one(x, y)
-            {'target_mean_by_place': 0}
-            {'target_mean_by_place': 0}
-            {'target_mean_by_place': 16.0}
-            {'target_mean_by_place': 42.0}
-            {'target_mean_by_place': 20.0}
-            {'target_mean_by_place': 50.0}
+            {'target_bayes_mean_by_place': 3.0}
+            {'target_bayes_mean_by_place': 3.0}
+            {'target_bayes_mean_by_place': 9.5}
+            {'target_bayes_mean_by_place': 22.5}
+            {'target_bayes_mean_by_place': 14.333333...}
+            {'target_bayes_mean_by_place': 34.333333...}
 
     References:
 

@@ -44,6 +44,7 @@ autodoc_default_flags = [
     'show-inheritance'
 ]
 autosummary_generate = True  # Make _autosummary files and include them
+add_module_names = False
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -119,7 +120,7 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'manni'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -129,14 +130,13 @@ pygments_style = None
 #
 html_theme = 'sphinx_rtd_theme'
 html_favicon = '_static/favicon.ico'
-html_logo = '_static/logo.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    'logo_only': True
+    'logo_only': False
 }
 github_url = 'https://github.com/creme-ml/creme'
 
@@ -233,5 +233,6 @@ epub_exclude_files = ['search.html']
 
 # -- Extension configuration -------------------------------------------------
 def setup(app):
-    # to hide/show the prompt in code examples:
-    app.add_javascript('js/copybutton.js')
+    # to hide/show the prompt in code examples
+    app.add_javascript('copybutton.js')
+    app.add_stylesheet('custom.css')

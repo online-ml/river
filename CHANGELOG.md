@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- `Covariance` and `PearsonCorrelation` to `stats`
+- `Covariance`, `PearsonCorrelation`, and `SmoothMean` to `stats`
 - `VarianceThreshold` and `SelectKBest` to `feature_selection`
 - `metrics`:
     - `ConfusionMatrix`
@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Discarder` from `preprocessing`
 - `CategoricalImputer` and `NumericImputer` from `impute`
 - The `fit_predict_one`, `fit_predict_proba_one`, and `fit_transform_one` have been deprecated
+- `TargetEncoder` from `feature_extraction`
 
 ### Modified
 
