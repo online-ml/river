@@ -84,6 +84,8 @@ Ensemble methods
    meta.regressor_chains
    meta.batch_incremental
    meta.accuracy_weighted_ensemble
+   meta.additive_expert_ensemble
+   meta.dynamic_weighted_majority
    meta.learn_pp
    meta.learn_nse
 

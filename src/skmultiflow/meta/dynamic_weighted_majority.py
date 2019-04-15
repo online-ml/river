@@ -6,7 +6,7 @@ from skmultiflow.bayes import NaiveBayes
 
 class DynamicWeightedMajority(StreamModel):
     """
-    Dynamic Weighted Majority Ensemble [1]_.
+    Dynamic Weighted Majority Ensemble
 
     Parameters
     ----------
@@ -23,7 +23,7 @@ class DynamicWeightedMajority(StreamModel):
 
     Notes
     -----
-    The method, dynamic weighted majority (DWM), uses four mechanisms to
+    The method, dynamic weighted majority (DWM) [1]_, uses four mechanisms to
     cope with concept drift: It trains online learners of the ensemble,
     it weights those learners based on their performance, it removes them,
     also based on their performance, and it adds new experts based on the
@@ -32,8 +32,8 @@ class DynamicWeightedMajority(StreamModel):
     References
     ----------
     .. [1] Kolter and Maloof. Dynamic weighted majority: An ensemble method
-        for drifting concepts. The Journal of Machine Learning Research,
-        8:2755-2790, December 2007. ISSN 1532-4435.
+       for drifting concepts. The Journal of Machine Learning Research,
+       8:2755-2790, December 2007. ISSN 1532-4435.
     """
 
     class WeightedExpert:
@@ -138,7 +138,7 @@ class DynamicWeightedMajority(StreamModel):
 
     def fit_single_sample(self, X, y, classes=None, weight=None):
         """
-        Fits a single sample of shape X.shape=(1, n_attributes) and y.shape=(1)
+        Fits a single sample of shape `X.shape=(1, n_attributes)` and `y.shape=(1)`
 
         Aggregates all experts' predictions, diminishes weight of experts whose
         predictions were wrong, and may create or remove experts every _period_
@@ -146,7 +146,7 @@ class DynamicWeightedMajority(StreamModel):
 
         Finally, trains each individual expert on the provided data.
 
-        Train loop as described by Kolter and Maloof [1]_.
+        Train loop as described by Kolter and Maloof in the original paper.
 
 
         Parameters

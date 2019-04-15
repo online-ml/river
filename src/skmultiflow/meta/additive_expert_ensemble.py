@@ -6,7 +6,7 @@ from skmultiflow.bayes import NaiveBayes
 
 class AdditiveExpertEnsemble(StreamModel):
     """
-    Additive Expert Ensemble [1]_.
+    Additive Expert Ensemble
 
     Parameters
     ----------
@@ -23,23 +23,23 @@ class AdditiveExpertEnsemble(StreamModel):
 
     Notes
     -----
-    Additive Expert Ensemble (AddExp) is a general method for using any online
-    learner for drifting concepts. Using the 'oldest' pruning strategy leads to
-    known mistake and error bounds, but using 'weakest' is generally better
-    performing.
+    The Additive Expert Ensemble (AddExp) [1]_ is a general method for using any
+    online learner for drifting concepts. Using the 'oldest' pruning strategy
+    leads to known mistake and error bounds, but using 'weakest' is generally
+    better performing.
 
-    Bound on mistakes when using 'oldest' pruning strategy (theorem 3.1 from
-    [1]_):
-    Let Wi denote the total weight of the ensemble at time step i, and Mi the
-    number of mistakes of the ensemble at all time steps up to i-1; then for
-    any time step t1 < t2, and if we stipulate that beta + 2 * gamma < 1:
-        M2 - M1 <= log(W1 - W2) / log(2 / (1 + beta + 2 * gamma))
+    Bound on mistakes when using 'oldest' pruning strategy (theorem 3.1 in the paper):
+    Let :math:`W_i` denote the total weight of the ensemble at time step :math:`i`,
+    and :math:`M_i` the number of mistakes of the ensemble at all time steps up
+    to :math:`i-1`; then for any time step :math:`t_1 < t_2`, and if we stipulate
+    that :math:`\\beta + 2 * \\gamma < 1` then
+
+    :math:`M_2 - M_1 \\leq log(W_1 - W_2) / log(2 / (1 + \\beta + 2 * \\gamma ))`
 
     References
-    __________
-    .. [1] Kolter and Maloof. Using additive expert ensembles to cope with
-        Concept drift. Proc. 22 International Conference on Machine Learning,
-        2005.
+    ----------
+    .. [1] Kolter and Maloof. Using additive expert ensembles to cope with Concept drift.
+       Proc. 22 International Conference on Machine Learning, 2005.
     """
 
     class WeightedExpert:
@@ -147,7 +147,7 @@ class AdditiveExpertEnsemble(StreamModel):
     def fit_single_sample(self, X, y, classes=None, weight=None):
         """
         Predict + update weights + modify experts + train on new sample.
-        (As was originally described by [1])
+        (As described in the original paper.)
         """
         self.epochs += 1
         self.num_classes = max(
