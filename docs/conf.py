@@ -36,13 +36,13 @@ release = creme.__version__
 #
 # needs_sphinx = '1.0'
 autoclass_content = 'both'  # include both class docstring and __init__
-autodoc_default_flags = [
+autodoc_default_options = {
     # Make sure that any autodoc declarations show the right members
-    'members',
-    'inherited-members',
-    'private-members',
-    'show-inheritance'
-]
+    'members': True,
+    'inherited-members': True,
+    'private-members': True,
+    'show-inheritance': True
+}
 autosummary_generate = True  # Make _autosummary files and include them
 add_module_names = False
 
@@ -137,8 +137,7 @@ html_favicon = '_static/favicon.ico'
 # documentation.
 #
 html_theme_options = {
-    'logo_only': False,
-    'display_github': True
+    'logo_only': False
 }
 github_url = 'https://github.com/creme-ml/creme'
 

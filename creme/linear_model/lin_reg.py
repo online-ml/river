@@ -62,8 +62,8 @@ class LinearRegression(base.Regressor):
             22.532806...
 
     Note:
-        Using a feature scaler such as :any:`preprocessing.StandardScaler` upstream helps the
-        optimizer to converge.
+        Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
+        to converge.
 
     """
 

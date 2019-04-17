@@ -48,7 +48,8 @@ def iter_sklearn_dataset(load_dataset, **kwargs):
     """Yields rows from one of the datasets provided by scikit-learn.
 
     Parameters:
-        load_dataset (callable): The method used to load the dataset, e.g. ``load_boston``.
+        load_dataset (callable): The method used to load the dataset, for example
+        `sklearn.datasets.load_boston`.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.

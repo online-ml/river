@@ -12,4 +12,5 @@ Ensemble models
    :nosignatures:
 
    BaggingClassifier
+   BaggingRegressor
    HedgeClassifier
