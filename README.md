@@ -3,11 +3,10 @@
 [![Build status](https://travis-ci.org/scikit-multiflow/scikit-multiflow.svg?branch=master)](https://travis-ci.org/scikit-multiflow/scikit-multiflow)
 [![codecov](https://codecov.io/gh/scikit-multiflow/scikit-multiflow/branch/master/graph/badge.svg)](https://codecov.io/gh/scikit-multiflow/scikit-multiflow)
 ![Python version](https://img.shields.io/badge/python-3.5%20%7C%203.6%20%7C%203.7-blue.svg)
-[![PyPI version](https://badge.fury.io/py/scikit-multiflow.svg)](https://badge.fury.io/py/scikit-multiflow)
-[![DockerHub](https://img.shields.io/badge/docker-available-blue.svg?logo=docker)](https://hub.docker.com/r/skmultiflow/scikit-multiflow)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/scikit-multiflow/badges/version.svg)](https://anaconda.org/conda-forge/scikit-multiflow)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/scikit-multiflow/badges/installer/conda.svg)](https://conda.anaconda.org/conda-forge)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/scikit-multiflow/badges/platforms.svg)](https://anaconda.org/conda-forge/scikit-multiflow)
+[![PyPI version](https://badge.fury.io/py/scikit-multiflow.svg)](https://badge.fury.io/py/scikit-multiflow)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/scikit-multiflow/badges/version.svg)](https://anaconda.org/conda-forge/scikit-multiflow)
+[![DockerHub](https://img.shields.io/badge/docker-available-blue.svg?logo=docker)](https://hub.docker.com/r/skmultiflow/scikit-multiflow)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)  
 
 A machine learning framework for multi-output/multi-label and stream data.
