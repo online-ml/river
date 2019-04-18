@@ -104,7 +104,10 @@ class MacroF1Score(base.MultiClassificationMetric):
         return self
 
     def get(self):
-        return statistics.mean((f1_score.get() for f1_score in self.f1_scores.values()))
+        total = sum(f1.get() for f1 in self.f1_scores.values())
+        if total == 0.:
+            return 0.
+        return total / len(self.f1_scores)
 
 
 class MicroF1Score(precision.MicroPrecision):

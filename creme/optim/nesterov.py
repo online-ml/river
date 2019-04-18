@@ -44,19 +44,17 @@ class NesterovMomentum(base.Optimizer):
         self.rho = rho
         self.s = collections.defaultdict(float)
 
-    def update_weights(self, x, y, w, loss, f_pred, f_grad):
+    def update_before_pred(self, w):
 
-        # Move the weights to the future position
         for i in w:
             w[i] -= self.rho * self.s[i]
 
-        # Compute the gradient
-        y_pred = f_pred(x, w)
-        gradient = f_grad(y, y_pred, loss, x, w)
+        return w
 
-        # Update the step and the weights
-        for i, gi in gradient.items():
+    def _update_after_pred(self, w, g):
+
+        for i, gi in g.items():
             self.s[i] = self.rho * self.s[i] + self.learning_rate * gi
             w[i] -= self.s[i]
 
-        return w, y_pred
+        return w

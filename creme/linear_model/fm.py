@@ -76,7 +76,7 @@ class FMRegressor(base.Regressor):
         loss_gradient = self.loss.gradient(y, y_pred)
 
         # Update the weights
-        self.weights = self.weights_optimizer.update_weights_with_gradient(
+        self.weights = self.weights_optimizer.update_after_pred(
             w=self.weights,
             g={j: xj * loss_gradient for j, xj in x.items()}
         )
@@ -93,7 +93,7 @@ class FMRegressor(base.Regressor):
         }
 
         for j, xj in x.items():
-            self.latents[j] = self.latents_optimizer.update_weights_with_gradient(
+            self.latents[j] = self.latents_optimizer.update_after_pred(
                 w=self.latents[j],
                 g={
                     f: xj * (vs[f] - v[j][f] * xj)

@@ -44,7 +44,7 @@ class Momentum(base.Optimizer):
         self.rho = rho
         self.s = collections.defaultdict(float)
 
-    def update_weights_with_gradient(self, w, g):
+    def _update_after_pred(self, w, g):
 
         for i, gi in g.items():
             self.s[i] = self.rho * self.s[i] + self.learning_rate * gi

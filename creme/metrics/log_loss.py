@@ -28,8 +28,6 @@ class LogLoss(stats.Mean, base.BinaryClassificationMetric):
 
     """
 
-    ll = optim.LogLoss().__call__
-
     @property
     def bigger_is_better(self):
         return False
@@ -39,4 +37,5 @@ class LogLoss(stats.Mean, base.BinaryClassificationMetric):
         return False
 
     def update(self, y_true, y_pred):
-        return super().update(self.ll(y_true, y_pred[True] if isinstance(y_pred, dict) else y_pred))
+        ll = optim.LogLoss().__call__
+        return super().update(ll(y_true, y_pred[True] if isinstance(y_pred, dict) else y_pred))

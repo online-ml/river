@@ -25,3 +25,4 @@ API
    stats
    stream
    tree
+   utils

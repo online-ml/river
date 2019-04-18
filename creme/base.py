@@ -94,7 +94,7 @@ class Transformer(Estimator):
     """A transformer."""
 
     def fit_one(self, x: dict, y=None) -> dict:
-        """Fits to a set of features ``x `` and an optinal target ``y``.
+        """Fits to a set of features ``x`` and an optinal target ``y``.
 
         A lot of transformers don't actually have to do anything during the ``fit_one`` step
         because they are stateless. For this reason the default behavior of this function is to do
@@ -113,7 +113,7 @@ class Transformer(Estimator):
 
     @abc.abstractmethod
     def transform_one(self, x: dict) -> dict:
-        """Transformes a set of features ``x``
+        """Transforms a set of features ``x``
 
         Parameters:
             x (dict)
@@ -125,7 +125,7 @@ class Transformer(Estimator):
 
     @property
     def is_supervised(self) -> bool:
-        """Indicates if the transformer used the target ``y`` or not.
+        """Indicates if the transformer uses the target ``y`` or not.
 
         Supervised transformers have to be handled differently from unsupervised transformers in an
         online setting. This is especially true for target encoding where leakage can easily occur.

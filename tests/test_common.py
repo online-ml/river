@@ -46,7 +46,9 @@ def test_sklearn_check_estimator(estimator):
             linear_model.LogisticRegression(),
             # sklearn's check_estimator doesn't support pipelines yet
             preprocessing.StandardScaler() | linear_model.LinearRegression(),
+            preprocessing.StandardScaler() | linear_model.PAClassifier(),
             preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.LogisticRegression()),
+            preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.PAClassifier()),
         ]
     ]
 )

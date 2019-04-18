@@ -20,7 +20,8 @@ class LinearRegression(base.Regressor):
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
             Defaults to `optim.VanillaSGD`.
-        loss (optim.Loss): The loss function to minimize. Defaults to `optim.SquaredLoss`.
+        loss (optim.RegressionLoss): The loss function to minimize. Defaults to
+            `optim.SquaredLoss`.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (stats.Univariate): The univariate statistic used to compute the intercept
             online. Defaults to `stats.Mean`.
@@ -74,30 +75,23 @@ class LinearRegression(base.Regressor):
         self.intercept = stats.Mean() if intercept is None else intercept
         self.weights = collections.defaultdict(float)
 
-    def _predict_with_weights(self, x, w):
-        y = utils.dot(x, w)
-        if self.intercept:
-            y += self.intercept.get()
-        return y
+    def fit_one(self, x, y):
 
-    def _calc_gradient(self, y_true, y_pred, loss, x, w):
-        loss_gradient = loss.gradient(y_true=y_true, y_pred=y_pred)
-        return {
-            i: xi * loss_gradient + self.l2 * w.get(i, 0)
+        # Some optimizers need to do something before a prediction is made
+        self.weights = self.optimizer.update_before_pred(w=self.weights)
+
+        # Make a prediction for the given features
+        y_pred = self.predict_one(x)
+
+        # Compute the gradient w.r.t. each feature
+        loss_gradient = self.loss.gradient(y_true=y, y_pred=y_pred)
+        gradient = {
+            i: xi * loss_gradient + self.l2 * self.weights.get(i, 0)
             for i, xi in x.items()
         }
 
-    def fit_one(self, x, y):
-
-        # Update the weights with the error gradient
-        self.weights, _ = self.optimizer.update_weights(
-            x=x,
-            y=y,
-            w=self.weights,
-            loss=self.loss,
-            f_pred=self._predict_with_weights,
-            f_grad=self._calc_gradient
-        )
+        # Update the weights by using the gradient
+        self.weights = self.optimizer.update_after_pred(g=gradient, w=self.weights)
 
         # Update the intercept
         if self.intercept:
@@ -106,4 +100,7 @@ class LinearRegression(base.Regressor):
         return self
 
     def predict_one(self, x):
-        return self._predict_with_weights(x, self.weights)
+        y = utils.dot(x, self.weights)
+        if self.intercept:
+            y += self.intercept.get()
+        return y

@@ -47,7 +47,7 @@ class Adam(base.Optimizer):
         self.m = collections.defaultdict(float)
         self.v = collections.defaultdict(float)
 
-    def update_weights_with_gradient(self, w, g):
+    def _update_after_pred(self, w, g):
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi

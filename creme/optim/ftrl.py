@@ -54,7 +54,7 @@ class FTRLProximal(base.Optimizer):
         self.z = collections.defaultdict(float)
         self.n = collections.defaultdict(float)
 
-    def update_weights(self, x, y, w, loss, f_pred, f_grad):
+    def update_after_pred(self, w, g):
 
         alpha = self.alpha
         beta = self.beta
@@ -62,18 +62,14 @@ class FTRLProximal(base.Optimizer):
         l2 = self.l2
         z = self.z
         n = self.n
-        w = {}
 
-        for i, xi in x.items():
+        for i in g:
             if abs(z[i]) > l1:
                 w[i] = -((beta + n[i] ** 0.5) / alpha + l2) ** -1 * (z[i] - np.sign(z[i]) * l1)
 
-        y_pred = f_pred(x, w)
-        gradient = f_grad(y_true=y, y_pred=y_pred, loss=loss, x=x, w=w)
+        for i, gi in g.items():
+            s = ((self.n[i] + gi ** 2) ** 0.5 - self.n[i] ** 0.5) / self.alpha
+            self.z[i] += gi - s * w.get(i, 0)
+            self.n[i] += gi ** 2
 
-        for i, gi in gradient.items():
-            s = ((n[i] + gi ** 2) ** 0.5 - n[i] ** 0.5) / alpha
-            z[i] += gi - s * w.get(i, 0)
-            n[i] += gi ** 2
-
-        return w, y_pred
+        return w

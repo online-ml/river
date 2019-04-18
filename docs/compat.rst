@@ -13,9 +13,3 @@ Compatibility utilities
 
    convert_creme_to_sklearn
    convert_sklearn_to_creme
-   CremeClassifierWrapper
-   CremeRegressorWrapper
-   SKLClassifierWrapper
-   SKLClustererWrapper
-   SKLTransformerWrapper
-   SKLRegressorWrapper

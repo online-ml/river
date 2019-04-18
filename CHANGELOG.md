@@ -26,6 +26,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `OptimalLR` to `optim`
 - `Differ` to `feature_extraction`
 - `Imputer` to `impute`
+- `CrossEntropy` to `optim`
+- `PAClassifier`, `PARegressor`, and `SoftmaxRegression` to `linear_model`
+- `check_estimator` to `utils`
 
 ### Removed
 
@@ -33,11 +36,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `CategoricalImputer` and `NumericImputer` from `impute`
 - The `fit_predict_one`, `fit_predict_proba_one`, and `fit_transform_one` have been deprecated
 - `TargetEncoder` from `feature_extraction`
+- All the passive aggressive methods from `optim`
+- The `optim` module has a slightly simpler API
 
 ### Modified
 
 - Added `on` and `sparse` parameters to `preprocessing.OneHotEncoder`
 - Renamed `GroupBy` to `Agg` and `TargetGroupBy` to `TargetAgg` to `Agg`
+- `convert_creme_to_sklearn` now returns an `sklearn.pipeline.Pipeline` when given `creme.compose.Pipelin`
 
 
 ## [0.0.3](https://pypi.org/project/creme/0.0.3/) - 2019-03-21

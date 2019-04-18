@@ -41,14 +41,9 @@ class HedgeClassifier(base.BinaryClassifier):
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('hedge', ensemble.HedgeClassifier(
             ...         models=[
-            ...             linear_model.LogisticRegression(
-            ...                 optimizer=optim.PassiveAggressiveI(),
-            ...                 loss=optim.HingeLoss()
-            ...             ),
-            ...             linear_model.LogisticRegression(
-            ...                 optimizer=optim.PassiveAggressiveII(),
-            ...                 loss=optim.HingeLoss()
-            ...             )
+            ...             linear_model.PAClassifier(mode=0),
+            ...             linear_model.PAClassifier(mode=1),
+            ...             linear_model.PAClassifier(mode=2),
             ...         ],
             ...         learning_rate=0.9
             ...     ))
@@ -56,10 +51,10 @@ class HedgeClassifier(base.BinaryClassifier):
             >>> metric = metrics.F1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.921348
+            F1Score: 0.91372
 
             >>> model['hedge'].weights
-            [0.999999..., 9.978434...e-28]
+            [9.992806...e-28, 0.999999..., 9.978434...e-28]
 
     References:
 

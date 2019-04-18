@@ -14,3 +14,6 @@ Linear models
    FMRegressor
    LinearRegression
    LogisticRegression
+   PAClassifier
+   PARegressor
+   SoftmaxRegression

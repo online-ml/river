@@ -21,8 +21,6 @@ Optimizers
    Momentum
    NesterovMomentum
    Optimizer
-   PassiveAggressiveI
-   PassiveAggressiveII
    RMSProp
    VanillaSGD
 
@@ -47,9 +45,12 @@ Loss functions
    :nosignatures:
 
    AbsoluteLoss
+   BinaryClassificationLoss
    CauchyLoss
+   CrossEntropy
    EpsilonInsensitiveHingeLoss
    HingeLoss
    LogLoss
-   Loss
+   MultiClassificationLoss
+   RegressionLoss
    SquaredLoss

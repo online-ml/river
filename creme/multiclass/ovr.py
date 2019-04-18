@@ -37,17 +37,18 @@ class OneVsRestClassifier(base.MultiClassifier):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimizer = optim.RMSProp()
+
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', multiclass.OneVsRestClassifier(
-            ...         binary_classifier=linear_model.LogisticRegression(optimizer))
+            ...         binary_classifier=linear_model.LogisticRegression())
             ...     )
             ... ])
-            >>> metric = metrics.Accuracy()
+
+            >>> metric = metrics.MacroF1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            Accuracy: 0.806667
+            MacroF1Score: 0.776965
 
     """
 
@@ -73,3 +74,6 @@ class OneVsRestClassifier(base.MultiClassifier):
             for label, model in self.classifiers.items()
         }
         return utils.softmax(y_pred)
+
+    def __str__(self):
+        return f'OneVsRest({self.binary_classifier})'

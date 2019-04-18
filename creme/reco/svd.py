@@ -63,14 +63,15 @@ class SVD(base.Recommender):
             >>> model = reco.SVD(
             ...     n_factors=10,
             ...     row_optimizer=optim.VanillaSGD(0.005),
-            ...     col_optimizer=optim.VanillaSGD(0.005)
+            ...     col_optimizer=optim.VanillaSGD(0.005),
+            ...     random_state=42
             ... )
 
             >>> for user, movie, rating in ratings:
             ...     _ = model.fit_one(user, movie, rating)
 
             >>> model.predict_one('Bob', 'Harry Potter')
-            6.554277...
+            6.554339...
 
     """
 
@@ -86,30 +87,41 @@ class SVD(base.Recommender):
         self.random_state = utils.check_random_state(random_state)
         self.row_biases = collections.defaultdict(float)
         self.col_biases = collections.defaultdict(float)
-        random_weights = functools.partial(np.random.normal, loc=mu, scale=sigma, size=n_factors)
+        random_weights = functools.partial(
+            self.random_state.normal,
+            loc=mu,
+            scale=sigma,
+            size=n_factors
+        )
         self.row_vec = collections.defaultdict(random_weights)
         self.col_vec = collections.defaultdict(random_weights)
 
     def fit_one(self, r_id, c_id, y):
+
+        self.row_optimizer.update_before_pred(self.row_biases)
+        self.col_optimizer.update_before_pred(self.col_biases)
+
         # Predict the value
         y_pred = self.predict_one(r_id, c_id)
-        # print(y_pred)
+
         # Compute the gradient of the loss with respect to the prediction
         loss_gradient = self.loss.gradient(y, y_pred)
 
         # Update row bias
         r_grad_bias = {r_id: loss_gradient + self.l2 * self.col_biases[r_id]}
-        self.row_biases = self.row_optimizer.update_weights_with_gradient(self.row_biases, r_grad_bias)
+        self.row_biases = self.row_optimizer.update_after_pred(self.row_biases, r_grad_bias)
+
         # Update the row vector
         r_grad_vec = {r_id: loss_gradient * self.col_vec[c_id] + self.l2 * self.row_vec[r_id]}
-        self.row_vec = self.row_optimizer.update_weights_with_gradient(self.row_vec, r_grad_vec)
+        self.row_vec = self.row_optimizer.update_after_pred(self.row_vec, r_grad_vec)
 
         # Update column bias
         c_grad_bias = {c_id: loss_gradient + self.l2 * self.col_biases[c_id]}
-        self.col_biases = self.col_optimizer.update_weights_with_gradient(self.col_biases, c_grad_bias)
+        self.col_biases = self.col_optimizer.update_after_pred(self.col_biases, c_grad_bias)
+
         # Update the column vector
         c_grad_vec = {c_id: loss_gradient * self.row_vec[r_id] + self.l2 * self.col_vec[c_id]}
-        self.col_vec = self.col_optimizer.update_weights_with_gradient(self.col_vec, c_grad_vec)
+        self.col_vec = self.col_optimizer.update_after_pred(self.col_vec, c_grad_vec)
 
         # Update the global mean
         self.global_mean.update(y)
@@ -117,6 +129,7 @@ class SVD(base.Recommender):
         return y_pred
 
     def predict_one(self, r_id, c_id):
+
         # Initialize the prediction to the mean
         y_pred = (self.global_mean.get() or 0)
 

@@ -34,6 +34,7 @@ def online_score(X_y, model, metric):
     for x, y in X_y:
         y_pred = pred_func(x)
         model = model.fit_one(x, y)
-        metric.update(y, y_pred)
+        if y_pred != {} and y_pred is not None:
+            metric.update(y, y_pred)
 
     return metric

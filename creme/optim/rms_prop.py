@@ -45,7 +45,7 @@ class RMSProp(base.Optimizer):
         self.eps = eps
         self.g2 = collections.defaultdict(float)
 
-    def update_weights_with_gradient(self, w, g):
+    def _update_after_pred(self, w, g):
 
         for i, gi in g.items():
             self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi ** 2

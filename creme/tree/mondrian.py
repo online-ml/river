@@ -469,7 +469,7 @@ class MondrianTreeClassifier(MondrianTree, base.MultiClassifier):
             >>> metric = metrics.F1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.822309
+            F1Score: 0.823377
 
     References:
 
