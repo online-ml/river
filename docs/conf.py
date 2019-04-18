@@ -69,8 +69,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'scikit-multiflow'
-copyright = '2017, various'
-author = 'various'
+copyright = '2017, J. Montiel, J. Read, A. Bifet, T. Abdessalem'
+author = 'J. Montiel, J. Read, A. Bifet, T. Abdessalem'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -188,7 +188,7 @@ html_context = {
 html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = False
+html_show_copyright = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
