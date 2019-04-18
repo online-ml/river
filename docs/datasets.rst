@@ -11,5 +11,6 @@ Dataset loading utilities
    :toctree: generated/
    :nosignatures:
 
+   fetch_electricity
    fetch_restaurants
    load_airline
