@@ -7,7 +7,7 @@ from glob import glob
 
 
 DIST_NAME = 'scikit-multiflow'
-DESCRIPTION = 'A multi-output/multi-label and stream data mining framework.'
+DESCRIPTION = 'A machine learning framework for multi-output/multi-label and stream data.'
 MAINTAINER = 'Jacob Montiel'
 MAINTAINER_EMAIL = ''
 URL = 'https://scikit-multiflow.github.io/'
@@ -17,7 +17,7 @@ PROJECT_URLS = {'Travis CI': 'https://travis-ci.org/scikit-multiflow/scikit-mult
                 }
 DOWNLOAD_URL = 'https://pypi.org/project/scikit-multiflow/#files'
 LICENSE = '3-Clause BSD'
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 
 # read the contents of README file
