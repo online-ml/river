@@ -18,6 +18,11 @@ class SoftmaxRegression(base.MultiClassifier):
     advantage of using this instead of a one-vs-all logistic regression is that the probabilities
     will be calibrated. Moreover softmax regression is more robust to outliers.
 
+    Parameters:
+        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
+        loss (optim.MultiClassificationLoss): The loss function to optimize for.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+
     Attributes:
         weights (collections.defaultdict)
 
@@ -39,13 +44,14 @@ class SoftmaxRegression(base.MultiClassifier):
             ...     random_state=42
             ... )
 
-            >>> model = preprocessing.StandardScaler()
+            >>> model = preprocessing.PolynomialExtender(degree=2)
+            >>> model |= preprocessing.StandardScaler()
             >>> model |= linear_model.SoftmaxRegression()
 
             >>> metric = metrics.MacroF1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MacroF1Score: 0.776965
+            MacroF1Score: 0.809381
 
     References:
 
@@ -79,7 +85,7 @@ class SoftmaxRegression(base.MultiClassifier):
 
             # Compute the gradient w.r.t. each feature
             weights = self.weights[label]
-            gradient = {i: xi * loss for i, xi in x.items()}
+            gradient = {i: xi * loss + self.l2 * weights.get(i, 0) for i, xi in x.items()}
             self.weights[label] = self.optimizers[label].update_after_pred(w=weights, g=gradient)
 
         return self

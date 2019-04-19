@@ -18,6 +18,31 @@ __all__ = ['Pipeline']
 class Pipeline(collections.OrderedDict):
     """A sequence of estimators.
 
+    Example:
+
+        ::
+
+            >>> from creme import compose
+            >>> from creme import linear_model
+            >>> from creme import feature_extraction
+            >>> from creme import feature_selection
+            >>> from creme import preprocessing
+            >>> from creme import stats
+
+            >>> model = feature_extraction.Differ(on='x')
+            >>> model += compose.Pipeline([
+            ...     compose.Blacklister('x'),
+            ...     feature_extraction.TFIDFVectorizer()
+            ... ])
+
+            >>> model |= preprocessing.StandardScaler()
+            >>> model |= feature_selection.SelectKBest(
+            ...     similarity=stats.PearsonCorrelation(),
+            ...     k=10
+            ... )
+
+            >>> model |= linear_model.PAClassifier()
+
     Parameters:
         steps (list): Ideally a list of (name, estimator) tuples. If an estimator is given without
             a name then a name is automatically inferred from the estimator.

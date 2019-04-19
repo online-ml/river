@@ -39,6 +39,7 @@ class OneVsRestClassifier(base.MultiClassifier):
             ... )
 
             >>> model = compose.Pipeline([
+            ...     ('poly', preprocessing.PolynomialExtender(degree=2)),
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', multiclass.OneVsRestClassifier(
             ...         binary_classifier=linear_model.LogisticRegression())
@@ -48,7 +49,7 @@ class OneVsRestClassifier(base.MultiClassifier):
             >>> metric = metrics.MacroF1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MacroF1Score: 0.776965
+            MacroF1Score: 0.809381
 
     """
 

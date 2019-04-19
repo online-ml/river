@@ -14,7 +14,7 @@ class LogisticRegression(base.BinaryClassifier):
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
         loss (optim.BinaryClassificationLoss): The loss function to optimize for.
-        l2 (float): regularization amount used to push weights towards 0.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
 
     Attributes:
         weights (collections.defaultdict)

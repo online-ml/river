@@ -66,7 +66,7 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 ... )
 
 >>> scaler = preprocessing.StandardScaler()
->>> lin_reg = linear_model.LogisticRegression(optim.AdaGrad())
+>>> lin_reg = linear_model.LogisticRegression(optimizer=optim.AdaGrad())
 >>> model = scaler | lin_reg
 
 >>> metric = metrics.F1Score()
