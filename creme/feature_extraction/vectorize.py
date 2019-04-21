@@ -39,7 +39,7 @@ class VectorizerMixin:
         lowercase (bool): Whether or not to convert all characters to lowercase.
         preprocessor (callable): The function used to preprocess the text. A default one is used
             if it is not provided by the user.
-        tokenizer (callable): The function used to convert preprocessed text into a ``dict`` of
+        tokenizer (callable): The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
 
     """
@@ -73,7 +73,7 @@ class VectorizerMixin:
 class CountVectorizer(base.Transformer, VectorizerMixin):
     """Counts the number of occurrences of each token.
 
-    This returns exactly the same results as ``sklearn``'s ``CountVectorizer``.
+    This returns exactly the same results as `sklearn.feature_extraction.text.CountVectorizer`.
 
     Parameters:
         on (str): The name of the feature that contains the text to vectorize.
@@ -81,26 +81,28 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
         lowercase (bool): Whether or not to convert all characters to lowercase.
         preprocessor (callable): The function used to preprocess the text. A default one is used
             if it is not provided by the user.
-        tokenizer (callable): The function used to convert preprocessed text into a ``dict`` of
+        tokenizer (callable): The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
 
     Example:
 
-        >>> import creme
-        >>> corpus = [
-        ...     'This is the first document.',
-        ...     'This document is the second document.',
-        ...     'And this is the third one.',
-        ...     'Is this the first document?',
-        ... ]
-        >>> vectorizer = creme.feature_extraction.CountVectorizer(on='sentence')
-        >>> for sentence in corpus:
-        ...     x = {'sentence': sentence}
-        ...     print(vectorizer.fit_one(x).transform_one(x))
-        Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
-        Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
-        Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
-        Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
+        ::
+
+            >>> import creme
+            >>> corpus = [
+            ...     'This is the first document.',
+            ...     'This document is the second document.',
+            ...     'And this is the third one.',
+            ...     'Is this the first document?',
+            ... ]
+            >>> vectorizer = creme.feature_extraction.CountVectorizer(on='sentence')
+            >>> for sentence in corpus:
+            ...     x = {'sentence': sentence}
+            ...     print(vectorizer.fit_one(x).transform_one(x))
+            Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
+            Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
+            Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
+            Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
 
     """
 
@@ -120,7 +122,7 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
         lowercase (bool): Whether or not to convert all characters to lowercase.
         preprocessor (callable): The function used to preprocess the text. A default one is used
             if it is not provided by the user.
-        tokenizer (callable): The function used to convert preprocessed text into a ``dict`` of
+        tokenizer (callable): The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
         normalize (bool): Whether or not the TF-IDF values by their L2 norm.
 
@@ -131,21 +133,23 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
 
     Example:
 
-        >>> import creme
-        >>> corpus = [
-        ...     'This is the first document.',
-        ...     'This document is the second document.',
-        ...     'And this is the third one.',
-        ...     'Is this the first document?',
-        ... ]
-        >>> vectorizer = creme.feature_extraction.TFIDFVectorizer(on='sentence')
-        >>> for sentence in corpus:
-        ...     x = {'sentence': sentence}
-        ...     print(vectorizer.fit_one(x).transform_one(x))
-        {'this': 0.447..., 'is': 0.447..., 'the': 0.447..., 'first': 0.447..., 'document': 0.447...}
-        {'this': 0.333..., 'document': 0.667..., 'is': 0.333..., 'the': 0.333..., 'second': 0.469...}
-        {'and': 0.497..., 'this': 0.293..., 'is': 0.293..., 'the': 0.293..., 'third': 0.497..., 'one': 0.497...}
-        {'is': 0.384..., 'this': 0.384..., 'the': 0.384..., 'first': 0.580..., 'document': 0.469...}
+        ::
+
+            >>> import creme
+            >>> corpus = [
+            ...     'This is the first document.',
+            ...     'This document is the second document.',
+            ...     'And this is the third one.',
+            ...     'Is this the first document?',
+            ... ]
+            >>> vectorizer = creme.feature_extraction.TFIDFVectorizer(on='sentence')
+            >>> for sentence in corpus:
+            ...     x = {'sentence': sentence}
+            ...     print(vectorizer.fit_one(x).transform_one(x))
+            {'this': 0.447..., 'is': 0.447..., 'the': 0.447..., 'first': 0.447..., 'document': 0.447...}
+            {'this': 0.333..., 'document': 0.667..., 'is': 0.333..., 'the': 0.333..., 'second': 0.469...}
+            {'and': 0.497..., 'this': 0.293..., 'is': 0.293..., 'the': 0.293..., 'third': 0.497..., 'one': 0.497...}
+            {'is': 0.384..., 'this': 0.384..., 'the': 0.384..., 'first': 0.580..., 'document': 0.469...}
 
     """
 

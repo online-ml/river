@@ -14,30 +14,18 @@ class Optimizer(abc.ABC):
     def learning_rate(self) -> float:
         return self.lr.get(self.n_iterations)
 
-    def update_weights_with_gradient(self, w: dict, g: dict) -> dict:
+    def update_before_pred(self, w: dict) -> dict:
+        return w
+
+    def _update_after_pred(self, w: dict, g: dict) -> dict:
         raise NotImplementedError
 
-    def update_weights(self, x, y, w, loss, f_pred, f_grad):
-        """
-
-        This method gives more control over the gradient computation than
-        ``update_weights_with_gradient``. This is required for optimisation methods that have to
-        take a step before actually computing the gradient, such as FTRL-Proximal and Nesterov
-        Momentum. However most optimizers could (and should) directly use
-        ``update_weights_with_gradient``.
-
-        """
-
-        # Predict the output of the given features
-        y_pred = f_pred(x, w)
-
-        # Compute the gradient
-        gradient = f_grad(y_true=y, y_pred=y_pred, loss=loss, x=x, w=w)
+    def update_after_pred(self, w: dict, g: dict):
 
         # Update the weights
-        w = self.update_weights_with_gradient(w, gradient)
+        w = self._update_after_pred(w, g)
 
         # Update the iteration counter
         self.n_iterations += 1
 
-        return w, y_pred
+        return w

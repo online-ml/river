@@ -89,5 +89,5 @@ dmypy.json
 .vscode
 
 # For convenience
-Untitled.ipynb
+Untitled*.ipynb
 test.py

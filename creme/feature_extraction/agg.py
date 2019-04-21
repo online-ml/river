@@ -84,11 +84,12 @@ class TargetAgg(base.Transformer):
 
     Parameters:
         by (str): The feature on which to group.
-        how (stats.RunningStatistic): The statistic to compute.
+        how (stats.Univariate): The statistic to compute.
         target_name (str): Name used in the result.
 
     Attributes:
-        groups (dict): Maps grouping keys to instances of ``creme.stats.RunningStatistic``
+        groups (dict): Maps grouping keys to instances of `stats.Univariate`.
+        feature_name (str): The name of the feature in the output.
 
     Example:
 
@@ -107,18 +108,22 @@ class TargetAgg(base.Transformer):
 
             >>> agg = creme.feature_extraction.TargetAgg(
             ...     by='place',
-            ...     how=creme.stats.Mean()
+            ...     how=creme.stats.BayesianMean(
+            ...         prior=3,
+            ...         prior_weight=1
+            ...     )
             ... )
 
             >>> for x in X:
+            ...     print(agg.transform_one(x))
             ...     y = x.pop('revenue')
-            ...     print(agg.fit_transform_one(x, y))
-            {'target_mean_by_place': 0}
-            {'target_mean_by_place': 0}
-            {'target_mean_by_place': 16.0}
-            {'target_mean_by_place': 42.0}
-            {'target_mean_by_place': 20.0}
-            {'target_mean_by_place': 50.0}
+            ...     agg = agg.fit_one(x, y)
+            {'target_bayes_mean_by_place': 3.0}
+            {'target_bayes_mean_by_place': 3.0}
+            {'target_bayes_mean_by_place': 9.5}
+            {'target_bayes_mean_by_place': 22.5}
+            {'target_bayes_mean_by_place': 14.333333...}
+            {'target_bayes_mean_by_place': 34.333333...}
 
     References:
 
@@ -131,16 +136,17 @@ class TargetAgg(base.Transformer):
         self.how = how
         self.target_name = target_name
         self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
+        self.feature_name = f'{self.target_name}_{self.how.name}_by_{self.by}'
 
     def is_supervised(self):
         return True
 
     def fit_one(self, x, y=None):
         self.groups[x[self.by]].update(y)
-        return self.transform_one(x)
+        return self
 
     def transform_one(self, x):
-        return {str(self): self.groups[x[self.by]].get()}
+        return {self.feature_name: self.groups[x[self.by]].get()}
 
     def __str__(self):
-        return f'{self.target_name}_{self.how.name}_by_{self.by}'
+        return self.feature_name

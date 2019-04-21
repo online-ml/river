@@ -16,6 +16,7 @@ class LRScheduler(abc.ABC):
 
 
 class ConstantLR(LRScheduler):
+    """Always uses the same learning rate."""
 
     def __init__(self, learning_rate):
         self.learning_rate = learning_rate
@@ -25,6 +26,15 @@ class ConstantLR(LRScheduler):
 
 
 class InverseScalingLR(LRScheduler):
+    """Reduces the learning rate using a power schedule.
+
+    Assuming an iteration counter $t$ starting from 0, the learning rate will be:
+
+    .. math:: \\frac{1}{(t+1)^p}
+
+    where $p$ is a user-defined parameter.
+
+    """
 
     def __init__(self, learning_rate, power=0.5):
         self.learning_rate = learning_rate
@@ -35,11 +45,11 @@ class InverseScalingLR(LRScheduler):
 
 
 class OptimalLR(LRScheduler):
-    """
+    """Optimal learning schedule as proposed by Léon Bottou.
 
     References:
 
-    1. `Stochastic Gradient Descent <https://leon.bottou.org/projects/sgd>`_
+        1. `Stochastic Gradient Descent <https://leon.bottou.org/projects/sgd>`_
 
     """
 

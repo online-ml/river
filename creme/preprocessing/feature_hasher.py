@@ -18,28 +18,30 @@ class FeatureHasher(base.Transformer):
     Parameters:
         n_features (int): The number by which each hash will be moduloed by.
         alternate_sign (bool): Whether or not half of the hashes will be negated.
-        encoding (str): The string encoding used by ``sklearn.utils.murmurhash3_32``.
+        encoding (str): The string encoding used by `sklearn.utils.murmurhash3_32`.
         random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
             the seed used by the random number generator; if ``RandomState`` instance,
             ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by ``np.random``.
+            generator is the ``RandomState`` instance used by `numpy.random`.
 
     Arguments:
-        seed (int): Seed used by ``sklearn.utils.murmurhash3_32``.
+        seed (int): Seed used by `sklearn.utils.murmurhash3_32`.
 
     Example:
 
-        >>> import creme
-        >>> hasher = creme.preprocessing.FeatureHasher(n_features=10, random_state=0)
-        >>> X = [{'dog': 1, 'cat': 2, 'elephant': 4}, {'dog': 2, 'run': 5}]
-        >>> for x in X:
-        ...     print(hasher.transform_one(x))
-        defaultdict(<class 'int'>, {2: -1, 1: 2, 8: 4})
-        defaultdict(<class 'int'>, {2: -2, 4: 5})
+        ::
+
+            >>> import creme
+            >>> hasher = creme.preprocessing.FeatureHasher(n_features=10, random_state=0)
+            >>> X = [{'dog': 1, 'cat': 2, 'elephant': 4}, {'dog': 2, 'run': 5}]
+            >>> for x in X:
+            ...     print(hasher.transform_one(x))
+            defaultdict(<class 'int'>, {2: -1, 1: 2, 8: 4})
+            defaultdict(<class 'int'>, {2: -2, 4: 5})
 
     References:
 
-    - `Feature vectorization using hashing trick <https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick>`_
+        1. `Feature vectorization using hashing trick <https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick>`_
 
     """
 

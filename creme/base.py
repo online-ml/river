@@ -38,11 +38,6 @@ class Regressor(Estimator):
 
         """
 
-    def fit_predict_one(self, x: dict, y: float) -> float:
-        y_pred = self.predict_one(x)
-        self.fit_one(x, y)
-        return y_pred
-
 
 class Classifier(Estimator):
 
@@ -86,16 +81,6 @@ class Classifier(Estimator):
             return max(self.predict_proba_one(x), key=y_pred.get)
         return None
 
-    def fit_predict_proba_one(self, x: dict, y: float) -> dict:
-        y_pred = self.predict_proba_one(x)
-        self.fit_one(x, y)
-        return y_pred
-
-    def fit_predict_one(self, x: dict, y: float) -> bool:
-        y_pred = self.predict_one(x)
-        self.fit_one(x, y)
-        return y_pred
-
 
 class BinaryClassifier(Classifier):
     """A binary classifier."""
@@ -109,7 +94,7 @@ class Transformer(Estimator):
     """A transformer."""
 
     def fit_one(self, x: dict, y=None) -> dict:
-        """Fits to a set of features ``x `` and an optinal target ``y``.
+        """Fits to a set of features ``x`` and an optinal target ``y``.
 
         A lot of transformers don't actually have to do anything during the ``fit_one`` step
         because they are stateless. For this reason the default behavior of this function is to do
@@ -128,7 +113,7 @@ class Transformer(Estimator):
 
     @abc.abstractmethod
     def transform_one(self, x: dict) -> dict:
-        """Transformes a set of features ``x``
+        """Transforms a set of features ``x``
 
         Parameters:
             x (dict)
@@ -140,7 +125,7 @@ class Transformer(Estimator):
 
     @property
     def is_supervised(self) -> bool:
-        """Indicates if the transformer used the target ``y`` or not.
+        """Indicates if the transformer uses the target ``y`` or not.
 
         Supervised transformers have to be handled differently from unsupervised transformers in an
         online setting. This is especially true for target encoding where leakage can easily occur.
@@ -149,14 +134,6 @@ class Transformer(Estimator):
 
         """
         return False
-
-    def fit_transform_one(self, x: dict, y=None):
-        """Fits and transforms while ensuring no leakage occurs if the transformer is supervised."""
-        if self.is_supervised:
-            y_pred = self.transform_one(x)
-            self.fit_one(x, y)
-            return y_pred
-        return self.fit_one(x, y).transform_one(x)
 
     def __or__(self, other):
         """Merges with another Transformer into a Pipeline."""

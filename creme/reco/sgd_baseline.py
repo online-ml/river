@@ -12,9 +12,9 @@ __all__ = ['SGDBaseline']
 class SGDBaseline(base.Recommender):
     """Stochastic gradient descent baseline.
 
-    This is somewhat equivalent to ``surprise.BaselineOnly`` with ``method='sgd'``. The difference
-    is that ``surprise`` always uses plain SGD whereas with ``creme`` you can use any SGD method,
-    for example Adam.
+    This is somewhat equivalent to `surprise.prediction_algorithms.baseline_only.BaselineOnly` with
+    ``method='sgd'``. The difference is that ``surprise`` always uses plain SGD whereas with
+    ``creme`` you can use any SGD method, for example `optim.Adam`.
 
     Parameters:
         row_optimizer (optim.Optimizer): Optimizer used to tune the row weights.
@@ -29,32 +29,32 @@ class SGDBaseline(base.Recommender):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import reco
+            >>> from creme import reco
 
-        >>> ratings = [
-        ...     ('Alice', 'Superman', 8),
-        ...     ('Alice', 'Terminator', 9),
-        ...     ('Alice', 'Star Wars', 8),
-        ...     ('Alice', 'Notting Hill', 2),
-        ...     ('Alice', 'Harry Potter ', 5),
-        ...     ('Bob', 'Superman', 8),
-        ...     ('Bob', 'Terminator', 9),
-        ...     ('Bob', 'Star Wars', 8),
-        ...     ('Bob', 'Notting Hill', 2),
-        ... ]
+            >>> ratings = [
+            ...     ('Alice', 'Superman', 8),
+            ...     ('Alice', 'Terminator', 9),
+            ...     ('Alice', 'Star Wars', 8),
+            ...     ('Alice', 'Notting Hill', 2),
+            ...     ('Alice', 'Harry Potter ', 5),
+            ...     ('Bob', 'Superman', 8),
+            ...     ('Bob', 'Terminator', 9),
+            ...     ('Bob', 'Star Wars', 8),
+            ...     ('Bob', 'Notting Hill', 2),
+            ... ]
 
-        >>> model = reco.SGDBaseline(
-        ...     row_optimizer=optim.VanillaSGD(0.005),
-        ...     col_optimizer=optim.VanillaSGD(0.005)
-        ... )
+            >>> model = reco.SGDBaseline(
+            ...     row_optimizer=optim.VanillaSGD(0.005),
+            ...     col_optimizer=optim.VanillaSGD(0.005)
+            ... )
 
-        >>> for user, movie, rating in ratings:
-        ...     _ = model.fit_one(user, movie, rating)
+            >>> for user, movie, rating in ratings:
+            ...     _ = model.fit_one(user, movie, rating)
 
-        >>> model.predict_one('Bob', 'Harry Potter')
-        6.554288...
+            >>> model.predict_one('Bob', 'Harry Potter')
+            6.554288...
 
     """
 
@@ -70,6 +70,9 @@ class SGDBaseline(base.Recommender):
 
     def fit_one(self, r_id, c_id, y):
 
+        self.row_optimizer.update_before_pred(self.row_biases)
+        self.col_optimizer.update_before_pred(self.col_biases)
+
         # Predict the value
         y_pred = self.predict_one(r_id, c_id)
 
@@ -78,11 +81,11 @@ class SGDBaseline(base.Recommender):
 
         # Update the row biases
         r_grad = {r_id: loss_gradient + self.l2 * self.row_biases.get(r_id, 0)}
-        self.row_biases = self.row_optimizer.update_weights_with_gradient(self.row_biases, r_grad)
+        self.row_biases = self.row_optimizer.update_after_pred(self.row_biases, r_grad)
 
         # Update the row biases
         c_grad = {c_id: loss_gradient + self.l2 * self.col_biases.get(c_id, 0)}
-        self.col_biases = self.col_optimizer.update_weights_with_gradient(self.col_biases, c_grad)
+        self.col_biases = self.col_optimizer.update_after_pred(self.col_biases, c_grad)
 
         # Update the global mean
         self.global_mean.update(y)

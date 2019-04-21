@@ -48,7 +48,8 @@ def iter_sklearn_dataset(load_dataset, **kwargs):
     """Yields rows from one of the datasets provided by scikit-learn.
 
     Parameters:
-        load_dataset (callable): The method used to load the dataset, e.g. ``load_boston``.
+        load_dataset (callable): The method used to load the dataset, for example
+        `sklearn.datasets.load_boston`.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
@@ -83,38 +84,39 @@ def iter_csv(filepath_or_buffer, target_name, types=None, parse_dates=None):
     """Yields rows from a CSV file.
 
     Parameters:
-        filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer object that has a ``read`` method.
+        filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer
+            object that has a ``read`` method.
         types (dict): The type of each feature.
-        parse_dates (dict): A ``dict`` mapping feature names to a format passed to the ``strptime``
-            method from the ``datetime`` library.
+        parse_dates (dict): A `dict` mapping feature names to a format passed to the
+            `datetime.datetime.strptime` method.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     Example:
 
-    ::
+        ::
 
-        >>> import io
-        >>> from creme import stream
+            >>> import io
+            >>> from creme import stream
 
-        >>> data = io.StringIO('''name,day,viewers
-        ... Breaking Bad,2018-03-14,1337
-        ... The Sopranos,2018-03-14,42
-        ... Breaking Bad,2018-03-15,7331
-        ... ''')
+            >>> data = io.StringIO('''name,day,viewers
+            ... Breaking Bad,2018-03-14,1337
+            ... The Sopranos,2018-03-14,42
+            ... Breaking Bad,2018-03-15,7331
+            ... ''')
 
-        >>> params = dict(
-        ...     target_name='viewers',
-        ...     types={'viewers': int},
-        ...     parse_dates={'day': '%Y-%m-%d'}
-        ... )
+            >>> params = dict(
+            ...     target_name='viewers',
+            ...     types={'viewers': int},
+            ...     parse_dates={'day': '%Y-%m-%d'}
+            ... )
 
-        >>> for x, y in stream.iter_csv(data, **params):
-        ...     print(x, y)
-        OrderedDict([('name', 'Breaking Bad'), ('day', datetime.datetime(2018, 3, 14, 0, 0))]) 1337
-        OrderedDict([('name', 'The Sopranos'), ('day', datetime.datetime(2018, 3, 14, 0, 0))]) 42
-        OrderedDict([('name', 'Breaking Bad'), ('day', datetime.datetime(2018, 3, 15, 0, 0))]) 7331
+            >>> for x, y in stream.iter_csv(data, **params):
+            ...     print(x, y)
+            OrderedDict([('name', 'Breaking Bad'), ('day', datetime.datetime(2018, 3, 14, 0, 0))]) 1337
+            OrderedDict([('name', 'The Sopranos'), ('day', datetime.datetime(2018, 3, 14, 0, 0))]) 42
+            OrderedDict([('name', 'Breaking Bad'), ('day', datetime.datetime(2018, 3, 15, 0, 0))]) 7331
 
     """
 

@@ -1,3 +1,8 @@
+.. image:: _static/creme.svg
+    :width: 400px
+    :height: 240px
+    :align: center
+
 Introduction
 ============
 

@@ -9,6 +9,7 @@ from .entropy import Entropy
 from .ewmean import EWMean
 from .kurtosis import Kurtosis
 from .max import Max
+from .mean import BayesianMean
 from .mean import Mean
 from .min import Min
 from .mode import Mode
@@ -32,6 +33,7 @@ from .variance import Variance
 
 
 __all__ = [
+    'BayesianMean',
     'Bivariate',
     'Count',
     'Covariance',

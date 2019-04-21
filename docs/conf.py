@@ -36,14 +36,15 @@ release = creme.__version__
 #
 # needs_sphinx = '1.0'
 autoclass_content = 'both'  # include both class docstring and __init__
-autodoc_default_flags = [
+autodoc_default_options = {
     # Make sure that any autodoc declarations show the right members
-    'members',
-    'inherited-members',
-    'private-members',
-    'show-inheritance'
-]
+    'members': True,
+    'inherited-members': True,
+    'private-members': True,
+    'show-inheritance': True
+}
 autosummary_generate = True  # Make _autosummary files and include them
+add_module_names = False
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -58,6 +59,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'nbsphinx'
 ]
+
+#nbsphinx_execute = 'never'
+nbsphinx_timeout = -1
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -77,11 +81,9 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-    'sklearn': ('https://scikit-learn.org/stable/', None)
+    'sklearn': ('https://scikit-learn.org/stable/', None),
+    'surprise': ('https://surprise.readthedocs.io/en/stable/', None)
 }
-
-nbsphinx_execute = 'never'
-nbsphinx_timeout = -1
 
 # The value is used as a parameter of MathJax.Hub.Config().
 mathjax_config = {
@@ -119,7 +121,7 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'friendly'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -129,14 +131,13 @@ pygments_style = None
 #
 html_theme = 'sphinx_rtd_theme'
 html_favicon = '_static/favicon.ico'
-html_logo = '_static/logo.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    'logo_only': True
+    'logo_only': False
 }
 github_url = 'https://github.com/creme-ml/creme'
 
@@ -233,5 +234,6 @@ epub_exclude_files = ['search.html']
 
 # -- Extension configuration -------------------------------------------------
 def setup(app):
-    # to hide/show the prompt in code examples:
-    app.add_javascript('js/copybutton.js')
+    # to hide/show the prompt in code examples
+    app.add_javascript('copybutton.js')
+    app.add_stylesheet('custom.css')

@@ -13,11 +13,11 @@ __all__ = ['BaggingClassifier', 'BaggingRegressor']
 class BaggingClassifier(base.Classifier):
     """Bagging for classification.
 
-    For each incoming observation, each model's `fit_one` method is called ``k`` times where ``k``
-    is sampled from a Poisson distribution of parameter 1. ``k`` thus has a 36% chance of being
-    equal to 0, a 36% chance of being equal to 1, an 18% chance of being equal to 2, a 6% chance of
-    being equal to 3, a 1% chance of being equal to 4, etc. You can do
-    ``scipy.stats.poisson(1).pmf(k)`` for more detailed values.
+    For each incoming observation, each model's ``fit_one`` method is called ``k`` times where
+    ``k`` is sampled from a Poisson distribution of parameter 1. ``k`` thus has a 36% chance of
+    being equal to 0, a 36% chance of being equal to 1, an 18% chance of being equal to 2, a 6%
+    chance of being equal to 3, a 1% chance of being equal to 4, etc. You can do
+    ``scipy.stats.poisson(1).pmf(k)`` to obtain more detailed values.
 
     Parameters:
         classifier (BinaryClassifier or MultiClassifier): The classifier to bag.
@@ -27,7 +27,7 @@ class BaggingClassifier(base.Classifier):
         In the following example three logistic regressions are bagged together. The performance is
         slightly better than when using a single logistic regression.
 
-    ::
+        ::
 
             >>> from creme import compose
             >>> from creme import ensemble
@@ -57,7 +57,7 @@ class BaggingClassifier(base.Classifier):
             >>> metric = metrics.F1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.967468
+            F1Score: 0.970464
 
     References:
 

@@ -11,31 +11,31 @@ class AdaGrad(base.Optimizer):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import compose
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import optim
-        >>> from creme import preprocessing
-        >>> from creme import stream
-        >>> from sklearn import datasets
+            >>> from creme import compose
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import optim
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_breast_cancer,
-        ...     shuffle=True,
-        ...     random_state=42
-        ... )
-        >>> optimiser = optim.AdaGrad()
-        >>> model = compose.Pipeline([
-        ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('learn', linear_model.LogisticRegression(optimiser))
-        ... ])
-        >>> metric = metrics.F1Score()
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     load_dataset=datasets.load_breast_cancer,
+            ...     shuffle=True,
+            ...     random_state=42
+            ... )
+            >>> optimiser = optim.AdaGrad()
+            >>> model = compose.Pipeline([
+            ...     ('scale', preprocessing.StandardScaler()),
+            ...     ('learn', linear_model.LogisticRegression(optimiser))
+            ... ])
+            >>> metric = metrics.F1Score()
 
-        >>> model_selection.online_score(X_y, model, metric)
-        F1Score: 0.97191
+            >>> model_selection.online_score(X_y, model, metric)
+            F1Score: 0.97191
 
     """
 
@@ -44,7 +44,7 @@ class AdaGrad(base.Optimizer):
         self.eps = eps
         self.g2 = collections.defaultdict(float)
 
-    def update_weights_with_gradient(self, w, g):
+    def _update_after_pred(self, w, g):
 
         for i, gi in g.items():
             self.g2[i] += gi ** 2

@@ -7,7 +7,7 @@ class SDFT(window.Window):
     """Sliding Discrete Fourier Transform (SDFT).
 
     Initially, the coefficients are all equal to 0, up until enough values have been seen. A call
-    to ``np.fft.fft`` is triggered once ``window_size`` values have been seen. Subsequent values
+    to `numpy.fft.fft` is triggered once ``window_size`` values have been seen. Subsequent values
     will update the coefficients online. This is much faster than recomputing an FFT from scratch
     for every new value.
 
@@ -19,18 +19,21 @@ class SDFT(window.Window):
 
     Example:
 
-    ::
+        ::
 
-        >>> X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            >>> X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-        >>> window_size = 5
-        >>> sdft = SDFT(window_size)
+            >>> window_size = 5
+            >>> sdft = SDFT(window_size)
 
-        >>> for i, x in enumerate(X):
-        ...     sdft = sdft.update(x)
-        ...
-        ...     if i + 1 >= window_size:
-        ...         assert np.allclose(sdft.fft, np.fft.fft(X[i+1 - window_size:i+1]))
+            >>> for i, x in enumerate(X):
+            ...     sdft = sdft.update(x)
+            ...
+            ...     if i + 1 >= window_size:
+            ...         assert np.allclose(
+            ...             sdft.fft,
+            ...             np.fft.fft(X[i+1 - window_size:i+1])
+            ...         )
 
     """
 

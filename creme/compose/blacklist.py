@@ -5,20 +5,20 @@ class Blacklister(base.Transformer):
     """Subsets a set of features by applying a blacklist.
 
     Parameters:
-        blacklist (``str`` or ``list``): Key(s) to keep.
+        blacklist (`str` or `list`): Key(s) to discard.
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import compose
+            >>> from creme import compose
 
-        >>> x = {'a': 42, 'b': 12}
-        >>> compose.Blacklister(['a', 'zoidberg']).fit_transform_one(x)
-        {'b': 12}
+            >>> x = {'a': 42, 'b': 12}
+            >>> compose.Blacklister(['a', 'zoidberg']).transform_one(x)
+            {'b': 12}
 
-        >>> compose.Blacklister('b').fit_transform_one(x)
-        {'a': 42}
+            >>> compose.Blacklister('b').transform_one(x)
+            {'a': 42}
 
     """
 

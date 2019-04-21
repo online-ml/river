@@ -12,52 +12,52 @@ class TransformerUnion(collections.UserDict, base.Transformer):
     """Packs multiple transformers into a single one.
 
     Calling ``transform_one`` will concatenate each transformer's output using a
-    ``collections.ChainMap``.
+    `collections.ChainMap`.
 
     Args:
         transformers (list)
 
     Example:
 
-    ::
+        ::
 
-        >>> from pprint import pprint
-        >>> import creme.compose
-        >>> import creme.feature_extraction
+            >>> from pprint import pprint
+            >>> import creme.compose
+            >>> import creme.feature_extraction
 
-        >>> X = [
-        ...     {'place': 'Taco Bell', 'revenue': 42},
-        ...     {'place': 'Burger King', 'revenue': 16},
-        ...     {'place': 'Burger King', 'revenue': 24},
-        ...     {'place': 'Taco Bell', 'revenue': 58},
-        ...     {'place': 'Burger King', 'revenue': 20},
-        ...     {'place': 'Taco Bell', 'revenue': 50}
-        ... ]
+            >>> X = [
+            ...     {'place': 'Taco Bell', 'revenue': 42},
+            ...     {'place': 'Burger King', 'revenue': 16},
+            ...     {'place': 'Burger King', 'revenue': 24},
+            ...     {'place': 'Taco Bell', 'revenue': 58},
+            ...     {'place': 'Burger King', 'revenue': 20},
+            ...     {'place': 'Taco Bell', 'revenue': 50}
+            ... ]
 
-        >>> mean = creme.feature_extraction.Agg(
-        ...     on='revenue',
-        ...     by='place',
-        ...     how=creme.stats.Mean()
-        ... )
-        >>> count = creme.feature_extraction.Agg(
-        ...     on='revenue',
-        ...     by='place',
-        ...     how=creme.stats.Count()
-        ... )
-        >>> agg = creme.compose.TransformerUnion([mean])
-        >>> agg += count
+            >>> mean = creme.feature_extraction.Agg(
+            ...     on='revenue',
+            ...     by='place',
+            ...     how=creme.stats.Mean()
+            ... )
+            >>> count = creme.feature_extraction.Agg(
+            ...     on='revenue',
+            ...     by='place',
+            ...     how=creme.stats.Count()
+            ... )
+            >>> agg = creme.compose.TransformerUnion([mean])
+            >>> agg += count
 
-        >>> for x in X:
-        ...     pprint(agg.fit_one(x).transform_one(x))
-        {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
-        {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
-        {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
-        {'revenue_count_by_place': 2, 'revenue_mean_by_place': 50.0}
-        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 20.0}
-        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
+            >>> for x in X:
+            ...     pprint(agg.fit_one(x).transform_one(x))
+            {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
+            {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
+            {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
+            {'revenue_count_by_place': 2, 'revenue_mean_by_place': 50.0}
+            {'revenue_count_by_place': 3, 'revenue_mean_by_place': 20.0}
+            {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
 
-        >>> pprint(agg.transform_one({'place': 'Taco Bell'}))
-        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
+            >>> pprint(agg.transform_one({'place': 'Taco Bell'}))
+            {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
 
     """
 
@@ -66,6 +66,10 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         if estimators is not None:
             for estimator in estimators:
                 self += estimator
+
+    @property
+    def is_supervised(self):
+        return any(transformer.is_supervised for transformer in self.values())
 
     def __str__(self):
         """Return a human friendly representation of the pipeline."""
@@ -100,12 +104,5 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         """Passes the data through each transformer and packs the results together."""
         return dict(collections.ChainMap(*(
             estimator.transform_one(x)
-            for estimator in self.values()
-        )))
-
-    def fit_transform_one(self, x: dict, y=None):
-        """Fits and transforms while ensuring no leakage occurs if the transformer is supervised."""
-        return dict(collections.ChainMap(*(
-            estimator.fit_transform_one(x, y)
             for estimator in self.values()
         )))
