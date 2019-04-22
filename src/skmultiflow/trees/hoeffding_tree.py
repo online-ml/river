@@ -1,8 +1,9 @@
 import logging
 import textwrap
 from abc import ABCMeta
-from operator import attrgetter
+from operator import attrgetter, itemgetter
 import numpy as np
+import copy
 from skmultiflow.utils.utils import get_dimensions, normalize_values_in_dict, calculate_object_size
 from skmultiflow.core.base import StreamModel
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
@@ -12,9 +13,12 @@ from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestio
 from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
 from skmultiflow.bayes import do_naive_bayes_prediction
+from skmultiflow.core.base_rule import Rule
+from skmultiflow.trees.hellinger_distance_criterion import HellingerDistanceCriterion
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
+HELLINGER = 'hellinger'
 MAJORITY_CLASS = 'mc'
 NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
@@ -39,6 +43,7 @@ class HoeffdingTree(StreamModel):
         | Split criterion to use.
         | 'gini' - Gini
         | 'info_gain' - Information Gain
+        | 'hellinger' - Helinger Distance
     split_confidence: float (default=0.0000001)
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold: float (default=0.05)
@@ -417,6 +422,10 @@ class HoeffdingTree(StreamModel):
                     buffer[0] += self._split_test.describe_condition_for_branch(branch_idx)
                     buffer[0] += ':\n'
                     child.describe_subtree(ht, buffer, indent + 2)
+
+        def get_predicate(self, branch):
+
+            return self._split_test.branch_rule(branch)
 
     class LearningNode(Node):
         """ Base class for Learning Nodes in a Hoeffding Tree.
@@ -814,7 +823,7 @@ class HoeffdingTree(StreamModel):
 
     @split_criterion.setter
     def split_criterion(self, split_criterion):
-        if split_criterion != GINI_SPLIT and split_criterion != INFO_GAIN_SPLIT:
+        if split_criterion != GINI_SPLIT and split_criterion != INFO_GAIN_SPLIT and split_criterion != HELLINGER:
             logger.info("Invalid option {}', will use default '{}'".format(split_criterion, INFO_GAIN_SPLIT))
             self._split_criterion = INFO_GAIN_SPLIT
         else:
@@ -1227,6 +1236,8 @@ class HoeffdingTree(StreamModel):
                 split_criterion = GiniSplitCriterion()
             elif self._split_criterion == INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
+            elif self._split_criterion == HELLINGER:
+                split_criterion = HellingerDistanceCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
             best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
@@ -1422,6 +1433,42 @@ class HoeffdingTree(StreamModel):
                 split_node = node
                 for i in range(split_node.num_children()):
                     self.__find_learning_nodes(split_node.get_child(i), split_node, i, found)
+
+    def get_model_rules(self):
+        """ Returns list of list describing the tree.
+
+        Returns
+        -------
+        list (Rule)
+            list of the rules describing the tree
+        """
+        root = self._tree_root
+        rules = []
+
+        def recurse(node, rule, ht):
+            if isinstance(node, ht.SplitNode):
+                for i, child in node._children.items():
+                    predicate = node.get_predicate(i)
+                    r = copy.deepcopy(rule)
+                    r.predicate_set.append(predicate)
+                    recurse(child, r, ht)
+            else:
+                rule.observed_class_distribution = node.get_observed_class_distribution().copy()
+                rule.class_idx = max(node.get_observed_class_distribution().items(), key=itemgetter(1))[0]
+                rules.append(rule)
+
+
+        rule = Rule()
+        recurse(root,rule, self)
+        return rules
+
+    def get_rules_description(self):
+        """ Prints the the description of tree using rules."""
+        description = ''
+        for rule in self.get_model_rules():
+            description += str(rule) + '\n'
+
+        return description
 
     def score(self, X, y):
         raise NotImplementedError
