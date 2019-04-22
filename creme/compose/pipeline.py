@@ -6,6 +6,7 @@ try:
     GRAPHVIZ_INSTALLED = True
 except ImportError:
     GRAPHVIZ_INSTALLED = False
+
 from sklearn.utils import metaestimators
 
 from . import func
@@ -16,7 +17,13 @@ __all__ = ['Pipeline']
 
 
 class Pipeline(collections.OrderedDict):
-    """A sequence of estimators.
+    """Chains a sequence of estimators.
+
+    Sequentially apply a list of estimators
+
+    Parameters:
+        steps (list): Ideally a list of (name, estimator) tuples. If an estimator is given without
+            a name then a name is automatically inferred from the estimator.
 
     Example:
 
@@ -42,10 +49,6 @@ class Pipeline(collections.OrderedDict):
             ... )
 
             >>> model |= linear_model.PAClassifier()
-
-    Parameters:
-        steps (list): Ideally a list of (name, estimator) tuples. If an estimator is given without
-            a name then a name is automatically inferred from the estimator.
 
     """
 
@@ -107,38 +110,38 @@ class Pipeline(collections.OrderedDict):
 
     def fit_one(self, x, y=None):
         """Fits each step with ``x``."""
-        xx = x
+        x_transformed = x
 
-        for t in itertools.islice(self.values(), len(self) - 1):
-            xx = t.transform_one(xx)
+        for transformer in itertools.islice(self.values(), len(self) - 1):
+            x_transformed = transformer.transform_one(x_transformed)
 
             # The supervised parts of a TransformerUnion have to be updated
-            if isinstance(t, union.TransformerUnion):
-                for sub_t in t.values():
-                    if sub_t.is_supervised:
-                        sub_t.fit_one(x, y)
+            if isinstance(transformer, union.TransformerUnion):
+                for sub_transformer in transformer.values():
+                    if sub_transformer.is_supervised:
+                        sub_transformer.fit_one(x, y)
                 continue
 
             # If a transformer is supervised then it has to be updated
-            if t.is_supervised:
-                t.fit_one(x, y)
+            if transformer.is_supervised:
+                transformer.fit_one(x, y)
 
-        self.final_estimator.fit_one(xx, y)
+        self.final_estimator.fit_one(x_transformed, y)
         return self
 
     def run_transformers(self, x):
-        for t in itertools.islice(self.values(), len(self) - 1):
+        for transformer in itertools.islice(self.values(), len(self) - 1):
 
-            if isinstance(t, union.TransformerUnion):
-                for sub_t in t.values():
-                    if not sub_t.is_supervised:
-                        sub_t.fit_one(x)
-                x = t.transform_one(x)
+            if isinstance(transformer, union.TransformerUnion):
+                for sub_transformer in transformer.values():
+                    if not sub_transformer.is_supervised:
+                        sub_transformer.fit_one(x)
+                x = transformer.transform_one(x)
                 continue
 
-            if not t.is_supervised:
-                t.fit_one(x)
-            x = t.transform_one(x)
+            if not transformer.is_supervised:
+                transformer.fit_one(x)
+            x = transformer.transform_one(x)
 
         return x
 
@@ -171,7 +174,8 @@ class Pipeline(collections.OrderedDict):
     def predict_proba_one(self, x):
         """Predicts probabilities.
 
-        Only works if each estimator has a ``transform_one`` method and the final estimator has a ``predict_proba_one`` method.
+        Only works if each estimator has a ``transform_one`` method and the final estimator has a
+        ``predict_proba_one`` method.
 
         """
         x = self.run_transformers(x)

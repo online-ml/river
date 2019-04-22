@@ -1,11 +1,14 @@
 from .. import base
 
 
+__all__ = ['Blacklister']
+
+
 class Blacklister(base.Transformer):
     """Subsets a set of features by applying a blacklist.
 
     Parameters:
-        blacklist (`str` or `list`): Key(s) to discard.
+        blacklist (str or list): Key(s) to discard.
 
     Example:
 

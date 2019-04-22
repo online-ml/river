@@ -14,8 +14,8 @@ class TransformerUnion(collections.UserDict, base.Transformer):
     Calling ``transform_one`` will concatenate each transformer's output using a
     `collections.ChainMap`.
 
-    Args:
-        transformers (list)
+    Parameters:
+        transformers (list): transformers to pack together.
 
     Example:
 
@@ -24,6 +24,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
             >>> from pprint import pprint
             >>> import creme.compose
             >>> import creme.feature_extraction
+            >>> import creme.stats
 
             >>> X = [
             ...     {'place': 'Taco Bell', 'revenue': 42},
@@ -61,22 +62,22 @@ class TransformerUnion(collections.UserDict, base.Transformer):
 
     """
 
-    def __init__(self, estimators=None):
+    def __init__(self, transformers=None):
         super().__init__()
-        if estimators is not None:
-            for estimator in estimators:
-                self += estimator
+        if transformers is not None:
+            for transformer in transformers:
+                self += transformer
 
     @property
     def is_supervised(self):
         return any(transformer.is_supervised for transformer in self.values())
 
     def __str__(self):
-        """Return a human friendly representation of the pipeline."""
+        """Returns a human friendly representation of the pipeline."""
         return f'{{{", ".join(self.keys())}}}'
 
     def __add__(self, other):
-        """Adds an estimator while taking care of the input type."""
+        """Adds a transformer while taking care of the input type."""
 
         # Infer a name if none is given
         if not isinstance(other, (list, tuple)):
@@ -90,19 +91,19 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         if other[0] in self:
             raise KeyError(f'{other[0]} already exists')
 
-        # Store the estimator
+        # Store the transformer
         self[other[0]] = other[1]
 
         return self
 
     def fit_one(self, x, y=None):
-        for estimator in self.values():
-            estimator.fit_one(x, y)
+        for transformer in self.values():
+            transformer.fit_one(x, y)
         return self
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
         return dict(collections.ChainMap(*(
-            estimator.transform_one(x)
-            for estimator in self.values()
+            transformer.transform_one(x)
+            for transformer in self.values()
         )))
