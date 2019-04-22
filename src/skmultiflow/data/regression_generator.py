@@ -145,6 +145,12 @@ class RegressionGenerator(Stream):
         self.target_values = [float] * self.n_targets
 
     def prepare_for_use(self):
+        """
+        Note
+        ----
+        This functions is NOT required for this generator.
+
+        """
         pass
 
     def n_remaining_samples(self):

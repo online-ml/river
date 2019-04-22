@@ -63,7 +63,6 @@ class DataStream(Stream):
                 self.target_idx = -self.y.shape[1]
                 self.n_targets = self.y.shape[1]
 
-
     @property
     def y(self):
         """
@@ -236,10 +235,12 @@ class DataStream(Stream):
         self._cat_features_idx = cat_features_idx
 
     def prepare_for_use(self):
-        """ prepare_for_use
+        """
+        Prepares the stream for use.
 
-        Prepares the stream for use. This functions should always be
-        called after the stream initialization.
+        Note
+        ----
+        This functions should always be called after the stream initialization.
 
         """
         self.restart()
