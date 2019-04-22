@@ -423,14 +423,14 @@ class ClassifierMixin(metaclass=ABCMeta):
 
         Returns
         -------
-        An array-like with all the predictions for the samples in X.
+        A numpy.ndarray with all the predictions for the samples in X.
 
         """
         raise NotImplementedError
 
     @abstractmethod
     def predict_proba(self, X):
-        """ On classifiers, estimates the probability of each sample in X belonging to each of the existing labels.
+        """ Estimates the probability of each sample in X belonging to each of the class-labels.
 
         Parameters
         ----------
@@ -439,9 +439,9 @@ class ClassifierMixin(metaclass=ABCMeta):
 
         Returns
         -------
-        An array of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the same
-        index. And where the list in index [i] contains len(self.target_values) elements, each of which represents the
-        probability that the i-th sample of X belongs to a certain label.
+        A numpy.ndarray of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the
+        same index. And where the list in index [i] contains len(self.target_values) elements, each of which represents
+        the probability that the i-th sample of X belongs to a certain class-label.
 
         """
         raise NotImplementedError
