@@ -37,7 +37,7 @@ class ClassificationMeasurements(BaseObject):
         if targets is not None:
             self.n_targets = len(targets)
         else:
-            self.n_targets = 0
+            self.n_targets = 2
         self.confusion_matrix = ConfusionMatrix(self.n_targets, dtype)
         self.last_true_label = None
         self.last_prediction = None
@@ -51,7 +51,7 @@ class ClassificationMeasurements(BaseObject):
         if self.targets is not None:
             self.n_targets = len(self.targets)
         else:
-            self.n_targets = 0
+            self.n_targets = 2
         self.last_true_label = None
         self.last_prediction = None
         self.last_sample = None
@@ -216,6 +216,69 @@ class ClassificationMeasurements(BaseObject):
             return 1
         return (p0 - pc) / (1.0 - pc)
 
+    def get_g_mean(self):
+        """ Compute the G-mean of the classifier.
+
+        Returns
+        -------
+        float
+            The G-mean
+        """
+        tn = self.confusion_matrix.value_at(0, 0)
+        fp = self.confusion_matrix.value_at(0, 1)
+        if tn + fp == 0:
+            specificity = 0
+        else:
+            specificity =  tn / (tn + fp)
+        sensitivity = self.get_recall()
+        return np.sqrt((sensitivity * specificity))
+
+    def get_f1_score(self):
+        """ Compute the F1-score of the classifier.
+
+        Returns
+        -------
+        float
+            The F1-score
+        """
+        precision = self.get_precision()
+        recall = self.get_recall()
+        if recall + precision == 0:
+            return 0.0
+        else:
+            return 2 * (precision * recall) / (precision + recall)
+
+    def get_precision(self):
+        """ compute the precision of the classifier.
+
+
+        Returns
+        -------
+        float
+            The precision
+        """
+        tp = self.confusion_matrix.value_at(1, 1)
+        fp = self.confusion_matrix.value_at(0, 1)
+        if tp + fp == 0:
+            return 0.0
+        else:
+            return tp / (tp + fp)
+
+    def get_recall(self):
+        """ Compute the recall.
+
+        Returns
+        -------
+        float
+            The recall.
+        """
+        tp = self.confusion_matrix.value_at(1, 1)
+        fn = self.confusion_matrix.value_at(1, 0)
+        if tp + fn == 0:
+            return 0.0
+        else:
+            return tp / (tp + fn)
+
     def get_kappa_m(self):
         """ Computes the Cohen's kappa M coefficient.
 
@@ -245,6 +308,10 @@ class ClassificationMeasurements(BaseObject):
                ' - kappa: {:.6f}'.format(self.get_kappa()) + \
                ' - kappa_t: {:.6f}'.format(self.get_kappa_t()) + \
                ' - kappa_m: {:.6f}'.format(self.get_kappa_m()) + \
+               ' - f1-score: {:.6f}'.format(self.get_f1_score()) + \
+               ' - precision: {:.6f}'.format(self.get_precision()) + \
+               ' - recall: {:.6f}'.format(self.get_recall()) + \
+               ' - G-mean: {:.6f}'.format(self.get_g_mean()) + \
                ' - majority_class: {}'.format(self.get_majority_class())
 
     def get_class_type(self):
@@ -290,7 +357,7 @@ class WindowClassificationMeasurements(BaseObject):
         if targets is not None:
             self.n_targets = len(targets)
         else:
-            self.n_targets = 0
+            self.n_targets = 2
         self.confusion_matrix = ConfusionMatrix(self.n_targets, dtype)
         self.last_class = None
 
@@ -312,7 +379,7 @@ class WindowClassificationMeasurements(BaseObject):
         if self.targets is not None:
             self.n_targets = len(self.targets)
         else:
-            self.n_targets = 0
+            self.n_targets = 2
 
         self.true_labels = FastBuffer(self.window_size)
         self.predictions = FastBuffer(self.window_size)
@@ -521,6 +588,69 @@ class WindowClassificationMeasurements(BaseObject):
             return 1
         return (p0 - pc) / (1.0 - pc)
 
+    def get_g_mean(self):
+        """ Compute the G-mean of the classifier.
+
+        Returns
+        -------
+        float
+            The G-mean
+        """
+        tn = self.confusion_matrix.value_at(0, 0)
+        fp = self.confusion_matrix.value_at(0, 1)
+        if tn + fp == 0:
+            specificity = 0
+        else:
+            specificity =  tn / (tn + fp)
+        sensitivity = self.get_recall()
+        return np.sqrt((sensitivity * specificity))
+
+    def get_f1_score(self):
+        """ Compute the F1-score of the classifier.
+
+        Returns
+        -------
+        float
+            The F1-score
+        """
+        precision = self.get_precision()
+        recall = self.get_recall()
+        if recall + precision == 0:
+            return 0.0
+        else:
+            return 2 * (precision * recall) / (precision + recall)
+
+    def get_precision(self):
+        """ compute the precision of the classifier.
+
+
+        Returns
+        -------
+        float
+            The precision
+        """
+        tp = self.confusion_matrix.value_at(1, 1)
+        fp = self.confusion_matrix.value_at(0, 1)
+        if tp + fp == 0:
+            return 0.0
+        else:
+            return tp / (tp + fp)
+
+    def get_recall(self):
+        """ Compute the recall.
+
+        Returns
+        -------
+        float
+            The recall.
+        """
+        tp = self.confusion_matrix.value_at(1, 1)
+        fn = self.confusion_matrix.value_at(1, 0)
+        if tp + fn == 0:
+            return 0.0
+        else:
+            return tp / (tp + fn)
+
     @property
     def _matrix(self):
         return self.confusion_matrix.matrix
@@ -540,6 +670,10 @@ class WindowClassificationMeasurements(BaseObject):
                ' - kappa: {:.6f}'.format(self.get_kappa()) + \
                ' - kappa_t: {:.6f}'.format(self.get_kappa_t()) + \
                ' - kappa_m: {:.6f}'.format(self.get_kappa_m()) + \
+               ' - f1-score: {:.6f}'.format(self.get_f1_score()) + \
+               ' - precision: {:.6f}'.format(self.get_precision()) + \
+               ' - recall: {:.6f}'.format(self.get_recall()) + \
+               ' - G-mean: {:.6f}'.format(self.get_g_mean()) + \
                ' - majority_class: {}'.format(self.get_majority_class())
 
 
