@@ -1,13 +1,15 @@
-from collections import deque
 import numpy as np
-from skmultiflow.core.base import StreamModel
+
+from collections import deque
+
+from skmultiflow.core.base import BaseStreamEstimator, ClassifierMixin
 from skmultiflow.utils import get_dimensions
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.bayes import do_naive_bayes_prediction
 
 
-class NaiveBayes(StreamModel):
+class NaiveBayes(BaseStreamEstimator, ClassifierMixin):
     """ Performs classic bayesian prediction while making naive assumption that all inputs are independent.
     Naive Bayes is a classifier algorithm known for its simplicity and low computational cost. Given `n` different
     classes, the trained Naive Bayes classifier predicts for every unlabelled instance the class to which it
@@ -36,47 +38,22 @@ class NaiveBayes(StreamModel):
         else:
             self._nominal_attributes = nominal_attributes
 
-    def fit(self, X, y, classes=None, weight=None):
-        """ Fits the model.
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially (incrementally) fit the model.
 
         Parameters
         ----------
-        X: numpy.ndarray, shape (n_samples, n_features)
-            The feature's matrix.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: numpy.ndarray, shape (n_samples)
-            The class labels for all samples in X.
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the labels of all samples in X.
 
-        classes: numpy.ndarray, shape (n_samples), optional (default=None)
-            A list with all the possible labels of the classification problem.
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known classes. Usage varies depending on the learning method.
 
-        weight: numpy.ndarray, shape (n_samples), optional (default=None)
-            Instance(s) weight(s). If not provided, uniform weights are assumed.
-
-        Returns
-        -------
-        NaiveBayes
-            self
-
-        """
-        self.partial_fit(X, y, classes=None, weight=None)
-
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ Partially fits the model.
-
-        Parameters
-        ----------
-        X: numpy.ndarray, shape (n_samples, n_features)
-            The feature's matrix.
-
-        y: numpy.ndarray, shape (n_samples)
-            The class labels for all samples in X.
-
-        classes: numpy.ndarray, shape (n_samples), optional (default=None)
-            A list with all the possible labels of the classification problem.
-
-        weight: numpy.ndarray, shape (n_samples), optional (default=None)
-            Instance(s) weight(s). If not provided, uniform weights are assumed.
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
 
         Returns
         -------
@@ -89,13 +66,14 @@ class NaiveBayes(StreamModel):
 
         if y is not None:
             row_cnt, _ = get_dimensions(X)
-            if weight is None:
-                weight = np.ones(row_cnt)
-            if row_cnt != len(weight):
-                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt, len(weight)))
+            if sample_weight is None:
+                sample_weight = np.ones(row_cnt)
+            if row_cnt != len(sample_weight):
+                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt,
+                                                                                                  len(sample_weight)))
             for i in range(row_cnt):
-                if weight[i] != 0.0:
-                    self._partial_fit(X[i], y[i], weight[i])
+                if sample_weight[i] != 0.0:
+                    self._partial_fit(X[i], y[i], sample_weight[i])
         return self
 
     def _partial_fit(self, X, y, weight):
@@ -115,17 +93,16 @@ class NaiveBayes(StreamModel):
             obs.observe_attribute_class(X[i], int(y), weight)
 
     def predict(self, X):
-        """ Uses the current model to predict samples in X.
+        """ Predict classes for the passed data.
 
         Parameters
         ----------
-        X: numpy.ndarray, shape (n_samples, n_features)
-            The feature's matrix.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The set of data samples to predict the labels for.
 
         Returns
         -------
-        numpy.ndarray
-            An array containing the predicted labels for all instances in X.
+        A numpy.ndarray with all the predictions for the samples in X.
 
         """
         r, _ = get_dimensions(X)
@@ -137,21 +114,18 @@ class NaiveBayes(StreamModel):
         return np.array(predictions)
 
     def predict_proba(self, X):
-        """ Predicts the probability of each sample belonging to each one of the
-        known classes.
+        """ Estimates the probability of each sample in X belonging to each of the class-labels.
 
         Parameters
         ----------
-        X: Numpy.ndarray, shape (n_samples, n_features)
-            A matrix of the samples we want to predict.
+        X : Numpy.ndarray of shape (n_samples, n_features)
+            The matrix of samples one wants to predict the class probabilities for.
 
         Returns
         -------
-        numpy.ndarray
-            An array of shape (n_samples, n_features), in which each outer entry is
-            associated with the X entry of the same index. And where the list in
-            index [i] contains len(self.target_values) elements, each of which represents
-            the probability that the i-th sample of X belongs to a certain label.
+        A numpy.ndarray of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the
+        same index. And where the list in index [i] contains len(self.target_values) elements, each of which represents
+        the probability that the i-th sample of X belongs to a certain class-label.
 
         """
         predictions = deque()
@@ -172,22 +146,3 @@ class NaiveBayes(StreamModel):
                     y_proba[int(key)] = value / sum_values if sum_values != 0 else 0.0
                 predictions.append(y_proba)
         return np.array(predictions)
-
-    def score(self, X, y):
-        from sklearn.metrics import accuracy_score
-        return accuracy_score(y_true=y, y_pred=self.predict(X))
-
-    def reset(self):
-        self.__init__(self._nominal_attributes)
-
-    def get_info(self):
-        """ Collects information about the classifier's configuration.
-
-        Returns
-        -------
-        string
-            Configuration for this classifier instance.
-        """
-        description = type(self).__name__ + ': '
-        description += 'nominal attributes: {} - '.format(self._nominal_attributes)
-        return description
