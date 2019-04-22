@@ -1,103 +1,94 @@
 import copy as cp
+
 from skmultiflow.core.base import StreamModel
+from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
-from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
+from skmultiflow.utils.utils import *
 
 
-class OzaBagging(StreamModel):
-    """ OzaBagging Classifier
-    
-    Oza Bagging is an ensemble learning method first introduced by Oza and 
-    Russel's 'Online Bagging and Boosting'. They are an improvement of the 
-    well known Bagging ensemble method for the batch setting, which in this 
-    version can effectively handle data streams.
-    
-    For a traditional Bagging algorithm, adapted for the batch setting, we 
-    would have M classifiers training on M different datasets, created by 
-    drawing N samples from the N-sized training set with replacement.
-    
-    In the online context, since there is no training dataset, but a stream 
-    of samples, the drawing of samples with replacement can't be trivially 
-    executed. The strategy adopted by the Online Bagging algorithm is to 
-    simulate this task by training each arriving sample K times, which is 
-    drawn by the binomial distribution. Since we can consider the data stream 
-    to be infinite, and knowing that with infinite samples the binomial 
-    distribution tends to a Poisson(1) distribution, Oza and Russel found 
-    that to be a good 'drawing with replacement'.
-    
+class OnlineUnderOverBagging(StreamModel):
+    """ online UnderOverbBgging
+
+     Online UnderOverBagging [1]_ is the online version of the ensemble method.
+
+     In case of imbalanced classes UnderOverBagging uses the strategy of undersampling
+     the majority class and oversampling the minority class. In addition the sampling
+     rate can be also varied over the bagging iterations, which further boosts the
+     diversity of the base learners.
+
+     The derivation of the online UnderOverBaging algorithm is made through the observation
+     that a Binomial distribution with sampling rate :math:`\frac{C}{N}` corresponds to a
+     poisson distribution with :math:`\lambda=C`.
+
+     This online ensemble learner method is improved by the addition of an ADWIN change
+     detector.
+
+     ADWIN stands for Adaptive Windowing. It works by keeping updated
+     statistics of a variable sized window, so it can detect changes and
+     perform cuts in its window to better adapt the learning algorithms.
+
+
     Parameters
     ----------
     base_estimator: StreamModel
-        This is the ensemble classifier type, each ensemble classifier is going 
+        This is the ensemble classifier type, each ensemble classifier is going
         to be a copy of the base_estimator.
-    
+
     n_estimators: int
         The size of the ensemble, in other words, how many classifiers to train.
+
+    sampling_rate: int
+        The sampling rate of the positive instances.
+
+    drift_detection: Bool
+        A drift detector (ADWIN) can be used by the method to track the performance
+         of the classifiers and adapt when a drift is detected.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
-    
+
     Raises
     ------
-    NotImplementedError: A few of the functions described here are not 
+    NotImplementedError: A few of the functions described here are not
     implemented since they have no application in this context.
-    
+
     ValueError: A ValueError is raised if the 'classes' parameter is
     not passed in the first partial_fit call.
 
-    
-    Examples
-    --------
-    >>> # Imports
-    >>> from skmultiflow.meta.oza_bagging import OzaBagging
-    >>> from skmultiflow.lazy.knn import KNN
-    >>> from skmultiflow.data.sea_generator import SEAGenerator
-    >>> # Setting up the stream
-    >>> stream = SEAGenerator(1, noise_percentage=6.7)
-    >>> stream.prepare_for_use()
-    >>> # Setting up the OzaBagging classifier to work with KNN classifiers
-    >>> clf = OzaBagging(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=2)
-    >>> # Keeping track of sample count and correct prediction count
-    >>> sample_count = 0
-    >>> corrects = 0
-    >>> # Pre training the classifier with 200 samples
-    >>> X, y = stream.next_sample(200)
-    >>> clf = clf.partial_fit(X, y, classes=stream.target_values)
-    >>> for i in range(2000):
-    ...     X, y = stream.next_sample()
-    ...     pred = clf.predict(X)
-    ...     clf = clf.partial_fit(X, y)
-    ...     if pred is not None:
-    ...         if y[0] == pred[0]:
-    ...             corrects += 1
-    ...     sample_count += 1
-    >>> 
-    >>> # Displaying the results
-    >>> print(str(sample_count) + ' samples analyzed.')
-    2000 samples analyzed.
-    >>> print('OzaBagging classifier performance: ' + str(corrects / sample_count))
-    OzaBagging classifier performance: 0.9645
-    
+    References
+    ----------
+    .. [1] B. Wang and J. Pineau, "Online Bagging and Boosting for Imbalanced Data Streams,"
+           in IEEE Transactions on Knowledge and Data Engineering, vol. 28, no. 12, pp.
+           3353-3366, 1 Dec. 2016. doi: 10.1109/TKDE.2016.2609424
+
     """
 
-    def __init__(self, base_estimator=KNNAdwin(), n_estimators=10, random_state=None):
+    def __init__(self, base_estimator=KNNAdwin(), n_estimators=10, sampling_rate=2, drift_detection=True,
+                 random_state=None):
         super().__init__()
         # default values
         self.ensemble = None
         self.n_estimators = None
         self.classes = None
         self.random_state = None
+        self.n_samples = None
+        self.drift_detection = drift_detection
+        self.adwin_ensemble = None
         self._init_n_estimators = n_estimators
         self._init_random_state = random_state
+        self.sampling_rate = sampling_rate
         self.__configure(base_estimator)
 
     def __configure(self, base_estimator):
         base_estimator.reset()
         self.base_estimator = base_estimator
         self.n_estimators = self._init_n_estimators
+        self.adwin_ensemble = []
+        for i in range(self.n_estimators):
+            self.adwin_ensemble.append(ADWIN())
         self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
         self.random_state = check_random_state(self._init_random_state)
 
@@ -105,29 +96,31 @@ class OzaBagging(StreamModel):
         self.__configure(self.base_estimator)
 
     def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
+        self.partial_fit(X, y, classes, weight)
 
     def partial_fit(self, X, y, classes=None, weight=None):
         """ partial_fit
-         
+
         Partially fits the model, based on the X and y matrix.
-                
-        Since it's an ensemble learner, if X and y matrix of more than one 
-        sample are passed, the algorithm will partial fit the model one sample 
+
+        Since it's an ensemble learner, if X and y matrix of more than one
+        sample are passed, the algorithm will partial fit the model one sample
         at a time.
-        
-        Each sample is trained by each classifier a total of K times, where K 
-        is drawn by a Poisson(1) distribution.
-        
+
+        Each sample is trained by each classifier a total of K times, where K
+        is drawn by a Poisson(l) distribution. l is updated after every example
+        using :math:`lambda_{sc}` if th estimator correctly classifies the example or
+        :math:`lambda_{sw}` in the other case.
+
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features) 
+        X: Numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
-            
+
         y: Array-like
             An array-like of all the class labels for the samples in X.
-            
-        classes: list 
+
+        classes: list
             List of all existing classes. This is an optional parameter, except
             for the first partial_fit call, when it becomes obligatory.
 
@@ -137,14 +130,8 @@ class OzaBagging(StreamModel):
         Raises
         ------
         ValueError: A ValueError is raised if the 'classes' parameter is not
-        passed in the first partial_fit call, or if they are passed in further 
-        calls but differ from the initial classes list passed.
-        
-        Returns
-        _______
-        OzaBagging
-            self
-        
+        passed in the first partial_fit call, or if they are passed in further
+        calls but differ from the initial classes list passed..
         """
         if self.classes is None:
             if classes is None:
@@ -159,14 +146,48 @@ class OzaBagging(StreamModel):
                 raise ValueError("The classes passed to the partial_fit function differ from those passed earlier.")
 
         self.__adjust_ensemble_size()
+
         r, _ = get_dimensions(X)
         for j in range(r):
+            change_detected = False
             for i in range(self.n_estimators):
-                k = self.random_state.poisson()
+                a = (i + 1) / self.n_estimators
+                if y[j] == 1:
+                    lam = a * self.sampling_rate
+                else:
+                    lam = a
+                k = self.random_state.poisson(lam)
                 if k > 0:
                     for b in range(k):
-                        self.ensemble[i].partial_fit([X[j]], [y[j]], weight)
-        return self
+                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, weight)
+
+                if self.drift_detection:
+                    try:
+                        pred = self.ensemble[i].predict(X)
+                        error_estimation = self.adwin_ensemble[i].estimation
+                        for j in range(r):
+                            if pred[j] is not None:
+                                if pred[j] == y[j]:
+                                    self.adwin_ensemble[i].add_element(1)
+                                else:
+                                    self.adwin_ensemble[i].add_element(0)
+                        if self.adwin_ensemble[i].detected_change():
+                            if self.adwin_ensemble[i].estimation > error_estimation:
+                                change_detected = True
+                    except ValueError:
+                        change_detected = False
+                        pass
+
+            if change_detected and self.drift_detection:
+                max_threshold = 0.0
+                i_max = -1
+                for i in range(self.n_estimators):
+                    if max_threshold < self.adwin_ensemble[i].estimation:
+                        max_threshold = self.adwin_ensemble[i].estimation
+                        i_max = i
+                if i_max != -1:
+                    self.ensemble[i_max].reset()
+                    self.adwin_ensemble[i_max] = ADWIN()
 
     def __adjust_ensemble_size(self):
         if len(self.classes) != len(self.ensemble):
@@ -174,23 +195,24 @@ class OzaBagging(StreamModel):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
                     self.n_estimators += 1
+                    self.adwin_ensemble.append(ADWIN())
 
     def predict(self, X):
         """ predict
-        
-        The predict function will average the predictions from all its learners 
+
+        The predict function will average the predictions from all its learners
         to find the most likely prediction for the sample matrix X.
-        
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
-        
+
         Returns
         -------
         numpy.ndarray
             A numpy.ndarray with the label prediction for all the samples in X.
-        
+
         """
         r, c = get_dimensions(X)
         proba = self.predict_proba(X)
@@ -203,28 +225,28 @@ class OzaBagging(StreamModel):
 
     def predict_proba(self, X):
         """ predict_proba
-        
-        Predicts the probability of each sample belonging to each one of the 
+
+        Predicts the probability of each sample belonging to each one of the
         known classes.
-        
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
-        
+
         Raises
         ------
         ValueError: A ValueError is raised if the number of classes in the base_estimator
         learner differs from that of the ensemble learner.
-        
+
         Returns
         -------
         numpy.ndarray
-            An array of shape (n_samples, n_features), in which each outer entry is 
-            associated with the X entry of the same index. And where the list in 
+            An array of shape (n_samples, n_features), in which each outer entry is
+            associated with the X entry of the same index. And where the list in
             index [i] contains len(self.target_values) elements, each of which represents
             the probability that the i-th sample of X belongs to a certain label.
-        
+
         """
         proba = []
         r, c = get_dimensions(X)
@@ -265,5 +287,5 @@ class OzaBagging(StreamModel):
         raise NotImplementedError
 
     def get_info(self):
-        return 'OzaBagging Classifier: base_estimator: ' + str(self.base_estimator) + \
-               ' - n_estimators: ' + str(self.n_estimators)
+        return 'OnlineUnderOverBagging Classifier: base_estimator: ' + str(self.base_estimator) + \
+               ' - n_estimators: ' + str(self.n_estimators) + ' - sampling_rate: ' + str(self.sampling_rate)

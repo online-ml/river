@@ -396,6 +396,26 @@ class StreamEvaluator(BaseObject, metaclass=ABCMeta):
                     values[0].append(self.mean_eval_measurements[i].get_average_root_mean_square_error())
                     values[1].append(self.current_eval_measurements[i].get_average_root_mean_square_error())
 
+            elif metric == constants.F1_SCORE:
+                for i in range(self.n_models):
+                    values[0].append(self.mean_eval_measurements[i].get_f1_score())
+                    values[1].append(self.current_eval_measurements[i].get_f1_score())
+
+            elif metric == constants.PRECISION:
+                for i in range(self.n_models):
+                    values[0].append(self.mean_eval_measurements[i].get_precision())
+                    values[1].append(self.current_eval_measurements[i].get_precision())
+
+            elif metric == constants.RECALL:
+                for i in range(self.n_models):
+                    values[0].append(self.mean_eval_measurements[i].get_recall())
+                    values[1].append(self.current_eval_measurements[i].get_recall())
+
+            elif metric == constants.GMEAN:
+                for i in range(self.n_models):
+                    values[0].append(self.mean_eval_measurements[i].get_g_mean())
+                    values[1].append(self.current_eval_measurements[i].get_g_mean())
+
             elif metric == constants.TRUE_VS_PREDICTED:
                 y_true = -1
                 y_pred = []
