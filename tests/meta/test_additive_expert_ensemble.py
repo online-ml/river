@@ -45,6 +45,11 @@ def test_additive_expert_ensemble_weakest():
 
     assert type(learner.predict(X)) == np.ndarray
 
+    expected_info = "AdditiveExpertEnsemble(base_estimator=NaiveBayes(nominal_attributes=None),\n" \
+                    "                       beta=0.5, gamma=0.1, n_estimators=None,\n" \
+                    "                       pruning='weakest')"
+    assert learner.get_info() == expected_info
+
 
 def test_additive_expert_ensemble_oldest():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
