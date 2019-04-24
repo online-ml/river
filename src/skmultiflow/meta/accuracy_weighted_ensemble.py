@@ -1,12 +1,12 @@
-from skmultiflow.core.base import StreamModel
-from skmultiflow.bayes.naive_bayes import NaiveBayes
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.bayes import NaiveBayes
 from sklearn.model_selection import KFold
 import numpy as np
 import copy as cp
 import operator as op
 
 
-class AccuracyWeightedEnsemble(StreamModel):
+class AccuracyWeightedEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
     """
     Accuracy Weighted Ensemble or AWE
 
@@ -105,10 +105,7 @@ class AccuracyWeightedEnsemble(StreamModel):
         self.X_chunk = None
         self.y_chunk = None
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
-
-    def partial_fit(self, X, y=None, classes=None, weight=None):
+    def partial_fit(self, X, y=None, classes=None, sample_weight=None):
         """ Updates the ensemble when a new data chunk arrives (Algorithm 1 in the paper).
         The update is only launched when the chunk is filled up.
 
@@ -121,7 +118,7 @@ class AccuracyWeightedEnsemble(StreamModel):
         classes: list or numpy.array
             Contains the class values in the stream. If defined, will be used to define the length of the arrays
             returned by `predict_proba`
-        weight: float or array-like
+        sample_weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
         """
 
@@ -149,7 +146,7 @@ class AccuracyWeightedEnsemble(StreamModel):
                 # (1) train classifier C' from X
                 C_new = self.train_model(model=cp.deepcopy(self.base_estimator),
                                          X=self.X_chunk, y=self.y_chunk,
-                                         classes=classes, weight=weight)
+                                         classes=classes, sample_weight=sample_weight)
 
                 # compute the baseline error rate given by a random classifier
                 baseline_score = self.compute_baseline(self.y_chunk)
@@ -183,7 +180,7 @@ class AccuracyWeightedEnsemble(StreamModel):
         pass
 
     @staticmethod
-    def train_model(model, X, y, classes=None, weight=None):
+    def train_model(model, X, y, classes=None, sample_weight=None):
         """ Trains a model, taking care of the fact that either fit or partial_fit is implemented
 
         Parameters
@@ -196,7 +193,7 @@ class AccuracyWeightedEnsemble(StreamModel):
             The labels in the chunk
         classes: list or numpy.array
             The unique classes in the data chunk
-        weight: float or array-like
+        sample_weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
 
         Returns
@@ -207,7 +204,7 @@ class AccuracyWeightedEnsemble(StreamModel):
         try:
             model.fit(X, y)
         except NotImplementedError:
-            model.partial_fit(X, y, classes, weight)
+            model.partial_fit(X, y, classes, sample_weight)
         return model
 
     def predict(self, X):
@@ -228,7 +225,7 @@ class AccuracyWeightedEnsemble(StreamModel):
         N, D = X.shape
 
         if len(self.models_pool) == 0:
-            return np.zeros(N)
+            return np.zeros(N, dtype=int)
 
         # get top K classifiers
         end = self.n_estimators if len(self.models_pool) > self.n_estimators else len(self.models_pool)
@@ -248,10 +245,9 @@ class AccuracyWeightedEnsemble(StreamModel):
                 else:
                     weighted_votes[i][label] = model.weight / sum_weights
 
-        predict_weighted_voting = np.zeros(N)
+        predict_weighted_voting = np.zeros(N, dtype=int)
         for i, dic in enumerate(weighted_votes):
-            max_value = max(dic.items(), key=op.itemgetter(1))[0]
-            predict_weighted_voting[i] = max_value
+            predict_weighted_voting[i] = int(max(dic.items(), key=op.itemgetter(1))[0])
 
         return predict_weighted_voting
 
@@ -264,9 +260,6 @@ class AccuracyWeightedEnsemble(StreamModel):
         self.p = -1
         self.X_chunk = None
         self.y_chunk = None
-
-    def score(self, X, y):
-        raise NotImplementedError
 
     @staticmethod
     def compute_score(model, X, y):
@@ -335,7 +328,7 @@ class AccuracyWeightedEnsemble(StreamModel):
                 X_test, y_test = self.X_chunk[test_idx], self.y_chunk[test_idx]
                 copy_model.estimator = self.train_model(model=copy_model.estimator, X=X_train, y=y_train,
                                                         classes=copy_model.seen_labels,
-                                                        weight=None)
+                                                        sample_weight=None)
                 score += self.compute_score(model=copy_model, X=X_test, y=y_test) / self.n_splits
         else:
             # compute the score on the entire data chunk
@@ -397,20 +390,3 @@ class AccuracyWeightedEnsemble(StreamModel):
         mse_r = np.sum([class_dist[i] * ((1 - class_dist[i]) ** 2) for i, c in enumerate(classes)])
 
         return mse_r
-
-    def get_info(self):
-        """ Collects the information of the AWE
-
-        Returns
-        -------
-        string
-            Configuration for AWE.
-        """
-
-        description = type(self).__name__ + ': '
-        description += "n_estimators: {} - ".format(self.n_estimators)
-        description += "n_kept_estimators: {} - ".format(self.n_kept_estimators)
-        description += "base_estimator: {} - ".format(self.base_estimator.get_info())
-        description += "window_size: {} - ".format(self.window_size)
-        description += "n_splits: {}".format(self.n_splits)
-        return description
