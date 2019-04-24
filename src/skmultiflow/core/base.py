@@ -340,7 +340,7 @@ class BaseStreamEstimator(BaseEstimator):
         Notes
         -----
         This class provides additional functionality not available in the base estimator from scikit-learn
-        """
+    """
     def reset(self):
         """ Resets the estimator to its initial state.
 
@@ -353,6 +353,16 @@ class BaseStreamEstimator(BaseEstimator):
         # method is possible for a given estimator
         self.__init__(self.get_params())
         return self
+
+    def get_info(self):
+        """ Collects and returns the information about the configuration of the estimator
+
+        Returns
+        -------
+        string
+            Configuration of the estimator.
+        """
+        return self.__repr__()
 
 
 class ClassifierMixin(metaclass=ABCMeta):
