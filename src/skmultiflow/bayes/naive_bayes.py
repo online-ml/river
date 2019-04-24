@@ -2,7 +2,7 @@ import numpy as np
 
 from collections import deque
 
-from skmultiflow.core.base import BaseStreamEstimator, ClassifierMixin
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin
 from skmultiflow.utils import get_dimensions
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
