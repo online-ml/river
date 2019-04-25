@@ -4,11 +4,11 @@ import logging
 import copy as cp
 from sklearn.cluster import KMeans
 from collections import deque
-from skmultiflow.core.base import StreamModel
-from skmultiflow.utils.utils import get_dimensions
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin
+from skmultiflow.utils import get_dimensions
 
 
-class SAMKNN(StreamModel):
+class SAMKNN(BaseStreamEstimator, ClassifierMixin):
     """ SAMKNN - Self Adjusting Memory (SAM) coupled with the k Nearest Neighbor classifier.
 
     Parameters
@@ -83,8 +83,13 @@ class SAMKNN(StreamModel):
 
     """
 
-    def __init__(self, n_neighbors=5, weighting='distance', max_window_size=5000, ltm_size=0.4, min_stm_size=50,
-                 stm_size_option='maxACCApprox', use_ltm=True):
+    def __init__(self, n_neighbors=5,
+                 weighting='distance',
+                 max_window_size=5000,
+                 ltm_size=0.4,
+                 min_stm_size=50,
+                 stm_size_option='maxACCApprox',
+                 use_ltm=True):
         super().__init__()
         self.n_neighbors = n_neighbors
         self._STMSamples = None
@@ -351,11 +356,27 @@ class SAMKNN(StreamModel):
             predictedLabel = self.getLabelsFct(distancesSTM, self._STMLabels, min(self.n_neighbors, currLen))[0]
         return predictedLabel
 
-    def fit(self, X, y, classes = None, weight=None):
-        self.partial_fit(X, y, classes, weight)
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially (incrementally) fit the model.
 
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """Processes a new sample."""
+            Parameters
+            ----------
+            X : numpy.ndarray of shape (n_samples, n_features)
+                The features to train the model.
+
+            y: numpy.ndarray of shape (n_samples)
+                An array-like with the labels of all samples in X.
+
+            classes: numpy.ndarray, optional (default=None)
+                Array with all possible/known classes. Usage varies depending on the learning method.
+
+            sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+                Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+
+            Returns
+            -------
+            self
+        """
         r, c = get_dimensions(X)
         if self._STMSamples is None:
             self._STMSamples = np.empty(shape=(0, c))
@@ -379,12 +400,6 @@ class SAMKNN(StreamModel):
         return np.asarray(predictedLabel)
 
     def predict_proba(self, X):
-        raise NotImplementedError
-
-    def reset(self):
-        raise NotImplementedError
-
-    def score(self, X, y):
         raise NotImplementedError
 
     @staticmethod
@@ -436,13 +451,6 @@ class SAMKNN(StreamModel):
     @property
     def LTMLabels(self):
         return self._LTMLabels
-
-    def get_info(self):
-        result = ''
-        result += 'avg. STMSize %f LTMSize %f' % (np.mean(self.STMSizes), np.mean(self.LTMSizes)) + '; '
-        result += 'num correct STM %d LTM %d CM %d ' % (self.numSTMCorrect, self.numLTMCorrect, self.numCMCorrect) + '; '
-        result += 'num correct %d/%d' % (self.numCorrectPredictions, self.numPossibleCorrectPredictions) + '\n'
-        return result
 
 
 class STMSizer(object):
