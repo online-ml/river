@@ -166,13 +166,15 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
                 # if self.interLeavedPredHistories.has_key(0):
                 if 0 in keyset:
                     self.interLeavedPredHistories[0].pop(0)
+                updated_histories = cp.deepcopy(self.interLeavedPredHistories)
                 for key in self.interLeavedPredHistories.keys():
                     if key > 0:
                         if key == 1:
-                            self.interLeavedPredHistories.pop(0, None)
-                        tmp = self.interLeavedPredHistories[key]
-                        self.interLeavedPredHistories.pop(key, None)
-                        self.interLeavedPredHistories[key-1] = tmp
+                            updated_histories.pop(0, None)
+                        tmp = updated_histories[key]
+                        updated_histories.pop(key, None)
+                        updated_histories[key - 1] = tmp
+                self.interLeavedPredHistories = updated_histories
             else:
                 self.interLeavedPredHistories = {}
         return STMShortened
