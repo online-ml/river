@@ -1,15 +1,16 @@
-import numpy as np
 from array import array
-import os
-from skmultiflow.lazy.sam_knn import SAMKNN
-from skmultiflow.data.file_stream import FileStream
+
+import numpy as np
+
+import pytest
+
+from skmultiflow.lazy import SAMKNN
+from skmultiflow.data import SEAGenerator
 
 
-def test_sam_knn(package_path):
+def test_sam_knn():
 
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_big.csv')
-
-    stream = FileStream(test_file)
+    stream = SEAGenerator(random_state=1)
     stream.prepare_for_use()
 
     hyperParams = {'maxSize': 1000, 'nNeighbours': 5, 'knnWeights': 'distance', 'STMSizeAdaption': 'maxACCApprox',
@@ -33,23 +34,23 @@ def test_sam_knn(package_path):
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('d', [1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0,
-                                       0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-                                       1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-                                       0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0,
-                                       0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0])
+    expected_predictions = array('i', [1, 1, 1, 0, 1, 1, 0, 0, 0, 1,
+                                       1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+                                       0, 0, 1, 1, 0, 0, 0, 0, 1, 1,
+                                       1, 1, 0, 1, 0, 0, 1, 0, 1])
 
     assert np.alltrue(predictions == expected_predictions)
 
     assert type(learner.predict(X)) == np.ndarray
-    #  assert type(learner.predict_proba(X)) == np.ndarray  predict_proba not implemented.
+
+    with pytest.raises(NotImplementedError):
+        learner.predict_proba(X)
 
 
-def test_sam_knn_coverage(package_path):
+def test_sam_knn_coverage():
 
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_big.csv')
-
-    stream = FileStream(test_file)
+    stream = SEAGenerator(random_state=1)
     stream.prepare_for_use()
 
     hyperParams = {'maxSize': 50,
@@ -80,9 +81,14 @@ def test_sam_knn_coverage(package_path):
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('i', [1, 1, 1, 1, 1, 0, 0, 1, 1, 0,
-                                       0, 1, 1, 0, 0, 1, 1, 1, 1, 1,
-                                       1, 1, 1, 0, 0, 1, 0, 1, 0, 0,
-                                       1, 1, 1, 1, 1, 1, 1, 0, 0, 1,
-                                       0, 1, 0, 1, 1, 0, 1, 1, 1])
+    expected_predictions = array('i', [1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       0, 1, 0, 0, 1, 1, 1, 1, 1, 0,
+                                       0, 1, 1, 1, 1, 1, 0, 1, 1, 1,
+                                       1, 1, 1, 1, 0, 1, 1, 1, 1, 0,
+                                       0, 0, 0, 0, 0, 1, 1, 1, 0])
     assert np.alltrue(predictions == expected_predictions)
+
+    expected_info = "SAMKNN(ltm_size=None, max_window_size=None, min_stm_size=None, n_neighbors=3,\n" \
+                    "       stm_size_option=None, use_ltm=None, weighting=None)"
+
+    assert learner.get_info() == expected_info
