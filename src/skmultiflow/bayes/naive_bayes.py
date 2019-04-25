@@ -17,7 +17,7 @@ class NaiveBayes(BaseStreamEstimator, ClassifierMixin):
 
     Parameters
     ----------
-    nominal_attributes: array-like (optional)
+    nominal_attributes: numpy.ndarray (optional, default=None)
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
 
     Notes
