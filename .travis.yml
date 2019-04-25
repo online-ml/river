@@ -19,6 +19,10 @@ matrix:
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 # command to install dependencies
 install:
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];
+    then pip3 install --upgrade pip setuptools wheel;
+    else pip3 install --upgrade --user pip setuptools wheel;
+    fi
   - pip3 install --upgrade pip setuptools wheel
   - pip3 install --only-binary=numpy,scipy numpy scipy
   - pip3 install codecov pytest-cov
