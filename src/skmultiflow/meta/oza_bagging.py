@@ -165,7 +165,7 @@ class OzaBagging(StreamModel):
                 k = self.random_state.poisson()
                 if k > 0:
                     for b in range(k):
-                        self.ensemble[i].partial_fit([X[j]], [y[j]], weight)
+                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, weight)
         return self
 
     def __adjust_ensemble_size(self):

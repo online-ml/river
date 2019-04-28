@@ -225,7 +225,7 @@ class LEDGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def get_info(self):
-        return self.name + \
+        return type(self).__name__ + ': ' + \
                '  - has_noise: ' + str(self.has_noise) + \
                '  - noise_percentage: ' + str(self.noise_percentage) + \
                '  - random_state: ' + str(self.random_state)

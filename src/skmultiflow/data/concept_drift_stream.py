@@ -135,7 +135,7 @@ class ConceptDriftStream(Stream):
          Boolean
             True if stream is restartable.
          """
-        return self._input_stream.is_restartable()
+        return self._input_stream.is_restartable() or self._drift_stream.is_restartable()
 
     def next_sample(self, batch_size=1):
 
