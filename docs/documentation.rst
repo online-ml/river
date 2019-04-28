@@ -88,6 +88,12 @@ Ensemble methods
    meta.dynamic_weighted_majority
    meta.learn_pp
    meta.learn_nse
+   meta.online_under_over_bagging
+   meta.online_boosting
+   meta.online_rus_boost
+   meta.online_adac2
+   meta.online_csb2
+   meta.online_smote_bagging
 
 Lazy learning methods
 ---------------------
@@ -140,6 +146,22 @@ Tree methods
    trees.regression_hoeffding_tree
    trees.regression_hoeffding_adaptive_tree
    trees.multi_target_regression_hoeffding_tree
+
+Rules methods
+-------------
+
+.. automodule:: skmultiflow.rules
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :toctree: _autosummary
+
+   rules.vfdr
+
+
 
 Drift Detection: :mod:`skmultiflow.drift_detection`
 ===================================================

@@ -35,7 +35,7 @@ class AGRAWALGenerator(Stream):
          - the education level
          - uniformly chosen from 0 to 4
        * - car
-         - make of the car
+         - car maker
          - uniformly chosen from 1 to 20
        * - zipcode
          - zip code of the town
@@ -318,32 +318,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -360,32 +360,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -407,32 +407,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -454,32 +454,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -510,32 +510,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -566,32 +566,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -615,32 +615,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -657,32 +657,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -699,32 +699,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -741,32 +741,32 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        age: float
-            Numeric feature.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Numeric feature.
+            Numeric feature: Commission.
 
         age: int
-            Numeric feature.
+            Numeric feature: Age.
 
         elevel: int
-            Categorical feature.
+            Categorical feature: Education level.
 
         car: int
-            Categorical feature.
+            Categorical feature: Car maker.
 
         zipcode; int
-            Categorical feature.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            Numeric feature.
+            Numeric feature: Value of the house.
 
         hyears: float
-            Numeric feature.
+            Numeric feature: Years house owned.
 
         loan: float
-            Numeric feature.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
