@@ -49,6 +49,6 @@ def test_learn_pp():
                     "            min_samples_leaf=1, min_samples_split=2,\n" \
                     "            min_weight_fraction_leaf=0.0, presort=False, random_state=2212,\n" \
                     "            splitter='best'),\n" \
-                    "        error_threshold=0.5, n_ensembles=5, n_estimators=5, random_state=None,\n" \
+                    "        error_threshold=0.5, n_ensembles=5, n_estimators=5, random_state=2212,\n" \
                     "        window_size=100)"
     assert classifier.get_info() == expected_info
