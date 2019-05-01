@@ -26,13 +26,15 @@ def online_score(X_y, model, metric):
                          f'{model.__class__.__name__}')
 
     # Determine if predict_one or predict_proba_one should be used
-    fit_predict = model.fit_predict_one
+    pred_func = model.predict_one
     if isinstance(model, base.Classifier) and not metric.requires_labels:
-        fit_predict = model.fit_predict_proba_one
+        pred_func = model.predict_proba_one
 
     # Train the model and use the out-of-fold predictions to update the metric
     for x, y in X_y:
-        y_pred = fit_predict(x, y)
-        metric.update(y, y_pred)
+        y_pred = pred_func(x)
+        model = model.fit_one(x, y)
+        if y_pred != {} and y_pred is not None:
+            metric.update(y, y_pred)
 
     return metric

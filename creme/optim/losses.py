@@ -3,13 +3,24 @@ import math
 
 import numpy as np
 
+from .. import utils
+
 
 __all__ = [
     'AbsoluteLoss',
+    'BinaryClassificationLoss',
+    'CauchyLoss',
+    'CrossEntropy',
     'HingeLoss',
     'LogLoss',
+    'MultiClassificationLoss',
+    'RegressionLoss',
     'SquaredLoss'
 ]
+
+
+def clip_proba(p):
+    return utils.clip(p, minimum=1e-15, maximum=1 - 1e-15)
 
 
 class Loss(abc.ABC):
@@ -24,11 +35,15 @@ class Loss(abc.ABC):
 
 
 class BinaryClassificationLoss(Loss):
-    """Helper class used for organizing losses."""
+    """A loss appropriate binary classification tasks."""
+
+
+class MultiClassificationLoss(Loss):
+    """A loss appropriate for multi-class classification tasks."""
 
 
 class RegressionLoss(Loss):
-    """Helper class used for organizing losses."""
+    """A loss appropriate for regression tasks."""
 
 
 class AbsoluteLoss(RegressionLoss):
@@ -44,17 +59,17 @@ class AbsoluteLoss(RegressionLoss):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import optim
+            >>> from creme import optim
 
-        >>> loss = optim.AbsoluteLoss()
-        >>> loss(-42, 42)
-        84
-        >>> loss.gradient(1, 2)
-        1
-        >>> loss.gradient(2, 1)
-        -1
+            >>> loss = optim.AbsoluteLoss()
+            >>> loss(-42, 42)
+            84
+            >>> loss.gradient(1, 2)
+            1
+            >>> loss.gradient(2, 1)
+            -1
 
     """
 
@@ -133,34 +148,30 @@ class LogLoss(BinaryClassificationLoss):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import optim
+            >>> from creme import optim
 
-        >>> loss = optim.LogLoss()
-        >>> loss(1, 0.5)
-        0.693147...
-        >>> loss(1, 0)
-        34.53877...
-        >>> loss.gradient(1, 0.2)
-        -0.8
-        >>> loss.gradient(0, 0.2)
-        0.2
+            >>> loss = optim.LogLoss()
+            >>> loss(1, 0.5)
+            0.693147...
+            >>> loss(1, 0)
+            34.53877...
+            >>> loss.gradient(1, 0.2)
+            -0.8
+            >>> loss.gradient(0, 0.2)
+            0.2
 
     """
 
-    @staticmethod
-    def _clip_proba(p):
-        return max(min(p, 1 - 1e-15), 1e-15)
-
     def __call__(self, y_true, y_pred):
-        y_pred = self._clip_proba(y_pred)
+        y_pred = clip_proba(y_pred)
         if y_true:
             return -math.log(y_pred)
         return -math.log(1 - y_pred)
 
     def gradient(self, y_true, y_pred):
-        return self._clip_proba(y_pred) - y_true
+        return clip_proba(y_pred) - y_true
 
 
 class HingeLoss(BinaryClassificationLoss):
@@ -183,24 +194,26 @@ class HingeLoss(BinaryClassificationLoss):
 
     Example:
 
-        >>> from creme import optim
-        >>> import numpy as np
-        >>> from sklearn import svm
-        >>> from sklearn.metrics import hinge_loss
+        ::
 
-        >>> X = [[0], [1]]
-        >>> y = [-1, 1]
-        >>> lin_svm = svm.LinearSVC(random_state=0).fit(X, y)
+            >>> from creme import optim
+            >>> import numpy as np
+            >>> from sklearn import svm
+            >>> from sklearn.metrics import hinge_loss
 
-        >>> y_true = [0, 1, 1]
-        >>> y_pred = lin_svm.decision_function([[-2], [3], [0.5]])
+            >>> X = [[0], [1]]
+            >>> y = [-1, 1]
+            >>> lin_svm = svm.LinearSVC(random_state=0).fit(X, y)
 
-        >>> hinge_loss([0, 1, 1], y_pred)
-        0.303036...
+            >>> y_true = [0, 1, 1]
+            >>> y_pred = lin_svm.decision_function([[-2], [3], [0.5]])
 
-        >>> loss = optim.HingeLoss()
-        >>> np.mean([loss(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
-        0.303036...
+            >>> hinge_loss([0, 1, 1], y_pred)
+            0.303036...
+
+            >>> loss = optim.HingeLoss()
+            >>> np.mean([loss(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
+            0.303036...
 
     """
 
@@ -249,3 +262,55 @@ class EpsilonInsensitiveHingeLoss(RegressionLoss):
         elif y_pred + self.eps < y_true:
             return -1
         return 0
+
+
+class CrossEntropy(MultiClassificationLoss):
+    """Cross entropy is a generalization of logistic loss to multiple classes.
+
+    Example:
+
+        ::
+
+            >>> from creme import optim
+
+            >>> y_true = [0, 1, 2, 2]
+            >>> y_pred = [
+            ...     {0: 0.29450637, 1: 0.34216758, 2: 0.36332605},
+            ...     {0: 0.21290077, 1: 0.32728332, 2: 0.45981591},
+            ...     {0: 0.42860913, 1: 0.33380113, 2: 0.23758974},
+            ...     {0: 0.44941979, 1: 0.32962558, 2: 0.22095463}
+            ... ]
+
+            >>> loss = optim.CrossEntropy()
+
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     print(loss(y_t, y_p))
+            1.222454...
+            1.116929...
+            1.437209...
+            1.509797...
+
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     print(loss.gradient(y_t, y_p))
+            {0: -0.70549363, 1: 0.34216758, 2: 0.36332605}
+            {0: 0.21290077, 1: -0.67271668, 2: 0.45981591}
+            {0: 0.42860913, 1: 0.33380113, 2: -0.76241026}
+            {0: 0.44941979, 1: 0.32962558, 2: -0.77904537}
+
+    References:
+
+        1. `What is Softmax regression and how is it related to Logistic regression? <https://github.com/rasbt/python-machine-learning-book/blob/master/faq/softmax_regression.md>`_
+
+    """
+
+    def __call__(self, y_true, y_pred):
+        return -sum(
+            (y_true == label) * math.log(clip_proba(proba))
+            for label, proba in y_pred.items()
+        )
+
+    def gradient(self, y_true, y_pred):
+        return {
+            label: clip_proba(y_pred.get(label, 0.)) - (y_true == label)
+            for label in {*y_pred.keys(), y_true}
+        }

@@ -3,47 +3,49 @@ import math
 from .. import base
 
 
+__all__ = ['TargetModifierRegressor', 'BoxCoxTransformRegressor']
+
+
 class TargetModifierRegressor(base.Regressor):
     """Model wrapper that modifies the target before training.
 
-    The user is expected to check that ``func`` and ``inverse_func`` are
-    coherent with each other.
+    The user is expected to check that ``func`` and ``inverse_func`` are coherent with each other.
 
-    Parameter:
-        regressor (creme.base.Regressor)
-        func (callable)
-        inverse_func (callable)
+    Parameters:
+        regressor (creme.base.Regressor): regressor model applied for training.
+        func (callable): a function modifying the target before training.
+        inverse_func (callable): a function to return to the target's original space.
 
     Example:
 
-    ::
+        ::
 
-        >>> import math
-        >>> from creme import compose
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import preprocessing
-        >>> from creme import stream
-        >>> from sklearn import datasets
+            >>> import math
+            >>> from creme import compose
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_boston,
-        ...     shuffle=True,
-        ...     random_state=42
-        ... )
-        >>> model = compose.Pipeline([
-        ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('learn', compose.TargetModifierRegressor(
-        ...         regressor=linear_model.LinearRegression(),
-        ...         func=math.log,
-        ...         inverse_func=math.exp
-        ...     ))
-        ... ])
-        >>> metric = metrics.MSE()
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     load_dataset=datasets.load_boston,
+            ...     shuffle=True,
+            ...     random_state=42
+            ... )
+            >>> model = compose.Pipeline([
+            ...     ('scale', preprocessing.StandardScaler()),
+            ...     ('learn', compose.TargetModifierRegressor(
+            ...         regressor=linear_model.LinearRegression(),
+            ...         func=math.log,
+            ...         inverse_func=math.exp
+            ...     ))
+            ... ])
+            >>> metric = metrics.MSE()
 
-        >>> model_selection.online_score(X_y, model, metric)
-        MSE: 26.105649
+            >>> model_selection.online_score(X_y, model, metric)
+            MSE: 26.105649
 
     """
 
@@ -64,42 +66,45 @@ class TargetModifierRegressor(base.Regressor):
 class BoxCoxTransformRegressor(TargetModifierRegressor):
     """Applies the Box-Cox transform to the target before training.
 
+    Box-Cox transform is usefull when the target variable is heteroscedastic (i.e. there are
+    sub-populations that have different variabilities from others) allowing to transform it towards
+    normality.
     The ``power`` parameter is denoted λ in the litterature. If ``power`` is equal to 0 then the
     Box-Cox is nothing more than a log transform.
 
     Parameter:
-        regressor (creme.base.Regressor)
-        power (float)
+        regressor (creme.base.Regressor): regressor model applied for training.
+        power (float): power value to do the transformation.
 
     Example:
 
-    ::
+        ::
 
-        >>> import math
-        >>> from creme import compose
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import preprocessing
-        >>> from creme import stream
-        >>> from sklearn import datasets
+            >>> import math
+            >>> from creme import compose
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_boston,
-        ...     shuffle=True,
-        ...     random_state=42
-        ... )
-        >>> model = compose.Pipeline([
-        ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('learn', compose.BoxCoxTransformRegressor(
-        ...         regressor=linear_model.LinearRegression(),
-        ...         power=0.05
-        ...     ))
-        ... ])
-        >>> metric = metrics.MSE()
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     load_dataset=datasets.load_boston,
+            ...     shuffle=True,
+            ...     random_state=42
+            ... )
+            >>> model = compose.Pipeline([
+            ...     ('scale', preprocessing.StandardScaler()),
+            ...     ('learn', compose.BoxCoxTransformRegressor(
+            ...         regressor=linear_model.LinearRegression(),
+            ...         power=0.05
+            ...     ))
+            ... ])
+            >>> metric = metrics.MSE()
 
-        >>> model_selection.online_score(X_y, model, metric)
-        MSE: 26.186062
+            >>> model_selection.online_score(X_y, model, metric)
+            MSE: 26.186062
 
     """
 

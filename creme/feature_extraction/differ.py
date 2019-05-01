@@ -68,7 +68,7 @@ class Differ(base.Transformer):
         self.on = on
         self.by = by
         self.when = always_true if when is True else when
-        self.when_name = when.__name__ if when_name is None else when_name
+        self.when_name = when.__name__ if when_name is None and when is not True else when_name
         self.last_moments = {}
         self.feature_name = f'{self.on}_diff'
         if when is not True:

@@ -11,20 +11,22 @@ class Normal(base.ContinuousDistribution):
 
     Example:
 
-        >>> d1 = Normal().update(5)
-        >>> d1.mode()
-        5.0
+        ::
 
-        >>> d2 = Normal().update(6).update(7)
-        >>> d2.mode()
-        6.5
+            >>> d1 = Normal().update(5)
+            >>> d1.mode()
+            5.0
 
-        >>> d1 += d2
-        >>> d1.mode()
-        11.5
+            >>> d2 = Normal().update(6).update(7)
+            >>> d2.mode()
+            6.5
 
-        >>> d2.pdf(6.5)
-        0.564189...
+            >>> d1 += d2
+            >>> d1.mode()
+            11.5
+
+            >>> d2.pdf(6.5)
+            0.564189...
 
     """
 

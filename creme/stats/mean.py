@@ -48,3 +48,38 @@ class Mean(base.Univariate):
 
     def __mul__(self, other):
         return Mean(n=self.n, mean=self.mean * other)
+
+
+class BayesianMean(base.Univariate):
+    """Estimates a mean using outside information.
+
+    References:
+
+        1. `Additive smoothing <https://www.wikiwand.com/en/Additive_smoothing>`_
+        2. `Bayesian average <https://www.wikiwand.com/en/Bayesian_average>`_
+        3. `Practical example of Bayes estimators <https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators>`_
+
+    """
+
+    def __init__(self, prior, prior_weight):
+        self.prior = prior
+        self.prior_weight = prior_weight
+        self.mean = Mean()
+
+    @property
+    def name(self):
+        return 'bayes_mean'
+
+    def update(self, x):
+        self.mean.update(x)
+        return self
+
+    def get(self):
+
+        # Uses the notation from https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators
+        R = self.mean.get()
+        v = self.mean.n
+        m = self.prior_weight
+        C = self.prior
+
+        return (R * v + C * m) / (v + m)

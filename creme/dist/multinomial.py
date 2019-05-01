@@ -8,20 +8,22 @@ class Multinomial(base.DiscreteDistribution):
 
     Example:
 
-        >>> d1 = Multinomial().update('sunny')
-        >>> d1.mode()
-        'sunny'
+        ::
 
-        >>> d2 = Multinomial().update('rainy').update('rainy')
-        >>> d2.mode()
-        'rainy'
+            >>> d1 = Multinomial().update('sunny')
+            >>> d1.mode()
+            'sunny'
 
-        >>> d1 += d2
-        >>> d1.mode()
-        'rainy'
+            >>> d2 = Multinomial().update('rainy').update('rainy')
+            >>> d2.mode()
+            'rainy'
 
-        >>> d1.pmf('cloudy')
-        0.0
+            >>> d1 += d2
+            >>> d1.mode()
+            'rainy'
+
+            >>> d1.pmf('cloudy')
+            0.0
 
     """
 

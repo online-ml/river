@@ -21,49 +21,44 @@ class HedgeClassifier(base.BinaryClassifier):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import compose
-        >>> from creme import ensemble
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import optim
-        >>> from creme import preprocessing
-        >>> from creme import stream
-        >>> from sklearn import datasets
+            >>> from creme import compose
+            >>> from creme import ensemble
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import optim
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
-        ...     load_dataset=datasets.load_breast_cancer,
-        ...     shuffle=False
-        ... )
-        >>> model = compose.Pipeline([
-        ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('hedge', ensemble.HedgeClassifier(
-        ...         models=[
-        ...             linear_model.LogisticRegression(
-        ...                 optimizer=optim.PassiveAggressiveI(),
-        ...                 loss=optim.HingeLoss()
-        ...             ),
-        ...             linear_model.LogisticRegression(
-        ...                 optimizer=optim.PassiveAggressiveII(),
-        ...                 loss=optim.HingeLoss()
-        ...             )
-        ...         ],
-        ...         learning_rate=0.9
-        ...     ))
-        ... ])
-        >>> metric = metrics.F1Score()
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     load_dataset=datasets.load_breast_cancer,
+            ...     shuffle=False
+            ... )
+            >>> model = compose.Pipeline([
+            ...     ('scale', preprocessing.StandardScaler()),
+            ...     ('hedge', ensemble.HedgeClassifier(
+            ...         models=[
+            ...             linear_model.PAClassifier(mode=0),
+            ...             linear_model.PAClassifier(mode=1),
+            ...             linear_model.PAClassifier(mode=2),
+            ...         ],
+            ...         learning_rate=0.9
+            ...     ))
+            ... ])
+            >>> metric = metrics.F1Score()
 
-        >>> model_selection.online_score(X_y, model, metric)
-        F1Score: 0.921348
+            >>> model_selection.online_score(X_y, model, metric)
+            F1Score: 0.91372
 
-        >>> model['hedge'].weights
-        [0.999999..., 9.978434...e-28]
+            >>> model['hedge'].weights
+            [9.992806...e-28, 0.999999..., 9.978434...e-28]
 
     References:
 
-    1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
+        1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
 
     """
 

@@ -1,24 +1,27 @@
 from .. import base
 
 
+__all__ = ['Whitelister']
+
+
 class Whitelister(base.Transformer):
     """Subsets a set of features by applying a whitelist.
 
     Parameters:
-        whitelist (``str`` or ``list``): Key(s) to keep.
+        whitelist (str or list): Key(s) to keep.
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import compose
+            >>> from creme import compose
 
-        >>> x = {'a': 42, 'b': 12}
-        >>> compose.Whitelister(['a', 'zoidberg']).fit_transform_one(x)
-        {'a': 42}
+            >>> x = {'a': 42, 'b': 12}
+            >>> compose.Whitelister(['a', 'zoidberg']).transform_one(x)
+            {'a': 42}
 
-        >>> compose.Whitelister('b').fit_transform_one(x)
-        {'b': 12}
+            >>> compose.Whitelister('b').transform_one(x)
+            {'b': 12}
 
     """
 

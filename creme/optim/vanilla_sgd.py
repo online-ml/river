@@ -40,7 +40,7 @@ class VanillaSGD(base.Optimizer):
     def __init__(self, lr=0.1):
         super().__init__(lr)
 
-    def update_weights_with_gradient(self, w, g):
+    def _update_after_pred(self, w, g):
 
         for i, gi in g.items():
             w[i] -= self.learning_rate * gi

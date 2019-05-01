@@ -23,8 +23,6 @@ ESTIMATORS = [
     cluster.KMeans(random_state=42),
     preprocessing.MinMaxScaler(),
     preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
-    preprocessing.StandardScaler() | linear_model.LinearRegression(),
-    preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.LogisticRegression()),
     preprocessing.PolynomialExtender(),
     feature_selection.VarianceThreshold(),
     feature_selection.SelectKBest(similarity=stats.PearsonCorrelation())
@@ -43,7 +41,15 @@ def test_sklearn_check_estimator(estimator):
     'estimator',
     [
         pytest.param(copy.deepcopy(estimator), id=str(estimator))
-        for estimator in ESTIMATORS + [linear_model.LogisticRegression()]
+        for estimator in ESTIMATORS + [
+            # sklearn's check_estimator doesn't binary classifiers yet
+            linear_model.LogisticRegression(),
+            # sklearn's check_estimator doesn't support pipelines yet
+            preprocessing.StandardScaler() | linear_model.LinearRegression(),
+            preprocessing.StandardScaler() | linear_model.PAClassifier(),
+            preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.LogisticRegression()),
+            preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.PAClassifier()),
+        ]
     ]
 )
 def test_creme_check_estimator(estimator):

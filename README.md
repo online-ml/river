@@ -66,13 +66,14 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 ... )
 
 >>> scaler = preprocessing.StandardScaler()
->>> lin_reg = linear_model.LogisticRegression(optim.AdaGrad())
+>>> lin_reg = linear_model.LogisticRegression(optimizer=optim.AdaGrad())
 >>> model = scaler | lin_reg
 
 >>> metric = metrics.F1Score()
 
 >>> for x, y in X_y:
-...     y_pred = model.fit_predict_one(x, y)
+...     y_pred = model.predict_one(x)
+...     model = model.fit_one(x, y)
 ...     metric = metric.update(y, y_pred)
 
 >>> metric

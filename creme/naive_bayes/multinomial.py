@@ -15,7 +15,7 @@ class MultinomialNB(base.BaseNB):
     The input vector has to contain positive values, such as counts or TF-IDF values.
 
     This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
-    ``predict_one`` from ``base.MultiClassifier``.
+    ``predict_one`` from `base.MultiClassifier`.
 
     Parameters:
         alpha (float): Smoothing parameter used for avoiding zero probabilities.
@@ -29,55 +29,55 @@ class MultinomialNB(base.BaseNB):
 
     Example:
 
-    ::
+        ::
 
-        >>> import math
-        >>> from creme import compose
-        >>> from creme import feature_extraction
-        >>> from creme import naive_bayes
+            >>> import math
+            >>> from creme import compose
+            >>> from creme import feature_extraction
+            >>> from creme import naive_bayes
 
-        >>> docs = [
-        ...     ('Chinese Beijing Chinese', 'yes'),
-        ...     ('Chinese Chinese Shanghai', 'yes'),
-        ...     ('Chinese Macao', 'yes'),
-        ...     ('Tokyo Japan Chinese', 'no')
-        ... ]
-        >>> model = compose.Pipeline([
-        ...     ('tokenize', feature_extraction.CountVectorizer(on='text', lowercase=False)),
-        ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
-        ... ])
-        >>> for x, y in docs:
-        ...     model = model.fit_one({'text': x}, y)
+            >>> docs = [
+            ...     ('Chinese Beijing Chinese', 'yes'),
+            ...     ('Chinese Chinese Shanghai', 'yes'),
+            ...     ('Chinese Macao', 'yes'),
+            ...     ('Tokyo Japan Chinese', 'no')
+            ... ]
+            >>> model = compose.Pipeline([
+            ...     ('tokenize', feature_extraction.CountVectorizer(on='text', lowercase=False)),
+            ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
+            ... ])
+            >>> for x, y in docs:
+            ...     model = model.fit_one({'text': x}, y)
 
-        >>> model['nb'].p_class('yes')
-        0.75
-        >>> cp = model['nb'].p_feature_given_class
-        >>> cp('Chinese', 'yes') ==  3 / 7
-        True
-        >>> cp('Tokyo', 'yes') ==  1 / 14
-        True
-        >>> cp('Japan', 'yes') ==  1 / 14
-        True
-        >>> cp('Chinese', 'no') ==  2 / 9
-        True
-        >>> cp('Tokyo', 'no') ==  2 / 9
-        True
-        >>> cp('Japan', 'no') ==  2 / 9
-        True
+            >>> model['nb'].p_class('yes')
+            0.75
+            >>> cp = model['nb'].p_feature_given_class
+            >>> cp('Chinese', 'yes') ==  3 / 7
+            True
+            >>> cp('Tokyo', 'yes') ==  1 / 14
+            True
+            >>> cp('Japan', 'yes') ==  1 / 14
+            True
+            >>> cp('Chinese', 'no') ==  2 / 9
+            True
+            >>> cp('Tokyo', 'no') ==  2 / 9
+            True
+            >>> cp('Japan', 'no') ==  2 / 9
+            True
 
-        >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
-        >>> tokens = model['tokenize'].transform_one({'text': new_text})
-        >>> jlh = model['nb']._joint_log_likelihood(tokens)
-        >>> math.exp(jlh['yes'])
-        0.0003...
-        >>> math.exp(jlh['no'])
-        0.0001...
-        >>> model.predict_one({'text': new_text})
-        'yes'
+            >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
+            >>> tokens = model['tokenize'].transform_one({'text': new_text})
+            >>> jlh = model['nb']._joint_log_likelihood(tokens)
+            >>> math.exp(jlh['yes'])
+            0.0003...
+            >>> math.exp(jlh['no'])
+            0.0001...
+            >>> model.predict_one({'text': new_text})
+            'yes'
 
     References:
 
-    1. `Naive Bayes text classification <https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html>`_
+        1. `Naive Bayes text classification <https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html>`_
 
     """
 
