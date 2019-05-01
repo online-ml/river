@@ -378,10 +378,10 @@ class ClassifierMixin(metaclass=ABCMeta):
             The features to train the model.
 
         y: numpy.ndarray of shape (n_samples, n_targets)
-            An array-like with the labels of all samples in X.
+            An array-like with the class labels of all samples in X.
 
         classes: numpy.ndarray, optional (default=None)
-            Contains all possible labels. Usage varies depending on the learning method.
+            Contains all possible/known class labels. Usage varies depending on the learning method.
 
         sample_weight: numpy.ndarray, optional (default=None)
             Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
@@ -407,10 +407,10 @@ class ClassifierMixin(metaclass=ABCMeta):
             The features to train the model.
 
         y: numpy.ndarray of shape (n_samples)
-            An array-like with the labels of all samples in X.
+            An array-like with the class labels of all samples in X.
 
         classes: numpy.ndarray, optional (default=None)
-            Array with all possible/known classes. Usage varies depending on the learning method.
+            Array with all possible/known class labels. Usage varies depending on the learning method.
 
         sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
             Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
@@ -429,7 +429,7 @@ class ClassifierMixin(metaclass=ABCMeta):
         Parameters
         ----------
         X : numpy.ndarray of shape (n_samples, n_features)
-            The set of data samples to predict the labels for.
+            The set of data samples to predict the class labels for.
 
         Returns
         -------
@@ -487,6 +487,85 @@ class ClassifierMixin(metaclass=ABCMeta):
 class RegressorMixin:
     """Mixin class for all regression estimators in scikit-multiflow."""
     _estimator_type = "regressor"
+
+    def fit(self, X, y, sample_weight=None):
+        """ Fit the model.
+
+        Parameters
+        ----------
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
+
+        y: numpy.ndarray of shape (n_samples, n_targets)
+            An array-like with the target values of all samples in X.
+
+        sample_weight: numpy.ndarray, optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+
+        Returns
+        -------
+        self
+
+        """
+        # non-optimized default implementation; override if a better
+        # method is possible for a given regressor
+        self.partial_fit(X, y, sample_weight=sample_weight)
+
+        return self
+
+    @abstractmethod
+    def partial_fit(self, X, y, sample_weight=None):
+        """ Partially (incrementally) fit the model.
+
+        Parameters
+        ----------
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
+
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the target values of all samples in X.
+
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+
+        Returns
+        -------
+        self
+
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def predict(self, X):
+        """ Predict target values for the passed data.
+
+        Parameters
+        ----------
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The set of data samples to predict the target values for.
+
+        Returns
+        -------
+        A numpy.ndarray with all the predictions for the samples in X.
+
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def predict_proba(self, X):
+        """ Estimates the probability for probabilistic/bayesian regressors
+
+        Parameters
+        ----------
+        X : Numpy.ndarray of shape (n_samples, n_features)
+            The matrix of samples one wants to predict the probabilities for.
+
+        Returns
+        -------
+        numpy.ndarray
+
+        """
+        raise NotImplementedError
 
     def score(self, X, y, sample_weight=None):
         """Returns the coefficient of determination R^2 of the prediction.
