@@ -4,11 +4,11 @@ import copy
 
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin
 from skmultiflow.utils import check_random_state
 
 
-class ClassifierChain(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class ClassifierChain(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin):
     """ Classifier Chains for multi-label learning.
 
     Parameters
@@ -114,10 +114,10 @@ class ClassifierChain(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         super().__init__()
         self.base_estimator = base_estimator
         self.order = order
+        self.random_state = random_state
         self.chain = None
         self.ensemble = None
         self.L = None
-        self.random_state = random_state
         self._random_state = None   # This is the actual random_state object used internally
         self.__configure()
 
@@ -234,7 +234,7 @@ class ClassifierChain(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
+        X : numpy.ndarray of shape (n_samples, n_features)
             The matrix of samples one wants to predict the class probabilities for.
 
         Returns
@@ -263,6 +263,11 @@ class ClassifierChain(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
     def reset(self):
         self.__configure()
         return self
+
+    @staticmethod
+    def _more_tags():
+        return {'multioutput': True,
+                'multioutput_only': True}
 
 
 def P(y, x, cc, payoff=np.prod):
