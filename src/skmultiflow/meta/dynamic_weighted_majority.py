@@ -1,12 +1,12 @@
 import copy as cp
 import numpy as np
-from skmultiflow.core.base import StreamModel
+
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.bayes import NaiveBayes
 
 
-class DynamicWeightedMajority(StreamModel):
-    """
-    Dynamic Weighted Majority Ensemble
+class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+    """ Dynamic Weighted Majority (DWM) ensemble classifier
 
     Parameters
     ----------
@@ -23,7 +23,7 @@ class DynamicWeightedMajority(StreamModel):
 
     Notes
     -----
-    The method, dynamic weighted majority (DWM) [1]_, uses four mechanisms to
+    The dynamic weighted majority (DWM) [1]_, uses four mechanisms to
     cope with concept drift: It trains online learners of the ensemble,
     it weights those learners based on their performance, it removes them,
     also based on their performance, and it adds new experts based on the
@@ -72,12 +72,8 @@ class DynamicWeightedMajority(StreamModel):
 
         self.reset()
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
-
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """
-        Partially fits the model on the supplied X and y matrices.
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially fits the model on the supplied X and y matrices.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample
@@ -91,13 +87,11 @@ class DynamicWeightedMajority(StreamModel):
         y: Array-like
             An array-like of all the class labels for the samples in X.
 
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
+        classes: list numpy.ndarray (default=None)
+             Array with all possible/known class labels.
 
-        weight: None
-            Instance weight. This is ignored by the ensemble and is only
-            for compliance with the general skmultiflow interface.
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed.
 
         Returns
         -------
@@ -106,14 +100,14 @@ class DynamicWeightedMajority(StreamModel):
         """
         for i in range(len(X)):
             self.fit_single_sample(
-                X[i:i+1, :], y[i:i+1], classes, weight
+                X[i:i+1, :], y[i:i+1], classes, sample_weight
             )
         return self
 
     def predict(self, X):
         """ predict
 
-        The predict function will take an average of the precitions of its
+        The predict function will take an average of the predictions of its
         learners, weighted by their respective weights, and return the most
         likely class.
 
@@ -234,15 +228,3 @@ class DynamicWeightedMajority(StreamModel):
         Constructs a new WeightedExpert from the provided base_estimator.
         """
         return self.WeightedExpert(cp.deepcopy(self.base_estimator), 1)
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        return \
-            type(self).__name__ + ': ' + \
-            "max_estimators: {} - ".format(self.max_experts) + \
-            "base_estimator: {} - ".format(self.base_estimator.get_info()) + \
-            "period: {} - ".format(self.period) + \
-            "beta: {} - ".format(self.beta) + \
-            "theta: {}".format(self.theta)

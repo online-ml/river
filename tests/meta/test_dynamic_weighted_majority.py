@@ -42,3 +42,7 @@ def test_dynamic_weighted_majority():
     assert correct_predictions == expected_correct_predictions
 
     assert type(learner.predict(X)) == np.ndarray
+
+    expected_info = 'DynamicWeightedMajority(base_estimator=NaiveBayes(nominal_attributes=None),\n' \
+                    '                        beta=0.5, n_estimators=None, period=50, theta=0.01)'
+    assert learner.get_info() == expected_info
