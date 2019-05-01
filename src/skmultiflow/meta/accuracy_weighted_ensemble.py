@@ -7,15 +7,14 @@ import operator as op
 
 
 class AccuracyWeightedEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
-    """
-    Accuracy Weighted Ensemble or AWE
+    """ Accuracy Weighted Ensemble (AWE) classifier
 
     Parameters
     ----------
     n_estimators: int (default=10)
         Maximum number of estimators to be kept in the ensemble
-    base_estimator: StreamModel or sklearn.BaseEstimator (default=NaiveBayes)
-        Each member of the ensemble is an instance of the base estimator
+    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=NaiveBayes)
+        Each member of the ensemble is an instance of the base estimator.
     window_size: int (default=200)
         The size of one chunk to be processed
         (warning: the chunk size is not always the same as the batch size)
@@ -106,20 +105,22 @@ class AccuracyWeightedEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimat
         self.y_chunk = None
 
     def partial_fit(self, X, y=None, classes=None, sample_weight=None):
-        """ Updates the ensemble when a new data chunk arrives (Algorithm 1 in the paper).
+        """ Partially (incrementally) fit the model.
+
+        Updates the ensemble when a new data chunk arrives (Algorithm 1 in the paper).
         The update is only launched when the chunk is filled up.
 
         Parameters
         ----------
         X: numpy.ndarray of shape (n_samples, n_features)
-            Instance attributes.
-        y: array_like
-            Classes (targets) for all samples in X.
-        classes: list or numpy.array
+            The features to train the model.
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
+        classes: numpy.ndarray, optional (default=None)
             Contains the class values in the stream. If defined, will be used to define the length of the arrays
             returned by `predict_proba`
         sample_weight: float or array-like
-            Instance weight. If not provided, uniform weights are assumed.
+            Samples weight. If not provided, uniform weights are assumed.
         """
 
         N, D = X.shape
@@ -209,6 +210,7 @@ class AccuracyWeightedEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimat
 
     def predict(self, X):
         """ Predicts the labels of X in a general classification setting.
+
         The prediction is done via normalized weighted voting (choosing the maximum).
 
         Parameters

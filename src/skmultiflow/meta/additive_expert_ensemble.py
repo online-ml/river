@@ -5,14 +5,13 @@ from skmultiflow.bayes import NaiveBayes
 
 
 class AdditiveExpertEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
-    """
-    Additive Expert Ensemble
+    """ Additive Expert (AddExp) ensemble classifier
 
     Parameters
     ----------
     n_estimators: int (default=5)
         Maximum number of estimators to hold.
-    base_estimator: StreamModel or sklearn.BaseEstimator (default=NaiveBayes)
+    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=NaiveBayes)
         Each member of the ensemble is an instance of the base estimator.
     beta: float (default=0.8)
         Factor for which to decrease weights by.
@@ -81,8 +80,7 @@ class AdditiveExpertEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimator
         self.reset()
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
-        """
-        Partially fits the model on the supplied X and y matrices.
+        """ Partially fits the model on the supplied X and y matrices.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample
@@ -96,17 +94,14 @@ class AdditiveExpertEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimator
         y: Array-like
             An array-like of all the class labels for the samples in X.
 
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
+        classes: numpy.ndarray (default=None)
+            Array with all possible/known class labels.
 
-        sample_weight: None
-            Instance weight. This is ignored by the ensemble and is only
-            for compliance with the general skmultiflow interface.
+        sample_weight: Not used (default=None)
 
         Returns
         -------
-        DynamicWeightedMajority
+        AdditiveExpertEnsemble
             self
         """
         for i in range(len(X)):
@@ -114,7 +109,7 @@ class AdditiveExpertEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimator
         return self
 
     def predict(self, X):
-        """ predict
+        """ Predicts the class labels of X in a general classification setting.
 
         The predict function will take an average of the predictions of its
         learners, weighted by their respective weights, and return the most
@@ -137,6 +132,8 @@ class AdditiveExpertEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimator
         return (aggregate + 0.5).astype(int)    # Round to nearest int
 
     def predict_proba(self, X):
+        """ Not implemented for this method.
+        """
         raise NotImplementedError
 
     def fit_single_sample(self, X, y, classes=None, sample_weight=None):
