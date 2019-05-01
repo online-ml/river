@@ -444,7 +444,7 @@ class ClassifierMixin(metaclass=ABCMeta):
 
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
+        X : numpy.ndarray of shape (n_samples, n_features)
             The matrix of samples one wants to predict the class probabilities for.
 
         Returns
@@ -557,7 +557,7 @@ class RegressorMixin:
 
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
+        X : numpy.ndarray of shape (n_samples, n_features)
             The matrix of samples one wants to predict the probabilities for.
 
         Returns
@@ -635,7 +635,8 @@ class MetaEstimatorMixin:
 
 class MultiOutputMixin(object):
     """Mixin to mark estimators that support multioutput."""
-    def _more_tags(self):
+    @staticmethod
+    def _more_tags():
         return {'multioutput': True}
 
 

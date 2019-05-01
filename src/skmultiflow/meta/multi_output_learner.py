@@ -5,11 +5,11 @@ from inspect import signature
 
 from sklearn.linear_model import SGDClassifier
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin
 from skmultiflow.metrics import *
 
 
-class MultiOutputLearner(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class MultiOutputLearner(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin):
     """ Multi-Output Learner classifier
 
     Parameters
@@ -208,3 +208,8 @@ class MultiOutputLearner(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixi
     def reset(self):
         self.ensemble = None
         self.n_labels = None
+
+    @staticmethod
+    def _more_tags():
+        return {'multioutput': True,
+                'multioutput_only': True}

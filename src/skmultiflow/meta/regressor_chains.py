@@ -4,16 +4,16 @@ import copy
 
 from sklearn.linear_model import SGDRegressor
 
-from skmultiflow.core import BaseStreamEstimator, RegressorMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseStreamEstimator, RegressorMixin, MetaEstimatorMixin, MultiOutputMixin
 from skmultiflow.utils import check_random_state
 
 
-class RegressorChain(BaseStreamEstimator, RegressorMixin, MetaEstimatorMixin):
-    """ Regressor Chains for multi-label learning.
+class RegressorChain(BaseStreamEstimator, RegressorMixin, MetaEstimatorMixin, MultiOutputMixin):
+    """ Regressor Chains for multi-output learning.
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (defaul=SGDRegressor)
+    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=SGDRegressor)
         Each member of the ensemble is an instance of the base estimator.
 
     order : str (default=None)
@@ -38,10 +38,10 @@ class RegressorChain(BaseStreamEstimator, RegressorMixin, MetaEstimatorMixin):
         super().__init__()
         self.base_estimator = base_estimator
         self.order = order
+        self.random_state = random_state
         self.chain = None
         self.ensemble = None
         self.L = None
-        self.random_state = random_state
         self._random_state = None   # This is the actual random_state object used internally
         self.__configure()
 
@@ -157,3 +157,8 @@ class RegressorChain(BaseStreamEstimator, RegressorMixin, MetaEstimatorMixin):
         """ Not implemented for this method.
         """
         raise NotImplementedError
+
+    @staticmethod
+    def _more_tags():
+        return {'multioutput': True,
+                'multioutput_only': True}
