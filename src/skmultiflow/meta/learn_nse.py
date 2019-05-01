@@ -79,7 +79,7 @@ class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
         y: Array-like
             An array-like of all the class labels for the samples in X.
@@ -225,7 +225,7 @@ class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
 
         Returns
@@ -248,7 +248,7 @@ class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
         Returns
         -------

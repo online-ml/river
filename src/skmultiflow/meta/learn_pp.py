@@ -95,6 +95,7 @@ class LearnPP(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         self.classes = None
         self.n_ensembles = n_ensembles
         self.random = check_random_state(random_state)
+        self.random_state = random_state
         self.error_threshold = error_threshold
         self.X_batch = []
         self.y_batch = []
@@ -105,6 +106,7 @@ class LearnPP(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         self.ensemble_weights = []
         self.X_batch = []
         self.y_batch = []
+        self.random = check_random_state(self.random_state)
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ Partially (incrementally) fit the model.
@@ -265,7 +267,7 @@ class LearnPP(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
 
         Returns

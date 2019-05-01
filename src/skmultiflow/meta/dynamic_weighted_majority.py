@@ -81,7 +81,7 @@ class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimato
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
 
         y: Array-like
@@ -113,7 +113,7 @@ class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimato
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
 
         Returns
@@ -130,7 +130,7 @@ class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimato
     def predict_proba(self, X):
         raise NotImplementedError
 
-    def fit_single_sample(self, X, y, classes=None, weight=None):
+    def fit_single_sample(self, X, y, classes=None, sample_weight=None):
         """
         Fits a single sample of shape `X.shape=(1, n_attributes)` and `y.shape=(1)`
 
@@ -145,7 +145,7 @@ class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimato
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
 
         y: Array-like
@@ -154,9 +154,10 @@ class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimato
         classes: list
             List of all existing classes. This is an optional parameter.
 
-        weight: None
-            Instance weight. This is ignored by the ensemble and is only
-            for compliance with the general skmultiflow interface.
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Applicability
+            depends on the base estimator.
+
         """
         self.epochs += 1
         self.num_classes = max(
@@ -190,7 +191,7 @@ class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimato
 
         # Train individual experts
         for exp in self.experts:
-            exp.estimator.partial_fit(X, y, classes, weight)
+            exp.estimator.partial_fit(X, y, classes, sample_weight)
 
     def get_expert_predictions(self, X):
         """

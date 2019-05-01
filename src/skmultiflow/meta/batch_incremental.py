@@ -105,7 +105,7 @@ class BatchIncremental(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin)
 
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
+        X : numpy.ndarray of shape (n_samples, n_features)
             The matrix of samples one wants to predict the class probabilities for.
 
         Returns
