@@ -5,7 +5,7 @@ from skmultiflow.utils.utils import *
 
 
 class KNN(BaseStreamEstimator, ClassifierMixin):
-    """ K-Nearest Neighbors Classifier
+    """ K-Nearest Neighbors classifier
     
     This is a non-parametric classification method. The output of this
     algorithm are the n_neighbors closest training examples to the query sample
