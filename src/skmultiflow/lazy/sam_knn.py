@@ -9,7 +9,7 @@ from skmultiflow.utils import get_dimensions
 
 
 class SAMKNN(BaseStreamEstimator, ClassifierMixin):
-    """ SAMKNN - Self Adjusting Memory (SAM) coupled with the k Nearest Neighbor classifier.
+    """ SAMKNN - Self Adjusting Memory (SAM) coupled with the kNN classifier.
 
     Parameters
     ----------
