@@ -2,11 +2,12 @@ import copy as cp
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
 
 
-class LearnNSE(StreamModel):
-    """
+class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+    """ Learn++.NSE classifier
+
     Learn++.NSE [1]_ is an ensemble of classifiers for incremental learning
     from non-stationary environments (NSEs) where the underlying data
     distributions change over time. It learns from consecutive batches of data
@@ -23,7 +24,7 @@ class LearnNSE(StreamModel):
     Parameters
     ----------
     base_estimator: StreamModel or sklearn.BaseEstimator (default=DecisionTreeClassifier)
-        This is the base estimator, each member of the ensemble is an instance of the base estimator.
+        Each member of the ensemble is an instance of the base estimator.
     ensemble_size: int (default=15)
         The number of base estimators in the ensemble.
     window_size: int (default=250)
@@ -65,9 +66,6 @@ class LearnNSE(StreamModel):
         self.base_estimator = cp.deepcopy(base_estimator)
         self.classes = None
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
-
     @staticmethod
     def _train_model(estimator, X, y, classes=None):
         try:
@@ -75,7 +73,7 @@ class LearnNSE(StreamModel):
         except (NotImplementedError, TypeError):
             estimator.partial_fit(X, y, classes=classes)
 
-    def partial_fit(self, X, y=None, classes=None, weight=None):
+    def partial_fit(self, X, y=None, classes=None, sample_weight=None):
         """
         Partially fits the model, based on the X and y matrix.
 
@@ -85,11 +83,9 @@ class LearnNSE(StreamModel):
             Features matrix used for partially updating the model.
         y: Array-like
             An array-like of all the class labels for the samples in X.
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
-        weight: None
-            Instance weights. NOT used for this classifier.
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels.
+        sample_weight: NOT used (default=None)
         Raises
         ------
         RuntimeError:
@@ -263,9 +259,6 @@ class LearnNSE(StreamModel):
         votes = self.predict_proba(X)
         return np.argmax(votes, axis=1)
 
-    def score(self, X, y):
-        raise NotImplementedError
-
     def reset(self):
         self.ensemble = []
         self.ensemble_weights = []
@@ -273,21 +266,3 @@ class LearnNSE(StreamModel):
         self.wkts = []
         self.X_batch = []
         self.y_batch = []
-
-    def get_info(self):
-        """ Collects information about the model.
-
-        Returns
-        -------
-        string
-            Configuration for the model.
-        """
-
-        description = type(self).__name__ + ': '
-        description += 'base_estimator: {} - '.format(type(self.base_estimator))
-        description += 'ensemble_size: {} - '.format(type(self.ensemble_size))
-        description += 'period: {} - '.format(type(self.period))
-        description += 'slope: {} - '.format(type(self.slope))
-        description += 'crossing_point: {} - '.format(type(self.crossing_point))
-        description += 'pruning: {}'.format(type(self.pruning))
-        return description
