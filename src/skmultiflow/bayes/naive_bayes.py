@@ -10,7 +10,9 @@ from skmultiflow.bayes import do_naive_bayes_prediction
 
 
 class NaiveBayes(BaseStreamEstimator, ClassifierMixin):
-    """ Performs classic bayesian prediction while making naive assumption that all inputs are independent.
+    """ Naive Bayes classifier
+
+    Performs classic bayesian prediction while making naive assumption that all inputs are independent.
     Naive Bayes is a classifier algorithm known for its simplicity and low computational cost. Given `n` different
     classes, the trained Naive Bayes classifier predicts for every unlabelled instance the class to which it
     belongs with high accuracy.
