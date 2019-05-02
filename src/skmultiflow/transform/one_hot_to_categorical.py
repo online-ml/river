@@ -1,4 +1,5 @@
 import numpy as np
+
 from skmultiflow.transform.base_transform import StreamTransform
 from skmultiflow.utils.utils import get_dimensions
 
@@ -17,12 +18,10 @@ class OneHotToCategorical(StreamTransform):
         the same categorical feature.
     
     """
+
     def __init__(self, categorical_list):
         super().__init__()
         self.categorical_list = categorical_list
-
-    def get_info(self):
-        return 'OneHotToCategorical: categorical_list: ' + str(self.categorical_list)
 
     def transform(self, X):
         """ transform
