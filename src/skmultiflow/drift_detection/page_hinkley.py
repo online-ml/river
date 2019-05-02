@@ -105,19 +105,3 @@ class PageHinkley(BaseDriftDetector):
 
         if self.sum > self.threshold:
             self.in_concept_change = True
-
-    def get_info(self):
-        """ Collect information about the concept drift detector.
-
-        Returns
-        -------
-        string
-            Configuration for the concept drift detector.
-        """
-        description = type(self).__name__ + ': '
-        description += 'min_num_instances: {} - '.format(self.min_instances)
-        description += 'delta: {} - '.format(self.delta)
-        description += 'threshold (lambda): {} - '.format(self.threshold)
-        description += 'delta: {} - '.format(self.delta)
-        description += 'alpha: {} - '.format(self.alpha)
-        return description

@@ -22,3 +22,6 @@ def test_adwin(test_path):
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
+
+    expected_info = "ADWIN(delta=0.002)"
+    assert adwin.get_info() == expected_info

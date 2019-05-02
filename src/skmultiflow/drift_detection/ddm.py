@@ -1,4 +1,5 @@
 import numpy as np
+
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
@@ -152,17 +153,3 @@ class DDM(BaseDriftDetector):
 
         else:
             self.in_warning_zone = False
-
-    def get_info(self):
-        """ Collect information about the concept drift detector.
-
-        Returns
-        -------
-        string
-            Configuration for the concept drift detector.
-        """
-        description = type(self).__name__ + ': '
-        description += 'min_num_instances: {} - '.format(self.min_instances)
-        description += 'warning_level: {} - '.format(self.warning_level)
-        description += 'out_control_level: {} - '.format(self.out_control_level)
-        return description
