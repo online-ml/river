@@ -1,10 +1,11 @@
 import copy as cp
-from skmultiflow.core.base_object import BaseObject
+
+from skmultiflow.core import BaseStreamEstimator
 from skmultiflow.lazy.distances import mixed_distance, euclidean_distance
 from skmultiflow.utils.utils import *
 
 
-class KDTree(BaseObject):
+class KDTree(BaseStreamEstimator):
     """ A K-dimensional tree implementation, adapted for k dimensional problems.
     
     Parameters
@@ -59,7 +60,7 @@ class KDTree(BaseObject):
     metric for the distance calculation.
 
     """
-
+    _estimator_type = "data_structure"
     METRICS = ['mixed', 'euclidean']
 
     def __init__(self, X, metric='mixed', categorical_list=None, return_distance=False, leaf_size=40, **kwargs):
@@ -217,17 +218,15 @@ class KDTree(BaseObject):
         return self.root
 
     def get_info(self):
-        info = '{}:'.format(type(self).__name__)
-        info += ' - leaf_size: {}'.format(self.leaf_size)
-        info += ' - metric: {}'.format(self.metric)
-        info += ' - return_distance: {}'.format(self.return_distance)
+        info = '{}('.format(type(self).__name__)
+        info += 'categorical_list={}, '.format(self.categorical_list)
+        info += 'leaf_size={}, '.format(self.leaf_size)
+        info += 'metric={}, '.format(self.metric)
+        info += 'return_distance={})'.format(self.return_distance)
         return info
 
-    def get_class_type(self):
-        return 'data_structure'
 
-
-class KDTreeNode(BaseObject):
+class KDTreeNode(object):
     """ A node from a KD Tree. A node object will store the indexes of its children's
     samples, and only a reference to the tree's complete data.
     
@@ -277,14 +276,12 @@ class KDTreeNode(BaseObject):
         self.left_indexes = left_indexes
         self.right_indexes = right_indexes
 
+        # Here we assume left and right have the same dimensions.
         self.split_axis = split_axis
         self.split_value = split_value
         self.leaf_size = leaf_size
         self.is_leaf = False
         self.leaf_indexes = None
-
-        # Here we assume left and right have the same dimensions.
-        self.split_axis = split_axis
 
         self.distance_function = distance_function
         self.kwargs = kwargs
@@ -542,13 +539,3 @@ class KDTreeNode(BaseObject):
     @property
     def _right(self):
         return self.right_subtree
-
-    def get_info(self):
-        info = '{}:'.format(type(self).__name__)
-        info += ' - is_leaf: {}'.format(self.is_leaf)
-        info += ' - split_axis: {}'.format(self.split_axis)
-        info += ' - split_value: {}'.format(self.split_value)
-        return info
-
-    def get_class_type(self):
-        return 'data_structure'
