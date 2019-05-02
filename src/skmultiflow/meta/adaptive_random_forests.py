@@ -1,24 +1,25 @@
 from copy import deepcopy
-import numpy as np
-from sklearn.preprocessing import normalize
 import math
-from skmultiflow.core.base import StreamModel
-from skmultiflow.core.base_object import BaseObject
+
+import numpy as np
+
+from sklearn.preprocessing import normalize
+
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
-from skmultiflow.drift_detection.adwin import ADWIN
+from skmultiflow.drift_detection import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree import ARFHoeffdingTree
 from skmultiflow.metrics.measure_collection import ClassificationMeasurements
-from skmultiflow.utils.utils import get_dimensions, normalize_values_in_dict
-from skmultiflow.utils import check_random_state, check_weights
+from skmultiflow.utils import get_dimensions, normalize_values_in_dict, check_random_state, check_weights
 
 
-class AdaptiveRandomForest(StreamModel):
-    """Adaptive Random Forest (ARF).
+class AdaptiveRandomForest(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+    """Adaptive Random Forest (ARF) classifier.
 
         Parameters
         ----------
         n_estimators: int, optional (default=10)
-            Number of trees oin the ensemble.
+            Number of trees in the ensemble.
 
         max_features : int, float, string or None, optional (default="auto")
             Max number of attributes for each node split.
@@ -41,7 +42,8 @@ class AdaptiveRandomForest(StreamModel):
 
             - 'acc' - Accuracy
             - 'kappa' - Accuracy
-        drift_detection_method: BaseDriftDetector or None,, optional (default=ADWIN(0.001))
+
+        drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
             Drift Detection method. Set to None to disable Drift detection.
 
         warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
@@ -171,8 +173,8 @@ class AdaptiveRandomForest(StreamModel):
         self.classes = None
         self._train_weight_seen_by_model = 0.0
         self.ensemble = None
-        self._init_random_state = random_state
-        self.random_state = check_random_state(self._init_random_state)
+        self.random_state = random_state
+        self._random_state = check_random_state(self.random_state)   # This is the actual random_state object used
         if performance_metric in ['acc', 'kappa']:
             self.performance_metric = performance_metric
         else:
@@ -193,12 +195,35 @@ class AdaptiveRandomForest(StreamModel):
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
-    
-    def partial_fit(self, X, y, classes=None, weight=1.0):
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially (incrementally) fit the model.
+
+        Parameters
+        ----------
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
+
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
+
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels.
+
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed.
+
+        Returns
+        -------
+        self
+
+        """
         if self.classes is None and classes is not None:
             self.classes = classes
+
+        if sample_weight is None:
+            weight = 1.0
+        else:
+            weight = sample_weight
 
         if y is not None:
             row_cnt, _ = get_dimensions(X)
@@ -207,6 +232,8 @@ class AdaptiveRandomForest(StreamModel):
                 if weight[i] != 0.0:
                     self._train_weight_seen_by_model += weight[i]
                     self._partial_fit(X[i], y[i], self.classes, weight[i])
+
+        return self
 
     def _partial_fit(self, X, y, classes=None, weight=1.0):
         self.instances_seen += 1
@@ -217,7 +244,7 @@ class AdaptiveRandomForest(StreamModel):
         for i in range(self.n_estimators):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
             self.ensemble[i].evaluator.add_result(y_predicted, y, weight)
-            k = self.random_state.poisson(self.lambda_value)
+            k = self._random_state.poisson(self.lambda_value)
             if k > 0:
                 self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]),
                                              classes=classes,
@@ -225,15 +252,17 @@ class AdaptiveRandomForest(StreamModel):
                                              instances_seen=self.instances_seen)
     
     def predict(self, X):
-        """Predicts the label of the X instance(s)
+        """ Predict classes for the passed data.
+
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
-            Samples for which we want to predict the labels.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The set of data samples to predict the class labels for.
+
         Returns
         -------
-        numpy.ndarray
-            Predicted labels for all instances in X.
+        A numpy.ndarray with all the predictions for the samples in X.
+
         """
         r, _ = get_dimensions(X)
         predictions = []
@@ -247,7 +276,7 @@ class AdaptiveRandomForest(StreamModel):
         return np.asarray(predictions)
 
     def predict_proba(self, X):
-        """ Predicts the class probabilities for the X instance(s).
+        """ Estimates the probability of each sample in X belonging to each of the class-labels.
 
         Class probabilities are calculated as the mean predicted class probabilities per base estimator.
 
@@ -255,6 +284,7 @@ class AdaptiveRandomForest(StreamModel):
         ----------
          X: numpy.ndarray of shape (n_samples, n_features)
             Samples for which we want to predict the class probabilities.
+
         Returns
         -------
         numpy.ndarray of shape (n_samples, n_classes)
@@ -280,25 +310,7 @@ class AdaptiveRandomForest(StreamModel):
         self.max_features = 0
         self.instances_seen = 0
         self._train_weight_seen_by_model = 0.0
-        self.random_state = check_random_state(self._init_random_state)
-
-    def score(self, X, y):
-        raise NotImplementedError
-        
-    def get_info(self):
-        """Collect information about the Hoeffding Tree configuration.
-
-        Returns
-        -------
-        string
-            Configuration for the Hoeffding Tree.
-        """
-        description = type(self).__name__ + ': '
-        description += 'n_estimators: {} - '.format(self.n_estimators)
-        description += 'max_features: {} - '.format(self.max_features)
-        description += 'disable_weighted_vote: {} - '.format(self.disable_weighted_vote)
-        description += 'lambda_value: {} - '.format(self.lambda_value)
-        return description
+        self._random_state = check_random_state(self.random_state)
 
     def get_votes_for_instance(self, X):
         if self.ensemble is None:
@@ -325,31 +337,28 @@ class AdaptiveRandomForest(StreamModel):
         return combined_votes
         
     def init_ensemble(self, X):
-        self.ensemble = [None] * self.n_estimators
-
         self._set_max_features(get_dimensions(X)[1])
 
-        for i in range(self.n_estimators):
-            self.ensemble[i] = ARFBaseLearner(i,
-                                              ARFHoeffdingTree(max_byte_size=self.max_byte_size,
-                                                               memory_estimate_period=self.memory_estimate_period,
-                                                               grace_period=self.grace_period,
-                                                               split_criterion=self.split_criterion,
-                                                               split_confidence=self.split_confidence,
-                                                               tie_threshold=self.tie_threshold,
-                                                               binary_split=self.binary_split,
-                                                               stop_mem_management=self.stop_mem_management,
-                                                               remove_poor_atts=self.remove_poor_atts,
-                                                               no_preprune=self.no_preprune,
-                                                               leaf_prediction=self.leaf_prediction,
-                                                               nb_threshold=self.nb_threshold,
-                                                               nominal_attributes=self.nominal_attributes,
-                                                               max_features=self.max_features,
-                                                               random_state=self._init_random_state),
-                                              self.instances_seen,
-                                              self.drift_detection_method,
-                                              self.warning_detection_method,
-                                              False)
+        self.ensemble = [ARFBaseLearner(i,
+                                        ARFHoeffdingTree(max_byte_size=self.max_byte_size,
+                                                         memory_estimate_period=self.memory_estimate_period,
+                                                         grace_period=self.grace_period,
+                                                         split_criterion=self.split_criterion,
+                                                         split_confidence=self.split_confidence,
+                                                         tie_threshold=self.tie_threshold,
+                                                         binary_split=self.binary_split,
+                                                         stop_mem_management=self.stop_mem_management,
+                                                         remove_poor_atts=self.remove_poor_atts,
+                                                         no_preprune=self.no_preprune,
+                                                         leaf_prediction=self.leaf_prediction,
+                                                         nb_threshold=self.nb_threshold,
+                                                         nominal_attributes=self.nominal_attributes,
+                                                         max_features=self.max_features,
+                                                         random_state=self.random_state),
+                                        self.instances_seen,
+                                        self.drift_detection_method,
+                                        self.warning_detection_method,
+                                        False) for i in range(self.n_estimators)]
 
     def _set_max_features(self, n):
         if self.max_features == 'auto' or self.max_features == 'sqrt':
@@ -384,7 +393,7 @@ class AdaptiveRandomForest(StreamModel):
         return True
 
 
-class ARFBaseLearner(BaseObject):
+class ARFBaseLearner(BaseStreamEstimator):
     """ARF Base Learner class.
 
     Parameters
@@ -446,7 +455,7 @@ class ARFBaseLearner(BaseObject):
         if warning_detection_method is not None:
             self._use_background_learner = True
             self.warning_detection = deepcopy(warning_detection_method)
-            
+
     def reset(self, instances_seen):
         if self._use_background_learner and self.background_learner is not None:
             self.classifier = self.background_learner.classifier
@@ -467,7 +476,6 @@ class ARFBaseLearner(BaseObject):
         if self.background_learner:
             self.background_learner.classifier.partial_fit(X, y, classes=classes, weight=weight)
 
-        correctly_classifies = False
         if self._use_drift_detector and not self.is_background_learner:
             correctly_classifies = self.classifier.predict(X) == y
             # Check for warning only if use_background_learner is active
@@ -507,9 +515,3 @@ class ARFBaseLearner(BaseObject):
 
     def get_votes_for_instance(self, X):
         return self.classifier.get_votes_for_instance(X)
-
-    def get_class_type(self):
-        raise NotImplementedError
-
-    def get_info(self):
-        return "NotImplementedError"
