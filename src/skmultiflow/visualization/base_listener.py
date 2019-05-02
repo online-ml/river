@@ -1,8 +1,8 @@
 from abc import ABCMeta, abstractmethod
-from skmultiflow.core.base_object import BaseObject
+from skmultiflow.core.base import BaseEstimator
 
 
-class BaseListener(BaseObject, metaclass=ABCMeta):
+class BaseListener(BaseEstimator, metaclass=ABCMeta):
     """ An abstract class that defines the constraints for all the listener
     type objects in this framework.
     
@@ -14,6 +14,7 @@ class BaseListener(BaseObject, metaclass=ABCMeta):
     NotImplementedError: This is an abstract class.
     
     """
+    _estimator_type = 'listener'
 
     def __init__(self):
         super().__init__()
@@ -33,11 +34,4 @@ class BaseListener(BaseObject, metaclass=ABCMeta):
             A buffer containing evaluation data for a single training / visualization step.
          
         """
-        raise NotImplementedError
-
-    def get_class_type(self):
-        return 'listener'
-
-    @abstractmethod
-    def get_info(self):
         raise NotImplementedError

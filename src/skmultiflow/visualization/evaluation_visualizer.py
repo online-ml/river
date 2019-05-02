@@ -489,9 +489,6 @@ class EvaluationVisualizer(BaseListener):
     def hold():
         plt.show(block=True)
 
-    def get_info(self):
-        pass
-
 
 class PlotDataTracker(object):
     """ A class to track relevant data for plots corresponding to selected metrics.
