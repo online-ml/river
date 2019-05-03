@@ -127,22 +127,23 @@ class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         self.init_matrix_codes = None
         self._random_state = None   # This is the actual random_state object used internally
         self.base_estimator = base_estimator
-        self._init_n_estimators = n_estimators
-        self.enable_matrix_codes = enable_code_matrix
+        self.n_estimators = n_estimators
+        self.enable_code_matrix = enable_code_matrix
         self.w = w
         self.delta = delta
         if leverage_algorithm not in self.LEVERAGE_ALGORITHMS:
             raise ValueError("Leverage algorithm not supported.")
-        self.leveraging_algorithm = leverage_algorithm
+        self.leverage_algorithm = leverage_algorithm
         self.random_state = random_state
         self.__configure()
 
     def __configure(self):
-        self.base_estimator.reset()
-        self.n_estimators = self._init_n_estimators
-        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.n_estimators)]
+        if hasattr(self.base_estimator, "reset"):
+            self.base_estimator.reset()
+        self.actual_n_estimators = self.n_estimators
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.actual_n_estimators)]
         self.adwin_ensemble = []
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             self.adwin_ensemble.append(ADWIN(self.delta))
         self._random_state = check_random_state(self.random_state)
         self.n_detected_changes = 0
@@ -196,11 +197,11 @@ class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
     def __partial_fit(self, X, y):
         if self.init_matrix_codes:
-            self.matrix_codes = np.zeros((self.n_estimators, len(self.classes)), dtype=int)
-            for i in range(self.n_estimators):
+            self.matrix_codes = np.zeros((self.actual_n_estimators, len(self.classes)), dtype=int)
+            for i in range(self.actual_n_estimators):
                 n_zeros = 0
                 n_ones = 0
-                while (n_ones - n_zeros) * (n_ones - n_zeros) > self.n_estimators % 2:
+                while (n_ones - n_zeros) * (n_ones - n_zeros) > self.actual_n_estimators % 2:
                     n_zeros = 0
                     n_ones = 0
                     for j in range(len(self.classes)):
@@ -218,13 +219,13 @@ class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
         change_detected = False
         X_cp, y_cp = cp.deepcopy(X), cp.deepcopy(y)
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             k = 0.0
 
-            if self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[0]:
+            if self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[0]:
                 k = self._random_state.poisson(self.w)
 
-            elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[1]:
+            elif self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[1]:
                 error = self.adwin_ensemble[i].estimation
                 pred = self.ensemble[i].predict(np.asarray([X]))
                 if pred is None:
@@ -236,21 +237,21 @@ class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
                 else:
                     k = 0.0
 
-            elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[2]:
+            elif self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[2]:
                 w = 1.0
                 k = 0.0 if (self._random_state.randint(2) == 1) else w
 
-            elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[3]:
+            elif self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[3]:
                 w = 1.0
                 k = 1.0 + self._random_state.poisson(w)
 
-            elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[4]:
+            elif self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[4]:
                 w = 1.0
                 k = self._random_state.poisson(1)
                 k = w if k > 0 else 0
 
             if k > 0:
-                if self.enable_matrix_codes:
+                if self.enable_code_matrix:
                     y_cp = self.matrix_codes[i][int(y_cp)]
                 for l in range(int(k)):
                     self.ensemble[i].partial_fit(np.asarray([X_cp]), np.asarray([y_cp]), self.classes)
@@ -271,7 +272,7 @@ class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
             self.n_detected_changes += 1
             max_threshold = 0.0
             i_max = -1
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 if max_threshold < self.adwin_ensemble[i].estimation:
                     max_threshold = self.adwin_ensemble[i].estimation
                     i_max = i
@@ -286,7 +287,7 @@ class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
                     self.adwin_ensemble.append(ADWIN(self.delta))
-                    self.n_estimators += 1
+                    self.actual_n_estimators += 1
 
     def predict(self, X):
         """ Predict classes for the passed data.
@@ -338,12 +339,12 @@ class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         then taking the absolute probability from the ensemble itself.
 
         """
-        if self.enable_matrix_codes:
+        if self.enable_code_matrix:
             return self.predict_binary_proba(X)
         proba = []
         r, c = get_dimensions(X)
         try:
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
                     raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
@@ -400,7 +401,7 @@ class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         r, c = get_dimensions(X)
         if not self.init_matrix_codes:
             try:
-                for i in range(self.n_estimators):
+                for i in range(self.actual_n_estimators):
                     vote = self.ensemble[i].predict_proba(X)
                     vote_class = 0
 

@@ -58,7 +58,7 @@ class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimato
         """
         super().__init__()
 
-        self.max_experts = n_estimators
+        self.n_estimators = n_estimators
         self.base_estimator = base_estimator
 
         self.beta = beta
@@ -185,7 +185,7 @@ class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimato
             self._scale_weights(max_weight)
             self._remove_experts()
             if np.any(y_hat != y):
-                if len(self.experts) == self.max_experts:
+                if len(self.experts) == self.n_estimators:
                     self.experts.pop(weakest_expert_index)
                 self.experts.append(self._construct_new_expert())
 

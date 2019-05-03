@@ -90,22 +90,23 @@ class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         super().__init__()
         # default values
         self.ensemble = None
-        self.n_estimators = None
+        self.actual_n_estimators = None
         self.classes = None
         self._random_state = None   # This is the actual random_state object used internally
-        self._init_n_estimators = n_estimators
-        self.random_state = random_state
-        self.__configure(base_estimator)
-
-    def __configure(self, base_estimator):
-        base_estimator.reset()
         self.base_estimator = base_estimator
-        self.n_estimators = self._init_n_estimators
-        self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
+        self.n_estimators = n_estimators
+        self.random_state = random_state
+        self.__configure()
+
+    def __configure(self):
+        if hasattr(self.base_estimator, "reset"):
+            self.base_estimator.reset()
+        self.actual_n_estimators = self.n_estimators
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.actual_n_estimators)]
         self._random_state = check_random_state(self.random_state)
 
     def reset(self):
-        self.__configure(self.base_estimator)
+        self.__configure()
         return self
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
@@ -160,7 +161,7 @@ class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
         self.__adjust_ensemble_size()
 
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             k = self._random_state.poisson()
             if k > 0:
                 for b in range(k):
@@ -172,7 +173,7 @@ class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
-                    self.n_estimators += 1
+                    self.actual_n_estimators += 1
 
     def predict(self, X):
         """ Predict classes for the passed data.
@@ -224,7 +225,7 @@ class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         proba = []
         r, c = get_dimensions(X)
         try:
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
                     raise ValueError("The number of classes in the base learner is larger than in the ensemble.")

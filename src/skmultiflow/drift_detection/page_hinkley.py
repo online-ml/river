@@ -20,7 +20,7 @@ class PageHinkley(BaseDriftDetector):
     
     Parameters
     ----------
-    min_num_instances: int (default=30)
+    min_instances: int (default=30)
         The minimum number of instances before detecting change.
     delta: float (default=0.005)
         The delta factor for the Page Hinkley test.
@@ -48,9 +48,9 @@ class PageHinkley(BaseDriftDetector):
     ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
     
     """
-    def __init__(self, min_num_instances=30, delta=0.005, threshold=50, alpha=1 - 0.0001):
+    def __init__(self, min_instances=30, delta=0.005, threshold=50, alpha=1 - 0.0001):
         super().__init__()
-        self.min_instances = min_num_instances
+        self.min_instances = min_instances
         self.delta = delta
         self.threshold = threshold
         self.alpha = alpha

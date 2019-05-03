@@ -49,7 +49,7 @@ def test_awe():
     assert np.alltrue(predictions == expected_predictions)
 
     # assert model information
-    expected_info = 'AccuracyWeightedEnsemble(base_estimator=NaiveBayes(nominal_attributes=None),\n' \
+    expected_info = 'AccuracyWeightedEnsemble(base_estimator=NaiveBayes(nominal_attributes=[]),\n' \
                     '                         n_estimators=5, n_kept_estimators=10, n_splits=5,\n' \
                     '                         window_size=200)'
     assert classifier.__repr__() == expected_info

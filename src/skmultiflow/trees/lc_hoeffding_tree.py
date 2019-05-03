@@ -78,21 +78,20 @@ class LCHT(HoeffdingTree, MultiOutputMixin):
                  nominal_attributes=None,
                  n_labels=None):
 
-        super().__init__()
-        self.max_byte_size = max_byte_size
-        self.memory_estimate_period = memory_estimate_period
-        self.grace_period = grace_period
-        self.split_criterion = split_criterion
-        self.split_confidence = split_confidence
-        self.tie_threshold = tie_threshold
-        self.binary_split = binary_split
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_atts = remove_poor_atts
-        self.no_preprune = no_preprune
-        self.leaf_prediction = leaf_prediction
-        self.nb_threshold = nb_threshold
-        self.nominal_attributes = nominal_attributes
-        self.n_labels=n_labels
+        super().__init__(max_byte_size=max_byte_size,
+                         memory_estimate_period=memory_estimate_period,
+                         grace_period=grace_period,
+                         split_criterion=split_criterion,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         binary_split=binary_split,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_atts=remove_poor_atts,
+                         no_preprune=no_preprune,
+                         leaf_prediction=leaf_prediction,
+                         nb_threshold=nb_threshold,
+                         nominal_attributes=nominal_attributes)
+        self.n_labels = n_labels
 
     @property
     def n_labels(self):

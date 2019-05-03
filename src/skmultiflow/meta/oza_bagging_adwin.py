@@ -81,27 +81,14 @@ class OzaBaggingAdwin(OzaBagging):
     def __init__(self, base_estimator=KNNAdwin(), n_estimators=10, random_state=None):
         super().__init__(base_estimator, n_estimators, random_state)
         # default values
-        self.ensemble = None
-        self.n_estimators = None
-        self.classes = None
         self.adwin_ensemble = None
-        self._random_state = None   # This is the actual random_state object used internally
-        self._init_n_estimators = n_estimators
-        self.random_state = random_state
-        self.__configure(base_estimator)
+        self.__configure()
 
-    def __configure(self, base_estimator):
-        self.n_estimators = self._init_n_estimators
-        self.adwin_ensemble = []
-        for i in range(self.n_estimators):
-            self.adwin_ensemble.append(ADWIN())
-        base_estimator.reset()
-        self.base_estimator = base_estimator
-        self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
-        self._random_state = check_random_state(self.random_state)
+    def __configure(self):
+        self.adwin_ensemble = [cp.deepcopy(ADWIN()) for _ in range(self.actual_n_estimators)]
 
     def reset(self):
-        self.__configure(self.base_estimator)
+        self.__configure()
         return self
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
@@ -164,7 +151,7 @@ class OzaBaggingAdwin(OzaBagging):
 
         self.__adjust_ensemble_size()
         change_detected = False
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             k = self._random_state.poisson()
             if k > 0:
                 for b in range(k):
@@ -189,7 +176,7 @@ class OzaBaggingAdwin(OzaBagging):
         if change_detected:
             max_threshold = 0.0
             i_max = -1
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 if max_threshold < self.adwin_ensemble[i].estimation:
                     max_threshold = self.adwin_ensemble[i].estimation
                     i_max = i
@@ -205,4 +192,4 @@ class OzaBaggingAdwin(OzaBagging):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
                     self.adwin_ensemble.append(ADWIN())
-                    self.n_estimators += 1
+                    self.actual_n_estimators += 1

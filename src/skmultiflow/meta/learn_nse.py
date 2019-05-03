@@ -25,7 +25,7 @@ class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
     ----------
     base_estimator: StreamModel or sklearn.BaseEstimator (default=DecisionTreeClassifier)
         Each member of the ensemble is an instance of the base estimator.
-    ensemble_size: int (default=15)
+    n_estimators: int (default=15)
         The number of base estimators in the ensemble.
     window_size: int (default=250)
         The size of the training window (batch), in other words, how many instances are kept for training.
@@ -47,7 +47,7 @@ class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
                  window_size=250,
                  slope=0.5,
                  crossing_point=10,
-                 ensemble_size=15,
+                 n_estimators=15,
                  pruning=None):
         super().__init__()
         self.ensemble = []
@@ -55,10 +55,10 @@ class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         self.bkts = []
         self.wkts = []
         self.buffer = []
-        self.period = window_size
+        self.window_size = window_size
         self.slope = slope
         self.crossing_point = crossing_point
-        self.ensemble_size = ensemble_size
+        self.n_estimators = n_estimators
         self.pruning = pruning
         self.X_batch = []
         self.y_batch = []
@@ -113,7 +113,7 @@ class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
             self.y_batch.append(y[i])
             mt = len(self.y_batch)
 
-            if mt == self.period:
+            if mt == self.window_size:
                 self.X_batch = np.array(self.X_batch)
                 self.y_batch = np.array(self.y_batch)
 
@@ -187,13 +187,13 @@ class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
                 # Ensemble pruning
 
-                if self.pruning == 'age' and t > self.ensemble_size:
+                if self.pruning == 'age' and t > self.n_estimators:
                     # Age-based
                     self.ensemble.pop(0)
                     self.ensemble_weights.pop(0)
                     self.bkts.pop(0)
                     self.wkts.pop(0)
-                elif self.pruning == 'error' and t > self.ensemble_size:
+                elif self.pruning == 'error' and t > self.n_estimators:
                     # Error-based
                     self.ensemble.pop(error_index - 1)
                     self.ensemble_weights.pop(error_index - 1)

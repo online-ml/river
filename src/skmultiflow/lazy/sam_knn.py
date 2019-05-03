@@ -34,7 +34,7 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
         scratch.
         'maxACCApprox' approximates the Interleaved test-train error and is 
         significantly faster than the exact version. If set to None, the STM is not 
-        adapted at all. When additionally useLTM=false, this algorithm is simply a kNN 
+        adapted at all. When additionally use_ltm=false, this algorithm is simply a kNN
         with fixed sliding window size.
         
     min_stm_size : int, optional (default=50)
@@ -92,23 +92,29 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
                  use_ltm=True):
         super().__init__()
         self.n_neighbors = n_neighbors
+        self.weighting = weighting
+        self.max_wind_size = max_window_size
+        self.ltm_size = ltm_size
+        self.min_stm_size = min_stm_size
+        self.use_ltm = use_ltm
+        self.stm_size_option = stm_size_option
+
         self._STMSamples = None
         self._STMLabels = np.empty(shape=(0), dtype=np.int32)
         self._LTMSamples = None
         self._LTMLabels = np.empty(shape=(0), dtype=np.int32)
-        self.maxLTMSize = ltm_size * max_window_size
-        self.maxSTMSize = max_window_size - self.maxLTMSize
-        self.minSTMSize = min_stm_size
+        self.maxLTMSize = self.ltm_size * self.max_wind_size
+        self.maxSTMSize = self.max_wind_size - self.maxLTMSize
+        self.minSTMSize = self.min_stm_size
 
-        if stm_size_option is not None:
+        if self.stm_size_option is not None:
             self.STMDistances = np.zeros(shape=(max_window_size + 1, max_window_size + 1))
-        if weighting == 'distance':
+        if self.weighting == 'distance':
             self.getLabelsFct = SAMKNN.get_distance_weighted_label
-        elif weighting == 'uniform':
+        elif self.weighting == 'uniform':
             self.getLabelsFct = SAMKNN.get_maj_label
-        self.STMSizeAdaption = stm_size_option
-        self.useLTM = use_ltm
-        if use_ltm:
+        self.STMSizeAdaption = self.stm_size_option
+        if self.use_ltm:
             self.predictFct = self._predict_by_all_memories
             self.sizeCheckFct = self.size_check_STMLTM
         else:
@@ -153,7 +159,7 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
         return newSamples, newLabels
 
     def size_check_fade_out(self):
-        """Makes sure that the STM does not surpass the maximum size, only used when useLTM=False."""
+        """Makes sure that the STM does not surpass the maximum size, only used when use_ltm=False."""
         STMShortened = False
         if len(self._STMLabels) > self.maxSTMSize + self.maxLTMSize:
             STMShortened = True
@@ -180,7 +186,7 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
         return STMShortened
 
     def size_check_STMLTM(self):
-        """Makes sure that the STM and LTM combined doe not surpass the maximum size, only used when useLTM=True."""
+        """Makes sure that the STM and LTM combined doe not surpass the maximum size, only used when use_ltm=True."""
         STMShortened = False
         if len(self._STMLabels) + len(self._LTMLabels) > self.maxSTMSize + self.maxLTMSize:
             if len(self._LTMLabels) > self.maxLTMSize:
@@ -231,7 +237,7 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
     def _partial_fit(self, x, y):
         """Processes a new sample."""
         distancesSTM = SAMKNN.get_distances(x, self._STMSamples)
-        if not self.useLTM:
+        if not self.use_ltm:
             self._partial_fit_by_stm(x, y, distancesSTM)
         else:
             self._partial_fit_by_all_memories(x, y, distancesSTM)
@@ -259,7 +265,7 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
                 self._STMLabels = np.delete(self._STMLabels, delrange, 0)
                 self.STMDistances[:len(self._STMLabels),:len(self._STMLabels)] = self.STMDistances[(oldWindowSize-newWindowSize):(oldWindowSize-newWindowSize)+len(self._STMLabels),(oldWindowSize-newWindowSize):(oldWindowSize-newWindowSize)+len(self._STMLabels)]
 
-                if self.useLTM:
+                if self.use_ltm:
                     for i in delrange:
                         self.STMPredHistory.popleft()
                         self.LTMPredHistory.popleft()
@@ -273,7 +279,7 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
         self.LTMSizes.append(len(self._LTMLabels))
 
     def _partial_fit_by_all_memories(self, sample, label, distancesSTM):
-        """Predicts the label of a given sample by using the STM, LTM and the CM, only used when useLTM=True."""
+        """Predicts the label of a given sample by using the STM, LTM and the CM, only used when use_ltm=True."""
         predictedLabelLTM = 0
         predictedLabelSTM = 0
         predictedLabelBoth = 0
@@ -351,7 +357,7 @@ class SAMKNN(BaseStreamEstimator, ClassifierMixin):
         pass
 
     def _predict_by_stm(self, sample, label, distancesSTM):
-        """Predicts the label of a given sample by the STM, only used when useLTM=False."""
+        """Predicts the label of a given sample by the STM, only used when use_ltm=False."""
         predictedLabel = 0
         currLen = len(self._STMLabels)
         if currLen > 0:
