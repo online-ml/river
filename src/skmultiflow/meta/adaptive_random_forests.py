@@ -339,26 +339,26 @@ class AdaptiveRandomForest(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMi
     def init_ensemble(self, X):
         self._set_max_features(get_dimensions(X)[1])
 
-        self.ensemble = [ARFBaseLearner(i,
-                                        ARFHoeffdingTree(max_byte_size=self.max_byte_size,
-                                                         memory_estimate_period=self.memory_estimate_period,
-                                                         grace_period=self.grace_period,
-                                                         split_criterion=self.split_criterion,
-                                                         split_confidence=self.split_confidence,
-                                                         tie_threshold=self.tie_threshold,
-                                                         binary_split=self.binary_split,
-                                                         stop_mem_management=self.stop_mem_management,
-                                                         remove_poor_atts=self.remove_poor_atts,
-                                                         no_preprune=self.no_preprune,
-                                                         leaf_prediction=self.leaf_prediction,
-                                                         nb_threshold=self.nb_threshold,
-                                                         nominal_attributes=self.nominal_attributes,
-                                                         max_features=self.max_features,
-                                                         random_state=self.random_state),
-                                        self.instances_seen,
-                                        self.drift_detection_method,
-                                        self.warning_detection_method,
-                                        False) for i in range(self.n_estimators)]
+        self.ensemble = [ARFBaseLearner(index_original=i,
+                                        classifier=ARFHoeffdingTree(max_byte_size=self.max_byte_size,
+                                                                    memory_estimate_period=self.memory_estimate_period,
+                                                                    grace_period=self.grace_period,
+                                                                    split_criterion=self.split_criterion,
+                                                                    split_confidence=self.split_confidence,
+                                                                    tie_threshold=self.tie_threshold,
+                                                                    binary_split=self.binary_split,
+                                                                    stop_mem_management=self.stop_mem_management,
+                                                                    remove_poor_atts=self.remove_poor_atts,
+                                                                    no_preprune=self.no_preprune,
+                                                                    leaf_prediction=self.leaf_prediction,
+                                                                    nb_threshold=self.nb_threshold,
+                                                                    nominal_attributes=self.nominal_attributes,
+                                                                    max_features=self.max_features,
+                                                                    random_state=self.random_state),
+                                        instances_seen=self.instances_seen,
+                                        drift_detection_method=self.drift_detection_method,
+                                        warning_detection_method=self.warning_detection_method,
+                                        is_background_learner=False) for i in range(self.n_estimators)]
 
     def _set_max_features(self, n):
         if self.max_features == 'auto' or self.max_features == 'sqrt':

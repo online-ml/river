@@ -442,20 +442,23 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
                  learning_ratio_decay=0.001,
                  learning_ratio_const=True,
                  random_state=None):
-        super().__init__()
-        self.max_byte_size = max_byte_size
-        self.split_criterion = 'intra cluster variance reduction'
-        self.memory_estimate_period = memory_estimate_period
-        self.grace_period = grace_period
-        self.split_confidence = split_confidence
-        self.tie_threshold = tie_threshold
-        self.binary_split = binary_split
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_atts = remove_poor_atts
-        self.no_preprune = no_preprune
-        self.leaf_prediction = leaf_prediction
-        self.nb_threshold = nb_threshold
-        self.nominal_attributes = nominal_attributes
+        super().__init__(max_byte_size=max_byte_size,
+                         memory_estimate_period=memory_estimate_period,
+                         grace_period=grace_period,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         binary_split=binary_split,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_atts=remove_poor_atts,
+                         no_preprune=no_preprune,
+                         leaf_prediction=leaf_prediction,
+                         nb_threshold=nb_threshold,
+                         nominal_attributes=nominal_attributes)
+        self.split_criterion = 'icvr',   # intra cluster variance reduction
+        self.learning_ratio_perceptron = learning_ratio_perceptron
+        self.learning_ratio_decay = learning_ratio_decay
+        self.learning_ratio_const = learning_ratio_const
+        self.random_state = random_state
 
         self._tree_root = None
         self._decision_node_cnt = 0
@@ -467,15 +470,11 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
         self._growth_allowed = True
         self._train_weight_seen_by_model = 0.0
 
-        self.learning_ratio_perceptron = learning_ratio_perceptron
-        self.learning_ratio_decay = learning_ratio_decay
-        self.learning_ratio_const = learning_ratio_const
         self.examples_seen = 0
         self.sum_of_values = 0.0
         self.sum_of_squares = 0.0
         self.sum_of_attribute_values = 0.0
         self.sum_of_attribute_squares = 0.0
-        self.random_state = random_state
 
         # To add the n_targets property once
         self._n_targets_set = False
@@ -498,10 +497,10 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
 
     @split_criterion.setter
     def split_criterion(self, split_criterion):
-        if split_criterion != 'intra cluster variance reduction':
+        if split_criterion != 'icvr':   # intra cluster variance reduction
             print("Invalid split_criterion option {}', will use default '{}'"
-                        .format(split_criterion, 'intra cluster variance reduction'))
-            self._split_criterion = 'intra cluster variance reduction'
+                        .format(split_criterion, 'icvr'))
+            self._split_criterion = 'icvr'
         else:
             self._split_criterion = split_criterion
 

@@ -767,8 +767,6 @@ class HoeffdingTree(BaseStreamEstimator, ClassifierMixin):
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
-        # self._numeric_estimator_option = 'GaussianNumericAttributeClassObserver'           # Numeric estimator to use.
-        # self._nominal_estimator_option = 'NominalAttributeClassObserver'                   # Nominal estimator to use.
 
         self._tree_root = None
         self._decision_node_cnt = 0

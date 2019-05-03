@@ -63,7 +63,7 @@ class AdditiveExpertEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimator
         """
         super().__init__()
 
-        self.max_experts = n_estimators
+        self.n_estimators = n_estimators
         self.base_estimator = base_estimator
 
         self.beta = beta
@@ -167,8 +167,8 @@ class AdditiveExpertEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimator
             new_exp = self._construct_new_expert(ensemble_weight * self.gamma)
             self._add_expert(new_exp)
 
-        # Pruning to self.max_experts if needed
-        if len(self.experts) > self.max_experts:
+        # Pruning to self.n_estimators if needed
+        if len(self.experts) > self.n_estimators:
             self.experts.pop(0)
 
         # Train each expert on X

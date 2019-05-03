@@ -49,6 +49,7 @@ def test_leverage_bagging():
 
     expected_info = "LeverageBagging(base_estimator=KNN(leaf_size=40, max_window_size=2000,\n" \
                     "                                   n_neighbors=8, nominal_attributes=[]),\n" \
-                    "                delta=0.002, enable_code_matrix=None, leverage_algorithm=None,\n" \
-                    "                n_estimators=3, random_state=112, w=6)"
+                    "                delta=0.002, enable_code_matrix=False,\n" \
+                    "                leverage_algorithm='leveraging_bag', n_estimators=3,\n" \
+                    "                random_state=112, w=6)"
     assert learner.get_info() == expected_info
