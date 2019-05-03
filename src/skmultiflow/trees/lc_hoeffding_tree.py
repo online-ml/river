@@ -1,3 +1,4 @@
+from skmultiflow.core import MultiOutputMixin
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
@@ -11,7 +12,7 @@ NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
-class LCHT(HoeffdingTree):
+class LCHT(HoeffdingTree, MultiOutputMixin):
     """ Label Combination Hoeffding Tree
 
     Label combination transforms the problem from multilabel to multiclass.
@@ -103,8 +104,25 @@ class LCHT(HoeffdingTree):
             raise ValueError('The number of labels must be specified')
         self._n_labels = n_labels
 
-    def partial_fit(self, X, y, classes=None, weight=None):
-        super().partial_fit(X, y, weight=weight)    # Override HT, infer the classes
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Incrementally trains the model. Train samples (instances) are composed of X attributes and their
+            corresponding targets y.
+
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            Instance attributes.
+        y: array_like
+            Classes (targets) for all samples in X.
+        classes: Not used (default=None)
+        sample_weight: float or array-like, optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed.
+
+        Returns
+        -------
+            self
+            """
+        super().partial_fit(X, y, sample_weight=sample_weight)    # Override HT, infer the classes
 
     class LCActiveLearningNode(HoeffdingTree.ActiveLearningNode):
 
@@ -302,3 +320,8 @@ class LCHT(HoeffdingTree):
             parent.set_child(parent_branch, new_leaf)
         self._active_leaf_node_cnt -= 1
         self._inactive_leaf_node_cnt += 1
+
+    @staticmethod
+    def _more_tags():
+        return {'multioutput': True,
+                'multioutput_only': True}
