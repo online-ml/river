@@ -235,7 +235,7 @@ class AdaptiveRandomForest(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMi
 
         return self
 
-    def _partial_fit(self, X, y, classes=None, weight=1.0):
+    def _partial_fit(self, X, y, classes=None, sample_weight=1.0):
         self.instances_seen += 1
         
         if self.ensemble is None:
@@ -243,12 +243,12 @@ class AdaptiveRandomForest(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMi
 
         for i in range(self.n_estimators):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
-            self.ensemble[i].evaluator.add_result(y_predicted, y, weight)
+            self.ensemble[i].evaluator.add_result(y_predicted, y, sample_weight)
             k = self._random_state.poisson(self.lambda_value)
             if k > 0:
                 self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]),
                                              classes=classes,
-                                             weight=np.asarray([k]),
+                                             sample_weight=np.asarray([k]),
                                              instances_seen=self.instances_seen)
     
     def predict(self, X):
@@ -470,11 +470,11 @@ class ARFBaseLearner(BaseStreamEstimator):
             self.drift_detection.reset()
         self.evaluator = self.evaluator_method()
 
-    def partial_fit(self, X, y, classes, weight, instances_seen):
-        self.classifier.partial_fit(X, y, classes=classes, weight=weight)
+    def partial_fit(self, X, y, classes, sample_weight, instances_seen):
+        self.classifier.partial_fit(X, y, classes=classes, sample_weight=sample_weight)
 
         if self.background_learner:
-            self.background_learner.classifier.partial_fit(X, y, classes=classes, weight=weight)
+            self.background_learner.classifier.partial_fit(X, y, classes=classes, sample_weight=sample_weight)
 
         if self._use_drift_detector and not self.is_background_learner:
             correctly_classifies = self.classifier.predict(X) == y
