@@ -42,11 +42,13 @@ def test_hoeffding_tree(test_path):
     assert np.alltrue(predictions == expected_predictions)
     assert np.allclose(proba_predictions, data)
 
-    expected_info = 'HoeffdingTree: max_byte_size: 33554432 - memory_estimate_period: 1000000 - grace_period: 200 ' \
-                    '- split_criterion: info_gain - split_confidence: 1e-07 - tie_threshold: 0.05 ' \
-                    '- binary_split: False - stop_mem_management: False - remove_poor_atts: False ' \
-                    '- no_pre_prune: False - leaf_prediction: nba - nb_threshold: 0 - nominal_attributes: [5, 6, 7,' \
-                    ' 8, 9, 10, 11, 12, 13, 14] - '
+    expected_info = "HoeffdingTree(binary_split=False, grace_period=200, leaf_prediction='nba',\n" \
+                    "              max_byte_size=33554432, memory_estimate_period=1000000,\n" \
+                    "              nb_threshold=0, no_preprune=False,\n" \
+                    "              nominal_attributes=[5, 6, 7, 8, 9, 10, 11, 12, 13, 14],\n" \
+                    "              remove_poor_atts=False, split_confidence=1e-07,\n" \
+                    "              split_criterion='info_gain', stop_mem_management=False,\n" \
+                    "              tie_threshold=0.05)"
     assert learner.get_info() == expected_info
 
     expected_model_1 = 'Leaf = Class 1.0 | {0.0: 1423.0, 1.0: 1745.0, 2.0: 978.0, 3.0: 854.0}\n'
