@@ -34,13 +34,16 @@ class DataStream(Stream):
 
     cat_features_idx: list, optional (default=None)
         A list of indices corresponding to the location of categorical features.
+
+    name: str, optional (default=None)
+        A string to id the data.
     """
 
     _CLASSIFICATION = 'classification'
     _REGRESSION = 'regression'
     _Y_is_defined = False
 
-    def __init__(self, data, y=None, target_idx=-1, n_targets=1, cat_features_idx=None):
+    def __init__(self, data, y=None, target_idx=-1, n_targets=1, cat_features_idx=None, name=None):
         super().__init__()
         self.X = None
         self.y = y
@@ -51,6 +54,7 @@ class DataStream(Stream):
         self.n_classes = 0
         self.data = data
         self._is_ready = False
+        self.name = name
         self.__configure()
 
     def __configure(self):
@@ -62,7 +66,6 @@ class DataStream(Stream):
                 self.X = pd.DataFrame(self.data)
                 self.target_idx = -self.y.shape[1]
                 self.n_targets = self.y.shape[1]
-
 
     @property
     def y(self):
@@ -389,10 +392,11 @@ class DataStream(Stream):
         print(self.y)
 
     def get_data_info(self):
+        name = self.name + ": " if self.name else ""
         if self.task_type == self._CLASSIFICATION:
-            return "{} target(s), {} classes".format(self.n_targets, self.n_classes)
+            return "{}{} target(s), {} classes".format(name, self.n_targets, self.n_classes)
         elif self.task_type == self._REGRESSION:
-            return "{} target(s)".format(self.n_targets)
+            return "{} target(s)".format(name, self.n_targets)
 
     def _get_target_values(self):
         if self.task_type == 'classification':
@@ -404,4 +408,6 @@ class DataStream(Stream):
             return [float] * self.n_targets
 
     def get_info(self):
-        return 'Dataset Stream:' + '  -  n_targets: ' + str(self.n_targets)
+        return 'DataStream(n_targets={}, target_idx={}, cat_features_idx={}, name={})'.\
+            format(self.target_idx, self.n_targets, self.cat_features_idx,
+                   self.name if not self.name else "'" + self.name + "'")

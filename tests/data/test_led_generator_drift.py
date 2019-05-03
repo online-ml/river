@@ -57,3 +57,9 @@ def test_led_generator_drift(test_path):
     assert np.alltrue(y == y_expected)
 
     assert stream.n_features == X.shape[1]
+
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "LEDGeneratorDrift(has_noise=True, n_drift_features=4, noise_percentage=0.28,\n" \
+                    "                  random_state=112)"
+    assert stream.get_info() == expected_info

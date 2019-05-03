@@ -74,9 +74,9 @@ class MIXEDGenerator(Stream):
 
         # Classification functions to use
         self._classification_functions = [self.classification_function_zero, self.classification_function_one]
-        self._original_random_state = random_state
-        self.classification_function_idx = classification_function
-        self.random_state = None
+        self.random_state = random_state
+        self.classification_function = classification_function
+        self._random_state = None
         self.balance_classes = balance_classes
         self.n_cat_features = 2
         self.n_num_features = 2
@@ -96,7 +96,7 @@ class MIXEDGenerator(Stream):
         self.target_values = [i for i in range(self.n_classes)]
 
     @property
-    def classification_function_idx(self):
+    def classification_function(self):
         """ Retrieve the index of the current classification function.
 
         Returns
@@ -106,8 +106,8 @@ class MIXEDGenerator(Stream):
         """
         return self._classification_function_idx
 
-    @classification_function_idx.setter
-    def classification_function_idx(self, classification_function_idx):
+    @classification_function.setter
+    def classification_function(self, classification_function_idx):
         """ Set the index of the current classification function.
 
         Parameters
@@ -117,7 +117,8 @@ class MIXEDGenerator(Stream):
         if classification_function_idx in range(2):
             self._classification_function_idx = classification_function_idx
         else:
-            raise ValueError("classification_function_idx takes only these values: 0, 1, and {} was passed".format(classification_function_idx))
+            raise ValueError("classification_function takes only these values: 0, 1, and {} was passed".
+                             format(classification_function_idx))
 
     @property
     def balance_classes(self):
@@ -179,12 +180,12 @@ class MIXEDGenerator(Stream):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                att_0 = 0 if self.random_state.rand() < 0.5 else 1
-                att_1 = 0 if self.random_state.rand() < 0.5 else 1
-                att_2 = self.random_state.rand()
-                att_3 = self.random_state.rand()
+                att_0 = 0 if self._random_state.rand() < 0.5 else 1
+                att_1 = 0 if self._random_state.rand() < 0.5 else 1
+                att_2 = self._random_state.rand()
+                att_3 = self._random_state.rand()
 
-                group = self._classification_functions[self.classification_function_idx](att_0, att_1, att_2, att_3)
+                group = self._classification_functions[self.classification_function](att_0, att_1, att_2, att_3)
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -206,7 +207,7 @@ class MIXEDGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
-        self.random_state = check_random_state(self._original_random_state)
+        self._random_state = check_random_state(self.random_state)
         self.next_class_should_be_zero = False
         self.sample_idx = 0
 
@@ -270,17 +271,12 @@ class MIXEDGenerator(Stream):
         z = y < 0.5 + 0.3 * np.sin(3 * np.pi * x)
         return 1 if (v == 1 and w == 1) or (v == 1 and z) or (w == 1 and z) else 0
 
-    def get_info(self):
-        return 'MixedGenerator: classification_function: ' + str(self.classification_function_idx) + \
-               ' - random_state: ' + str(self.random_state) + \
-               ' - balance_classes: ' + str(self.balance_classes)
-
     def generate_drift(self):
         """
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self.random_state.randint(3)
-        while new_function == self.classification_function_idx:
-            new_function = self.random_state.randint(3)
-        self.classification_function_idx = new_function
+        new_function = self._random_state.randint(3)
+        while new_function == self.classification_function:
+            new_function = self._random_state.randint(3)
+        self.classification_function = new_function
