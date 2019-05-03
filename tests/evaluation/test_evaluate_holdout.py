@@ -41,18 +41,31 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
     compare_files(output_file, expected_file)
 
     mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
+
     expected_mean_accuracy = 0.344000
-    expected_mean_kappa = 0.135021
-    expected_mean_kappa_t = 0.180000
-    expected_current_accuracy = 0.360000
-    expected_current_kappa = 0.152542
-    expected_current_kappa_t = 0.200000
     assert np.isclose(mean_performance.get_accuracy(), expected_mean_accuracy)
+
+    expected_mean_kappa = 0.135021
     assert np.isclose(mean_performance.get_kappa(), expected_mean_kappa)
+
+    expected_mean_kappa_t = 0.180000
     assert np.isclose(mean_performance.get_kappa_t(), expected_mean_kappa_t)
+
+    expected_current_accuracy = 0.360000
     assert np.isclose(current_performance.get_accuracy(), expected_current_accuracy)
+
+    expected_current_kappa = 0.152542
     assert np.isclose(current_performance.get_kappa(), expected_current_kappa)
+
+    expected_current_kappa_t = 0.200000
     assert np.isclose(current_performance.get_kappa_t(), expected_current_kappa_t)
+
+    expected_info = "EvaluateHoldout(batch_size=1, dynamic_test_set=False, max_samples=1000,\n" \
+                    "                max_time=inf, metrics=['accuracy', 'kappa', 'kappa_t'],\n" \
+                    "                n_wait=200,\n" \
+                    "                output_file='holdout_summary.csv',\n" \
+                    "                restart_stream=True, show_plot=False, test_size=50)"
+    assert evaluator.get_info() == expected_info
 
 
 def compare_files(test, expected):
