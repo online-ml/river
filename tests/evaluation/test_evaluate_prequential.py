@@ -38,18 +38,31 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
     compare_files(output_file, expected_file)
 
     mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
+
     expected_mean_accuracy = 0.436250
-    expected_mean_kappa = 0.231791
-    expected_mean_kappa_t = 0.236887
-    expected_current_accuracy = 0.430000
-    expected_current_kappa = 0.223909
-    expected_current_kappa_t = 0.240000
     assert np.isclose(mean_performance.get_accuracy(), expected_mean_accuracy)
+
+    expected_mean_kappa = 0.231791
     assert np.isclose(mean_performance.get_kappa(), expected_mean_kappa)
+
+    expected_mean_kappa_t = 0.236887
     assert np.isclose(mean_performance.get_kappa_t(), expected_mean_kappa_t)
+
+    expected_current_accuracy = 0.430000
     assert np.isclose(current_performance.get_accuracy(), expected_current_accuracy)
+
+    expected_current_kappa = 0.223909
     assert np.isclose(current_performance.get_kappa(), expected_current_kappa)
+
+    expected_current_kappa_t = 0.240000
     assert np.isclose(current_performance.get_kappa_t(), expected_current_kappa_t)
+
+    expected_info = "EvaluatePrequential(batch_size=1, data_points_for_classification=False,\n" \
+                    "                    max_samples=1000, max_time=inf,\n" \
+                    "                    metrics=['accuracy', 'kappa', 'kappa_t'], n_wait=200,\n" \
+                    "                    output_file='prequential_summary.csv',\n" \
+                    "                    pretrain_size=200, restart_stream=True, show_plot=False)"
+    assert evaluator.get_info() == expected_info
 
 
 def compare_files(test, expected):
