@@ -459,7 +459,7 @@ class StreamEvaluator(BaseStreamEstimator, metaclass=ABCMeta):
             with open(self.output_file, 'w+') as f:
                 f.write("# TEST CONFIGURATION BEGIN")
                 if hasattr(self.stream, 'get_info'):
-                    f.write("\n# {}".format(self.stream.get_info()))
+                    f.write("\n# {}".format(" ".join([line.strip() for line in self.stream.get_info().splitlines()])))
                 for i in range(self.n_models):
                     if hasattr(self.model[i], 'get_info'):
                         info = " ".join([line.strip() for line in self.model[i].get_info().splitlines()])
