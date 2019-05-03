@@ -42,10 +42,12 @@ def test_hoeffding_anytime_tree(test_path):
 
     assert np.allclose(proba_predictions, expected_proba)
 
-    expected_info = 'HATT: max_byte_size: 33554432 - memory_estimate_period: 1000000 - grace_period: 200 - ' \
-                    'min_samples_reevaluate: 20 - split_criterion: info_gain - split_confidence: 1e-07 - ' \
-                    'tie_threshold: 0.05 - binary_split: False - stop_mem_management: False - leaf_prediction: ' \
-                    'nba - nb_threshold: 0 - nominal_attributes: [1, 2, 3, 4, 5, 6, 7, 8] - '
+    expected_info = "HATT(binary_split=False, grace_period=200, leaf_prediction='nba',\n" \
+                    "     max_byte_size=33554432, memory_estimate_period=1000000,\n" \
+                    "     min_samples_reevaluate=20, nb_threshold=0,\n" \
+                    "     nominal_attributes=[1, 2, 3, 4, 5, 6, 7, 8], split_confidence=1e-07,\n" \
+                    "     split_criterion='info_gain', stop_mem_management=False,\n" \
+                    "     tie_threshold=0.05)"
     assert learner.get_info() == expected_info
 
     expected_model = 'ifAttribute1=0:ifAttribute3=0:Leaf=Class1|{0:260.0,1:287.0}' \
