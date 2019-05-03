@@ -91,15 +91,15 @@ class SineGenerator(Stream):
 
         # Classification functions to use
         self._classification_functions = [self.classification_function_zero, self.classification_function_one,
-                                         self.classification_function_two, self.classification_function_three]
-        self.classification_function_idx = classification_function
-        self._original_random_state = random_state
+                                          self.classification_function_two, self.classification_function_three]
+        self.classification_function = classification_function
+        self.random_state = random_state
         self.has_noise = has_noise
         self.balance_classes = balance_classes
         self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = 2
         self.n_targets = 1
-        self.random_state = None
+        self._random_state = None
         self.next_class_should_be_zero = False
         self.name = "Sine Generator"
 
@@ -114,7 +114,7 @@ class SineGenerator(Stream):
         self.target_values = [i for i in range(self.n_classes)]
 
     @property
-    def classification_function_idx(self):
+    def classification_function(self):
         """ Retrieve the index of the current classification function.
 
         Returns
@@ -124,8 +124,8 @@ class SineGenerator(Stream):
         """
         return self._classification_function_idx
 
-    @classification_function_idx.setter
-    def classification_function_idx(self, classification_function_idx):
+    @classification_function.setter
+    def classification_function(self, classification_function_idx):
         """ Set the index of the current classification function.
 
         Parameters
@@ -135,7 +135,7 @@ class SineGenerator(Stream):
         if classification_function_idx in range(4):
             self._classification_function_idx = classification_function_idx
         else:
-            raise ValueError("classification_function_idx takes only these "
+            raise ValueError("classification_function takes only these "
                              "values: 0, 1, 2, 3, and {} was "
                              "passed".format(classification_function_idx))
 
@@ -196,7 +196,7 @@ class SineGenerator(Stream):
 
         """
 
-        self.random_state = check_random_state(self._original_random_state)
+        self._random_state = check_random_state(self.random_state)
         self.next_class_should_be_zero = False
         self.sample_idx = 0
 
@@ -235,9 +235,9 @@ class SineGenerator(Stream):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                att1 = self.random_state.rand()
-                att2 = self.random_state.rand()
-                group = self._classification_functions[self.classification_function_idx](att1, att2)
+                att1 = self._random_state.rand()
+                att2 = self._random_state.rand()
+                group = self._classification_functions[self.classification_function](att1, att2)
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -252,7 +252,7 @@ class SineGenerator(Stream):
 
             if self.has_noise:
                 for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    data[j, i] = self.random_state.rand()
+                    data[j, i] = self._random_state.rand()
                 data[j, 4] = group
             else:
                 data[j, 2] = group
@@ -267,10 +267,10 @@ class SineGenerator(Stream):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self.random_state.randint(4)
-        while new_function == self.classification_function_idx:
-            new_function = self.random_state.randint(4)
-        self.classification_function_idx = new_function
+        new_function = self._random_state.randint(4)
+        while new_function == self.classification_function:
+            new_function = self._random_state.randint(4)
+        self.classification_function = new_function
 
     @staticmethod
     def classification_function_zero(att1, att2):
@@ -360,10 +360,3 @@ class SineGenerator(Stream):
 
         """
         return 0 if (att1 < 0.5 + 0.3 * np.sin(3 * np.pi * att2)) else 1
-
-    def get_info(self):
-        return 'SineGenerator: classification_function: ' + str(self.classification_function_idx) + \
-               ' - random_state: ' + str(self._original_random_state) + \
-               ' - balance_classes: ' + str(self.balance_classes) + \
-               ' - has_noise: ' + str(self.has_noise)
-

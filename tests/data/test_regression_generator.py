@@ -56,3 +56,9 @@ def test_regression_generator(test_path):
     assert stream.n_targets == y.shape[1]
 
     assert stream.n_features == X.shape[1]
+
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "RegressionGenerator(n_features=20, n_informative=6, n_samples=100, n_targets=4,\n" \
+                    "                    random_state=0)"
+    assert stream.get_info() == expected_info

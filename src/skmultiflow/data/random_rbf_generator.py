@@ -95,9 +95,9 @@ class RandomRBFGenerator(Stream):
 
     def __init__(self, model_random_state=None, sample_random_state=None, n_classes=2, n_features=10, n_centroids=50):
         super().__init__()
-        self._original_sample_random_state = sample_random_state
-        self._original_model_random_state = model_random_state
-        self.sample_random_state = None
+        self.sample_random_state = sample_random_state
+        self.model_random_state = model_random_state
+        self._sample_random_state = None
         self.n_classes = n_classes
         self.n_targets = 1
         self.n_features = n_features
@@ -136,14 +136,14 @@ class RandomRBFGenerator(Stream):
         data = np.zeros([batch_size, self.n_features + 1])
         for j in range(batch_size):
             centroid_aux = self.centroids[prp.random_index_based_on_weights(self.centroid_weights,
-                                                                            self.sample_random_state)]
+                                                                            self._sample_random_state)]
             att_vals = []
             magnitude = 0.0
             for i in range(self.n_features):
-                att_vals.append((self.sample_random_state.rand() * 2.0) - 1.0)
+                att_vals.append((self._sample_random_state.rand() * 2.0) - 1.0)
                 magnitude += att_vals[i]*att_vals[i]
             magnitude = np.sqrt(magnitude)
-            desired_mag = self.sample_random_state.normal() * centroid_aux.std_dev
+            desired_mag = self._sample_random_state.normal() * centroid_aux.std_dev
             scale = desired_mag/magnitude
             for i in range(self.n_features):
                 data[j, i] = centroid_aux.centre[i] + att_vals[i]*scale
@@ -154,7 +154,7 @@ class RandomRBFGenerator(Stream):
 
     def prepare_for_use(self):
         self.generate_centroids()
-        self.sample_random_state = check_random_state(self._original_sample_random_state)
+        self._sample_random_state = check_random_state(self.sample_random_state)
 
     def generate_centroids(self):
         """ generate_centroids
@@ -163,7 +163,7 @@ class RandomRBFGenerator(Stream):
         a label, a standard deviation and a weight. 
         
         """
-        model_random_state = check_random_state(self._original_model_random_state)
+        model_random_state = check_random_state(self.model_random_state)
         self.centroids = []
         self.centroid_weights = []
         for i in range(self.n_centroids):
@@ -175,13 +175,6 @@ class RandomRBFGenerator(Stream):
             self.centroids[i].class_label = model_random_state.randint(self.n_classes)
             self.centroids[i].std_dev = model_random_state.rand()
             self.centroid_weights.append(model_random_state.rand())
-
-    def get_info(self):
-        return 'RandomRBFGenerator: model_random_state: ' + str(self._original_model_random_state) + \
-               ' - sample_random_state: ' + str(self._original_sample_random_state) + \
-               ' - n_classes: ' + str(self.n_classes) + \
-               ' - num_att: ' + str(self.n_num_features) + \
-               ' - n_centroids: ' + str(self.n_centroids)
 
 
 class Centroid:

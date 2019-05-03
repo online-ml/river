@@ -52,8 +52,8 @@ class AGRAWALGenerator(Stream):
                                           self.classification_function_four, self.classification_function_five,
                                           self.classification_function_six, self.classification_function_seven,
                                           self.classification_function_eight, self.classification_function_nine]
-        self.classification_function_idx = classification_function
-        self._original_random_state = random_state
+        self.classification_function = classification_function
+        self.random_state = random_state
         self.balance_classes = balance_classes
         self.perturbation = perturbation
         self.n_num_features = 6
@@ -61,7 +61,7 @@ class AGRAWALGenerator(Stream):
         self.n_features = self.n_num_features + self.n_cat_features
         self.n_classes = 2
         self.n_targets = 1
-        self.random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self._next_class_should_be_zero = False
         self.name = "AGRAWAL Generator"
 
@@ -73,7 +73,7 @@ class AGRAWALGenerator(Stream):
         self.target_values = [i for i in range(self.n_classes)]
 
     @property
-    def classification_function_idx(self):
+    def classification_function(self):
         """ Retrieve the index of the current classification function.
 
         Returns
@@ -81,10 +81,10 @@ class AGRAWALGenerator(Stream):
         int
             index of the classification function, from 0 to 9
         """
-        return self._classification_function_idx
+        return self._classification_function
 
-    @classification_function_idx.setter
-    def classification_function_idx(self, classification_function_idx):
+    @classification_function.setter
+    def classification_function(self, classification_function_idx):
         """ Set the index of the current classification function.
 
         Parameters
@@ -93,9 +93,9 @@ class AGRAWALGenerator(Stream):
             from 0 to 9
         """
         if classification_function_idx in range(10):
-            self._classification_function_idx = classification_function_idx
+            self._classification_function = classification_function_idx
         else:
-            raise ValueError("classification_function_idx takes values from 0 to 9,"
+            raise ValueError("classification_function takes values from 0 to 9,"
                              " and {} was passed".format(classification_function_idx))
 
     @property
@@ -154,7 +154,7 @@ class AGRAWALGenerator(Stream):
         Should be called before generating the samples.
 
         """
-        self.random_state = check_random_state(self._original_random_state)
+        self._random_state = check_random_state(self.random_state)
         self._next_class_should_be_zero = False
         self.sample_idx = 0
 
@@ -192,19 +192,19 @@ class AGRAWALGenerator(Stream):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                salary = 20000 + 130000 * self.random_state.rand()
-                commission = 0 if (salary >= 75000) else (10000 + 75000 * self.random_state.rand())
-                age = 20 + self.random_state.randint(61)
-                elevel = self.random_state.randint(5)
-                car = self.random_state.randint(20)
-                zipcode = self.random_state.randint(9)
-                hvalue = (9 - zipcode) * 100000 * (0.5 + self.random_state.rand())
-                hyears = 1 + self.random_state.randint(30)
-                loan = self.random_state.rand() * 100000
-                group = self._classification_functions[self.classification_function_idx](salary, commission,
-                                                                                         age, elevel, car,
-                                                                                         zipcode, hvalue,
-                                                                                         hyears, loan)
+                salary = 20000 + 130000 * self._random_state.rand()
+                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._random_state.rand())
+                age = 20 + self._random_state.randint(61)
+                elevel = self._random_state.randint(5)
+                car = self._random_state.randint(20)
+                zipcode = self._random_state.randint(9)
+                hvalue = (9 - zipcode) * 100000 * (0.5 + self._random_state.rand())
+                hyears = 1 + self._random_state.randint(30)
+                loan = self._random_state.rand() * 100000
+                group = self._classification_functions[self.classification_function](salary, commission,
+                                                                                     age, elevel, car,
+                                                                                     zipcode, hvalue,
+                                                                                     hyears, loan)
                 if not self.balance_classes:
                     desired_class_found = True
                 else:
@@ -249,7 +249,7 @@ class AGRAWALGenerator(Stream):
         """
         if val_range is None:
             val_range = val_max - val_min
-        val += val_range * (2 * (self.random_state.rand() - 0.5)) * self.perturbation
+        val += val_range * (2 * (self._random_state.rand() - 0.5)) * self.perturbation
         if val < val_min:
             val = val_min
         elif val > val_max:
@@ -261,10 +261,10 @@ class AGRAWALGenerator(Stream):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self.random_state.randint(10)
-        while new_function == self.classification_function_idx:
-            new_function = self.random_state.randint(10)
-        self.classification_function_idx = new_function
+        new_function = self._random_state.randint(10)
+        while new_function == self.classification_function:
+            new_function = self._random_state.randint(10)
+        self.classification_function = new_function
 
 
     @staticmethod
@@ -734,9 +734,3 @@ class AGRAWALGenerator(Stream):
             equity = hvalue * (hyears - 20) / 10
         disposable = (2 * (salary + commission) / 3 - 5000 * elevel + equity / 5 - 10000)
         return 0 if disposable > 1 else 1
-
-    def get_info(self):
-        return 'AGRAWAL Generator: classification_function: ' + str(self.classification_function_idx) + \
-               ' - random_state: ' + str(self._original_random_state) + \
-               ' - balance_classes: ' + str(self.balance_classes) + \
-               ' - perturbation: ' + str(self.perturbation)

@@ -309,5 +309,5 @@ class FileStream(Stream):
             return [float] * self.n_targets
 
     def get_info(self):
-        return 'File Stream: filename: ' + str(self.basename) + \
-               '  -  n_targets: ' + str(self.n_targets)
+        return 'FileStream(filename={}, target_idx={}, n_targets={}, cat_features_idx={})'\
+            .format("'" + self.basename + "'", self.target_idx, self. n_targets, self.cat_features_idx)
