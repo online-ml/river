@@ -32,7 +32,7 @@ class DataStream(Stream):
     n_targets: int, optional (default=1)
         The number of targets.
 
-    cat_features_idx: list, optional (default=None)
+    cat_features: list, optional (default=None)
         A list of indices corresponding to the location of categorical features.
 
     name: str, optional (default=None)
@@ -43,11 +43,12 @@ class DataStream(Stream):
     _REGRESSION = 'regression'
     _Y_is_defined = False
 
-    def __init__(self, data, y=None, target_idx=-1, n_targets=1, cat_features_idx=None, name=None):
+    def __init__(self, data, y=None, target_idx=-1, n_targets=1, cat_features=None, name=None):
         super().__init__()
         self.X = None
         self.y = y
-        self.cat_features_idx = [] if cat_features_idx is None else cat_features_idx
+        self.cat_features = cat_features
+        self.cat_features_idx = [] if self.cat_features is None else self.cat_features
         self.n_targets = n_targets
         self.target_idx = target_idx
         self.task_type = None
@@ -408,6 +409,6 @@ class DataStream(Stream):
             return [float] * self.n_targets
 
     def get_info(self):
-        return 'DataStream(n_targets={}, target_idx={}, cat_features_idx={}, name={})'.\
-            format(self.target_idx, self.n_targets, self.cat_features_idx,
+        return 'DataStream(n_targets={}, target_idx={}, cat_features={}, name={})'.\
+            format(self.target_idx, self.n_targets, self.cat_features,
                    self.name if not self.name else "'" + self.name + "'")

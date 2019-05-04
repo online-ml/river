@@ -45,7 +45,7 @@ def test_additive_expert_ensemble_weakest():
 
     assert type(learner.predict(X)) == np.ndarray
 
-    expected_info = "AdditiveExpertEnsemble(base_estimator=NaiveBayes(nominal_attributes=[]),\n" \
+    expected_info = "AdditiveExpertEnsemble(base_estimator=NaiveBayes(nominal_attributes=None),\n" \
                     "                       beta=0.5, gamma=0.1, n_estimators=3, pruning='weakest')"
     assert learner.get_info() == expected_info
 

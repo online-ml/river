@@ -39,7 +39,7 @@ def test_knn():
     expected_correct_predictions = 49
     assert correct_predictions == expected_correct_predictions
 
-    expected_info = 'KNN(leaf_size=40, max_window_size=2000, n_neighbors=8, nominal_attributes=[])'
+    expected_info = 'KNN(leaf_size=40, max_window_size=2000, n_neighbors=8, nominal_attributes=None)'
     assert learner.get_info() == expected_info
 
     learner.reset()

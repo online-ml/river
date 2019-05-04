@@ -62,7 +62,7 @@ def test_data_stream(test_path, package_path):
 
     assert 'stream' == stream._estimator_type
 
-    expected_info = "DataStream(n_targets=-1, target_idx=1, cat_features_idx=[], name='Test')"
+    expected_info = "DataStream(n_targets=-1, target_idx=1, cat_features=None, name='Test')"
     assert stream.get_info() == expected_info
 
 

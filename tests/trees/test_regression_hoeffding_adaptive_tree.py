@@ -49,7 +49,7 @@ def test_hoeffding_tree():
                     "              learning_ratio_const=True, learning_ratio_decay=0.001,\n" \
                     "              learning_ratio_perceptron=0.02, max_byte_size=33554432,\n" \
                     "              memory_estimate_period=1000000, nb_threshold=0, no_preprune=False,\n" \
-                    "              nominal_attributes=[], random_state=1, remove_poor_atts=False,\n" \
+                    "              nominal_attributes=None, random_state=1, remove_poor_atts=False,\n" \
                     "              split_confidence=1e-07, stop_mem_management=False,\n" \
                     "              tie_threshold=0.05)"
 
@@ -103,7 +103,7 @@ def test_hoeffding_tree_perceptron():
                     "              leaf_prediction='perceptron', learning_ratio_const=True,\n" \
                     "              learning_ratio_decay=0.001, learning_ratio_perceptron=0.02,\n" \
                     "              max_byte_size=33554432, memory_estimate_period=1000000,\n" \
-                    "              nb_threshold=0, no_preprune=False, nominal_attributes=[],\n" \
+                    "              nb_threshold=0, no_preprune=False, nominal_attributes=None,\n" \
                     "              random_state=1, remove_poor_atts=False, split_confidence=1e-07,\n" \
                     "              stop_mem_management=False, tie_threshold=0.05)"
     assert learner.get_info() == expected_info

@@ -27,7 +27,7 @@ class FileStream(Stream):
     n_targets: int, optional (default=1)
         The number of targets.
 
-    cat_features_idx: list, optional (default=None)
+    cat_features: list, optional (default=None)
         A list of indices corresponding to the location of categorical features.
     Examples
     --------
@@ -61,12 +61,13 @@ class FileStream(Stream):
     _CLASSIFICATION = 'classification'
     _REGRESSION = 'regression'
 
-    def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features_idx=None):
+    def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features=None):
         super().__init__()
         self.filename = ''
         self.X = None
         self.y = None
-        self.cat_features_idx = [] if cat_features_idx is None else cat_features_idx
+        self.cat_features = cat_features
+        self.cat_features_idx = [] if self.cat_features is None else self.cat_features
         self.n_targets = n_targets
         self.target_idx = target_idx
         self.task_type = None
@@ -309,5 +310,5 @@ class FileStream(Stream):
             return [float] * self.n_targets
 
     def get_info(self):
-        return 'FileStream(filename={}, target_idx={}, n_targets={}, cat_features_idx={})'\
-            .format("'" + self.basename + "'", self.target_idx, self. n_targets, self.cat_features_idx)
+        return 'FileStream(filename={}, target_idx={}, n_targets={}, cat_features={})'\
+            .format("'" + self.basename + "'", self.target_idx, self. n_targets, self.cat_features)

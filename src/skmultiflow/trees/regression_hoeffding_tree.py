@@ -113,7 +113,7 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
-                    if i in ht.nominal_attributes:
+                    if ht.nominal_attributes is not None and i in ht.nominal_attributes:
                         obs = NominalAttributeRegressionObserver()
                     else:
                         obs = NumericAttributeRegressionObserver()
@@ -195,7 +195,7 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
-                    if i in rht.nominal_attributes:
+                    if rht.nominal_attributes is not None and i in rht.nominal_attributes:
                         obs = NominalAttributeRegressionObserver()
                     else:
                         obs = NumericAttributeRegressionObserver()

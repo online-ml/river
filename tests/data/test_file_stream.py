@@ -57,5 +57,5 @@ def test_file_stream(test_path, package_path):
 
     assert 'stream' == stream._estimator_type
 
-    expected_info = "FileStream(filename='sea_stream.csv', target_idx=-1, n_targets=1, cat_features_idx=[])"
+    expected_info = "FileStream(filename='sea_stream.csv', target_idx=-1, n_targets=1, cat_features=None)"
     assert stream.get_info() == expected_info
