@@ -47,10 +47,14 @@ def test_vfdr():
                                  'Rule 1 :Att (2) <= 58.180| class :1  {1: 1269.7307449971418}\n' + \
                                  'Rule 2 :Att (2) <= 60.910| class :0  {0: 66.24158839706533, 1: 54.0}\n' + \
                                  'Default Rule :| class :0  {0: 1316.7584116029348}'
+
     assert (learner.get_model_description() == expected_model_description)
 
     expected_model_measurements = {'Number of rules: ': 3, 'model_size in bytes': 62295}
-    assert (learner.get_model_measurements() == expected_model_measurements)
+    expected_model_measurements_ = {'Number of rules: ': 3, 'model_size in bytes': 73167}
+
+    assert (learner.get_model_measurements() == expected_model_measurements) or\
+           (learner.get_model_measurements() == expected_model_measurements_)
 
 
 
@@ -88,7 +92,11 @@ def test_vfdr_foil():
     assert np.alltrue(predictions == expected_predictions)
 
     expected_measurements = {'Number of rules: ': 3, 'model_size in bytes': 64936}
-    assert learner.get_model_measurements() == expected_measurements
+    expected_measurements_ = {'Number of rules: ': 3, 'model_size in bytes': 76328}
+
+
+    assert (learner.get_model_measurements() == expected_measurements) or \
+           (learner.get_model_measurements() == expected_measurements_)
 
     expected_model_description = 'Rule 0 :Att (2) <= 25.450 | class: 1.0| class :0  {0: 464.44730579120136}\n' + \
                                  'Rule 1 :Att (4) = 3.000 | class: 0.0| class :0  {0: 95.0, 1: 45.0}\n' + \

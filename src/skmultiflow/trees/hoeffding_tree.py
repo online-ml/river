@@ -491,6 +491,7 @@ class HoeffdingTree(StreamModel):
                 self._observed_class_distribution[y] += weight
             except KeyError:
                 self._observed_class_distribution[y] = weight
+                self._observed_class_distribution = dict(sorted(self._observed_class_distribution.items()))
 
     class ActiveLearningNode(LearningNode):
         """ Learning node that supports growth.

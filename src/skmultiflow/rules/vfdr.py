@@ -190,9 +190,9 @@ class VFDR(StreamModel):
 
             """
             try:
-                self.observed_class_distribution[y] += weight
+                self._observed_class_distribution[y] += weight
             except KeyError:
-                self.observed_class_distribution[y] = weight
+                self._observed_class_distribution[y] = weight
                 self._observed_class_distribution = dict(sorted(self._observed_class_distribution.items()))
 
             for i in range(len(X)):
