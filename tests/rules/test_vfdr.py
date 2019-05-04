@@ -93,10 +93,12 @@ def test_vfdr_foil():
 
     expected_measurements = {'Number of rules: ': 3, 'model_size in bytes': 64936}
     expected_measurements_ = {'Number of rules: ': 3, 'model_size in bytes': 76328}
+    expected_measurements__ = {'Number of rules: ': 3, 'model_size in bytes': 64404}
 
 
     assert (learner.get_model_measurements() == expected_measurements) or \
-           (learner.get_model_measurements() == expected_measurements_)
+           (learner.get_model_measurements() == expected_measurements_) or \
+           (learner.get_model_measurements() == expected_measurements__)
 
     expected_model_description = 'Rule 0 :Att (2) <= 25.450 | class: 1.0| class :0  {0: 464.44730579120136}\n' + \
                                  'Rule 1 :Att (4) = 3.000 | class: 0.0| class :0  {0: 95.0, 1: 45.0}\n' + \
