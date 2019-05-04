@@ -39,7 +39,7 @@ class KNN(BaseStreamEstimator, ClassifierMixin):
         construction time, but the slower the query time will be.
         
     nominal_attributes: numpy.ndarray (optional, default=None)
-        List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+        List of Nominal attributes. If empty, then assume that all attributes are numerical.
     
     Raises
     ------
@@ -101,8 +101,9 @@ class KNN(BaseStreamEstimator, ClassifierMixin):
         self.first_fit = True
         self.classes = []
         self.leaf_size = leaf_size
-        if nominal_attributes is None:
-            self.nominal_attributes = []
+        self.nominal_attributes = nominal_attributes
+        if self.nominal_attributes is None:
+            self._nominal_attributes = []
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ Partially fits the model on the samples X and corresponding targets y.
@@ -228,15 +229,10 @@ class KNN(BaseStreamEstimator, ClassifierMixin):
             One list with the k-nearest neighbor's distances and another 
             one with their indexes.
         
-        Notes
-        -----
-        If you wish to use our own KDTree implementation please comment 
-        the third line of this function and uncomment the first and 
-        second lines.
-        
         """
+        # To use our own KDTree implementation please replace it as follows
         # tree = KDTree(self.window.get_attributes_matrix(), metric='euclidean',
-        #              nominal_attributes=self.nominal_attributes, return_distance=True)
+        #              nominal_attributes=self._nominal_attributes, return_distance=True)
 
         tree = sk.KDTree(self.window.get_attributes_matrix(), self.leaf_size, metric='euclidean')
         dist, ind = tree.query(np.asarray(X), k=self.n_neighbors)

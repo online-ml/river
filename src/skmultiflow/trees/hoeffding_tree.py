@@ -521,7 +521,7 @@ class HoeffdingTree(BaseStreamEstimator, ClassifierMixin):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
-                    if i in ht.nominal_attributes:
+                    if ht.nominal_attributes is not None and i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
                         obs = NumericAttributeClassObserverGaussian()
@@ -891,8 +891,6 @@ class HoeffdingTree(BaseStreamEstimator, ClassifierMixin):
 
     @nominal_attributes.setter
     def nominal_attributes(self, nominal_attributes):
-        if nominal_attributes is None:
-            nominal_attributes = []
         self._nominal_attributes = nominal_attributes
 
     @property

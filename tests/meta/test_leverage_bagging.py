@@ -48,7 +48,7 @@ def test_leverage_bagging():
     assert type(learner.predict_proba(X)) == np.ndarray
 
     expected_info = "LeverageBagging(base_estimator=KNN(leaf_size=40, max_window_size=2000,\n" \
-                    "                                   n_neighbors=8, nominal_attributes=[]),\n" \
+                    "                                   n_neighbors=8, nominal_attributes=None),\n" \
                     "                delta=0.002, enable_code_matrix=False,\n" \
                     "                leverage_algorithm='leveraging_bag', n_estimators=3,\n" \
                     "                random_state=112, w=6)"

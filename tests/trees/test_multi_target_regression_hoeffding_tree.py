@@ -47,7 +47,7 @@ def test_multi_target_regression_hoeffding_tree_mean(test_path):
                     "                                   max_byte_size=33554432,\n" \
                     "                                   memory_estimate_period=1000000,\n" \
                     "                                   nb_threshold=0, no_preprune=False,\n" \
-                    "                                   nominal_attributes=[], random_state=None,\n" \
+                    "                                   nominal_attributes=None, random_state=None,\n" \
                     "                                   remove_poor_atts=False,\n" \
                     "                                   split_confidence=1e-07,\n" \
                     "                                   stop_mem_management=False,\n" \
@@ -100,7 +100,7 @@ def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
                     "                                   max_byte_size=33554432,\n" \
                     "                                   memory_estimate_period=1000000,\n" \
                     "                                   nb_threshold=0, no_preprune=False,\n" \
-                    "                                   nominal_attributes=[], random_state=1,\n" \
+                    "                                   nominal_attributes=None, random_state=1,\n" \
                     "                                   remove_poor_atts=False,\n" \
                     "                                   split_confidence=1e-07,\n" \
                     "                                   stop_mem_management=False,\n" \
@@ -152,7 +152,7 @@ def test_multi_target_regression_hoeffding_tree_adaptive(test_path):
                     "                                   max_byte_size=33554432,\n" \
                     "                                   memory_estimate_period=1000000,\n" \
                     "                                   nb_threshold=0, no_preprune=False,\n" \
-                    "                                   nominal_attributes=[], random_state=1,\n" \
+                    "                                   nominal_attributes=None, random_state=1,\n" \
                     "                                   remove_poor_atts=False,\n" \
                     "                                   split_confidence=1e-07,\n" \
                     "                                   stop_mem_management=False,\n" \

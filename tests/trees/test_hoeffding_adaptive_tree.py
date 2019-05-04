@@ -42,7 +42,7 @@ def test_hat_mc(test_path):
 
     expected_info = "HAT(binary_split=False, grace_period=200, leaf_prediction='mc',\n" \
                     "    max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0,\n" \
-                    "    no_preprune=False, nominal_attributes=[], remove_poor_atts=False,\n" \
+                    "    no_preprune=False, nominal_attributes=None, remove_poor_atts=False,\n" \
                     "    split_confidence=1e-07, split_criterion='info_gain',\n" \
                     "    stop_mem_management=False, tie_threshold=0.05)"
 
@@ -106,7 +106,7 @@ def test_hat_nb(test_path):
 
     expected_info = "HAT(binary_split=False, grace_period=200, leaf_prediction='nb',\n" \
                     "    max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0,\n" \
-                    "    no_preprune=False, nominal_attributes=[], remove_poor_atts=False,\n" \
+                    "    no_preprune=False, nominal_attributes=None, remove_poor_atts=False,\n" \
                     "    split_confidence=1e-07, split_criterion='info_gain',\n" \
                     "    stop_mem_management=False, tie_threshold=0.05)"
 
@@ -150,7 +150,7 @@ def test_hat_nba(test_path):
 
     expected_info = "HAT(binary_split=False, grace_period=200, leaf_prediction='nba',\n" \
                     "    max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0,\n" \
-                    "    no_preprune=False, nominal_attributes=[], remove_poor_atts=False,\n" \
+                    "    no_preprune=False, nominal_attributes=None, remove_poor_atts=False,\n" \
                     "    split_confidence=1e-07, split_criterion='info_gain',\n" \
                     "    stop_mem_management=False, tie_threshold=0.05)"
 

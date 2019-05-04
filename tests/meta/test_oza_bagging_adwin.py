@@ -47,6 +47,6 @@ def test_oza_bagging_adwin():
     assert type(learner.predict_proba(X)) == np.ndarray
 
     expected_info = "OzaBaggingAdwin(base_estimator=KNN(leaf_size=40, max_window_size=2000,\n" \
-                    "                                   n_neighbors=8, nominal_attributes=[]),\n" \
+                    "                                   n_neighbors=8, nominal_attributes=None),\n" \
                     "                n_estimators=3, random_state=112)"
     assert learner.get_info() == expected_info
