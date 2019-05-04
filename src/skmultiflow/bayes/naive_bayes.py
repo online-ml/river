@@ -35,10 +35,11 @@ class NaiveBayes(BaseStreamEstimator, ClassifierMixin):
         self._observed_class_distribution = {}
         self._attribute_observers = {}
         self._classes = None
-        if not nominal_attributes:
-            self.nominal_attributes = []
+        self.nominal_attributes = nominal_attributes
+        if not self.nominal_attributes:
+            self._nominal_attributes = []
         else:
-            self.nominal_attributes = nominal_attributes
+            self._nominal_attributes = self.nominal_attributes
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ Partially (incrementally) fit the model.
@@ -87,7 +88,7 @@ class NaiveBayes(BaseStreamEstimator, ClassifierMixin):
             try:
                 obs = self._attribute_observers[i]
             except KeyError:
-                if i in self.nominal_attributes:
+                if i in self._nominal_attributes:
                     obs = NominalAttributeClassObserver()
                 else:
                     obs = NumericAttributeClassObserverGaussian()
@@ -148,3 +149,6 @@ class NaiveBayes(BaseStreamEstimator, ClassifierMixin):
                     y_proba[int(key)] = value / sum_values if sum_values != 0 else 0.0
                 predictions.append(y_proba)
         return np.array(predictions)
+
+    def reset(self):
+        self.__init__(self.nominal_attributes)

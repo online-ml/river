@@ -349,10 +349,9 @@ class BaseStreamEstimator(BaseEstimator):
         self
 
         """
-        # non-optimized default implementation; override if a better
-        # method is possible for a given estimator
-        self.__init__(self.get_params())
-        return self
+        raise RuntimeWarning("{} does not implement a reset method.\n"
+                             "Consider using the clone method available in skmultiflow.core.base"
+                             .format(type(self).__name__))
 
     def get_info(self):
         """ Collects and returns the information about the configuration of the estimator
