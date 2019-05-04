@@ -50,5 +50,5 @@ def test_missing_values_cleaner_coverage(test_path):
     X = copy(X_nan)
     X_complete = cleaner.partial_fit(X)
 
-    cleaner.partial_fit_transform(X=X, y=[])
+    cleaner.partial_fit_transform(X=X)
 
