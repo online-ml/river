@@ -55,11 +55,11 @@ class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
     Examples
     --------
     >>> # Imports
-    >>> from skmultiflow.meta.oza_bagging import OzaBagging
+    >>> from skmultiflow.meta import OzaBagging
     >>> from skmultiflow.lazy.knn import KNN
-    >>> from skmultiflow.data.sea_generator import SEAGenerator
+    >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
-    >>> stream = SEAGenerator(1, noise_percentage=6.7)
+    >>> stream = SEAGenerator(1, noise_percentage=0.07)
     >>> stream.prepare_for_use()
     >>> # Setting up the OzaBagging classifier to work with KNN classifiers
     >>> clf = OzaBagging(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=2)
@@ -82,8 +82,8 @@ class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
     >>> print(str(sample_count) + ' samples analyzed.')
     2000 samples analyzed.
     >>> print('OzaBagging classifier performance: ' + str(corrects / sample_count))
-    OzaBagging classifier performance: 0.9645
-    
+    OzaBagging classifier performance: 0.9095
+
     """
 
     def __init__(self, base_estimator=KNNAdwin(), n_estimators=10, random_state=None):
