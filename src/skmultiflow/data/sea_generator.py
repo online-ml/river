@@ -43,8 +43,7 @@ class SEAGenerator(Stream):
     balance_classes: bool (Default: False)
         Whether to balance classes or not. If balanced, the class
         distribution will converge to a uniform distribution.
-        From 0.0 to 1.0.
-        
+
     noise_percentage: float (Default: 0.0)
         The probability that noise will happen in the generation. At each 
         new sample generated, a random probability is generated, and if that 
