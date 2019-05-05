@@ -22,7 +22,7 @@ class Agg(base.Transformer):
         how (stats.Univariate): The statistic to compute.
 
     Attributes:
-        dict
+        groups (collections.defaultdict): Maps grouping keys to instances of `stats.Univariate`.
 
     Example:
 
