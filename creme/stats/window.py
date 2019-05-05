@@ -4,25 +4,30 @@ import collections
 
 class Window:
     """Maintains a list of previously seen values.
+
     Parameters:
         window_size (int):  Size of the rolling window.
 
     Attributes:
         window (collections.deque): Queue with a length `window_size`.
 
-    >>> from creme.stats.window import Window
+    Example:
 
-    >>> X = [1, 2, 3, 4, 5, 6]
+        ::
 
-    >>> window = Window(window_size=2)
-    >>> for x in X:
-    ...     print(window.append(x))
-    deque([1], maxlen=2)
-    deque([1, 2], maxlen=2)
-    deque([2, 3], maxlen=2)
-    deque([3, 4], maxlen=2)
-    deque([4, 5], maxlen=2)
-    deque([5, 6], maxlen=2)
+            >>> from creme.stats.window import Window
+
+            >>> X = [1, 2, 3, 4, 5, 6]
+
+            >>> window = Window(window_size=2)
+            >>> for x in X:
+            ...     print(window.append(x))
+            deque([1], maxlen=2)
+            deque([1, 2], maxlen=2)
+            deque([2, 3], maxlen=2)
+            deque([3, 4], maxlen=2)
+            deque([4, 5], maxlen=2)
+            deque([5, 6], maxlen=2)
 
     """
 

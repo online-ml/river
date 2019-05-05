@@ -5,8 +5,7 @@ class Covariance(base.Bivariate):
     """Running covariance.
 
     Parameters:
-        ddof (int)
-            Delta Degrees of Freedom.
+        ddof (int): Delta Degrees of Freedom.
 
     Example:
 
@@ -25,7 +24,7 @@ class Covariance(base.Bivariate):
 
     References:
 
-    1. `Algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
+        1. `Algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
 
     """
 

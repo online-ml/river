@@ -9,20 +9,20 @@ class Sum(base.Univariate):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import stats
+            >>> from creme import stats
 
-        >>> X = [-5, -3, -1, 1, 3, 5]
-        >>> mean = stats.Sum()
-        >>> for x in X:
-        ...     print(mean.update(x).get())
-        -5.0
-        -8.0
-        -9.0
-        -8.0
-        -5.0
-        0.0
+            >>> X = [-5, -3, -1, 1, 3, 5]
+            >>> mean = stats.Sum()
+            >>> for x in X:
+            ...     print(mean.update(x).get())
+            -5.0
+            -8.0
+            -9.0
+            -8.0
+            -5.0
+            0.0
 
     """
 

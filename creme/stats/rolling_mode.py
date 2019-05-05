@@ -17,32 +17,32 @@ class RollingMode(base.Univariate, window.Window):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import stats
+            >>> from creme import stats
 
-        >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']
-        >>> rolling_mode = stats.rolling_mode.RollingMode(window_size=2)
-        >>> for x in X:
-        ...     print(rolling_mode.update(x).get())
-        sunny
-        sunny
-        sunny
-        sunny
-        rainy
-        rainy
-        rainy
+            >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']
+            >>> rolling_mode = stats.rolling_mode.RollingMode(window_size=2)
+            >>> for x in X:
+            ...     print(rolling_mode.update(x).get())
+            sunny
+            sunny
+            sunny
+            sunny
+            rainy
+            rainy
+            rainy
 
-        >>> rolling_mode = stats.rolling_mode.RollingMode(window_size=5)
-        >>> for x in X:
-        ...     print(rolling_mode.update(x).get())
-        sunny
-        sunny
-        sunny
-        sunny
-        sunny
-        rainy
-        rainy
+            >>> rolling_mode = stats.rolling_mode.RollingMode(window_size=5)
+            >>> for x in X:
+            ...     print(rolling_mode.update(x).get())
+            sunny
+            sunny
+            sunny
+            sunny
+            sunny
+            rainy
+            rainy
 
     """
 

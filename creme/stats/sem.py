@@ -13,23 +13,25 @@ class SEM(variance.Variance):
 
     Example:
 
-        >>> import creme.stats
+        ::
 
-        >>> X = [3, 5, 4, 7, 10, 12]
+            >>> import creme.stats
 
-        >>> sem = creme.stats.SEM()
-        >>> for x in X:
-        ...     print(sem.update(x).get())
-        0.0
-        1.0
-        0.577350...
-        0.853912...
-        1.240967...
-        1.447219...
+            >>> X = [3, 5, 4, 7, 10, 12]
+
+            >>> sem = creme.stats.SEM()
+            >>> for x in X:
+            ...     print(sem.update(x).get())
+            0.0
+            1.0
+            0.577350...
+            0.853912...
+            1.240967...
+            1.447219...
 
     References:
 
-    1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+        1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
 
     """
 

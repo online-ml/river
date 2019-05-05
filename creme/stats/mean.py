@@ -10,20 +10,20 @@ class Mean(base.Univariate):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import stats
+            >>> from creme import stats
 
-        >>> X = [-5, -3, -1, 1, 3, 5]
-        >>> mean = stats.Mean()
-        >>> for x in X:
-        ...     print(mean.update(x).get())
-        -5.0
-        -4.0
-        -3.0
-        -2.0
-        -1.0
-        0.0
+            >>> X = [-5, -3, -1, 1, 3, 5]
+            >>> mean = stats.Mean()
+            >>> for x in X:
+            ...     print(mean.update(x).get())
+            -5.0
+            -4.0
+            -3.0
+            -2.0
+            -1.0
+            0.0
 
     """
 

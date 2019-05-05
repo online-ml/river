@@ -13,7 +13,7 @@ class SplitRegressor(base.Regressor):
         on (str): The feature on which to perform the split.
         models (dict): A mapping between feature values and regressor.
         default_model (base.Regressor): The regressor used for feature values that are not
-            specified in `models`.
+            specified in ``models``.
 
     Example:
 

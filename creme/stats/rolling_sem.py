@@ -10,30 +10,30 @@ class RollingSEM(rolling_variance.RollingVariance):
 
     Example:
 
-    ::
-        >>> import creme
+        ::
+            >>> import creme
 
-        >>> X = [1, 4, 2, -4, -8, 0]
+            >>> X = [1, 4, 2, -4, -8, 0]
 
-        >>> rolling_sem = creme.stats.RollingSEM(ddof=1, window_size=2)
-        >>> for x in X:
-        ...     print(rolling_sem.update(x).get())
-        0.0
-        1.5
-        1.0
-        3.0
-        2.0
-        4.0
+            >>> rolling_sem = creme.stats.RollingSEM(ddof=1, window_size=2)
+            >>> for x in X:
+            ...     print(rolling_sem.update(x).get())
+            0.0
+            1.5
+            1.0
+            3.0
+            2.0
+            4.0
 
-        >>> rolling_sem = creme.stats.RollingSEM(ddof=1, window_size=3)
-        >>> for x in X:
-        ...     print(rolling_sem.update(x).get())
-        0.0
-        1.5
-        0.881917...
-        2.403700...
-        2.905932...
-        2.309401...
+            >>> rolling_sem = creme.stats.RollingSEM(ddof=1, window_size=3)
+            >>> for x in X:
+            ...     print(rolling_sem.update(x).get())
+            0.0
+            1.5
+            0.881917...
+            2.403700...
+            2.905932...
+            2.309401...
 
     """
 

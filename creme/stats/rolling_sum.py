@@ -13,20 +13,20 @@ class RollingSum(base.Univariate, window.Window):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import stats
+            >>> from creme import stats
 
-        >>> X = [1, -4, 3, -2, 2, 1]
-        >>> rolling_sum = stats.RollingSum(2)
-        >>> for x in X:
-        ...     print(rolling_sum.update(x).get())
-        1
-        -3
-        -1
-        1
-        0
-        3
+            >>> X = [1, -4, 3, -2, 2, 1]
+            >>> rolling_sum = stats.RollingSum(2)
+            >>> for x in X:
+            ...     print(rolling_sum.update(x).get())
+            1
+            -3
+            -1
+            1
+            0
+            3
 
     """
 

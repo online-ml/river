@@ -13,8 +13,9 @@ class NUnique(base.Univariate):
     now.
 
     Parameters:
-        error_rate (float): Error rate.
-        encoding (str): Encoding for the `32bit murmurhash3`. Defaults to `utf-8`.
+        error_rate (float): Desired error rate. Memory usage is inversely proportional to this
+            value.
+        encoding (str): Encoding used for `sklearn.utils.murmurhash3_32`. Defaults to ``'utf-8'``.
         random_state (int): Integer seed for the hashing algorithm. Defaults to `None`.
 
     Attributes:
@@ -24,28 +25,29 @@ class NUnique(base.Univariate):
 
     Example:
 
-    ::
+        ::
 
-        >>> import string
-        >>> from creme import stats
+            >>> import string
+            >>> from creme import stats
 
-        >>> alphabet = string.ascii_lowercase
-        >>> n_unique = stats.NUnique(error_rate=0.1)
+            >>> alphabet = string.ascii_lowercase
+            >>> n_unique = stats.NUnique(error_rate=0.1)
 
-        >>> n_unique.update('a').get()
-        1
+            >>> n_unique.update('a').get()
+            1
 
-        >>> n_unique.update('b').get()
-        2
+            >>> n_unique.update('b').get()
+            2
 
-        >>> for letter in alphabet:
-        ...     n_unique = n_unique.update(letter)
-        >>> n_unique.get()
-        26
+            >>> for letter in alphabet:
+            ...     n_unique = n_unique.update(letter)
+            >>> n_unique.get()
+            26
 
     References:
-        - `My favorite algorithm (and data structure): HyperLogLog <https://odino.org/my-favorite-data-structure-hyperloglog/>`_
-        - `HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm <http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf>`_
+
+        1. `My favorite algorithm (and data structure): HyperLogLog <https://odino.org/my-favorite-data-structure-hyperloglog/>`_
+        2. `HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm <http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf>`_
 
     """
 

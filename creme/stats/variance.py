@@ -15,23 +15,25 @@ class Variance(base.Univariate):
 
     Example:
 
-        >>> import creme.stats
+        ::
 
-        >>> X = [3, 5, 4, 7, 10, 12]
+            >>> import creme.stats
 
-        >>> var = creme.stats.Variance()
-        >>> for x in X:
-        ...     print(var.update(x).get())
-        0.0
-        2.0
-        1.0
-        2.916666...
-        7.7
-        12.56666...
+            >>> X = [3, 5, 4, 7, 10, 12]
+
+            >>> var = creme.stats.Variance()
+            >>> for x in X:
+            ...     print(var.update(x).get())
+            0.0
+            2.0
+            1.0
+            2.916666...
+            7.7
+            12.56666...
 
     References:
 
-    1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+        1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
 
     """
 

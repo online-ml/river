@@ -15,20 +15,20 @@ class RollingPeakToPeak(base.Univariate):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import stats
+            >>> from creme import stats
 
-        >>> X = [1, -4, 3, -2, 2, 1]
-        >>> ptp = stats.RollingPeakToPeak(window_size=2)
-        >>> for x in X:
-        ...     print(ptp.update(x).get())
-        0
-        5
-        7
-        5
-        4
-        1
+            >>> X = [1, -4, 3, -2, 2, 1]
+            >>> ptp = stats.RollingPeakToPeak(window_size=2)
+            >>> for x in X:
+            ...     print(ptp.update(x).get())
+            0
+            5
+            7
+            5
+            4
+            1
 
     """
 

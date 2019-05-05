@@ -14,33 +14,33 @@ class RollingQuantile(base.Univariate, window.SortedWindow):
 
     Example:
 
-    ::
+        ::
 
-        >>> from creme import stats
-        >>> import numpy as np
+            >>> from creme import stats
+            >>> import numpy as np
 
-        >>> rolling_quantile = stats.RollingQuantile(window_size = 100,
-        ...                                          quantile = 0.5)
+            >>> rolling_quantile = stats.RollingQuantile(window_size = 100,
+            ...                                          quantile = 0.5)
 
-        >>> for i in range(0,1001):
-        ...     _ = rolling_quantile.update(i)
-        ...     if i%100 == 0:
-        ...         print(rolling_quantile.get())
-        0
-        50
-        150
-        250
-        350
-        450
-        550
-        650
-        750
-        850
-        950
+            >>> for i in range(0,1001):
+            ...     _ = rolling_quantile.update(i)
+            ...     if i%100 == 0:
+            ...         print(rolling_quantile.get())
+            0
+            50
+            150
+            250
+            350
+            450
+            550
+            650
+            750
+            850
+            950
 
     References:
 
-    1. `Left sorted <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
+        1. `Left sorted <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
 
     """
 

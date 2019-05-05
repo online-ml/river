@@ -13,29 +13,33 @@ class RollingVariance(base.Univariate):
         sos (float): Sum of squares.
         rolling_mean (stats.RollingMean): The running rolling mean.
 
-    >>> import creme
+    Example:
 
-    >>> X = [1, 4, 2, -4, -8, 0]
+        ::
 
-    >>> rolling_variance = creme.stats.RollingVariance(ddof=1, window_size=2)
-    >>> for x in X:
-    ...     print(rolling_variance.update(x).get())
-    0.0
-    4.5
-    2.0
-    18.0
-    8.0
-    32.0
+            >>> import creme
 
-    >>> rolling_variance = creme.stats.RollingVariance(ddof=1, window_size=3)
-    >>> for x in X:
-    ...     print(rolling_variance.update(x).get())
-    0.0
-    4.5
-    2.333333...
-    17.333333...
-    25.333333...
-    16.0
+            >>> X = [1, 4, 2, -4, -8, 0]
+
+            >>> rolling_variance = creme.stats.RollingVariance(ddof=1, window_size=2)
+            >>> for x in X:
+            ...     print(rolling_variance.update(x).get())
+            0.0
+            4.5
+            2.0
+            18.0
+            8.0
+            32.0
+
+            >>> rolling_variance = creme.stats.RollingVariance(ddof=1, window_size=3)
+            >>> for x in X:
+            ...     print(rolling_variance.update(x).get())
+            0.0
+            4.5
+            2.333333...
+            17.333333...
+            25.333333...
+            16.0
 
     """
 
