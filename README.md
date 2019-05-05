@@ -37,7 +37,7 @@
 
 ## Installation
 
-:point-up: `creme` is tested with Python 3.6 and above.
+:point_up: `creme` is tested with Python 3.6 and above.
 
 `creme` mostly relies on Python's standard library. Sometimes it relies on `numpy`, `scipy`, and `scikit-learn` so as not to reinvent the wheel. `creme` can simply be installed with `pip`.
 
@@ -93,7 +93,7 @@ Feel free to open an issue if you feel like other solutions are worth mentioning
 
 ## Contributing
 
-Like many subfields of machine learning, online learning is far from being an exact science and so there is still a lot to do. Feel free to contribute in any way you like, we're always open to new ideas and approaches. Also have a look at the [issue tracker](https://github.com/creme-ml/creme/issues).
+Like many subfields of machine learning, online learning is far from being an exact science and so there is still a lot to do. Feel free to contribute in any way you like, we're always open to new ideas and approaches. Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
 
 Last but not least you are more than welcome to share with us how you're using `creme` or online learning in general! We believe that online learning solves a lot of pain points in practice and we would love to share experiences.
 
