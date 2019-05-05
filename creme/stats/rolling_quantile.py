@@ -9,6 +9,9 @@ class RollingQuantile(base.Univariate, window.SortedWindow):
         window_size (int): Size of the window.
         quantile (float): Desired quantile, must be between 0 and 1.
 
+    Attributes:
+        idx (int): Index of the desired quantile in the rolling observation list.
+
     Example:
 
     ::
