@@ -9,8 +9,10 @@ class RollingMode(base.Univariate, window.Window):
 
     The mode is the most common value.
 
-    Attributes:
+    Parameters:
         window_size (int): Size of the rolling window.
+
+    Attributes:
         counts (collections.defaultdict): Value counts.
 
     Example:
