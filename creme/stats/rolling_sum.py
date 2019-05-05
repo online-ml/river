@@ -5,8 +5,11 @@ from . import window
 class RollingSum(base.Univariate, window.Window):
     """Running sum over a window.
 
-    Attributes:
+    Parameters:
         window_size (int): Size of the rolling window.
+
+    Attributes:
+        sum (int): The running rolling sum.
 
     Example:
 
