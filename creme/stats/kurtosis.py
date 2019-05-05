@@ -4,7 +4,7 @@ from . import moments
 class Kurtosis(moments.CentralMoments):
     """Running kurtosis using Welford's algorithm.
 
-    Properties:
+    Parameters:
         bias (bool): If ``False``, then the calculations are corrected for statistical bias.
 
     Attributes:

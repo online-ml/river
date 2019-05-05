@@ -4,10 +4,11 @@ import collections
 
 class Window:
     """Maintains a list of previously seen values.
+    Parameters:
+        window_size (int):  Size of the rolling window.
 
-        Attributes:
-            window_size (int)
-            window (deque)
+    Attributes:
+        window (collections.deque): Queue with a length `window_size`.
 
     >>> from creme.stats.window import Window
 
