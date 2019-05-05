@@ -7,7 +7,7 @@ class Max(base.Univariate):
     """Running max.
 
     Attributes:
-        max : The running max.
+        max (float): The running max.
 
     """
 

@@ -6,6 +6,14 @@ from . import variance
 class PearsonCorrelation(base.Bivariate):
     """Online Pearson correlation.
 
+    Parameters:
+        ddof (int):  Delta Degrees of Freedom. Defaults to `1`
+
+    Attributes:
+        var_x (stats.Variance): Running variance of `x`.
+        var_y (stats.Variance): Running variance of `y`.
+        cov_xy (stats.Variance): Running covariance of `x` and `y`.
+
     Example:
 
         >>> from creme import stats

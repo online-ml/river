@@ -17,7 +17,7 @@ class Mode(base.Univariate):
             mode is computed.
 
     Attributes:
-        counts (collections.defaultdict)
+        counts (collections.defaultdict): Counts the number of occurrences of the different keys.
 
     Example:
 

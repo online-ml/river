@@ -7,11 +7,11 @@ class RollingVariance(base.Univariate):
 
     Parameters:
         window_size (int): Size of the rolling window.
-        ddof (int): Factor used to correct the variance.
+        ddof (int): Delta Degrees of Freedom for the variance.
 
     Attributes:
         sos (float): Sum of squares.
-        rolling_mean (RollingMean)
+        rolling_mean (stats.RollingMean): The running rolling mean.
 
     >>> import creme
 

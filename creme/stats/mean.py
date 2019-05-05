@@ -5,8 +5,8 @@ class Mean(base.Univariate):
     """Running mean.
 
     Attributes:
-        count (stats.Count)
-        mean (float)
+        mean (float): The running mean.
+        n (int): The current number of observations.
 
     Example:
 

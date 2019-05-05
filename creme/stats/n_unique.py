@@ -12,6 +12,16 @@ class NUnique(base.Univariate):
     `here <https://github.com/clarkduvall/hypy>`_. The code is a bit too terse but it will do for
     now.
 
+    Parameters:
+        error_rate (float): Error rate.
+        encoding (str): Encoding for the `32bit murmurhash3`. Defaults to `utf-8`.
+        random_state (int): Integer seed for the hashing algorithm. Defaults to `None`.
+
+    Attributes:
+        n_bits (int)
+        n_buckets (int)
+        buckets (list)
+
     Example:
 
     ::

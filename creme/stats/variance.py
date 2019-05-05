@@ -10,7 +10,7 @@ class Variance(base.Univariate):
             where $n$ represents the number of seen elements.
 
     Attributes:
-        mean (stats.Mean)
+        mean (stats.Mean): The running mean.
         sos (float): The running sum of squares.
 
     Example:

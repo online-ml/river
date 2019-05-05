@@ -7,9 +7,14 @@ from . import base
 class Entropy(base.Univariate):
     """Running entropy.
 
+    Parameters:
+        alpha (int) : Fading factor.
+        eps (float) : Small value that will be added to the denominator to avoid division by zero.
+
     Attributes:
-        entropy (float) : The running entropy.
-        alpha (int) : Fading factor
+        entropy (float): The running entropy.
+        n (int) : The current number of observations.
+        counter (collections.Counter) : Count the number of times the values have occurred
 
     Example:
 

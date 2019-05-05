@@ -6,8 +6,12 @@ from . import rolling_min
 class RollingPeakToPeak(base.Univariate):
     """Running peak to peak (max - min) over a window.
 
-    Attributes:
+    Parameters:
         window_size (int): Size of the rolling window.
+
+    Attributes:
+        max (stars.RollingMax): The running rolling max.
+        min (stars.RollingMin): The running rolling min.
 
     Example:
 
