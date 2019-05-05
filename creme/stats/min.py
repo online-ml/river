@@ -7,7 +7,7 @@ class Min(base.Univariate):
     """Running min.
 
     Attributes:
-        min : The running min.
+        min (float): The running min.
 
     """
 

@@ -7,8 +7,8 @@ class PeakToPeak(base.Univariate):
     """Running peak to peak (max - min).
 
     Attributes:
-        max (stats.Max)
-        min (stats.Min)
+        max (stats.Max): The running max.
+        min (stats.Min): The running min.
         p2p (float): The running peak to peak.
 
     Example:
