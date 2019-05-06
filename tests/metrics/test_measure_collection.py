@@ -47,8 +47,6 @@ def test_classification_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_window_classification_measurements():
     y_true = np.ones(100)
@@ -85,8 +83,6 @@ def test_window_classification_measurements():
 
     measurements.reset()
     assert measurements.sample_count == 0
-
-    assert measurements.get_class_type() == 'measurement'
 
 
 def test_multi_target_classification_measurements():
@@ -127,8 +123,6 @@ def test_multi_target_classification_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_window_multi_target_classification_measurements():
     y_0 = np.ones(100)
@@ -168,8 +162,6 @@ def test_window_multi_target_classification_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_regression_measurements():
     y_true = np.sin(range(100))
@@ -195,8 +187,6 @@ def test_regression_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_window_regression_measurements():
     y_true = np.sin(range(100))
@@ -221,8 +211,6 @@ def test_window_regression_measurements():
 
     measurements.reset()
     assert measurements.sample_count == 0
-
-    assert measurements.get_class_type() == 'measurement'
 
 
 def test_multi_target_regression_measurements():
@@ -266,8 +254,6 @@ def test_multi_target_regression_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_window_multi_target_regression_measurements():
     y_true = np.zeros((100, 3))
@@ -309,8 +295,6 @@ def test_window_multi_target_regression_measurements():
 
     measurements.reset()
     assert np.isclose(measurements.total_square_error, 0.0)
-
-    assert measurements.get_class_type() == 'measurement'
 
 
 def test_running_time_measurements():
