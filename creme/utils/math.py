@@ -5,7 +5,15 @@ import operator
 import numpy as np
 
 
-__all__ = ['dot', 'sigmoid']
+__all__ = [
+    'chain_dot',
+    'clip',
+    'dot',
+    'norm',
+    'prod',
+    'sigmoid',
+    'softmax'
+]
 
 
 def softmax(y_pred):

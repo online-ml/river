@@ -1,8 +1,9 @@
+from .. import utils
+
 from . import base
-from . import window
 
 
-class RollingMin(base.Univariate, window.SortedWindow):
+class RollingMin(base.Univariate, utils.SortedWindow):
     """Running min over a window.
 
     Parameters:

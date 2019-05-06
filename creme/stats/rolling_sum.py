@@ -1,8 +1,9 @@
+from .. import utils
+
 from . import base
-from . import window
 
 
-class RollingSum(base.Univariate, window.Window):
+class RollingSum(base.Univariate, utils.Window):
     """Running sum over a window.
 
     Parameters:

@@ -12,3 +12,5 @@ Developper utilities
    :nosignatures:
 
    check_estimator
+   SortedWindow
+   Window

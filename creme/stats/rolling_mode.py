@@ -1,10 +1,11 @@
 import collections
 
+from .. import utils
+
 from . import base
-from . import window
 
 
-class RollingMode(base.Univariate, window.Window):
+class RollingMode(base.Univariate, utils.Window):
     """Running mode over a window.
 
     The mode is the most common value.
@@ -55,10 +56,10 @@ class RollingMode(base.Univariate, window.Window):
         return f'rolling_{self.window_size}_mode'
 
     def update(self, x):
-        if len(self.window) >= self.window_size:
+        if len(self) >= self.window_size:
 
             # Subtract the counter of the last element
-            first_in = self.window[0]
+            first_in = self[0]
             self.counts[first_in] -= 1
 
             # No need to store the value if it's counter is 0

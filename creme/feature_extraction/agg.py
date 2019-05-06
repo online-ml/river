@@ -28,7 +28,8 @@ class Agg(base.Transformer):
 
         ::
 
-            >>> import creme
+            >>> from creme import feature_extraction
+            >>> from creme import stats
 
             >>> X = [
             ...     {'place': 'Taco Bell', 'revenue': 42},
@@ -39,10 +40,10 @@ class Agg(base.Transformer):
             ...     {'place': 'Taco Bell', 'revenue': 50}
             ... ]
 
-            >>> agg = creme.feature_extraction.Agg(
+            >>> agg = feature_extraction.Agg(
             ...     on='revenue',
             ...     by='place',
-            ...     how=creme.stats.Mean()
+            ...     how=stats.Mean()
             ... )
 
             >>> for x in X:

@@ -1,9 +1,9 @@
 import numpy as np
 
-from ..stats import window
+from .. import utils
 
 
-class SDFT(window.Window):
+class SDFT(utils.Window):
     """Sliding Discrete Fourier Transform (SDFT).
 
     Initially, the coefficients are all equal to 0, up until enough values have been seen. A call
@@ -38,19 +38,19 @@ class SDFT(window.Window):
     """
 
     def __init__(self, window_size):
-        super().__init__(window_size)
+        super().__init__(window_size=window_size)
         self.fft = np.zeros(window_size)
 
     def update(self, x):
 
-        # Simply append the new value if the window size is not yet reached
+        # Simply append the new value if the window isn't full yet
         if len(self) < self.window_size - 1:
             self.append(x)
 
-        # Compute an initial FFT once the window is full
+        # Compute an initial FFT the first time the window is full
         elif len(self) == self.window_size - 1:
             self.append(x)
-            self.fft = np.fft.fft(self.window)
+            self.fft = np.fft.fft(self).tolist()
 
         # Update the coefficients for subsequent values
         else:

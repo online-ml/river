@@ -6,13 +6,6 @@ import random
 
 from sklearn import datasets
 
-from .. import base
-from .. import dummy
-from .. import metrics
-from .. import model_selection
-from .. import stats
-from .. import stream
-
 
 __all__ = ['check_estimator']
 
@@ -23,6 +16,8 @@ def make_random_features(model, n_observations, n_features):
 
 
 def make_random_targets(model, n_observations):
+
+    from .. import base
 
     random_func = None
 
@@ -95,6 +90,9 @@ def check_predict_proba_one(model):
 
 def check_a_better_than_b(model_a, model_b, X_y_func, metric):
     """Trains two models and checks that model_a does better than model_b."""
+
+    from .. import model_selection
+
     metric_a = model_selection.online_score(
         X_y=X_y_func(),
         model=model_a,
@@ -113,6 +111,10 @@ def check_a_better_than_b(model_a, model_b, X_y_func, metric):
 
 
 def check_better_than_dummy_binary(classifier):
+
+    from .. import dummy
+    from .. import metrics
+    from .. import stream
 
     for dummy_model, X_y_func, metric in itertools.product(
         (dummy.NoChangeClassifier(), dummy.PriorClassifier()),
@@ -134,6 +136,10 @@ def check_better_than_dummy_binary(classifier):
 
 def check_better_than_dummy_multi(classifier):
 
+    from .. import dummy
+    from .. import metrics
+    from .. import stream
+
     for dummy_model, X_y_func, metric in itertools.product(
         (dummy.NoChangeClassifier(), dummy.PriorClassifier()),
         (functools.partial(
@@ -153,6 +159,11 @@ def check_better_than_dummy_multi(classifier):
 
 
 def check_better_than_dummy_regression(regressor):
+
+    from .. import dummy
+    from .. import metrics
+    from .. import stats
+    from .. import stream
 
     for dummy_model, X_y_func, metric in itertools.product(
         (dummy.StatisticRegressor(stats.Mean()),),
@@ -183,6 +194,9 @@ def check_predict_proba_one_binary(classifier):
 
 
 def yield_all_checks(model):
+
+    from .. import base
+
     yield check_fit_one
 
     if isinstance(model, base.Classifier):

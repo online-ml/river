@@ -25,10 +25,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `fetch_electricity` to `datasets`
 - `OptimalLR` to `optim`
 - `Differ` to `feature_extraction`
-- `Imputer` to `impute`
+- `StatImputer` to `impute`
 - `CrossEntropy` to `optim`
 - `PAClassifier`, `PARegressor`, and `SoftmaxRegression` to `linear_model`
-- `check_estimator` to `utils`
+- `check_estimator`, `SortedWindow`, and `Window` to `utils`
 
 ### Removed
 

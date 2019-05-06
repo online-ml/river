@@ -55,7 +55,7 @@ class RollingVariance(base.Univariate):
 
     def update(self, x):
         if len(self.rolling_mean) >= self.window_size:
-            self.sos -= self.rolling_mean.window[0] ** 2
+            self.sos -= self.rolling_mean[0] ** 2
 
         self.sos += x * x
         self.rolling_mean.update(x)

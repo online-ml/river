@@ -1,8 +1,9 @@
+from .. import utils
+
 from . import base
-from . import window
 
 
-class RollingMax(base.Univariate, window.SortedWindow):
+class RollingMax(base.Univariate, utils.SortedWindow):
     """Running max over a window.
 
     Parameters:
