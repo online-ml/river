@@ -19,7 +19,10 @@ __all__ = ['Pipeline']
 class Pipeline(collections.OrderedDict):
     """Chains a sequence of estimators.
 
-    Sequentially apply a list of estimators
+    Sequentially apply a list of estimators. Pipelines helps to define machine learning systems in a
+    declarative style, which makes a lot of sense when we think in a stream manner. For further
+    information and practical examples, take a look at the related post in the documentation:
+    :ref:`notebooks/The art of using pipelines.html`
 
     Parameters:
         steps (list): Ideally a list of (name, estimator) tuples. If an estimator is given without
@@ -66,6 +69,18 @@ class Pipeline(collections.OrderedDict):
         """Inserts a step at the start of the pipeline."""
         self.add_step(other, at_start=True)
         return self
+
+    def __add__(self, other):
+        """Merges with another Pipeline or TransformerUnion into a TransformerUnion."""
+        if isinstance(other, union.TransformerUnion):
+            return other.__add__(self)
+        return union.TransformerUnion([self, other])
+
+    def __radd__(self, other):
+        """Merges with another Pipeline or TransformerUnion into a TransformerUnion."""
+        if isinstance(other, union.TransformerUnion):
+            return other.__add__(self)
+        return union.TransformerUnion([other, self])
 
     def __str__(self):
         """Return a human friendly representation of the pipeline."""
@@ -187,30 +202,88 @@ class Pipeline(collections.OrderedDict):
         if not GRAPHVIZ_INSTALLED:
             raise ImportError('graphviz is not installed')
 
+        def get_first_estimator(d):
+            """Gets first estimator key of a Pipeline or TransformerUnion."""
+
+            for first_key in d.keys():
+                first_step = d.get(first_key)
+                break
+
+            if isinstance(first_step, (Pipeline, union.TransformerUnion)):
+                # Recurse
+                first_key = get_first_estimator(first_step)
+
+            return first_key
+
+        def draw_step(node, previous_node):
+            """Draws a node and its previous edge."""
+            if node in nodes:
+                node = node + "_"
+                return draw_step(node, previous_node)
+
+            graph.node(node)
+            graph.edge(previous_node, node)
+            nodes.append(node)
+            edges.append(previous_node)
+
+        def draw_steps(d=self, skip_first=False):
+            """Draws all estimators graph nodes and edges."""
+
+            union_ending_node_ix = None
+
+            for key in list(d.keys()):
+
+                if skip_first:
+                    skip_first = False
+                    continue
+
+                step = d.get(key)
+
+                # If step is a Pipeline recurse on step
+                if isinstance(step, Pipeline):
+                    draw_steps(step)
+
+                # If step is a TransformerUnion, dive inside
+                elif isinstance(step, union.TransformerUnion):
+
+                    node_before_union = nodes[-1]
+
+                    # Draw each TransformerUnion steps
+                    for ix, sub_key in enumerate(step.keys()):
+
+                        sub_step = step.get(sub_key)
+
+                        # If sub step is another nested step, draw its first estimator and recurse
+                        if isinstance(sub_step, (Pipeline, union.TransformerUnion)):
+                            sub_sub_key = get_first_estimator(sub_step)
+                            draw_step(node=sub_sub_key, previous_node=node_before_union)
+                            draw_steps(d=sub_step, skip_first=True)
+                        # Else just draw it
+                        else:
+                            draw_step(node=sub_key, previous_node=nodes[-1 - ix])
+
+                    union_ending_node_ix = len(nodes)
+
+                else:
+                    draw_step(key, nodes[-1])
+
+                # If previous step was a TransformerUnion and following node have been drawn
+                if union_ending_node_ix == len(nodes) - 1:
+                    # Connect TransformerUnion child nodes with the next step
+                    for node in nodes[1: -1]:
+                        if node not in edges:
+                            graph.edge(node, nodes[union_ending_node_ix])
+                            edges.append(node)
+                    # Reset TransformerUnion flag
+                    union_ending_node_ix = None
+
+        nodes, edges = ['input'], []
         graph = graphviz.Digraph()
+        graph.node('input')
 
-        steps = iter(['input'] + list(self.keys()) + ['output'])
+        draw_steps()
 
-        def draw_step(previous_steps=None):
-
-            step = next(steps, None)
-            if step is None:
-                return
-
-            if isinstance(self.get(step), union.TransformerUnion):
-                step = self[step].keys()
-            else:
-                step = [step]
-
-            for substep in step:
-                graph.node(substep)
-
-                for previous_step in previous_steps or []:
-                    graph.edge(previous_step, substep)
-
-            # Recurse
-            draw_step(step)
-
-        draw_step()
+        graph.node('output')
+        graph.edge(nodes[-1], 'output')
 
         return graph
