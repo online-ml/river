@@ -32,3 +32,6 @@ class Whitelister(base.Transformer):
 
     def transform_one(self, x):
         return {i: x[i] for i in set(x.keys()) & self.whitelist}
+
+    def __str__(self):
+        return self.__class__.__name__ + f'({list(self.whitelist)})'
