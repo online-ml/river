@@ -4,6 +4,6 @@ User guide
 .. toctree::
    :maxdepth: 2
 
-   notebooks/Introduction.ipynb
-   notebooks/Building a simple time series model.ipynb
-   notebooks/The art of using pipelines.ipynb
+   notebooks/introduction.ipynb
+   notebooks/building-a-simple-time-series-model.ipynb
+   notebooks/the-art-of-using-pipelines.ipynb

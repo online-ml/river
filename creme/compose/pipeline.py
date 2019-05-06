@@ -21,8 +21,8 @@ class Pipeline(collections.OrderedDict):
 
     Sequentially apply a list of estimators. Pipelines helps to define machine learning systems in a
     declarative style, which makes a lot of sense when we think in a stream manner. For further
-    information and practical examples, take a look at the related post in the documentation:
-    :ref:`notebooks/The art of using pipelines.html`
+    information and practical examples, take a look at the
+    `user guide <../notebooks/the-art-of-using-pipelines.html>`_.
 
     Parameters:
         steps (list): Ideally a list of (name, estimator) tuples. If an estimator is given without
@@ -33,25 +33,24 @@ class Pipeline(collections.OrderedDict):
         ::
 
             >>> from creme import compose
-            >>> from creme import linear_model
             >>> from creme import feature_extraction
-            >>> from creme import feature_selection
+            >>> from creme import linear_model
             >>> from creme import preprocessing
-            >>> from creme import stats
 
-            >>> model = feature_extraction.Differ(on='x')
-            >>> model += compose.Pipeline([
-            ...     compose.Blacklister('x'),
-            ...     feature_extraction.TFIDFVectorizer()
-            ... ])
+            >>> tfidf = feature_extraction.TFIDFVectorizer('text')
+            >>> counts = feature_extraction.CountVectorizer('text')
+            >>> text_part = compose.Whitelister('text') | (tfidf + counts)
 
+            >>> num_part = compose.Whitelister(['a', 'b']) | preprocessing.PolynomialExtender()
+
+            >>> model = text_part + num_part
             >>> model |= preprocessing.StandardScaler()
-            >>> model |= feature_selection.SelectKBest(
-            ...     similarity=stats.PearsonCorrelation(),
-            ...     k=10
-            ... )
+            >>> model |= linear_model.LinearRegression()
 
-            >>> model |= linear_model.PAClassifier()
+            >>> dot = model.draw()
+
+        .. image:: ../_static/pipeline_docstring.svg
+            :align: center
 
     """
 
@@ -218,10 +217,10 @@ class Pipeline(collections.OrderedDict):
         def draw_step(node, previous_node):
             """Draws a node and its previous edge."""
             if node in nodes:
-                node = node + "_"
+                node = node + '_'
                 return draw_step(node, previous_node)
 
-            graph.node(node)
+            graph.node(node, node.rstrip('_'))
             graph.edge(previous_node, node)
             nodes.append(node)
             edges.append(previous_node)
