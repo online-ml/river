@@ -5,6 +5,9 @@ from .. import base
 from .. import utils
 
 
+__all__ = ['PolynomialExtender']
+
+
 def powerset(iterable, min_size, max_size, with_replacement=False):
     """powerset([A, B, C], 1, 2) --> (A,) (B,) (C,) (A, B) (A, C) (B, C)"""
     combiner = itertools.combinations_with_replacement \
@@ -16,6 +19,11 @@ def powerset(iterable, min_size, max_size, with_replacement=False):
 
 class PolynomialExtender(base.Transformer):
     """Polynomial feature extender.
+
+    Generate features consisting of all polynomial combinations of the features with degree less
+    than or equal to the specified degree.
+    Be aware that the number of outputed features scales polynomially in the number of input
+    features and exponentially in the degree. High degrees can cause overfitting.
 
     Parameters:
         degree (int): The maximum degree of the polynomial features.

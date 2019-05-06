@@ -8,10 +8,10 @@ __all__ = ['MinMaxScaler', 'StandardScaler']
 
 
 class StandardScaler(base.Transformer):
-    """Scales the data so that it has mean 0 and variance 1.
+    """Scales the data so that it has zero mean and unit variance.
 
     Under the hood a running mean and a running variance are maintained. The scaling is slightly
-    different than when using scikit-learn but this doesn't seem to have any impact learning
+    different than when using scikit-learn but this doesn't seem to have any impact on learning
     performance.
 
     Attributes:
@@ -88,11 +88,11 @@ class StandardScaler(base.Transformer):
 
 
 class MinMaxScaler(base.Transformer):
-    """Scales the data to a fixed range 0 to 1.
+    """Scales the data to a fixed range from 0 to 1.
 
-    Under the hood a running min and a running peak to peak (max - min) are maintained. The scaling is slightly
-    different than when using scikit-learn but this doesn't seem to have any impact learning
-    performance.
+    Under the hood a running min and a running peak to peak (max - min) are maintained. The scaling
+    is slightly different than when using scikit-learn but this doesn't seem to have any impact on
+    learning performance.
 
     Attributes:
         min (dict): Mapping between features and instances of `stats.Min`.
