@@ -138,7 +138,7 @@ html_favicon = '_static/favicon.ico'
 #
 html_theme_options = {
     'logo_only': False,
-    'analytics_id': 'UA-139702521-1'
+    'analytics_id': 'UA-63302552-3'
 }
 
 
