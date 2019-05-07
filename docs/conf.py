@@ -137,9 +137,10 @@ html_favicon = '_static/favicon.ico'
 # documentation.
 #
 html_theme_options = {
-    'logo_only': False
+    'logo_only': False,
+    'analytics_id': 'UA-139702521-1'
 }
-github_url = 'https://github.com/creme-ml/creme'
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

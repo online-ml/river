@@ -43,7 +43,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added `on` and `sparse` parameters to `preprocessing.OneHotEncoder`
 - Renamed `GroupBy` to `Agg` and `TargetGroupBy` to `TargetAgg` to `Agg`
-- `convert_creme_to_sklearn` now returns an `sklearn.pipeline.Pipeline` when given `creme.compose.Pipelin`
+- `convert_creme_to_sklearn` now returns an `sklearn.pipeline.Pipeline` when given `creme.compose.Pipeline`
+- `pipeline.draw()` now works properly for arbitrary amounts of nesting, including nested `FeatureUnion`s
 
 
 ## [0.0.3](https://pypi.org/project/creme/0.0.3/) - 2019-03-21

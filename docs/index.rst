@@ -3,6 +3,11 @@
     :height: 240px
     :align: center
 
+.. image:: https://img.shields.io/github/stars/creme-ml/creme.svg?style=social
+   :target: https://github.com/creme-ml/creme
+   :align: center
+
+
 Introduction
 ============
 
