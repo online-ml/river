@@ -15,7 +15,7 @@ def test_oza_bagging():
     max_samples = 5000
     predictions = []
     wait_samples = 100
-    correct_predictions = 0
+    correct_predictions= 0
 
     while cnt < max_samples:
         X, y = stream.next_sample()

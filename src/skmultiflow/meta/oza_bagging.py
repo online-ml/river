@@ -159,12 +159,13 @@ class OzaBagging(StreamModel):
                 raise ValueError("The classes passed to the partial_fit function differ from those passed earlier.")
 
         self.__adjust_ensemble_size()
-
-        for i in range(self.n_estimators):
-            k = self.random_state.poisson()
-            if k > 0:
-                for b in range(k):
-                    self.ensemble[i].partial_fit(X, y, classes, weight)
+        r, _ = get_dimensions(X)
+        for j in range(r):
+            for i in range(self.n_estimators):
+                k = self.random_state.poisson()
+                if k > 0:
+                    for b in range(k):
+                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, weight)
         return self
 
     def __adjust_ensemble_size(self):

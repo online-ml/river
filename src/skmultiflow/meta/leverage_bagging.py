@@ -189,7 +189,7 @@ class LeverageBagging(StreamModel):
         if classes is not None and self.classes is None:
             self.classes = classes
         elif classes is not None and self.classes is not None:
-            if self.classes == set(classes):
+            if set(self.classes) == set(classes):
                 pass
             else:
                 raise ValueError(
