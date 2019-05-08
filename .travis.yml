@@ -18,7 +18,7 @@ jobs:
     - source activate testenv
     install:
     - conda install --name testenv --yes --file requirements.txt pytest pytest-cov
-    - pip install codecov graphviz
+    - pip install codecov graphviz matplotlib
     script: pytest --cov=creme
     after_success: codecov
 
