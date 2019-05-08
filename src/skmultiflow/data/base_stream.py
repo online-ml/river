@@ -295,7 +295,7 @@ class Stream(BaseObject, metaclass=ABCMeta):
             A string representing the plot name.
         
         """
-        return self.name + " - {} targets, {} classes, {} features".format(self.n_targets,
+        return self.name + " - {} target(s), {} classes, {} features".format(self.n_targets,
                                                                              self.n_classes, self.n_features)
 
     def get_class_type(self):

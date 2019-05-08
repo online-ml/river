@@ -102,6 +102,7 @@ class RandomTreeGenerator(Stream):
     True
     
     """
+
     def __init__(self, tree_random_state=None, sample_random_state=None, n_classes=2, n_cat_features=5,
                  n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=5, min_leaf_depth=3,
                  fraction_leaves_per_level=0.15):
@@ -132,6 +133,14 @@ class RandomTreeGenerator(Stream):
         self.target_values = [i for i in range(self.n_classes)]
 
     def prepare_for_use(self):
+        """
+        Prepares the stream for use.
+
+        Note
+        ----
+        This functions should always be called after the stream initialization.
+
+        """
         self.sample_random_state = check_random_state(self._original_sample_random_state)
         self.sample_idx = 0
         self.generate_random_tree()
@@ -315,12 +324,6 @@ class RandomTreeGenerator(Stream):
             min_index += 1
         return None
 
-    def n_remaining_samples(self):
-        return -1
-
-    def has_more_samples(self):
-        return True
-
     def next_sample(self, batch_size=1):
         """ next_sample
         
@@ -353,9 +356,9 @@ class RandomTreeGenerator(Stream):
                 aux = self.sample_random_state.randint(0, self.n_categories_per_cat_feature)
                 for k in range(self.n_categories_per_cat_feature):
                     if aux == k:
-                        data[j, k+i] = 1.0
+                        data[j, k + i] = 1.0
                     else:
-                        data[j, k+i] = 0.0
+                        data[j, k + i] = 0.0
 
             data[j, self.n_num_features + (self.n_cat_features * self.n_categories_per_cat_feature)] \
                 = self.classify_instance(self.tree_root, data[j])
@@ -405,6 +408,7 @@ class Node:
         split_att_value.
     
     """
+
     def __init__(self, class_label=None, split_att_index=None, split_att_value=None):
         self.class_label = class_label
         self.split_att_index = split_att_index

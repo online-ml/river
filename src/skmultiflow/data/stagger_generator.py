@@ -4,7 +4,6 @@ from skmultiflow.utils import check_random_state
 
 
 class STAGGERGenerator(Stream):
-
     """ StaggerGenerator
 
     This generator is an implementation of the dara stream with abrupt concept
@@ -159,7 +158,11 @@ class STAGGERGenerator(Stream):
 
     def prepare_for_use(self):
         """
-        Should be called before generating the samples.
+        Prepares the stream for use.
+
+        Note
+        ----
+        This functions should always be called after the stream initialization.
 
         """
         self.random_state = check_random_state(self._original_random_state)

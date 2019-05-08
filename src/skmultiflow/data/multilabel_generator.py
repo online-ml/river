@@ -5,7 +5,6 @@ from skmultiflow.utils import check_random_state
 
 
 class MultilabelGenerator(Stream):
-
     """ MultilabelGenerator
 
     This generator creates a stream of samples for a multilabel problem.
@@ -117,7 +116,8 @@ class MultilabelGenerator(Stream):
                                                         random_state=self.random_state)
         self.target_names = ["target_" + str(i) for i in range(self.n_targets)]
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_num_features)]
-        self.target_values = np.unique(self.y).tolist() if self.n_targets == 1 else [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
+        self.target_values = np.unique(self.y).tolist() if self.n_targets == 1 else [np.unique(self.y[:, i]).tolist()
+                                                                                     for i in range(self.n_targets)]
 
     def next_sample(self, batch_size=1):
         """ next_sample
@@ -160,6 +160,12 @@ class MultilabelGenerator(Stream):
         self.current_sample_y = None
 
     def prepare_for_use(self):
+        """
+        Note
+        ----
+        This functions is NOT required for this generator.
+
+        """
         pass
 
     def n_remaining_samples(self):
