@@ -4,7 +4,7 @@ from skmultiflow.data import ConceptDriftStream
 
 
 def test_concept_drift_stream(test_path):
-    stream = ConceptDriftStream(random_state=1)
+    stream = ConceptDriftStream(random_state=1, position=20, width=5)
     stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
@@ -44,7 +44,7 @@ def test_concept_drift_stream(test_path):
     assert np.alltrue(y[0] == y_expected[0])
 
     stream.restart()
-    X, y = stream.next_sample(10)
+    X, y = stream.next_sample(30)
     assert np.alltrue(X == X_expected)
     assert np.alltrue(y == y_expected)
 
@@ -59,9 +59,9 @@ def test_concept_drift_stream(test_path):
                     "                                                 classification_function=2,\n" \
                     "                                                 perturbation=0.0,\n" \
                     "                                                 random_state=112),\n" \
-                    "                   position=0, random_state=1,\n" \
+                    "                   position=20, random_state=1,\n" \
                     "                   stream=AGRAWALGenerator(balance_classes=False,\n" \
                     "                                           classification_function=0,\n" \
                     "                                           perturbation=0.0, random_state=112),\n" \
-                    "                   width=1000)"
+                    "                   width=5)"
     assert stream.get_info() == expected_info

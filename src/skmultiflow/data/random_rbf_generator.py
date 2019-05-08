@@ -5,7 +5,6 @@ import numpy as np
 
 
 class RandomRBFGenerator(Stream):
-
     """ RandomRBFGenerator
     
     This generator produces a radial basis function stream.
@@ -141,18 +140,26 @@ class RandomRBFGenerator(Stream):
             magnitude = 0.0
             for i in range(self.n_features):
                 att_vals.append((self._sample_random_state.rand() * 2.0) - 1.0)
-                magnitude += att_vals[i]*att_vals[i]
+                magnitude += att_vals[i] * att_vals[i]
             magnitude = np.sqrt(magnitude)
             desired_mag = self._sample_random_state.normal() * centroid_aux.std_dev
-            scale = desired_mag/magnitude
+            scale = desired_mag / magnitude
             for i in range(self.n_features):
-                data[j, i] = centroid_aux.centre[i] + att_vals[i]*scale
+                data[j, i] = centroid_aux.centre[i] + att_vals[i] * scale
             data[j, self.n_features] = centroid_aux.class_label
         self.current_sample_x = data[:, :self.n_features]
         self.current_sample_y = data[:, self.n_features:].flatten()
         return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
+        """
+        Prepares the stream for use.
+
+        Note
+        ----
+        This functions should always be called after the stream initialization.
+
+        """
         self.generate_centroids()
         self._sample_random_state = check_random_state(self.sample_random_state)
 

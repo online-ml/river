@@ -65,6 +65,52 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
     assert evaluator.get_info() == expected_info
 
 
+def test_evaluate_classification_metrics():
+
+    stream = RandomTreeGenerator(tree_random_state=23, sample_random_state=12, n_classes=2, n_cat_features=2,
+                                 n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
+                                 fraction_leaves_per_level=0.15)
+    stream.prepare_for_use()
+
+    # Setup learner
+    nominal_attr_idx = [x for x in range(15, len(stream.feature_names))]
+    learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
+
+    max_samples = 1000
+    metrics = ['f1', 'precision', 'recall', 'gmean']
+    evaluator = EvaluatePrequential(max_samples=max_samples,
+                                    metrics=metrics)
+
+    # Evaluate
+    evaluator.evaluate(stream=stream, model=learner)
+    mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
+
+    expected_current_f1_score = 0.7096774193548387
+    expected_current_precision = 0.6814159292035398
+    expected_current_recall = 0.7403846153846154
+    expected_current_g_mean = 0.6802502367624613
+    expected_mean_f1_score = 0.7009803921568628
+    expected_mean_precision = 0.7185929648241206
+    expected_mean_recall = 0.6842105263157895
+    expected_mean_g_mean = 0.6954166367760247
+    print(mean_performance.get_g_mean())
+    print(mean_performance.get_recall())
+    print(mean_performance.get_precision())
+    print(mean_performance.get_f1_score())
+    print(current_performance.get_g_mean())
+    print(current_performance.get_recall())
+    print(current_performance.get_precision())
+    print(current_performance.get_f1_score())
+    assert np.isclose(current_performance.get_f1_score(), expected_current_f1_score)
+    assert np.isclose(current_performance.get_precision(), expected_current_precision)
+    assert np.isclose(current_performance.get_recall(), expected_current_recall)
+    assert np.isclose(current_performance.get_g_mean(), expected_current_g_mean)
+    assert np.isclose(mean_performance.get_f1_score(), expected_mean_f1_score)
+    assert np.isclose(mean_performance.get_precision(), expected_mean_precision)
+    assert np.isclose(mean_performance.get_recall(), expected_mean_recall)
+    assert np.isclose(mean_performance.get_g_mean(), expected_mean_g_mean)
+
+
 def compare_files(test, expected):
     lines_expected = open(expected).readlines()
     lines_test = open(test).readlines()

@@ -139,7 +139,11 @@ class WaveformGenerator(Stream):
 
     def prepare_for_use(self):
         """
-        Should be called before generating the samples.
+        Prepares the stream for use.
+
+        Note
+        ----
+        This functions should always be called after the stream initialization.
 
         """
         self._random_state = check_random_state(self.random_state)
@@ -184,15 +188,15 @@ class WaveformGenerator(Stream):
             multiplier_b = 1.0 - multiplier_a
 
             for i in range(self._NUM_BASE_ATTRIBUTES):
-                data[j, i] = multiplier_a*self._H_FUNCTION[choice_a][i] \
-                            + multiplier_b*self._H_FUNCTION[choice_b][i] \
+                data[j, i] = multiplier_a * self._H_FUNCTION[choice_a][i] \
+                            + multiplier_b * self._H_FUNCTION[choice_b][i] \
                             + self._random_state.normal()
 
             if self.has_noise:
                 for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
                     data[j, i] = self._random_state.normal()
 
-            data[j, data[j].size-1] = group
+            data[j, data[j].size - 1] = group
         self.current_sample_x = data[:, :self.n_features]
         self.current_sample_y = np.ravel(data[:, self.n_features:]).astype(int)
 

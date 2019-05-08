@@ -7,14 +7,21 @@ class MIXEDGenerator(Stream):
 
     """ MIXEDGenerator
 
-    This generator is an implementation of the data stream with abrupt
-    concept drift, boolean noise-free examples as described in
+    This generator is an implementation of a data stream with abrupt
+    concept drift and boolean noise-free examples as described in
     Gama, Joao, et al [1]_.
 
-    It has four relevant attributes,two boolean attributes v,w
-    and two numeric attributes from [0; 1]. The examples are classified positive
-    if two of three conditions are satisfied: :math:`v,w, y < 0,5 + 0,3 sin(3 \pi  x)`.
-    After each context change the classification is reversed."
+    It has four relevant attributes, two boolean attributes :math:`v,w`
+    and two numeric attributes :math:`x, y` uniformly distributed from 0 to 1.
+    The examples are labaled depending on the classification function chosen from below.
+
+    * function 0:
+        - if :math:`v` and :math:`w` are true or :math:`v` and :math:`z` are true or :math:`w` and :math:`z` are true then 0 else 1
+        where :math:`z` is :math:`y < 0.5 + 0.3 sin(3 \pi  x)`
+    * function 1:
+        The opposite of function 0.
+
+    The drift is added by switching from function 0 to 1 or the opposite."
 
     Parameters
     ----------
@@ -73,7 +80,7 @@ class MIXEDGenerator(Stream):
         super().__init__()
 
         # Classification functions to use
-        self._classification_functions = [self.classification_function_zero, self.classification_function_one]
+        self._classification_functions = [self._classification_function_zero, self._classification_function_one]
         self.random_state = random_state
         self.classification_function = classification_function
         self._random_state = None
@@ -207,12 +214,20 @@ class MIXEDGenerator(Stream):
         return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):
+        """
+        Prepares the stream for use.
+
+        Note
+        ----
+        This functions should always be called after the stream initialization.
+
+        """
         self._random_state = check_random_state(self.random_state)
         self.next_class_should_be_zero = False
         self.sample_idx = 0
 
     @staticmethod
-    def classification_function_zero(v, w, x, y):
+    def _classification_function_zero(v, w, x, y):
         """ classification_function_zero
 
         Decides the sample class label as negative  if the two boolean attributes
@@ -242,7 +257,7 @@ class MIXEDGenerator(Stream):
         return 0 if (v == 1 and w == 1) or (v == 1 and z) or (w == 1 and z) else 1
 
     @staticmethod
-    def classification_function_one(v, w, x, y):
+    def _classification_function_one(v, w, x, y):
         """ classification_function_one
 
         Decides the sample class label as positive  if the two boolean attributes

@@ -90,15 +90,15 @@ class LEDGenerator(Stream):
     _NUM_BASE_ATTRIBUTES = 7
     _TOTAL_ATTRIBUTES_INCLUDING_NOISE = 24
     _ORIGINAL_INSTANCES = np.array([[1, 1, 1, 0, 1, 1, 1],
-                                   [0, 0, 1, 0, 0, 1, 0],
-                                   [1, 0, 1, 1, 1, 0, 1],
-                                   [1, 0, 1, 1, 0, 1, 1],
-                                   [0, 1, 1, 1, 0, 1, 0],
-                                   [1, 1, 0, 1, 0, 1, 1],
-                                   [1, 1, 0, 1, 1, 1, 1],
-                                   [1, 0, 1, 0, 0, 1, 0],
-                                   [1, 1, 1, 1, 1, 1, 1],
-                                   [1, 1, 1, 1, 0, 1, 1]])
+                                    [0, 0, 1, 0, 0, 1, 0],
+                                    [1, 0, 1, 1, 1, 0, 1],
+                                    [1, 0, 1, 1, 0, 1, 1],
+                                    [0, 1, 1, 1, 0, 1, 0],
+                                    [1, 1, 0, 1, 0, 1, 1],
+                                    [1, 1, 0, 1, 1, 1, 1],
+                                    [1, 0, 1, 0, 0, 1, 0],
+                                    [1, 1, 1, 1, 1, 1, 1],
+                                    [1, 1, 1, 1, 0, 1, 1]])
 
     def __init__(self, random_state=None, noise_percentage=0.0, has_noise=False):
         super().__init__()
@@ -171,18 +171,23 @@ class LEDGenerator(Stream):
             raise ValueError("has_noise should be boolean, and {} was passed".format(has_noise))
 
     def prepare_for_use(self):
+        """
+        Prepares the stream for use.
+
+        Note
+        ----
+        This functions should always be called after the stream initialization.
+
+        """
         self._random_state = check_random_state(self.random_state)
         self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
-
         """ next_sample
 
         An instance is generated based on the parameters passed. If noise
         is included the total number of attributes will be 24, if it's not
         included there will be 7 attributes.
-
-
 
         Parameters
         ----------
@@ -206,7 +211,6 @@ class LEDGenerator(Stream):
             target[j] = selected
 
             for i in range(self._NUM_BASE_ATTRIBUTES):
-
                 if (0.01 + self._random_state.rand()) <= self.noise_percentage:
                     data[j, i] = 1 if (self._ORIGINAL_INSTANCES[selected, i] == 0) else 0
                 else:

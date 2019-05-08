@@ -34,19 +34,19 @@ class DDM(BaseDriftDetector):
     The detection threshold is calculated in function of two statistics,
     obtained when `(pi + si)` is minimum:
 
-    * `pmin`: The minimum recorded error rate.
-    * `smin`: The minimum recorded standard deviation.
+    * :math:`p_{min}`: The minimum recorded error rate.
+    * `s_{min}`: The minimum recorded standard deviation.
 
-    At instant `i`, the detection algorithm uses:
+    At instant :math:`i`, the detection algorithm uses:
 
-    * `pi`: The error rate at instant i.
-    * `si`: The standard deviation at instant i.
+    * :math:`p_i`: The error rate at instant i.
+    * :math:`s_i`: The standard deviation at instant i.
 
     The conditions for entering the warning zone and detecting change are
     as follows:
 
-    * if `pi + si >= pmin + 2 * smin` -> Warning zone
-    * if `pi + si >= pmin + 3 * smin` -> Change detected
+    * if :math:`p_i + s_i \geq p_{min} + 2 * s_{min}` -> Warning zone
+    * if :math:`p_i + s_i \geq p_{min} + 3 * s_{min}` -> Change detected
 
     References
     ----------
