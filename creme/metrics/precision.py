@@ -6,6 +6,9 @@ from .. import stats
 from . import base
 
 
+__all__ = ['Precision', 'MacroPrecision', 'MicroPrecision']
+
+
 class Precision(stats.Mean, base.BinaryClassificationMetric):
     """Binary precision score.
 

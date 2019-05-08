@@ -1,6 +1,9 @@
 from . import mse
 
 
+__all__ = ['RMSE']
+
+
 class RMSE(mse.MSE):
     """Root mean squared error.
 

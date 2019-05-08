@@ -3,6 +3,9 @@ from .. import stats
 from . import base
 
 
+__all__ = ['Accuracy']
+
+
 class Accuracy(stats.Mean, base.MultiClassificationMetric):
     """Accuracy score, which is the percentage of exact matches.
 

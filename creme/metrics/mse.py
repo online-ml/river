@@ -3,6 +3,9 @@ from .. import stats
 from . import base
 
 
+__all__ = ['MSE']
+
+
 class MSE(stats.Mean, base.RegressionMetric):
     """Mean squared error.
 

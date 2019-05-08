@@ -3,6 +3,9 @@ from .. import stats
 from . import base
 
 
+__all__ = ['SMAPE']
+
+
 class SMAPE(stats.Mean, base.RegressionMetric):
     """Symmetric mean absolute percentage error.
 

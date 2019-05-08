@@ -4,6 +4,7 @@ loss in precision.
 """
 from .accuracy import Accuracy
 from .confusion import ConfusionMatrix
+from .cross_entropy import CrossEntropy
 from .f1_score import F1Score
 from .f1_score import MacroF1Score
 from .f1_score import MicroF1Score
@@ -24,6 +25,7 @@ from .smape import SMAPE
 __all__ = [
     'Accuracy',
     'ConfusionMatrix',
+    'CrossEntropy',
     'F1Score',
     'LogLoss',
     'MacroF1Score',

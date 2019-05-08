@@ -8,6 +8,9 @@ from . import precision
 from . import recall
 
 
+__all__ = ['F1Score', 'MacroF1Score', 'MicroF1Score']
+
+
 class F1Score(stats.Mean, base.BinaryClassificationMetric):
     """Binary F1 score.
 

@@ -4,6 +4,9 @@ from .. import stats
 from . import base
 
 
+__all__ = ['LogLoss']
+
+
 class LogLoss(stats.Mean, base.BinaryClassificationMetric):
     """Binary logarithmic loss.
 
