@@ -1,8 +1,8 @@
-from skmultiflow.core.base_object import BaseObject
+from skmultiflow.core import BaseStreamEstimator
 from sklearn.utils import tosequence
 
 
-class Pipeline(BaseObject):
+class Pipeline(BaseStreamEstimator):
     """ Pipeline
 
     A pipeline structure that holds a set of sequential Transforms, followed
@@ -23,7 +23,7 @@ class Pipeline(BaseObject):
 
     Parameters
     ----------
-    dict: list of tuple
+    steps: list of tuple
         Tuple list containing the set of transforms and the final estimator.
         It doesn't need to contain a transform type object, but the estimator
         is required. Each tuple should be of the format ('name', estimator).
@@ -38,13 +38,13 @@ class Pipeline(BaseObject):
     Examples
     --------
     >>> # Imports
-    >>> from skmultiflow.lazy.knn_adwin import KNNAdwin
-    >>> from skmultiflow.core.pipeline import Pipeline
-    >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-    >>> from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
+    >>> from skmultiflow.lazy import KNNAdwin
+    >>> from skmultiflow.core import Pipeline
+    >>> from skmultiflow.data import FileStream
+    >>> from skmultiflow.evaluation import EvaluatePrequential
+    >>> from skmultiflow.transform import OneHotToCategorical
     >>> # Setting up the stream
-    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
+    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv")
     >>> stream.prepare_for_use()
     >>> transform = OneHotToCategorical([[10, 11, 12, 13],
     ... [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
@@ -59,6 +59,7 @@ class Pipeline(BaseObject):
     >>> evaluator.evaluate(stream=stream, model=pipe)
 
     """
+    _estimator_type = 'pipeline'
 
     def __init__(self, steps):
         # Default values
@@ -231,9 +232,6 @@ class Pipeline(BaseObject):
 
         """
         raise NotImplementedError
-
-    def get_class_type(self):
-        return 'estimator'
 
     def _validate_steps(self):
         """ validate_steps
