@@ -96,7 +96,7 @@ class MultilabelGenerator(Stream):
         self.n_classes = 2
         self.n_num_features = n_features
         self.random_state = random_state
-        self._random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.name = "Multilabel Generator"
 
     def prepare_for_use(self):

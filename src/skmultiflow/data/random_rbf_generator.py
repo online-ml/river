@@ -96,7 +96,7 @@ class RandomRBFGenerator(Stream):
         super().__init__()
         self.sample_random_state = sample_random_state
         self.model_random_state = model_random_state
-        self._sample_random_state = None
+        self._sample_random_state = None   # This is the actual random_state object used internally
         self.n_classes = n_classes
         self.n_targets = 1
         self.n_features = n_features

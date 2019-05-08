@@ -94,7 +94,7 @@ class WaveformGenerator(Stream):
         super().__init__()
 
         self.random_state = random_state
-        self._random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.has_noise = has_noise
         self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = self._NUM_CLASSES
