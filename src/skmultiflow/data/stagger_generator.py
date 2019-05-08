@@ -90,7 +90,7 @@ class STAGGERGenerator(Stream):
         self.n_features = self.n_cat_features
         self.n_classes = 2
         self.n_targets = 1
-        self._random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.next_class_should_be_zero = False
         self.name = "Stagger Generator"
 

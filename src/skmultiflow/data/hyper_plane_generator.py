@@ -69,7 +69,7 @@ class HyperplaneGenerator(Stream):
         self.sigma_percentage = sigma_percentage
         self.noise_percentage = noise_percentage
         self.n_targets = 1
-        self._random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self._next_class_should_be_zero = False
         self._weights = np.zeros(self.n_features)
         self._sigma = np.zeros(self.n_features)

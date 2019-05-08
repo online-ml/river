@@ -119,7 +119,7 @@ class RandomTreeGenerator(Stream):
         self.min_leaf_depth = min_leaf_depth
         self.fraction_leaves_per_level = fraction_leaves_per_level
         self.tree_root = None
-        self._sample_random_state = None
+        self._sample_random_state = None   # This is the actual random_state object used internally
         self.name = "Random Tree Generator"
         self.__configure()
 

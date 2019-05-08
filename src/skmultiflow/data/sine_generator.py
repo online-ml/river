@@ -99,7 +99,7 @@ class SineGenerator(Stream):
         self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = 2
         self.n_targets = 1
-        self._random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.next_class_should_be_zero = False
         self.name = "Sine Generator"
 

@@ -103,7 +103,7 @@ class LEDGenerator(Stream):
     def __init__(self, random_state=None, noise_percentage=0.0, has_noise=False):
         super().__init__()
         self.random_state = random_state
-        self._random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.noise_percentage = noise_percentage
         self.n_cat_features = self._NUM_BASE_ATTRIBUTES
         self.n_features = self.n_cat_features

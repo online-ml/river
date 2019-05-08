@@ -83,7 +83,7 @@ class MIXEDGenerator(Stream):
         self._classification_functions = [self._classification_function_zero, self._classification_function_one]
         self.random_state = random_state
         self.classification_function = classification_function
-        self._random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.balance_classes = balance_classes
         self.n_cat_features = 2
         self.n_num_features = 2
