@@ -12,7 +12,6 @@ __all__ = [
     'Agg',
     'CountVectorizer',
     'Differ',
-    'GroupBy',
     'TargetAgg',
     'TFIDFVectorizer'
 ]

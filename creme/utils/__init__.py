@@ -1,4 +1,5 @@
 from .estimator_checks import check_estimator
+from .histogram import Histogram
 from .math import chain_dot
 from .math import clip
 from .math import dot
@@ -15,6 +16,7 @@ __all__ = [
     'check_estimator',
     'clip',
     'dot',
+    'Histogram',
     'norm',
     'prod',
     'sigmoid',

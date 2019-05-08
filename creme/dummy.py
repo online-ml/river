@@ -5,6 +5,8 @@ import collections
 
 from . import base
 
+__all__ = ['NoChangeClassifier', 'PriorClassifier', 'StatisticRegressor']
+
 
 class NoChangeClassifier(base.MultiClassifier):
     """Dummy classifier which returns the last class seen.

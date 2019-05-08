@@ -8,7 +8,7 @@ class Window(collections.deque):
     This is just a convenience layer on top of a `collections.deque`.
 
     Parameters:
-        window_size (int):  Size of the rolling window.
+        window_size (int): Size of the rolling window.
 
     Example:
 

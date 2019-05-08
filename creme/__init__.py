@@ -29,5 +29,6 @@ __all__ = [
     'reco',
     'stats',
     'stream',
+    'tree',
     'utils'
 ]

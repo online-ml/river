@@ -12,5 +12,6 @@ Developper utilities
    :nosignatures:
 
    check_estimator
+   Histogram
    SortedWindow
    Window
