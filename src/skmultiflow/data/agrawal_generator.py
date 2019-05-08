@@ -1,4 +1,5 @@
 import numpy as np
+
 from skmultiflow.data.base_stream import Stream
 from skmultiflow.utils import check_random_state
 
@@ -13,6 +14,41 @@ class AGRAWALGenerator(Stream):
     There are ten functions defined for generating binary class labels from the
     features. Presumably these determine whether the loan should be approved.
     The features and functions are listed in the original paper [1]_.
+
+    .. list-table::
+       :widths: 25 25 50
+       :header-rows: 1
+
+       * - feature name
+         - feature description
+         - values
+       * - salary
+         - the salary
+         - uniformly distributed from 20k to 150k
+       * - commission
+         - the commission
+         - if (salary < 75k) then 0 else uniformly distributed from 10k to 75k
+       * - age
+         - the age
+         - uniformly distributed from 20 to 80
+       * - elevel
+         - the education level
+         - uniformly chosen from 0 to 4
+       * - car
+         - car maker
+         - uniformly chosen from 1 to 20
+       * - zipcode
+         - zip code of the town
+         - uniformly chosen from 0 to 8
+       * - hvalue
+         - value of the house
+         - uniformly distributed from 50k x zipcode to 100k x zipcode
+       * - hyears
+         - years house owned
+         - uniformly distributed from 1 to 30
+       * - loan
+         - total loan amount
+         - uniformly distributed from 0 to 500k
 
     Parameters
     ----------
@@ -47,11 +83,11 @@ class AGRAWALGenerator(Stream):
         super().__init__()
 
         # Classification functions to use
-        self._classification_functions = [self.classification_function_zero, self.classification_function_one,
-                                          self.classification_function_two, self.classification_function_three,
-                                          self.classification_function_four, self.classification_function_five,
-                                          self.classification_function_six, self.classification_function_seven,
-                                          self.classification_function_eight, self.classification_function_nine]
+        self._classification_functions = [self._classification_function_zero, self._classification_function_one,
+                                          self._classification_function_two, self._classification_function_three,
+                                          self._classification_function_four, self._classification_function_five,
+                                          self._classification_function_six, self._classification_function_seven,
+                                          self._classification_function_eight, self._classification_function_nine]
         self.classification_function = classification_function
         self.random_state = random_state
         self.balance_classes = balance_classes
@@ -151,7 +187,11 @@ class AGRAWALGenerator(Stream):
 
     def prepare_for_use(self):
         """
-        Should be called before generating the samples.
+        Prepares the stream for use.
+
+        Note
+        ----
+        This functions should always be called after the stream initialization.
 
         """
         self._random_state = check_random_state(self.random_state)
@@ -200,7 +240,7 @@ class AGRAWALGenerator(Stream):
                 zipcode = self._random_state.randint(9)
                 hvalue = (9 - zipcode) * 100000 * (0.5 + self._random_state.rand())
                 hyears = 1 + self._random_state.randint(30)
-                loan = self._random_state.rand() * 100000
+                loan = self._random_state.rand() * 500000
                 group = self._classification_functions[self.classification_function](salary, commission,
                                                                                      age, elevel, car,
                                                                                      zipcode, hvalue,
@@ -233,18 +273,23 @@ class AGRAWALGenerator(Stream):
 
     def perturb_value(self, val, val_min, val_max, val_range=None):
         """
-        Perturbs the values of the features after prediction the class
+        Perturbs the values of the features by adding noise after assigning a label,
         if the perturbation is higher than 0.0.
+
         Parameters
         ----------
-        val
-        val_min
-        val_max
-        val_range
+        val: float
+            The value to add noise to.
+        val_min: float
+            The minimum value after perturbation.
+        val_max: float
+            The maximum value after perturbation.
+        val_range:
+            The range of the perturbation.
 
         Returns
         -------
-        val
+        float
             The value after perturbation.
         """
         if val_range is None:
@@ -266,39 +311,38 @@ class AGRAWALGenerator(Stream):
             new_function = self._random_state.randint(10)
         self.classification_function = new_function
 
-
     @staticmethod
-    def classification_function_zero(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_zero(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_zero
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -310,37 +354,37 @@ class AGRAWALGenerator(Stream):
         return 0 if ((age < 40) or (60 <= age)) else 1
 
     @staticmethod
-    def classification_function_one(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_one(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_one
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -357,37 +401,37 @@ class AGRAWALGenerator(Stream):
             return 0 if ((25000 <= salary) and (salary <= 75000)) else 1
 
     @staticmethod
-    def classification_function_two(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_two(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_two
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -404,37 +448,37 @@ class AGRAWALGenerator(Stream):
             return 0 if ((elevel == 2) or (elevel == 3)) or (elevel == 4) else 1
 
     @staticmethod
-    def classification_function_three(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_three(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_three
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -460,37 +504,37 @@ class AGRAWALGenerator(Stream):
                 return 0 if ((25000 <= salary) and (salary <= 75000)) else 1
 
     @staticmethod
-    def classification_function_four(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_four(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_four
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -516,37 +560,37 @@ class AGRAWALGenerator(Stream):
                 return 0 if ((75000 <= loan) and (loan <= 300000)) else 1
 
     @staticmethod
-    def classification_function_five(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_five(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_five
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -565,37 +609,37 @@ class AGRAWALGenerator(Stream):
             return 0 if ((25000 <= totalsalary) and (totalsalary <= 75000)) else 1
 
     @staticmethod
-    def classification_function_six(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_six(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_six
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -607,37 +651,37 @@ class AGRAWALGenerator(Stream):
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def classification_function_seven(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_seven(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_seven
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -649,37 +693,37 @@ class AGRAWALGenerator(Stream):
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def classification_function_eight(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_eight(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_eight
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------
@@ -691,37 +735,37 @@ class AGRAWALGenerator(Stream):
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def classification_function_nine(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_nine(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
         """ classification_function_nine
 
         Parameters
         ----------
-        age: float
-            First numeric attribute.
+        salary: float
+            Numeric feature: Salary.
 
         commission: float
-            Second numeric attribute.
+            Numeric feature: Commission.
 
         age: int
-            Third numeric attribute.
+            Numeric feature: Age.
 
         elevel: int
-            Forth numeric attribute.
+            Categorical feature: Education level.
 
         car: int
-            fifth numeric attribute.
+            Categorical feature: Car maker.
 
         zipcode; int
-            sixth numeric attribute.
+            Categorical feature: Zipcode.
 
         hvalue: flaot
-            seventh numeric attribute.
+            Numeric feature: Value of the house.
 
         hyears: float
-            eighth numeric attribute.
+            Numeric feature: Years house owned.
 
         loan: float
-            ninth numeric attribute.
+            Numeric feature: Total amount of loan.
 
         Returns
         -------

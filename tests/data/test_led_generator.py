@@ -35,8 +35,6 @@ def test_led_generator(test_path):
 
     assert stream.n_classes == 10
 
-    assert stream.get_data_info() == 'Led Generator - 24 features'
-
     assert stream.has_more_samples() is True
 
     assert stream.is_restartable() is True

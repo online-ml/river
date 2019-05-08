@@ -8,12 +8,12 @@ from skmultiflow.utils import check_random_state
 
 class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
     """ Oza Bagging ensemble classifier
-    
+
     Parameters
     ----------
     base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=KNNAdwin)
         Each member of the ensemble is an instance of the base estimator.
-    
+
     n_estimators: int (default=10)
         The size of the ensemble, in other words, how many classifiers to train.
 
@@ -160,12 +160,13 @@ class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
                 raise ValueError("The classes passed to the partial_fit function differ from those passed earlier.")
 
         self.__adjust_ensemble_size()
-
-        for i in range(self.actual_n_estimators):
-            k = self._random_state.poisson()
-            if k > 0:
-                for b in range(k):
-                    self.ensemble[i].partial_fit(X, y, classes, sample_weight)
+        r, _ = get_dimensions(X)
+        for j in range(r):
+            for i in range(self.actual_n_estimators):
+                k = self._random_state.poisson()
+                if k > 0:
+                    for b in range(k):
+                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, sample_weight)
         return self
 
     def __adjust_ensemble_size(self):
@@ -220,7 +221,7 @@ class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
         ------
         ValueError: A ValueError is raised if the number of classes in the base_estimator
         learner differs from that of the ensemble learner.
-        
+
         """
         proba = []
         r, c = get_dimensions(X)

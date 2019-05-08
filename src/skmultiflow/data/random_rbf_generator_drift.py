@@ -143,8 +143,8 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
         the difference is the extra step taken to setup the drift, if there's 
         any.
         
-        To __configure the drift, random offset speeds are chosen for 
-        self.num_drift_centroids centroids. Finally, the speed are 
+        To configure the drift, random offset speeds are chosen for
+        ``self.num_drift_centroids`` centroids. Finally, the speed is
         normalized.
         
         """
@@ -161,7 +161,7 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
 
             for j in range(self.n_num_features):
                 rand_speed.append(model_random_state.rand())
-                norm_speed += rand_speed[j]*rand_speed[j]
+                norm_speed += rand_speed[j] * rand_speed[j]
 
             norm_speed = np.sqrt(norm_speed)
 

@@ -272,5 +272,5 @@ class Stream(BaseStreamEstimator, metaclass=ABCMeta):
             Stream data information
         
         """
-        return self.name + " - {} targets, {} classes, {} features".format(self.n_targets, self.n_classes,
+        return self.name + " - {} target(s), {} classes, {} features".format(self.n_targets, self.n_classes,
                                                                            self.n_features)

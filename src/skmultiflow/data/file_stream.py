@@ -63,16 +63,17 @@ class FileStream(Stream):
 
     def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features=None):
         super().__init__()
-        self.filename = ''
-        self.X = None
-        self.y = None
-        self.cat_features = cat_features
-        self.cat_features_idx = [] if self.cat_features is None else self.cat_features
+
+        self.filepath = filepath
         self.n_targets = n_targets
         self.target_idx = target_idx
+        self.cat_features = cat_features
+        self.cat_features_idx = [] if self.cat_features is None else self.cat_features
+
+        self.X = None
+        self.y = None
         self.task_type = None
         self.n_classes = 0
-        self.filepath = filepath
         self.filename = ''
         self.basename = ''
 
@@ -168,8 +169,11 @@ class FileStream(Stream):
     def prepare_for_use(self):
         """ prepare_for_use
 
-        Prepares the stream for use. This functions should always be
-        called after the stream initialization.
+        Prepares the stream for use.
+
+        Note
+        ----
+        This functions should always be called after the stream initialization.
 
         """
         self._load_data()
@@ -178,6 +182,8 @@ class FileStream(Stream):
         self.current_sample_y = None
 
     def _load_data(self):
+        """ Reads the data provided by the user and separates the features and targets.
+        """
         try:
             raw_data = self.read_function(self.filepath)
 
@@ -186,7 +192,6 @@ class FileStream(Stream):
             rows, cols = raw_data.shape
             self.n_samples = rows
             labels = raw_data.columns.values.tolist()
-
 
             if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
                 # Take everything to the right of target_idx
@@ -286,13 +291,18 @@ class FileStream(Stream):
         """
         return self.n_samples - self.sample_idx
 
-    def print_df(self):
+    def get_all_samples(self):
         """
-        Prints all the samples in the stream.
+        returns all the samples in the stream.
 
+        Returns
+        -------
+        X: pd.DataFrame
+            The features' columns.
+        y: pd.DataFrame
+            The targets' columns.
         """
-        print(self.X)
-        print(self.y)
+        return self.X, self.y
 
     def get_data_info(self):
         if self.task_type == self._CLASSIFICATION:

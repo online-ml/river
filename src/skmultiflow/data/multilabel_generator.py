@@ -5,7 +5,6 @@ from skmultiflow.utils import check_random_state
 
 
 class MultilabelGenerator(Stream):
-
     """ MultilabelGenerator
 
     This generator creates a stream of samples for a multilabel problem.

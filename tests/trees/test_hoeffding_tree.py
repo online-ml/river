@@ -52,11 +52,25 @@ def test_hoeffding_tree(test_path):
     assert learner.get_info() == expected_info
 
     expected_model_1 = 'Leaf = Class 1.0 | {0.0: 1423.0, 1.0: 1745.0, 2.0: 978.0, 3.0: 854.0}\n'
-    expected_model_2 = 'Leaf = Class 1.0 | {1.0: 1745.0, 2.0: 978.0, 0.0: 1423.0, 3.0: 854.0}\n'
-    assert (learner.get_model_description() == expected_model_1) \
-           or (learner.get_model_description() == expected_model_2)
+
+    assert (learner.get_model_description() == expected_model_1)
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    X, y = stream.next_sample(20000)
+    learner.split_criterion = 'hellinger'
+    learner.partial_fit(X, y)
+
+    expected_rules = 'Att (5) == 0.000 and Att (12) == 0.000 | class: 1\n' + \
+        'Att (5) == 0.000 and Att (12) == 1.000 | class: 1\n' + \
+        'Att (5) == 1.000 and Att (13) == 0.000 and Att (1) <= 0.550 and Att (3) <= 0.730 | class: 0\n' +\
+        'Att (5) == 1.000 and Att (13) == 0.000 and Att (1) <= 0.550 and Att (3) > 0.730 | class: 2\n' + \
+        'Att (5) == 1.000 and Att (13) == 0.000 and Att (1) > 0.550 and Att (1) <= 0.800 | class: 0\n' + \
+        'Att (5) == 1.000 and Att (13) == 0.000 and Att (1) > 0.550 and Att (1) > 0.800 and Att (14) == 0.000 | class: 0\n' + \
+        'Att (5) == 1.000 and Att (13) == 0.000 and Att (1) > 0.550 and Att (1) > 0.800 and Att (14) == 1.000 | class: 1\n' + \
+        'Att (5) == 1.000 and Att (13) == 1.000 and Att (3) <= 0.730 | class: 1\n' + \
+        'Att (5) == 1.000 and Att (13) == 1.000 and Att (3) > 0.730 | class: 0\n'
+    assert expected_rules == learner.get_rules_description()
 
 
 def test_hoeffding_tree_coverage():
