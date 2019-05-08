@@ -54,7 +54,6 @@ def test_vfdr():
                                  'Rule 2 :Att (2) <= 60.910| class :0  {0: 66.241588397065328, 1: 54.0}\n' + \
                                  'Default Rule :| class :0  {0: 1316.7584116029348}'
 
-
     assert (learner.get_model_description() == expected_model_description) or \
            (learner.get_model_description() == expected_model_description_)
 
@@ -138,9 +137,6 @@ def test_vfdr_hellinger():
     expected_predictions = array('i', [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1,
                                        0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1,
                                        0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0])
-
-    print(predictions)
-    print(learner.get_model_description())
 
     assert np.alltrue(predictions == expected_predictions)
 
