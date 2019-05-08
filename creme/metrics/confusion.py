@@ -1,6 +1,9 @@
 import collections
 
 
+__all__ = ['ConfusionMatrix']
+
+
 class ConfusionMatrix(collections.defaultdict):
     """Confusion matrix.
 

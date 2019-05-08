@@ -3,6 +3,9 @@ import math
 from . import rmse
 
 
+__all__ = ['RMSLE']
+
+
 class RMSLE(rmse.RMSE):
     """Root mean squared logarithmic error.
 

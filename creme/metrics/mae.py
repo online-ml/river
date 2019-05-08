@@ -3,6 +3,9 @@ from .. import stats
 from . import base
 
 
+__all__ = ['MAE']
+
+
 class MAE(stats.Mean, base.RegressionMetric):
     """Mean absolute error.
 

@@ -7,6 +7,9 @@ from . import base
 from . import precision
 
 
+__all__ = ['Recall', 'MacroRecall', 'MicroRecall']
+
+
 class Recall(stats.Mean, base.BinaryClassificationMetric):
     """Binary recall score.
 
