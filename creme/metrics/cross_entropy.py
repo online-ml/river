@@ -19,19 +19,21 @@ class CrossEntropy(stats.Mean, base.MultiClassificationMetric):
 
             >>> y_true = [0, 1, 2, 2]
             >>> y_pred = [
-            ...     [0.29450637, 0.34216758, 0.36332605],
-            ...     [0.21290077, 0.32728332, 0.45981591],
-            ...     [0.42860913, 0.33380113, 0.23758974],
-            ...     [0.44941979, 0.32962558, 0.22095463]
+            ...     {0: 0.29450637, 1: 0.34216758, 2: 0.36332605},
+            ...     {0: 0.21290077, 1: 0.32728332, 2: 0.45981591},
+            ...     {0: 0.42860913, 1: 0.33380113, 2: 0.23758974},
+            ...     {0: 0.44941979, 1: 0.32962558, 2: 0.22095463}
             ... ]
 
             >>> metric = metrics.CrossEntropy()
-            >>> labels = [0, 1, 2]
 
-            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-            ...     metric = metric.update(y_t, {i: p for i, p in enumerate(y_p)})
-            ...     if i >= 1:
-            ...         assert metric.get() == log_loss(y_true[:i+1], y_pred[:i+1], labels=labels)
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     metric = metric.update(y_t, y_p)
+            ...     print(metric.get())
+            1.222454...
+            1.169691...
+            1.258864...
+            1.321597...
 
             >>> metric
             CrossEntropy: 1.321598

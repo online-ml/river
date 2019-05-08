@@ -21,10 +21,13 @@ class LogLoss(stats.Mean, base.BinaryClassificationMetric):
             >>> y_pred = [0.9,  0.1,   0.2,   0.65]
 
             >>> metric = metrics.LogLoss()
-            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+            >>> for y_t, y_p in zip(y_true, y_pred):
             ...     metric = metric.update(y_t, y_p)
-            ...     if i >= 1:
-            ...         assert metric.get() == log_loss(y_true[:i+1], y_pred[:i+1])
+            ...     print(metric.get())
+            0.105360...
+            0.105360...
+            0.144621...
+            0.216161...
 
             >>> metric
             LogLoss: 0.216162
