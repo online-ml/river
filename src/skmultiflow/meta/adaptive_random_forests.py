@@ -5,7 +5,7 @@ import numpy as np
 
 from sklearn.preprocessing import normalize
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree import ARFHoeffdingTree
@@ -13,7 +13,7 @@ from skmultiflow.metrics.measure_collection import ClassificationMeasurements
 from skmultiflow.utils import get_dimensions, normalize_values_in_dict, check_random_state, check_weights
 
 
-class AdaptiveRandomForest(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class AdaptiveRandomForest(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """Adaptive Random Forest (ARF) classifier.
 
         Parameters
@@ -393,7 +393,7 @@ class AdaptiveRandomForest(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMi
         return True
 
 
-class ARFBaseLearner(BaseStreamEstimator):
+class ARFBaseLearner(BaseSKMObject):
     """ARF Base Learner class.
 
     Parameters

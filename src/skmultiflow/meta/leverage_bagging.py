@@ -1,18 +1,18 @@
 import copy as cp
 
-from skmultiflow.core.base import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core.base import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.lazy import KNN
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
 
 
-class LeverageBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Leverage Bagging ensemble classifier
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=KNN)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNN)
         Each member of the ensemble is an instance of the base estimator.
         
     n_estimators: int (default=10)

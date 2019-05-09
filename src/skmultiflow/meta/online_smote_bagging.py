@@ -2,14 +2,14 @@ import copy as cp
 
 from sklearn.metrics.pairwise import euclidean_distances
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
-class OnlineSMOTEBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class OnlineSMOTEBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     r""" Online SMOTEBagging
 
     Online SMOTEBagging [1]_ is the online version of the ensemble method SMOTEBagging.

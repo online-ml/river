@@ -1,11 +1,11 @@
 import copy as cp
 import numpy as np
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.bayes import NaiveBayes
 
 
-class DynamicWeightedMajority(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class DynamicWeightedMajority(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Dynamic Weighted Majority (DWM) ensemble classifier
 
     Parameters

@@ -1,11 +1,11 @@
 import copy as cp
 
-from skmultiflow.core import BaseStreamEstimator
+from skmultiflow.core import BaseSKMObject
 from skmultiflow.lazy.distances import mixed_distance, euclidean_distance
 from skmultiflow.utils.utils import *
 
 
-class KDTree(BaseStreamEstimator):
+class KDTree(BaseSKMObject):
     """ A K-dimensional tree implementation, adapted for k dimensional problems.
     
     Parameters

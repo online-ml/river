@@ -1,8 +1,8 @@
 from abc import ABCMeta, abstractmethod
-from skmultiflow.core import BaseStreamEstimator
+from skmultiflow.core import BaseSKMObject
 
 
-class BaseDriftDetector(BaseStreamEstimator, metaclass=ABCMeta):
+class BaseDriftDetector(BaseSKMObject, metaclass=ABCMeta):
     """ Abstract Drift Detector
     
     Any drift detector class should follow this minimum structure in 

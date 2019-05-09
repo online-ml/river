@@ -1,8 +1,8 @@
 from abc import ABCMeta, abstractmethod
-from skmultiflow.core import BaseStreamEstimator
+from skmultiflow.core import BaseSKMObject
 
 
-class Stream(BaseStreamEstimator, metaclass=ABCMeta):
+class Stream(BaseSKMObject, metaclass=ABCMeta):
     """ The abstract class setting up the minimum requirements of a stream,
     so that it can work along the other modules in the scikit-multiflow
     framework.

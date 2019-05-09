@@ -1,17 +1,17 @@
 import copy as cp
 import numpy as np
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.bayes import NaiveBayes
 
 
-class AdditiveExpertEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class AdditiveExpertEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Additive Expert (AddExp) ensemble classifier
 
     Parameters
     ----------
     n_estimators: int (default=5)
         Maximum number of estimators to hold.
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=NaiveBayes)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=NaiveBayes)
         Each member of the ensemble is an instance of the base estimator.
     beta: float (default=0.8)
         Factor for which to decrease weights by.

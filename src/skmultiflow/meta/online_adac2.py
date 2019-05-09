@@ -1,13 +1,13 @@
 import copy as cp
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
-class OnlineAdaC2(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class OnlineAdaC2(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Online AdaC2
 
     Online AdaC2 [1]_ is the adaptation of the ensemble learner to data streams.

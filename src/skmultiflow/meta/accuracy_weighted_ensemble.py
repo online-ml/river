@@ -1,4 +1,4 @@
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.bayes import NaiveBayes
 from sklearn.model_selection import KFold
 import numpy as np
@@ -6,14 +6,14 @@ import copy as cp
 import operator as op
 
 
-class AccuracyWeightedEnsemble(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class AccuracyWeightedEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Accuracy Weighted Ensemble (AWE) classifier
 
     Parameters
     ----------
     n_estimators: int (default=10)
         Maximum number of estimators to be kept in the ensemble
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=NaiveBayes)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=NaiveBayes)
         Each member of the ensemble is an instance of the base estimator.
     window_size: int (default=200)
         The size of one chunk to be processed

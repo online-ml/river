@@ -2,14 +2,14 @@ import numpy as np
 
 from collections import deque
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.utils import get_dimensions
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.bayes import do_naive_bayes_prediction
 
 
-class NaiveBayes(BaseStreamEstimator, ClassifierMixin):
+class NaiveBayes(BaseSKMObject, ClassifierMixin):
     """ Naive Bayes classifier
 
     Performs classic bayesian prediction while making naive assumption that all inputs are independent.

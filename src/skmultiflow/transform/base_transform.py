@@ -1,9 +1,9 @@
-from skmultiflow.core import BaseStreamEstimator
+from skmultiflow.core import BaseSKMObject
 
 from abc import ABCMeta, abstractmethod
 
 
-class StreamTransform(BaseStreamEstimator, metaclass=ABCMeta):
+class StreamTransform(BaseSKMObject, metaclass=ABCMeta):
     """ BaseTransform
     
     Abstract class that explicits the constraints to all Transform objects 

@@ -1,13 +1,13 @@
 import copy as cp
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
-class OnlineUnderOverBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class OnlineUnderOverBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     r""" Online Under-Over-Bagging
 
      Online UnderOverBagging [1]_ is the online version of the ensemble method.

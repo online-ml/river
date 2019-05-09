@@ -2,10 +2,10 @@ import copy as cp
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 
 
-class LearnNSE(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class LearnNSE(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Learn++.NSE classifier
 
     Learn++.NSE [1]_ is an ensemble of classifiers for incremental learning

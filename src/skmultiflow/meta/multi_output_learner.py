@@ -5,16 +5,16 @@ from inspect import signature
 
 from sklearn.linear_model import SGDClassifier
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin
 from skmultiflow.metrics import *
 
 
-class MultiOutputLearner(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin):
+class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin):
     """ Multi-Output Learner classifier
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (defaul=SGDClassifier)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (defaul=SGDClassifier)
         Each member of the ensemble is an instance of the base estimator.
 
     Notes

@@ -3,11 +3,11 @@ from inspect import signature
 
 import numpy as np
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from sklearn.tree import DecisionTreeClassifier
 
 
-class BatchIncremental(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class BatchIncremental(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Batch Incremental ensemble classifier.
 
     This is a wrapper that allows the application of any batch model to a 
@@ -18,7 +18,7 @@ class BatchIncremental(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin)
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=DecisionTreeClassifier)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=DecisionTreeClassifier)
         Each member of the ensemble is an instance of the base estimator
 
     window_size: int (default=100)

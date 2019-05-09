@@ -4,16 +4,16 @@ import copy
 
 from sklearn.linear_model import SGDRegressor
 
-from skmultiflow.core import BaseStreamEstimator, RegressorMixin, MetaEstimatorMixin, MultiOutputMixin
+from skmultiflow.core import BaseSKMObject, RegressorMixin, MetaEstimatorMixin, MultiOutputMixin
 from skmultiflow.utils import check_random_state
 
 
-class RegressorChain(BaseStreamEstimator, RegressorMixin, MetaEstimatorMixin, MultiOutputMixin):
+class RegressorChain(BaseSKMObject, RegressorMixin, MetaEstimatorMixin, MultiOutputMixin):
     """ Regressor Chains for multi-output learning.
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=SGDRegressor)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=SGDRegressor)
         Each member of the ensemble is an instance of the base estimator.
 
     order : str (default=None)

@@ -333,7 +333,7 @@ class BaseEstimator:
         return tags
 
 
-class BaseStreamEstimator(BaseEstimator):
+class BaseSKMObject(BaseEstimator):
     """Base class for all stream estimators in scikit-multiflow
 
         Notes

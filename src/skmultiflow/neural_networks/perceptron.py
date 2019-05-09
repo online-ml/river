@@ -1,9 +1,9 @@
 import numpy as np
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from sklearn.linear_model.perceptron import Perceptron
 
 
-class PerceptronMask(BaseStreamEstimator, ClassifierMixin):
+class PerceptronMask(BaseSKMObject, ClassifierMixin):
     """ PerceptronMask
 
     A mask for scikit-learn's Perceptron classifier.
