@@ -7,7 +7,10 @@ from .base import ClassifierMixin
 from .base import RegressorMixin
 from .base import MetaEstimatorMixin
 from .base import MultiOutputMixin
+from .base import clone
+from .base import is_classifier
+from .base import is_regressor
 from .pipeline import Pipeline
 
 __all__ = ["BaseSKMObject", "ClassifierMixin", "RegressorMixin", "MetaEstimatorMixin", "MultiOutputMixin",
-           "Pipeline"]
+           "Pipeline", "clone", "is_classifier", "is_regressor"]

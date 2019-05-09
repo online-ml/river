@@ -210,7 +210,6 @@ X : numpy.ndarray of shape (n_samples, n_features)
         self.ensemble = None
         self.n_labels = None
 
-    @staticmethod
-    def _more_tags():
+    def _more_tags(self):
         return {'multioutput': True,
                 'multioutput_only': True}

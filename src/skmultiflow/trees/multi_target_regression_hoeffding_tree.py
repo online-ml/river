@@ -454,7 +454,7 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
                          nominal_attributes=nominal_attributes)
-        self.split_criterion = 'icvr',   # intra cluster variance reduction
+        self.split_criterion = 'icvr'   # intra cluster variance reduction
         self.learning_ratio_perceptron = learning_ratio_perceptron
         self.learning_ratio_decay = learning_ratio_decay
         self.learning_ratio_const = learning_ratio_const
@@ -497,6 +497,9 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
 
     @split_criterion.setter
     def split_criterion(self, split_criterion):
+        if split_criterion == 'vr':
+            # Corner case due to parent class initialization
+            split_criterion = 'icvr'
         if split_criterion != 'icvr':   # intra cluster variance reduction
             print("Invalid split_criterion option {}', will use default '{}'"
                         .format(split_criterion, 'icvr'))
@@ -970,7 +973,6 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
         self._active_leaf_node_cnt -= 1
         self._inactive_leaf_node_cnt += 1
 
-    @staticmethod
-    def _more_tags():
+    def _more_tags(self):
         return {'multioutput': True,
                 'multioutput_only': True}
