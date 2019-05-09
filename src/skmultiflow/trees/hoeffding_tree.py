@@ -15,7 +15,7 @@ from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestio
 from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
 from skmultiflow.bayes import do_naive_bayes_prediction
-from skmultiflow.core.base_rule import Rule
+from skmultiflow.rules.base_rule import Rule
 from skmultiflow.trees.hellinger_distance_criterion import HellingerDistanceCriterion
 
 GINI_SPLIT = 'gini'
