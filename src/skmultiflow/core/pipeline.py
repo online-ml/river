@@ -277,30 +277,31 @@ class Pipeline(BaseSKMObject):
         return dict(self.steps)
 
     def get_info(self):
-        info = "Pipeline: "
+        info = "Pipeline:\n["
         names, estimators = zip(*self.steps)
-        classifier = estimators[-1]
+        learner = estimators[-1]
         transforms = estimators[:-1]
         i = 0
         for t in transforms:
             try:
                 if t.get_info() is not None:
                     info += t.get_info()
-                    info += " #### "
+                    info += "\n"
                 else:
                     info += 'Transform: no info available'
             except NotImplementedError:
                 info += 'Transform: no info available'
             i += 1
 
-        if classifier is not None:
+        if learner is not None:
             try:
-                if hasattr(classifier, 'get_info'):
-                    info += classifier.get_info()
+                if hasattr(learner, 'get_info'):
+                    info += learner.get_info()
                 else:
-                    info += 'Classifier: no info available'
+                    info += 'Learner: no info available'
             except NotImplementedError:
-                info += 'Classifier: no info available'
+                info += 'Learner: no info available'
+        info += "]"
         return info
 
     @property
