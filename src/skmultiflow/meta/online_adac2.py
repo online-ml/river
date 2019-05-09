@@ -1,13 +1,13 @@
 import copy as cp
 
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
-class OnlineAdaC2(StreamModel):
+class OnlineAdaC2(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
     """ Online AdaC2
 
     Online AdaC2 [1]_ is the adaptation of the ensemble learner to data streams.
@@ -61,8 +61,8 @@ class OnlineAdaC2(StreamModel):
     References
     ----------
     .. [1] B. Wang and J. Pineau, "Online Bagging and Boosting for Imbalanced Data Streams,"
-           in IEEE Transactions on Knowledge and Data Engineering, vol. 28, no. 12, pp.
-           3353-3366, 1 Dec. 2016. doi: 10.1109/TKDE.2016.2609424
+       in IEEE Transactions on Knowledge and Data Engineering, vol. 28, no. 12, pp.
+       3353-3366, 1 Dec. 2016. doi: 10.1109/TKDE.2016.2609424
 
     """
 
@@ -75,16 +75,17 @@ class OnlineAdaC2(StreamModel):
                  random_state=None):
 
         super().__init__()
-        # default values
-        self.ensemble = None
-        self.n_estimators = None
-        self.classes = None
-        self.random_state = None
-        self._init_n_estimators = n_estimators
-        self._init_random_state = random_state
+        self.n_estimators = n_estimators
+        self.random_state = random_state
         self.cost_positive = cost_positive
         self.cost_negative = cost_negative
         self.drift_detection = drift_detection
+        self.base_estimator = base_estimator
+        # default values
+        self.ensemble = None
+        self.actual_n_estimators = None
+        self.classes = None
+        self._random_state = None
         self.adwin_ensemble = None
         self.lam_tp = None
         self.lam_fn = None
@@ -93,32 +94,30 @@ class OnlineAdaC2(StreamModel):
         self.lam_sum = None
         self.wacc = None
         self.werr = None
-        self.__configure(base_estimator)
+        self.__configure()
 
-    def __configure(self, base_estimator):
-        base_estimator.reset()
-        self.base_estimator = base_estimator
-        self.n_estimators = self._init_n_estimators
+    def __configure(self):
+        if hasattr(self.base_estimator, "reset"):
+            self.base_estimator.reset()
+
+        self.actual_n_estimators = self.n_estimators
         self.adwin_ensemble = []
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             self.adwin_ensemble.append(ADWIN())
-        self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
-        self.random_state = check_random_state(self._init_random_state)
-        self.lam_tp = np.zeros(self.n_estimators)
-        self.lam_fn = np.zeros(self.n_estimators)
-        self.lam_tn = np.zeros(self.n_estimators)
-        self.lam_fp = np.zeros(self.n_estimators)
-        self.lam_sum = np.zeros(self.n_estimators)
-        self.wacc = np.zeros(self.n_estimators)
-        self.werr = np.zeros(self.n_estimators)
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.actual_n_estimators)]
+        self._random_state = check_random_state(self.random_state)
+        self.lam_tp = np.zeros(self.actual_n_estimators)
+        self.lam_fn = np.zeros(self.actual_n_estimators)
+        self.lam_tn = np.zeros(self.actual_n_estimators)
+        self.lam_fp = np.zeros(self.actual_n_estimators)
+        self.lam_sum = np.zeros(self.actual_n_estimators)
+        self.wacc = np.zeros(self.actual_n_estimators)
+        self.werr = np.zeros(self.actual_n_estimators)
 
     def reset(self):
-        self.__configure(self.base_estimator)
+        self.__configure()
 
-    def fit(self, X, y, classes=None, weight=None):
-        self.partial_fit(X, y, classes, weight)
-
-    def partial_fit(self, X, y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ partial_fit
 
         Partially fits the model, based on the X and y matrix.
@@ -144,7 +143,7 @@ class OnlineAdaC2(StreamModel):
             List of all existing classes. This is an optional parameter, except
             for the first partial_fit call, when it becomes obligatory.
 
-        weight: Array-like
+        sample_weight: Array-like
             Instance weight. If not provided, uniform weights are assumed.
 
         Raises
@@ -152,6 +151,10 @@ class OnlineAdaC2(StreamModel):
         ValueError: A ValueError is raised if the 'classes' parameter is not
         passed in the first partial_fit call, or if they are passed in further
         calls but differ from the initial classes list passed.
+
+        Returns
+        -------
+        self
 
         """
         if self.classes is None:
@@ -172,12 +175,12 @@ class OnlineAdaC2(StreamModel):
         for j in range(r):
             change_detected = False
             lam = 1
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 self.lam_sum[i] += lam
-                k = self.random_state.poisson(lam)
+                k = self._random_state.poisson(lam)
                 if k > 0:
                     for b in range(k):
-                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, weight)
+                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, sample_weight)
                     if self.ensemble[i].predict([X[j]])[0] == 1 and y[j] == 1:
                         self.lam_tp[i] += self.cost_positive * lam
                         self.wacc[i] = (self.lam_tp[i] + self.lam_tn[i]) / self.lam_sum[i]
@@ -203,12 +206,9 @@ class OnlineAdaC2(StreamModel):
                     try:
                         pred = self.ensemble[i].predict(X)
                         error_estimation = self.adwin_ensemble[i].estimation
-                        for j in range(r):
-                            if pred[j] is not None:
-                                if pred[j] == y[j]:
-                                    self.adwin_ensemble[i].add_element(1)
-                                else:
-                                    self.adwin_ensemble[i].add_element(0)
+                        for k in range(r):
+                            if pred[k] is not None:
+                                self.adwin_ensemble[i].add_element(int(pred[k] == y[k]))
                         if self.adwin_ensemble[i].detected_change():
                             if self.adwin_ensemble[i].estimation > error_estimation:
                                 change_detected = True
@@ -219,7 +219,7 @@ class OnlineAdaC2(StreamModel):
             if change_detected and self.drift_detection:
                 max_threshold = 0.0
                 i_max = -1
-                for i in range(self.n_estimators):
+                for i in range(self.actual_n_estimators):
                     if max_threshold < self.adwin_ensemble[i].estimation:
                         max_threshold = self.adwin_ensemble[i].estimation
                         i_max = i
@@ -227,18 +227,20 @@ class OnlineAdaC2(StreamModel):
                     self.ensemble[i_max].reset()
                     self.adwin_ensemble[i_max] = ADWIN()
 
+        return self
+
     def __adjust_ensemble_size(self):
         if len(self.classes) != len(self.ensemble):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
-                    self.n_estimators += 1
+                    self.actual_n_estimators += 1
                     self.adwin_ensemble.append(ADWIN())
-                self.lam_tp = np.zeros(self.n_estimators)
-                self.lam_fn = np.zeros(self.n_estimators)
-                self.lam_tn = np.zeros(self.n_estimators)
-                self.lam_fp = np.zeros(self.n_estimators)
-                self.lam_sum = np.zeros(self.n_estimators)
+                self.lam_tp = np.zeros(self.actual_n_estimators)
+                self.lam_fn = np.zeros(self.actual_n_estimators)
+                self.lam_tn = np.zeros(self.actual_n_estimators)
+                self.lam_fp = np.zeros(self.actual_n_estimators)
+                self.lam_sum = np.zeros(self.actual_n_estimators)
 
     def predict(self, X):
         """ predict
@@ -294,7 +296,7 @@ class OnlineAdaC2(StreamModel):
         proba = []
         r, c = get_dimensions(X)
         try:
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
                     raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
@@ -325,11 +327,3 @@ class OnlineAdaC2(StreamModel):
             else:
                 aux.append(proba[i])
         return np.asarray(aux)
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        return 'OnlineAdaC2 Classifier: base_estimator: ' + str(self.base_estimator) + \
-               ' - n_estimators: ' + str(self.n_estimators) + ' - cost positive: ' + str(self.cost_negative) + \
-               ' - cost negative: ' + str(self.cost_negative)
