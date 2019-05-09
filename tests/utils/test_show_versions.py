@@ -1,3 +1,7 @@
+import pytest
+
+import sys
+
 from skmultiflow.utils._show_versions import _get_deps_info
 from skmultiflow.utils import show_versions
 
@@ -18,6 +22,7 @@ def test_get_deps_info():
     assert set(info.keys()) == set(expected_keys)
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
 def test_show_versions(capsys):
     show_versions()
     captured = capsys.readouterr()
