@@ -44,3 +44,8 @@ def test_online_csb2():
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    expected_info = "OnlineCSB2(base_estimator=NaiveBayes(nominal_attributes=None),\n" \
+                    "           cost_negative=0.9, cost_positive=1, drift_detection=True,\n" \
+                    "           n_estimators=3, random_state=112)"
+    assert learner.get_info() == expected_info
