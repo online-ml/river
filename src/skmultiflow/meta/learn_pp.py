@@ -3,11 +3,11 @@ import copy
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.utils import check_random_state
 
 
-class LearnPP(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class LearnPP(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Learn++ ensemble classifier
 
     Learn++ [1]_ is an ensemble learning. Learn++ does not require
@@ -25,7 +25,7 @@ class LearnPP(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=DecisionTreeClassifier)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=DecisionTreeClassifier)
         Each member of the ensemble is an instance of the base estimator.
     n_estimators: int (default=30)
         The number of classifiers per ensemble

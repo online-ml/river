@@ -12,7 +12,7 @@ class OzaBaggingAdwin(OzaBagging):
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=KNNAdwin)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNNAdwin)
         Each member of the ensemble is an instance of the base estimator.
 
     n_estimators: int (default=10)

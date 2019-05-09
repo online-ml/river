@@ -1,10 +1,10 @@
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.utils.data_structures import InstanceWindow
 import sklearn.neighbors as sk
 from skmultiflow.utils.utils import *
 
 
-class KNN(BaseStreamEstimator, ClassifierMixin):
+class KNN(BaseSKMObject, ClassifierMixin):
     """ K-Nearest Neighbors classifier
     
     This is a non-parametric classification method. The output of this

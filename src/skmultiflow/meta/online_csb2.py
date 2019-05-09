@@ -1,13 +1,13 @@
 import copy as cp
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
-class OnlineCSB2(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class OnlineCSB2(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Online CSB2
 
     Online CSB2 [1]_ is the online version of the ensemble learner CSB2.

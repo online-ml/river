@@ -1,7 +1,7 @@
-from skmultiflow.core import BaseStreamEstimator
+from skmultiflow.core import BaseSKMObject
 
 
-class Rule(BaseStreamEstimator):
+class Rule(BaseSKMObject):
     """ Basic rule class.
     A rule is collection of predicates that build a conjunction (the
     IF part of the rule).

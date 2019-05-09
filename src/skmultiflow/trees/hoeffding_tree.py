@@ -7,7 +7,7 @@ import numpy as np
 
 
 from skmultiflow.utils.utils import get_dimensions, normalize_values_in_dict, calculate_object_size
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.trees.attribute_class_observer_null import AttributeClassObserverNull
@@ -26,7 +26,7 @@ NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
-class HoeffdingTree(BaseStreamEstimator, ClassifierMixin):
+class HoeffdingTree(BaseSKMObject, ClassifierMixin):
     """ Hoeffding Tree or VFDT.
 
     Parameters

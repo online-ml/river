@@ -1,8 +1,8 @@
-from skmultiflow.core import BaseStreamEstimator
+from skmultiflow.core import BaseSKMObject
 from sklearn.utils import tosequence
 
 
-class Pipeline(BaseStreamEstimator):
+class Pipeline(BaseSKMObject):
     """ Pipeline
 
     A pipeline structure that holds a set of sequential Transforms, followed

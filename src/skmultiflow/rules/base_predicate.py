@@ -1,7 +1,7 @@
-from skmultiflow.core import BaseStreamEstimator
+from skmultiflow.core import BaseSKMObject
 
 
-class Predicate(BaseStreamEstimator):
+class Predicate(BaseSKMObject):
     """ Basic element of a Rule.
 
     A predicate is a comparison between an attribute and a value in the form of:

@@ -1,13 +1,13 @@
 import copy as cp
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
-class OnlineRUSBoost(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class OnlineRUSBoost(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Online RUSBoost
 
     Online RUSBoost [1]_ is the adaptation of the ensemble learner to data streams.

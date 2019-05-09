@@ -4,16 +4,16 @@ import copy
 
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin
 from skmultiflow.utils import check_random_state
 
 
-class ClassifierChain(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin):
+class ClassifierChain(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin):
     """ Classifier Chains for multi-label learning.
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=LogisticRegression)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=LogisticRegression)
         Each member of the ensemble is an instance of the base estimator
 
     order : str (default=None)

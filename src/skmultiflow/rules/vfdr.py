@@ -1,7 +1,7 @@
 import copy
 from operator import attrgetter, itemgetter
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.rules.base_predicate import Predicate
 from skmultiflow.rules.base_rule import Rule
 from skmultiflow.rules.foil_gain_rule_criterion import FoilGainExpandCriterion
@@ -24,7 +24,7 @@ _ADWIN = 'adwin'
 _DDM = 'ddm'
 
 
-class VFDR(BaseStreamEstimator, ClassifierMixin):
+class VFDR(BaseSKMObject, ClassifierMixin):
     """ Adaptive Very Fast Decision Rules
 
     AVFDR [1]_ is an incremental rule learning classifier capable to adapt to evolving data streams.

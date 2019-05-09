@@ -3,7 +3,7 @@ import io
 from abc import ABCMeta, abstractmethod
 from timeit import default_timer as timer
 
-from skmultiflow.core import BaseStreamEstimator
+from skmultiflow.core import BaseSKMObject
 from skmultiflow.data.base_stream import Stream
 from .evaluation_data_buffer import EvaluationDataBuffer
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
@@ -15,7 +15,7 @@ import skmultiflow.utils.constants as constants
 from skmultiflow.utils.utils import calculate_object_size
 
 
-class StreamEvaluator(BaseStreamEstimator, metaclass=ABCMeta):
+class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
     """ The abstract class that works as a base model for all of this framework's
     evaluators. It creates a basic interface that evaluation modules should
     follow in order to use them with all the tools available in scikit-workflow.

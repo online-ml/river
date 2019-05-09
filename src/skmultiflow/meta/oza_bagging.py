@@ -1,17 +1,17 @@
 import copy as cp
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
 
 
-class OzaBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class OzaBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Oza Bagging ensemble classifier
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseStreamEstimator or sklearn.BaseEstimator (default=KNNAdwin)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNNAdwin)
         Each member of the ensemble is an instance of the base estimator.
 
     n_estimators: int (default=10)

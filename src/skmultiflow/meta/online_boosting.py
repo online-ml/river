@@ -1,13 +1,13 @@
 import copy as cp
 
-from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 from skmultiflow.drift_detection import ADWIN
 
 
-class OnlineBoosting(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+class OnlineBoosting(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     r""" Online boosting classifier
     Online Boosting [1]_ is the online version of the boosting ensemble method (AdaBoost).
 
