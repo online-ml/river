@@ -1,5 +1,5 @@
 from skmultiflow.trees.instance_conditional_test import InstanceConditionalTest
-from skmultiflow.core.base_predicate import Predicate
+from skmultiflow.rules.base_predicate import Predicate
 
 class NominalAttributeMultiwayTest(InstanceConditionalTest):
     def __init__(self, att_idx):
