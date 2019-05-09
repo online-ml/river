@@ -1,23 +1,23 @@
 import copy as cp
 
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
-class OnlineUnderOverBagging(StreamModel):
-    """ online UnderOverbBgging
+class OnlineUnderOverBagging(BaseStreamEstimator, ClassifierMixin, MetaEstimatorMixin):
+    r""" Online Under-Over-Bagging
 
      Online UnderOverBagging [1]_ is the online version of the ensemble method.
 
-     In case of imbalanced classes UnderOverBagging uses the strategy of undersampling
+     In case of imbalanced classes UnderOverBagging uses the strategy of under-sampling
      the majority class and oversampling the minority class. In addition the sampling
      rate can be also varied over the bagging iterations, which further boosts the
      diversity of the base learners.
 
-     The derivation of the online UnderOverBaging algorithm is made through the observation
+     The derivation of the online UnderOverBagging algorithm is made through the observation
      that a Binomial distribution with sampling rate :math:`\frac{C}{N}` corresponds to a
      poisson distribution with :math:`\lambda=C`.
 
@@ -61,8 +61,12 @@ class OnlineUnderOverBagging(StreamModel):
     References
     ----------
     .. [1] B. Wang and J. Pineau, "Online Bagging and Boosting for Imbalanced Data Streams,"
-           in IEEE Transactions on Knowledge and Data Engineering, vol. 28, no. 12, pp.
-           3353-3366, 1 Dec. 2016. doi: 10.1109/TKDE.2016.2609424
+       in IEEE Transactions on Knowledge and Data Engineering, vol. 28, no. 12, pp. 3353-3366,
+       1 Dec. 2016. doi: 10.1109/TKDE.2016.2609424
+
+    Returns
+    -------
+    self
 
     """
 
@@ -70,35 +74,35 @@ class OnlineUnderOverBagging(StreamModel):
                  random_state=None):
         super().__init__()
         # default values
-        self.ensemble = None
-        self.n_estimators = None
-        self.classes = None
-        self.random_state = None
-        self.n_samples = None
-        self.drift_detection = drift_detection
-        self.adwin_ensemble = None
-        self._init_n_estimators = n_estimators
-        self._init_random_state = random_state
-        self.sampling_rate = sampling_rate
-        self.__configure(base_estimator)
-
-    def __configure(self, base_estimator):
-        base_estimator.reset()
         self.base_estimator = base_estimator
-        self.n_estimators = self._init_n_estimators
+        self.n_estimators = n_estimators
+        self.sampling_rate = sampling_rate
+        self.drift_detection = drift_detection
+        self.random_state = random_state
+        self.ensemble = None
+        self.actual_n_estimators = None
+        self.classes = None
+        self._random_state = None
+        self.n_samples = None
+        self.adwin_ensemble = None
+
+        self.__configure()
+
+    def __configure(self):
+        if hasattr(self.base_estimator, "reset"):
+            self.base_estimator.reset()
+
+        self.actual_n_estimators = self.n_estimators
         self.adwin_ensemble = []
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             self.adwin_ensemble.append(ADWIN())
-        self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
-        self.random_state = check_random_state(self._init_random_state)
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.actual_n_estimators)]
+        self._random_state = check_random_state(self.random_state)
 
     def reset(self):
-        self.__configure(self.base_estimator)
+        self.__configure()
 
-    def fit(self, X, y, classes=None, weight=None):
-        self.partial_fit(X, y, classes, weight)
-
-    def partial_fit(self, X, y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ partial_fit
 
         Partially fits the model, based on the X and y matrix.
@@ -124,7 +128,7 @@ class OnlineUnderOverBagging(StreamModel):
             List of all existing classes. This is an optional parameter, except
             for the first partial_fit call, when it becomes obligatory.
 
-        weight: Array-like
+        sample_weight: Array-like
             Instance weight. If not provided, uniform weights are assumed.
 
         Raises
@@ -150,27 +154,24 @@ class OnlineUnderOverBagging(StreamModel):
         r, _ = get_dimensions(X)
         for j in range(r):
             change_detected = False
-            for i in range(self.n_estimators):
-                a = (i + 1) / self.n_estimators
+            for i in range(self.actual_n_estimators):
+                a = (i + 1) / self.actual_n_estimators
                 if y[j] == 1:
                     lam = a * self.sampling_rate
                 else:
                     lam = a
-                k = self.random_state.poisson(lam)
+                k = self._random_state.poisson(lam)
                 if k > 0:
                     for b in range(k):
-                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, weight)
+                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, sample_weight)
 
                 if self.drift_detection:
                     try:
                         pred = self.ensemble[i].predict(X)
                         error_estimation = self.adwin_ensemble[i].estimation
-                        for j in range(r):
-                            if pred[j] is not None:
-                                if pred[j] == y[j]:
-                                    self.adwin_ensemble[i].add_element(1)
-                                else:
-                                    self.adwin_ensemble[i].add_element(0)
+                        for k in range(r):
+                            if pred[k] is not None:
+                                self.adwin_ensemble[i].add_element(int(pred[k] == y[k]))
                         if self.adwin_ensemble[i].detected_change():
                             if self.adwin_ensemble[i].estimation > error_estimation:
                                 change_detected = True
@@ -181,7 +182,7 @@ class OnlineUnderOverBagging(StreamModel):
             if change_detected and self.drift_detection:
                 max_threshold = 0.0
                 i_max = -1
-                for i in range(self.n_estimators):
+                for i in range(self.actual_n_estimators):
                     if max_threshold < self.adwin_ensemble[i].estimation:
                         max_threshold = self.adwin_ensemble[i].estimation
                         i_max = i
@@ -189,12 +190,14 @@ class OnlineUnderOverBagging(StreamModel):
                     self.ensemble[i_max].reset()
                     self.adwin_ensemble[i_max] = ADWIN()
 
+        return self
+
     def __adjust_ensemble_size(self):
         if len(self.classes) != len(self.ensemble):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
-                    self.n_estimators += 1
+                    self.actual_n_estimators += 1
                     self.adwin_ensemble.append(ADWIN())
 
     def predict(self, X):
@@ -251,7 +254,7 @@ class OnlineUnderOverBagging(StreamModel):
         proba = []
         r, c = get_dimensions(X)
         try:
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
                     raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
@@ -282,10 +285,3 @@ class OnlineUnderOverBagging(StreamModel):
             else:
                 aux.append(proba[i])
         return np.asarray(aux)
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        return 'OnlineUnderOverBagging Classifier: base_estimator: ' + str(self.base_estimator) + \
-               ' - n_estimators: ' + str(self.n_estimators) + ' - sampling_rate: ' + str(self.sampling_rate)
