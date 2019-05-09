@@ -81,11 +81,16 @@ class LearnNSE(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         ----------
         X: numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
+
         y: Array-like
             An array-like of all the class labels for the samples in X.
+
         classes: numpy.ndarray, optional (default=None)
-            Array with all possible/known class labels.
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
+
         sample_weight: NOT used (default=None)
+
         Raises
         ------
         RuntimeError:

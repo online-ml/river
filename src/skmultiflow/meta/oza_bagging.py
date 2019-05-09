@@ -121,10 +121,11 @@ class OzaBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
             An array-like with the class labels of all samples in X.
 
         classes: numpy.ndarray, optional (default=None)
-            Array with all possible/known class labels.
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
         sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed.
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the base estimator.
 
         Raises
         ------

@@ -29,21 +29,19 @@ class OnlineRUSBoost(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
 
     Parameters
     ----------
-    base_estimator: StreamModel
-        This is the ensemble classifier type, each ensemble classifier is going
-        to be a copy of the base_estimator.
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNNAdwin)
+        Each member of the ensemble is an instance of the base estimator.
 
-    n_estimators: int
+    n_estimators: int, optional (default=10)
         The size of the ensemble, in other words, how many classifiers to train.
 
-    sampling_rate: int
+    sampling_rate: int, optional (default=3)
         The sampling rate of the positive instances.
 
-    algorithm: int
+    algorithm: int, optional (default=1)
         The implementation of RUSBoost to use {1, 2, 3}.
 
-
-    drift_detection: Bool
+    drift_detection: bool, optional (default=True)
         A drift detector (ADWIN) can be used by the method to track the performance
          of the classifiers and adapt when a drift is detected.
 
@@ -133,18 +131,18 @@ class OnlineRUSBoost(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            Features matrix used for partially updating the model.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: Array-like
-            An array-like of all the class labels for the samples in X.
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
 
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
-        weight: Array-like
-            Instance weight. If not provided, uniform weights are assumed.
+        sample_weight: Array-like
+            Instance weight. If not provided, uniform weights are assumed. Usage varies depending on the base estimator.
 
         Raises
         ------
