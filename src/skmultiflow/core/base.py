@@ -482,7 +482,7 @@ class ClassifierMixin(metaclass=ABCMeta):
         return accuracy_score(y, self.predict(X), sample_weight=sample_weight)
 
 
-class RegressorMixin:
+class RegressorMixin(metaclass=ABCMeta):
     """Mixin class for all regression estimators in scikit-multiflow."""
     _estimator_type = "regressor"
 
@@ -626,15 +626,14 @@ class RegressorMixin:
                         multioutput='variance_weighted')
 
 
-class MetaEstimatorMixin:
+class MetaEstimatorMixin(object):
+    """Mixin class for all meta estimators in scikit-multiflow."""
     _required_parameters = ["estimator"]
-    """Mixin class for all meta estimators in scikit-learn."""
 
 
 class MultiOutputMixin(object):
     """Mixin to mark estimators that support multioutput."""
-    @staticmethod
-    def _more_tags():
+    def _more_tags(self):
         return {'multioutput': True}
 
 

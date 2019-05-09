@@ -37,7 +37,7 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
         If True, disable poor attributes.
     no_preprune: boolean (default=False)
         If True, disable pre-pruning.
-    leaf_prediction: string (default='nba')
+    leaf_prediction: string (default='perceptron')
         | Prediction mechanism used at leafs.
         | 'mean' - Target mean
         | 'perceptron' - Perceptron
@@ -317,7 +317,8 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
                          no_preprune=no_preprune,
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
-                         nominal_attributes=nominal_attributes)
+                         nominal_attributes=nominal_attributes,
+                         split_criterion='vr')
         self.split_criterion = 'vr'   # variance reduction
 
         self._tree_root = None

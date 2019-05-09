@@ -158,7 +158,6 @@ class RegressorChain(BaseSKMObject, RegressorMixin, MetaEstimatorMixin, MultiOut
         """
         raise NotImplementedError
 
-    @staticmethod
-    def _more_tags():
+    def _more_tags(self):
         return {'multioutput': True,
                 'multioutput_only': True}
