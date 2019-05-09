@@ -142,17 +142,15 @@ class Pipeline(BaseSKMObject):
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
-            The data upon which the transforms/estimator will create their
-            model.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: An array_like object of length n_samples
-            Contains the true class labels for all the samples in X
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
 
-        classes: list, optional
-            A list containing all classes that can show up during subsequent
-            partial_fit calls. It's optional for all but the first call, when
-            it's obligatory.
+        classes: numpy.ndarray
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
         Returns
         -------

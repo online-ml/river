@@ -117,10 +117,11 @@ class LearnPP(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
             The features to train the model.
 
         y: numpy.ndarray of shape (n_samples)
-            An array-like with the labels of all samples in X.
+            An array-like with the class labels of all samples in X.
 
         classes: numpy.ndarray, optional (default=None)
-            Array with all possible/known class labels.
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
         sample_weight: NOT used (default=None)
 
