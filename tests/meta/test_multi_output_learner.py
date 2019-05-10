@@ -7,8 +7,10 @@ from skmultiflow.metrics.measure_collection import hamming_score
 import numpy as np
 
 import pytest
+from sklearn import __version__ as sklearn_version
 
 
+@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 @pytest.mark.filterwarnings('ignore::UserWarning')
 def test_multi_output_learner():
 
