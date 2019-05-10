@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 
 
 class WaveformGenerator(Stream):
-    """ WaveformGenerator
+    """ Waveform stream generator.
 
     Generates instances with 21 numeric attributes and 3 classes, based
     on a random differentiation of some base waveforms. Supports noise 

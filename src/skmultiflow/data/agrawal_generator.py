@@ -5,7 +5,7 @@ from skmultiflow.utils import check_random_state
 
 
 class AGRAWALGenerator(Stream):
-    """ AGRAWAL stream generator
+    """ Agrawal stream generator.
 
     The generator was introduced by Agrawal et al in [1]_, and was common source
     of data for early work on scaling up decision tree learners.

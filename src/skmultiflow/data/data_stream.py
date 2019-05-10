@@ -4,19 +4,10 @@ from skmultiflow.data.base_stream import Stream
 
 
 class DataStream(Stream):
-    """ DataStream
+    """ Creates a stream from a data source.
 
-    A stream generated from the entries of a dataset ( numpy array or pandas
-    DataFrame).
-
-    The stream is able to provide, as requested, a number of samples, in
-    a way that old samples cannot be accessed in a later time. This is done
-    so that a stream context can be correctly simulated.
-
-    DataStream takes the whole data set are separates the X and Y or takes X and Y
-    separately.
-    For the first case target_idx and n_targets need to be provided, in the next
-    case they are not needed.
+    DataStream takes the whole data set containing the `X` (features) and `Y` (targets) or takes `X` and `Y` separately.
+    For the first case `target_idx` and `n_targets` need to be provided, in the second case they are not needed.
 
     Parameters
     ----------
@@ -37,6 +28,12 @@ class DataStream(Stream):
 
     name: str, optional (default=None)
         A string to id the data.
+
+    Notes
+    -----
+    The stream object provides upon request a number of samples, in a way such that old samples cannot be accessed
+    at a later time. This is done to correctly simulate the stream context.
+
     """
 
     _CLASSIFICATION = 'classification'

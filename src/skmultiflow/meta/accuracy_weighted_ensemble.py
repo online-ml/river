@@ -7,7 +7,7 @@ import operator as op
 
 
 class AccuracyWeightedEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Accuracy Weighted Ensemble (AWE) classifier
+    """ Accuracy Weighted Ensemble classifier
 
     Parameters
     ----------

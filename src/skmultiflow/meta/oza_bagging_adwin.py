@@ -7,7 +7,7 @@ from skmultiflow.utils.utils import *
 
 
 class OzaBaggingAdwin(OzaBagging):
-    """ Oza Bagging ensemble classifier with ADWIN change detector
+    """ Oza Bagging ensemble classifier with ADWIN change detector.
 
     Parameters
     ----------

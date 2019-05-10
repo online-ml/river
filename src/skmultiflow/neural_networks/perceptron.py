@@ -1,16 +1,13 @@
 import numpy as np
 from skmultiflow.core import BaseSKMObject, ClassifierMixin
-from sklearn.linear_model.perceptron import Perceptron
+from sklearn.linear_model import Perceptron
 
 
 class PerceptronMask(BaseSKMObject, ClassifierMixin):
-    """ PerceptronMask
+    """ Mask for sklearn.linear_model.Perceptron.
 
-    A mask for scikit-learn's Perceptron classifier.
-
-    Because scikit-multiflow's framework require a few interfaces, not present 
-    int scikit-learn, this mask allows the first to use classifiers native to 
-    the latter.
+    scikit-multiflow requires a few interfaces, not present in scikit-learn,
+    This mask serves as a wrapper for the Perceptron classifier.
 
     """
     def __init__(self,

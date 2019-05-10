@@ -3,10 +3,9 @@ from sklearn.utils import tosequence
 
 
 class Pipeline(BaseSKMObject):
-    """ Pipeline
+    """ Holds a set of sequential operation (transforms), followed by a single estimator. (Experimental)
 
-    A pipeline structure that holds a set of sequential Transforms, followed
-    by a single learner. It allows for easy manipulation of datasets that may
+    It allows for easy manipulation of datasets that may
     require several transformation processes before being used by a learner.
     Also allows for the cross-validation of several steps.
 
@@ -34,6 +33,11 @@ class Pipeline(BaseSKMObject):
     the necessary functions for the pipeline to work, a TypeError is raised.
 
     NotImplementedError: Some of the functions are yet to be implemented.
+
+    Notes
+    -----
+    This code is an experimental feature. Use with caution.
+
 
     Examples
     --------

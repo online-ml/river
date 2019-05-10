@@ -6,7 +6,7 @@ from skmultiflow.utils.utils import *
 
 
 class KNNAdwin(KNN):
-    """ K-Nearest Neighbors classifier with ADWIN change detector
+    """ K-Nearest Neighbors classifier with ADWIN change detector.
     
     This Classifier is an improvement from the regular KNN classifier, 
     as it is resistant to concept drift. It utilises the ADWIN change 

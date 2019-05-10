@@ -5,12 +5,12 @@ from skmultiflow.utils import check_random_state
 
 
 class MultilabelGenerator(Stream):
-    """ MultilabelGenerator
+    """ Creates a multi-label stream.
 
-    This generator creates a stream of samples for a multilabel problem.
-    It uses the make_multilabel_classification function from scikit-learn, 
-    which creates a batch setting multilabel classification problem. These 
-    samples are then sequentially fed by the next_sample function.
+    This generator creates a stream of samples for a multi-label problem.
+    It uses the make_multi-label_classification function from scikit-learn,
+    which creates a batch setting multi-label classification problem. These
+    samples are then sequentially yield by the next_sample method.
 
     Parameters
     ----------

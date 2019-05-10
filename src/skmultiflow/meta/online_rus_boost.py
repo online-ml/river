@@ -8,7 +8,7 @@ from skmultiflow.utils.utils import *
 
 
 class OnlineRUSBoost(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Online RUSBoost
+    """ Online RUSBoost ensemble classifier.
 
     Online RUSBoost [1]_ is the adaptation of the ensemble learner to data streams.
 
@@ -116,9 +116,7 @@ class OnlineRUSBoost(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         self.__configure()
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-
-        Partially fits the model, based on the X and y matrix.
+        """ Partially fits the model, based on the X and y matrix.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample

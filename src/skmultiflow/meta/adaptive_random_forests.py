@@ -14,7 +14,7 @@ from skmultiflow.utils import get_dimensions, normalize_values_in_dict, check_ra
 
 
 class AdaptiveRandomForest(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """Adaptive Random Forest (ARF) classifier.
+    """Adaptive Random Forest classifier.
 
         Parameters
         ----------

@@ -1,5 +1,5 @@
 """
-The :mod:`skmultiflow.core` module covers core methods of `scikit-multiflow`.
+The :mod:`skmultiflow.core` module covers core elements of `scikit-multiflow`.
 """
 
 from .base import BaseSKMObject

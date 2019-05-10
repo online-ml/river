@@ -8,7 +8,8 @@ from skmultiflow.drift_detection import ADWIN
 
 
 class OnlineBoosting(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    r""" Online boosting classifier
+    r""" Online Boosting ensemble classifier.
+
     Online Boosting [1]_ is the online version of the boosting ensemble method (AdaBoost).
 
     AdaBoost focuses more on difficult examples. The misclassified examples by the current
@@ -101,9 +102,7 @@ class OnlineBoosting(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         self.__configure()
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
-        """ partial_fit
-
-        Partially fits the model, based on the X and y matrix.
+        """ Partially fits the model, based on the X and y matrix.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample

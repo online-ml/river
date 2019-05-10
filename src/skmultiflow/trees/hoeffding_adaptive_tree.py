@@ -19,7 +19,7 @@ error_width_threshold = 300
 
 
 class HAT(HoeffdingTree):
-    """ Hoeffding Adaptive Tree for evolving data streams.
+    """ Hoeffding Adaptive Tree.
 
     Parameters
     ----------

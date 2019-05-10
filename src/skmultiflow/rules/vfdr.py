@@ -25,12 +25,12 @@ _DDM = 'ddm'
 
 
 class VFDR(BaseSKMObject, ClassifierMixin):
-    """ Adaptive Very Fast Decision Rules
+    """ Adaptive Very Fast Decision Rules.
 
-    AVFDR [1]_ is an incremental rule learning classifier capable to adapt to evolving data streams.
-    The learning process of AVFDR is similar to that of Hoeffding Tree, but instead of a tree
-    it uses a collection of rules. The core of VFDR is its rules that aim to create a highly
-    interpretable classifier thanks to their nature.
+    The Adaptive Very Fast Decision Rules (AVFDR) [1]_ is an incremental rule learning classifier
+    capable to adapt to evolving data streams. The learning process of AVFDR is similar to that
+    of Hoeffding Tree, but instead of a tree it uses a collection of rules. The core of VFDR is
+    its rules that aim to create a highly interpretable classifier thanks to their nature.
     Each rule is a conjunction of conditions based on attribute values and the structure for keeping
     sufficient statistics. The sufficient statistics will determine the class predicted by the rule.
     IF :math:`att_1 < 1` and :math:`att_2 = 0` then class 0.
@@ -62,7 +62,7 @@ class VFDR(BaseSKMObject, ClassifierMixin):
         | Maximum number of rules the model can have.
     nb_threshold: int (default=0)
         | Number of instances a leaf should observe before allowing Naive Bayes.
-    nb_prediction: Bool (defautl=True)
+    nb_prediction: Bool (default=True)
         | Use Naive Bayes as prediction strategy in the leafs, else majority class is uses.
     drift_detector: BaseDriftDetector (Default=None)
         | The drift detector to uses in rules. If None detection will be ignored.
@@ -119,14 +119,14 @@ class VFDR(BaseSKMObject, ClassifierMixin):
 
     class Rule(Rule):
         """ Rule class
-        A rule is collection of predicates(conditions) that make up the conjunction ( the IF
-        part of the rule).
+
+        A rule is collection of predicates(conditions) that make up the conjunction (the IF part of the rule).
         The conditions are in the form of: :math:`Att_{idx} > value`,  :math:`Att_{idx} <= value` and
-         :math:`Att_{idx} = value`.
+        :math:`Att_{idx} = value`.
 
         The rule can also track the class distribution and use a drift detector to track change in concept.
 
-        parameters
+        Parameters
         ----------
         class_distribution: dict (class_value, weight)
             Class observations collected from the instances seen in the rule.
@@ -420,8 +420,9 @@ class VFDR(BaseSKMObject, ClassifierMixin):
         return final_votes if fired_rule else self.default_rule.get_class_votes(X, self)
 
     def partial_fit(self, X, y, classes=None, weight=None):
-        """Incrementally trains the model. Train samples (instances) are composed of X attributes and their
-        corresponding targets y.
+        """Incrementally trains the model.
+
+        Train samples (instances) are composed of X attributes and their corresponding targets y.
 
         Tasks performed before training:
 
@@ -433,7 +434,7 @@ class VFDR(BaseSKMObject, ClassifierMixin):
 
         * If the rule_set is empty, update the default_rule and if enough statistics are collected try to create rule.
         * If rules exist in the rule_set, check if they cover the instance. The statistics of the ones that fire are
-         updated using the instance.
+          updated using the instance.
         * If enough statistics are collected if a rule then attempt to expand it.
 
         Parameters

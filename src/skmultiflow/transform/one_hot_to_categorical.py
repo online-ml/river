@@ -5,11 +5,10 @@ from skmultiflow.utils.utils import get_dimensions
 
 
 class OneHotToCategorical(StreamTransform):
-    """ OneHotToCategorical
+    """ Transforms one-hot encoded data into categorical feature(s).
     
-    Transform that receives a features matrix, with some features coded as 
-    one hot, and transform these features in basic int coded categorical 
-    features.
+    Receives a features matrix, with some binary features (one-hot), and transform them into single categorical
+    feature.
     
     Parameters
     ----------

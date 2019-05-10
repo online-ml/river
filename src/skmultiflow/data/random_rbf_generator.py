@@ -5,19 +5,14 @@ import numpy as np
 
 
 class RandomRBFGenerator(Stream):
-    """ RandomRBFGenerator
+    """ Random Radial Basis Function stream generator.
     
-    This generator produces a radial basis function stream.
-    
-    A number of centroids, having a random central position, a standard 
-    deviation, a class label and weight, are generated. A new sample is 
-    created by choosing one of the centroids at random, taking into 
-    account their weights, and offsetting the attributes at a random 
-    direction from the centroid's center. The offset length is drawn 
-    from a Gaussian distribution.
+    Produces a radial basis function stream. A number of centroids, having a random central position, a standard
+    deviation, a class label and weight, are generated. A new sample is created by choosing one of the centroids at
+    random, taking into account their weights, and offsetting the attributes at a random direction from the centroid's
+    center. The offset length is drawn  from a Gaussian distribution.
       
-    This process will create a normally distributed hypersphere of samples 
-    on the surrounds of each centroid.
+    This process will create a normally distributed hypersphere of samples on the surrounds of each centroid.
     
     Parameters
     ---------

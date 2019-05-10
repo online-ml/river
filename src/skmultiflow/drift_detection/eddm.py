@@ -4,7 +4,7 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class EDDM(BaseDriftDetector):
-    """ EDDM method for concept drift detection
+    """ Early Drift Detection Method.
 
     Notes
     -----

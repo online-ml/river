@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 
 
 class SEAGenerator(Stream):
-    """ SEAGenerator
+    """ SEA stream generator.
     
     This generator is an implementation of the data stream with abrupt 
     concept drift, first described in Street and Kim's 'A streaming 

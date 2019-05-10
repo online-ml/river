@@ -11,10 +11,10 @@ class BatchIncremental(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Batch Incremental ensemble classifier.
 
     This is a wrapper that allows the application of any batch model to a 
-    stream by incrementally building an ensemble of them. A window of examples 
-    is collected, then used to train a new model, which is added to the 
-    ensemble. A maximum number of models ensures memory use is finite (the 
-    oldest model is deleted when this number is exceeded). 
+    stream by incrementally building an ensemble of instances of the batch model.
+    A window of examples is collected, then used to train a new model, which is
+    added to the ensemble. A maximum number of models ensures memory use is finite
+    (the oldest model is deleted when this number is exceeded).
 
     Parameters
     ----------

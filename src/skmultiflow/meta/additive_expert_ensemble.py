@@ -5,7 +5,7 @@ from skmultiflow.bayes import NaiveBayes
 
 
 class AdditiveExpertEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Additive Expert (AddExp) ensemble classifier
+    """ Additive Expert ensemble classifier.
 
     Parameters
     ----------

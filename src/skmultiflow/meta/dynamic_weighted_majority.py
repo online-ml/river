@@ -6,7 +6,7 @@ from skmultiflow.bayes import NaiveBayes
 
 
 class DynamicWeightedMajority(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Dynamic Weighted Majority (DWM) ensemble classifier
+    """ Dynamic Weighted Majority ensemble classifier.
 
     Parameters
     ----------

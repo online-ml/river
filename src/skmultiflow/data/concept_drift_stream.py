@@ -5,7 +5,7 @@ from skmultiflow.data import AGRAWALGenerator
 
 
 class ConceptDriftStream(Stream):
-    """ ConceptDriftStream
+    """ Generates a stream with concept drift.
 
     A stream generator that adds concept drift or change by joining several streams.
     This is done by building a weighted combination of two pure distributions that

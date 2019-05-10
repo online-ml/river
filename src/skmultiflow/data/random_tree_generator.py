@@ -5,7 +5,7 @@ from skmultiflow.utils import check_random_state
 
 
 class RandomTreeGenerator(Stream):
-    """ RandomTreeGenerator
+    """ Random Tree stream generator.
        
     This generator is built based on its description in Domingo and Hulten's 
     'Knowledge Discovery and Data Mining'. The generator is based on a random 

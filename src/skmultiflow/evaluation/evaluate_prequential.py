@@ -10,8 +10,9 @@ from skmultiflow.utils import constants
 
 
 class EvaluatePrequential(StreamEvaluator):
-    """ The prequential evaluation method, or interleaved test-then-train method,
-    is an alternative to the traditional holdout evaluation, inherited from
+    """ The prequential evaluation method or interleaved test-then-train method.
+
+    An alternative to the traditional holdout evaluation, inherited from
     batch setting problems.
 
     The prequential evaluation is designed specifically for stream settings,

@@ -3,9 +3,10 @@ from skmultiflow.core import BaseSKMObject
 
 
 class Stream(BaseSKMObject, metaclass=ABCMeta):
-    """ The abstract class setting up the minimum requirements of a stream,
-    so that it can work along the other modules in the scikit-multiflow
-    framework.
+    """ Base Stream class.
+
+    This abstract class defines the minimum requirements of a stream,
+    so that it can work along other modules in scikit-multiflow.
     
     Raises
     ------

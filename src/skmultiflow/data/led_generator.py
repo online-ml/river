@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 
 
 class LEDGenerator(Stream):
-    """ LEDGenerator
+    """ LED stream generator.
 
     This data source originates from the CART book [1]_. An implementation
     in C was donated to the UCI [2]_ machine learning repository by David Aha.

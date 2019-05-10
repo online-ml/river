@@ -4,7 +4,7 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class DDM(BaseDriftDetector):
-    """ DDM method for concept drift detection
+    """ Drift Detection Method.
     
     Parameters
     ----------
