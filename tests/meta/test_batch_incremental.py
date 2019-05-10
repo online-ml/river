@@ -2,10 +2,13 @@ from skmultiflow.data import RandomTreeGenerator
 from skmultiflow.meta.batch_incremental import BatchIncremental
 
 from sklearn.tree import DecisionTreeClassifier
-
 import numpy as np
 
+import pytest
+from sklearn import __version__ as sklearn_version
 
+
+@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 def test_batch_incremental():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112)
     stream.prepare_for_use()

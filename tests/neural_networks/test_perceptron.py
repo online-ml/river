@@ -8,8 +8,10 @@ from skmultiflow.neural_networks import PerceptronMask
 from sklearn.metrics import accuracy_score
 
 import pytest
+from sklearn import __version__ as sklearn_version
 
 
+@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 @pytest.mark.filterwarnings('ignore::FutureWarning')
 def test_perceptron(test_path):
     stream = SEAGenerator(random_state=1)

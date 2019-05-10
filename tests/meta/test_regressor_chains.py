@@ -7,8 +7,10 @@ from sklearn.linear_model import SGDRegressor
 import numpy as np
 
 import pytest
+from sklearn import __version__ as sklearn_version
 
 
+@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 @pytest.mark.filterwarnings('ignore::UserWarning')
 def test_regressor_chains():
     X_reg, y_reg = make_regression(random_state=112, n_targets=3, n_samples=5150)
