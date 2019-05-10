@@ -10,7 +10,7 @@ from skmultiflow.utils.utils import *
 
 
 class OnlineSMOTEBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    r""" Online SMOTEBagging
+    r""" Online SMOTEBagging ensemble classifier.
 
     Online SMOTEBagging [1]_ is the online version of the ensemble method SMOTEBagging.
 
@@ -94,18 +94,17 @@ class OnlineSMOTEBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         self.__configure()
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
-        """ partial_fit
-
-        Partially fits the model, based on the X and y matrix.
+        """ Partially fits the model, based on the X and y matrix.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample
         at a time.
 
         Each sample is trained by each classifier a total of K times, where K
-        is drawn by a Poisson(l) distribution. l is updated after every example
+        is drawn by a :math:`Poisson(l)` distribution. :math:`l` is updated after every example
         using :math:`lambda_{sc}` if th estimator correctly classifies the example or
         :math:`lambda_{sw}` in the other case.
+
         Parameters
         ----------
         X : numpy.ndarray of shape (n_samples, n_features)

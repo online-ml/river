@@ -8,7 +8,7 @@ from skmultiflow.utils.utils import *
 
 
 class OnlineAdaC2(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Online AdaC2
+    """ Online AdaC2 ensemble classifier.
 
     Online AdaC2 [1]_ is the adaptation of the ensemble learner to data streams.
 
@@ -117,9 +117,7 @@ class OnlineAdaC2(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         self.__configure()
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
-        """ partial_fit
-
-        Partially fits the model, based on the X and y matrix.
+        """ Partially fits the model, based on the X and y matrix.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample

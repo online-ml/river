@@ -13,16 +13,16 @@ NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
 class LCHT(HoeffdingTree, MultiOutputMixin):
-    """ Label Combination Hoeffding Tree
+    """ Label Combination Hoeffding Tree for multi-label learning.
 
-    Label combination transforms the problem from multilabel to multiclass.
-    For each unique combination of labels it assigns a class and procedes
-    with training the hoeffding tree normaly.
+    Label combination transforms the problem from multi-label to multi-class.
+    For each unique combination of labels it assigns a class and proceeds
+    with training the hoeffding tree normally.
 
     The transformation is done by changing the label set which could be seen
     as a binary number to an int which will represent the class, and after
-    the prediction the int is converted back to a bnary number which is the
-    predicted labelset.
+    the prediction the int is converted back to a binary number which is the
+    predicted label-set.
 
     The number of labels need to be provided for the transformation to work.
 

@@ -10,8 +10,9 @@ from skmultiflow.utils import constants, get_dimensions
 
 
 class EvaluateHoldout(StreamEvaluator):
-    """ The holdout evaluation method, or periodic holdout evaluation method,
-    analyses each arriving sample by updating its statistics, without computing
+    """ The holdout evaluation method or periodic holdout evaluation method.
+
+    Analyses each arriving sample by updating its statistics, without computing
     performance metrics, nor predicting labels or regression values.
 
     The performance evaluation happens at every n_wait analysed samples, at which

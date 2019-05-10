@@ -4,28 +4,26 @@ from skmultiflow.utils import check_random_state
 
 
 class MIXEDGenerator(Stream):
+    r""" Mixed data stream generator.
 
-    """ MIXEDGenerator
+    This generator is an implementation of a data stream with abrupt concept drift and boolean noise-free examples
+    as described in Gama, João, et al [1]_.
 
-    This generator is an implementation of a data stream with abrupt
-    concept drift and boolean noise-free examples as described in
-    Gama, Joao, et al [1]_.
-
-    It has four relevant attributes, two boolean attributes :math:`v,w`
-    and two numeric attributes :math:`x, y` uniformly distributed from 0 to 1.
-    The examples are labaled depending on the classification function chosen from below.
+    It has four relevant attributes, two boolean attributes :math:`v, w` and two numeric attributes :math:`x, y`
+    uniformly distributed from 0 to 1. The examples are labaled depending on the classification function chosen
+    from below.
 
     * function 0:
-        - if :math:`v` and :math:`w` are true or :math:`v` and :math:`z` are true or :math:`w` and :math:`z` are true then 0 else 1
-        where :math:`z` is :math:`y < 0.5 + 0.3 sin(3 \pi  x)`
+        if :math:`v` and :math:`w` are true or :math:`v` and :math:`z` are true or :math:`w` and :math:`z` are
+        true then 0 else 1, where :math:`z` is :math:`y < 0.5 + 0.3 sin(3 \pi  x)`
     * function 1:
         The opposite of function 0.
 
-    The drift is added by switching from function 0 to 1 or the opposite."
+    The drift is added by switching from function 0 to 1 or the opposite.
 
     Parameters
     ----------
-    classification_function: int (Default: 0)
+    classification_function: int (default: 0)
         Which of the four classification functions to use for the generation.
         The value can vary from 0 to 1.
 
@@ -58,21 +56,20 @@ class MIXEDGenerator(Stream):
 
     >>> stream.next_sample(10)
     (array([[1.        , 1.        , 0.05480574, 0.81767738],
-        [1.        , 1.        , 0.00255603, 0.98119928],
-        [0.        , 0.        , 0.39464259, 0.00494492],
-        [1.        , 1.        , 0.82060937, 0.344983  ],
-        [0.        , 1.        , 0.08623151, 0.54607394],
-        [0.        , 0.        , 0.04500817, 0.33218776],
-        [1.        , 1.        , 0.70936161, 0.18840112],
-        [1.        , 0.        , 0.50315448, 0.76353033],
-        [1.        , 1.        , 0.21415209, 0.76309258],
-        [0.        , 1.        , 0.42563042, 0.23435109]]), array([1., 1., 0., 1., 1., 0., 1., 0., 1., 1.]))
+           [1.        , 1.        , 0.00255603, 0.98119928],
+           [0.        , 0.        , 0.39464259, 0.00494492],
+           [1.        , 1.        , 0.82060937, 0.344983  ],
+           [0.        , 1.        , 0.08623151, 0.54607394],
+           [0.        , 0.        , 0.04500817, 0.33218776],
+           [1.        , 1.        , 0.70936161, 0.18840112],
+           [1.        , 0.        , 0.50315448, 0.76353033],
+           [1.        , 1.        , 0.21415209, 0.76309258],
+           [0.        , 1.        , 0.42563042, 0.23435109]]), array([1., 1., 0., 1., 1., 0., 1., 0., 1., 1.]))
 
     >>> stream.n_remaining_samples()
     -1
     >>> stream.has_more_samples()
     True
-
 
    """
 

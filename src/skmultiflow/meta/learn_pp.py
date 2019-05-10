@@ -8,14 +8,13 @@ from skmultiflow.utils import check_random_state
 
 
 class LearnPP(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Learn++ ensemble classifier
+    """ Learn++ ensemble classifier.
 
-    Learn++ [1]_ is an ensemble learning. Learn++ does not require
-    access to previously used data during subsequent incremental learning
-    steps. At the same time, it does not forget previously acquired knowledge.
-    Learn++ utilizes an ensemble of classifiers by generating multiple
-    hypotheses using training data sampled according to carefully
-    tailored distributions.
+    Learn++ [1]_  does not require access to previously used data during
+    subsequent incremental learning steps. At the same time, it does not
+    forget previously acquired knowledge. Learn++ utilizes an ensemble of
+    classifiers by generating multiple hypotheses using training data
+    sampled according to carefully tailored distributions.
 
     References
     ----------

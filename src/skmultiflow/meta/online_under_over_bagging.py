@@ -8,7 +8,7 @@ from skmultiflow.utils.utils import *
 
 
 class OnlineUnderOverBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    r""" Online Under-Over-Bagging
+    r""" Online Under-Over-Bagging ensemble classifier.
 
      Online UnderOverBagging [1]_ is the online version of the ensemble method.
 
@@ -102,9 +102,7 @@ class OnlineUnderOverBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin)
         self.__configure()
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
-        """ partial_fit
-
-        Partially fits the model, based on the X and y matrix.
+        """ Partially fits the model, based on the X and y matrix.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample

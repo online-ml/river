@@ -4,7 +4,7 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class ADWIN(BaseDriftDetector):
-    """ ADWIN method for concept drift detection
+    """ Adaptive Windowing method for concept drift detection.
     
     Parameters
     ----------

@@ -13,9 +13,10 @@ _PERCEPTRON = 'perceptron'
 
 
 class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
-    """ Regression Hoeffding trees known as Fast incremental model tree with drift detection (FIMT-DD).
+    """ Regression Hoeffding Tree or Fast Incremental Model Tree with Drift Detection.
 
-    This is an implementation of the model tree introduced by E. Ikonomovska, J. Gama, and S. Džeroski [1]_.
+    This is an implementation of the Fast Incremental Model Tree with Drift Detection (FIMT-DD)
+    introduced by E. Ikonomovska, J. Gama, and S. Džeroski [1]_.
 
     Parameters
     ----------

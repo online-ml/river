@@ -6,7 +6,7 @@ from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 
 
 class LearnNSE(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Learn++.NSE classifier
+    """ Learn++.NSE ensemble classifier.
 
     Learn++.NSE [1]_ is an ensemble of classifiers for incremental learning
     from non-stationary environments (NSEs) where the underlying data

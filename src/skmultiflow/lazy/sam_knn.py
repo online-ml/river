@@ -9,7 +9,7 @@ from skmultiflow.utils import get_dimensions
 
 
 class SAMKNN(BaseSKMObject, ClassifierMixin):
-    """ SAMKNN - Self Adjusting Memory (SAM) coupled with the kNN classifier.
+    """ Self Adjusting Memory coupled with the kNN classifier.
 
     Parameters
     ----------

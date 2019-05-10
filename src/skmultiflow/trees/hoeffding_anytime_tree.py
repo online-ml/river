@@ -23,7 +23,7 @@ error_width_threshold = 300
 
 
 class HATT(HoeffdingTree):
-    """ Hoeffding Anytime Tree or EVDT.
+    """ Hoeffding Anytime Tree or Extremely Fast Decision Tree.
 
     Parameters
     ----------

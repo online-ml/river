@@ -5,7 +5,7 @@ import numpy as np
 
 
 class RegressionGenerator(Stream):
-    """ RegressionGenerator
+    """ Creates a regression stream.
     
     This generator creates a stream of samples for a regression problem. It 
     uses the make_regression function from scikit-learn, which creates a 

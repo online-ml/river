@@ -27,7 +27,7 @@ NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
 class HoeffdingTree(BaseSKMObject, ClassifierMixin):
-    """ Hoeffding Tree or VFDT.
+    """ Hoeffding Tree or Very Fast Decision Tree.
 
     Parameters
     ----------

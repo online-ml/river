@@ -2,7 +2,7 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class PageHinkley(BaseDriftDetector):
-    """ Page-Hinkley method for concept drift detection
+    """ Page-Hinkley method for concept drift detection.
 
     Notes
     -----

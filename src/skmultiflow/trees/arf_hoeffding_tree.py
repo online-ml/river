@@ -11,7 +11,7 @@ class ARFHoeffdingTree(HoeffdingTree):
     """ Adaptive Random Forest Hoeffding Tree.
 
     Parameters
-    __________
+    ----------
     max_byte_size: int, optional (default=33554432)
         Maximum memory consumed by the tree.
 
@@ -64,7 +64,7 @@ class ARFHoeffdingTree(HoeffdingTree):
             If None, the random number generator is the RandomState instance used by `np.random`.
 
     Notes
-    _____
+    -----
     This is the base model for the Adaptive Random Forest ensemble learner
     (See skmultiflow.classification.meta.adaptive_random_forests).
     This Hoeffding Tree includes a max_features parameter, which defines the number of randomly selected features to

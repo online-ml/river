@@ -35,8 +35,7 @@ class KDTree(BaseSKMObject):
     
     Raises
     ------
-    May raise ValueErrors if the parameters passed don't have the correct 
-    types.
+    May raise ValueErrors if the parameters passed don't have the correct types.
     
     Notes
     -----

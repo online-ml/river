@@ -300,7 +300,9 @@ def P(y, x, cc, payoff=np.prod):
 
 
 class ProbabilisticClassifierChain(ClassifierChain):
-    """ Probabilistic Classifier Chains (PCC)
+    """ Probabilistic Classifier Chains for multi-label learning.
+
+    Published as 'PCC'
 
     Parameters
     ----------
@@ -357,7 +359,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
 
 
 class MonteCarloClassifierChain(ProbabilisticClassifierChain):
-    """ Monte Carlo Sampling Classifier Chains (MCC) classifier
+    """ Monte Carlo Sampling Classifier Chains for multi-label learning.
 
         PCC, using Monte Carlo sampling, published as 'MCC'.
 

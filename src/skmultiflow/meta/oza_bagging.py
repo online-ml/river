@@ -7,7 +7,7 @@ from skmultiflow.utils import check_random_state
 
 
 class OzaBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Oza Bagging ensemble classifier
+    """ Oza Bagging ensemble classifier.
 
     Parameters
     ----------

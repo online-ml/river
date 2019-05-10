@@ -18,7 +18,7 @@ _ADAPTIVE = 'adaptive'
 
 
 class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMixin):
-    """Multi-target Regression Hoeffding tree.
+    """Multi-target Regression Hoeffding Tree.
 
     This is an implementation of the iSoup-Tree proposed by A. Osojnik, P. Panov, and S. Džeroski [1]_.
 

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class RandomRBFGeneratorDrift(RandomRBFGenerator):
-    """ RandomRBFGeneratorDrift
+    """ Random Radial Basis Function stream generator with concept drift.
     
     This class is an extension from the RandomRBFGenerator. It functions 
     as the parent class, except that drift can be introduced in objects 

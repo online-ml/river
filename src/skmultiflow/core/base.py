@@ -145,7 +145,7 @@ def _update_if_consistent(dict1, dict2):
 
 
 class BaseEstimator:
-    """Base class for all estimators
+    """Base Estimator class for compatibility with scikit-learn.
 
     Notes
     -----
@@ -334,7 +334,7 @@ class BaseEstimator:
 
 
 class BaseSKMObject(BaseEstimator):
-    """Base class for all stream estimators in scikit-multiflow
+    """Base class for most objects in scikit-multiflow
 
         Notes
         -----

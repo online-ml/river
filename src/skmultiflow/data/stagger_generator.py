@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 
 
 class STAGGERGenerator(Stream):
-    """ StaggerGenerator
+    """ STAGGER concepts stream generator.
 
     This generator is an implementation of the dara stream with abrupt concept
     drift, as described in Gama, Joao, et al [1]_.

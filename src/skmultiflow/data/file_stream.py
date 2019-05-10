@@ -5,16 +5,10 @@ from skmultiflow.data.base_stream import Stream
 
 
 class FileStream(Stream):
-    """ FileStream
+    """ Creates a stream from a file source.
 
-    A stream generated from the entries of a file. For the moment only
-    csv files are supported, but the idea is to support different formats,
-    as long as there is a function that correctly reads, interprets, and
-    returns a pandas' DataFrame or numpy.ndarray with the data.
-
-    The stream is able to provide, as requested, a number of samples, in
-    a way that old samples cannot be accessed in a later time. This is done
-    so that a stream context can be correctly simulated.
+    For the moment only csv files are supported, but the goal is to support different formats, as long as there is a
+    function that correctly reads, interprets, and returns a pandas' DataFrame or numpy.ndarray with the data.
 
     Parameters
     ----------
@@ -29,6 +23,12 @@ class FileStream(Stream):
 
     cat_features: list, optional (default=None)
         A list of indices corresponding to the location of categorical features.
+
+    Notes
+    -----
+    The stream object provides upon request a number of samples, in a way such that old samples cannot be accessed
+    at a later time. This is done to correctly simulate the stream context.
+
     Examples
     --------
     >>> # Imports

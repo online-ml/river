@@ -14,10 +14,9 @@ LearningNodePerceptron = RegressionHoeffdingTree.LearningNodePerceptron
 
 
 class RegressionHAT(RegressionHoeffdingTree):
-    """
-    Regression Hoeffding trees known as Fast incremental model tree with drift detection (FIMT-DD).
+    """ An adaptation of the Hoeffding Adaptive Tree for regression.
 
-    The tree uses ADWIN to detect drift and PERCEPTRON to make predictions
+    The tree uses ADWIN to detect drift and PERCEPTRON to make predictions.
 
     Parameters
     ----------

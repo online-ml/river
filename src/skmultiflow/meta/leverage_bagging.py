@@ -8,7 +8,7 @@ from skmultiflow.utils import check_random_state
 
 
 class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
-    """ Leverage Bagging ensemble classifier
+    """ Leverage Bagging ensemble classifier.
 
     Parameters
     ----------

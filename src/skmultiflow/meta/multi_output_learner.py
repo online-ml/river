@@ -10,7 +10,7 @@ from skmultiflow.metrics import *
 
 
 class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin):
-    """ Multi-Output Learner classifier
+    """ Multi-Output Learner for multi-label classification.
 
     Parameters
     ----------
