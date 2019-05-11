@@ -15,7 +15,7 @@ def test_knn():
     correct_predictions = 0
     wait_samples = 100
     X_batch = []
-    y_batch =[]
+    y_batch = []
 
     while cnt < max_samples:
         X, y = stream.next_sample()
@@ -39,10 +39,12 @@ def test_knn():
     expected_correct_predictions = 49
     assert correct_predictions == expected_correct_predictions
 
-    expected_info = 'KNN: - n_neighbors: 8 - max_window_size: 2000 - leaf_size: 40'
+    expected_info = 'KNN(leaf_size=40, max_window_size=2000, n_neighbors=8, nominal_attributes=None)'
     assert learner.get_info() == expected_info
 
     learner.reset()
+    assert learner.get_info() == expected_info
+
     X_batch = np.array(X_batch)
     y_batch = np.array(y_batch)
     learner.fit(X_batch[:4500], y_batch[:4500], classes=[0, 1])

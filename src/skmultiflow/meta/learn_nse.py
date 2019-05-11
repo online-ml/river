@@ -2,11 +2,12 @@ import copy as cp
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 
 
-class LearnNSE(StreamModel):
-    """
+class LearnNSE(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+    """ Learn++.NSE ensemble classifier.
+
     Learn++.NSE [1]_ is an ensemble of classifiers for incremental learning
     from non-stationary environments (NSEs) where the underlying data
     distributions change over time. It learns from consecutive batches of data
@@ -23,8 +24,8 @@ class LearnNSE(StreamModel):
     Parameters
     ----------
     base_estimator: StreamModel or sklearn.BaseEstimator (default=DecisionTreeClassifier)
-        This is the base estimator, each member of the ensemble is an instance of the base estimator.
-    ensemble_size: int (default=15)
+        Each member of the ensemble is an instance of the base estimator.
+    n_estimators: int (default=15)
         The number of base estimators in the ensemble.
     window_size: int (default=250)
         The size of the training window (batch), in other words, how many instances are kept for training.
@@ -46,7 +47,7 @@ class LearnNSE(StreamModel):
                  window_size=250,
                  slope=0.5,
                  crossing_point=10,
-                 ensemble_size=15,
+                 n_estimators=15,
                  pruning=None):
         super().__init__()
         self.ensemble = []
@@ -54,19 +55,16 @@ class LearnNSE(StreamModel):
         self.bkts = []
         self.wkts = []
         self.buffer = []
-        self.period = window_size
+        self.window_size = window_size
         self.slope = slope
         self.crossing_point = crossing_point
-        self.ensemble_size = ensemble_size
+        self.n_estimators = n_estimators
         self.pruning = pruning
         self.X_batch = []
         self.y_batch = []
         self.instance_weights = []
         self.base_estimator = cp.deepcopy(base_estimator)
         self.classes = None
-
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
 
     @staticmethod
     def _train_model(estimator, X, y, classes=None):
@@ -75,21 +73,24 @@ class LearnNSE(StreamModel):
         except (NotImplementedError, TypeError):
             estimator.partial_fit(X, y, classes=classes)
 
-    def partial_fit(self, X, y=None, classes=None, weight=None):
+    def partial_fit(self, X, y=None, classes=None, sample_weight=None):
         """
         Partially fits the model, based on the X and y matrix.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
+
         y: Array-like
             An array-like of all the class labels for the samples in X.
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
-        weight: None
-            Instance weights. NOT used for this classifier.
+
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
+
+        sample_weight: NOT used (default=None)
+
         Raises
         ------
         RuntimeError:
@@ -117,7 +118,7 @@ class LearnNSE(StreamModel):
             self.y_batch.append(y[i])
             mt = len(self.y_batch)
 
-            if mt == self.period:
+            if mt == self.window_size:
                 self.X_batch = np.array(self.X_batch)
                 self.y_batch = np.array(self.y_batch)
 
@@ -191,13 +192,13 @@ class LearnNSE(StreamModel):
 
                 # Ensemble pruning
 
-                if self.pruning == 'age' and t > self.ensemble_size:
+                if self.pruning == 'age' and t > self.n_estimators:
                     # Age-based
                     self.ensemble.pop(0)
                     self.ensemble_weights.pop(0)
                     self.bkts.pop(0)
                     self.wkts.pop(0)
-                elif self.pruning == 'error' and t > self.ensemble_size:
+                elif self.pruning == 'error' and t > self.n_estimators:
                     # Error-based
                     self.ensemble.pop(error_index - 1)
                     self.ensemble_weights.pop(error_index - 1)
@@ -229,7 +230,7 @@ class LearnNSE(StreamModel):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
 
         Returns
@@ -252,7 +253,7 @@ class LearnNSE(StreamModel):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
         Returns
         -------
@@ -263,9 +264,6 @@ class LearnNSE(StreamModel):
         votes = self.predict_proba(X)
         return np.argmax(votes, axis=1)
 
-    def score(self, X, y):
-        raise NotImplementedError
-
     def reset(self):
         self.ensemble = []
         self.ensemble_weights = []
@@ -273,21 +271,3 @@ class LearnNSE(StreamModel):
         self.wkts = []
         self.X_batch = []
         self.y_batch = []
-
-    def get_info(self):
-        """ Collects information about the model.
-
-        Returns
-        -------
-        string
-            Configuration for the model.
-        """
-
-        description = type(self).__name__ + ': '
-        description += 'base_estimator: {} - '.format(type(self.base_estimator))
-        description += 'ensemble_size: {} - '.format(type(self.ensemble_size))
-        description += 'period: {} - '.format(type(self.period))
-        description += 'slope: {} - '.format(type(self.slope))
-        description += 'crossing_point: {} - '.format(type(self.crossing_point))
-        description += 'pruning: {}'.format(type(self.pruning))
-        return description

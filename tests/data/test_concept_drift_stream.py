@@ -21,14 +21,9 @@ def test_concept_drift_stream(test_path):
 
     assert stream.n_cat_features == 3
 
-    assert  stream.n_num_features == 6
+    assert stream.n_num_features == 6
 
     assert stream.n_targets == 1
-
-    assert stream.get_info() == 'ConceptDriftStream: ' \
-                                'First Stream: AGRAWALGenerator - ' \
-                                'Drift Stream: AGRAWALGenerator - ' \
-                                'alpha: 0.0 - position: 20 - width: 5'
 
     assert stream.has_more_samples() is True
 
@@ -57,4 +52,16 @@ def test_concept_drift_stream(test_path):
 
     assert stream.n_features == X.shape[1]
 
-    assert 'stream' == stream.get_class_type()
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "ConceptDriftStream(alpha=0.0,\n" \
+                    "                   drift_stream=AGRAWALGenerator(balance_classes=False,\n" \
+                    "                                                 classification_function=2,\n" \
+                    "                                                 perturbation=0.0,\n" \
+                    "                                                 random_state=112),\n" \
+                    "                   position=20, random_state=1,\n" \
+                    "                   stream=AGRAWALGenerator(balance_classes=False,\n" \
+                    "                                           classification_function=0,\n" \
+                    "                                           perturbation=0.0, random_state=112),\n" \
+                    "                   width=5)"
+    assert stream.get_info() == expected_info

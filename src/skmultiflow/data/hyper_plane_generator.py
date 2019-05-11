@@ -4,7 +4,8 @@ from skmultiflow.utils import check_random_state
 
 
 class HyperplaneGenerator(Stream):
-    """ HyperplaneGenerator
+    r""" Hyperplane stream generator.
+
     Generates a problem of prediction class of a rotation hyperplane. It was
     used as testbed for CVFDT and VFDT in [1]_.
 
@@ -60,7 +61,7 @@ class HyperplaneGenerator(Stream):
                  noise_percentage=0.05, sigma_percentage=0.1):
         super().__init__()
 
-        self._original_random_state = random_state
+        self.random_state = random_state
         self.n_num_features = n_features
         self.n_features = self.n_num_features
         self.n_classes = 2
@@ -69,7 +70,7 @@ class HyperplaneGenerator(Stream):
         self.sigma_percentage = sigma_percentage
         self.noise_percentage = noise_percentage
         self.n_targets = 1
-        self.random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self._next_class_should_be_zero = False
         self._weights = np.zeros(self.n_features)
         self._sigma = np.zeros(self.n_features)
@@ -185,11 +186,11 @@ class HyperplaneGenerator(Stream):
         This functions should always be called after the stream initialization.
 
         """
-        self.random_state = check_random_state(self._original_random_state)
+        self._random_state = check_random_state(self.random_state)
         self._next_class_should_be_zero = False
         self.sample_idx = 0
         for i in range(self.n_features):
-            self._weights[i] = self.random_state.rand()
+            self._weights[i] = self._random_state.rand()
             self._sigma[i] = 1 if (i < self.n_drift_features) else 0
 
     def next_sample(self, batch_size=1):
@@ -221,13 +222,13 @@ class HyperplaneGenerator(Stream):
         for j in range(batch_size):
             self.sample_idx += 1
             for i in range(self.n_features):
-                data[j, i] = self.random_state.rand()
+                data[j, i] = self._random_state.rand()
                 sum += self._weights[i] * data[j, i]
                 sum_weights += self._weights[i]
 
             group = 1 if sum >= sum_weights * 0.5 else 0
 
-            if 0.01 + self.random_state.rand() <= self.noise_percentage:
+            if 0.01 + self._random_state.rand() <= self.noise_percentage:
                 group = 1 if (group == 0) else 0
 
             data[j, -1] = group
@@ -246,14 +247,5 @@ class HyperplaneGenerator(Stream):
         """
         for i in range(self.n_drift_features):
             self._weights[i] += float(float(self._sigma[i]) * float(self.mag_change))
-            if (0.01 + self.random_state.rand()) <= self.sigma_percentage:
+            if (0.01 + self._random_state.rand()) <= self.sigma_percentage:
                 self._sigma[i] *= -1
-
-    def get_info(self):
-        return 'HyperplaneGenerator: - random_state: ' + str(self._original_random_state) + \
-               ' - n_features: ' + str(self.n_features) + \
-               ' - n_classes: ' + str(self.n_classes) + \
-               ' - n_drift_features: ' + str(self.n_drift_features) + \
-               ' - perturbation: ' + str(self.noise_percentage) + \
-               ' - sigma_percentage: ' + str(self.sigma_percentage) + \
-               ' - mag_change: ' + str(self.mag_change)

@@ -6,6 +6,27 @@ This is the API documentation for ``scikit-multiflow``.
 
 .. _data_ref:
 
+Core: :mod:`skmultiflow.core`
+=============================
+
+.. automodule:: skmultiflow.core
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   core.base.BaseEstimator
+   core.BaseSKMObject
+   core.ClassifierMixin
+   core.RegressorMixin
+   core.MetaEstimatorMixin
+   core.MultiOutputMixin
+   core.Pipeline
+
 Data: :mod:`skmultiflow.data`
 =============================
 
@@ -16,11 +37,12 @@ Data: :mod:`skmultiflow.data`
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   data.base_stream
-   data.data_stream
-   data.file_stream
+   data.base_stream.Stream
+   data.DataStream
+   data.FileStream
 
 Stream Generators
 -----------------
@@ -28,23 +50,24 @@ Stream Generators
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   data.agrawal_generator
-   data.hyper_plane_generator
-   data.led_generator
-   data.led_generator_drift
-   data.mixed_generator
-   data.random_rbf_generator
-   data.random_rbf_generator_drift
-   data.random_tree_generator
-   data.sea_generator
-   data.sine_generator
-   data.stagger_generator
-   data.waveform_generator
-   data.multilabel_generator
-   data.regression_generator
-   data.concept_drift_stream
+   data.AGRAWALGenerator
+   data.HyperplaneGenerator
+   data.LEDGenerator
+   data.LEDGeneratorDrift
+   data.MIXEDGenerator
+   data.RandomRBFGenerator
+   data.RandomRBFGeneratorDrift
+   data.RandomTreeGenerator
+   data.SEAGenerator
+   data.SineGenerator
+   data.STAGGERGenerator
+   data.WaveformGenerator
+   data.MultilabelGenerator
+   data.RegressionGenerator
+   data.ConceptDriftStream
 
 Learning methods
 ================
@@ -59,41 +82,10 @@ Bayes methods
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   bayes.naive_bayes
-
-Ensemble methods
-----------------
-
-.. automodule:: skmultiflow.meta
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: skmultiflow
-
-.. autosummary::
-   :toctree: _autosummary
-
-   meta.adaptive_random_forests
-   meta.leverage_bagging
-   meta.oza_bagging
-   meta.oza_bagging_adwin
-   meta.multi_output_learner
-   meta.classifier_chains
-   meta.regressor_chains
-   meta.batch_incremental
-   meta.accuracy_weighted_ensemble
-   meta.additive_expert_ensemble
-   meta.dynamic_weighted_majority
-   meta.learn_pp
-   meta.learn_nse
-   meta.online_under_over_bagging
-   meta.online_boosting
-   meta.online_rus_boost
-   meta.online_adac2
-   meta.online_csb2
-   meta.online_smote_bagging
+   bayes.NaiveBayes
 
 Lazy learning methods
 ---------------------
@@ -105,12 +97,47 @@ Lazy learning methods
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   lazy.kdtree
-   lazy.knn
-   lazy.knn_adwin
-   lazy.sam_knn
+   lazy.KNN
+   lazy.KNNAdwin
+   lazy.SAMKNN
+
+Ensemble methods
+----------------
+
+.. automodule:: skmultiflow.meta
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   meta.AccuracyWeightedEnsemble
+   meta.AdaptiveRandomForest
+   meta.AdditiveExpertEnsemble
+   meta.BatchIncremental
+   meta.ClassifierChain
+   meta.ProbabilisticClassifierChain
+   meta.MonteCarloClassifierChain
+   meta.DynamicWeightedMajority
+   meta.LearnNSE
+   meta.LearnPP
+   meta.LeverageBagging
+   meta.MultiOutputLearner
+   meta.OnlineAdaC2
+   meta.OnlineBoosting
+   meta.OnlineCSB2
+   meta.OnlineRUSBoost
+   meta.OnlineSMOTEBagging
+   meta.OnlineUnderOverBagging
+   meta.OzaBagging
+   meta.OzaBaggingAdwin
+   meta.RegressorChain
 
 Neural Networks
 ---------------
@@ -122,9 +149,10 @@ Neural Networks
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   neural_networks.perceptron
+   neural_networks.PerceptronMask
 
 Tree methods
 ------------
@@ -136,16 +164,16 @@ Tree methods
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   trees.hoeffding_tree
-   trees.hoeffding_adaptive_tree
-   trees.hoeffding_anytime_tree
-   trees.arf_hoeffding_tree
-   trees.lc_hoeffding_tree
-   trees.regression_hoeffding_tree
-   trees.regression_hoeffding_adaptive_tree
-   trees.multi_target_regression_hoeffding_tree
+   trees.HoeffdingTree
+   trees.HAT
+   trees.HATT
+   trees.LCHT
+   trees.RegressionHoeffdingTree
+   trees.RegressionHAT
+   trees.MultiTargetRegressionHoeffdingTree
 
 Rules methods
 -------------
@@ -157,11 +185,10 @@ Rules methods
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   rules.vfdr
-
-
+   rules.VFDR
 
 Drift Detection: :mod:`skmultiflow.drift_detection`
 ===================================================
@@ -173,12 +200,13 @@ Drift Detection: :mod:`skmultiflow.drift_detection`
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   drift_detection.adwin
-   drift_detection.ddm
-   drift_detection.eddm
-   drift_detection.page_hinkley
+   drift_detection.ADWIN
+   drift_detection.DDM
+   drift_detection.EDDM
+   drift_detection.PageHinkley
 
 Evaluation: :mod:`skmultiflow.evaluation`
 =========================================
@@ -190,7 +218,49 @@ Evaluation: :mod:`skmultiflow.evaluation`
 .. currentmodule:: skmultiflow
 
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   evaluation.evaluate_holdout
-   evaluation.evaluate_prequential
+   evaluation.EvaluateHoldout
+   evaluation.EvaluatePrequential
+
+Transform: :mod:`skmultiflow.transform`
+=======================================
+
+.. automodule:: skmultiflow.transform
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   transform.MissingValuesCleaner
+   transform.OneHotToCategorical
+
+Misc:
+=====
+
+Data structure
+--------------
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   lazy.KDTree
+
+Utilities
+---------
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   core.clone

@@ -2,8 +2,8 @@ Welcome to scikit-multiflow's documentation!
 ============================================
 
 .. image:: _static/images/skmultiflow-logo-wide.png
+   :width: 600px
    :alt: scikit-multiflow-logo
-   :align: center
 
 A machine learning framework for multi-output/multi-label and stream data.
 Inspired by `MOA <https://moa.cms.waikato.ac.nz/>`_ and `MEKA <http://meka.sourceforge.net/>`_,

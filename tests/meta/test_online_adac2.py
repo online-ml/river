@@ -15,7 +15,7 @@ def test_online_adac2():
     max_samples = 5000
     predictions = []
     wait_samples = 100
-    correct_predictions= 0
+    correct_predictions = 0
 
     while cnt < max_samples:
         X, y = stream.next_sample()
@@ -42,3 +42,8 @@ def test_online_adac2():
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    expected_info = "OnlineAdaC2(base_estimator=NaiveBayes(nominal_attributes=None), cost_negative=1,\n" \
+                    "            cost_positive=1, drift_detection=True, n_estimators=3,\n" \
+                    "            random_state=112)"
+    assert learner.get_info() == expected_info

@@ -1,5 +1,4 @@
 import numpy as np
-from sortedcontainers.sortedlist import SortedList
 
 from skmultiflow.rules.attribute_expand_suggestion import AttributeExpandSuggestion
 from skmultiflow.trees.attribute_class_observer import AttributeClassObserver

@@ -3,13 +3,13 @@ from skmultiflow.data import AGRAWALGenerator
 import numpy as np
 from array import array
 import sys
-import os
+
 
 def test_vfdr():
 
     learner = VFDR(ordered_rules=True,
                    rule_prediction='first_hit',
-                   nominal_attributes=[3,4,5],
+                   nominal_attributes=[3, 4, 5],
                    expand_criterion='info_gain',
                    remove_poor_atts=True,
                    min_weight=100,
@@ -38,10 +38,10 @@ def test_vfdr():
 
     assert np.alltrue(predictions == expected_predictions)
 
-    expected_info = 'VFDR: ordered_rules: True - grace_period: 200 - split_confidence: 1e-07 ' + \
-                                  '- tie_threshold: 0.05 - remove_poor_atts: True - rule_prediction: first_hit ' + \
-                                  '- nb_threshold: 0 - nominal_attributes: [3, 4, 5] - drift_detector: NoneType ' + \
-                                  '- Predict using Naive Bayes: False'
+    expected_info = "VFDR(drift_detector=None, expand_confidence=1e-07, expand_criterion='info_gain',\n" \
+                    "     grace_period=200, max_rules=1000, min_weight=100, nb_prediction=False,\n" \
+                    "     nb_threshold=0, nominal_attributes=[3, 4, 5], ordered_rules=True,\n" \
+                    "     remove_poor_atts=True, rule_prediction='first_hit', tie_threshold=0.05)"
     assert learner.get_info() == expected_info
 
     expected_model_description = 'Rule 0 :Att (2) <= 39.550| class :0  {0: 1365.7101742993455}\n' + \
@@ -63,7 +63,6 @@ def test_vfdr():
     if sys.version_info.minor != 6:
         assert (learner.get_model_measurements() == expected_model_measurements) or\
                (learner.get_model_measurements() == expected_model_measurements_)
-
 
 
 def test_vfdr_foil():
@@ -151,6 +150,3 @@ def test_vfdr_hellinger():
     if sys.version_info.minor != 6:
         assert (learner.get_model_description() == expected_model_description) or \
                (learner.get_model_description() == expected_model_description_)
-
-
-test_vfdr_hellinger()

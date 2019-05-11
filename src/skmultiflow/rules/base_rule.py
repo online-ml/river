@@ -1,8 +1,7 @@
-from operator import itemgetter
-from skmultiflow.core.base_object import BaseObject
+from skmultiflow.core import BaseSKMObject
 
 
-class Rule(BaseObject):
+class Rule(BaseSKMObject):
     """ Basic rule class.
     A rule is collection of predicates that build a conjunction (the
     IF part of the rule).
@@ -125,21 +124,3 @@ class Rule(BaseObject):
                         return False
                 return True
         return False
-
-    def get_info(self):
-        """ Collect information about the rule configuration.
-
-        Returns
-        -------
-        string
-            Configuration for the rule.
-        """
-
-        description = type(self).__name__ + ': '
-        description += 'Observed class distribution: {} - '.format(self.observed_class_distribution)
-        description += 'Class index: {} - '.format(self.class_idx)
-        description += 'Drift detector: {}'.format(type(self.drift_detector).__name__)
-        return description
-
-    def get_class_type(self):
-        return 'rule'

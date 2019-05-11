@@ -1,14 +1,17 @@
-from sklearn.exceptions import ConvergenceWarning
 from sklearn.datasets import make_regression
-from skmultiflow.meta.regressor_chains import RegressorChain
-from sklearn.linear_model import SGDRegressor
 from skmultiflow.data import DataStream
+
+from skmultiflow.meta import RegressorChain
+from sklearn.linear_model import SGDRegressor
+
 import numpy as np
 
-import warnings
-warnings.filterwarnings("ignore", category=ConvergenceWarning)
+import pytest
+from sklearn import __version__ as sklearn_version
 
 
+@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
+@pytest.mark.filterwarnings('ignore::UserWarning')
 def test_regressor_chains():
     X_reg, y_reg = make_regression(random_state=112, n_targets=3, n_samples=5150)
     stream = DataStream(X_reg, y_reg)
@@ -89,5 +92,12 @@ def test_regressor_chains():
     assert np.allclose(np.array(predictions).all(), np.array(expected_predictions).all())
     assert type(learner.predict(X)) == np.ndarray
 
-
-test_regressor_chains()
+    expected_info = "RegressorChain(base_estimator=SGDRegressor(alpha=0.0001, average=False, early_stopping=False, " \
+                    "epsilon=0.1,\n" \
+                    "       eta0=0.01, fit_intercept=True, l1_ratio=0.15,\n" \
+                    "       learning_rate='invscaling', loss='squared_loss', max_iter=10,\n" \
+                    "       n_iter=None, n_iter_no_change=5, penalty='l2', power_t=0.25,\n" \
+                    "       random_state=112, shuffle=True, tol=0.001, validation_fraction=0.1,\n" \
+                    "       verbose=0, warm_start=False),\n" \
+                    "               order=None, random_state=112)"
+    assert learner.get_info() == expected_info

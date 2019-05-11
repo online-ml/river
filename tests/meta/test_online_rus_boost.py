@@ -31,9 +31,11 @@ def test_online_rus_1():
             learner.partial_fit(X, y)
         cnt += 1
     performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0,
-                            0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                            0, 0, 1, 0, 0, 1, 1]
+    expected_predictions = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1,
+                            0, 0, 1, 0, 1, 1, 1, 0, 0, 0,
+                            0, 0, 0, 0, 0, 1, 0, 1, 0, 0,
+                            0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 1, 0, 0, 1, 0, 0, 1, 1]
 
     expected_correct_predictions = 33
     expected_performance = 0.673469387755102
@@ -44,6 +46,12 @@ def test_online_rus_1():
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    expected_info = "OnlineRUSBoost(algorithm=1, base_estimator=NaiveBayes(nominal_attributes=None),\n" \
+                    "               drift_detection=True, n_estimators=3, random_state=112,\n" \
+                    "               sampling_rate=5)"
+    assert learner.get_info() == expected_info
+
 
 def test_online_rus_2():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
@@ -72,8 +80,11 @@ def test_online_rus_2():
             learner.partial_fit(X, y)
         cnt += 1
     performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                            0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
+    expected_predictions = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1,
+                            0, 0, 1, 0, 1, 1, 1, 0, 0, 0,
+                            0, 0, 0, 0, 0, 1, 0, 1, 0, 1,
+                            0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 1, 0, 0, 1, 0, 0, 0, 1]
 
     expected_correct_predictions = 33
     expected_performance = 0.673469387755102
@@ -84,6 +95,7 @@ def test_online_rus_2():
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
 
 def test_online_rus_3():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
@@ -112,10 +124,11 @@ def test_online_rus_3():
             learner.partial_fit(X, y)
         cnt += 1
     performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0,
-                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1,
-                            1]
-
+    expected_predictions = [1, 0, 1, 1, 1, 1, 0, 1, 0, 1,
+                            1, 1, 1, 1, 1, 1, 1, 0, 1, 1,
+                            1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                            0, 1, 1, 1, 1, 0, 1, 1, 1]
 
     expected_correct_predictions = 35
     expected_performance = 0.7142857142857143

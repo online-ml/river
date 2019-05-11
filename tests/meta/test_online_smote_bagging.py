@@ -15,7 +15,7 @@ def test_online_smote_bagging():
     max_samples = 5000
     predictions = []
     wait_samples = 100
-    correct_predictions= 0
+    correct_predictions = 0
 
     while cnt < max_samples:
         X, y = stream.next_sample()
@@ -31,9 +31,11 @@ def test_online_smote_bagging():
             learner.partial_fit(X, y)
         cnt += 1
     performance = correct_predictions / len(predictions)
-    expected_predictions = [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0,
-                            1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1,
-                            1, 0, 1, 0, 0, 1, 1]
+    expected_predictions = [1, 0, 1, 1, 0, 1, 0, 1, 0, 1,
+                            0, 0, 1, 0, 1, 1, 1, 0, 1, 1,
+                            0, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+                            1, 1, 1, 1, 0, 1, 1, 1, 1, 0,
+                            0, 1, 1, 0, 1, 0, 0, 1, 1]
 
     expected_correct_predictions = 42
     expected_performance = 0.8571428571428571
@@ -44,3 +46,8 @@ def test_online_smote_bagging():
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    expected_info = "OnlineSMOTEBagging(base_estimator=NaiveBayes(nominal_attributes=None),\n" \
+                    "                   drift_detection=True, n_estimators=3, random_state=None,\n" \
+                    "                   sampling_rate=2)"
+    assert learner.get_info() == expected_info

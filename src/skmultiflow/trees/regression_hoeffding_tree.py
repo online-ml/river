@@ -1,26 +1,22 @@
-import numpy as np
+from operator import attrgetter
+
+from skmultiflow.core import RegressorMixin
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.trees.numeric_attribute_regression_observer import NumericAttributeRegressionObserver
 from skmultiflow.trees.nominal_attribute_regression_observer import NominalAttributeRegressionObserver
-from operator import attrgetter
 from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
 from skmultiflow.trees.variance_reduction_split_criterion import VarianceReductionSplitCriterion
-import logging
 
 _TARGET_MEAN = 'mean'
 _PERCEPTRON = 'perceptron'
 
-# logger
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
+class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
+    """ Regression Hoeffding Tree or Fast Incremental Model Tree with Drift Detection.
 
-class RegressionHoeffdingTree(HoeffdingTree):
-    """
-    Regression Hoeffding trees known as Fast incremental model tree with drift detection (FIMT-DD).
-
-    This is an implementation of the model tree introduced by E. Ikonomovska, J. Gama, and S. Džeroski [1]_.
+    This is an implementation of the Fast Incremental Model Tree with Drift Detection (FIMT-DD)
+    introduced by E. Ikonomovska, J. Gama, and S. Džeroski [1]_.
 
     Parameters
     ----------
@@ -42,7 +38,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
         If True, disable poor attributes.
     no_preprune: boolean (default=False)
         If True, disable pre-pruning.
-    leaf_prediction: string (default='nba')
+    leaf_prediction: string (default='perceptron')
         | Prediction mechanism used at leafs.
         | 'mean' - Target mean
         | 'perceptron' - Perceptron
@@ -118,7 +114,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
-                    if i in ht.nominal_attributes:
+                    if ht.nominal_attributes is not None and i in ht.nominal_attributes:
                         obs = NominalAttributeRegressionObserver()
                     else:
                         obs = NumericAttributeRegressionObserver()
@@ -200,7 +196,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
-                    if i in rht.nominal_attributes:
+                    if rht.nominal_attributes is not None and i in rht.nominal_attributes:
                         obs = NominalAttributeRegressionObserver()
                     else:
                         obs = NumericAttributeRegressionObserver()
@@ -311,19 +307,20 @@ class RegressionHoeffdingTree(HoeffdingTree):
                  learning_ratio_decay=0.001,
                  learning_ratio_const=True,
                  random_state=None):
-        self.split_criterion = 'variance reduction'
-        self.max_byte_size = max_byte_size
-        self.memory_estimate_period = memory_estimate_period
-        self.grace_period = grace_period
-        self.split_confidence = split_confidence
-        self.tie_threshold = tie_threshold
-        self.binary_split = binary_split
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_atts = remove_poor_atts
-        self.no_preprune = no_preprune
-        self.leaf_prediction = leaf_prediction
-        self.nb_threshold = nb_threshold
-        self.nominal_attributes = nominal_attributes
+        super().__init__(max_byte_size=max_byte_size,
+                         memory_estimate_period=memory_estimate_period,
+                         grace_period=grace_period,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         binary_split=binary_split,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_atts=remove_poor_atts,
+                         no_preprune=no_preprune,
+                         leaf_prediction=leaf_prediction,
+                         nb_threshold=nb_threshold,
+                         nominal_attributes=nominal_attributes,
+                         split_criterion='vr')
+        self.split_criterion = 'vr'   # variance reduction
 
         self._tree_root = None
         self._decision_node_cnt = 0
@@ -343,8 +340,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
         self.sum_of_squares = 0.0
         self.sum_of_attribute_values = []
         self.sum_of_attribute_squares = []
-        self._init_random_state = random_state
-        self.random_state = check_random_state(self._init_random_state)
+        self.random_state = random_state
 
     @property
     def leaf_prediction(self):
@@ -353,7 +349,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {_TARGET_MEAN, _PERCEPTRON}:
-            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, _PERCEPTRON))
+            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction, _PERCEPTRON))
             self._leaf_prediction = _PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
@@ -364,9 +360,10 @@ class RegressionHoeffdingTree(HoeffdingTree):
 
     @split_criterion.setter
     def split_criterion(self, split_criterion):
-        if split_criterion != 'variance reduction':
-            logger.info("Invalid option {}', will use default '{}'".format(split_criterion, 'variance reduction'))
-            self._split_criterion = 'variance reduction'
+        if split_criterion != 'vr':   # variance reduction
+            print("Invalid split_criterion option {}', will use default '{}'".format(split_criterion,
+                                                                                     'vr'))
+            self._split_criterion = 'vr'
         else:
             self._split_criterion = split_criterion
 
@@ -431,7 +428,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
             return self.ActiveLearningNodeForRegression(initial_class_observations)
         elif self.leaf_prediction == _PERCEPTRON:
             return self.LearningNodePerceptron(initial_class_observations, perceptron_weight,
-                                               random_state=self._init_random_state)
+                                               random_state=self.random_state)
 
     def get_weights_for_instance(self, X):
         """ Get class votes for a single instance.
@@ -455,8 +452,8 @@ class RegressionHoeffdingTree(HoeffdingTree):
         else:
             return []
 
-    def partial_fit(self, X, y, weight=None):
-        """Incrementally trains the model. Train samples (instances) are compossed of X attributes and their
+    def partial_fit(self, X, y, sample_weight=None):
+        """Incrementally trains the model. Train samples (instances) are composed of X attributes and their
         corresponding targets y.
 
         Tasks performed before training:
@@ -478,48 +475,50 @@ class RegressionHoeffdingTree(HoeffdingTree):
         X: numpy.ndarray of shape (n_samples, n_features)
             Instance attributes.
         y: array_like
-            Classes (targets) for all samples in X.
-        weight: float or array-like
-            Instance weight. If not provided, uniform weights are assumed.
+            Target values for all samples in X.
+        sample_weight: float or array-like
+            Samples weight. If not provided, uniform weights are assumed.
 
         """
         if y is not None:
             row_cnt, _ = get_dimensions(X)
-            if weight is None:
-                weight = np.ones(row_cnt)
-            if row_cnt != len(weight):
-                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt, len(weight)))
+            if sample_weight is None:
+                sample_weight = np.ones(row_cnt)
+            if row_cnt != len(sample_weight):
+                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt,
+                                                                                                  len(sample_weight)))
             for i in range(row_cnt):
-                if weight[i] != 0.0:
-                    self._train_weight_seen_by_model += weight[i]
-                    self._partial_fit(X[i], y[i], weight[i])
+                if sample_weight[i] != 0.0:
+                    self._train_weight_seen_by_model += sample_weight[i]
+                    self._partial_fit(X[i], y[i], sample_weight[i])
 
-    def _partial_fit(self, X, y, weight):
+    def _partial_fit(self, X, y, sample_weight):
         """Trains the model on samples X and corresponding targets y.
 
         Private function where actual training is carried on.
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (1, n_features)
             Instance attributes.
-        y: array_like
-            Classes (targets) for all samples in X.
-        weight: float or array-like
-            Instance weight. If not provided, uniform weights are assumed.
+        y: float
+            Target value for sample X.
+        sample_weight: float
+            Samples weight.
 
         """
 
-        self.samples_seen += weight
-        self.sum_of_values += weight * y
-        self.sum_of_squares += weight * y * y
+        self.samples_seen += sample_weight
+        self.sum_of_values += sample_weight * y
+        self.sum_of_squares += sample_weight * y * y
 
         try:
-            self.sum_of_attribute_values = np.add(self.sum_of_attribute_values, np.multiply(weight, X))
-            self.sum_of_attribute_squares = np.add(self.sum_of_attribute_squares, np.multiply(weight, np.power(X, 2)))
+            self.sum_of_attribute_values = np.add(self.sum_of_attribute_values, np.multiply(sample_weight, X))
+            self.sum_of_attribute_squares = np.add(self.sum_of_attribute_squares, np.multiply(sample_weight,
+                                                                                              np.power(X, 2)))
         except ValueError:
-            self.sum_of_attribute_values = np.multiply(weight, X)
-            self.sum_of_attribute_squares = np.multiply(weight, np.power(X, 2))
+            self.sum_of_attribute_values = np.multiply(sample_weight, X)
+            self.sum_of_attribute_squares = np.multiply(sample_weight, np.power(X, 2))
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
@@ -533,7 +532,7 @@ class RegressionHoeffdingTree(HoeffdingTree):
             self._active_leaf_node_cnt += 1
         if isinstance(leaf_node, self.LearningNode):
             learning_node = leaf_node
-            learning_node.learn_from_instance(X, y, weight, self)
+            learning_node.learn_from_instance(X, y, sample_weight, self)
             if self._growth_allowed and isinstance(learning_node, HoeffdingTree.ActiveLearningNode):
                 active_learning_node = learning_node
                 weight_seen = active_learning_node.get_weight_seen()
@@ -575,7 +574,8 @@ class RegressionHoeffdingTree(HoeffdingTree):
                     normalized_sample = self.normalize_sample(X[i])
                     normalized_prediction = np.dot(self.get_weights_for_instance(X[i]), normalized_sample)
                     mean = self.sum_of_values / self.samples_seen
-                    sd = np.sqrt((self.sum_of_squares - self.sum_of_values ** 2 / self.samples_seen) / self.samples_seen)
+                    sd = np.sqrt((self.sum_of_squares - self.sum_of_values ** 2 / self.samples_seen)
+                                 / self.samples_seen)
                     if self.samples_seen > 1:
                         predictions.append(normalized_prediction * sd * 3 + mean)
                     else:
@@ -586,7 +586,9 @@ class RegressionHoeffdingTree(HoeffdingTree):
         return np.asarray(predictions)
 
     def predict_proba(self, X):
-        pass
+        """Not implemented for this method
+        """
+        raise NotImplementedError
 
     def enforce_tracker_limit(self):
         pass

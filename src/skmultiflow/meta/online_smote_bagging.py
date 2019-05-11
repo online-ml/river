@@ -2,21 +2,21 @@ import copy as cp
 
 from sklearn.metrics.pairwise import euclidean_distances
 
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
-class OnlineSMOTEBagging(StreamModel):
-    """ Online SMOTEBagging
+class OnlineSMOTEBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+    r""" Online SMOTEBagging ensemble classifier.
 
     Online SMOTEBagging [1]_ is the online version of the ensemble method SMOTEBagging.
 
-    This method works by resampling the negative class with replacement rate at 100%,
+    This method works by re-sampling the negative class with replacement rate at 100%,
     while :math:`CN^+` positive examples are generated for each base learner, among
-    which :math:`a\%` of them are created by reasampling and the rest of the examples
+    which :math:`a\%` of them are created by re-sampling and the rest of the examples
     are created by the synthetic minority oversampling technique (SMOTE).
 
 
@@ -29,17 +29,16 @@ class OnlineSMOTEBagging(StreamModel):
 
     Parameters
     ----------
-    base_estimator: StreamModel
-        This is the ensemble classifier type, each ensemble classifier is going
-        to be a copy of the base_estimator.
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNNAdwin)
+        Each member of the ensemble is an instance of the base estimator.
 
-    n_estimators: int
+    n_estimators: int, optional (default=10)
         The size of the ensemble, in other words, how many classifiers to train.
 
-    sampling_rate: int
+    sampling_rate: int, optional (default=1)
         The sampling rate of the positive instances.
 
-    drift_detection: Bool
+    drift_detection: bool, optional (default=True)
         A drift detector (ADWIN) can be used by the method to track the performance
          of the classifiers and adapt when a drift is detected.
 
@@ -59,75 +58,77 @@ class OnlineSMOTEBagging(StreamModel):
     References
     ----------
     .. [1] B. Wang and J. Pineau, "Online Bagging and Boosting for Imbalanced Data Streams,"
-           in IEEE Transactions on Knowledge and Data Engineering, vol. 28, no. 12, pp.
-           3353-3366, 1 Dec. 2016. doi: 10.1109/TKDE.2016.2609424
+       in IEEE Transactions on Knowledge and Data Engineering, vol. 28, no. 12, pp. 3353-3366,
+       1 Dec. 2016. doi: 10.1109/TKDE.2016.2609424
     """
 
     def __init__(self, base_estimator=KNNAdwin(), n_estimators=10, sampling_rate=1, drift_detection=True,
                  random_state=None):
         super().__init__()
-        # default values
-        self.ensemble = None
-        self.n_estimators = None
-        self.classes = None
-        self.random_state = None
-        self._init_n_estimators = n_estimators
+        self.base_estimator = base_estimator
+        self.n_estimators = n_estimators
         self._init_random_state = random_state
         self.sampling_rate = sampling_rate
         self.drift_detection = drift_detection
+        # default values
+        self.ensemble = None
+        self.actual_n_estimators = None
+        self.classes = None
+        self._random_state = None
         self.adwin_ensemble = None
-        self.__configure(base_estimator)
+        self.__configure()
 
-    def __configure(self, base_estimator):
-        base_estimator.reset()
-        self.base_estimator = base_estimator
-        self.n_estimators = self._init_n_estimators
+    def __configure(self):
+        if hasattr(self.base_estimator, "reset"):
+            self.base_estimator.reset()
+
+        self.actual_n_estimators = self.n_estimators
         self.adwin_ensemble = []
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             self.adwin_ensemble.append(ADWIN())
-        self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
-        self.random_state = check_random_state(self._init_random_state)
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.actual_n_estimators)]
+        self._random_state = check_random_state(self._init_random_state)
         self.pos_samples = []
 
     def reset(self):
-        self.__configure(self.base_estimator)
+        self.__configure()
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
-
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-
-        Partially fits the model, based on the X and y matrix.
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially fits the model, based on the X and y matrix.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample
         at a time.
 
         Each sample is trained by each classifier a total of K times, where K
-        is drawn by a Poisson(l) distribution. l is updated after every example
+        is drawn by a :math:`Poisson(l)` distribution. :math:`l` is updated after every example
         using :math:`lambda_{sc}` if th estimator correctly classifies the example or
         :math:`lambda_{sw}` in the other case.
+
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            Features matrix used for partially updating the model.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: Array-like
-            An array-like of all the class labels for the samples in X.
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
 
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
-        weight: Array-like
-            Instance weight. If not provided, uniform weights are assumed.
+        sample_weight: Array-like
+            Instance weight. If not provided, uniform weights are assumed. Usage varies depending on the base estimator.
 
         Raises
         ------
         ValueError: A ValueError is raised if the 'classes' parameter is not
         passed in the first partial_fit call, or if they are passed in further
         calls but differ from the initial classes list passed.
+
+        Returns
+        -------
+        self
 
         """
         if self.classes is None:
@@ -148,39 +149,35 @@ class OnlineSMOTEBagging(StreamModel):
         for j in range(r):
             change_detected = False
             lam = 1
-            lam_smote = 0
-            for i in range(self.n_estimators):
-                a = (i + 1) / self.n_estimators
+            for i in range(self.actual_n_estimators):
+                a = (i + 1) / self.actual_n_estimators
                 if y[j] == 1:
                     self.pos_samples.append(X[j])
                     lam = a * self.sampling_rate
                     lam_smote = (1 - a) * self.sampling_rate
-                    k = self.random_state.poisson(lam)
+                    k = self._random_state.poisson(lam)
                     if k > 0:
                         for b in range(k):
-                            self.ensemble[i].partial_fit([X[j]], [y[j]], classes, weight)
-                    k_smote = self.random_state.poisson(lam_smote)
+                            self.ensemble[i].partial_fit([X[j]], [y[j]], classes, sample_weight)
+                    k_smote = self._random_state.poisson(lam_smote)
 
                     if k_smote > 0:
                         for b in range(k_smote):
                             x_smote = self.online_smote()
-                            self.ensemble[i].partial_fit([x_smote], [y[j]], classes, weight)
+                            self.ensemble[i].partial_fit([x_smote], [y[j]], classes, sample_weight)
                 else:
-                    k = self.random_state.poisson(lam)
+                    k = self._random_state.poisson(lam)
                     if k > 0:
                         for b in range(k):
-                            self.ensemble[i].partial_fit([X[j]], [y[j]], classes, weight)
+                            self.ensemble[i].partial_fit([X[j]], [y[j]], classes, sample_weight)
 
                 if self.drift_detection:
                     try:
                         pred = self.ensemble[i].predict(X)
                         error_estimation = self.adwin_ensemble[i].estimation
-                        for j in range(r):
-                            if pred[j] is not None:
-                                if pred[j] == y[j]:
-                                    self.adwin_ensemble[i].add_element(1)
-                                else:
-                                    self.adwin_ensemble[i].add_element(0)
+                        for k in range(r):
+                            if pred[k] is not None:
+                                self.adwin_ensemble[i].add_element(int(pred[k] == y[k]))
                         if self.adwin_ensemble[i].detected_change():
                             if self.adwin_ensemble[i].estimation > error_estimation:
                                 change_detected = True
@@ -191,7 +188,7 @@ class OnlineSMOTEBagging(StreamModel):
             if change_detected and self.drift_detection:
                 max_threshold = 0.0
                 i_max = -1
-                for i in range(self.n_estimators):
+                for i in range(self.actual_n_estimators):
                     if max_threshold < self.adwin_ensemble[i].estimation:
                         max_threshold = self.adwin_ensemble[i].estimation
                         i_max = i
@@ -206,7 +203,7 @@ class OnlineSMOTEBagging(StreamModel):
             if len(self.classes) > len(self.ensemble):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
-                    self.n_estimators += 1
+                    self.actual_n_estimators += 1
                     self.adwin_ensemble.append(ADWIN())
 
     def online_smote(self, k=5):
@@ -216,8 +213,8 @@ class OnlineSMOTEBagging(StreamModel):
             neighbors = np.argsort(distance_vector)
             if k > len(neighbors):
                 k = len(neighbors)
-            i = self.random_state.randint(0, k)
-            gamma = self.random_state.rand()
+            i = self._random_state.randint(0, k)
+            gamma = self._random_state.rand()
             x_smote = np.add(x, np.multiply(gamma, np.subtract(x, self.pos_samples[neighbors[i]])))
             return x_smote
         return self.pos_samples[-1]
@@ -276,7 +273,7 @@ class OnlineSMOTEBagging(StreamModel):
         proba = []
         r, c = get_dimensions(X)
         try:
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
                     raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
@@ -307,10 +304,3 @@ class OnlineSMOTEBagging(StreamModel):
             else:
                 aux.append(proba[i])
         return np.asarray(aux)
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        return 'Online SMOTEBAgging Classifier: base_estimator: ' + str(self.base_estimator) + \
-               ' - n_estimators: ' + str(self.n_estimators) + ' - sampling_rate: ' + str(self.sampling_rate)

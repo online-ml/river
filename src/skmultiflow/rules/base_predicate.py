@@ -1,6 +1,7 @@
-from skmultiflow.core.base_object import BaseObject
+from skmultiflow.core import BaseSKMObject
 
-class Predicate(BaseObject):
+
+class Predicate(BaseSKMObject):
     """ Basic element of a Rule.
 
     A predicate is a comparison between an attribute and a value in the form of:
@@ -125,20 +126,3 @@ class Predicate(BaseObject):
             if other.att_idx == self.att_idx and other.operator == self.operator:
                 return True
         return False
-
-    def get_info(self):
-        """ Collect information about the predicate configuration.
-
-        Returns
-        -------
-        string
-            Configuration for the predicate.
-        """
-        description = self.__class__.__name__ + ': '
-        description += 'Attribute index: {} - '.format(self.att_idx)
-        description += 'Operator: {} - '.format(self.operator)
-        description += 'Comparison value: {}'.format(self.value)
-        return description
-
-    def get_class_type(self):
-        return 'predicate'

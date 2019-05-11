@@ -1,11 +1,12 @@
 import numpy as np
-from skmultiflow.core.base_object import BaseObject
+
 from skmultiflow.utils.data_structures import FastBuffer, FastComplexBuffer, ConfusionMatrix, MOLConfusionMatrix
 from skmultiflow.utils import check_weights
+
 from timeit import default_timer as timer
 
 
-class ClassificationMeasurements(BaseObject):
+class ClassificationMeasurements(object):
     """ Class used to keep updated statistics about a classifier, in order
     to be able to provide, at any given moment, any relevant metric about
     that classifier.
@@ -314,11 +315,8 @@ class ClassificationMeasurements(BaseObject):
                ' - G-mean: {:.6f}'.format(self.get_g_mean()) + \
                ' - majority_class: {}'.format(self.get_majority_class())
 
-    def get_class_type(self):
-        return 'measurement'
 
-
-class WindowClassificationMeasurements(BaseObject):
+class WindowClassificationMeasurements(object):
     """ This class will maintain a fixed sized window of the newest information
     about one classifier. It can provide, as requested, any of the relevant
     current metrics about the classifier, measured inside the window.
@@ -659,9 +657,6 @@ class WindowClassificationMeasurements(BaseObject):
     def sample_count(self):
         return self.true_labels.get_current_size()
 
-    def get_class_type(self):
-        return 'measurement'
-
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
@@ -677,7 +672,7 @@ class WindowClassificationMeasurements(BaseObject):
                ' - majority_class: {}'.format(self.get_majority_class())
 
 
-class MultiTargetClassificationMeasurements(BaseObject):
+class MultiTargetClassificationMeasurements(object):
     """ This class will keep updated statistics about a multi output classifier,
     using a confusion matrix adapted to multi output problems, the
     MOLConfusionMatrix, alongside other relevant attributes.
@@ -847,11 +842,8 @@ class MultiTargetClassificationMeasurements(BaseObject):
                ' - exact_match: {:.6f}'.format(self.get_exact_match()) + \
                ' - j_index: {:.6f}'.format(self.get_j_index())
 
-    def get_class_type(self):
-        return 'measurement'
 
-
-class WindowMultiTargetClassificationMeasurements(BaseObject):
+class WindowMultiTargetClassificationMeasurements(object):
     """ This class will maintain a fixed sized window of the newest information
     about one classifier. It can provide, as requested, any of the relevant
     current metrics about the classifier, measured inside the window.
@@ -1026,11 +1018,8 @@ class WindowMultiTargetClassificationMeasurements(BaseObject):
                ' - exact_match: {:.6f}'.format(self.get_exact_match()) + \
                ' - j_index: {:.6f}'.format(self.get_j_index())
 
-    def get_class_type(self):
-        return 'measurement'
 
-
-class RegressionMeasurements(BaseObject):
+class RegressionMeasurements(object):
     """ This class is used to keep updated statistics over a regression
     learner in a regression problem context.
 
@@ -1105,9 +1094,6 @@ class RegressionMeasurements(BaseObject):
     def get_last(self):
         return self.last_true_label, self.last_prediction
 
-    def get_class_type(self):
-        return 'measurement'
-
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
@@ -1115,7 +1101,7 @@ class RegressionMeasurements(BaseObject):
                ' - mean_absolute_error: {:.6f}'.format(self.get_average_error())
 
 
-class WindowRegressionMeasurements(BaseObject):
+class WindowRegressionMeasurements(object):
     """ This class is used to keep updated statistics over a regression
     learner in a regression problem context inside a fixed sized window.
     It uses FastBuffer objects to simulate the fixed sized windows.
@@ -1205,9 +1191,6 @@ class WindowRegressionMeasurements(BaseObject):
     def sample_count(self):
         return self.total_square_error_correction.get_current_size()
 
-    def get_class_type(self):
-        return 'measurement'
-
     def get_info(self):
         return '{}:'.format(type(self).__name__) + \
                ' - sample_count: {}'.format(self.sample_count) + \
@@ -1215,7 +1198,7 @@ class WindowRegressionMeasurements(BaseObject):
                ' - mean_absolute_error: {:.6f}'.format(self.get_average_error())
 
 
-class MultiTargetRegressionMeasurements(BaseObject):
+class MultiTargetRegressionMeasurements(object):
     """ This class is used to keep updated statistics over a multi-target regression
     learner in a multi-target regression problem context.
 
@@ -1321,9 +1304,6 @@ class MultiTargetRegressionMeasurements(BaseObject):
     def _sample_count(self):
         return self.sample_count
 
-    def get_class_type(self):
-        return 'measurement'
-
     def get_info(self):
         return 'MultiTargetRegressionMeasurements: sample_count: ' + \
                 str(self._sample_count) + ' - average_mean_square_error: ' + \
@@ -1332,7 +1312,7 @@ class MultiTargetRegressionMeasurements(BaseObject):
                 str(self.get_average_root_mean_square_error())
 
 
-class WindowMultiTargetRegressionMeasurements(BaseObject):
+class WindowMultiTargetRegressionMeasurements(object):
     """ This class is used to keep updated statistics over a multi-target regression
     learner in a multi-target regression problem context inside a fixed sized
     window. It uses FastBuffer objects to simulate the fixed sized windows.
@@ -1452,9 +1432,6 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
     def _sample_count(self):
         return self.total_square_error_correction.get_current_size()
 
-    def get_class_type(self):
-        return 'measurement'
-
     def get_info(self):
         return 'MultiTargetRegressionMeasurements: sample_count: ' + \
                 str(self._sample_count) + ' - average_mean_square_error: ' + \
@@ -1463,13 +1440,13 @@ class WindowMultiTargetRegressionMeasurements(BaseObject):
                 str(self.get_average_root_mean_square_error())
 
 
-class RunningTimeMeasurements(BaseObject):
+class RunningTimeMeasurements(object):
     """ Class used to compute the running time for each evaluated prediction
         model.
 
         The training, prediction, and total time are considered separately. The
-        class accounts for the amount of time each model effectively expent
-        traning and testing. To do so, timers for each of the actions are
+        class accounts for the amount of time each model effectively spent on
+        training and testing. To do so, timers for each of the actions are
         considered.
 
         Besides the properties getters, the available compute time methods
@@ -1485,6 +1462,8 @@ class RunningTimeMeasurements(BaseObject):
 
     def __init__(self):
         super().__init__()
+        self._training_start = None
+        self._testing_start = None
         self._training_time = 0
         self._testing_time = 0
         self._sample_count = 0
@@ -1537,9 +1516,6 @@ class RunningTimeMeasurements(BaseObject):
 
     def get_current_total_running_time(self):
         return self._total_time
-
-    def get_class_type(self):
-        return 'measurement'
 
     def get_info(self):
         return 'RunningTimeMeasurements: sample_count: ' + \
