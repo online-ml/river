@@ -149,6 +149,3 @@ class NaiveBayes(BaseSKMObject, ClassifierMixin):
                     y_proba[int(key)] = value / sum_values if sum_values != 0 else 0.0
                 predictions.append(y_proba)
         return np.array(predictions)
-
-    def reset(self):
-        self.__init__(self.nominal_attributes)

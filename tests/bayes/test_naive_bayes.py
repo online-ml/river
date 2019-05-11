@@ -47,7 +47,7 @@ def test_naive_bayes(test_path):
     assert np.allclose(y_proba, y_proba_expected)
 
     expected_info = 'NaiveBayes(nominal_attributes=None)'
-    assert learner.__repr__() == expected_info
+    assert learner.get_info() == expected_info
 
     learner.reset()
     learner.fit(X=np.array(X_batch[:4500]), y=np.array(y_batch[:4500]))

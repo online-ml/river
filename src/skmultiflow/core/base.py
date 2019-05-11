@@ -348,9 +348,11 @@ class BaseSKMObject(BaseEstimator):
         self
 
         """
-        raise RuntimeWarning("{} does not implement a reset method.\n"
-                             "Consider using the clone method available in skmultiflow.core.base"
-                             .format(type(self).__name__))
+        # non-optimized default implementation; override if a better
+        # method is possible for a given object
+        command = ''.join([line.strip() for line in self.__repr__().split()])
+        command = command.replace(str(self.__class__.__name__), 'self.__init__')
+        exec(command)
 
     def get_info(self):
         """ Collects and returns the information about the configuration of the estimator
