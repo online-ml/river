@@ -149,20 +149,20 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
         """
         return self.classifier._predict_proba_lr(X)
 
-    def reset(self):
-        self.__init__(penalty=self.penalty,
-                      alpha=self.alpha,
-                      fit_intercept=self.fit_intercept,
-                      max_iter=self.max_iter,
-                      tol=self.tol,
-                      shuffle=self.shuffle,
-                      verbose=self.verbose,
-                      eta0=self.eta0,
-                      n_jobs=self.n_jobs,
-                      random_state=self.random_state,
-                      early_stopping=self.early_stopping,
-                      validation_fraction=self.validation_fraction,
-                      n_iter_no_change=self.n_iter_no_change,
-                      class_weight=self.class_weight,
-                      warm_start=self.warm_start,
-                      n_iter=self.n_iter,)
+    # def reset(self):
+    #     self.__init__(penalty=self.penalty,
+    #                   alpha=self.alpha,
+    #                   fit_intercept=self.fit_intercept,
+    #                   max_iter=self.max_iter,
+    #                   tol=self.tol,
+    #                   shuffle=self.shuffle,
+    #                   verbose=self.verbose,
+    #                   eta0=self.eta0,
+    #                   n_jobs=self.n_jobs,
+    #                   random_state=self.random_state,
+    #                   early_stopping=self.early_stopping,
+    #                   validation_fraction=self.validation_fraction,
+    #                   n_iter_no_change=self.n_iter_no_change,
+    #                   class_weight=self.class_weight,
+    #                   warm_start=self.warm_start,
+    #                   n_iter=self.n_iter,)
