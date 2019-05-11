@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 
 
 class SEAGenerator(Stream):
-    """ SEAGenerator
+    """ SEA stream generator.
     
     This generator is an implementation of the data stream with abrupt 
     concept drift, first described in Street and Kim's 'A streaming 
@@ -47,8 +47,7 @@ class SEAGenerator(Stream):
     balance_classes: bool (Default: False)
         Whether to balance classes or not. If balanced, the class
         distribution will converge to a uniform distribution.
-        From 0.0 to 1.0.
-        
+
     noise_percentage: float (Default: 0.0)
         The probability that noise will happen in the generation. At each 
         new sample generated, a random probability is generated, and if that 
@@ -92,7 +91,6 @@ class SEAGenerator(Stream):
     True
     
     """
-
     def __init__(self, classification_function=0, random_state=None, balance_classes=False, noise_percentage=0.0):
         super().__init__()
 
@@ -100,15 +98,15 @@ class SEAGenerator(Stream):
         self._classification_functions = [self._classification_function_zero, self._classification_function_one,
                                           self._classification_function_two, self._classification_function_three]
 
-        self.classification_function_idx = classification_function
-        self._original_random_state = random_state
+        self.classification_function = classification_function
+        self.random_state = random_state
         self.balance_classes = balance_classes
         self.noise_percentage = noise_percentage
         self.n_num_features = 3
         self.n_features = self.n_num_features
         self.n_classes = 2
         self.n_targets = 1
-        self.random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.next_class_should_be_zero = False
         self.name = "SEA Generator"
 
@@ -120,7 +118,7 @@ class SEAGenerator(Stream):
         self.target_values = [i for i in range(self.n_classes)]
 
     @property
-    def classification_function_idx(self):
+    def classification_function(self):
         """ Retrieve the index of the current classification function.
 
         Returns
@@ -130,8 +128,8 @@ class SEAGenerator(Stream):
         """
         return self._classification_function_idx
 
-    @classification_function_idx.setter
-    def classification_function_idx(self, classification_function_idx):
+    @classification_function.setter
+    def classification_function(self, classification_function_idx):
         """ Set the index of the current classification function.
 
         Parameters
@@ -141,7 +139,7 @@ class SEAGenerator(Stream):
         if classification_function_idx in range(4):
             self._classification_function_idx = classification_function_idx
         else:
-            raise ValueError("classification_function_idx takes only these values: 0, 1, 2, 3, {} was "
+            raise ValueError("classification_function takes only these values: 0, 1, 2, 3, {} was "
                              "passed".format(classification_function_idx))
 
     @property
@@ -203,7 +201,7 @@ class SEAGenerator(Stream):
         This functions should always be called after the stream initialization.
 
         """
-        self.random_state = check_random_state(self._original_random_state)
+        self._random_state = check_random_state(self.random_state)
         self.next_class_should_be_zero = False
         self.sample_idx = 0
 
@@ -241,10 +239,10 @@ class SEAGenerator(Stream):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                att1 = 10 * self.random_state.rand()
-                att2 = 10 * self.random_state.rand()
-                att3 = 10 * self.random_state.rand()
-                group = self._classification_functions[self.classification_function_idx](att1, att2, att3)
+                att1 = 10 * self._random_state.rand()
+                att2 = 10 * self._random_state.rand()
+                att3 = 10 * self._random_state.rand()
+                group = self._classification_functions[self.classification_function](att1, att2, att3)
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -254,7 +252,7 @@ class SEAGenerator(Stream):
                         desired_class_found = True
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
-            if 0.01 + self.random_state.rand() <= self.noise_percentage:
+            if 0.01 + self._random_state.rand() <= self.noise_percentage:
                 group = 1 if (group == 0) else 0
 
             data[j, 0] = att1
@@ -272,10 +270,10 @@ class SEAGenerator(Stream):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self.random_state.randint(4)
-        while new_function == self.classification_function_idx:
-            new_function = self.random_state.randint(4)
-        self.classification_function_idx = new_function
+        new_function = self._random_state.randint(4)
+        while new_function == self.classification_function:
+            new_function = self._random_state.randint(4)
+        self.classification_function = new_function
 
     @staticmethod
     def _classification_function_zero(att1, att2, att3):
@@ -380,9 +378,3 @@ class SEAGenerator(Stream):
 
         """
         return 0 if (att1 + att2 <= 9.5) else 1
-
-    def get_info(self):
-        return 'SEAGenerator: classification_function: ' + str(self.classification_function_idx) + \
-               ' - random_state: ' + str(self._original_random_state) + \
-               ' - balance_classes: ' + str(self.balance_classes) + \
-               ' - noise_percentage: ' + str(self.noise_percentage)

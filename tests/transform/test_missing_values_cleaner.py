@@ -18,10 +18,11 @@ def test_missing_values_cleaner(test_path):
     X_expected = np.load(test_file)
     assert np.alltrue(X_complete == X_expected)
 
-    expected_info =  'MissingValuesCleaner: - strategy: zero - window_size: 200 - new_value: 1'
+    expected_info = "MissingValuesCleaner(missing_value=[nan], new_value=1, strategy='zero',\n" \
+                    "                     window_size=200)"
     assert cleaner.get_info() == expected_info
 
-    assert cleaner.get_class_type() == 'transform'
+    assert cleaner._estimator_type == 'transform'
 
 
 def test_missing_values_cleaner_coverage(test_path):
@@ -49,5 +50,5 @@ def test_missing_values_cleaner_coverage(test_path):
     X = copy(X_nan)
     X_complete = cleaner.partial_fit(X)
 
-    cleaner.partial_fit_transform(X=X, y=[])
+    cleaner.partial_fit_transform(X=X)
 

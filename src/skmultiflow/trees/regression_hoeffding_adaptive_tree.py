@@ -1,8 +1,8 @@
+from abc import ABCMeta, abstractmethod
+
 from skmultiflow.trees.regression_hoeffding_tree import RegressionHoeffdingTree, HoeffdingTree
 from skmultiflow.utils.utils import *
-import logging
 from skmultiflow.drift_detection.adwin import ADWIN
-from abc import ABCMeta, abstractmethod
 from skmultiflow.utils import check_random_state
 
 
@@ -12,16 +12,11 @@ error_width_threshold = 300
 SplitNode = RegressionHoeffdingTree.SplitNode
 LearningNodePerceptron = RegressionHoeffdingTree.LearningNodePerceptron
 
-# logger
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 class RegressionHAT(RegressionHoeffdingTree):
-    """
-    Regression Hoeffding trees known as Fast incremental model tree with drift detection (FIMT-DD).
+    """ An adaptation of the Hoeffding Adaptive Tree for regression.
 
-    The tree uses ADWIN to detect drift and PERCEPTRON to make predictions
+    The tree uses ADWIN to detect drift and PERCEPTRON to make predictions.
 
     Parameters
     ----------
@@ -366,7 +361,7 @@ class RegressionHAT(RegressionHoeffdingTree):
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {_TARGET_MEAN, _PERCEPTRON}:
-            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, _PERCEPTRON))
+            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction, _PERCEPTRON))
             self._leaf_prediction = _PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
@@ -377,7 +372,7 @@ class RegressionHAT(RegressionHoeffdingTree):
             initial_class_observations = {}
 
         return self.AdaLearningNodeForRegression(initial_class_observations, perceptron_weight,
-                                                 random_state=self._init_random_state)
+                                                 random_state=self.random_state)
 
     def _partial_fit(self, X, y, weight):
         """Trains the model on samples X and corresponding targets y.
@@ -386,12 +381,12 @@ class RegressionHAT(RegressionHoeffdingTree):
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (1, n_features)
             Instance attributes.
         y: array_like
-            Classes (targets) for all samples in X.
-        weight: float or array-like
-            Instance weight. If not provided, uniform weights are assumed.
+            Target value for sample X.
+        weight: float
+            Sample weight.
 
         """
 

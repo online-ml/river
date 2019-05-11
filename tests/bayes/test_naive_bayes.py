@@ -3,6 +3,7 @@ from array import array
 import os
 from skmultiflow.data import SEAGenerator
 from skmultiflow.bayes import NaiveBayes
+from skmultiflow.core.base import is_classifier
 
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -45,7 +46,7 @@ def test_naive_bayes(test_path):
     y_proba_expected = np.load(test_file)
     assert np.allclose(y_proba, y_proba_expected)
 
-    expected_info = 'NaiveBayes: nominal attributes: [] - '
+    expected_info = 'NaiveBayes(nominal_attributes=None)'
     assert learner.get_info() == expected_info
 
     learner.reset()
@@ -55,7 +56,7 @@ def test_naive_bayes(test_path):
     assert np.isclose(expected_score, learner.score(X=np.array(X_batch[4501:]),
                                                     y=np.array(y_batch[4501:])))
 
-    assert 'estimator' == learner.get_class_type()
+    assert is_classifier(learner)
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray

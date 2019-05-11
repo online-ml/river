@@ -15,7 +15,7 @@ def test_online_boosting():
     max_samples = 5000
     predictions = []
     wait_samples = 100
-    correct_predictions= 0
+    correct_predictions = 0
 
     while cnt < max_samples:
         X, y = stream.next_sample()
@@ -43,3 +43,7 @@ def test_online_boosting():
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    expected_info = "OnlineBoosting(base_estimator=NaiveBayes(nominal_attributes=None),\n" \
+                    "               drift_detection=True, n_estimators=None, random_state=112)"
+    assert learner.get_info() == expected_info

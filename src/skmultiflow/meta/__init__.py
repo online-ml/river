@@ -8,6 +8,8 @@ from .leverage_bagging import LeverageBagging
 from .oza_bagging import OzaBagging
 from .oza_bagging_adwin import OzaBaggingAdwin
 from .classifier_chains import ClassifierChain
+from .classifier_chains import ProbabilisticClassifierChain
+from .classifier_chains import MonteCarloClassifierChain
 from .regressor_chains import RegressorChain
 from .multi_output_learner import MultiOutputLearner
 from .learn_pp import LearnPP
@@ -24,6 +26,7 @@ from .online_smote_bagging import OnlineSMOTEBagging
 
 
 __all__ = ["AdaptiveRandomForest", "BatchIncremental", "LeverageBagging", "OzaBagging", "OzaBaggingAdwin",
-           "ClassifierChain", "RegressorChain", "MultiOutputLearner", "LearnPP", "LearnNSE",
-           "AccuracyWeightedEnsemble", "DynamicWeightedMajority", "AdditiveExpertEnsemble", "OnlineSMOTEBagging",
+           "ClassifierChain", "ProbabilisticClassifierChain", "MonteCarloClassifierChain",
+           "RegressorChain", "MultiOutputLearner", "LearnPP", "LearnNSE", "AccuracyWeightedEnsemble",
+           "DynamicWeightedMajority", "AdditiveExpertEnsemble", "OnlineSMOTEBagging",
            "OnlineRUSBoost", "OnlineCSB2", "OnlineAdaC2", "OnlineUnderOverBagging", "OnlineBoosting"]

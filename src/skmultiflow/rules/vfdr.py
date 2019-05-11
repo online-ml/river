@@ -1,10 +1,9 @@
 import copy
-import logging
 from operator import attrgetter, itemgetter
 
-from skmultiflow.core.base import StreamModel
-from skmultiflow.core.base_predicate import Predicate
-from skmultiflow.core.base_rule import Rule
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
+from skmultiflow.rules.base_predicate import Predicate
+from skmultiflow.rules.base_rule import Rule
 from skmultiflow.rules.foil_gain_rule_criterion import FoilGainExpandCriterion
 from skmultiflow.rules.hellinger_distance_criterion import HellingerDistanceCriterion
 from skmultiflow.rules.info_gain_rule_criterion import InfoGainExpandCriterion
@@ -24,18 +23,14 @@ _EDDM = 'eddm'
 _ADWIN = 'adwin'
 _DDM = 'ddm'
 
-# logger
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
+class VFDR(BaseSKMObject, ClassifierMixin):
+    """ Adaptive Very Fast Decision Rules.
 
-class VFDR(StreamModel):
-    """ Adaptive Very Fast Decision Rules
-
-    AVFDR [1]_ is an incremental rule learning classifier capable to adapt to evolving data streams.
-    The learning process of AVFDR is similar to that of Hoeffding Tree, but instead of a tree
-    it uses a collection of rules. The core of VFDR is its rules that aim to create a highly
-    interpretable classifier thanks to their nature.
+    The Adaptive Very Fast Decision Rules (AVFDR) [1]_ is an incremental rule learning classifier
+    capable to adapt to evolving data streams. The learning process of AVFDR is similar to that
+    of Hoeffding Tree, but instead of a tree it uses a collection of rules. The core of VFDR is
+    its rules that aim to create a highly interpretable classifier thanks to their nature.
     Each rule is a conjunction of conditions based on attribute values and the structure for keeping
     sufficient statistics. The sufficient statistics will determine the class predicted by the rule.
     IF :math:`att_1 < 1` and :math:`att_2 = 0` then class 0.
@@ -67,7 +62,7 @@ class VFDR(StreamModel):
         | Maximum number of rules the model can have.
     nb_threshold: int (default=0)
         | Number of instances a leaf should observe before allowing Naive Bayes.
-    nb_prediction: Bool (defautl=True)
+    nb_prediction: Bool (default=True)
         | Use Naive Bayes as prediction strategy in the leafs, else majority class is uses.
     drift_detector: BaseDriftDetector (Default=None)
         | The drift detector to uses in rules. If None detection will be ignored.
@@ -124,14 +119,14 @@ class VFDR(StreamModel):
 
     class Rule(Rule):
         """ Rule class
-        A rule is collection of predicates(conditions) that make up the conjunction ( the IF
-        part of the rule).
+
+        A rule is collection of predicates(conditions) that make up the conjunction (the IF part of the rule).
         The conditions are in the form of: :math:`Att_{idx} > value`,  :math:`Att_{idx} <= value` and
-         :math:`Att_{idx} = value`.
+        :math:`Att_{idx} = value`.
 
         The rule can also track the class distribution and use a drift detector to track change in concept.
 
-        parameters
+        Parameters
         ----------
         class_distribution: dict (class_value, weight)
             Class observations collected from the instances seen in the rule.
@@ -424,12 +419,10 @@ class VFDR(StreamModel):
 
         return final_votes if fired_rule else self.default_rule.get_class_votes(X, self)
 
-    def fit(self, X, y, classes=None, weight=None):
-        self.partial_fit(X, y, classes, weight)
-
     def partial_fit(self, X, y, classes=None, weight=None):
-        """Incrementally trains the model. Train samples (instances) are composed of X attributes and their
-        corresponding targets y.
+        """Incrementally trains the model.
+
+        Train samples (instances) are composed of X attributes and their corresponding targets y.
 
         Tasks performed before training:
 
@@ -441,7 +434,7 @@ class VFDR(StreamModel):
 
         * If the rule_set is empty, update the default_rule and if enough statistics are collected try to create rule.
         * If rules exist in the rule_set, check if they cover the instance. The statistics of the ones that fire are
-         updated using the instance.
+          updated using the instance.
         * If enough statistics are collected if a rule then attempt to expand it.
 
         Parameters
@@ -456,6 +449,10 @@ class VFDR(StreamModel):
         weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
 
+        Returns
+        -------
+        self
+
         """
         if self.classes is None and classes is not None:
             self.classes = classes
@@ -468,6 +465,8 @@ class VFDR(StreamModel):
             for i in range(row_cnt):
                 if weight[i] != 0.0:
                     self._partial_fit(X[i], y[i], weight[i])
+
+        return self
 
     def _partial_fit(self, X, y, weight):
         """Trains the model on sample X and corresponding target y.
@@ -512,7 +511,7 @@ class VFDR(StreamModel):
         """ Create a new rule from the default rule.
 
         If the default rule has enough statistics, possible expanding candidates are checked.
-        If the best candidate verifies the Hoffding bound, a new rule is created if a one predicate.
+        If the best candidate verifies the Hoeffding bound, a new rule is created if a one predicate.
         The rule statistics are passed down to the new rule and the default rule is reset.
 
         """
@@ -595,7 +594,7 @@ class VFDR(StreamModel):
     def _expand_rule(self, rule):
         """
         If the rule has enough statistics, possible expanding candidates are checked. If the best
-        candidate verifies the Hoffding bound, a new predicate is add to the  rule.
+        candidate verifies the Hoeffding bound, a new predicate is add to the  rule.
         The rule statistics are update to fit the new description.
 
         """
@@ -837,9 +836,6 @@ class VFDR(StreamModel):
         self.classes = None
         return self
 
-    def score(self, X, y):
-        raise NotImplementedError
-
     def get_model_rules(self):
         """ Get the rules that describe the model
 
@@ -909,27 +905,6 @@ class VFDR(StreamModel):
 
         """
         return np.sqrt((range_val * range_val * np.log(1.0 / confidence)) / (2.0 * n))
-
-    def get_info(self):
-        """Collect information about the AVFDR configuration.
-
-        Returns
-        -------
-        string
-            Configuration for AVFDR.
-        """
-        description = type(self).__name__ + ': '
-        description += 'ordered_rules: {} - '.format(self.ordered_rules)
-        description += 'grace_period: {} - '.format(self.grace_period)
-        description += 'split_confidence: {} - '.format(self.expand_confidence)
-        description += 'tie_threshold: {} - '.format(self.tie_threshold)
-        description += 'remove_poor_atts: {} - '.format(self.remove_poor_atts)
-        description += 'rule_prediction: {} - '.format(self.rule_prediction)
-        description += 'nb_threshold: {} - '.format(self.nb_threshold)
-        description += 'nominal_attributes: {} - '.format(self.nominal_attributes)
-        description += 'drift_detector: {} - '.format(type(self.drift_detector).__name__)
-        description += 'Predict using Naive Bayes: {}'.format(self.nb_prediction)
-        return description
 
     def __init__(self,
                  expand_confidence=0.0000001,
@@ -1005,7 +980,7 @@ class VFDR(StreamModel):
     def rule_prediction(self, value):
         if value != _FIRSTHIT and value != _WEIGHTEDMAX \
                 and value != _WEIGHTEDSUM:
-            logger.info("Invalid option '{}', will use '{}'".format(value, _FIRSTHIT))
+            print("Invalid rule_prediction option '{}', will use '{}'".format(value, _FIRSTHIT))
             self._rule_prediction = _FIRSTHIT
         else:
             self._rule_prediction = value
@@ -1026,7 +1001,7 @@ class VFDR(StreamModel):
     def nominal_attributes(self, value):
         if value is None:
             self._nominal_attributes = []
-            logger.debug("No Nominal attributes have been defined, will consider all attributes as numerical")
+            print("No Nominal attributes have been defined, will consider all attributes as numerical")
         else:
             self._nominal_attributes = value
 
@@ -1045,7 +1020,7 @@ class VFDR(StreamModel):
     @ordered_rules.setter
     def ordered_rules(self, value):
         if value and self.rule_prediction != _FIRSTHIT:
-            logger.info("Only one rule from the ordered set can be covered, rule prediction is set to first hit")
+            print("Only one rule from the ordered set can be covered, rule prediction is set to first hit")
             self.rule_prediction = _FIRSTHIT
             self._ordered_rules = True
         else:

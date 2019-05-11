@@ -1,18 +1,17 @@
 import copy as cp
 import numpy as np
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.bayes import NaiveBayes
 
 
-class AdditiveExpertEnsemble(StreamModel):
-    """
-    Additive Expert Ensemble
+class AdditiveExpertEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+    """ Additive Expert ensemble classifier.
 
     Parameters
     ----------
     n_estimators: int (default=5)
         Maximum number of estimators to hold.
-    base_estimator: StreamModel or sklearn.BaseEstimator (default=NaiveBayes)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=NaiveBayes)
         Each member of the ensemble is an instance of the base estimator.
     beta: float (default=0.8)
         Factor for which to decrease weights by.
@@ -64,7 +63,7 @@ class AdditiveExpertEnsemble(StreamModel):
         """
         super().__init__()
 
-        self.max_experts = n_estimators
+        self.n_estimators = n_estimators
         self.base_estimator = base_estimator
 
         self.beta = beta
@@ -80,12 +79,8 @@ class AdditiveExpertEnsemble(StreamModel):
 
         self.reset()
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
-
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """
-        Partially fits the model on the supplied X and y matrices.
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially fits the model on the supplied X and y matrices.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample
@@ -93,41 +88,36 @@ class AdditiveExpertEnsemble(StreamModel):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
 
         y: Array-like
             An array-like of all the class labels for the samples in X.
 
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
+        classes: numpy.ndarray (default=None)
+            Array with all possible/known class labels.
 
-        weight: None
-            Instance weight. This is ignored by the ensemble and is only
-            for compliance with the general skmultiflow interface.
+        sample_weight: Not used (default=None)
 
         Returns
         -------
-        DynamicWeightedMajority
+        AdditiveExpertEnsemble
             self
         """
         for i in range(len(X)):
-            self.fit_single_sample(
-                X[i:i+1, :], y[i:i+1], classes, weight
-            )
+            self.fit_single_sample(X[i:i+1, :], y[i:i+1], classes, sample_weight)
         return self
 
     def predict(self, X):
-        """ predict
+        """ Predicts the class labels of X in a general classification setting.
 
-        The predict function will take an average of the precitions of its
+        The predict function will take an average of the predictions of its
         learners, weighted by their respective weights, and return the most
         likely class.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
 
         Returns
@@ -142,9 +132,11 @@ class AdditiveExpertEnsemble(StreamModel):
         return (aggregate + 0.5).astype(int)    # Round to nearest int
 
     def predict_proba(self, X):
+        """ Not implemented for this method.
+        """
         raise NotImplementedError
 
-    def fit_single_sample(self, X, y, classes=None, weight=None):
+    def fit_single_sample(self, X, y, classes=None, sample_weight=None):
         """
         Predict + update weights + modify experts + train on new sample.
         (As described in the original paper.)
@@ -175,13 +167,13 @@ class AdditiveExpertEnsemble(StreamModel):
             new_exp = self._construct_new_expert(ensemble_weight * self.gamma)
             self._add_expert(new_exp)
 
-        # Pruning to self.max_experts if needed
-        if len(self.experts) > self.max_experts:
+        # Pruning to self.n_estimators if needed
+        if len(self.experts) > self.n_estimators:
             self.experts.pop(0)
 
         # Train each expert on X
         for exp in self.experts:
-            exp.estimator.partial_fit(X, y, classes=classes, weight=weight)
+            exp.estimator.partial_fit(X, y, classes=classes, sample_weight=sample_weight)
 
         # Normalize weights (if not will tend to infinity)
         if self.epochs % 1000:
@@ -219,17 +211,4 @@ class AdditiveExpertEnsemble(StreamModel):
     def reset(self):
         self.epochs = 0
         self.num_classes = 2
-        self.experts = [
-            self._construct_new_expert()
-        ]
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        return \
-            type(self).__name__ + ': ' + \
-            "max_estimators: {} - ".format(self.max_experts) + \
-            "base_estimator: {} - ".format(self.base_estimator.get_info()) + \
-            "beta: {} - ".format(self.beta) + \
-            "gamma: {}".format(self.gamma)
+        self.experts = [self._construct_new_expert()]

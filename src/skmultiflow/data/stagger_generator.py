@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 
 
 class STAGGERGenerator(Stream):
-    """ StaggerGenerator
+    """ STAGGER concepts stream generator.
 
     This generator is an implementation of the dara stream with abrupt concept
     drift, as described in Gama, Joao, et al [1]_.
@@ -83,14 +83,14 @@ class STAGGERGenerator(Stream):
         self._classification_functions = [self.classification_function_zero, self.classification_function_one,
                                           self.classification_function_two]
 
-        self.classification_function_idx = classification_function
-        self._original_random_state = random_state
+        self.classification_function = classification_function
+        self.random_state = random_state
         self.balance_classes = balance_classes
         self.n_cat_features = 3
         self.n_features = self.n_cat_features
         self.n_classes = 2
         self.n_targets = 1
-        self.random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.next_class_should_be_zero = False
         self.name = "Stagger Generator"
 
@@ -106,7 +106,7 @@ class STAGGERGenerator(Stream):
         self.target_values = [i for i in range(self.n_classes)]
 
     @property
-    def classification_function_idx(self):
+    def classification_function(self):
         """ Retrieve the index of the current classification function.
 
         Returns
@@ -116,8 +116,8 @@ class STAGGERGenerator(Stream):
         """
         return self._classification_function_idx
 
-    @classification_function_idx.setter
-    def classification_function_idx(self, classification_function_idx):
+    @classification_function.setter
+    def classification_function(self, classification_function_idx):
         """ Set the index of the current classification function.
 
         Parameters
@@ -127,7 +127,7 @@ class STAGGERGenerator(Stream):
         if classification_function_idx in range(3):
             self._classification_function_idx = classification_function_idx
         else:
-            raise ValueError("classification_function_idx takes only these "
+            raise ValueError("classification_function takes only these "
                              "values: 0, 1, 2, and {} was "
                              "passed".format(classification_function_idx))
 
@@ -165,7 +165,7 @@ class STAGGERGenerator(Stream):
         This functions should always be called after the stream initialization.
 
         """
-        self.random_state = check_random_state(self._original_random_state)
+        self._random_state = check_random_state(self.random_state)
         self.next_class_should_be_zero = False
         self.sample_idx = 0
 
@@ -203,11 +203,11 @@ class STAGGERGenerator(Stream):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                size = self.random_state.randint(3)
-                color = self.random_state.randint(3)
-                shape = self.random_state.randint(3)
+                size = self._random_state.randint(3)
+                color = self._random_state.randint(3)
+                shape = self._random_state.randint(3)
 
-                group = self._classification_functions[self.classification_function_idx](size, color, shape)
+                group = self._classification_functions[self.classification_function](size, color, shape)
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -232,10 +232,10 @@ class STAGGERGenerator(Stream):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self.random_state.randint(3)
-        while new_function == self.classification_function_idx:
-            new_function = self.random_state.randint(3)
-        self.classification_function_idx = new_function
+        new_function = self._random_state.randint(3)
+        while new_function == self.classification_function:
+            new_function = self._random_state.randint(3)
+        self.classification_function = new_function
 
     @staticmethod
     def classification_function_zero(size, color, shape):
@@ -314,8 +314,3 @@ class STAGGERGenerator(Stream):
 
         """
         return 1 if (size == 1 or size == 2) else 0
-
-    def get_info(self):
-        return 'STAGGERGenerator: classification_function: ' + str(self.classification_function_idx) + \
-               ' - random_state: ' + str(self._original_random_state) + \
-               ' - balance_classes: ' + str(self.balance_classes)

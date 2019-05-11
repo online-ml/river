@@ -1,9 +1,10 @@
 import numpy as np
+
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class EDDM(BaseDriftDetector):
-    """ EDDM method for concept drift detection
+    """ Early Drift Detection Method.
 
     Notes
     -----
@@ -151,14 +152,3 @@ class EDDM(BaseDriftDetector):
 
                 else:
                     self.in_warning_zone = False
-
-    def get_info(self):
-        """ Collect information about the concept drift detector.
-
-        Returns
-        -------
-        string
-            Configuration for the concept drift detector.
-        """
-        description = type(self).__name__
-        return description

@@ -39,14 +39,19 @@ def test_multi_target_regression_hoeffding_tree_mean(test_path):
     expected_error = 167.40626294018753
     assert np.isclose(error, expected_error)
 
-    expected_info = \
-        'MultiTargetRegressionHoeffdingTree: max_byte_size: 33554432 - ' \
-        'memory_estimate_period: 1000000 - grace_period: 200 - ' \
-        'split_criterion: intra cluster variance reduction - ' \
-        'split_confidence: 1e-07 - tie_threshold: 0.05 - binary_split: False' \
-        ' - stop_mem_management: False - remove_poor_atts: False ' \
-        '- no_pre_prune: False - leaf_prediction: mean - nb_threshold: 0 - ' \
-        'nominal_attributes: [] - '
+    expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
+                    "                                   leaf_prediction='mean',\n" \
+                    "                                   learning_ratio_const=True,\n" \
+                    "                                   learning_ratio_decay=0.001,\n" \
+                    "                                   learning_ratio_perceptron=0.02,\n" \
+                    "                                   max_byte_size=33554432,\n" \
+                    "                                   memory_estimate_period=1000000,\n" \
+                    "                                   nb_threshold=0, no_preprune=False,\n" \
+                    "                                   nominal_attributes=None, random_state=None,\n" \
+                    "                                   remove_poor_atts=False,\n" \
+                    "                                   split_confidence=1e-07,\n" \
+                    "                                   stop_mem_management=False,\n" \
+                    "                                   tie_threshold=0.05)"
     assert learner.get_info() == expected_info
     assert isinstance(learner.get_model_description(), type(''))
     assert type(learner.predict(X)) == np.ndarray
@@ -87,14 +92,19 @@ def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
     expected_error = 134.54152831279887
     assert np.isclose(error, expected_error)
 
-    expected_info = \
-        'MultiTargetRegressionHoeffdingTree: max_byte_size: 33554432 - ' \
-        'memory_estimate_period: 1000000 - grace_period: 200 - ' \
-        'split_criterion: intra cluster variance reduction - ' \
-        'split_confidence: 1e-07 - tie_threshold: 0.05 - binary_split: False' \
-        ' - stop_mem_management: False - remove_poor_atts: False ' \
-        '- no_pre_prune: False - leaf_prediction: perceptron - ' \
-        'nb_threshold: 0 - nominal_attributes: [] - '
+    expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
+                    "                                   leaf_prediction='perceptron',\n" \
+                    "                                   learning_ratio_const=True,\n" \
+                    "                                   learning_ratio_decay=0.001,\n" \
+                    "                                   learning_ratio_perceptron=0.02,\n" \
+                    "                                   max_byte_size=33554432,\n" \
+                    "                                   memory_estimate_period=1000000,\n" \
+                    "                                   nb_threshold=0, no_preprune=False,\n" \
+                    "                                   nominal_attributes=None, random_state=1,\n" \
+                    "                                   remove_poor_atts=False,\n" \
+                    "                                   split_confidence=1e-07,\n" \
+                    "                                   stop_mem_management=False,\n" \
+                    "                                   tie_threshold=0.05)"
     assert learner.get_info() == expected_info
     assert isinstance(learner.get_model_description(), type(''))
 
@@ -134,14 +144,20 @@ def test_multi_target_regression_hoeffding_tree_adaptive(test_path):
     expected_error = 134.38731296533115
     assert np.isclose(error, expected_error)
 
-    expected_info = \
-        'MultiTargetRegressionHoeffdingTree: max_byte_size: 33554432 - ' \
-        'memory_estimate_period: 1000000 - grace_period: 200 - ' \
-        'split_criterion: intra cluster variance reduction - ' \
-        'split_confidence: 1e-07 - tie_threshold: 0.05 - binary_split: False' \
-        ' - stop_mem_management: False - remove_poor_atts: False ' \
-        '- no_pre_prune: False - leaf_prediction: adaptive - ' \
-        'nb_threshold: 0 - nominal_attributes: [] - '
+    expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
+                    "                                   leaf_prediction='adaptive',\n" \
+                    "                                   learning_ratio_const=True,\n" \
+                    "                                   learning_ratio_decay=0.001,\n" \
+                    "                                   learning_ratio_perceptron=0.02,\n" \
+                    "                                   max_byte_size=33554432,\n" \
+                    "                                   memory_estimate_period=1000000,\n" \
+                    "                                   nb_threshold=0, no_preprune=False,\n" \
+                    "                                   nominal_attributes=None, random_state=1,\n" \
+                    "                                   remove_poor_atts=False,\n" \
+                    "                                   split_confidence=1e-07,\n" \
+                    "                                   stop_mem_management=False,\n" \
+                    "                                   tie_threshold=0.05)"
+
     assert learner.get_info() == expected_info
     assert isinstance(learner.get_model_description(), type(''))
 

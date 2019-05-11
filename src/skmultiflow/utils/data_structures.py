@@ -1,8 +1,7 @@
-from skmultiflow.core.base_object import BaseObject
 import numpy as np
 
 
-class FastBuffer(BaseObject):
+class FastBuffer(object):
     """ FastBuffer
 
     A simple buffer used to keep track of a limited number of unitary entries. It
@@ -56,9 +55,6 @@ class FastBuffer(BaseObject):
         self.buffer = []
 
         self.configure(max_size, object_list)
-
-    def get_class_type(self):
-        return 'data_structure'
 
     def configure(self, max_size, object_list):
         self.max_size = max_size
@@ -162,7 +158,7 @@ class FastBuffer(BaseObject):
         return 'FastBuffer: max_size: ' + str(self.max_size) + ' - current_size: ' + str(self.current_size)
 
 
-class FastComplexBuffer(BaseObject):
+class FastComplexBuffer(object):
     """ FastComplexBuffer
 
     A complex buffer used to keep track of a limited number of complex entries. It
@@ -201,9 +197,6 @@ class FastComplexBuffer(BaseObject):
         self.buffer = []
 
         self.configure(max_size, width)
-
-    def get_class_type(self):
-        return 'data_structure'
 
     def configure(self, max_size, width):
         self.max_size = max_size
@@ -343,7 +336,7 @@ class FastComplexBuffer(BaseObject):
                + ' - width: ' + str(self.width)
 
 
-class ConfusionMatrix(BaseObject):
+class ConfusionMatrix(object):
     """ ConfusionMatrix
 
     This structure constitutes a confusion matrix, or an error matrix. It is
@@ -588,11 +581,8 @@ class ConfusionMatrix(BaseObject):
                ' - sample_count: ' + str(self.sample_count) + \
                ' - dtype: ' + str(self.dtype)
 
-    def get_class_type(self):
-        return 'collection'
 
-
-class MOLConfusionMatrix(BaseObject):
+class MOLConfusionMatrix(object):
     """ MOLConfusionMatrix
 
     This structure constitutes a confusion matrix, or an error matrix. It is
@@ -874,11 +864,8 @@ class MOLConfusionMatrix(BaseObject):
                ' - total_discordance: ' + str(self.get_total_discordance()) + \
                ' - dtype: ' + str(self.dtype)
 
-    def get_class_type(self):
-        return 'collection'
 
-
-class InstanceWindow(BaseObject):
+class InstanceWindow(object):
     """ InstanceWindow
 
     Keeps a limited size window from the most recent instances seen.
@@ -1023,9 +1010,6 @@ class InstanceWindow(BaseObject):
     @property
     def n_samples(self):
         return self._n_samples
-
-    def get_class_type(self):
-        return 'data_structure'
 
     def get_info(self):
         return 'InstanceWindow: n_attributes: ' + str(self.n_attributes) + \

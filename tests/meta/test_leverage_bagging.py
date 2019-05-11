@@ -1,6 +1,7 @@
 from skmultiflow.meta import LeverageBagging
 from skmultiflow.lazy import KNN
 from skmultiflow.data import SEAGenerator
+
 import numpy as np
 
 
@@ -15,7 +16,7 @@ def test_leverage_bagging():
     max_samples = 5000
     predictions = []
     wait_samples = 100
-    correct_predictions= 0
+    correct_predictions = 0
 
     while cnt < max_samples:
         X, y = stream.next_sample()
@@ -30,16 +31,25 @@ def test_leverage_bagging():
         else:
             learner.partial_fit(X, y)
         cnt += 1
+
     performance = correct_predictions / len(predictions)
     expected_predictions = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1,
                             0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1,
                             0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1]
-    expected_correct_predictions = 42
-    expected_performance = 0.8571428571428571
-
     assert np.alltrue(predictions == expected_predictions)
+
+    expected_performance = 0.8571428571428571
     assert np.isclose(expected_performance, performance)
+
+    expected_correct_predictions = 42
     assert correct_predictions == expected_correct_predictions
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    expected_info = "LeverageBagging(base_estimator=KNN(leaf_size=40, max_window_size=2000,\n" \
+                    "                                   n_neighbors=8, nominal_attributes=None),\n" \
+                    "                delta=0.002, enable_code_matrix=False,\n" \
+                    "                leverage_algorithm='leveraging_bag', n_estimators=3,\n" \
+                    "                random_state=112, w=6)"
+    assert learner.get_info() == expected_info

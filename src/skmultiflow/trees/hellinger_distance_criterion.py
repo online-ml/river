@@ -1,5 +1,7 @@
 from skmultiflow.trees.split_criterion import SplitCriterion
+
 import numpy as np
+
 
 class HellingerDistanceCriterion(SplitCriterion):
 
@@ -14,7 +16,8 @@ class HellingerDistanceCriterion(SplitCriterion):
             return -np.inf
         return self.compute_hellinger(post_split_dist)
 
-    def compute_hellinger(self, dist):
+    @staticmethod
+    def compute_hellinger(dist):
 
         try:
             left_branch_positive = dist[0][1]
@@ -22,15 +25,14 @@ class HellingerDistanceCriterion(SplitCriterion):
             right_branch_positive = dist[1][1]
             right_branch_negative = dist[1][0]
         except KeyError:
-            return  0
+            return 0
         total_negative = left_branch_negative + right_branch_negative
         total_positive = left_branch_positive + right_branch_positive
 
         hellinger = (np.sqrt(left_branch_negative/total_negative) - np.sqrt(left_branch_positive/total_positive)) ** 2 \
-                    + (np.sqrt(right_branch_negative/total_negative) - np.sqrt(right_branch_positive/total_positive)) ** 2
+                + (np.sqrt(right_branch_negative/total_negative) - np.sqrt(right_branch_positive/total_positive)) ** 2
 
         return np.sqrt(hellinger)
-
 
     @staticmethod
     def get_range_of_merit(pre_split_dist):

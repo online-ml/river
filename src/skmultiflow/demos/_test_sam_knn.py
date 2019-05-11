@@ -28,7 +28,7 @@ def run(X, y, hyperParams):
                         max_window_size=hyperParams['maxSize'],
                         weighting=hyperParams['knnWeights'],
                         stm_size_option=hyperParams['STMSizeAdaption'],
-                        use_ltm=hyperParams['useLTM'])
+                        use_ltm=hyperParams['use_ltm'])
     logging.info('applying model on dataset')
     predicted_labels = []
     true_labels = []
@@ -45,9 +45,9 @@ def run(X, y, hyperParams):
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(message)s', level=logging.INFO)
-    hyperParams ={'maxSize': 1000, 'nNeighbours': 5, 'knnWeights': 'distance', 'STMSizeAdaption': 'maxACCApprox', 'useLTM': False}
+    hyperParams ={'maxSize': 1000, 'nNeighbours': 5, 'knnWeights': 'distance', 'STMSizeAdaption': 'maxACCApprox', 'use_ltm': False}
     # hyperParams = {'windowSize': 5000, 'nNeighbours': 5, 'knnWeights': 'distance', 'STMSizeAdaption': None,
-    #               'useLTM': False}
+    #               'use_ltm': False}
 
     logging.info('loading dataset')
     # stream = FileStream("../data/datasets/weather.csv")

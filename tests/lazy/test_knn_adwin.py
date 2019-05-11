@@ -40,7 +40,8 @@ def test_knn_adwin():
     learner.reset()
     assert learner.window.n_samples == 0
 
-    expected_info = 'KNNAdwin: - n_neighbors: 8 - max_window_size: 200 - leaf_size: 40'
+    expected_info = 'KNNAdwin(leaf_size=40, max_window_size=200, n_neighbors=8,\n' \
+                    '         nominal_attributes=None)'
     assert learner.get_info() == expected_info
 
     stream.restart()

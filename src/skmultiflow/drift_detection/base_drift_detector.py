@@ -1,8 +1,8 @@
 from abc import ABCMeta, abstractmethod
-from skmultiflow.core.base_object import BaseObject
+from skmultiflow.core import BaseSKMObject
 
 
-class BaseDriftDetector(BaseObject, metaclass=ABCMeta):
+class BaseDriftDetector(BaseSKMObject, metaclass=ABCMeta):
     """ Abstract Drift Detector
     
     Any drift detector class should follow this minimum structure in 
@@ -16,6 +16,8 @@ class BaseDriftDetector(BaseObject, metaclass=ABCMeta):
     
     """
 
+    estimator_type = "drift_detector"
+
     def __init__(self):
         super().__init__()
         self.in_concept_change = None
@@ -23,7 +25,6 @@ class BaseDriftDetector(BaseObject, metaclass=ABCMeta):
         self.estimation = None
         self.delay = None
 
-    @abstractmethod
     def reset(self):
         """ reset
         
@@ -93,10 +94,3 @@ class BaseDriftDetector(BaseObject, metaclass=ABCMeta):
         
         """
         raise NotImplementedError
-
-    @abstractmethod
-    def get_info(self):
-        raise NotImplementedError
-
-    def get_class_type(self):
-        return 'drift_detector'

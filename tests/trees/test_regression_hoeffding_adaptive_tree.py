@@ -45,11 +45,14 @@ def test_hoeffding_tree():
     expected_error = 143.11351404083086
     assert np.isclose(error, expected_error)
 
-    expected_info = 'RegressionHAT: max_byte_size: 33554432 - memory_estimate_period: 1000000 ' \
-                    '- grace_period: 200 - split_criterion: variance reduction - split_confidence: 1e-07 ' \
-                    '- tie_threshold: 0.05 - binary_split: False - stop_mem_management: False ' \
-                    '- remove_poor_atts: False - no_pre_prune: False - leaf_prediction: mean - nb_threshold: 0 ' \
-                    '- nominal_attributes: [] - '
+    expected_info = "RegressionHAT(binary_split=False, grace_period=200, leaf_prediction='mean',\n" \
+                    "              learning_ratio_const=True, learning_ratio_decay=0.001,\n" \
+                    "              learning_ratio_perceptron=0.02, max_byte_size=33554432,\n" \
+                    "              memory_estimate_period=1000000, nb_threshold=0, no_preprune=False,\n" \
+                    "              nominal_attributes=None, random_state=1, remove_poor_atts=False,\n" \
+                    "              split_confidence=1e-07, stop_mem_management=False,\n" \
+                    "              tie_threshold=0.05)"
+
     assert learner.get_info() == expected_info
 
     assert isinstance(learner.get_model_description(), type(''))
@@ -96,12 +99,16 @@ def test_hoeffding_tree_perceptron():
     expected_error = 362.98595964244623
     assert np.isclose(error, expected_error)
 
-    expected_info = 'RegressionHAT: max_byte_size: 33554432 - memory_estimate_period: 1000000 ' \
-                    '- grace_period: 200 - split_criterion: variance reduction - split_confidence: 1e-07 ' \
-                    '- tie_threshold: 0.05 - binary_split: False - stop_mem_management: False ' \
-                    '- remove_poor_atts: False - no_pre_prune: False - leaf_prediction: perceptron - nb_threshold: 0 ' \
-                    '- nominal_attributes: [] - '
+    expected_info = "RegressionHAT(binary_split=False, grace_period=200,\n" \
+                    "              leaf_prediction='perceptron', learning_ratio_const=True,\n" \
+                    "              learning_ratio_decay=0.001, learning_ratio_perceptron=0.02,\n" \
+                    "              max_byte_size=33554432, memory_estimate_period=1000000,\n" \
+                    "              nb_threshold=0, no_preprune=False, nominal_attributes=None,\n" \
+                    "              random_state=1, remove_poor_atts=False, split_confidence=1e-07,\n" \
+                    "              stop_mem_management=False, tie_threshold=0.05)"
     assert learner.get_info() == expected_info
 
     assert isinstance(learner.get_model_description(), type(''))
     assert type(learner.predict(X)) == np.ndarray
+
+    assert learner._estimator_type == 'regressor'

@@ -1,12 +1,12 @@
 import copy as cp
 import numpy as np
-from skmultiflow.core.base import StreamModel
+
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.bayes import NaiveBayes
 
 
-class DynamicWeightedMajority(StreamModel):
-    """
-    Dynamic Weighted Majority Ensemble
+class DynamicWeightedMajority(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+    """ Dynamic Weighted Majority ensemble classifier.
 
     Parameters
     ----------
@@ -23,7 +23,7 @@ class DynamicWeightedMajority(StreamModel):
 
     Notes
     -----
-    The method, dynamic weighted majority (DWM) [1]_, uses four mechanisms to
+    The dynamic weighted majority (DWM) [1]_, uses four mechanisms to
     cope with concept drift: It trains online learners of the ensemble,
     it weights those learners based on their performance, it removes them,
     also based on their performance, and it adds new experts based on the
@@ -58,7 +58,7 @@ class DynamicWeightedMajority(StreamModel):
         """
         super().__init__()
 
-        self.max_experts = n_estimators
+        self.n_estimators = n_estimators
         self.base_estimator = base_estimator
 
         self.beta = beta
@@ -72,12 +72,8 @@ class DynamicWeightedMajority(StreamModel):
 
         self.reset()
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
-
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """
-        Partially fits the model on the supplied X and y matrices.
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially fits the model on the supplied X and y matrices.
 
         Since it's an ensemble learner, if X and y matrix of more than one
         sample are passed, the algorithm will partial fit the model one sample
@@ -85,19 +81,18 @@ class DynamicWeightedMajority(StreamModel):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            Features matrix used for partially updating the model.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: Array-like
-            An array-like of all the class labels for the samples in X.
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
 
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
-        weight: None
-            Instance weight. This is ignored by the ensemble and is only
-            for compliance with the general skmultiflow interface.
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the base estimator.
 
         Returns
         -------
@@ -106,20 +101,20 @@ class DynamicWeightedMajority(StreamModel):
         """
         for i in range(len(X)):
             self.fit_single_sample(
-                X[i:i+1, :], y[i:i+1], classes, weight
+                X[i:i+1, :], y[i:i+1], classes, sample_weight
             )
         return self
 
     def predict(self, X):
         """ predict
 
-        The predict function will take an average of the precitions of its
+        The predict function will take an average of the predictions of its
         learners, weighted by their respective weights, and return the most
         likely class.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
 
         Returns
@@ -136,7 +131,7 @@ class DynamicWeightedMajority(StreamModel):
     def predict_proba(self, X):
         raise NotImplementedError
 
-    def fit_single_sample(self, X, y, classes=None, weight=None):
+    def fit_single_sample(self, X, y, classes=None, sample_weight=None):
         """
         Fits a single sample of shape `X.shape=(1, n_attributes)` and `y.shape=(1)`
 
@@ -151,7 +146,7 @@ class DynamicWeightedMajority(StreamModel):
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             Features matrix used for partially updating the model.
 
         y: Array-like
@@ -160,9 +155,10 @@ class DynamicWeightedMajority(StreamModel):
         classes: list
             List of all existing classes. This is an optional parameter.
 
-        weight: None
-            Instance weight. This is ignored by the ensemble and is only
-            for compliance with the general skmultiflow interface.
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Applicability
+            depends on the base estimator.
+
         """
         self.epochs += 1
         self.num_classes = max(
@@ -190,13 +186,13 @@ class DynamicWeightedMajority(StreamModel):
             self._scale_weights(max_weight)
             self._remove_experts()
             if np.any(y_hat != y):
-                if len(self.experts) == self.max_experts:
+                if len(self.experts) == self.n_estimators:
                     self.experts.pop(weakest_expert_index)
                 self.experts.append(self._construct_new_expert())
 
         # Train individual experts
         for exp in self.experts:
-            exp.estimator.partial_fit(X, y, classes, weight)
+            exp.estimator.partial_fit(X, y, classes, sample_weight)
 
     def get_expert_predictions(self, X):
         """
@@ -234,15 +230,3 @@ class DynamicWeightedMajority(StreamModel):
         Constructs a new WeightedExpert from the provided base_estimator.
         """
         return self.WeightedExpert(cp.deepcopy(self.base_estimator), 1)
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        return \
-            type(self).__name__ + ': ' + \
-            "max_estimators: {} - ".format(self.max_experts) + \
-            "base_estimator: {} - ".format(self.base_estimator.get_info()) + \
-            "period: {} - ".format(self.period) + \
-            "beta: {} - ".format(self.beta) + \
-            "theta: {}".format(self.theta)

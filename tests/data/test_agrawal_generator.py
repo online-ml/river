@@ -54,6 +54,12 @@ def test_agrawal_generator(test_path):
 
     assert stream.n_features == X.shape[1]
 
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "AGRAWALGenerator(balance_classes=False, classification_function=2,\n" \
+                    "                 perturbation=0.28, random_state=112)"
+    assert stream.get_info() == expected_info
+
 
 def test_agrawal_generator_all_functions(test_path):
     for f in range(10):

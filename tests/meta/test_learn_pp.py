@@ -3,7 +3,11 @@ from skmultiflow.meta.learn_pp import LearnPP
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 
+import pytest
+from sklearn import __version__ as sklearn_version
 
+
+@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 def test_learn_pp():
     stream = RandomTreeGenerator(tree_random_state=2212, sample_random_state=2212)
     stream.prepare_for_use()
@@ -41,3 +45,14 @@ def test_learn_pp():
     assert np.isclose(expected_acc, acc)
     assert corrects == expected_correct_predictions
     assert type(classifier.predict(X)) == np.ndarray
+
+    expected_info = "LearnPP(base_estimator=DecisionTreeClassifier(class_weight=None, criterion='gini', " \
+                    "max_depth=None,\n" \
+                    "            max_features=None, max_leaf_nodes=None,\n" \
+                    "            min_impurity_decrease=0.0, min_impurity_split=None,\n" \
+                    "            min_samples_leaf=1, min_samples_split=2,\n" \
+                    "            min_weight_fraction_leaf=0.0, presort=False, random_state=2212,\n" \
+                    "            splitter='best'),\n" \
+                    "        error_threshold=0.5, n_ensembles=5, n_estimators=5, random_state=2212,\n" \
+                    "        window_size=100)"
+    assert classifier.get_info() == expected_info

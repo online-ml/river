@@ -1,3 +1,4 @@
+from skmultiflow.core import MultiOutputMixin
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
@@ -11,17 +12,17 @@ NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
-class LCHT(HoeffdingTree):
-    """ Label Combination Hoeffding Tree
+class LCHT(HoeffdingTree, MultiOutputMixin):
+    """ Label Combination Hoeffding Tree for multi-label learning.
 
-    Label combination transforms the problem from multilabel to multiclass.
-    For each unique combination of labels it assigns a class and procedes
-    with training the hoeffding tree normaly.
+    Label combination transforms the problem from multi-label to multi-class.
+    For each unique combination of labels it assigns a class and proceeds
+    with training the hoeffding tree normally.
 
     The transformation is done by changing the label set which could be seen
     as a binary number to an int which will represent the class, and after
-    the prediction the int is converted back to a bnary number which is the
-    predicted labelset.
+    the prediction the int is converted back to a binary number which is the
+    predicted label-set.
 
     The number of labels need to be provided for the transformation to work.
 
@@ -77,21 +78,20 @@ class LCHT(HoeffdingTree):
                  nominal_attributes=None,
                  n_labels=None):
 
-        super().__init__()
-        self.max_byte_size = max_byte_size
-        self.memory_estimate_period = memory_estimate_period
-        self.grace_period = grace_period
-        self.split_criterion = split_criterion
-        self.split_confidence = split_confidence
-        self.tie_threshold = tie_threshold
-        self.binary_split = binary_split
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_atts = remove_poor_atts
-        self.no_preprune = no_preprune
-        self.leaf_prediction = leaf_prediction
-        self.nb_threshold = nb_threshold
-        self.nominal_attributes = nominal_attributes
-        self.n_labels=n_labels
+        super().__init__(max_byte_size=max_byte_size,
+                         memory_estimate_period=memory_estimate_period,
+                         grace_period=grace_period,
+                         split_criterion=split_criterion,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         binary_split=binary_split,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_atts=remove_poor_atts,
+                         no_preprune=no_preprune,
+                         leaf_prediction=leaf_prediction,
+                         nb_threshold=nb_threshold,
+                         nominal_attributes=nominal_attributes)
+        self.n_labels = n_labels
 
     @property
     def n_labels(self):
@@ -103,8 +103,25 @@ class LCHT(HoeffdingTree):
             raise ValueError('The number of labels must be specified')
         self._n_labels = n_labels
 
-    def partial_fit(self, X, y, classes=None, weight=None):
-        super().partial_fit(X, y, weight=weight)    # Override HT, infer the classes
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Incrementally trains the model. Train samples (instances) are composed of X attributes and their
+            corresponding targets y.
+
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            Instance attributes.
+        y: array_like
+            Classes (targets) for all samples in X.
+        classes: Not used (default=None)
+        sample_weight: float or array-like, optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed.
+
+        Returns
+        -------
+            self
+            """
+        super().partial_fit(X, y, sample_weight=sample_weight)    # Override HT, infer the classes
 
     class LCActiveLearningNode(HoeffdingTree.ActiveLearningNode):
 
@@ -126,7 +143,7 @@ class LCHT(HoeffdingTree):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
-                    if i in ht.nominal_attributes:
+                    if ht.nominal_attributes is not None and i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
                         obs = NumericAttributeClassObserverGaussian()
@@ -302,3 +319,8 @@ class LCHT(HoeffdingTree):
             parent.set_child(parent_branch, new_leaf)
         self._active_leaf_node_cnt -= 1
         self._inactive_leaf_node_cnt += 1
+
+    @staticmethod
+    def _more_tags():
+        return {'multioutput': True,
+                'multioutput_only': True}

@@ -1,14 +1,16 @@
 import numpy as np
+
 from scipy import stats
+
 from skmultiflow.transform.base_transform import StreamTransform
-from skmultiflow.utils.data_structures import FastBuffer
-from skmultiflow.utils.utils import get_dimensions
+from skmultiflow.utils import FastBuffer, get_dimensions
 
 
 class MissingValuesCleaner(StreamTransform):
-    """ This is a transform object. It provides a simple way to replace missing
-    values in samples with another value, which can be chosen from a set of 
-    replacing strategies.
+    """ Fills missing values with some defined value.
+
+    Provides a simple way to replace missing values in data samples with some value. The imputation value
+    can be set via a set of imputation strategies.
     
     Parameters
     ----------
@@ -188,10 +190,3 @@ class MissingValuesCleaner(StreamTransform):
         if self.strategy in ['mean', 'median', 'mode']:
             self.window.add_element(X)
         return self
-
-    def get_info(self):
-        info = '{}:'.format(type(self).__name__)
-        info += ' - strategy: {}'.format(self.strategy)
-        info += ' - window_size: {}'.format(self.window_size)
-        info += ' - new_value: {}'.format(self.new_value)
-        return info

@@ -1,9 +1,8 @@
-from skmultiflow.core.base_object import BaseObject
 from timeit import default_timer as timer
 import logging
 
 
-class EvaluateStreamGenerationSpeed(BaseObject):
+class EvaluateStreamGenerationSpeed(object):
     """ EvaluateStreamGeneration
     
     Measures the stream's sample generation time.
@@ -105,9 +104,6 @@ class EvaluateStreamGenerationSpeed(BaseObject):
                 self.output_file = value
             elif name == 'batch_size':
                 self.batch_size = value
-
-    def get_class_type(self):
-        return 'evaluator'
 
     def get_info(self):
         return 'EvaluateStreamGenerationSpeed: n_samples: ' + str(self.num_samples) + \

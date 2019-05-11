@@ -1,9 +1,10 @@
 import numpy as np
+
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class DDM(BaseDriftDetector):
-    """ DDM method for concept drift detection
+    """ Drift Detection Method.
     
     Parameters
     ----------
@@ -76,18 +77,15 @@ class DDM(BaseDriftDetector):
 
     def __init__(self, min_num_instances=30, warning_level=2.0, out_control_level=3.0):
         super().__init__()
-        self._init_min_num_instances = min_num_instances
-        self._init_warning_level = warning_level
-        self._init_out_control = out_control_level
         self.sample_count = None
         self.miss_prob = None
         self.miss_std = None
         self.miss_prob_sd_min = None
         self.miss_prob_min = None
         self.miss_sd_min = None
-        self.min_instances = None
-        self.warning_level = None
-        self.out_control_level = None
+        self.min_instances = min_num_instances
+        self.warning_level = warning_level
+        self.out_control_level = out_control_level
         self.reset()
 
     def reset(self):
@@ -103,9 +101,6 @@ class DDM(BaseDriftDetector):
         self.miss_prob_sd_min = float("inf")
         self.miss_prob_min = float("inf")
         self.miss_sd_min = float("inf")
-        self.min_instances = self._init_min_num_instances
-        self.warning_level = self._init_warning_level
-        self.out_control_level = self._init_out_control
 
     def add_element(self, prediction):
         """ Add a new element to the statistics
@@ -152,17 +147,3 @@ class DDM(BaseDriftDetector):
 
         else:
             self.in_warning_zone = False
-
-    def get_info(self):
-        """ Collect information about the concept drift detector.
-
-        Returns
-        -------
-        string
-            Configuration for the concept drift detector.
-        """
-        description = type(self).__name__ + ': '
-        description += 'min_num_instances: {} - '.format(self.min_instances)
-        description += 'warning_level: {} - '.format(self.warning_level)
-        description += 'out_control_level: {} - '.format(self.out_control_level)
-        return description
