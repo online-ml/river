@@ -85,7 +85,6 @@ class KNNAdwin(KNN):
                          leaf_size=leaf_size,
                          nominal_attributes=nominal_attributes)
         self.adwin = ADWIN()
-        self.window = None
 
     def reset(self):
         """ reset
