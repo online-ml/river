@@ -143,7 +143,7 @@ class RandomRBFGenerator(Stream):
                 data[j, i] = centroid_aux.centre[i] + att_vals[i] * scale
             data[j, self.n_features] = centroid_aux.class_label
         self.current_sample_x = data[:, :self.n_features]
-        self.current_sample_y = data[:, self.n_features:].flatten()
+        self.current_sample_y = data[:, self.n_features:].flatten().astype(int)
         return self.current_sample_x, self.current_sample_y
 
     def prepare_for_use(self):

@@ -4,11 +4,7 @@ from skmultiflow.meta.batch_incremental import BatchIncremental
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 
-import pytest
-from sklearn import __version__ as sklearn_version
 
-
-@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 def test_batch_incremental():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112)
     stream.prepare_for_use()
@@ -53,12 +49,10 @@ def test_batch_incremental():
 
     assert type(learner.predict(X)) == np.ndarray
 
-    expected_info = "BatchIncremental(base_estimator=DecisionTreeClassifier(class_weight=None, criterion='gini'," \
-                    " max_depth=None,\n" \
-                    "            max_features=None, max_leaf_nodes=None,\n" \
-                    "            min_impurity_decrease=0.0, min_impurity_split=None,\n" \
-                    "            min_samples_leaf=1, min_samples_split=2,\n" \
-                    "            min_weight_fraction_leaf=0.0, presort=False, random_state=112,\n" \
-                    "            splitter='best'),\n" \
-                    "                 n_estimators=10, window_size=100)"
-    assert learner.get_info() == expected_info
+    expected_info = "BatchIncremental(base_estimator=DecisionTreeClassifier(class_weight=None, " \
+                    "criterion='gini', max_depth=None, max_features=None, max_leaf_nodes=None, " \
+                    "min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=1, " \
+                    "min_samples_split=2, min_weight_fraction_leaf=0.0, presort=False, random_state=112, " \
+                    "splitter='best'), n_estimators=10, window_size=100)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info

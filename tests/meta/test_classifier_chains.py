@@ -1,24 +1,21 @@
 import pytest
 
 from sklearn.linear_model import SGDClassifier
+from sklearn import __version__ as sklearn_version
 
 from skmultiflow.data import MultilabelGenerator, make_logical
 from skmultiflow.meta import ClassifierChain, MonteCarloClassifierChain, ProbabilisticClassifierChain
 
 import numpy as np
 
-from sklearn import __version__ as sklearn_version
 
-
-@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 @pytest.mark.filterwarnings('ignore::UserWarning')
 def test_classifier_chains():
-
-    stream = MultilabelGenerator(random_state=112, n_targets=3, n_samples=5150)
+    seed = 112
+    stream = MultilabelGenerator(random_state=seed, n_targets=3, n_samples=5150)
     stream.prepare_for_use()
-    estimator = SGDClassifier(random_state=112, tol=1e-3, max_iter=10)
-    learner = ClassifierChain(base_estimator=estimator, random_state=112)
-
+    estimator = SGDClassifier(random_state=seed, tol=1e-3, max_iter=10)
+    learner = ClassifierChain(base_estimator=estimator, random_state=seed)
     X, y = stream.next_sample(150)
     learner.partial_fit(X, y)
 
@@ -41,35 +38,59 @@ def test_classifier_chains():
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [1.0, 0.0, 1.0],
-                            [1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 0.0],
-                            [1.0, 0.0, 0.0], [0.0, 1.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0],
-                            [0.0, 0.0, 1.0], [1.0, 1.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 0.0],
-                            [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0], [0.0, 1.0, 1.0],
-                            [1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [1.0, 1.0, 0.0],
-                            [0.0, 1.0, 0.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-                            [1.0, 0.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 1.0], [0.0, 0.0, 0.0], [1.0, 0.0, 1.0],
-                            [0.0, 0.0, 1.0], [0.0, 0.0, 0.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0],
-                            [0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+    if not sklearn_version.startswith("0.21"):
+        expected_predictions = [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [1.0, 0.0, 1.0],
+                                [1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 0.0],
+                                [1.0, 0.0, 0.0], [0.0, 1.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0],
+                                [0.0, 0.0, 1.0], [1.0, 1.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 0.0],
+                                [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0], [0.0, 1.0, 1.0],
+                                [1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [1.0, 1.0, 0.0],
+                                [0.0, 1.0, 0.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
+                                [1.0, 0.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 1.0], [0.0, 0.0, 0.0], [1.0, 0.0, 1.0],
+                                [0.0, 0.0, 1.0], [0.0, 0.0, 0.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0],
+                                [0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+        assert np.alltrue(np.array_equal(predictions, expected_predictions))
 
-    assert np.alltrue(np.array_equal(predictions, expected_predictions))
+        expected_correct_predictions = 21
+        assert correct_predictions == expected_correct_predictions
 
-    expected_correct_predictions = 21
-    assert correct_predictions == expected_correct_predictions
+        expected_info = "ClassifierChain(base_estimator=SGDClassifier(alpha=0.0001, average=False, class_weight=None,\n" \
+                        "       early_stopping=False, epsilon=0.1, eta0=0.0, fit_intercept=True,\n" \
+                        "       l1_ratio=0.15, learning_rate='optimal', loss='hinge', max_iter=10,\n" \
+                        "       n_iter=None, n_iter_no_change=5, n_jobs=None, penalty='l2',\n" \
+                        "       power_t=0.5, random_state=112, shuffle=True, tol=0.001,\n" \
+                        "       validation_fraction=0.1, verbose=0, warm_start=False),\n" \
+                        "                order=None, random_state=112)"
+        assert learner.get_info() == expected_info
+
+    else:
+        expected_predictions = [[0.0, 0.0, 1.0], [0.0, 0.0, 0.0], [1.0, 0.0, 1.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0],
+                                [1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [1.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 0.0],
+                                [1.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0],
+                                [0.0, 0.0, 1.0], [1.0, 0.0, 1.0], [0.0, 0.0, 0.0], [1.0, 0.0, 1.0], [0.0, 0.0, 0.0],
+                                [0.0, 1.0, 1.0], [0.0, 1.0, 1.0], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0], [0.0, 1.0, 1.0],
+                                [0.0, 1.0, 1.0], [0.0, 1.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0],
+                                [0.0, 1.0, 1.0], [1.0, 0.0, 1.0], [0.0, 1.0, 1.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
+                                [1.0, 0.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 1.0], [0.0, 0.0, 0.0], [1.0, 0.0, 1.0],
+                                [0.0, 0.0, 1.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0],
+                                [0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+        assert np.alltrue(np.array_equal(predictions, expected_predictions))
+
+        expected_correct_predictions = 26
+        assert correct_predictions == expected_correct_predictions
+
+        expected_info = "ClassifierChain(base_estimator=SGDClassifier(alpha=0.0001, average=False, class_weight=None,\n" \
+                        "              early_stopping=False, epsilon=0.1, eta0=0.0, fit_intercept=True,\n" \
+                        "              l1_ratio=0.15, learning_rate='optimal', loss='hinge', max_iter=10,\n" \
+                        "              n_iter_no_change=5, n_jobs=None, penalty='l2', power_t=0.5,\n" \
+                        "              random_state=112, shuffle=True, tol=0.001,\n" \
+                        "              validation_fraction=0.1, verbose=0, warm_start=False),\n" \
+                        "                order=None, random_state=112)"
+        assert learner.get_info() == expected_info
 
     assert type(learner.predict(X)) == np.ndarray
 
-    expected_info = "ClassifierChain(base_estimator=SGDClassifier(alpha=0.0001, average=False, class_weight=None,\n" \
-                    "       early_stopping=False, epsilon=0.1, eta0=0.0, fit_intercept=True,\n" \
-                    "       l1_ratio=0.15, learning_rate='optimal', loss='hinge', max_iter=10,\n" \
-                    "       n_iter=None, n_iter_no_change=5, n_jobs=None, penalty='l2',\n" \
-                    "       power_t=0.5, random_state=112, shuffle=True, tol=0.001,\n" \
-                    "       validation_fraction=0.1, verbose=0, warm_start=False),\n" \
-                    "                order=None, random_state=112)"
-    assert learner.get_info() == expected_info
 
-
-@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 @pytest.mark.filterwarnings('ignore::UserWarning')
 def test_classifier_chains_all():
     seed = 1

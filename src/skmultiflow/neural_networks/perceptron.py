@@ -60,7 +60,7 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
                                      class_weight=self.class_weight,
                                      warm_start=self.warm_start)
 
-    def fit(self, X, y, classes=None, weight=None):
+    def fit(self, X, y, classes=None, sample_weight=None):
         """ Calls the Perceptron fit function from sklearn.
 
         Parameters
@@ -73,7 +73,8 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
 
         classes: Not used.
 
-        weight: Instance weight. If not provided, uniform weights are assumed.
+        sample_weight:
+            Samples weight. If not provided, uniform weights are assumed.
 
         Returns
         -------
@@ -81,7 +82,7 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
             self
 
         """
-        self.classifier.fit(X=X, y=y, sample_weight=weight)
+        self.classifier.fit(X=X, y=y, sample_weight=sample_weight)
         return self
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
@@ -97,8 +98,7 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
         y: Array-like
             The class labels for all samples in X.
 
-        classes: list, optional
-            A list with all the possible labels of the classification problem.
+        classes: Not used.
 
         sample_weight:
             Samples weight. If not provided, uniform weights are assumed.
@@ -148,21 +148,3 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
     
         """
         return self.classifier._predict_proba_lr(X)
-
-    # def reset(self):
-    #     self.__init__(penalty=self.penalty,
-    #                   alpha=self.alpha,
-    #                   fit_intercept=self.fit_intercept,
-    #                   max_iter=self.max_iter,
-    #                   tol=self.tol,
-    #                   shuffle=self.shuffle,
-    #                   verbose=self.verbose,
-    #                   eta0=self.eta0,
-    #                   n_jobs=self.n_jobs,
-    #                   random_state=self.random_state,
-    #                   early_stopping=self.early_stopping,
-    #                   validation_fraction=self.validation_fraction,
-    #                   n_iter_no_change=self.n_iter_no_change,
-    #                   class_weight=self.class_weight,
-    #                   warm_start=self.warm_start,
-    #                   n_iter=self.n_iter,)
