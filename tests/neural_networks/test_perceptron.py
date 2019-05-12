@@ -11,7 +11,6 @@ import pytest
 from sklearn import __version__ as sklearn_version
 
 
-@pytest.mark.skipif(sklearn_version.startswith('0.21'), reason="does not work on sklearn >= 0.21.x")
 @pytest.mark.filterwarnings('ignore::FutureWarning')
 def test_perceptron(test_path):
     stream = SEAGenerator(random_state=1)
@@ -58,11 +57,16 @@ def test_perceptron(test_path):
 
     # Coverage tests
     learner.reset()
-    learner.fit(X=X_batch[:4500], y=y_batch[:4500])
+    if not sklearn_version.startswith("0.21"):
+        learner.fit(X=np.asarray(X_batch[:4500]), y=np.asarray(y_batch[:4500]), classes=stream.target_values)
+    else:
+        # Root cause of failure (TypeError: an integer is required) is in the fit() method in sklearn 0.21.0,
+        # This is a workaround until a fix is made available in sklearn
+        learner.partial_fit(X=np.asarray(X_batch[:4500]), y=np.asarray(y_batch[:4500]), classes=stream.target_values)
     y_pred = learner.predict(X=X_batch[4501:])
     accuracy = accuracy_score(y_true=y_batch[4501:], y_pred=y_pred)
     expected_accuracy = 0.9478957915831663
-    assert np.isclose(expected_accuracy, accuracy)  # Removed due to npn-replicable error in Travis build
+    assert np.isclose(expected_accuracy, accuracy)
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray

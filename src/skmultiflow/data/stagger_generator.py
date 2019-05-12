@@ -223,7 +223,7 @@ class STAGGERGenerator(Stream):
             data[j, 3] = group
 
         self.current_sample_x = data[:, :self.n_features]
-        self.current_sample_y = data[:, self.n_features:].flatten()
+        self.current_sample_y = data[:, self.n_features:].flatten().astype(int)
 
         return self.current_sample_x, self.current_sample_y
 

@@ -236,7 +236,7 @@ class HyperplaneGenerator(Stream):
         self._generate_drift()
 
         self.current_sample_x = data[:, :self.n_features]
-        self.current_sample_y = data[:, self.n_features:].flatten()
+        self.current_sample_y = data[:, self.n_features:].flatten().astype(int)
 
         return self.current_sample_x, self.current_sample_y
 

@@ -133,7 +133,7 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
             data[k, :] = np.append(X, y)
 
         self.current_sample_x = data[:, :self.n_num_features]
-        self.current_sample_y = data[:, self.n_num_features:].flatten()
+        self.current_sample_y = data[:, self.n_num_features:].flatten().astype(int)
         return self.current_sample_x, self.current_sample_y
 
     def generate_centroids(self):
