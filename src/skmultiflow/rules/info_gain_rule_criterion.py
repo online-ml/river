@@ -4,6 +4,14 @@ from skmultiflow.trees.split_criterion import SplitCriterion
 
 
 class InfoGainExpandCriterion(SplitCriterion):
+    """ Information Gain rule split criterion.
+
+    A measure of how often a randomly chosen element from the set would be incorrectly labeled if it was randomly
+    labeled according to the distribution of labels in the subset.
+
+    This implementation is specific to rule-based methods.
+
+    """
     def __init__(self, min_branch_frac_option=0.01):
         super().__init__()
         # Minimum fraction of weight required down at least two branches.
