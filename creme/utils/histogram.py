@@ -110,8 +110,8 @@ class Histogram(collections.Counter):
             bisect.insort_left(self.sorted_bins, new_bin)
 
             # Deletion of the two bins to replace them with the new one resulting from their merging
-            for k in [right_bin, left_bin]:
-                self.pop(k)
+            for k in [left_bin, right_bin]:
+                self.pop(k, None)
                 self.sorted_bins.pop((find_index(self.sorted_bins, k)))
 
             super().update({new_bin: total_count})
