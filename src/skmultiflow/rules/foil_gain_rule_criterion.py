@@ -4,6 +4,13 @@ from skmultiflow.trees.split_criterion import SplitCriterion
 
 
 class FoilGainExpandCriterion(SplitCriterion):
+    """ FOIL's Information Gain rule split criterion.
+
+    A measure similar to Information Gain, used in the first-order inductive learner (FOIL) algorithm.
+
+    This implementation is specific to rule-based methods.
+
+    """
     def __init__(self, min_branch_frac_option=0.01):
         super().__init__()
         # Minimum fraction of weight required down at least two branches.

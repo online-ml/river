@@ -4,6 +4,20 @@ from skmultiflow.trees.split_criterion import SplitCriterion
 
 
 class HellingerDistanceCriterion(SplitCriterion):
+    """ Hellinger Distance rule split criterion.
+
+        The Hellinger distance is a measure of distributional divergence. It is used as the splitting criterion [1]_
+        on decision trees to to address the imbalanced data problem.
+
+        This implementation is specific to rule-based methods.
+
+    References
+    ----------
+    .. [1] Cieslak, David A., T. Ryan Hoens, Nitesh V. Chawla, and W. Philip Kegelmeyer.
+       "Hellinger distance decision trees are robust and skew-insensitive." Data Mining and Knowledge Discovery 24,
+       no. 1 (2012): 136-158.
+
+    """
 
     def __init__(self, min_branch_frac_option=0.01):
         super().__init__()
