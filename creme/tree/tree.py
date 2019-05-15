@@ -138,6 +138,7 @@ def find_best_split(class_counts, feature_counts, split_enum):
     >>> split_enum = enum.UnaryEnumerator()
 
     >>> find_best_split(class_counts, feature_counts, split_enum)
+    (1.0, 0.311278..., 'speed_limit', ['no'])
 
     """
 
