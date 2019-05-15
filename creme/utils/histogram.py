@@ -4,17 +4,17 @@ import math
 
 
 def find_index(seq, val):
-    """Assume ``seq`` is sorted and search for the position of ``val``.
-
-    References:
-
-        1. `Searching Sorted Lists <https://docs.python.org/3/library/bisect.html#searching-sorted-lists>`_
-
-    """
+    """Assume ``seq`` is sorted and search for the position of ``val``."""
     i = bisect.bisect_left(seq, val)
     if i != len(seq) and seq[i] == val:
         return i
-    raise ValueError
+    raise ValueError(f'{val} was not found')
+
+
+def is_in(seq, val):
+    """Assume ``seq`` is sorted and check if it contains ``val``."""
+    i = bisect.bisect_left(seq, val)
+    return i < len(seq) and seq[i] == val
 
 
 class Histogram(collections.Counter):
@@ -84,7 +84,10 @@ class Histogram(collections.Counter):
     def update(self, x):
 
         super().update([x])
-        bisect.insort_left(self.sorted_bins, x)
+
+        # Update the sorted list of bin values
+        if not is_in(self.sorted_bins, x):
+            bisect.insort_left(self.sorted_bins, x)
 
         # Bins have to be merged if there are more than max_bins
         while self.n_bins > self.max_bins:
@@ -107,6 +110,10 @@ class Histogram(collections.Counter):
 
             new_bin = left_bin * self[left_bin] + right_bin * self[right_bin]
             new_bin /= total_count
+
+            if math.isnan(new_bin):
+                print(left_bin, right_bin, total_count)
+
             bisect.insort_left(self.sorted_bins, new_bin)
 
             # Deletion of the two bins to replace them with the new one resulting from their merging
@@ -119,6 +126,10 @@ class Histogram(collections.Counter):
         return self
 
     def __str__(self):
+
+        if len(self) == 1:
+            return f'{self.sorted_bins[0]:.5f}: {self[self.sorted_bins[0]]}'
+
         return '\n'.join(
             f'[{a:.5f}, {b:.5f}): {self[a]}'
             for a, b in zip(self.sorted_bins[:-1], self.sorted_bins[1:])
