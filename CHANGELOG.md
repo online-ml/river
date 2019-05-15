@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- `BernoulliNB` to `naive_bayes`
+- `BernoulliNB` and `ComplementNB` to `naive_bayes`
 
 ### Modified
 

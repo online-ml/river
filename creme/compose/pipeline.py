@@ -102,16 +102,22 @@ class Pipeline(collections.OrderedDict):
         if not isinstance(step, (list, tuple)):
             step = (str(step), step)
 
-        # If a function is given then wrap it in a FuncTransformer
-        if callable(step[1]):
-            step = (step[1].__class__, func.FuncTransformer(step[1]))
+        name, estimator = step
 
-        # Prefer clarity to magic
-        if step[0] in self:
-            raise KeyError(f'{step[0]} already exists')
+        # If a function is given then wrap it in a FuncTransformer
+        if callable(estimator):
+            step = (estimator.__class__, func.FuncTransformer(estimator))
+
+        # Check if an identical step has already been inserted
+        if name in self:
+            raise KeyError(f'{name} already exists')
+
+        # Instantiate the estimator if it hasn't been done
+        if isinstance(estimator, type):
+            estimator = estimator()
 
         # Store the step
-        self[step[0]] = step[1]
+        self[name] = estimator
 
         # Move the step to the start of the pipeline if so instructed
         if at_start:

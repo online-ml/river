@@ -12,5 +12,6 @@ Naive Bayes models
    :nosignatures:
 
    BernoulliNB
+   ComplementNB
    GaussianNB
    MultinomialNB
