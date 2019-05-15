@@ -1,5 +1,6 @@
-from .mondrian import MondrianTreeClassifier
-from .mondrian import MondrianTreeRegressor
+from .tree import DecisionTreeClassifier
 
 
-__all__ = ['MondrianTreeClassifier', 'MondrianTreeRegressor']
+__all__ = [
+    'DecisionTreeClassifier'
+]

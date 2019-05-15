@@ -4,24 +4,22 @@ import math
 from . import base
 
 
-__all__ = ['MultinomialNB']
+__all__ = ['BernoulliNB']
 
 
-class MultinomialNB(base.BaseNB):
-    """Naive Bayes classifier for multinomial models.
-
-    The input vector has to contain positive values, such as counts or TF-IDF values.
+class BernoulliNB(base.BaseNB):
+    """Bernoulli Naive Bayes.
 
     This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
     ``predict_one`` from `base.MultiClassifier`.
 
     Parameters:
         alpha (float): Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+        true_threshold (float): Threshold for binarizing (mapping to booleans) features.
 
     Attributes:
-        class_dist (proba.Multinomial): Class prior probability distribution.
+        class_counts (collections.Counter): Number of times each class has been seen.
         feature_counts (collections.defaultdict): Total frequencies per feature and class.
-        class_totals (collections.Counter): Total frequencies per class.
 
     Example:
 
@@ -40,7 +38,7 @@ class MultinomialNB(base.BaseNB):
             ... ]
             >>> model = compose.Pipeline([
             ...     ('tokenize', feature_extraction.CountVectorizer(lowercase=False)),
-            ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
+            ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
             ... ])
             >>> for sentence, label in docs:
             ...     model = model.fit_one(sentence, label)
@@ -52,64 +50,69 @@ class MultinomialNB(base.BaseNB):
 
             >>> cp = model['nb'].p_feature_given_class
 
-            >>> cp('Chinese', 'yes') == (5 + 1) / (8 + 6)
+            >>> cp('Chinese', 'yes') == (3 + 1) / (3 + 2)
             True
 
-            >>> cp('Tokyo', 'yes') == (0 + 1) / (8 + 6)
+            >>> cp('Japan', 'yes') == (0 + 1) / (3 + 2)
             True
-            >>> cp('Japan', 'yes') == (0 + 1) / (8 + 6)
-            True
-
-            >>> cp('Chinese', 'no') == (1 + 1) / (3 + 6)
+            >>> cp('Tokyo', 'yes') == (0 + 1) / (3 + 2)
             True
 
-            >>> cp('Tokyo', 'no') == (1 + 1) / (3 + 6)
+            >>> cp('Beijing', 'yes') == (1 + 1) / (3 + 2)
             True
-            >>> cp('Japan', 'no') == (1 + 1) / (3 + 6)
+            >>> cp('Macao', 'yes') == (1 + 1) / (3 + 2)
+            True
+            >>> cp('Shanghai', 'yes') == (1 + 1) / (3 + 2)
+            True
+
+            >>> cp('Chinese', 'no') == (1 + 1) / (1 + 2)
+            True
+
+            >>> cp('Japan', 'no') == (1 + 1) / (1 + 2)
+            True
+            >>> cp('Tokyo', 'no') == (1 + 1) / (1 + 2)
+            True
+
+            >>> cp('Beijing', 'no') == (0 + 1) / (1 + 2)
+            True
+            >>> cp('Macao', 'no') == (0 + 1) / (1 + 2)
+            True
+            >>> cp('Shanghai', 'no') == (0 + 1) / (1 + 2)
             True
 
             >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
             >>> tokens = model['tokenize'].transform_one(new_text)
             >>> jlh = model['nb'].joint_log_likelihood(tokens)
             >>> math.exp(jlh['yes'])
-            0.000301...
+            0.005184...
             >>> math.exp(jlh['no'])
-            0.000135...
+            0.021947...
             >>> model.predict_one(new_text)
-            'yes'
+            'no'
 
     References:
 
-        1. `Naive Bayes text classification <https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html>`_
+        1. <The Bernoulli model `https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html`>_
 
     """
 
-    def __init__(self, alpha=1.):
+    def __init__(self, alpha=1., true_threshold=0.0):
         self.alpha = alpha
+        self.true_threshold = true_threshold
         self.class_counts = collections.Counter()
         self.feature_counts = collections.defaultdict(collections.Counter)
-        self.class_totals = collections.Counter()
 
     def fit_one(self, x, y):
         self.class_counts.update((y,))
 
-        for f, frequency in x.items():
-            self.feature_counts[f].update({y: frequency})
-            self.class_totals.update({y: frequency})
+        for i, xi in x.items():
+            self.feature_counts[i].update({y: xi > self.true_threshold})
 
         return self
 
-    @property
-    def classes_(self):
-        return list(self.class_counts.keys())
-
-    @property
-    def n_terms(self):
-        return len(self.feature_counts)
-
     def p_feature_given_class(self, f, c):
         num = self.feature_counts[f][c] + self.alpha
-        den = self.class_totals[c] + self.alpha * self.n_terms
+        den = self.class_counts[c] + self.alpha * 2
         return num / den
 
     def p_class(self, c):
@@ -117,9 +120,14 @@ class MultinomialNB(base.BaseNB):
 
     def joint_log_likelihood(self, x):
         return {
-            c: math.log(self.p_class(c)) + sum(
-                frequency * math.log(self.p_feature_given_class(f, c))
-                for f, frequency in x.items()
-            )
-            for c in self.classes_
+            c: math.log(self.p_class(c)) + sum(map(
+                math.log,
+                (
+                    self.p_feature_given_class(f, c)
+                    if f in x and x[f] > self.true_threshold
+                    else 1. - self.p_feature_given_class(f, c)
+                    for f in self.feature_counts
+                )
+            ))
+            for c in self.class_counts
         }

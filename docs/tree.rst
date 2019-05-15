@@ -10,6 +10,3 @@ Incremental decision trees
 .. autosummary::
    :toctree: generated/
    :nosignatures:
-
-   MondrianTreeClassifier
-   MondrianTreeRegressor

@@ -2,7 +2,7 @@ import collections
 import functools
 import math
 
-from .. import dist
+from .. import proba
 
 from . import base
 
@@ -12,6 +12,11 @@ __all__ = ['GaussianNB']
 
 class GaussianNB(base.BaseNB):
     """Gaussian Naive Bayes.
+
+    A Gaussian distribution $G_{cf}$ is maintained for each class $c$ and each feature $f$. Each
+    Gaussian is updated using the amount associated with each feature; the details can be be found
+    in `proba.Normal`. The joint log-likelihood is then obtained by summing the log probabilities
+    of each feature associated with each class.
 
     This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
     ``predict_one`` from `base.MultiClassifier`.
@@ -38,23 +43,26 @@ class GaussianNB(base.BaseNB):
     """
 
     def __init__(self):
-        self.class_dist = dist.Multinomial()
+        self.class_counts = collections.Counter()
         defaultdict = collections.defaultdict
-        self.gaussians = defaultdict(functools.partial(defaultdict, dist.Normal))
+        self.gaussians = defaultdict(functools.partial(defaultdict, proba.Gaussian))
 
     def fit_one(self, x, y):
 
-        self.class_dist.update(y)
+        self.class_counts.update((y,))
 
         for i, xi in x.items():
             self.gaussians[y][i].update(xi)
 
         return self
 
-    def _joint_log_likelihood(self, x):
+    def p_class(self, c):
+        return self.class_counts[c] / sum(self.class_counts.values())
+
+    def joint_log_likelihood(self, x):
         return {
-            c: math.log(self.class_dist.pmf(c)) + sum(
-                math.log(10e-10 + gaussians[i].pdf(xi))
+            c: math.log(self.p_class(c)) + sum(
+                math.log(10e-10 + gaussians[i].proba_of(xi))
                 for i, xi in x.items()
             )
             for c, gaussians in self.gaussians.items()

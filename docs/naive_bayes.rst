@@ -11,5 +11,6 @@ Naive Bayes models
    :toctree: generated/
    :nosignatures:
 
+   BernoulliNB
    GaussianNB
    MultinomialNB
