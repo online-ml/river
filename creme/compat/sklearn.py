@@ -214,6 +214,13 @@ class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
         except exceptions.NotFittedError:
             return {c: 1 / len(self.classes) for c in self.classes}
 
+    def predict_one(self, x):
+        try:
+            y_pred = self.sklearn_estimator.predict([list(x.values())])[0]
+            return y_pred
+        except exceptions.NotFittedError:
+            return None
+
 
 class SKLBaseWrapper(sklearn_base.BaseEstimator):
     """The purpose of this class is to adapt the Sphinx documentation rendering."""

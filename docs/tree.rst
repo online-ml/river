@@ -10,3 +10,5 @@ Incremental decision trees
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+
+   DecisionTreeClassifier
