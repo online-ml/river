@@ -5,8 +5,8 @@ from skmultiflow.data.led_generator import LEDGenerator
 class LEDGeneratorDrift(LEDGenerator):
     """ LED stream generator with concept drift.
 
-    This class is an extension from the LEDGenerator. This generator  functionality is to
-    adds concept drift to the stream.
+    This class is an extension from the LEDGenerator. The purpose of this generator is to
+    add concept drift to the stream.
 
     Parameters
     ----------
