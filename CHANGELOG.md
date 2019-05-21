@@ -10,11 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - `BernoulliNB` and `ComplementNB` to `naive_bayes`
 - `DecisionTreeClassifier` to `tree`
+- `Skyline` to `utils`
 
 ### Modified
 
 - `CountVectorizer` and `VectorizerMixin` can now be directly be fed `str`s instead of having to use a `dict`
-- The `dist` module has been renamed to `proba` and is now public, for the moment contains a single distribution called `Gaussian`
+- The `dist` module has been renamed to `proba` and is now public, for the moment it contains a single distribution called `Gaussian`
 
 ### Removed
 

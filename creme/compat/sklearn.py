@@ -51,8 +51,7 @@ SKLEARN_INPUT_X_PARAMS = {
     'ensure_2d': True,
     'allow_nd': False,
     'ensure_min_samples': 1,
-    'ensure_min_features': 1,
-    'warn_on_dtype': False
+    'ensure_min_features': 1
 }
 
 # Params passed to sklearn.utils.check_X_y in addition to SKLEARN_INPUT_X_PARAMS

@@ -20,17 +20,20 @@ class Window(collections.deque):
 
             >>> for x in [1, 2, 3, 4, 5, 6]:
             ...     print(window.append(x))
-            deque([1], maxlen=2)
-            deque([1, 2], maxlen=2)
-            deque([2, 3], maxlen=2)
-            deque([3, 4], maxlen=2)
-            deque([4, 5], maxlen=2)
-            deque([5, 6], maxlen=2)
+            [1]
+            [1, 2]
+            [2, 3]
+            [3, 4]
+            [4, 5]
+            [5, 6]
 
     """
 
     def __init__(self, window_size):
         super().__init__([], maxlen=window_size)
+
+    def __repr__(self):
+        return str(list(self))
 
     @property
     def window_size(self):

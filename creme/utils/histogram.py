@@ -66,7 +66,6 @@ class Histogram(collections.Counter):
             :align: center
 
     References:
-
         1. `A Streaming Parallel Decision Tree Algorithm <http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf>`_
         2. `Streaming Approximate Histograms in Go <https://www.vividcortex.com/blog/2013/07/08/streaming-approximate-histograms/>`_
         3. `Go implementation <https://github.com/VividCortex/gohistogram>`_

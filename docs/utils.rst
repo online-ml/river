@@ -13,5 +13,6 @@ Developper utilities
 
    check_estimator
    Histogram
+   Skyline
    SortedWindow
    Window
