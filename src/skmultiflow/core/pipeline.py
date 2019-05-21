@@ -3,7 +3,7 @@ from sklearn.utils import tosequence
 
 
 class Pipeline(BaseSKMObject):
-    """ Holds a set of sequential operation (transforms), followed by a single estimator. (Experimental)
+    """ [Experimental] Holds a set of sequential operation (transforms), followed by a single estimator.
 
     It allows for easy manipulation of datasets that may
     require several transformation processes before being used by a learner.

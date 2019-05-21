@@ -6,7 +6,7 @@ There are three common components to learning problems: the **data** to learn fr
 
 The :class:`~skmultiflow.core.BaseSKMObject` class is the base class in ``scikit-multiflow``. It is based on ``sklearn.BaseEstimator`` in order to support inter-framework compatibility. It adds extra functionality relevant in the context of ``scikit-multiflow``.
 
-Any stream model in ``scikit-multiflow`` is created by extended the :class:`~skmultiflow.core.BaseSKMObject` class and the corresponding task-specific mixins, such as: :class:`~skmultiflow.core.ClassifierMixin`, :class:`~skmultiflow.core.RegressorMixin`, :class:`~skmultiflow.core.MetaEstimatorMixin` and :class:`~skmultiflow.core.MultiOutputMixin`
+Any stream model in ``scikit-multiflow`` is created by extending the :class:`~skmultiflow.core.BaseSKMObject` class and the corresponding task-specific mixin(s), such as: :class:`~skmultiflow.core.ClassifierMixin`, :class:`~skmultiflow.core.RegressorMixin`, :class:`~skmultiflow.core.MetaEstimatorMixin` and :class:`~skmultiflow.core.MultiOutputMixin`
 
 The :class:`~skmultiflow.core.ClassifierMixin` defines the following methods:
 
@@ -15,11 +15,18 @@ The :class:`~skmultiflow.core.ClassifierMixin` defines the following methods:
 * ``predict`` -- Predicts the target's value in supervised learning methods.
 * ``predict_proba`` -- Calculates the probability of a sample pertaining to a given class in classification problems.
 
-The :class:`~skmultiflow.core.RegressorMixin` defines the same methods for the regression setting but slight differences in the methods' signatures.
+The :class:`~skmultiflow.core.RegressorMixin` defines the same methods for the regression setting with minor differences in the methods' signatures.
 
-An stream model interacts with two other objects: a :class:`~skmultiflow.data.base_stream.Stream` object and (optionally) an :class:`~skmultiflow.evaluation.base_evaluator.StreamEvaluator` object. The ``Stream`` object provides a continuous flow of data on request. The ``StreamEvaluator`` performs multiple tasks: query the stream for data, train and test the model on the incoming data and continuously tracks the model's performance.
+The following UML diagram provides an overview of the base classes in ``scikit-multiflow`` with their methods.
 
-Following, is the sequence to train a Stream Model and track performance in ``scikit-multiflow`` using the ``Prequential`` evaluator.
+.. image:: _static/images/base_classes_with_methods.png
+   :width: 1000px
+   :alt: base classes with methods
+   :align: center
+
+A stream model interacts with two other objects: a :class:`~skmultiflow.data.base_stream.Stream` object and (optionally) a :class:`~skmultiflow.evaluation.base_evaluator.StreamEvaluator` object. The ``Stream`` object provides a continuous flow of data on request. The ``StreamEvaluator`` performs multiple tasks: query the stream for data, train and test the model on the incoming data and continuously tracks the model's performance.
+
+Following, is the sequence to train a stream model and track performance in ``scikit-multiflow`` using the ``Prequential`` evaluator.
 
 .. image:: _static/images/prequential_sequence.png
    :width: 1000px

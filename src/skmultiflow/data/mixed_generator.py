@@ -19,7 +19,8 @@ class MIXEDGenerator(Stream):
     * function 1:
         The opposite of function 0.
 
-    The drift is added by switching from function 0 to 1 or the opposite.
+    Concept drift can be introduced by changing the classification function.
+    This can be done manually or using ``ConceptDriftStream``.
 
     Parameters
     ----------
