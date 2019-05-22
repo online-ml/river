@@ -1,7 +1,0 @@
-graphviz==0.10.1
-ipykernel==4.8.2
-jupyter-client==5.2.3
-matplotlib==3.0.2
-nbsphinx==0.4.2
-Sphinx==2.0.1
-sphinx-rtd-theme==0.4.3
