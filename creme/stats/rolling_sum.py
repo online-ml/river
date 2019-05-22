@@ -32,15 +32,15 @@ class RollingSum(base.Univariate, utils.Window):
     """
 
     def __init__(self, window_size):
-        super().__init__(window_size)
+        super().__init__(size=window_size)
         self.sum = 0
 
     @property
     def name(self):
-        return f'rolling_{self.window_size}_sum'
+        return f'rolling_{self.size}_sum'
 
     def update(self, x):
-        if len(self) == self.window_size:
+        if len(self) == self.size:
             self.sum -= self[0]
         self.sum += x
         self.append(x)

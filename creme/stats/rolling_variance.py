@@ -44,17 +44,16 @@ class RollingVariance(base.Univariate):
     """
 
     def __init__(self, window_size, ddof=1):
-        self.window_size = window_size
         self.ddof = ddof
         self.sos = 0
-        self.rolling_mean = rolling_mean.RollingMean(window_size)
+        self.rolling_mean = rolling_mean.RollingMean(window_size=window_size)
 
     @property
     def name(self):
-        return f'rolling_{self.window_size}_variance'
+        return f'rolling_{self.rolling_mean.size}_variance'
 
     def update(self, x):
-        if len(self.rolling_mean) >= self.window_size:
+        if len(self.rolling_mean) >= self.rolling_mean.size:
             self.sos -= self.rolling_mean[0] ** 2
 
         self.sos += x * x

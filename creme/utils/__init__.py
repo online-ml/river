@@ -8,6 +8,7 @@ from .math import norm
 from .math import prod
 from .math import sigmoid
 from .math import softmax
+from .sdft import SDFT
 from .skyline import Skyline
 from .window import Window
 from .window import SortedWindow
@@ -22,6 +23,7 @@ __all__ = [
     'Histogram',
     'norm',
     'prod',
+    'SDFT',
     'sigmoid',
     'Skyline',
     'softmax',

@@ -39,7 +39,7 @@ class RollingSEM(rolling_variance.RollingVariance):
 
     @property
     def name(self):
-        return f'rolling_{self.window_size}_sem'
+        return f'rolling_{self.size}_sem'
 
     def get(self):
         return (super().get() / len(self.rolling_mean)) ** 0.5

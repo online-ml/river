@@ -1,6 +1,7 @@
 """
 Module for computing running statistics
 """
+from .auto_corr import AutoCorrelation
 from .base import Bivariate
 from .base import Univariate
 from .count import Count
@@ -33,6 +34,7 @@ from .variance import Variance
 
 
 __all__ = [
+    'AutoCorrelation',
     'BayesianMean',
     'Bivariate',
     'Count',

@@ -10,12 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - `BernoulliNB` and `ComplementNB` to `naive_bayes`
 - `DecisionTreeClassifier` to `tree`
-- `Skyline` to `utils`
+- `SDFT` and `Skyline` to `utils`
+- `AutoCorrelation` to `stats`
 
 ### Modified
 
 - `CountVectorizer` and `VectorizerMixin` can now be directly be fed `str`s instead of having to use a `dict`
 - The `dist` module has been renamed to `proba` and is now public, for the moment it contains a single distribution called `Gaussian`
+- Renamed the `window_size` parameter to `size` in `Window` and `SortedWindow`
 
 ### Removed
 

@@ -14,6 +14,7 @@ Univariate statistics
    :toctree: generated/
    :nosignatures:
 
+   AutoCorrelation
    BayesianMean
    Count
    Entropy

@@ -16,7 +16,7 @@ class Window(collections.deque):
 
             >>> from creme import utils
 
-            >>> window = utils.Window(window_size=2)
+            >>> window = utils.Window(size=2)
 
             >>> for x in [1, 2, 3, 4, 5, 6]:
             ...     print(window.append(x))
@@ -29,14 +29,14 @@ class Window(collections.deque):
 
     """
 
-    def __init__(self, window_size):
-        super().__init__([], maxlen=window_size)
+    def __init__(self, size):
+        super().__init__([], maxlen=size)
 
     def __repr__(self):
         return str(list(self))
 
     @property
-    def window_size(self):
+    def size(self):
         return self.maxlen
 
     def append(self, x):
@@ -56,7 +56,7 @@ class SortedWindow(collections.UserList):
 
             >>> from creme import utils
 
-            >>> window = utils.SortedWindow(window_size=3)
+            >>> window = utils.SortedWindow(size=3)
 
             >>> for i in reversed(range(9)):
             ...     print(window.append(i))
@@ -71,18 +71,17 @@ class SortedWindow(collections.UserList):
             [0, 1, 2]
 
     References:
-
         1. `Left sorted <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
 
     """
 
-    def __init__(self, window_size):
+    def __init__(self, size):
         super().__init__()
-        self.unsorted_window = Window(window_size)
+        self.unsorted_window = Window(size)
 
     @property
-    def window_size(self):
-        return self.unsorted_window.window_size
+    def size(self):
+        return self.unsorted_window.size
 
     def append(self, x):
 

@@ -28,6 +28,9 @@ class RollingMax(base.Univariate, utils.SortedWindow):
 
     """
 
+    def __init__(self, window_size):
+        super().__init__(size=window_size)
+
     @property
     def name(self):
         return f'rolling_{self.window_size}_max'

@@ -46,20 +46,20 @@ class RollingQuantile(base.Univariate, utils.SortedWindow):
     """
 
     def __init__(self, window_size, quantile=0.5):
-        super().__init__(window_size)
+        super().__init__(size=window_size)
         self.quantile = quantile
-        self.idx = int(round(self.quantile * self.window_size + 0.5)) - 1
+        self.idx = int(round(self.quantile * self.size + 0.5)) - 1
 
     @property
     def name(self):
-        return f'rolling_{self.window_size}_quantile'
+        return f'rolling_{self.size}_quantile'
 
     def update(self, x):
         self.append(x)
         return self
 
     def get(self):
-        if len(self) < self.window_size:
+        if len(self) < self.size:
             idx = int(round(self.quantile * len(self) + 0.5)) - 1
             return self[idx]
         return self[self.idx]

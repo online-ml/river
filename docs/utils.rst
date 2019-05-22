@@ -13,6 +13,7 @@ Developper utilities
 
    check_estimator
    Histogram
+   SDFT
    Skyline
    SortedWindow
    Window
