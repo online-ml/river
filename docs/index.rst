@@ -21,6 +21,7 @@ following the philosophy of `scikit-learn <http://scikit-learn.org/stable/>`_.
    :caption: Getting Started
 
    Installation <installation>
+   Package map <package_map>
 
 .. toctree::
    :maxdepth: 2
@@ -38,10 +39,22 @@ following the philosophy of `scikit-learn <http://scikit-learn.org/stable/>`_.
    Contributing <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>
    Github Repository <https://github.com/scikit-multiflow/scikit-multiflow>
 
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Other versions
+
+   Previous versions <versions>
+
 `Getting started <installation.html>`_
 ---------------------------------------
 
 Information to install `scikit-multiflow`.
+
+`Package map <package_map.html>`_
+---------------------------------------
+
+A map to help navigate available methods in `scikit-multiflow`.
 
 `User Guide <user-guide.html>`_
 -------------------------------
@@ -52,7 +65,7 @@ Covers the core elements of `scikit-multiflow`, describing how its different ele
 ------------------------------------------
 
 The API documentation provides detailed information of the implemented methods.
-This information includes method's descriptions, sources, parameters, usage examples, etc.
+This information includes method's descriptions, parameters, references, examples, etc.
 
 `Development <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>`_
 --------------------------------------------------------------------------------------------------
