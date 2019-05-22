@@ -1,0 +1,23 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "tweakyllama",
+      "name": "Lygon Bowen-West",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/7049400?v=4",
+      "profile": "https://github.com/tweakyllama",
+      "contributions": [
+        "test"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "creme",
+  "projectOwner": "creme-ml",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
