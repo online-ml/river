@@ -69,7 +69,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'scikit-multiflow'
-copyright = '2017, J. Montiel, J. Read, A. Bifet, T. Abdessalem'
+copyright = '2018 - 2019, scikit-multiflow developers (BSD License)'
 author = 'J. Montiel, J. Read, A. Bifet, T. Abdessalem'
 
 # The version info for the project you're documenting, acts as replacement for
