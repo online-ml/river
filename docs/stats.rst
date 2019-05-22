@@ -19,6 +19,7 @@ Univariate statistics
    Count
    Entropy
    EWMean
+   EWVar
    Kurtosis
    Max
    Mean
@@ -38,9 +39,9 @@ Univariate statistics
    RollingQuantile
    RollingSEM
    RollingSum
-   RollingVariance
+   RollingVar
    Univariate
-   Variance
+   Var
 
 Bivariate statistics
 ++++++++++++++++++++

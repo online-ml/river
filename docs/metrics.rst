@@ -30,6 +30,7 @@ Note that every multi-class classification metric also works for binary classifi
 
    Accuracy
    ConfusionMatrix
+   CrossEntropy
    MacroF1Score
    MacroPrecision
    MacroRecall
@@ -49,3 +50,30 @@ Regression
    RMSE
    RMSLE
    SMAPE
+
+Rolling metrics
++++++++++++++++
+
+Rolling metrics only apply to a window of most recent values.
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   RollingAccuracy
+   RollingCrossEntropy
+   RollingF1Score
+   RollingLogLoss
+   RollingMacroF1Score
+   RollingMacroPrecision
+   RollingMacroRecall
+   RollingMAE
+   RollingMicroF1Score
+   RollingMicroPrecision
+   RollingMicroRecall
+   RollingMSE
+   RollingPrecision
+   RollingRecall
+   RollingRMSE
+   RollingRMSLE
+   RollingSMAPE

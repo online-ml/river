@@ -11,13 +11,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `BernoulliNB` and `ComplementNB` to `naive_bayes`
 - `DecisionTreeClassifier` to `tree`
 - `SDFT` and `Skyline` to `utils`
-- `AutoCorrelation` to `stats`
+- `AutoCorrelation` and `EWVariance` to `stats`
+- Rolling metrics:
+    - `RollingAccuracy`
+    - `RollingCrossEntropy`
+    - `RollingF1Score`
+    - `RollingLogLoss`
+    - `RollingMacroF1Score`
+    - `RollingMacroPrecision`
+    - `RollingMacroRecall`
+    - `RollingMAE`
+    - `RollingMicroF1Score`
+    - `RollingMicroPrecision`
+    - `RollingMicroRecall`
+    - `RollingMSE`
+    - `RollingPrecision`
+    - `RollingRecall`
+    - `RollingRMSE`
+    - `RollingRMSLE`
+    - `RollingSMAPE`
 
 ### Modified
 
 - `CountVectorizer` and `VectorizerMixin` can now be directly be fed `str`s instead of having to use a `dict`
 - The `dist` module has been renamed to `proba` and is now public, for the moment it contains a single distribution called `Gaussian`
 - Renamed the `window_size` parameter to `size` in `Window` and `SortedWindow`
+- Rename `Variance` to `Var` and `RollingVariance` to `RollingVar`
 
 ### Removed
 

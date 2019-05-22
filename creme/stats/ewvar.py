@@ -3,11 +3,10 @@ from .ewmean import EWMean
 
 
 class EWVar(base.Univariate):
-    """
-    Exponentially weighted variance.
+    """Exponentially weighted variance.
 
-    To calculate the variance we use the fact that Var(X) = Mean(x^2) - Mean(x)^2
-    and internally we use the exponentially weighted mean of x/x^2 to calculate this.
+    To calculate the variance we use the fact that Var(X) = Mean(x^2) - Mean(x)^2 and internally
+    we use the exponentially weighted mean of x/x^2 to calculate this.
 
     Parameters:
         alpha (float): The closer ``alpha`` is to 1 the more the statistic will adapt to recent
@@ -37,10 +36,9 @@ class EWVar(base.Univariate):
             3.56536865234375
 
     References:
-
         1. `Incremental calculation of weighted mean and variance <http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf>`_
         2. `Exponential Moving Average on Streaming Data <https://dev.to/nestedsoftware/exponential-moving-average-on-streaming-data-4hhl>`_
-        3. `Pandas User Guide <http://pandas.pydata.org/pandas-docs/stable/user_guide/computation.html>`
+        3. `Pandas User Guide <http://pandas.pydata.org/pandas-docs/stable/user_guide/computation.html>`_
 
     """
 

@@ -70,7 +70,7 @@ class StandardScaler(base.Transformer):
     """
 
     def __init__(self):
-        self.variances = collections.defaultdict(stats.Variance)
+        self.variances = collections.defaultdict(stats.Var)
         self.eps = 10e-10
 
     def fit_one(self, x, y=None):

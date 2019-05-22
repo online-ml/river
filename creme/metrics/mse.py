@@ -3,7 +3,7 @@ from .. import stats
 from . import base
 
 
-__all__ = ['MSE']
+__all__ = ['MSE', 'RollingMSE']
 
 
 class MSE(stats.Mean, base.RegressionMetric):
@@ -30,6 +30,38 @@ class MSE(stats.Mean, base.RegressionMetric):
 
             >>> metric
             MSE: 0.375
+
+    """
+
+    @property
+    def bigger_is_better(self):
+        return False
+
+    def update(self, y_true, y_pred):
+        return super().update((y_true - y_pred) ** 2)
+
+
+class RollingMSE(stats.RollingMean, base.RegressionMetric):
+    """Rolling mean squared error.
+
+    Example:
+
+        ::
+
+            >>> import math
+            >>> from creme import metrics
+            >>> from sklearn.metrics import mean_squared_error
+
+            >>> y_true = [3, -0.5, 2, 7]
+            >>> y_pred = [2.5, 0.0, 2, 8]
+
+            >>> metric = metrics.RollingMSE(window_size=2)
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     print(metric.update(y_t, y_p).get())
+            0.25
+            0.25
+            0.125
+            0.5
 
     """
 

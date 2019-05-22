@@ -15,7 +15,7 @@ class GaussianNB(base.BaseNB):
 
     A Gaussian distribution $G_{cf}$ is maintained for each class $c$ and each feature $f$. Each
     Gaussian is updated using the amount associated with each feature; the details can be be found
-    in `proba.Normal`. The joint log-likelihood is then obtained by summing the log probabilities
+    in `proba.Gaussian`. The joint log-likelihood is then obtained by summing the log probabilities
     of each feature associated with each class.
 
     This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits

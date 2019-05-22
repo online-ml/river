@@ -28,7 +28,7 @@ class Gaussian(base.Distribution):
     """
 
     def __init__(self):
-        self.variance = stats.Variance()
+        self.variance = stats.Var()
 
     @property
     def mu(self):

@@ -6,12 +6,12 @@ from . import pearson
 class AutoCorrelation(pearson.PearsonCorrelation, utils.Window):
     """Measures the serial correlation.
 
-    This method computes the Pearson correlation between the current value and the value seen `n`
+    This method computes the Pearson correlation between the current value and the value seen ``n``
     steps before.
 
     Example:
 
-        The following examples are taken from the <pandas documentation `https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.autocorr.html`>_.
+        The following examples are taken from the `pandas documentation <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.autocorr.html>`_.
 
         ::
 
