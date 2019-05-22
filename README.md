@@ -8,6 +8,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/scikit-multiflow/badges/version.svg)](https://anaconda.org/conda-forge/scikit-multiflow)
 [![DockerHub](https://img.shields.io/badge/docker-available-blue.svg?logo=docker)](https://hub.docker.com/r/skmultiflow/scikit-multiflow)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)  
+[![Gitter](https://badges.gitter.im/scikit-multiflow/community.svg)](https://gitter.im/scikit-multiflow/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 A machine learning framework for multi-output/multi-label and stream data.
 Inspired by [MOA](https://moa.cms.waikato.ac.nz/) and [MEKA](http://meka.sourceforge.net/),
