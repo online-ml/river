@@ -19,8 +19,8 @@ __all__ = [
 ]
 
 
-def clip_proba(p):
-    return utils.clip(p, minimum=1e-15, maximum=1 - 1e-15)
+def clamp_proba(p):
+    return utils.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
 
 
 class Loss(abc.ABC):
@@ -165,13 +165,13 @@ class LogLoss(BinaryClassificationLoss):
     """
 
     def __call__(self, y_true, y_pred):
-        y_pred = clip_proba(y_pred)
+        y_pred = clamp_proba(y_pred)
         if y_true:
             return -math.log(y_pred)
         return -math.log(1 - y_pred)
 
     def gradient(self, y_true, y_pred):
-        return clip_proba(y_pred) - y_true
+        return clamp_proba(y_pred) - y_true
 
 
 class HingeLoss(BinaryClassificationLoss):
@@ -305,12 +305,12 @@ class CrossEntropy(MultiClassificationLoss):
 
     def __call__(self, y_true, y_pred):
         return -sum(
-            (y_true == label) * math.log(clip_proba(proba))
+            (y_true == label) * math.log(clamp_proba(proba))
             for label, proba in y_pred.items()
         )
 
     def gradient(self, y_true, y_pred):
         return {
-            label: clip_proba(y_pred.get(label, 0.)) - (y_true == label)
+            label: clamp_proba(y_pred.get(label, 0.)) - (y_true == label)
             for label in {*y_pred.keys(), y_true}
         }

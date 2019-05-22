@@ -37,6 +37,9 @@ class Adam(base.Optimizer):
             >>> model_selection.online_score(X_y, model, metric)
             F1Score: 0.960894
 
+    References:
+        1. `Adam: A method for stochastic optimization <https://arxiv.org/pdf/1412.6980.pdf>`_
+
     """
 
     def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8):

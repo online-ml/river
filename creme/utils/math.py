@@ -7,7 +7,7 @@ import numpy as np
 
 __all__ = [
     'chain_dot',
-    'clip',
+    'clamp',
     'dot',
     'entropy',
     'norm',
@@ -66,7 +66,7 @@ def sigmoid(x: float):
     return 1 / (1 + math.exp(-x))
 
 
-def clip(x: float, minimum=0., maximum=1.):
+def clamp(x: float, minimum=0., maximum=1.):
     return max(min(x, maximum), minimum)
 
 

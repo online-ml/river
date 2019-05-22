@@ -1,7 +1,7 @@
 from .estimator_checks import check_estimator
 from .histogram import Histogram
 from .math import chain_dot
-from .math import clip
+from .math import clamp
 from .math import dot
 from .math import entropy
 from .math import norm
@@ -17,7 +17,7 @@ from .window import SortedWindow
 __all__ = [
     'chain_dot',
     'check_estimator',
-    'clip',
+    'clamp',
     'dot',
     'entropy',
     'Histogram',
