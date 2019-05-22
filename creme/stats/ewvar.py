@@ -3,7 +3,11 @@ from .ewmean import EWMean
 
 
 class EWVar(base.Univariate):
-    """Exponentially weighted variance.
+    """
+    Exponentially weighted variance.
+
+    To calculate the variance we use the fact that Var(X) = Mean(x^2) - Mean(x)^2
+    and internally we use the exponentially weighted mean of x/x^2 to calculate this.
 
     Parameters:
         alpha (float): The closer ``alpha`` is to 1 the more the statistic will adapt to recent
@@ -42,7 +46,6 @@ class EWVar(base.Univariate):
 
     def __init__(self, alpha=0.5):
         self.alpha = alpha
-        self.n = 0
         self.mean = EWMean(alpha=alpha)
         self.sq_mean = EWMean(alpha=alpha)
 
@@ -53,7 +56,6 @@ class EWVar(base.Univariate):
     def update(self, x):
         self.mean.update(x)
         self.sq_mean.update(x**2)
-        self.n += 1
         return self
 
     def get(self):
