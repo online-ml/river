@@ -194,8 +194,8 @@ class SineGenerator(Stream):
         """
         Prepares the stream for use.
 
-        Note
-        ----
+        Notes
+        -----
         This functions should always be called after the stream initialization.
         """
         self._random_state = check_random_state(self.random_state)

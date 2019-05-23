@@ -104,8 +104,8 @@ class VFDR(BaseSKMObject, ClassifierMixin):
          0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0
          1 1 0 1 0 0 0 1 1 0 1 0 0 0 1 0 0 0 0 0 1 0 1 0 0 1]
 
-    Note
-    ----
+    Notes
+    -----
     When using an ordered set, the rules need to be read in order as each rule contain a hidden
     conjunction which is the opposite of all the rules before it. Also only one rule can fire which
     restricts the prediction to first hit.
