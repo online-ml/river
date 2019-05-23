@@ -22,8 +22,8 @@ class Predicate(BaseSKMObject):
     value: float or int
         The value to which the attribute is compared.
 
-    Note
-    ----
+    Notes
+    -----
     Different forms of predicate can be created by overriding the class' methods.
     """
 

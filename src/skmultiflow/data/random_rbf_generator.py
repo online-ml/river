@@ -150,8 +150,8 @@ class RandomRBFGenerator(Stream):
         """
         Prepares the stream for use.
 
-        Note
-        ----
+        Notes
+        -----
         This functions should always be called after the stream initialization.
 
         """
