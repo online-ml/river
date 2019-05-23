@@ -18,3 +18,31 @@
 .wy-nav-content {
     max-width: 1200px !important;
 }
+
+.forestgreen-label {
+    color:white;
+    background-color:forestgreen;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}
+
+.royalblue-label {
+    color:white;
+    background-color:royalblue;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}
+
+.crimson-label {
+    color:white;
+    background-color:crimson;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}
+
+.gold-label {
+    color:black;
+    background-color:gold;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}

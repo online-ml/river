@@ -46,13 +46,12 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'sphinx.ext.doctest',
               'sphinx.ext.intersphinx',
-              'sphinx.ext.linkcode',
-              'numpydoc']
+              'sphinx.ext.linkcode']
 
-# this is needed for some reason...
-# see https://github.com/numpy/numpydoc/issues/69
-numpydoc_show_class_members = False
+# Napoleon settings
+napoleon_include_init_with_doc = False
 
+# autodoc options
 autodoc_default_options = {'members': True, 'inherited-members': True}
 
 # Add any paths that contain templates here, relative to this directory.
