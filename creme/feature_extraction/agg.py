@@ -22,7 +22,7 @@ class Agg(base.Transformer):
         how (stats.Univariate): The statistic to compute.
 
     Attributes:
-        groups (collections.defaultdict): Maps grouping keys to instances of `stats.Univariate`.
+        groups (collections.defaultdict): Maps group keys to univariate statistics.
 
     Example:
 
@@ -89,7 +89,7 @@ class TargetAgg(base.Transformer):
         target_name (str): Name used in the result.
 
     Attributes:
-        groups (dict): Maps grouping keys to instances of `stats.Univariate`.
+        groups (dict): Maps group keys to univariate statistics.
         feature_name (str): The name of the feature in the output.
 
     Example:

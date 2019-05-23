@@ -34,7 +34,8 @@ class VectorizerMixin:
     """Contains common processing steps used by each vectorizer.
 
     Parameters:
-        on (str): The name of the feature that contains the text to vectorize.
+        on (str): The name of the feature that contains the text to vectorize. If `None`, then each
+            ``fit_one`` and ``transform_one`` should treat ``x`` as a `str` and not as a ``dict``.
         strip_accents (bool): Whether or not to strip accent characters.
         lowercase (bool): Whether or not to convert all characters to lowercase.
         preprocessor (callable): The function used to preprocess the text. A default one is used
@@ -51,6 +52,11 @@ class VectorizerMixin:
         self.lowercase = lowercase
         self.preprocessor = preprocessor or self.build_preprocessor()
         self.tokenizer = tokenizer or self.build_tokenizer()
+
+    def _get_text(self, x):
+        if self.on is not None:
+            return x[self.on]
+        return x
 
     def build_preprocessor(self):
         """Returns a function to preprocess the text before tokenization."""
@@ -95,10 +101,9 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
             ...     'And this is the third one.',
             ...     'Is this the first document?',
             ... ]
-            >>> vectorizer = creme.feature_extraction.CountVectorizer(on='sentence')
+            >>> vectorizer = creme.feature_extraction.CountVectorizer()
             >>> for sentence in corpus:
-            ...     x = {'sentence': sentence}
-            ...     print(vectorizer.fit_one(x).transform_one(x))
+            ...     print(vectorizer.transform_one(sentence))
             Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
             Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
             Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
@@ -107,7 +112,7 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
     """
 
     def transform_one(self, x):
-        return collections.Counter(self.tokenizer(self.preprocessor(x[self.on])))
+        return collections.Counter(self.tokenizer(self.preprocessor(self._get_text(x))))
 
 
 class TFIDFVectorizer(base.Transformer, VectorizerMixin):
@@ -142,10 +147,9 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
             ...     'And this is the third one.',
             ...     'Is this the first document?',
             ... ]
-            >>> vectorizer = creme.feature_extraction.TFIDFVectorizer(on='sentence')
+            >>> vectorizer = creme.feature_extraction.TFIDFVectorizer()
             >>> for sentence in corpus:
-            ...     x = {'sentence': sentence}
-            ...     print(vectorizer.fit_one(x).transform_one(x))
+            ...     print(vectorizer.fit_one(sentence).transform_one(sentence))
             {'this': 0.447..., 'is': 0.447..., 'the': 0.447..., 'first': 0.447..., 'document': 0.447...}
             {'this': 0.333..., 'document': 0.667..., 'is': 0.333..., 'the': 0.333..., 'second': 0.469...}
             {'and': 0.497..., 'this': 0.293..., 'is': 0.293..., 'the': 0.293..., 'third': 0.497..., 'one': 0.497...}
@@ -178,8 +182,10 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
 
     def fit_one(self, x, y=None):
 
+        text = self._get_text(x)
+
         # Compute the term counts
-        term_counts = self.tfs.fit_one(x).transform_one(x)
+        term_counts = self.tfs.fit_one(text).transform_one(text)
 
         # Increment the document frequencies of each term
         for term in term_counts:
@@ -191,5 +197,5 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
         return self
 
     def transform_one(self, x):
-        term_counts = self.tfs.transform_one(x)
+        term_counts = self.tfs.transform_one(self._get_text(x))
         return self.compute_tfidfs(term_counts)

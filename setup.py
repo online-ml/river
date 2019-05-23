@@ -21,16 +21,30 @@ AUTHOR = 'Max Halford'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
+# Package requirements.
+base_packages = ['numpy>=1.14.0', 'scipy>=1.0.1', 'scikit-learn>=0.19.0']
+
+dev_packages = [
+    'graphviz>=0.10.1',
+    'ipykernel>=4.8.2',
+    'jupyter-client>=5.2.3',
+    'matplotlib>=3.0.2',
+    'pytest>=4.5.0',
+    'pytest-cov>=2.6.1'
+]
+
+docs_packages = dev_packages + [
+    'nbsphinx>=0.4.2',
+    'Sphinx>=2.0.1',
+    'sphinx-rtd-theme>=0.4.3'
+]
+
 # The rest you shouldn't have to touch too much :)
 # ------------------------------------------------
 # Except, perhaps the License and Trove Classifiers!
 # If you do change the License, remember to change the Trove Classifier for that!
 
 here = os.path.abspath(os.path.dirname(__file__))
-
-# What packages are required for this module to be executed?
-with io.open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    install_requires = f.read().splitlines()
 
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.rst' is present in your MANIFEST.in file!
@@ -101,7 +115,11 @@ setup(
     # entry_points={
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
-    install_requires=install_requires,
+    install_requires=base_packages,
+    extras_require={
+        'dev': dev_packages,
+        'docs': docs_packages
+    },
     include_package_data=True,
     license='BSD-3',
     classifiers=[

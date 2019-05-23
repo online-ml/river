@@ -1,6 +1,6 @@
 from . import base
 from . import covariance
-from . import variance
+from . import var
 
 
 class PearsonCorrelation(base.Bivariate):
@@ -10,9 +10,9 @@ class PearsonCorrelation(base.Bivariate):
         ddof (int): Delta Degrees of Freedom. Defaults to ``1``.
 
     Attributes:
-        var_x (stats.Variance): Running variance of `x`.
-        var_y (stats.Variance): Running variance of `y`.
-        cov_xy (stats.Variance): Running covariance of `x` and `y`.
+        var_x (stats.Var): Running variance of `x`.
+        var_y (stats.Var): Running variance of `y`.
+        cov_xy (stats.Var): Running covariance of `x` and `y`.
 
     Example:
 
@@ -38,8 +38,8 @@ class PearsonCorrelation(base.Bivariate):
     """
 
     def __init__(self, ddof=1):
-        self.var_x = variance.Variance(ddof=ddof)
-        self.var_y = variance.Variance(ddof=ddof)
+        self.var_x = var.Var(ddof=ddof)
+        self.var_y = var.Var(ddof=ddof)
         self.cov_xy = covariance.Covariance(ddof=ddof)
 
     def update(self, x, y):

@@ -87,7 +87,13 @@ dmypy.json
 
 # IDE
 .vscode
+.idea
 
 # For convenience
 Untitled*.ipynb
 test.py
+
+# For all-contributors
+yarn.lock
+node_modules/
+package.json

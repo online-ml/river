@@ -1,9 +1,9 @@
 import numpy as np
 
-from .. import utils
+from . import window
 
 
-class SDFT(utils.Window):
+class SDFT(window.Window):
     """Sliding Discrete Fourier Transform (SDFT).
 
     Initially, the coefficients are all equal to 0, up until enough values have been seen. A call
@@ -15,48 +15,51 @@ class SDFT(utils.Window):
         window_size (int): The size of the window.
 
     Attributes:
-        fft (numpy array of complex numbers): The Fourier components.
+        window (window.Window): The window of values.
 
     Example:
 
         ::
 
+            >>> from creme import utils
+
             >>> X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
             >>> window_size = 5
-            >>> sdft = SDFT(window_size)
+            >>> sdft = utils.SDFT(window_size)
 
             >>> for i, x in enumerate(X):
             ...     sdft = sdft.update(x)
             ...
             ...     if i + 1 >= window_size:
-            ...         assert np.allclose(
-            ...             sdft.fft,
-            ...             np.fft.fft(X[i+1 - window_size:i+1])
-            ...         )
+            ...         assert np.allclose(sdft, np.fft.fft(X[i+1 - window_size:i+1]))
+
+    References:
+        1. `The Sliding DFT <https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf>`_
+        2. `Understanding and Implementing the Sliding DFT <https://www.dsprelated.com/showarticle/776.php>`_
 
     """
 
     def __init__(self, window_size):
-        super().__init__(window_size=window_size)
-        self.fft = np.zeros(window_size)
+        super().__init__(size=window_size)
+        self.window = window.Window(size=window_size)
 
     def update(self, x):
 
         # Simply append the new value if the window isn't full yet
-        if len(self) < self.window_size - 1:
-            self.append(x)
+        if len(self.window) < self.size - 1:
+            self.window.append(x)
 
         # Compute an initial FFT the first time the window is full
-        elif len(self) == self.window_size - 1:
-            self.append(x)
-            self.fft = np.fft.fft(self).tolist()
+        elif len(self.window) == self.size - 1:
+            self.window.append(x)
+            self.extend(np.fft.fft(self.window))
 
         # Update the coefficients for subsequent values
         else:
-            diff = x - self[0]
-            for i in range(self.window_size):
-                self.fft[i] = (self.fft[i] + diff) * np.exp(2j * np.pi * i / self.window_size)
-            self.append(x)
+            diff = x - self.window[0]
+            for i in range(self.size):
+                self[i] = (self[i] + diff) * np.exp(2j * np.pi * i / self.size)
+            self.window.append(x)
 
         return self

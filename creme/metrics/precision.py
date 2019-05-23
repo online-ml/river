@@ -1,4 +1,5 @@
 import collections
+import functools
 import statistics
 
 from .. import stats
@@ -6,10 +7,28 @@ from .. import stats
 from . import base
 
 
-__all__ = ['Precision', 'MacroPrecision', 'MicroPrecision']
+__all__ = [
+    'MacroPrecision',
+    'MicroPrecision',
+    'Precision',
+    'RollingMacroPrecision',
+    'RollingMicroPrecision',
+    'RollingPrecision'
+]
 
 
-class Precision(stats.Mean, base.BinaryClassificationMetric):
+class BasePrecision:
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    @property
+    def requires_labels(self):
+        return True
+
+
+class Precision(stats.Mean, BasePrecision, base.BinaryClassificationMetric):
     """Binary precision score.
 
     Example:
@@ -32,13 +51,35 @@ class Precision(stats.Mean, base.BinaryClassificationMetric):
 
     """
 
-    @property
-    def bigger_is_better(self):
-        return True
+    def update(self, y_true, y_pred):
+        if y_pred:
+            return super().update(y_true == y_pred)
+        return self
 
-    @property
-    def requires_labels(self):
-        return True
+
+class RollingPrecision(stats.RollingMean, BasePrecision, base.BinaryClassificationMetric):
+    """Rolling binary precision score.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+            >>> from sklearn.metrics import precision_score
+
+            >>> y_true = [True, False, True, True, True]
+            >>> y_pred = [True, True, False, True, True]
+
+            >>> metric = metrics.RollingPrecision(window_size=3)
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     print(metric.update(y_t, y_p))
+            RollingPrecision: 1.
+            RollingPrecision: 0.5
+            RollingPrecision: 0.5
+            RollingPrecision: 0.666667
+            RollingPrecision: 0.666667
+
+    """
 
     def update(self, y_true, y_pred):
         if y_pred:
@@ -46,7 +87,7 @@ class Precision(stats.Mean, base.BinaryClassificationMetric):
         return self
 
 
-class MacroPrecision(base.MultiClassificationMetric):
+class MacroPrecision(BasePrecision, base.MultiClassificationMetric):
     """Macro-average precision score.
 
     Example:
@@ -78,14 +119,6 @@ class MacroPrecision(base.MultiClassificationMetric):
         self.precisions = collections.defaultdict(Precision)
         self.classes = set()
 
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
     def update(self, y_true, y_pred):
         self.precisions[y_pred].update(y_true == y_pred, True)
         self.classes.update({y_true, y_pred})
@@ -98,7 +131,39 @@ class MacroPrecision(base.MultiClassificationMetric):
         ))
 
 
-class MicroPrecision(stats.Mean, base.MultiClassificationMetric):
+class RollingMacroPrecision(MacroPrecision):
+    """Rolling macro-average precision score.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+            >>> from sklearn.metrics import precision_score
+
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
+
+            >>> metric = metrics.RollingMacroPrecision(window_size=2)
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     print(metric.update(y_t, y_p).get())
+            0.333333...
+            0.125
+            0.194444...
+            0.25
+            0.25
+
+            >>> metric
+            RollingMacroPrecision: 0.25
+
+    """
+
+    def __init__(self, window_size):
+        self.precisions = collections.defaultdict(functools.partial(Precision, window_size))
+        self.classes = set()
+
+
+class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassificationMetric):
     """Micro-average precision score.
 
     The micro-average precision score is exactly equivalent to the micro-average recall as well as
@@ -133,13 +198,43 @@ class MicroPrecision(stats.Mean, base.MultiClassificationMetric):
 
     """
 
-    @property
-    def bigger_is_better(self):
-        return True
+    def update(self, y_true, y_pred):
+        super().update(y_true == y_pred)
+        return self
 
-    @property
-    def requires_labels(self):
-        return True
+
+class RollingMicroPrecision(stats.RollingMean, BasePrecision, base.MultiClassificationMetric):
+    """Rolling micro-average precision score.
+
+    The micro-average precision score is exactly equivalent to the micro-average recall as well as
+    the micro-average F1 score.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+            >>> from sklearn.metrics import precision_score
+
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
+
+            >>> metric = metrics.RollingMicroPrecision(window_size=3)
+            >>> for y_t, y_p in zip(y_true, y_pred):
+            ...     print(metric.update(y_t, y_p).get())
+            1.0
+            0.5
+            0.666666...
+            0.666666...
+            0.666666...
+
+            >>> metric
+            RollingMicroPrecision: 0.666667
+
+    References:
+        1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
+
+    """
 
     def update(self, y_true, y_pred):
         super().update(y_true == y_pred)

@@ -7,8 +7,9 @@ import numpy as np
 
 __all__ = [
     'chain_dot',
-    'clip',
+    'clamp',
     'dot',
+    'entropy',
     'norm',
     'prod',
     'sigmoid',
@@ -65,9 +66,33 @@ def sigmoid(x: float):
     return 1 / (1 + math.exp(-x))
 
 
-def clip(x: float, minimum=0., maximum=1.):
+def clamp(x: float, minimum=0., maximum=1.):
     return max(min(x, maximum), minimum)
 
 
 def norm(x, order=None):
     return np.linalg.norm(list(x.values()), ord=order)
+
+
+def entropy(counts):
+    """Computes entropy using counts.
+
+    Parameters:
+        counts (collections.Counter)
+
+    Example:
+
+        >>> counts = {
+        ...     'sunny': 4,
+        ...     'rainy': 2,
+        ...     'snowy': 10
+        ... }
+        >>> entropy(counts)
+        1.298794...
+
+    References:
+        1. `Calculating entropy <https://www.johndcook.com/blog/2013/08/17/calculating-entropy/>`_
+
+    """
+    N = sum(counts.values())
+    return math.log2(N) - sum(n * math.log2(n) for n in counts.values()) / N

@@ -11,5 +11,4 @@ Incremental decision trees
    :toctree: generated/
    :nosignatures:
 
-   MondrianTreeClassifier
-   MondrianTreeRegressor
+   DecisionTreeClassifier

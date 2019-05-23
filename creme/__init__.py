@@ -26,6 +26,7 @@ __all__ = [
     'naive_bayes',
     'optim',
     'preprocessing',
+    'proba',
     'reco',
     'stats',
     'stream',

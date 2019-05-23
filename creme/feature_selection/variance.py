@@ -40,7 +40,7 @@ class VarianceThreshold(base.Transformer):
     def __init__(self, threshold=0.0, min_samples=2):
         self.threshold = threshold
         self.min_samples = min_samples
-        self.variances = collections.defaultdict(stats.Variance)
+        self.variances = collections.defaultdict(stats.Var)
 
     def fit_one(self, x, y=None):
 

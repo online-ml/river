@@ -14,7 +14,7 @@ class BaseNB(base.MultiClassifier, abc.ABC):
     """
 
     @abc.abstractmethod
-    def _joint_log_likelihood(self, X):
+    def joint_log_likelihood(self, X):
         """Compute the unnormalized posterior log-likelihood of x.
 
         The log-likelihood is ``log P(c) + log P(x|c)``
@@ -23,7 +23,7 @@ class BaseNB(base.MultiClassifier, abc.ABC):
 
     def predict_proba_one(self, x):
         """Return probabilities using the log-likelihoods."""
-        jll = self._joint_log_likelihood(x)
+        jll = self.joint_log_likelihood(x)
         if not jll:
             return {}
         lse = special.logsumexp(list(jll.values()))

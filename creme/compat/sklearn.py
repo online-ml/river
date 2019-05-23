@@ -51,8 +51,7 @@ SKLEARN_INPUT_X_PARAMS = {
     'ensure_2d': True,
     'allow_nd': False,
     'ensure_min_samples': 1,
-    'ensure_min_features': 1,
-    'warn_on_dtype': False
+    'ensure_min_features': 1
 }
 
 # Params passed to sklearn.utils.check_X_y in addition to SKLEARN_INPUT_X_PARAMS
@@ -213,6 +212,13 @@ class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
             return {c: y_pred[i] for i, c in enumerate(self.classes)}
         except exceptions.NotFittedError:
             return {c: 1 / len(self.classes) for c in self.classes}
+
+    def predict_one(self, x):
+        try:
+            y_pred = self.sklearn_estimator.predict([list(x.values())])[0]
+            return y_pred
+        except exceptions.NotFittedError:
+            return None
 
 
 class SKLBaseWrapper(sklearn_base.BaseEstimator):

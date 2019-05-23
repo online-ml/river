@@ -37,6 +37,9 @@ class AdaGrad(base.Optimizer):
             >>> model_selection.online_score(X_y, model, metric)
             F1Score: 0.97191
 
+    References:
+        1. `Adaptive subgradient methods for online learning andstochastic optimization <http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf>`_
+
     """
 
     def __init__(self, lr=0.1, eps=1e-8):

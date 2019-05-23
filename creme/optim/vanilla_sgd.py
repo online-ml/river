@@ -35,6 +35,9 @@ class VanillaSGD(base.Optimizer):
             >>> model_selection.online_score(X_y, model, metric)
             F1Score: 0.966102
 
+    References:
+        1. `A Stochastic Approximation Method <https://pdfs.semanticscholar.org/34dd/d8865569c2c32dec9bf7ffc817ff42faaa01.pdf>`_
+
     """
 
     def __init__(self, lr=0.1):

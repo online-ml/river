@@ -21,6 +21,7 @@ API
    naive_bayes
    optim
    preprocessing
+   proba
    reco
    stats
    stream

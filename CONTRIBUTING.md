@@ -9,7 +9,8 @@ Before starting you want to make sure you have Python 3.6 or above installed.
 You first want to fork the `dev` branch of the repository, which you can do from GitHub. Once you've done the fork, you can clone it to your work station. Once this is done navigate to the cloned directory and install the required dependencies:
 
 ```sh
-pip install -r requirements.txt
+python setup.py develop
+pip install -e ".[dev]"
 ```
 
 :point_up: We recommend you use [Anaconda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
@@ -33,7 +34,7 @@ If you've added a new functionality, then you will have to write a docstring and
 
 ## Making a pull request
 
-Once you're happy with your changes, you can push them to your remote fork. By the way do not hesitate to make small commits rather than one big one, it makes things easier to review. You can create a pull request to `creme`'s `dev` branch.
+Once you're happy with your changes, you can push them to your remote fork. By the way do not hesitate to make small commits rather than one big one, it makes things easier to review. You can create a pull request to `creme`'s `master` branch.
 
 :warning: Don't make pull requests towards the `master` branch.
 

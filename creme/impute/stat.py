@@ -9,7 +9,7 @@ __all__ = ['StatImputer']
 
 
 class Constant(stats.Univariate):
-    """Implements the `stats.Univariate` interface but always returns the same value.
+    """Implements the ``stats.Univariate`` interface but always returns the same value.
 
     Arguments:
         value (any): A value
