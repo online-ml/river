@@ -1,6 +1,7 @@
 import collections
 import math
 
+from .. import utils
 from . import base
 # from . import lr_schedule
 
@@ -66,6 +67,6 @@ class AdaBound(base.Optimizer):
             lower_bound = final_lr * (1 - 1 / (self.gamma * (self.n_iterations + 1) + 1))
             upper_bound = final_lr * (1 + 1 / (self.gamma * (self.n_iterations + 1)))
 
-            w[i] -= max(lower_bound, min(step_size_bound, upper_bound)) * self.m[i]
+            w[i] -= utils.clamp(step_size_bound, lower_bound, upper_bound) * self.m[i]
 
         return w
