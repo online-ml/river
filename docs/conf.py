@@ -240,7 +240,7 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     # 'matplotlib': ('https://matplotlib.org/', None),
-    'sklearn': ('http://scikit-learn.org/stable', None)
+    'sklearn': ('https://scikit-learn.org/stable', None)
 }
 
 # -- Options for manual page output ---------------------------------------
