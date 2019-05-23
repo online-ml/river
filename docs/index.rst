@@ -33,11 +33,13 @@ following the philosophy of `scikit-learn <http://scikit-learn.org/stable/>`_.
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
    :hidden:
    :caption: Development
 
    Contributing <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>
    Github Repository <https://github.com/scikit-multiflow/scikit-multiflow>
+   What's new (Changelog) <whats_new>
 
 .. toctree::
    :maxdepth: 1
