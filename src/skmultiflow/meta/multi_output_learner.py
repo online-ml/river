@@ -32,7 +32,6 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
 
     Examples
     --------
-    # Imports
     >>> from skmultiflow.meta.multi_output_learner import MultiOutputLearner
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
@@ -114,7 +113,7 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
 
         Parameters
         ----------
-X : numpy.ndarray of shape (n_samples, n_features)
+        X : numpy.ndarray of shape (n_samples, n_features)
             The features to train the model.
 
         y: numpy.ndarray of shape (n_samples)
