@@ -9,6 +9,8 @@ class Skyline(collections.UserList):
 
     Example:
 
+        Here is an example taken from `this <https://maxhalford.github.io/blog/skyline-queries-in-python>`_ blog post.
+
         ::
 
             >>> import random
@@ -54,8 +56,80 @@ class Skyline(collections.UserList):
         .. image:: ../_static/skyline_docstring.svg
             :align: center
 
+        Here is another example using the kart data from *Mario Kart: Double Dash!!*.
+
+        ::
+
+            >>> import collections
+            >>> from creme import utils
+
+            >>> Kart = collections.namedtuple(
+            ...      'Kart',
+            ...      'name speed off_road acceleration weight turbo'
+            ... )
+
+            >>> karts = [
+            ...     Kart('Red Fire', 5, 4, 4, 5, 2),
+            ...     Kart('Green Fire', 7, 3, 3, 4, 2),
+            ...     Kart('Heart Coach', 4, 6, 6, 5, 2),
+            ...     Kart('Bloom Coach', 6, 4, 5, 3, 2),
+            ...     Kart('Turbo Yoshi', 4, 5, 6, 6, 2),
+            ...     Kart('Turbo Birdo', 6, 4, 4, 7, 2),
+            ...     Kart('Goo-Goo Buggy', 1, 9, 9, 2, 3),
+            ...     Kart('Rattle Buggy', 2, 9, 8, 2, 3),
+            ...     Kart('Toad Kart', 3, 9, 7, 2, 3),
+            ...     Kart('Toadette Kart', 1, 9, 9, 2, 3),
+            ...     Kart('Koopa Dasher', 2, 8, 8, 3, 3),
+            ...     Kart('Para-Wing', 1, 8, 9, 3, 3),
+            ...     Kart('DK Jumbo', 8, 2, 2, 8, 1),
+            ...     Kart('Barrel Train', 8, 7, 3, 5, 3),
+            ...     Kart('Koopa King', 9, 1, 1, 9, 1),
+            ...     Kart('Bullet Blaster', 8, 1, 4, 1, 3),
+            ...     Kart('Wario Car', 7, 3, 3, 7, 1),
+            ...     Kart('Waluigi Racer', 5, 9, 5, 6, 2),
+            ...     Kart('Piranha Pipes', 8, 7, 2, 9, 1),
+            ...     Kart('Boo Pipes', 2, 9, 8, 9, 1),
+            ...     Kart('Parade Kart', 7, 3, 4, 7, 3)
+            ... ]
+
+            >>> skyline = utils.Skyline(
+            ...     to_max=['speed', 'off_road', 'acceleration', 'turbo'],
+            ...     to_min=['weight']
+            ... )
+
+            >>> for kart in karts:
+            ...     skyline = skyline.update(kart._asdict())
+
+            >>> best_cart_names = [kart['name'] for kart in skyline]
+            >>> for name in best_cart_names:
+            ...     print(f'- {name}')
+            - Green Fire
+            - Heart Coach
+            - Bloom Coach
+            - Goo-Goo Buggy
+            - Rattle Buggy
+            - Toad Kart
+            - Toadette Kart
+            - Barrel Train
+            - Koopa King
+            - Bullet Blaster
+            - Waluigi Racer
+            - Parade Kart
+
+            >>> for name in set(kart.name for kart in karts) - set(best_cart_names):
+            ...     print(f'- {name}')
+            - Turbo Yoshi
+            - Red Fire
+            - Boo Pipes
+            - Para-Wing
+            - Turbo Birdo
+            - Wario Car
+            - DK Jumbo
+            - Piranha Pipes
+            - Koopa Dasher
+
     References:
-        1. `Skyline queries in Python <https://maxhalford.github.io/blog/skyline-queries-in-python/>`_
+        1. `Skyline queries in Python <https://maxhalford.github.io/blog/skyline-queries-in-python>`_
         2. `The Skyline Operator <https://infolab.usc.edu/csci599/Fall2007/papers/e-1.pdf>`_
         3. `Maintaining Sliding Window Skylineson Data Streams <http://www.cs.ust.hk/~dimitris/PAPERS/TKDE06-Sky.pdf>`_
 
