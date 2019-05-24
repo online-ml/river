@@ -2,19 +2,17 @@ sudo: false
 
 language: python
 
-python:
-  - 3.6
-
 jobs:
   include:
 
   - stage: test
+    python: 3.6
     before_install:
       - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       - bash miniconda.sh -b -p $HOME/miniconda
       - export PATH="$HOME/miniconda/bin:$PATH"
       - conda update --yes conda
-      - conda create --yes --name testenv python=3.6
+      - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
       - source activate testenv
     install:
       - python setup.py develop
@@ -24,12 +22,13 @@ jobs:
     after_success: codecov
 
   - stage: test
+    python: 3.7
     before_install:
       - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       - bash miniconda.sh -b -p $HOME/miniconda
       - export PATH="$HOME/miniconda/bin:$PATH"
       - conda update --yes conda
-      - conda create --yes --name testenv python=3.7
+      - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
       - source activate testenv
     install:
       - python setup.py develop
