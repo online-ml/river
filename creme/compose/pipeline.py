@@ -135,22 +135,22 @@ class Pipeline(collections.OrderedDict):
 
     def fit_one(self, x, y=None):
         """Fits each step with ``x``."""
-        x_transformed = x
 
         for transformer in self.transformers:
-            x_transformed = transformer.transform_one(x_transformed)
+            x_pre = x
+            x = transformer.transform_one(x)
 
             # The supervised parts of a TransformerUnion have to be updated
             if isinstance(transformer, union.TransformerUnion):
                 for sub_transformer in transformer.values():
                     if sub_transformer.is_supervised:
-                        sub_transformer.fit_one(x, y)
+                        sub_transformer.fit_one(x_pre, y)
 
             # If a transformer is supervised then it has to be updated
             elif transformer.is_supervised:
-                transformer.fit_one(x, y)
+                transformer.fit_one(x_pre, y)
 
-        self.final_estimator.fit_one(x_transformed, y)
+        self.final_estimator.fit_one(x, y)
         return self
 
     def transform_one(self, x):
@@ -225,7 +225,7 @@ class Pipeline(collections.OrderedDict):
                 print_title(f'{i+1}. Transformer union')
                 for j, (name, sub_t) in enumerate(t.items()):
                     print_title(f'{i+1}.{j} {name}', indent=True)
-                    print_features(t.transform_one(x), indent=True)
+                    print_features(sub_t.transform_one(x), indent=True)
                 x = t.transform_one(x)
                 print_features(x)
             else:
