@@ -10,6 +10,8 @@ except ImportError:
 
 from sklearn.utils import metaestimators
 
+from .. import base
+
 from . import func
 from . import union
 
@@ -93,6 +95,8 @@ class Pipeline(collections.OrderedDict):
     @property
     def transformers(self):
         """If a pipeline has $n$ steps, then the first $n-1$ are necessarily transformers."""
+        if isinstance(self.final_estimator, base.Transformer):
+            return self.values()
         return itertools.islice(self.values(), len(self) - 1)
 
     def add_step(self, step, at_start):
@@ -149,8 +153,12 @@ class Pipeline(collections.OrderedDict):
         self.final_estimator.fit_one(x_transformed, y)
         return self
 
-    def _run_transformers(self, x):
-        """Transforms ``x`` and fits the unsupervised transformers in the pipeline."""
+    def transform_one(self, x):
+        """Transform an input.
+
+        Only works if each estimator has a ``transform_one`` method.
+
+        """
         for transformer in self.transformers:
 
             if isinstance(transformer, union.TransformerUnion):
@@ -168,20 +176,6 @@ class Pipeline(collections.OrderedDict):
         return x
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
-    def transform_one(self, x):
-        """Transform an input.
-
-        Only works if each estimator has a ``transform_one`` method.
-
-        """
-        x = self._run_transformers(x)
-        final_tranformer = self.final_estimator
-        if not final_tranformer.is_supervised:
-            final_tranformer.fit_one(x)
-        x = final_tranformer.transform_one(x)
-        return x
-
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def predict_one(self, x):
         """Predict output.
 
@@ -189,7 +183,7 @@ class Pipeline(collections.OrderedDict):
         ``predict_one`` method.
 
         """
-        x = self._run_transformers(x)
+        x = self.transform_one(x)
         return self.final_estimator.predict_one(x)
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
@@ -200,8 +194,53 @@ class Pipeline(collections.OrderedDict):
         ``predict_proba_one`` method.
 
         """
-        x = self._run_transformers(x)
+        x = self.transform_one(x)
         return self.final_estimator.predict_proba_one(x)
+
+    def debug_one(self, x, show_types=True):
+        """Displays the state of a set of features as it goes through the pipeline.
+
+        Parameters:
+            x (dict) A set of features.
+            show_types (bool): Whether or not to display the type of feature along with it's value.
+
+        """
+        def print_features(x, indent=False, space_after=True):
+            for k, v in x.items():
+                type_str = f' ({type(v).__name__})' if show_types else ''
+                print(('\t' if indent else '') + f'{k}: {v}' + type_str)
+            if space_after:
+                print()
+
+        def print_title(title, indent=False):
+            print(('\t' if indent else '') + title)
+            print(('\t' if indent else '') + '-' * len(title))
+
+        # Print the initial state of the features
+        print_title('0. Input')
+        print_features(x)
+
+        for i, t in enumerate(self.transformers):
+            if isinstance(t, union.TransformerUnion):
+                print_title(f'{i+1}. Transformer union')
+                for j, (name, sub_t) in enumerate(t.items()):
+                    print_title(f'{i+1}.{j} {name}', indent=True)
+                    print_features(t.transform_one(x), indent=True)
+                x = t.transform_one(x)
+                print_features(x)
+            else:
+                print_title(f'{i+1}. {t}')
+                x = t.transform_one(x)
+                print_features(x)
+
+        # Print the predicted output from the final estimator
+        final = self.final_estimator
+        if not isinstance(final, base.Transformer):
+            print_title(f'{len(self)}. {final}')
+            if isinstance(final, base.Classifier):
+                print_features(final.predict_proba_one(x), space_after=False)
+            else:
+                print(final.predict_one(x))
 
     def draw(self):
         """Draws the pipeline using the ``graphviz`` library."""
