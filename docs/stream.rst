@@ -15,3 +15,4 @@ Streaming utilities
    iter_numpy
    iter_sklearn_dataset
    iter_pandas
+   simulate_qa

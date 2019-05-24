@@ -11,4 +11,5 @@ Model selection
    :toctree: generated/
    :nosignatures:
 
+   online_qa_score
    online_score

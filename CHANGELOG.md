@@ -31,6 +31,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `RollingRMSLE`
     - `RollingSMAPE`
 - `AdaBound` to `optim`
+- `fetch_bikes` to `datasets`
+- `simulate_qa` to `stream`
+- `online_qa_score` to `model_selection`
 
 ### Modified
 
