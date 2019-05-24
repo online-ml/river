@@ -2,6 +2,12 @@ sudo: false
 
 language: python
 
+cache:
+  apt: true
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/download
+
 jobs:
   include:
 
