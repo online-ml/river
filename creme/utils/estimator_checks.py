@@ -80,7 +80,7 @@ def check_predict_proba_one(model):
         # Check the probabilities are coherent
         assert isinstance(y_pred, dict)
         assert math.isclose(sum(y_pred.values()), 1.0)
-        for label, proba in y_pred.items():
+        for proba in y_pred.values():
             assert 0.0 <= proba <= 1.0
 
         # Check predict_proba_one is pure (i.e. x and y haven't changed)

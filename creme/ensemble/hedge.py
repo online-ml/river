@@ -75,7 +75,7 @@ class HedgeClassifier(base.BinaryClassifier):
         for i, _ in enumerate(self.weights):
             self.weights[i] /= total
 
-        for i, (model, weight) in enumerate(zip(self.models, self.weights)):
+        for i, model in enumerate(self.models):
             y_pred = model.predict_one(x)
             loss = self.loss(y, y_pred)
             self.weights[i] *= math.exp(-self.learning_rate * loss)

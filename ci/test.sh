@@ -20,7 +20,7 @@ conda update --yes conda
 
 # Create and activate a test environment
 PYTHON_VERSION=$1
-conda create --yes --name testenv python=PYTHON_VERSION
+conda create --yes --name testenv python=$PYTHON_VERSION
 source activate testenv
 
 # Install dependencies required for testing

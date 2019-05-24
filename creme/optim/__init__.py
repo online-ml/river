@@ -42,7 +42,6 @@ __all__ = [
     'HingeLoss',
     'InverseScalingLR',
     'LogLoss',
-    'Loss',
     'Momentum',
     'MultiClassificationLoss',
     'NesterovMomentum',

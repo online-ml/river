@@ -14,7 +14,7 @@ class BaseNB(base.MultiClassifier, abc.ABC):
     """
 
     @abc.abstractmethod
-    def joint_log_likelihood(self, X):
+    def joint_log_likelihood(self, x):
         """Compute the unnormalized posterior log-likelihood of x.
 
         The log-likelihood is ``log P(c) + log P(x|c)``

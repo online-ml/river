@@ -1,9 +1,10 @@
 from .. import utils
 
+from . import base
 from . import pearson
 
 
-class AutoCorrelation(pearson.PearsonCorrelation, utils.Window):
+class AutoCorrelation(base.Univariate, utils.Window):
     """Measures the serial correlation.
 
     This method computes the Pearson correlation between the current value and the value seen ``n``
@@ -44,8 +45,8 @@ class AutoCorrelation(pearson.PearsonCorrelation, utils.Window):
     """
 
     def __init__(self, lag):
-        pearson.PearsonCorrelation.__init__(self, ddof=1)
-        utils.Window.__init__(self, size=lag)
+        super().__init__(size=lag)
+        self.pearson = pearson.PearsonCorrelation(ddof=1)
 
     @property
     def name(self):
@@ -55,9 +56,12 @@ class AutoCorrelation(pearson.PearsonCorrelation, utils.Window):
 
         # The correlation can be update once enough elements have been seen
         if len(self) == self.size:
-            super().update(x, self[0])
+            self.pearson.update(x, self[0])
 
         # Add x to the window
         super().append(x)
 
         return self
+
+    def get(self):
+        return self.pearson.get()
