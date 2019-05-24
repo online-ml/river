@@ -27,6 +27,7 @@ class LogisticRegression(base.BinaryClassifier):
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
+            >>> from creme import optim
             >>> from creme import preprocessing
             >>> from creme import stream
             >>> from sklearn import datasets
@@ -38,12 +39,14 @@ class LogisticRegression(base.BinaryClassifier):
             ... )
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', linear_model.LogisticRegression())
+            ...     ('learn', linear_model.LogisticRegression(
+            ...         optimizer=optim.VanillaSGD(optim.OptimalLR(t0=30))
+            ...     ))
             ... ])
             >>> metric = metrics.F1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.964739
+            F1Score: 0.966197
 
     """
 

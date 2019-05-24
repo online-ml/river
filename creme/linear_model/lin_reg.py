@@ -51,13 +51,14 @@ class LinearRegression(base.Regressor):
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('lin_reg', linear_model.LinearRegression(
-            ...         loss=optim.CauchyLoss()
+            ...         loss=optim.CauchyLoss(),
+            ...         optimizer=optim.VanillaSGD(optim.InverseScalingLR(0.1))
             ...     ))
             ... ])
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.667428
+            MAE: 3.584663
 
             >>> model['lin_reg'].intercept.get()
             22.532806...
