@@ -12,7 +12,7 @@ class LRScheduler(abc.ABC):
 
     @abc.abstractmethod
     def get(self, t: int) -> float:
-        pass
+        """Returns the learning rate at a given iteration."""
 
 
 class ConstantLR(LRScheduler):
