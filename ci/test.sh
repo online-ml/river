@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
-# Install and update Miniconda
-if [[ ! -f download/miniconda.sh ]] then
+# Download Miniconda if necessary
+if [ ! -f download/miniconda.sh ]
+then
   if [ $TRAVIS_OS_NAME = "osx" ]
-    then
-      fname=Miniconda3-latest-MacOSX-x86_64.sh
-    else
-      fname=Miniconda3-latest-Linux-x86_64.sh
-    fi
-  wget https://repo.continuum.io/miniconda/$fname -O download/miniconda.sh
+  then
+    fname=Miniconda3-latest-MacOSX-x86_64.sh
+  else
+    fname=Miniconda3-latest-Linux-x86_64.sh
   fi
+  wget https://repo.continuum.io/miniconda/$fname -O download/miniconda.sh
+fi
+
+# Install and update Miniconda
 MINICONDA_PATH=$HOME/miniconda
 chmod +x download/miniconda.sh && ./download/miniconda.sh -b -p $MINICONDA_PATH
 export PATH=$MINICONDA_PATH/bin:$PATH
