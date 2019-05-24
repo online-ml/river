@@ -6,49 +6,10 @@ jobs:
   include:
 
   - stage: test
-    before_install:
-      - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-      - bash miniconda.sh -b -p $HOME/miniconda
-      - export PATH="$HOME/miniconda/bin:$PATH"
-      - conda update --yes conda
-      - conda create --yes --name testenv python=3.6
-      - source activate testenv
-    install:
-      - python setup.py develop
-      - pip install -e ".[dev]"
-      - pip install codecov
-    script: pytest --cov=creme
-    after_success: codecov
+    script: ./ci/test.sh 3.6
 
   - stage: test
-    before_install:
-      - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-      - bash miniconda.sh -b -p $HOME/miniconda
-      - export PATH="$HOME/miniconda/bin:$PATH"
-      - conda update --yes conda
-      - conda create --yes --name testenv python=3.7
-      - source activate testenv
-    install:
-      - python setup.py develop
-      - pip install -e ".[dev]"
-      - pip install codecov
-    script: pytest --cov=creme
-    after_success: codecov
-
-  - stage: test
-    before_install:
-      - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-      - bash miniconda.sh -b -p $HOME/miniconda
-      - export PATH="$HOME/miniconda/bin:$PATH"
-      - conda update --yes conda
-      - conda create --yes --name testenv python=3.8
-      - source activate testenv
-    install:
-      - python setup.py develop
-      - pip install -e ".[dev]"
-      - pip install codecov
-    script: pytest --cov=creme
-    after_success: codecov
+    script: ./ci/test.sh 3.7
 
   - stage: pypi
     install: echo "skipping install"
