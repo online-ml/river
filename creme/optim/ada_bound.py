@@ -40,11 +40,13 @@ class AdaBound(base.Optimizer):
             >>> metric = metrics.F1Score()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.960894
+            F1Score: 0.963277
     """
 
-    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8, gamma=1e-3):
+    def __init__(self, lr=1e-3, beta_1=0.9, beta_2=0.999, eps=1e-8, gamma=1e-3, final_lr=0.1):
         super().__init__(lr)
+        self.base_lr = lr
+        self.final_lr = final_lr
         self.beta_1 = beta_1
         self.beta_2 = beta_2
         self.eps = eps
@@ -63,9 +65,9 @@ class AdaBound(base.Optimizer):
             step_size = self.learning_rate * math.sqrt(bias_2) / bias_1
             step_size_bound = step_size / (math.sqrt(self.v[i]) + self.eps)
 
-            final_lr = self.learning_rate
-            lower_bound = final_lr * (1 - 1 / (self.gamma * (self.n_iterations + 1) + 1))
-            upper_bound = final_lr * (1 + 1 / (self.gamma * (self.n_iterations + 1)))
+            self.final_lr *= self.learning_rate / self.base_lr
+            lower_bound = self.final_lr * (1 - 1 / (self.gamma * (self.n_iterations + 1) + 1))
+            upper_bound = self.final_lr * (1 + 1 / (self.gamma * (self.n_iterations + 1)))
 
             w[i] -= utils.clamp(step_size_bound, lower_bound, upper_bound) * self.m[i]
 
