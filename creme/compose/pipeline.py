@@ -1,5 +1,6 @@
 import collections
 import itertools
+import types
 
 try:
     import graphviz
@@ -41,7 +42,7 @@ class Pipeline(collections.OrderedDict):
             >>> counts = feature_extraction.CountVectorizer('text')
             >>> text_part = compose.Whitelister('text') | (tfidf + counts)
 
-            >>> num_part = compose.Whitelister(['a', 'b']) | preprocessing.PolynomialExtender()
+            >>> num_part = compose.Whitelister('a', 'b') | preprocessing.PolynomialExtender()
 
             >>> model = text_part + num_part
             >>> model |= preprocessing.StandardScaler()
@@ -75,12 +76,6 @@ class Pipeline(collections.OrderedDict):
             return other.__add__(self)
         return union.TransformerUnion([self, other])
 
-    def __radd__(self, other):
-        """Merges with another Pipeline or TransformerUnion into a TransformerUnion."""
-        if isinstance(other, union.TransformerUnion):
-            return other.__add__(self)
-        return union.TransformerUnion([other, self])
-
     def __str__(self):
         """Return a human friendly representation of the pipeline."""
         return ' | '.join(self.keys())
@@ -95,6 +90,11 @@ class Pipeline(collections.OrderedDict):
         """
         return self.final_estimator.__class__
 
+    @property
+    def transformers(self):
+        """If a pipeline has $n$ steps, then the first $n-1$ are necessarily transformers."""
+        return itertools.islice(self.values(), len(self) - 1)
+
     def add_step(self, step, at_start):
         """Adds a step to either end of the pipeline while taking care of the input type."""
 
@@ -105,8 +105,9 @@ class Pipeline(collections.OrderedDict):
         name, estimator = step
 
         # If a function is given then wrap it in a FuncTransformer
-        if callable(estimator):
-            step = (estimator.__class__, func.FuncTransformer(estimator))
+        if isinstance(estimator, types.FunctionType):
+            name = estimator.__name__
+            estimator = func.FuncTransformer(estimator)
 
         # Check if an identical step has already been inserted
         if name in self:
@@ -132,7 +133,7 @@ class Pipeline(collections.OrderedDict):
         """Fits each step with ``x``."""
         x_transformed = x
 
-        for transformer in itertools.islice(self.values(), len(self) - 1):
+        for transformer in self.transformers:
             x_transformed = transformer.transform_one(x_transformed)
 
             # The supervised parts of a TransformerUnion have to be updated
@@ -140,27 +141,28 @@ class Pipeline(collections.OrderedDict):
                 for sub_transformer in transformer.values():
                     if sub_transformer.is_supervised:
                         sub_transformer.fit_one(x, y)
-                continue
 
             # If a transformer is supervised then it has to be updated
-            if transformer.is_supervised:
+            elif transformer.is_supervised:
                 transformer.fit_one(x, y)
 
         self.final_estimator.fit_one(x_transformed, y)
         return self
 
-    def run_transformers(self, x):
-        for transformer in itertools.islice(self.values(), len(self) - 1):
+    def _run_transformers(self, x):
+        """Transforms ``x`` and fits the unsupervised transformers in the pipeline."""
+        for transformer in self.transformers:
 
             if isinstance(transformer, union.TransformerUnion):
+
+                # Fit the unsupervised part of the union
                 for sub_transformer in transformer.values():
                     if not sub_transformer.is_supervised:
                         sub_transformer.fit_one(x)
-                x = transformer.transform_one(x)
-                continue
 
-            if not transformer.is_supervised:
+            elif not transformer.is_supervised:
                 transformer.fit_one(x)
+
             x = transformer.transform_one(x)
 
         return x
@@ -172,7 +174,7 @@ class Pipeline(collections.OrderedDict):
         Only works if each estimator has a ``transform_one`` method.
 
         """
-        x = self.run_transformers(x)
+        x = self._run_transformers(x)
         final_tranformer = self.final_estimator
         if not final_tranformer.is_supervised:
             final_tranformer.fit_one(x)
@@ -187,7 +189,7 @@ class Pipeline(collections.OrderedDict):
         ``predict_one`` method.
 
         """
-        x = self.run_transformers(x)
+        x = self._run_transformers(x)
         return self.final_estimator.predict_one(x)
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
@@ -198,7 +200,7 @@ class Pipeline(collections.OrderedDict):
         ``predict_proba_one`` method.
 
         """
-        x = self.run_transformers(x)
+        x = self._run_transformers(x)
         return self.final_estimator.predict_proba_one(x)
 
     def draw(self):

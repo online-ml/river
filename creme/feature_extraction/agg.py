@@ -1,6 +1,7 @@
 import collections
 import copy
 import functools
+import typing
 
 from .. import base
 
@@ -23,6 +24,7 @@ class Agg(base.Transformer):
 
     Attributes:
         groups (collections.defaultdict): Maps group keys to univariate statistics.
+        feature_name (str): The name of the feature in the output.
 
     Example:
 
@@ -56,26 +58,29 @@ class Agg(base.Transformer):
             {'revenue_mean_by_place': 50.0}
 
     References:
-
         1. `Streaming groupbys in pandas for big datasets <(https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
 
     """
 
     def __init__(self, on, by, how):
         self.on = on
-        self.by = by
+        self.by = by if isinstance(by, (typing.List, typing.Tuple)) else [by]
         self.how = how
         self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
+        self.feature_name = f'{self.on}_{self.how.name}_by_{"_and_".join(self.by)}'
+
+    def _get_key(self, x):
+        return '_'.join(str(x[k]) for k in self.by)
 
     def fit_one(self, x, y=None):
-        self.groups[x[self.by]].update(x[self.on])
+        self.groups[self._get_key(x)].update(x[self.on])
         return self
 
     def transform_one(self, x):
-        return {str(self): self.groups[x[self.by]].get()}
+        return {self.feature_name: self.groups[self._get_key(x)].get()}
 
     def __str__(self):
-        return f'{self.on}_{self.how.name}_by_{self.by}'
+        return self.feature_name
 
 
 class TargetAgg(base.Transformer):
@@ -127,27 +132,29 @@ class TargetAgg(base.Transformer):
             {'target_bayes_mean_by_place': 34.333333...}
 
     References:
-
         1. `Streaming groupbys in pandas for big datasets <(https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
 
     """
 
     def __init__(self, by, how, target_name='target'):
-        self.by = by
+        self.by = by if isinstance(by, (typing.List, typing.Tuple)) else [by]
         self.how = how
         self.target_name = target_name
         self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
-        self.feature_name = f'{self.target_name}_{self.how.name}_by_{self.by}'
+        self.feature_name = f'{target_name}_{how.name}_by_{"_and_".join(self.by)}'
 
     def is_supervised(self):
         return True
 
+    def _get_key(self, x):
+        return '_'.join(str(x[k]) for k in self.by)
+
     def fit_one(self, x, y=None):
-        self.groups[x[self.by]].update(y)
+        self.groups[self._get_key(x)].update(y)
         return self
 
     def transform_one(self, x):
-        return {self.feature_name: self.groups[x[self.by]].get()}
+        return {self.feature_name: self.groups[self._get_key(x)].get()}
 
     def __str__(self):
         return self.feature_name

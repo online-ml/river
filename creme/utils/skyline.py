@@ -116,17 +116,17 @@ class Skyline(collections.UserList):
             - Waluigi Racer
             - Parade Kart
 
-            >>> for name in set(kart.name for kart in karts) - set(best_cart_names):
+            >>> for name in sorted(set(kart.name for kart in karts) - set(best_cart_names)):
             ...     print(f'- {name}')
-            - Turbo Yoshi
-            - Red Fire
             - Boo Pipes
-            - Para-Wing
-            - Turbo Birdo
-            - Wario Car
             - DK Jumbo
-            - Piranha Pipes
             - Koopa Dasher
+            - Para-Wing
+            - Piranha Pipes
+            - Red Fire
+            - Turbo Birdo
+            - Turbo Yoshi
+            - Wario Car
 
     References:
         1. `Skyline queries in Python <https://maxhalford.github.io/blog/skyline-queries-in-python>`_

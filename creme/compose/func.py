@@ -28,7 +28,7 @@ class FuncTransformer(base.Transformer):
             ...     return x
 
             >>> transformer = compose.FuncTransformer(parse_date)
-            >>> transformer.fit_one(x).transform_one(x)
+            >>> transformer.transform_one(x)
             {'date': datetime.datetime(2019, 2, 14, 0, 0), 'x': 42, 'is_weekend': False}
 
     """

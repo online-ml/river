@@ -1,7 +1,7 @@
 import abc
+import typing
 
 from .. import base
-from .. import types
 
 
 __all__ = [
@@ -55,7 +55,7 @@ class BinaryClassificationMetric(ClassificationMetric):
 class MultiClassificationMetric(BinaryClassificationMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: types.Label, y_pred: dict):
+    def update(self, y_true: typing.Union[str, int], y_pred: dict):
         """Updates the metric."""
 
     def works_with(self, model):

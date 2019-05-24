@@ -41,7 +41,7 @@ def iter_numpy(X, y=None, feature_names=None, shuffle=False, random_state=None):
         X, y = X[order], y if y is None else y[order]
 
     for x, yi in itertools.zip_longest(X, y if hasattr(y, '__iter__') else []):
-        yield {i: xi for i, xi in zip(feature_names, x)}, yi
+        yield dict(zip(feature_names, x)), yi
 
 
 def iter_sklearn_dataset(load_dataset, **kwargs):
@@ -76,7 +76,7 @@ def iter_pandas(X, y=None, **kwargs):
 
     """
     kwargs['feature_names'] = X.columns
-    for x, yi in iter_numpy(X, y, **kwargs):
+    for x, yi in iter_numpy(X.to_numpy(), y, **kwargs):
         yield x, yi
 
 

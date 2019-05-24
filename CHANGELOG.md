@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `RollingRMSE`
     - `RollingRMSLE`
     - `RollingSMAPE`
+- `AdaBound` to `optim`
 
 ### Modified
 
@@ -37,6 +38,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `dist` module has been renamed to `proba` and is now public, for the moment it contains a single distribution called `Gaussian`
 - Renamed the `window_size` parameter to `size` in `Window` and `SortedWindow`
 - Rename `Variance` to `Var` and `RollingVariance` to `RollingVar`
+- `Blacklister` and `Whitelister` now take variadic inputs, which means you don't have to provide a list
+- `Agg` and `TargetAgg` can now aggregate on multiple attributes
 
 ### Removed
 

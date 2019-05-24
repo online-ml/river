@@ -2,10 +2,10 @@
 A set of sequential optimizers and learning rate schedulers. Also contains loss functions commonly
 used in machine learning.
 """
+from .ada_bound import AdaBound
 from .ada_delta import AdaDelta
 from .ada_grad import AdaGrad
 from .adam import Adam
-from .ada_bound import AdaBound
 from .base import Optimizer
 from .ftrl import FTRLProximal
 from .losses import AbsoluteLoss
@@ -29,10 +29,10 @@ from .vanilla_sgd import VanillaSGD
 
 __all__ = [
     'AbsoluteLoss',
+    'AdaBound',
     'AdaDelta',
     'AdaGrad',
     'Adam',
-    'AdaBound',
     'BinaryClassificationLoss',
     'CauchyLoss',
     'ConstantLR',

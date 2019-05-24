@@ -1,4 +1,5 @@
 import collections
+import types
 
 from .. import base
 
@@ -76,25 +77,35 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         """Returns a human friendly representation of the pipeline."""
         return f'{{{", ".join(self.keys())}}}'
 
-    def __add__(self, other):
+    def __repr__(self):
+        return str(self)
+
+    def add_step(self, other):
         """Adds a transformer while taking care of the input type."""
 
         # Infer a name if none is given
         if not isinstance(other, (list, tuple)):
-            other = (str(other), other)
+            name, transformer = (str(other), other)
 
         # If a function is given then wrap it in a FuncTransformer
-        if callable(other[1]):
-            other = (other[1].__name__, func.FuncTransformer(other[1]))
+        if isinstance(transformer, types.FunctionType):
+            name = transformer.__name__
+            transformer = func.FuncTransformer(transformer)
 
         # Prefer clarity to magic
-        if other[0] in self:
-            raise KeyError(f'{other[0]} already exists')
+        if name in self:
+            raise KeyError(f'{name} already exists')
 
         # Store the transformer
-        self[other[0]] = other[1]
+        self[name] = transformer
 
         return self
+
+    def __add__(self, other):
+        return self.add_step(other)
+
+    def __radd__(self, other):
+        return self.add_step(other)
 
     def fit_one(self, x, y=None):
         for transformer in self.values():

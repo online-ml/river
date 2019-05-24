@@ -14,6 +14,7 @@ Optimizers
    :toctree: generated/
    :nosignatures:
 
+   AdaBound
    AdaDelta
    AdaGrad
    Adam
