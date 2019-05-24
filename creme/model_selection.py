@@ -79,7 +79,7 @@ def online_qa_score(X_y, model, metric, on, lag):
         pred_func = model.predict_proba_one
 
     # Train the model and use the out-of-fold predictions to update the metric
-    for x, y in X_y:
+    for x, y in stream.simulate_qa(X_y, on=on, lag=lag):
 
         # If y is None then this is a question
         if y is None:

@@ -72,8 +72,7 @@ class VectorizerMixin:
 
     def build_tokenizer(self):
         """Return a function that splits a string into a sequence of tokens."""
-        token_pattern = re.compile(r'(?u)\b\w\w+\b')
-        return lambda text: token_pattern.findall(text)
+        return re.compile(r'(?u)\b\w\w+\b').findall
 
 
 class CountVectorizer(base.Transformer, VectorizerMixin):
