@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Install and update Miniconda
-if [[ ! -f download/miniconda.sh ]]
+if [[ ! -f download/miniconda.sh ]] then
   if [ $TRAVIS_OS_NAME = "osx" ]
     then
       fname=Miniconda3-latest-MacOSX-x86_64.sh
