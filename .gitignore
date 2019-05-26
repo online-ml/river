@@ -90,7 +90,7 @@ dmypy.json
 .idea
 
 # For convenience
-Untitled*.ipynb
+/*.ipynb
 test.py
 
 # For all-contributors
