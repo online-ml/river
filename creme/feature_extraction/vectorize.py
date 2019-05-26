@@ -50,8 +50,8 @@ class VectorizerMixin:
         self.on = on
         self.strip_accents = strip_accents
         self.lowercase = lowercase
-        self.preprocessor = preprocessor or self.build_preprocessor()
-        self.tokenizer = tokenizer or self.build_tokenizer()
+        self.preprocessor = self.build_preprocessor() if preprocessor is None else preprocessor
+        self.tokenizer = re.compile(r'(?u)\b\w\w+\b').findall if tokenizer is None else tokenizer
 
     def _get_text(self, x):
         if self.on is not None:
@@ -69,10 +69,6 @@ class VectorizerMixin:
             steps.append(str.lower)
 
         return compose(*steps) if steps else lambda x: x
-
-    def build_tokenizer(self):
-        """Return a function that splits a string into a sequence of tokens."""
-        return re.compile(r'(?u)\b\w\w+\b').findall
 
 
 class CountVectorizer(base.Transformer, VectorizerMixin):

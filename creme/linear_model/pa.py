@@ -17,6 +17,7 @@ class BasePA:
         self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[mode]
         self.weights = collections.defaultdict(float)
 
+    @classmethod
     def _calc_tau_0(self, x, loss):
         norm = utils.norm(x, order=2) ** 2
         if norm > 0:

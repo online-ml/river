@@ -1,5 +1,5 @@
 from . import base
-from . import sum
+from . import summing
 
 
 class Mean(base.Univariate):
@@ -45,7 +45,7 @@ class Mean(base.Univariate):
         return self.mean
 
 
-class RollingMean(sum.RollingSum):
+class RollingMean(summing.RollingSum):
     """Running average over a window.
 
     Parameters:

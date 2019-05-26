@@ -1,6 +1,6 @@
 from . import base
-from . import max
-from . import min
+from . import maximum
+from . import minimum
 
 
 class PeakToPeak(base.Univariate):
@@ -31,8 +31,8 @@ class PeakToPeak(base.Univariate):
     """
 
     def __init__(self):
-        self.max = max.Max()
-        self.min = min.Min()
+        self.max = maximum.Max()
+        self.min = minimum.Min()
 
     @property
     def name(self):
@@ -78,8 +78,8 @@ class RollingPeakToPeak(base.Univariate):
 
     def __init__(self, window_size):
         self.window_size = window_size
-        self.max = max.RollingMax(window_size)
-        self.min = min.RollingMin(window_size)
+        self.max = maximum.RollingMax(window_size)
+        self.min = minimum.RollingMin(window_size)
 
     @property
     def name(self):
