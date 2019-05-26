@@ -10,13 +10,13 @@ from .entropy import Entropy
 from .ewmean import EWMean
 from .ewvar import EWVar
 from .kurtosis import Kurtosis
-from .max import Max
-from .max import RollingMax
+from .maximum import Max
+from .maximum import RollingMax
 from .mean import BayesianMean
 from .mean import Mean
 from .mean import RollingMean
-from .min import Min
-from .min import RollingMin
+from .minimum import Min
+from .minimum import RollingMin
 from .mode import Mode
 from .mode import RollingMode
 from .n_unique import NUnique
@@ -28,8 +28,8 @@ from .quantile import RollingQuantile
 from .sem import SEM
 from .sem import RollingSEM
 from .skew import Skew
-from .sum import Sum
-from .sum import RollingSum
+from .summing import Sum
+from .summing import RollingSum
 from .var import Var
 from .var import RollingVar
 

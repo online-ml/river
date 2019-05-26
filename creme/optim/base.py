@@ -14,6 +14,7 @@ class Optimizer(abc.ABC):
     def learning_rate(self) -> float:
         return self.lr.get(self.n_iterations)
 
+    @classmethod
     def update_before_pred(self, w: dict) -> dict:
         return w
 
