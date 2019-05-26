@@ -34,6 +34,9 @@ class ConfusionMatrix(collections.defaultdict):
               bird     0     0     1
                cat     1     0     2
 
+            >>> cm['bird']['cat']
+            1
+
     """
 
     def __init__(self):
