@@ -6,15 +6,17 @@ cache:
   apt: true
   directories:
     - $HOME/.cache/pip
-    - $HOME/download
+    - $HOME/downloads
 
 jobs:
   include:
 
   - stage: test
+    install: skip
     script: ./ci/test.sh 3.6
 
   - stage: test
+    install: skip
     script: ./ci/test.sh 3.7
 
   - stage: pypi

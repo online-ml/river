@@ -1,6 +1,10 @@
-from bokeh import io
-from bokeh import models
-from bokeh import plotting
+try:
+    from bokeh import io
+    from bokeh import models
+    from bokeh import plotting
+    BOKEH_INSTALLED = True
+except ImportError:
+    BOKEH_INSTALLED = False
 
 
 __all__ = ['Scatter']

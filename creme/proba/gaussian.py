@@ -14,15 +14,17 @@ class Gaussian(base.Distribution):
 
             >>> from creme import proba
 
-            >>> p1 = proba.Gaussian().update(5)
-            >>> p1.mode()
-            5.0
+            >>> p = proba.Gaussian().update(6)
+            >>> p.mode()
+            6.0
 
-            >>> p2 = proba.Gaussian().update(6).update(7)
-            >>> p2.mode()
+            >>> p.update(7).mode()
             6.5
 
-            >>> p2.proba_of(6.5)
+            >>> p
+            𝒩(μ=6.500, σ=0.707)
+
+            >>> p.proba_of(6.5)
             0.564189...
 
     """
@@ -37,6 +39,12 @@ class Gaussian(base.Distribution):
     @property
     def sigma(self):
         return self.variance.get() ** 0.5
+
+    def __str__(self):
+        return f'𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})'
+
+    def __repr__(self):
+        return str(self)
 
     def update(self, x):
         self.variance.update(x)
