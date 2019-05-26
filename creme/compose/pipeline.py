@@ -99,6 +99,11 @@ class Pipeline(collections.OrderedDict):
             return self.values()
         return itertools.islice(self.values(), len(self) - 1)
 
+    @property
+    def is_supervised(self):
+        """Only works if all the steps of the pipelines are transformers."""
+        return any(transformer.is_supervised for transformer in self.values())
+
     def add_step(self, step, at_start):
         """Adds a step to either end of the pipeline while taking care of the input type."""
 
@@ -136,19 +141,21 @@ class Pipeline(collections.OrderedDict):
     def fit_one(self, x, y=None):
         """Fits each step with ``x``."""
 
-        for transformer in self.transformers:
+        # Loop over the first n - 1 steps, which should all be transformers
+        for t in itertools.islice(self.values(), len(self) - 1):
             x_pre = x
-            x = transformer.transform_one(x)
-
-            # The supervised parts of a TransformerUnion have to be updated
-            if isinstance(transformer, union.TransformerUnion):
-                for sub_transformer in transformer.values():
-                    if sub_transformer.is_supervised:
-                        sub_transformer.fit_one(x_pre, y)
+            x = t.transform_one(x)
 
             # If a transformer is supervised then it has to be updated
-            elif transformer.is_supervised:
-                transformer.fit_one(x_pre, y)
+            if t.is_supervised:
+
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.values():
+                        if sub_t.is_supervised:
+                            sub_t.fit_one(x_pre, y)
+
+                else:
+                    t.fit_one(x_pre, y)
 
         self.final_estimator.fit_one(x, y)
         return self

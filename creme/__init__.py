@@ -25,6 +25,7 @@ __all__ = [
     'multiclass',
     'naive_bayes',
     'optim',
+    'plot',
     'preprocessing',
     'proba',
     'reco',
