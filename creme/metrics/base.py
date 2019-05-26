@@ -11,6 +11,11 @@ __all__ = [
 ]
 
 
+Label = typing.Union[str, int]
+Proba = float
+Probas = typing.Dict[Label, Proba],
+
+
 class BaseMetric(abc.ABC):
 
     @abc.abstractmethod
@@ -45,7 +50,7 @@ class ClassificationMetric(BaseMetric):
 class BinaryClassificationMetric(ClassificationMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: bool, y_pred: float):
+    def update(self, y_true: bool, y_pred: typing.Union[bool, Probas]):
         """Updates the metric."""
 
     def works_with(self, model):
@@ -55,7 +60,7 @@ class BinaryClassificationMetric(ClassificationMetric):
 class MultiClassificationMetric(BinaryClassificationMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: typing.Union[str, int], y_pred: dict):
+    def update(self, y_true: Label, y_pred: typing.Union[Label, Probas]):
         """Updates the metric."""
 
     def works_with(self, model):
