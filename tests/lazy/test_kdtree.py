@@ -41,10 +41,10 @@ def test_kdd_tree_euclidean():
 
     assert np.allclose(dist, expected_dist)
 
-    expected_info = 'KDTree: - leaf_size: 40 - metric: euclidean - return_distance: True'
+    expected_info = 'KDTree(categorical_list=None, leaf_size=40, metric=euclidean, return_distance=True)'
     assert kdtree.get_info() == expected_info
 
-    assert kdtree.get_class_type() == 'data_structure'
+    assert kdtree._estimator_type == 'data_structure'
 
 
 def test_kdd_tree_mixed():
@@ -85,8 +85,10 @@ def test_kdd_tree_mixed():
 
     assert np.allclose(dist, expected_dist)
 
-    expected_info = 'KDTree: - leaf_size: 40 - metric: mixed - return_distance: True'
+    expected_info = 'KDTree(categorical_list=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ' \
+                    '11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], ' \
+                    'leaf_size=40, metric=mixed, return_distance=True)'
     assert kdtree.get_info() == expected_info
 
-    assert kdtree.get_class_type() == 'data_structure'
+    assert kdtree._estimator_type == 'data_structure'
 

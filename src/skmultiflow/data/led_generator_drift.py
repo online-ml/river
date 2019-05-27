@@ -3,12 +3,10 @@ from skmultiflow.data.led_generator import LEDGenerator
 
 
 class LEDGeneratorDrift(LEDGenerator):
+    """ LED stream generator with concept drift.
 
-    """ LEDGeneratorDrift
-
-    This class is an extension from the LEDGenerator. It functions
-    as the parent class, except that drift can be introduced in objects
-    of this class.
+    This class is an extension from the LEDGenerator. The purpose of this generator is to
+    add concept drift to the stream.
 
     Parameters
     ----------
@@ -21,13 +19,13 @@ class LEDGeneratorDrift(LEDGenerator):
         The probability that noise will happen in the generation. At each
         new sample generated, a random probability is generated, and if that
         probability is equal or less than the noise_percentage, the selected data  will
-        be switched
+        be switched.
 
     has_noise: bool (Default: False)
         Adds 17 non relevant attributes to the stream.
 
     n_drift_features : int (Default : 0)
-        The number of attributes that have drift
+        The number of attributes that have drift.
 
     Examples
     --------
@@ -89,8 +87,8 @@ class LEDGeneratorDrift(LEDGenerator):
             self._numberAttribute[i] = i
 
         if self.has_noise and self.n_drift_features > 0:
-            random_int = self.random_state.randint(7)
-            offset = self.random_state.randint(self._NUM_IRRELEVANT_ATTRIBUTES)
+            random_int = self._random_state.randint(7)
+            offset = self._random_state.randint(self._NUM_IRRELEVANT_ATTRIBUTES)
             for i in range(self.n_drift_features):
                 value1 = (i + random_int) % 7
                 value2 = 7 + (i + offset) % self._NUM_IRRELEVANT_ATTRIBUTES
@@ -104,8 +102,6 @@ class LEDGeneratorDrift(LEDGenerator):
         An instance is generated based on the parameters passed. If noise
         is included the total number of attributes will be 24, if it's not
         included there will be 7 attributes.
-
-
 
         Parameters
         ----------
@@ -124,16 +120,16 @@ class LEDGeneratorDrift(LEDGenerator):
 
         for j in range(batch_size):
             self.sample_idx += 1
-            selected = self.random_state.randint(self.n_classes)
+            selected = self._random_state.randint(self.n_classes)
             target[j] = selected
             for i in range(self._NUM_BASE_ATTRIBUTES):
-                if (0.01 + self.random_state.rand()) <= self.noise_percentage:
+                if (0.01 + self._random_state.rand()) <= self.noise_percentage:
                     data[j, self._numberAttribute[i]] = 1 if (self._ORIGINAL_INSTANCES[selected, i] == 0) else 0
                 else:
                     data[j, self._numberAttribute[i]] = self._ORIGINAL_INSTANCES[selected, i]
             if self.has_noise:
                 for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    data[j, self._numberAttribute[i]] = self.random_state.randint(2)
+                    data[j, self._numberAttribute[i]] = self._random_state.randint(2)
 
         self.current_sample_x = data[:, :self.n_features]
         self.current_sample_y = target
@@ -141,11 +137,3 @@ class LEDGeneratorDrift(LEDGenerator):
 
     def get_data_info(self):
         return "Led Generator with drift - {} features".format(self.n_features)
-
-    def get_info(self):
-        return '  -  n_num_features: ' + str(self.n_num_features) + \
-               '  -  n_cat_features: ' + str(self.n_cat_features) + \
-               '  -  has_noise: ' + str(self.has_noise) + \
-               '  -  noise_percentage: ' + str(self.noise_percentage) + \
-               '  -  n_drift_features: ' + str(self.n_drift_features) + \
-               '  -  random_state: ' + str(self.random_state)

@@ -1,18 +1,33 @@
 language: python
-python:
-  - "3.4"
-  - "3.5"
-  - "3.6"
+matrix:
+  include:
+    - name: "Python 3.5 on Linux"
+      python: 3.5
+    - name: "Python 3.6 on Linux"
+      python: 3.6
+    - name: "Python 3.7.1 on Xenial Linux"
+      python: 3.7
+      dist: xenial
+    - name: "Python 3.7.2 on macOS"
+      os: osx
+      osx_image: xcode10.2  # Python 3.7.2 running on macOS 10.14.3
+      language: shell
+    - name: "Python 3.7.3 on Windows"
+      os: windows           # Windows 10.0.17134 N/A Build 17134
+      language: shell
+      before_install: choco install python
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 # command to install dependencies
 install:
-  - pip install --upgrade pip setuptools wheel
-  - pip install --only-binary=numpy,scipy numpy scipy
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install 'pandas<0.21'; fi
-  - pip install codecov pytest-cov
-  - pip install -U .
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]];
+    then pip3 install --upgrade pip setuptools wheel;
+    fi
+  - pip3 install --only-binary=numpy,scipy numpy scipy
+  - pip3 install codecov pytest-cov
+  - pip3 install -U .
 # command to run tests
 script:
   - pytest tests --showlocals -v --cov=skmultiflow
-
+# after success
 after_success:
   - codecov

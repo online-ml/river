@@ -1,13 +1,18 @@
 import sys
+import os
 from setuptools import setup, find_packages
 from distutils.core import Extension
 from distutils.sysconfig import get_python_inc
 from os import path
 from glob import glob
 
+# get __version__ from _version.py
+ver_file = os.path.join('src/skmultiflow', '_version.py')
+with open(ver_file) as f:
+    exec(f.read())
 
 DIST_NAME = 'scikit-multiflow'
-DESCRIPTION = 'A multi-output/multi-label and stream data mining framework.'
+DESCRIPTION = 'A machine learning framework for multi-output/multi-label and stream data.'
 MAINTAINER = 'Jacob Montiel'
 MAINTAINER_EMAIL = ''
 URL = 'https://scikit-multiflow.github.io/'
@@ -17,8 +22,7 @@ PROJECT_URLS = {'Travis CI': 'https://travis-ci.org/scikit-multiflow/scikit-mult
                 }
 DOWNLOAD_URL = 'https://pypi.org/project/scikit-multiflow/#files'
 LICENSE = '3-Clause BSD'
-VERSION = '0.1.4'
-
+VERSION = __version__
 
 # read the contents of README file
 pkg_directory = path.abspath(path.dirname(__file__))

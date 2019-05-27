@@ -26,9 +26,13 @@ def test_one_hot_to_categorical(test_path):
     X_decoded = transformer.transform(X)
     assert np.alltrue(X_decoded == X_expected)
 
-    expected_info =  'OneHotToCategorical: categorical_list: [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], ' \
-                     '[10, 11, 12, 13, 14], [15, 16, 17, 18, 19], [20, 21, 22, 23, 24]]'
+    expected_info = "OneHotToCategorical(categorical_list=[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9],\n" \
+                    "                                      [10, 11, 12, 13, 14],\n" \
+                    "                                      [15, 16, 17, 18, 19],\n" \
+                    "                                      [20, 21, 22, 23, 24]])"
     assert transformer.get_info() == expected_info
+
+    assert transformer._estimator_type == 'transform'
 
     transformer.fit(X=X, y=y)
 

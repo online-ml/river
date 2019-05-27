@@ -12,7 +12,7 @@ def test_page_hinkley(test_path):
     ph = PageHinkley()
     test_file = os.path.join(test_path, 'drift_stream.npy')
     data_stream = np.load(test_file)
-    expected_indices = [1022, 1122, 1332]
+    expected_indices = [1013, 1335, 1505, 1758]
     detected_indices = []
 
     for i in range(data_stream.size):
@@ -21,3 +21,6 @@ def test_page_hinkley(test_path):
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
+
+    expected_info = "PageHinkley(alpha=0.9999, delta=0.005, min_instances=30, threshold=50)"
+    assert ph.get_info() == expected_info

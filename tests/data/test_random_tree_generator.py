@@ -29,7 +29,7 @@ def test_random_tree_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_data_info() == 'Random Tree Generator - 1 targets, 2 classes, 15 features'
+    assert stream.get_data_info() == 'Random Tree Generator - 1 target(s), 2 classes, 15 features'
 
     assert stream.has_more_samples() is True
 
@@ -57,3 +57,12 @@ def test_random_tree_generator(test_path):
     assert stream.n_targets == np.array(y).ndim
 
     assert stream.n_features == X.shape[1]
+
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "RandomTreeGenerator(fraction_leaves_per_level=0.15, max_tree_depth=6,\n" \
+                    "                    min_leaf_depth=3, n_cat_features=2,\n" \
+                    "                    n_categories_per_cat_feature=5, n_classes=2,\n" \
+                    "                    n_num_features=5, sample_random_state=12,\n" \
+                    "                    tree_random_state=23)"
+    assert stream.get_info() == expected_info

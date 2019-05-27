@@ -1,16 +1,24 @@
-Fixes # .
+<!-- 
+Thank you for contributing with a PR!
+
+Please fill the description of change(s) and/or if it fixes an open issue (optional).
+
+To ease the merge process please review the attached checklist.
+-->
 
 Changes proposed in this pull request:
--
--
--
 
-@scikit-multiflow/scikit-multiflow-repo-admins
+* 
+* 
+* Fixes # . [Optional]
+
+---
 
 Checklist
 
-- [x] Code complies with PEP-8 and is consistent with the framework.
-- [x] Code is properly documented.
-- [x] Tests are included for new functionality.
-- [x] Travis CI build passes.
-- [x] Test Coverage is maintained (threshold 0.2%)
+- [ ] Code complies with PEP-8 and is consistent with the framework.
+- [ ] Code is properly documented.
+- [ ] Tests are included for new functionality or updated accordingly.
+- [ ] Travis CI build passes with no errors.
+- [ ] Test Coverage is maintained (threshold is -0.2%).
+- [ ] Files changed (update, add, delete) are in the PR's scope (no extra files are included).

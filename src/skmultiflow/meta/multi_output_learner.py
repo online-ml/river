@@ -1,18 +1,21 @@
 import numpy as np
+
 import copy as cp
-from sklearn import linear_model
-from skmultiflow.core.base import StreamModel
+from inspect import signature
+
+from sklearn.linear_model import SGDClassifier
+
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin
 from skmultiflow.metrics import *
 
 
-class MultiOutputLearner(StreamModel):
-    """ MultiOutputLearner
+class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiOutputMixin):
+    """ Multi-Output Learner for multi-label classification.
 
     Parameters
     ----------
-    base_estimator: StreamModel or sklearn model
-        This is the ensemble classifier type, each ensemble classifier is going 
-        to be a copy of the base_estimator classifier.
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=SGDClassifier)
+        Each member of the ensemble is an instance of the base estimator.
 
     Notes
     -----
@@ -20,7 +23,7 @@ class MultiOutputLearner(StreamModel):
     a multi output problem, by applying them individually to each output. In
     the classification context, this is the "binary relevance" estimator.
 
-    A Multi-Output Learner learns to predict multiple outputs for each
+    A Multi-Output Learner model learns to predict multiple outputs for each
     instance. The outputs may either be discrete (i.e., classification),
     or continuous (i.e., regression). This class takes any base learner
     (which by default is LogisticRegression) and builds a separate model
@@ -29,7 +32,6 @@ class MultiOutputLearner(StreamModel):
 
     Examples
     --------
-    # Imports
     >>> from skmultiflow.meta.multi_output_learner import MultiOutputLearner
     >>> from skmultiflow.core.pipeline import Pipeline
     >>> from skmultiflow.data.file_stream import FileStream
@@ -63,7 +65,7 @@ class MultiOutputLearner(StreamModel):
     
     """
 
-    def __init__(self, base_estimator=linear_model.SGDClassifier(max_iter=100)):
+    def __init__(self, base_estimator=SGDClassifier(max_iter=100)):
         super().__init__()
         self.base_estimator = base_estimator
         self.ensemble = None
@@ -72,22 +74,22 @@ class MultiOutputLearner(StreamModel):
     def __configure(self):
         self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.n_labels)]
 
-    def fit(self, X, y, classes=None, weight=None):
-        """ fit
+    def fit(self, X, y, classes=None, sample_weight=None):
+        """ Fit the model.
 
         Fit the N classifiers, one for each classification task.
 
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
-            The array of samples used to fit the model.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: Array-like
-            An array-like with the labels of all samples in X.
+        y: numpy.ndarray of shape (n_samples, n_targets)
+            An array-like with the class labels of all samples in X.
 
-        classes: Not used.
+        classes: not used (default=None)
 
-        weight: Not used.
+        sample_weight: not used (default=None)
 
         Returns
         -------
@@ -97,31 +99,33 @@ class MultiOutputLearner(StreamModel):
         """
         N, L = y.shape
         self.n_labels = L
-        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.n_labels)]
+        self.__configure()
 
         for j in range(self.n_labels):
             self.ensemble[j].fit(X, y[:, j])
         return self
 
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ Partially fit each of the classifiers on the X matrix and the
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially (incrementally) fit the model.
+
+        Partially fit each of the classifiers on the X matrix and the
         corresponding y matrix.
 
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
-            The array of samples used to fit the model.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: Numpy.ndarray of shape (n_samples, n_labels)
-            An array-like with the labels of all samples in X.
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
 
-        classes: Array-like
-            Contains all labels that may appear in samples. It's an optional 
-            parameter, except during the first partial_fit call, when it's 
-            obligatory.
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
-        weight: Array-like.
-            Instance weight.
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the base estimator.
+
 
         Returns
         -------
@@ -129,34 +133,39 @@ class MultiOutputLearner(StreamModel):
             self
 
         """
+        if self.n_labels is None:
+            # This is the first time that the model is fit
+            self.fit(X, y)
+            return self
+
         N, self.n_labels = y.shape
 
         if self.ensemble is None:
             self.__configure()
 
         for j in range(self.n_labels):
-            if "weight" in self.ensemble[j].partial_fit.__code__.co_varnames:
-                self.ensemble[j].partial_fit(X, y[:, j], classes, weight)
-            elif "sample_weight" in self.ensemble[j].partial_fit.__code__.co_varnames:
-                self.ensemble[j].partial_fit(X, y[:, j], classes, weight)
+            if 'sample_weight' in signature(self.ensemble[j].partial_fit).parameters:
+                self.ensemble[j].partial_fit(X, y[:, j], sample_weight=sample_weight)
             else:
                 self.ensemble[j].partial_fit(X, y[:, j])
 
         return self
 
     def predict(self, X):
-        """ Iterates over all the classifiers, predicting with each one, to obtain
+        """ Predict classes for the passed data.
+
+        Iterates over all the classifiers, predicting with each one, to obtain
         the multi output prediction.
         
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
-            The matrix of samples one wants to predict.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The set of data samples to predict the class labels for.
             
         Returns
         -------
         numpy.ndarray
-            Numpy.ndarray of shape (n_samples, n_labels)
+            numpy.ndarray of shape (n_samples, n_labels)
             All the predictions for the samples in X.
         """
 
@@ -175,8 +184,8 @@ class MultiOutputLearner(StreamModel):
 
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
-            The matrix of samples one wants to predict.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The set of data samples to predict the class labels for.
 
         Returns
         -------
@@ -189,15 +198,17 @@ class MultiOutputLearner(StreamModel):
         N, D = X.shape
         proba = np.zeros((N,self.n_labels))
         for j in range(self.n_labels):
-            proba[:, j] = self.ensemble[j].predict_proba(X)[:, 1]
+            try:
+                proba[:, j] = self.ensemble[j].predict_proba(X)[:, 1]
+            except NotImplementedError:
+                raise NotImplementedError("Estimator {} does not implement the predict_proba method".format(
+                    type(self.base_estimator)))
         return proba
-
-    def get_info(self):
-        return 'MultiOutputLearner: - base_estimator: '  + str(type(self.base_estimator).__name__)
-
-    def score(self, X, y):
-        raise NotImplementedError
 
     def reset(self):
         self.ensemble = None
         self.n_labels = None
+
+    def _more_tags(self):
+        return {'multioutput': True,
+                'multioutput_only': True}

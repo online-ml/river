@@ -7,9 +7,9 @@ from skmultiflow.data.data_stream import DataStream
 def test_data_stream(test_path, package_path):
     test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
     raw_data = pd.read_csv(test_file)
-    stream = DataStream(raw_data)
+    stream = DataStream(raw_data, name='Test')
 
-    assert stream._Y_is_defined == False
+    assert not stream._Y_is_defined
 
     stream.prepare_for_use()
 
@@ -31,7 +31,7 @@ def test_data_stream(test_path, package_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_data_info() == '1 target(s), 2 classes'
+    assert stream.get_data_info() == 'Test: 1 target(s), 2 classes'
 
     assert stream.has_more_samples() is True
 
@@ -59,6 +59,11 @@ def test_data_stream(test_path, package_path):
     assert stream.n_targets == np.array(y).ndim
 
     assert stream.n_features == X.shape[1]
+
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "DataStream(n_targets=-1, target_idx=1, cat_features=None, name='Test')"
+    assert stream.get_info() == expected_info
 
 
 def test_data_stream_X_y(test_path, package_path):
@@ -68,7 +73,7 @@ def test_data_stream_X_y(test_path, package_path):
     X = raw_data.iloc[:, :-1]
     stream = DataStream(X, y)
 
-    assert stream._Y_is_defined == True
+    assert stream._Y_is_defined
 
     stream.prepare_for_use()
 
@@ -118,4 +123,3 @@ def test_data_stream_X_y(test_path, package_path):
     assert stream.n_targets == np.array(y).ndim
 
     assert stream.n_features == X.shape[1]
-

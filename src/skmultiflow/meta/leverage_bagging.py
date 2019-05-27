@@ -1,59 +1,35 @@
 import copy as cp
-from skmultiflow.core.base import StreamModel
-from skmultiflow.lazy.knn import KNN
-from skmultiflow.drift_detection.adwin import ADWIN
+
+from skmultiflow.core.base import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
+from skmultiflow.lazy import KNN
+from skmultiflow.drift_detection import ADWIN
 from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
 
 
-class LeverageBagging(StreamModel):
-    """ Leverage Bagging Classifier
-    
-    An ensemble method, which represents an improvement from the online Oza 
-    Bagging algorithm. The complete description of this method can be found 
-    in Bifet, Holmes, and Pfahringer's 'Leveraging Bagging for Evolving Data 
-    Streams'.
-    
-    The bagging performance is leveraged by increasing the re-sampling and 
-    by using output detection codes. We use a poisson distribution to 
-    simulate the re-sampling process. To increase re-sampling we use a higher 
-    value of the w parameter of the Poisson distribution, which is 6 by 
-    default. With this value we are increasing the input space diversity, by 
-    attributing a different range of weights to our samples.
-    
-    The second improvement is to use output detection codes. This consists of 
-    coding each label with a n bit long binary code and then associating n 
-    classifiers, one to each bit of the binary codes. At each new sample 
-    analyzed, each classifier is trained on its own bit. This allows, to some 
-    extent, the correction of errors.
-    
-    To deal with concept drift we use the ADWIN algorithm, one instance for 
-    each classifier. Each time a concept drift is detected we reset the worst 
-    ensemble's classifier, which is done by comparing the adwins' window sizes.
-    
+class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+    """ Leverage Bagging ensemble classifier.
+
     Parameters
     ----------
-    base_estimator: StreamModel
-        This is the ensemble classifier type, each ensemble classifier will be a
-        copy of the base_estimator.
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNN)
+        Each member of the ensemble is an instance of the base estimator.
         
-    n_estimators: int
+    n_estimators: int (default=10)
         The size of the ensemble, in other words, how many classifiers to train.
+
+    w: int (default=6)
+        The poisson distribution's parameter, which is used to simulate re-sampling.
         
-    w: int
-        The poisson distribution's parameter, which is used to simulate 
-        re-sampling.
-        
-    delta: float
+    delta: float (default=0.002)
         The delta parameter for the ADWIN change detector.
     
-    enable_code_matrix: bool
-        If set to True it will enable the output detection code matrix.
+    enable_code_matrix: bool (default=False)
+        If set, it will enable the output detection code matrix.
     
-    leverage_algorithm: string 
-        A string representing the bagging algorithm to use. Can be one of the 
-        following: 'leveraging_bag', 'leveraging_bag_me', 'leveraging_bag_half', 
-        'leveraging_bag_wt', 'leveraging_subag'
+    leverage_algorithm: string (default='leveraging_bag')
+        The bagging algorithm to use. Can be one of the following: 'leveraging_bag',
+         'leveraging_bag_me', 'leveraging_bag_half', 'leveraging_bag_wt', 'leveraging_subag'
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -62,19 +38,45 @@ class LeverageBagging(StreamModel):
     
     Raises
     ------
-    NotImplementedError: A few of the functions described here are not 
-    implemented since they have no application in this context.
-    
     ValueError: A ValueError is raised if the 'classes' parameter is
     not passed in the first partial_fit call.
+
+    Notes
+    -----
+    An ensemble method, which represents an improvement from the online Oza
+    Bagging algorithm. The complete description of this method can be found
+    in [1]_.
+
+    The bagging performance is leveraged by increasing the re-sampling and
+    by using output detection codes. We use a poisson distribution to
+    simulate the re-sampling process. To increase re-sampling we use a higher
+    value of the w parameter of the Poisson distribution, which is 6 by
+    default. With this value we are increasing the input space diversity, by
+    attributing a different range of weights to our samples.
+
+    The second improvement is to use output detection codes. This consists of
+    coding each label with a n bit long binary code and then associating n
+    classifiers, one to each bit of the binary codes. At each new sample
+    analyzed, each classifier is trained on its own bit. This allows, to some
+    extent, the correction of errors.
+
+    To deal with concept drift we use the ADWIN algorithm, one instance for
+    each classifier. Each time a concept drift is detected we reset the worst
+    ensemble's classifier, which is done by comparing the adwins' window sizes.
+
+    References
+    ----------
+    .. [1] A. Bifet, G. Holmes, and B. Pfahringer, “Leveraging Bagging for Evolving Data Streams,”
+       in Joint European conference on machine learning and knowledge discovery in databases, 2010,
+       no. 1, pp. 135–150.
 
     
     Examples
     --------
     >>> # Imports
     >>> from skmultiflow.meta import LeverageBagging
-    >>> from skmultiflow.lazy.knn import KNN
-    >>> from skmultiflow.data.sea_generator import SEAGenerator
+    >>> from skmultiflow.lazy import KNN
+    >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
     >>> stream.prepare_for_use()
@@ -123,55 +125,47 @@ class LeverageBagging(StreamModel):
         self.matrix_codes = None
         self.classes = None
         self.init_matrix_codes = None
-        self.random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self.base_estimator = base_estimator
-        self._init_n_estimators = n_estimators
-        self.enable_matrix_codes = enable_code_matrix
+        self.n_estimators = n_estimators
+        self.enable_code_matrix = enable_code_matrix
         self.w = w
         self.delta = delta
         if leverage_algorithm not in self.LEVERAGE_ALGORITHMS:
             raise ValueError("Leverage algorithm not supported.")
-        self.leveraging_algorithm = leverage_algorithm
-        self._init_random_state = random_state
+        self.leverage_algorithm = leverage_algorithm
+        self.random_state = random_state
         self.__configure()
 
     def __configure(self):
-        self.base_estimator.reset()
-        self.n_estimators = self._init_n_estimators
-        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.n_estimators)]
+        if hasattr(self.base_estimator, "reset"):
+            self.base_estimator.reset()
+        self.actual_n_estimators = self.n_estimators
+        self.ensemble = [cp.deepcopy(self.base_estimator) for _ in range(self.actual_n_estimators)]
         self.adwin_ensemble = []
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             self.adwin_ensemble.append(ADWIN(self.delta))
-        self.random_state = check_random_state(self._init_random_state)
+        self._random_state = check_random_state(self.random_state)
         self.n_detected_changes = 0
         self.classes = None
         self.init_matrix_codes = True
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially (incrementally) fit the model.
 
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-        
-        Partially fit the ensemble's method models. 
-        
-        This id done by calling the private funcion __partial_fit.
-        
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            The samples used to update the models.
-            
-        y: Array-like
-            An array containing all the labels for the samples in X.
-            
-        classes: list
-            A list with all the possible labels of the classification task.
-            It's an optional parameter, except for the first partial_fit 
-            call, when it's a requirement.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        weight: Not used.
-        
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
+
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels.
+
+        sample_weight: not used (default=None)
+
         Raises
         ------
         ValueError: A ValueError is raised if the 'classes' parameter is not
@@ -189,7 +183,7 @@ class LeverageBagging(StreamModel):
         if classes is not None and self.classes is None:
             self.classes = classes
         elif classes is not None and self.classes is not None:
-            if self.classes == set(classes):
+            if set(self.classes) == set(classes):
                 pass
             else:
                 raise ValueError(
@@ -203,18 +197,18 @@ class LeverageBagging(StreamModel):
 
     def __partial_fit(self, X, y):
         if self.init_matrix_codes:
-            self.matrix_codes = np.zeros((self.n_estimators, len(self.classes)), dtype=int)
-            for i in range(self.n_estimators):
+            self.matrix_codes = np.zeros((self.actual_n_estimators, len(self.classes)), dtype=int)
+            for i in range(self.actual_n_estimators):
                 n_zeros = 0
                 n_ones = 0
-                while (n_ones - n_zeros) * (n_ones - n_zeros) > self.n_estimators % 2:
+                while (n_ones - n_zeros) * (n_ones - n_zeros) > self.actual_n_estimators % 2:
                     n_zeros = 0
                     n_ones = 0
                     for j in range(len(self.classes)):
                         if (j == 1) and (len(self.classes) == 2):
                             result = 1 - self.matrix_codes[i][0]
                         else:
-                            result = self.random_state.randint(2)
+                            result = self._random_state.randint(2)
 
                         self.matrix_codes[i][j] = result
                         if result == 1:
@@ -225,39 +219,39 @@ class LeverageBagging(StreamModel):
 
         change_detected = False
         X_cp, y_cp = cp.deepcopy(X), cp.deepcopy(y)
-        for i in range(self.n_estimators):
+        for i in range(self.actual_n_estimators):
             k = 0.0
 
-            if self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[0]:
-                k = self.random_state.poisson(self.w)
+            if self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[0]:
+                k = self._random_state.poisson(self.w)
 
-            elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[1]:
+            elif self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[1]:
                 error = self.adwin_ensemble[i].estimation
                 pred = self.ensemble[i].predict(np.asarray([X]))
                 if pred is None:
                     k = 1.0
                 elif pred[0] != y:
                     k = 1.0
-                elif self.random_state.rand() < (error/(1.0 - error)):
+                elif self._random_state.rand() < (error / (1.0 - error)):
                     k = 1.0
                 else:
                     k = 0.0
 
-            elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[2]:
+            elif self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[2]:
                 w = 1.0
-                k = 0.0 if (self.random_state.randint(2) == 1) else w
+                k = 0.0 if (self._random_state.randint(2) == 1) else w
 
-            elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[3]:
+            elif self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[3]:
                 w = 1.0
-                k = 1.0 + self.random_state.poisson(w)
+                k = 1.0 + self._random_state.poisson(w)
 
-            elif self.leveraging_algorithm == self.LEVERAGE_ALGORITHMS[4]:
+            elif self.leverage_algorithm == self.LEVERAGE_ALGORITHMS[4]:
                 w = 1.0
-                k = self.random_state.poisson(1)
+                k = self._random_state.poisson(1)
                 k = w if k > 0 else 0
 
             if k > 0:
-                if self.enable_matrix_codes:
+                if self.enable_code_matrix:
                     y_cp = self.matrix_codes[i][int(y_cp)]
                 for l in range(int(k)):
                     self.ensemble[i].partial_fit(np.asarray([X_cp]), np.asarray([y_cp]), self.classes)
@@ -278,7 +272,7 @@ class LeverageBagging(StreamModel):
             self.n_detected_changes += 1
             max_threshold = 0.0
             i_max = -1
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 if max_threshold < self.adwin_ensemble[i].estimation:
                     max_threshold = self.adwin_ensemble[i].estimation
                     i_max = i
@@ -293,22 +287,19 @@ class LeverageBagging(StreamModel):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
                     self.adwin_ensemble.append(ADWIN(self.delta))
-                    self.n_estimators += 1
+                    self.actual_n_estimators += 1
 
     def predict(self, X):
-        """ predict
-        
-        Predicts the labels from all samples in the X matrix.
-        
+        """ Predict classes for the passed data.
+
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            A matrix of the samples we want to predict.
-        
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The set of data samples to predict the class labels for.
+
         Returns
         -------
-        numpy.ndarray
-            A numpy.ndarray with the label prediction for all the samples in X.
+        A numpy.ndarray with all the predictions for the samples in X.
         
         """
         r, c = get_dimensions(X)
@@ -322,17 +313,12 @@ class LeverageBagging(StreamModel):
         return np.asarray(predictions)
 
     def predict_proba(self, X):
-        """ predict_proba
-
-        Calculates the probability of each sample in X belonging to each 
-        of the labels, based on the knn algorithm. This is done by predicting 
-        the class probability for each one of the ensemble's classifier, and 
-        then taking the absolute probability from the ensemble itself.
+        """ Estimates the probability of each sample in X belonging to each of the class-labels.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            All the samples we want to predict the label for.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The matrix of samples one wants to predict the class probabilities for.
 
         Raises
         ------
@@ -341,19 +327,24 @@ class LeverageBagging(StreamModel):
 
         Returns
         -------
-        numpy.ndarray
-            An array of shape (n_samples, n_features), in which each outer entry is 
-            associated with the X entry of the same index. And where the list in 
-            index [i] contains len(self.classes) elements, each of which represents
-            the probability that the i-th sample of X belongs to a certain label.
+        A numpy.ndarray of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the
+        same index. And where the list in index [i] contains len(self.target_values) elements, each of which represents
+        the probability that the i-th sample of X belongs to a certain class-label.
+
+        Notes
+        -----
+        Calculates the probability of each sample in X belonging to each 
+        of the labels, based on the base estimator. This is done by predicting
+        the class probability for each one of the ensemble's classifier, and 
+        then taking the absolute probability from the ensemble itself.
 
         """
-        if self.enable_matrix_codes:
+        if self.enable_code_matrix:
             return self.predict_binary_proba(X)
         proba = []
         r, c = get_dimensions(X)
         try:
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 partial_proba = self.ensemble[i].predict_proba(X)
                 if len(partial_proba[0]) > max(self.classes) + 1:
                     raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
@@ -386,15 +377,14 @@ class LeverageBagging(StreamModel):
         return np.asarray(aux)
 
     def predict_binary_proba(self, X):
-        """ predict_binary_proba
+        """ Calculates the probability of each sample belonging to each coded label.
 
-        Calculates the probability of each sample in X belonging to each 
-        coded label. This will only be used if matrix codes are enabled. 
+        This will only be used if matrix codes are enabled.
         Otherwise the method will use the normal predict_proba function.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             All the samples we want to predict the label for.
 
         Returns
@@ -411,7 +401,7 @@ class LeverageBagging(StreamModel):
         r, c = get_dimensions(X)
         if not self.init_matrix_codes:
             try:
-                for i in range(self.n_estimators):
+                for i in range(self.actual_n_estimators):
                     vote = self.ensemble[i].predict_proba(X)
                     vote_class = 0
 
@@ -454,14 +444,3 @@ class LeverageBagging(StreamModel):
         """
         self.__configure()
         return self
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        return 'LeverageBagging Classifier: base_estimator: ' + str(type(self.base_estimator).__name__) + \
-               ' - n_estimators: ' + str(self.n_estimators) + \
-               ' - w: ' + str(self.w) + \
-               ' - delta: ' + str(self.delta) + \
-               ' - enable_code_matrix: ' + ('True' if self.enable_matrix_codes else 'False') + \
-               ' - leveraging_algorithm: ' + self.leveraging_algorithm

@@ -1,6 +1,7 @@
 from skmultiflow.meta import OzaBaggingAdwin
 from skmultiflow.lazy import KNN
 from skmultiflow.data import SEAGenerator
+
 import numpy as np
 
 
@@ -34,12 +35,18 @@ def test_oza_bagging_adwin():
     expected_predictions = [1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0,
                             1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1,
                             1, 0, 1, 0, 0, 1, 1]
-    expected_correct_predictions = 44
-    expected_performance = 0.8979591836734694
-
     assert np.alltrue(predictions == expected_predictions)
+
+    expected_performance = 0.8979591836734694
     assert np.isclose(expected_performance, performance)
+
+    expected_correct_predictions = 44
     assert correct_predictions == expected_correct_predictions
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    expected_info = "OzaBaggingAdwin(base_estimator=KNN(leaf_size=40, max_window_size=2000,\n" \
+                    "                                   n_neighbors=8, nominal_attributes=None),\n" \
+                    "                n_estimators=3, random_state=112)"
+    assert learner.get_info() == expected_info

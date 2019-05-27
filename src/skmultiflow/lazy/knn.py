@@ -1,11 +1,11 @@
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.utils.data_structures import InstanceWindow
 import sklearn.neighbors as sk
 from skmultiflow.utils.utils import *
 
 
-class KNN(StreamModel):
-    """ K-Nearest Neighbors Classifier
+class KNN(BaseSKMObject, ClassifierMixin):
+    """ K-Nearest Neighbors classifier.
     
     This is a non-parametric classification method. The output of this
     algorithm are the n_neighbors closest training examples to the query sample
@@ -38,9 +38,8 @@ class KNN(StreamModel):
         brute-force approach. The bigger this number the faster the tree 
         construction time, but the slower the query time will be.
         
-    categorical_list: array-like
-        Each entry is the index of a categorical feature. May be requested 
-        further filtering.
+    nominal_attributes: numpy.ndarray (optional, default=None)
+        List of Nominal attributes. If empty, then assume that all attributes are numerical.
     
     Raises
     ------
@@ -64,10 +63,10 @@ class KNN(StreamModel):
     Examples
     --------
     >>> # Imports
-    >>> from skmultiflow.lazy.knn import KNN
-    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.lazy import KNN
+    >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
-    >>> stream = FileStream('skmultiflow/data/datasets/sea_big.csv', -1, 1)
+    >>> stream = SEAGenerator(random_state=1, noise_percentage=.1)
     >>> stream.prepare_for_use()
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
@@ -86,14 +85,14 @@ class KNN(StreamModel):
     >>>
     >>> # Displaying results
     >>> print('KNN usage example')
-    >>> print(str(n_samples) + ' samples analyzed.')
+    >>> print('{} samples analyzed.'.format(n_samples))
     5000 samples analyzed.
-    >>> print("KNN's performance: " + str(corrects/n_samples))
-    KNN's performance: 0.868
+    >>> print("KNN's performance: {}".format(corrects/n_samples))
+    KNN's performance: 0.8788
     
     """
 
-    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, categorical_list=None):
+    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, nominal_attributes=None):
         super().__init__()
         self.n_neighbors = n_neighbors
         self.max_window_size = max_window_size
@@ -102,20 +101,12 @@ class KNN(StreamModel):
         self.first_fit = True
         self.classes = []
         self.leaf_size = leaf_size
-        if categorical_list is None:
-            self.categorical_list = []
+        self.nominal_attributes = nominal_attributes
+        if self.nominal_attributes is None:
+            self._nominal_attributes = []
 
-    def fit(self, X, y, classes=None, weight=None):
-        """ fit
-        
-        Fits the model on the samples X and targets y. This is actually the 
-        function as the partial fit.
-        
-        For the K-Nearest Neighbors Classifier, fitting the model is the 
-        equivalent of inserting the newer samples in the observed window, 
-        and if the size_limit is reached, removing older results. To store 
-        the viewed samples we use a InstanceWindow object. For this class' 
-        documentation please visit skmultiflow.core.utils.data_structures
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially fits the model on the samples X and corresponding targets y.
         
         Parameters
         ----------
@@ -125,56 +116,30 @@ class KNN(StreamModel):
         y: Array-like
             An array-like containing the classification targets for all 
             samples in X.
-            
-        classes: Not used.
 
-        weight: Not used.
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known classes.
+
+        sample_weight: Not used.
         
         Returns
         -------
         KNN
             self
-        
+
+        Notes
+        -----
+        For the K-Nearest Neighbors Classifier, fitting the model is the
+        equivalent of inserting the newer samples in the observed window,
+        and if the size_limit is reached, removing older results. To store
+        the viewed samples we use a InstanceWindow object. For this class'
+        documentation please visit skmultiflow.core.utils.data_structures
+
         """
         r, c = get_dimensions(X)
+
         if classes is not None:
             self.classes = list(set().union(self.classes, classes))
-
-        for i in range(r):
-            self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
-        return self
-
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-        
-        Fits the model on the samples X and targets y.
-        
-        For the K-Nearest Neighbors Classifier, fitting the model is the 
-        equivalent of inserting the newer samples in the observed window, 
-        and if the size_limit is reached, removing older results. To store 
-        the viewed samples we use a InstanceWindow object. For this class' 
-        documentation please visit skmultiflow.core.utils.data_structures
-        
-        Parameters
-        ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            The data upon which the algorithm will create its model.
-            
-        y: Array-like
-            An array-like containing the classification targets for all 
-            samples in X.
-
-        classes: Not used.
-
-        weight: Not used.
-        
-        Returns
-        -------
-        KNN
-            self
-        
-        """
-        r, c = get_dimensions(X)
 
         for i in range(r):
             self.window.add_element(np.asarray([X[i]]), np.asarray([[y[i]]]))
@@ -234,7 +199,7 @@ class KNN(StreamModel):
          
         """
         if self.window is None or self.window.n_samples < self.n_neighbors:
-            raise ValueError("KNN must be partially fitted on n_neighbors samples before doing any prediction.")
+            raise ValueError("KNN must be (partially) fitted on n_neighbors samples before doing any prediction.")
         proba = []
         r, c = get_dimensions(X)
 
@@ -264,26 +229,11 @@ class KNN(StreamModel):
             One list with the k-nearest neighbor's distances and another 
             one with their indexes.
         
-        Notes
-        -----
-        If you wish to use our own KDTree implementation please comment 
-        the third line of this function and uncomment the first and 
-        second lines.
-        
         """
+        # To use our own KDTree implementation please replace it as follows
         # tree = KDTree(self.window.get_attributes_matrix(), metric='euclidean',
-        #              categorical_list=self.categorical_list, return_distance=True)
+        #              nominal_attributes=self._nominal_attributes, return_distance=True)
 
         tree = sk.KDTree(self.window.get_attributes_matrix(), self.leaf_size, metric='euclidean')
         dist, ind = tree.query(np.asarray(X), k=self.n_neighbors)
         return dist, ind
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        info = '{}:'.format(type(self).__name__)
-        info += ' - n_neighbors: {}'.format(self.n_neighbors)
-        info += ' - max_window_size: {}'.format(self.max_window_size)
-        info += ' - leaf_size: {}'.format(self.leaf_size)
-        return info

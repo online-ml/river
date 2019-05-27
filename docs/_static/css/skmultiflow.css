@@ -1,0 +1,48 @@
+@import url("theme.css");
+
+.highlight a {
+    text-decoration: underline;
+}
+
+.deprecated p {
+    padding: 10px 7px 10px 10px;
+    color: #b94a48;
+    background-color: #F3E5E5;
+    border: 1px solid #eed3d7;
+}
+
+.deprecated p span.versionmodified {
+    font-weight: bold;
+}
+
+.wy-nav-content {
+    max-width: 1200px !important;
+}
+
+.forestgreen-label {
+    color:white;
+    background-color:forestgreen;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}
+
+.royalblue-label {
+    color:white;
+    background-color:royalblue;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}
+
+.crimson-label {
+    color:white;
+    background-color:crimson;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}
+
+.gold-label {
+    color:black;
+    background-color:gold;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}

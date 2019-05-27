@@ -12,10 +12,10 @@ If you are not familiar with Git or GitHub, here are good resources to start in 
 * Python Code shall comply with [PEP 8](https://www.python.org/dev/peps/pep-0008/)
 
 * Documentation shall be in docstring format and shall follow the
-  [NumPy/SciPy guidelines](https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt)
+  [NumPy/SciPy guidelines](https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard)
 
   - An example from the sphinx documentation:  
-    http://www.sphinx-doc.org/en/stable/ext/example_numpy.html
+    https://www.sphinx-doc.org/en/master/usage/extensions/example_numpy.html
 
 ## Development
 This section contains relevant information for development, including project setup, coding best practices, etc.
@@ -23,9 +23,12 @@ This section contains relevant information for development, including project se
 ### pip setup in editable mode
 As default, `pip` installs a *fixed* version of a python package. However, during development, new code is added to a project incrementally and it is desired for developers to "see" these changes reflected immediately. For this purpose, `pip install` provides an `editable mode` option, to avoid re-running the setup script as new code is added.
 
-To setup`scikit-multiflow` in editable mode you must run the following command from the local path of the project:
+To setup`scikit-multiflow` in editable mode you must run one of the following commands from the local path of the project:
 ```shell
 pip install -e .
+```
+```shell
+pip install --editable .
 ```
 
 ### Random number generators
@@ -45,15 +48,10 @@ If you are adding new code to `scikit-multiflow`, it is highly encouraged that y
 ## Sphinx documentation
 * We generate our documentation using `sphinx` with the following dependencies: `sphinx_rtd_theme` 
 * To update the documentation, perform in a terminal the steps below:
-    * Make your way to the scikit-multiflow parent directory (outside the project)
-    * Type in:  
-      ``` bash
-      $ sphinx-apidoc -o scikit-multiflow/docs scikit-multiflow/src/skmultiflow -e -f 
-      ```
-
     * Go to scikit-multiflow/docs and type in:  
       ``` bash
       $ make html
       ```
+      This will generate the documentation page in `docs/_build/html`
      
     * The documentation page is hosted in the **gh-pages** branch.

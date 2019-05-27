@@ -1,8 +1,7 @@
 from abc import ABCMeta, abstractmethod
-from skmultiflow.core.base_object import BaseObject
 
 
-class Option(BaseObject, metaclass=ABCMeta):
+class Option(object, metaclass=ABCMeta):
     """ BaseOption
     
     The abstract class that defines the constraints for all option classes in this framework.
@@ -76,9 +75,6 @@ class Option(BaseObject, metaclass=ABCMeta):
         
         """
         raise NotImplementedError
-
-    def get_class_type(self):
-        return 'option'
 
     @abstractmethod
     def get_info(self):

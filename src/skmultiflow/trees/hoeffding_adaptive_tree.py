@@ -1,16 +1,13 @@
-import logging
 from abc import ABCMeta, abstractmethod
-from skmultiflow.utils.utils import get_max_value_key, normalize_values_in_dict
-from skmultiflow.drift_detection.adwin import ADWIN
-from skmultiflow.bayes import do_naive_bayes_prediction
-from skmultiflow.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.utils import check_random_state
 import math
-import numpy as np
 
-# Logger
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+from skmultiflow.utils.utils import get_max_value_key, normalize_values_in_dict
+from skmultiflow.drift_detection import ADWIN
+from skmultiflow.bayes import do_naive_bayes_prediction
+from skmultiflow.trees import HoeffdingTree
+from skmultiflow.utils import check_random_state
+
+import numpy as np
 
 SplitNode = HoeffdingTree.SplitNode
 LearningNodeNBAdaptive = HoeffdingTree.LearningNodeNBAdaptive
@@ -22,7 +19,7 @@ error_width_threshold = 300
 
 
 class HAT(HoeffdingTree):
-    """ Hoeffding Adaptive Tree for evolving data streams.
+    """ Hoeffding Adaptive Tree.
 
     Parameters
     ----------
@@ -423,14 +420,14 @@ class HAT(HoeffdingTree):
         self._tree_root = None
 
     # Override HoeffdingTree
-    def _partial_fit(self, X, y, weight):
+    def _partial_fit(self, X, y, sample_weight):
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._active_leaf_node_cnt = 1
         if isinstance(self._tree_root, self.InactiveLearningNode):
-            self._tree_root.learn_from_instance(X, y, weight, self)
+            self._tree_root.learn_from_instance(X, y, sample_weight, self)
         else:
-            self._tree_root.learn_from_instance(X, y, weight, self, None, -1)
+            self._tree_root.learn_from_instance(X, y, sample_weight, self, None, -1)
 
     def filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch, update_splitter_counts):
         nodes = []
@@ -454,9 +451,6 @@ class HAT(HoeffdingTree):
                     dist = leaf_node.get_class_votes(X, self)
                     result.update(dist)  # add elements to dictionary
         return result
-
-    def score(self, X, y):
-        raise NotImplementedError
 
     # Override HoeffdingTree
     def _new_learning_node(self, initial_class_observations=None):

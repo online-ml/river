@@ -1,8 +1,8 @@
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
-from skmultiflow.bayes import NaiveBayes
 
-from skmultiflow.data import SEAGenerator, RandomTreeGenerator, ConceptDriftStream
+from sklearn.naive_bayes import GaussianNB
+
+from skmultiflow.data import SEAGenerator
 from skmultiflow.meta import LearnNSE
 from skmultiflow.trees import HoeffdingTree
 
@@ -13,7 +13,7 @@ def run_classifier(estimator, stream, pruning=None, ensemble_size=15, m=200):
                           pruning=pruning,
                           slope=0.5,
                           crossing_point=10,
-                          ensemble_size=ensemble_size)
+                          n_estimators=ensemble_size)
 
     # Keeping track of sample count and correct prediction count
     sample_count = 0
@@ -61,12 +61,10 @@ def test_learn_nse():
     assert len(classifier.X_batch) == 0
     assert len(classifier.y_batch) == 0
 
-    assert classifier.get_info() == "LearnNSE: base_estimator: <class 'sklearn.naive_bayes.GaussianNB'> - " \
-                                    "ensemble_size: <class 'int'> - " \
-                                    "period: <class 'int'> - " \
-                                    "slope: <class 'float'> - " \
-                                    "crossing_point: <class 'int'> - " \
-                                    "pruning: <class 'NoneType'>"
+    expected_info = 'LearnNSE(base_estimator=GaussianNB(priors=None, var_smoothing=1e-09),\n' \
+                    '         crossing_point=10, n_estimators=15, pruning=None, slope=0.5,\n' \
+                    '         window_size=250)'
+    assert classifier.get_info() == expected_info
     # test pruning error
     corrects, acc, classifier = run_classifier(estimator, stream, pruning="error", ensemble_size=5)
 

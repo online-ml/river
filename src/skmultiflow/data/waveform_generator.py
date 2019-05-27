@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 
 
 class WaveformGenerator(Stream):
-    """ WaveformGenerator
+    """ Waveform stream generator.
 
     Generates instances with 21 numeric attributes and 3 classes, based
     on a random differentiation of some base waveforms. Supports noise 
@@ -20,7 +20,7 @@ class WaveformGenerator(Stream):
         by `np.random`.
 
     has_noise: bool
-        if True additional 19 insignificant will be added. (Default: False)
+        if True additional 19 unrelated features will be added. (Default: False)
         
     Examples
     --------
@@ -93,8 +93,8 @@ class WaveformGenerator(Stream):
     def __init__(self, random_state=None, has_noise=False):
         super().__init__()
 
-        self._original_random_state = random_state
-        self.random_state = None
+        self.random_state = random_state
+        self._random_state = None   # This is the actual random_state object used internally
         self.has_noise = has_noise
         self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = self._NUM_CLASSES
@@ -139,10 +139,14 @@ class WaveformGenerator(Stream):
 
     def prepare_for_use(self):
         """
-        Should be called before generating the samples.
+        Prepares the stream for use.
+
+        Notes
+        -----
+        This functions should always be called after the stream initialization.
 
         """
-        self.random_state = check_random_state(self._original_random_state)
+        self._random_state = check_random_state(self.random_state)
         self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
@@ -177,30 +181,23 @@ class WaveformGenerator(Stream):
 
         for j in range(batch_size):
             self.sample_idx += 1
-            group = self.random_state.randint(0, self.n_classes)
+            group = self._random_state.randint(0, self.n_classes)
             choice_a = 1 if (group == 2) else 0
             choice_b = 1 if (group == 0) else 2
-            multiplier_a = self.random_state.rand()
+            multiplier_a = self._random_state.rand()
             multiplier_b = 1.0 - multiplier_a
 
             for i in range(self._NUM_BASE_ATTRIBUTES):
-                data[j, i] = multiplier_a*self._H_FUNCTION[choice_a][i] \
-                            + multiplier_b*self._H_FUNCTION[choice_b][i] \
-                            + self.random_state.normal()
+                data[j, i] = multiplier_a * self._H_FUNCTION[choice_a][i] \
+                            + multiplier_b * self._H_FUNCTION[choice_b][i] \
+                            + self._random_state.normal()
 
             if self.has_noise:
                 for i in range(self._NUM_BASE_ATTRIBUTES, self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
-                    data[j, i] = self.random_state.normal()
+                    data[j, i] = self._random_state.normal()
 
-            data[j, data[j].size-1] = group
+            data[j, data[j].size - 1] = group
         self.current_sample_x = data[:, :self.n_features]
-        self.current_sample_y = np.ravel(data[:, self.n_features:])
+        self.current_sample_y = np.ravel(data[:, self.n_features:]).astype(int)
 
         return self.current_sample_x, self.current_sample_y
-
-    def get_info(self):
-        return 'Waveform Generator: n_classes: ' + str(self.n_classes) + \
-               '  -  n_num_features: ' + str(self.n_num_features) + \
-               '  -  n_cat_features: ' + str(self.n_cat_features) + \
-               '  -  has_noise: ' + str(self.has_noise) + \
-               '  -  random_state: ' + str(self._original_random_state)

@@ -4,19 +4,10 @@ from skmultiflow.data.base_stream import Stream
 
 
 class DataStream(Stream):
-    """ DataStream
+    """ Creates a stream from a data source.
 
-    A stream generated from the entries of a dataset ( numpy array or pandas
-    DataFrame).
-
-    The stream is able to provide, as requested, a number of samples, in
-    a way that old samples cannot be accessed in a later time. This is done
-    so that a stream context can be correctly simulated.
-
-    DataStream takes the whole data set are separates the X and Y or takes X and Y
-    separately.
-    For the first case target_idx and n_targets need to be provided, in the next
-    case they are not needed.
+    DataStream takes the whole data set containing the `X` (features) and `Y` (targets) or takes `X` and `Y` separately.
+    For the first case `target_idx` and `n_targets` need to be provided, in the second case they are not needed.
 
     Parameters
     ----------
@@ -32,25 +23,36 @@ class DataStream(Stream):
     n_targets: int, optional (default=1)
         The number of targets.
 
-    cat_features_idx: list, optional (default=None)
+    cat_features: list, optional (default=None)
         A list of indices corresponding to the location of categorical features.
+
+    name: str, optional (default=None)
+        A string to id the data.
+
+    Notes
+    -----
+    The stream object provides upon request a number of samples, in a way such that old samples cannot be accessed
+    at a later time. This is done to correctly simulate the stream context.
+
     """
 
     _CLASSIFICATION = 'classification'
     _REGRESSION = 'regression'
     _Y_is_defined = False
 
-    def __init__(self, data, y=None, target_idx=-1, n_targets=1, cat_features_idx=None):
+    def __init__(self, data, y=None, target_idx=-1, n_targets=1, cat_features=None, name=None):
         super().__init__()
         self.X = None
         self.y = y
-        self.cat_features_idx = [] if cat_features_idx is None else cat_features_idx
+        self.cat_features = cat_features
+        self.cat_features_idx = [] if self.cat_features is None else self.cat_features
         self.n_targets = n_targets
         self.target_idx = target_idx
         self.task_type = None
         self.n_classes = 0
         self.data = data
         self._is_ready = False
+        self.name = name
         self.__configure()
 
     def __configure(self):
@@ -62,7 +64,6 @@ class DataStream(Stream):
                 self.X = pd.DataFrame(self.data)
                 self.target_idx = -self.y.shape[1]
                 self.n_targets = self.y.shape[1]
-
 
     @property
     def y(self):
@@ -236,10 +237,12 @@ class DataStream(Stream):
         self._cat_features_idx = cat_features_idx
 
     def prepare_for_use(self):
-        """ prepare_for_use
+        """
+        Prepares the stream for use.
 
-        Prepares the stream for use. This functions should always be
-        called after the stream initialization.
+        Notes
+        -----
+        This functions should always be called after the stream initialization.
 
         """
         self.restart()
@@ -389,10 +392,11 @@ class DataStream(Stream):
         print(self.y)
 
     def get_data_info(self):
+        name = self.name + ": " if self.name else ""
         if self.task_type == self._CLASSIFICATION:
-            return "{} target(s), {} classes".format(self.n_targets, self.n_classes)
+            return "{}{} target(s), {} classes".format(name, self.n_targets, self.n_classes)
         elif self.task_type == self._REGRESSION:
-            return "{} target(s)".format(self.n_targets)
+            return "{} target(s)".format(name, self.n_targets)
 
     def _get_target_values(self):
         if self.task_type == 'classification':
@@ -404,4 +408,6 @@ class DataStream(Stream):
             return [float] * self.n_targets
 
     def get_info(self):
-        return 'Dataset Stream:' + '  -  n_targets: ' + str(self.n_targets)
+        return 'DataStream(n_targets={}, target_idx={}, cat_features={}, name={})'.\
+            format(self.target_idx, self.n_targets, self.cat_features,
+                   self.name if not self.name else "'" + self.name + "'")

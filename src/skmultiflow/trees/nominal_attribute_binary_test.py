@@ -1,4 +1,5 @@
 from skmultiflow.trees.instance_conditional_test import InstanceConditionalTest
+from skmultiflow.rules.base_predicate import Predicate
 
 
 class NominalAttributeBinaryTest(InstanceConditionalTest):
@@ -20,6 +21,10 @@ class NominalAttributeBinaryTest(InstanceConditionalTest):
     def describe_condition_for_branch(self, branch):
         condition = ' = ' if branch == 0 else ' != '
         return 'Attribute {}{}{}'.format(self._att_idx, condition, self._att_value)
+
+    def branch_rule(self, branch):
+        condition = '==' if branch == 0 else '!='
+        return Predicate(self._att_idx, condition, self._att_value)
 
     def get_atts_test_depends_on(self):
         return [self._att_idx]

@@ -1,17 +1,20 @@
 from abc import ABCMeta, abstractmethod
-from skmultiflow.core.base_object import BaseObject
+from skmultiflow.core import BaseSKMObject
 
 
-class Stream(BaseObject, metaclass=ABCMeta):
-    """ The abstract class setting up the minimum requirements of a stream,
-    so that it can work along the other modules in the scikit-multiflow
-    framework.
+class Stream(BaseSKMObject, metaclass=ABCMeta):
+    """ Base Stream class.
+
+    This abstract class defines the minimum requirements of a stream,
+    so that it can work along other modules in scikit-multiflow.
     
     Raises
     ------
     NotImplementedError: This is an abstract class.
     
     """
+    _estimator_type = 'stream'
+
     def __init__(self):
         self.n_samples = 0
         self.n_targets = 0
@@ -177,30 +180,6 @@ class Stream(BaseObject, metaclass=ABCMeta):
         """
         self._target_names = target_names
 
-    @property
-    def random_state(self):
-        """ Retrieve the random state of the stream.
-
-        Returns
-        -------
-        RandomState
-        """
-        return self._random_state
-
-    @random_state.setter
-    def random_state(self, random_state):
-        """ Set the random state of the stream
-
-        Parameters
-        ----------
-        random_state
-
-        Returns
-        -------
-
-        """
-        self._random_state = random_state
-
     @abstractmethod
     def prepare_for_use(self):
         """ prepare_for_use
@@ -282,21 +261,17 @@ class Stream(BaseObject, metaclass=ABCMeta):
         return True
 
     def get_data_info(self):
-        """ get_name
+        """ Retrieves minimum information from the stream
         
-        Gets the name of the plot, which is a string that will appear 
-        in evaluation methods, to represent the stream.
+        Used by evaluator methods to id the stream.
         
-        The default format is: 'Stream name - x labels'.
+        The default format is: 'Stream name - n_targets, n_classes, n_features'.
         
         Returns
         -------
         string
-            A string representing the plot name.
+            Stream data information
         
         """
-        return self.name + " - {} targets, {} classes, {} features".format(self.n_targets,
-                                                                             self.n_classes, self.n_features)
-
-    def get_class_type(self):
-        return 'stream'
+        return self.name + " - {} target(s), {} classes, {} features".format(self.n_targets, self.n_classes,
+                                                                           self.n_features)

@@ -36,3 +36,11 @@ def test_lc_hoeffding_tree(test_path):
     assert np.alltrue(predictions == expected_predictions)
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+    expected_info = "LCHT(binary_split=False, grace_period=200, leaf_prediction='nba',\n" \
+                    "     max_byte_size=33554432, memory_estimate_period=1000000, n_labels=3,\n" \
+                    "     nb_threshold=0, no_preprune=False, nominal_attributes=None,\n" \
+                    "     remove_poor_atts=False, split_confidence=1e-07,\n" \
+                    "     split_criterion='info_gain', stop_mem_management=False,\n" \
+                    "     tie_threshold=0.05)"
+    assert learner.get_info() == expected_info

@@ -1,5 +1,5 @@
 from skmultiflow.trees.instance_conditional_test import InstanceConditionalTest
-
+from skmultiflow.rules.base_predicate import Predicate
 
 class NominalAttributeMultiwayTest(InstanceConditionalTest):
     def __init__(self, att_idx):
@@ -18,6 +18,10 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
 
     def describe_condition_for_branch(self, branch):
         return 'Attribute {} = {}'.format(self._att_idx, branch)
+
+    def branch_rule(self, branch):
+        return Predicate(self._att_idx, '==', branch)
+
 
     def get_atts_test_depends_on(self):
         return [self._att_idx]

@@ -3,18 +3,18 @@ import copy
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.utils import check_random_state
 
 
-class LearnPP(StreamModel):
-    """
-    Learn++ [1]_ is an ensemble learning. Learn++ does not require
-    access to previously used data during subsequent incremental learning
-    steps. At the same time, it does not forget previously acquired knowledge.
-    Learn++ utilizes an ensemble of classifiers by generating multiple
-    hypotheses using training data sampled according to carefully
-    tailored distributions.
+class LearnPP(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+    """ Learn++ ensemble classifier.
+
+    Learn++ [1]_  does not require access to previously used data during
+    subsequent incremental learning steps. At the same time, it does not
+    forget previously acquired knowledge. Learn++ utilizes an ensemble of
+    classifiers by generating multiple hypotheses using training data
+    sampled according to carefully tailored distributions.
 
     References
     ----------
@@ -24,8 +24,8 @@ class LearnPP(StreamModel):
 
     Parameters
     ----------
-    base_estimator: StreamModel or sklearn.BaseEstimator (default=DecisionTreeClassifier)
-        This is the base estimator, each member of the ensemble is an instance of the base estimator.
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=DecisionTreeClassifier)
+        Each member of the ensemble is an instance of the base estimator.
     n_estimators: int (default=30)
         The number of classifiers per ensemble
     n_ensembles: int (default=10)
@@ -94,6 +94,7 @@ class LearnPP(StreamModel):
         self.classes = None
         self.n_ensembles = n_ensembles
         self.random = check_random_state(random_state)
+        self.random_state = random_state
         self.error_threshold = error_threshold
         self.X_batch = []
         self.y_batch = []
@@ -104,22 +105,24 @@ class LearnPP(StreamModel):
         self.ensemble_weights = []
         self.X_batch = []
         self.y_batch = []
+        self.random = check_random_state(self.random_state)
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
-
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ Partially fits the model, based on the X and y matrix.
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially (incrementally) fit the model.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            Features matrix used for partially updating the model.
-        y: Array-like
-            An array-like of all the class labels for the samples in X.
-        classes: list
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
+
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
+
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
+
+        sample_weight: NOT used (default=None)
 
         Raises
         ------
@@ -184,8 +187,8 @@ class LearnPP(StreamModel):
                 # create training and testing subsets according to Dt
                 train_size = int(m / 2)
                 test_size = int(m / 2)
-                train_items_index = self.get_item(items_index, Dt, train_size)
-                test_items_index = self.get_item(items_index, Dt, test_size)
+                train_items_index = self._get_item(items_index, Dt, train_size)
+                test_items_index = self._get_item(items_index, Dt, test_size)
 
                 X_train = X[train_items_index]
                 y_train = y[train_items_index]
@@ -259,20 +262,13 @@ class LearnPP(StreamModel):
         return np.argmax(res, axis=1)
 
     def predict_proba(self, X):
-        """ predict_proba
-
-        Predicts the probability of each sample belonging to each one of the
+        """ Predicts the probability of each sample belonging to each one of the
         known classes.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
-
-        Raises
-        ------
-        ValueError: A ValueError is raised if the number of classes in the base_estimator
-        learner differs from that of the ensemble learner.
 
         Returns
         -------
@@ -291,41 +287,26 @@ class LearnPP(StreamModel):
         return votes
 
     def predict(self, X):
-        """
-        predict
-        The predict function will use majority votes from all its learners
-        with their weights to find the most likely prediction for the sample matrix X.
+        """ Predict classes for the passed data.
+
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            A matrix of the samples we want to predict.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The set of data samples to predict the labels for.
+
         Returns
         -------
-        numpy.ndarray
-            A numpy.ndarray with the label prediction for all the samples in X.
+        A numpy.ndarray with all the predictions for the samples in X.
+
+        Notes
+        -----
+
+        The predict function uses majority votes from all its learners
+        with their weights to find the most likely prediction for the sample matrix X.
+
         """
         votes = self.predict_proba(X)
         return np.argmax(votes, axis=1)
 
-    def get_item(self, items, items_weights, number_of_items):
+    def _get_item(self, items, items_weights, number_of_items):
         return self.random.choice(items, number_of_items, p=items_weights).astype(np.int32)
-
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        """ Collects information about the model.
-
-        Returns
-        -------
-        string
-            Configuration for the model.
-        """
-
-        description = type(self).__name__ + ': '
-        description += 'base_estimator: {} - '.format(type(self.base_estimator))
-        description += 'n_estimators: {} - '.format(type(self.n_estimators))
-        description += 'n_ensembles: {} - '.format(type(self.n_ensembles))
-        description += 'window_size: {} - '.format(type(self.window_size))
-        description += 'error_threshold: {} - '.format(type(self.error_threshold))
-        return description

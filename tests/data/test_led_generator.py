@@ -35,8 +35,6 @@ def test_led_generator(test_path):
 
     assert stream.n_classes == 10
 
-    assert stream.get_data_info() == 'Led Generator - 24 features'
-
     assert stream.has_more_samples() is True
 
     assert stream.is_restartable() is True
@@ -57,3 +55,8 @@ def test_led_generator(test_path):
     assert np.alltrue(y == y_expected)
 
     assert stream.n_features == X.shape[1]
+
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "LEDGenerator(has_noise=True, noise_percentage=0.28, random_state=112)"
+    assert stream.get_info() == expected_info

@@ -1,10 +1,11 @@
 from skmultiflow.data.base_stream import Stream
 from sklearn.datasets import make_regression
 from skmultiflow.utils import check_random_state
+import numpy as np
 
 
 class RegressionGenerator(Stream):
-    """ RegressionGenerator
+    """ Creates a regression stream.
     
     This generator creates a stream of samples for a regression problem. It 
     uses the make_regression function from scikit-learn, which creates a 
@@ -120,31 +121,29 @@ class RegressionGenerator(Stream):
         self.n_informative = n_informative
         self.n_num_features = n_features
         self.n_features = n_features
-        self.random_state = check_random_state(random_state)
+        self.random_state = random_state
+        self._random_state = None   # This is the actual random_state object used internally
         self.name = "Regression Generator"
-        self.__configure()
 
-    def __configure(self):
-        """ __configure
+    def prepare_for_use(self):
+        """ Prepare the stream for usage
         
         Uses the make_regression function from scikit-learn to generate a 
         regression problem. This problem will be kept in memory and provided 
         as demanded.
         
         """
+        self._random_state = check_random_state(self.random_state)
         self.X, self.y = make_regression(n_samples=self.n_samples,
                                          n_features=self.n_features,
                                          n_informative=self.n_informative,
                                          n_targets=self.n_targets,
-                                         random_state=self.random_state)
-        self.y.resize((self.y.size, self.n_targets))
+                                         random_state=self._random_state)
+        self.y = np.resize(self.y, (self.y.size, self.n_targets))
 
         self.target_names = ["target_" + str(i) for i in range(self.n_targets)]
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_num_features)]
         self.target_values = [float] * self.n_targets
-
-    def prepare_for_use(self):
-        pass
 
     def n_remaining_samples(self):
         """
@@ -199,15 +198,10 @@ class RegressionGenerator(Stream):
         Restart the stream to the initial state.
 
         """
+        # Note: No need to regenerate the data, just reset the idx
         self.sample_idx = 0
         self.current_sample_x = None
         self.current_sample_y = None
 
     def get_data_info(self):
         return "Regression Generator - {} targets, {} features".format(self.n_targets, self.n_features)
-
-    def get_info(self):
-        return 'RegressionGenerator: n_samples: ' + str(self.n_samples) + \
-               ' - n_features: ' + str(self.n_features) + \
-               ' - n_informative: ' + str(self.n_informative) + \
-               ' - n_targets: ' + str(self.n_targets)
