@@ -517,6 +517,8 @@ class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
                     elif metric == constants.MODEL_SIZE:
                         for i in range(self.n_models):
                             header += ',model_size_[{0}]'.format(self.model_names[i])
+                    elif metric == constants.DATA_POINTS:
+                        continue
                     else:
                         for i in range(self.n_models):
                             header += ',mean_{0}_[{1}],current_{0}_[{1}]'.format(metric, self.model_names[i])
@@ -547,6 +549,8 @@ class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
                     values = self._data_buffer.get_data(metric_id=metric, data_id='model_size')
                     for i in range(self.n_models):
                         line += ',{:.6f}'.format(values[i])
+                elif metric == constants.DATA_POINTS:
+                    continue
                 else:
                     mean_values = self._data_buffer.get_data(metric_id=metric, data_id=constants.MEAN)
                     current_values = self._data_buffer.get_data(metric_id=metric, data_id=constants.CURRENT)
