@@ -1,30 +1,20 @@
 import copy as cp
+
 from skmultiflow.meta import OzaBagging
 from skmultiflow.lazy import KNNAdwin
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.utils.utils import *
-from skmultiflow.utils import check_random_state
 
 
 class OzaBaggingAdwin(OzaBagging):
-    """ OzaBagging Classifier with ADWIN change detector
-    
-    This online ensemble learner method is an improvement from the Online 
-    Bagging algorithm described in Oza and Russel's 'Online Bagging and 
-    Boosting'. The improvement comes from the addition of a ADWIN change 
-    detector.
-    
-    ADWIN stands for Adaptive Windowing. It works by keeping updated 
-    statistics of a variable sized window, so it can detect changes and 
-    perform cuts in its window to better adapt the learning algorithms.
-    
+    """ Oza Bagging ensemble classifier with ADWIN change detector.
+
     Parameters
     ----------
-    base_estimator: StreamModel
-        This is the ensemble classifier type, each ensemble classifier is going 
-        to be a copy of the base_estimator.
-    
-    n_estimators: int
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNNAdwin)
+        Each member of the ensemble is an instance of the base estimator.
+
+    n_estimators: int (default=10)
         The size of the ensemble, in other words, how many classifiers to train.
 
     random_state: int, RandomState instance or None, optional (default=None)
@@ -34,11 +24,23 @@ class OzaBaggingAdwin(OzaBagging):
     
     Raises
     ------
-    NotImplementedError: A few of the functions described here are not 
-    implemented since they have no application in this context.
-    
     ValueError: A ValueError is raised if the 'classes' parameter is
     not passed in the first partial_fit call.
+
+    Notes
+    -----
+    This online ensemble learner method is an improvement from the Online
+    Bagging algorithm [1]_. The improvement comes from the addition of a ADWIN change
+    detector.
+
+    ADWIN stands for Adaptive Windowing. It works by keeping updated
+    statistics of a variable sized window, so it can detect changes and
+    perform cuts in its window to better adapt the learning algorithms.
+
+    References
+    ----------
+    .. [1] N. C. Oza, “Online Bagging and Boosting,” in 2005 IEEE International Conference on Systems,
+       Man and Cybernetics, 2005, vol. 3, no. 3, pp. 2340–2345.
 
     
     Examples
@@ -78,60 +80,33 @@ class OzaBaggingAdwin(OzaBagging):
     def __init__(self, base_estimator=KNNAdwin(), n_estimators=10, random_state=None):
         super().__init__(base_estimator, n_estimators, random_state)
         # default values
-        self.ensemble = None
-        self.n_estimators = None
-        self.classes = None
         self.adwin_ensemble = None
-        self.random_state = None
-        self._init_n_estimators = n_estimators
-        self._init_random_state = random_state
-        self.__configure(base_estimator)
+        self.__configure()
 
-    def __configure(self, base_estimator):
-        self.n_estimators = self._init_n_estimators
-        self.adwin_ensemble = []
-        for i in range(self.n_estimators):
-            self.adwin_ensemble.append(ADWIN())
-        base_estimator.reset()
-        self.base_estimator = base_estimator
-        self.ensemble = [cp.deepcopy(base_estimator) for _ in range(self.n_estimators)]
-        self.random_state = check_random_state(self._init_random_state)
+    def __configure(self):
+        self.adwin_ensemble = [cp.deepcopy(ADWIN()) for _ in range(self.actual_n_estimators)]
 
     def reset(self):
-        self.__configure(self.base_estimator)
+        self.__configure()
+        return self
 
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-
-        Partially fits the model, based on the X and y matrix.
-
-        Since it's an ensemble learner, if X and y matrix of more than one 
-        sample are passed, the algorithm will partial fit the model one sample 
-        at a time.
-
-        Each sample is trained by each classifier a total of K times, where K 
-        is drawn by a Poisson(1) distribution.
-        
-        Alongside updating the model, the learner will also update ADWIN's 
-        statistics over the new samples, so that the change detector can 
-        evaluate if a concept drift was detected. In the case drift is detected, 
-        the bagging algorithm will find the worst performing classifier and reset 
-        its statistics and window.
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially (incrementally) fit the model.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features) 
-            Features matrix used for partially updating the model.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: Array-like
-            An array-like of all the class labels for the samples in X.
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
 
-        classes: list 
-            List of all existing classes. This is an optional parameter, except
-            for the first partial_fit call, when it becomes obligatory.
+        classes: numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
-        weight: Array-like
-            Instance weight. If not provided, uniform weights are assumed.
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the base estimator.
 
         Raises
         ------
@@ -143,6 +118,21 @@ class OzaBaggingAdwin(OzaBagging):
         _______
         OzaBaggingAdwin
             self
+
+        Notes
+        -----
+        Since it's an ensemble learner, if X and y matrix of more than one
+        sample are passed, the algorithm will partial fit the model one sample
+        at a time.
+
+        Each sample is trained by each classifier a total of K times, where K
+        is drawn by a Poisson(1) distribution.
+
+        Alongside updating the model, the learner will also update ADWIN's
+        statistics over the new samples, so that the change detector can
+        evaluate if a concept drift was detected. In the case drift is detected,
+        the bagging algorithm will find the worst performing classifier and reset
+        its statistics and window.
 
         """
         r, c = get_dimensions(X)
@@ -161,11 +151,11 @@ class OzaBaggingAdwin(OzaBagging):
 
         self.__adjust_ensemble_size()
         change_detected = False
-        for i in range(self.n_estimators):
-            k = self.random_state.poisson()
+        for i in range(self.actual_n_estimators):
+            k = self._random_state.poisson()
             if k > 0:
                 for b in range(k):
-                    self.ensemble[i].partial_fit(X, y, classes, weight)
+                    self.ensemble[i].partial_fit(X, y, classes, sample_weight)
 
             try:
                 pred = self.ensemble[i].predict(X)
@@ -186,7 +176,7 @@ class OzaBaggingAdwin(OzaBagging):
         if change_detected:
             max_threshold = 0.0
             i_max = -1
-            for i in range(self.n_estimators):
+            for i in range(self.actual_n_estimators):
                 if max_threshold < self.adwin_ensemble[i].estimation:
                     max_threshold = self.adwin_ensemble[i].estimation
                     i_max = i
@@ -202,8 +192,4 @@ class OzaBaggingAdwin(OzaBagging):
                 for i in range(len(self.ensemble), len(self.classes)):
                     self.ensemble.append(cp.deepcopy(self.base_estimator))
                     self.adwin_ensemble.append(ADWIN())
-                    self.n_estimators += 1
-
-    def get_info(self):
-        return 'OzaBagginAdwin Classifier: base_estimator: ' + str(self.base_estimator) + \
-               ' - n_estimators: ' + str(self.n_estimators)
+                    self.actual_n_estimators += 1

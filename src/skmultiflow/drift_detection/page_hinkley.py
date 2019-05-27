@@ -2,7 +2,7 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class PageHinkley(BaseDriftDetector):
-    """ Page-Hinkley method for concept drift detection
+    """ Page-Hinkley method for concept drift detection.
 
     Notes
     -----
@@ -20,7 +20,7 @@ class PageHinkley(BaseDriftDetector):
     
     Parameters
     ----------
-    min_num_instances: int (default=30)
+    min_instances: int (default=30)
         The minimum number of instances before detecting change.
     delta: float (default=0.005)
         The delta factor for the Page Hinkley test.
@@ -48,9 +48,9 @@ class PageHinkley(BaseDriftDetector):
     ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
     
     """
-    def __init__(self, min_num_instances=30, delta=0.005, threshold=50, alpha=1 - 0.0001):
+    def __init__(self, min_instances=30, delta=0.005, threshold=50, alpha=1 - 0.0001):
         super().__init__()
-        self.min_instances = min_num_instances
+        self.min_instances = min_instances
         self.delta = delta
         self.threshold = threshold
         self.alpha = alpha
@@ -90,7 +90,7 @@ class PageHinkley(BaseDriftDetector):
             self.reset()
 
         self.x_mean = self.x_mean + (x - self.x_mean) / float(self.sample_count)
-        self.sum = self.alpha * self.sum + (x - self.x_mean - self.delta)
+        self.sum = max(0., self.alpha * self.sum + (x - self.x_mean - self.delta))
 
         self.sample_count += 1
 
@@ -105,19 +105,3 @@ class PageHinkley(BaseDriftDetector):
 
         if self.sum > self.threshold:
             self.in_concept_change = True
-
-    def get_info(self):
-        """ Collect information about the concept drift detector.
-
-        Returns
-        -------
-        string
-            Configuration for the concept drift detector.
-        """
-        description = type(self).__name__ + ': '
-        description += 'min_num_instances: {} - '.format(self.min_instances)
-        description += 'delta: {} - '.format(self.delta)
-        description += 'threshold (lambda): {} - '.format(self.threshold)
-        description += 'delta: {} - '.format(self.delta)
-        description += 'alpha: {} - '.format(self.alpha)
-        return description

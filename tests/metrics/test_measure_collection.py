@@ -35,7 +35,8 @@ def test_classification_measurements():
     assert expected_kappa_t == measurements.get_kappa_t()
 
     expected_info = 'ClassificationMeasurements: - sample_count: 100 - accuracy: 0.900000 - kappa: 0.444444 ' \
-                    '- kappa_t: -2.333333 - kappa_m: 0.888889 - majority_class: 0'
+                    '- kappa_t: -2.333333 - kappa_m: 0.888889 - f1-score: 0.500000 - ' \
+                    'precision: 0.500000 - recall: 0.500000 - G-mean: 0.687184 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
     expected_last = (1.0, 0.0)
@@ -46,8 +47,6 @@ def test_classification_measurements():
 
     measurements.reset()
     assert measurements.sample_count == 0
-
-    assert measurements.get_class_type() == 'measurement'
 
 
 def test_window_classification_measurements():
@@ -74,7 +73,8 @@ def test_window_classification_measurements():
     assert expected_kappa_t == measurements.get_kappa_t()
 
     expected_info = 'WindowClassificationMeasurements: - sample_count: 20 - window_size: 20 - accuracy: 0.500000 ' \
-                    '- kappa: 0.000000 - kappa_t: 1.000000 - kappa_m: 0.500000 - majority_class: 0'
+                    '- kappa: 0.000000 - kappa_t: 1.000000 - kappa_m: 0.500000 - f1-score: 0.000000 - ' \
+                    'precision: 0.000000 - recall: 0.000000 - G-mean: 0.000000 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
     expected_last = (1.0, 0.0)
@@ -85,8 +85,6 @@ def test_window_classification_measurements():
 
     measurements.reset()
     assert measurements.sample_count == 0
-
-    assert measurements.get_class_type() == 'measurement'
 
 
 def test_multi_target_classification_measurements():
@@ -127,8 +125,6 @@ def test_multi_target_classification_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_window_multi_target_classification_measurements():
     y_0 = np.ones(100)
@@ -168,8 +164,6 @@ def test_window_multi_target_classification_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_regression_measurements():
     y_true = np.sin(range(100))
@@ -195,8 +189,6 @@ def test_regression_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_window_regression_measurements():
     y_true = np.sin(range(100))
@@ -221,8 +213,6 @@ def test_window_regression_measurements():
 
     measurements.reset()
     assert measurements.sample_count == 0
-
-    assert measurements.get_class_type() == 'measurement'
 
 
 def test_multi_target_regression_measurements():
@@ -266,8 +256,6 @@ def test_multi_target_regression_measurements():
     measurements.reset()
     assert measurements.sample_count == 0
 
-    assert measurements.get_class_type() == 'measurement'
-
 
 def test_window_multi_target_regression_measurements():
     y_true = np.zeros((100, 3))
@@ -309,8 +297,6 @@ def test_window_multi_target_regression_measurements():
 
     measurements.reset()
     assert np.isclose(measurements.total_square_error, 0.0)
-
-    assert measurements.get_class_type() == 'measurement'
 
 
 def test_running_time_measurements():

@@ -3,6 +3,14 @@ import numpy as np
 
 
 class InfoGainSplitCriterion(SplitCriterion):
+    """ Information Gain split criterion.
+
+    A measure of how often a randomly chosen element from the set would be incorrectly labeled if it was randomly
+    labeled according to the distribution of labels in the subset.
+
+    `Wikipedia entry <https://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity>`_
+
+    """
     def __init__(self, min_branch_frac_option=0.01):
         super().__init__()
         # Minimum fraction of weight required down at least two branches.

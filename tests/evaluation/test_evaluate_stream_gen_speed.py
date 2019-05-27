@@ -26,5 +26,3 @@ def test_evaluate_stream_gen_speed():
     # Stop evaluation by reaching max_time
     stream = evaluator.evaluate(stream)
     assert stream_name == stream.name
-
-    assert evaluator.get_class_type() == 'evaluator'

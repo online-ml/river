@@ -26,7 +26,7 @@ def test_random_rbf_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_data_info() == 'Random RBF Generator - 1 targets, 4 classes, 10 features'
+    assert stream.get_data_info() == 'Random RBF Generator - 1 target(s), 4 classes, 10 features'
 
     assert stream.has_more_samples() is True
 
@@ -54,3 +54,9 @@ def test_random_rbf_generator(test_path):
     assert stream.n_targets == np.array(y).ndim
 
     assert stream.n_features == X.shape[1]
+
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "RandomRBFGenerator(model_random_state=99, n_centroids=50, n_classes=4,\n" \
+                    "                   n_features=10, sample_random_state=50)"
+    assert stream.get_info() == expected_info

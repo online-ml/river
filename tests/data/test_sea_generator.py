@@ -25,7 +25,7 @@ def test_sea_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_data_info() == 'SEA Generator - 1 targets, 2 classes, 3 features'
+    assert stream.get_data_info() == 'SEA Generator - 1 target(s), 2 classes, 3 features'
 
     assert stream.has_more_samples() is True
 
@@ -53,3 +53,9 @@ def test_sea_generator(test_path):
     assert stream.n_targets == np.array(y).ndim
 
     assert stream.n_features == X.shape[1]
+
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "SEAGenerator(balance_classes=False, classification_function=2,\n" \
+                    "             noise_percentage=0.28, random_state=112)"
+    assert stream.get_info() == expected_info

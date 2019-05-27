@@ -27,7 +27,7 @@ def test_hyper_plane_generator(test_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_data_info() == 'Hyperplane Generator - 1 targets, 2 classes, 10 features'
+    assert stream.get_data_info() == 'Hyperplane Generator - 1 target(s), 2 classes, 10 features'
 
     assert stream.has_more_samples() is True
 
@@ -55,3 +55,10 @@ def test_hyper_plane_generator(test_path):
     assert stream.n_targets == np.array(y).ndim
 
     assert stream.n_features == X.shape[1]
+
+    assert 'stream' == stream._estimator_type
+
+    expected_info = "HyperplaneGenerator(mag_change=0.6, n_drift_features=2, n_features=10,\n" \
+                    "                    noise_percentage=0.28, random_state=112,\n" \
+                    "                    sigma_percentage=0.1)"
+    assert stream.get_info() == expected_info

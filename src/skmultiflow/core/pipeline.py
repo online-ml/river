@@ -1,12 +1,11 @@
-from skmultiflow.core.base_object import BaseObject
+from skmultiflow.core import BaseSKMObject
 from sklearn.utils import tosequence
 
 
-class Pipeline(BaseObject):
-    """ Pipeline
+class Pipeline(BaseSKMObject):
+    """ [Experimental] Holds a set of sequential operation (transforms), followed by a single estimator.
 
-    A pipeline structure that holds a set of sequential Transforms, followed
-    by a single learner. It allows for easy manipulation of datasets that may
+    It allows for easy manipulation of datasets that may
     require several transformation processes before being used by a learner.
     Also allows for the cross-validation of several steps.
 
@@ -23,7 +22,7 @@ class Pipeline(BaseObject):
 
     Parameters
     ----------
-    dict: list of tuple
+    steps: list of tuple
         Tuple list containing the set of transforms and the final estimator.
         It doesn't need to contain a transform type object, but the estimator
         is required. Each tuple should be of the format ('name', estimator).
@@ -35,16 +34,21 @@ class Pipeline(BaseObject):
 
     NotImplementedError: Some of the functions are yet to be implemented.
 
+    Notes
+    -----
+    This code is an experimental feature. Use with caution.
+
+
     Examples
     --------
     >>> # Imports
-    >>> from skmultiflow.lazy.knn_adwin import KNNAdwin
-    >>> from skmultiflow.core.pipeline import Pipeline
-    >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
-    >>> from skmultiflow.transform.one_hot_to_categorical import OneHotToCategorical
+    >>> from skmultiflow.lazy import KNNAdwin
+    >>> from skmultiflow.core import Pipeline
+    >>> from skmultiflow.data import FileStream
+    >>> from skmultiflow.evaluation import EvaluatePrequential
+    >>> from skmultiflow.transform import OneHotToCategorical
     >>> # Setting up the stream
-    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv", -1, 1)
+    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv")
     >>> stream.prepare_for_use()
     >>> transform = OneHotToCategorical([[10, 11, 12, 13],
     ... [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
@@ -59,6 +63,7 @@ class Pipeline(BaseObject):
     >>> evaluator.evaluate(stream=stream, model=pipe)
 
     """
+    _estimator_type = 'pipeline'
 
     def __init__(self, steps):
         # Default values
@@ -141,17 +146,15 @@ class Pipeline(BaseObject):
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
-            The data upon which the transforms/estimator will create their
-            model.
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
 
-        y: An array_like object of length n_samples
-            Contains the true class labels for all the samples in X
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the class labels of all samples in X.
 
-        classes: list, optional
-            A list containing all classes that can show up during subsequent
-            partial_fit calls. It's optional for all but the first call, when
-            it's obligatory.
+        classes: numpy.ndarray
+            Array with all possible/known class labels. This is an optional parameter, except
+            for the first partial_fit call where it is compulsory.
 
         Returns
         -------
@@ -232,9 +235,6 @@ class Pipeline(BaseObject):
         """
         raise NotImplementedError
 
-    def get_class_type(self):
-        return 'estimator'
-
     def _validate_steps(self):
         """ validate_steps
 
@@ -281,30 +281,31 @@ class Pipeline(BaseObject):
         return dict(self.steps)
 
     def get_info(self):
-        info = "Pipeline: "
+        info = "Pipeline:\n["
         names, estimators = zip(*self.steps)
-        classifier = estimators[-1]
+        learner = estimators[-1]
         transforms = estimators[:-1]
         i = 0
         for t in transforms:
             try:
                 if t.get_info() is not None:
                     info += t.get_info()
-                    info += " #### "
+                    info += "\n"
                 else:
                     info += 'Transform: no info available'
             except NotImplementedError:
                 info += 'Transform: no info available'
             i += 1
 
-        if classifier is not None:
+        if learner is not None:
             try:
-                if hasattr(classifier, 'get_info'):
-                    info += classifier.get_info()
+                if hasattr(learner, 'get_info'):
+                    info += learner.get_info()
                 else:
-                    info += 'Classifier: no info available'
+                    info += 'Learner: no info available'
             except NotImplementedError:
-                info += 'Classifier: no info available'
+                info += 'Learner: no info available'
+        info += "]"
         return info
 
     @property

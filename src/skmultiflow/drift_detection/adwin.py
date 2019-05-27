@@ -1,10 +1,10 @@
 import numpy as np
+
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
-from skmultiflow.core.base_object import BaseObject
 
 
 class ADWIN(BaseDriftDetector):
-    """ ADWIN method for concept drift detection
+    """ Adaptive Windowing method for concept drift detection.
     
     Parameters
     ----------
@@ -81,7 +81,7 @@ class ADWIN(BaseDriftDetector):
         self.bln_bucket_deleted = False
         self.bucket_num_max = 0
         self.mint_min_window_length = 5
-        self.reset()
+        super().reset()
 
     def reset(self):
         """ Reset detectors
@@ -94,7 +94,7 @@ class ADWIN(BaseDriftDetector):
             self
         
         """
-        super().reset()
+        self.__init__(delta=self.delta)
 
     def get_change(self):
         """ Get drift
@@ -361,20 +361,8 @@ class ADWIN(BaseDriftDetector):
         epsilon = np.sqrt(2 * m * v * dd) + 1. * 2 / 3 * dd * m
         return np.absolute(abs_value) > epsilon
 
-    def get_info(self):
-        """ Collect information about the concept drift detector.
 
-        Returns
-        -------
-        string
-            Configuration for the concept drift detector.
-        """
-        description = type(self).__name__ + ': '
-        description += 'delta: {} - '.format(self.delta)
-        return description
-
-
-class List(BaseObject):
+class List(object):
     """ A linked list object for ADWIN algorithm.
     
     Used for storing ADWIN's bucket list. Is composed of Item objects. 
@@ -434,14 +422,8 @@ class List(BaseObject):
     def size(self):
         return self._count
 
-    def get_info(self):
-        return 'List: count: ' + str(self._count)
 
-    def get_class_type(self):
-        return 'data_structure'
-
-
-class Item(BaseObject):
+class Item(object):
     """ Item to be used by the List object.
     
     The Item object, alongside the List object, are the two main data 
@@ -531,12 +513,3 @@ class Item(BaseObject):
 
     def set_variance(self, value, index):
         self.bucket_variance[index] = value
-
-    def get_info(self):
-        return 'Item: bucket_size_row: ' + str(self.bucket_size_row) + \
-               ' - max_buckets: ' + str(self.max_buckets) + \
-               ' - bucket_total: ' + str(self.bucket_total) + \
-               ' - bucket_variance: ' + str(self.bucket_variance)
-
-    def get_class_type(self):
-        return 'data_structure'

@@ -1,6 +1,3 @@
-from skmultiflow.core.base_object import BaseObject
-
-
 def clean_header(base_file, new_file=None, ignore_char='#'):
     """ clean_header
     
@@ -47,7 +44,7 @@ def clean_header(base_file, new_file=None, ignore_char='#'):
                     out_file.write(line)
 
 
-class RemoveHeader(BaseObject):
+class RemoveHeader(object):
     """ RemoveHeader
         
     Class whose sole purpose is to remove the header from any file, and save 

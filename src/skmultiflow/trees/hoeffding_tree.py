@@ -1,10 +1,13 @@
-import logging
+import copy
 import textwrap
 from abc import ABCMeta
-from operator import attrgetter
+from operator import attrgetter, itemgetter
+
 import numpy as np
+
+
 from skmultiflow.utils.utils import get_dimensions, normalize_values_in_dict, calculate_object_size
-from skmultiflow.core.base import StreamModel
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.trees.attribute_class_observer_null import AttributeClassObserverNull
@@ -12,20 +15,19 @@ from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestio
 from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
 from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
 from skmultiflow.bayes import do_naive_bayes_prediction
+from skmultiflow.rules.base_rule import Rule
+from skmultiflow.trees.hellinger_distance_criterion import HellingerDistanceCriterion
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
+HELLINGER = 'hellinger'
 MAJORITY_CLASS = 'mc'
 NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
 
-# logger
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
-
-class HoeffdingTree(StreamModel):
-    """ Hoeffding Tree or VFDT.
+class HoeffdingTree(BaseSKMObject, ClassifierMixin):
+    """ Hoeffding Tree or Very Fast Decision Tree.
 
     Parameters
     ----------
@@ -39,6 +41,7 @@ class HoeffdingTree(StreamModel):
         | Split criterion to use.
         | 'gini' - Gini
         | 'info_gain' - Information Gain
+        | 'hellinger' - Helinger Distance
     split_confidence: float (default=0.0000001)
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold: float (default=0.05)
@@ -139,7 +142,7 @@ class HoeffdingTree(StreamModel):
             ----------
             X: numpy.ndarray of shape (n_samples, n_features)
                Data instances.
-            parent: HoeffdingTree.Node
+            parent: HoeffdingTree.Node or None
                 Parent node.
             parent_branch: Int
                 Parent branch index
@@ -418,6 +421,10 @@ class HoeffdingTree(StreamModel):
                     buffer[0] += ':\n'
                     child.describe_subtree(ht, buffer, indent + 2)
 
+        def get_predicate(self, branch):
+
+            return self._split_test.branch_rule(branch)
+
     class LearningNode(Node):
         """ Base class for Learning Nodes in a Hoeffding Tree.
 
@@ -482,6 +489,7 @@ class HoeffdingTree(StreamModel):
                 self._observed_class_distribution[y] += weight
             except KeyError:
                 self._observed_class_distribution[y] = weight
+                self._observed_class_distribution = dict(sorted(self._observed_class_distribution.items()))
 
     class ActiveLearningNode(LearningNode):
         """ Learning node that supports growth.
@@ -524,7 +532,7 @@ class HoeffdingTree(StreamModel):
                 try:
                     obs = self._attribute_observers[i]
                 except KeyError:
-                    if i in ht.nominal_attributes:
+                    if ht.nominal_attributes is not None and i in ht.nominal_attributes:
                         obs = NominalAttributeClassObserver()
                     else:
                         obs = NumericAttributeClassObserverGaussian()
@@ -770,8 +778,6 @@ class HoeffdingTree(StreamModel):
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
-        # self._numeric_estimator_option = 'GaussianNumericAttributeClassObserver'           # Numeric estimator to use.
-        # self._nominal_estimator_option = 'NominalAttributeClassObserver'                   # Nominal estimator to use.
 
         self._tree_root = None
         self._decision_node_cnt = 0
@@ -814,8 +820,8 @@ class HoeffdingTree(StreamModel):
 
     @split_criterion.setter
     def split_criterion(self, split_criterion):
-        if split_criterion != GINI_SPLIT and split_criterion != INFO_GAIN_SPLIT:
-            logger.info("Invalid option {}', will use default '{}'".format(split_criterion, INFO_GAIN_SPLIT))
+        if split_criterion != GINI_SPLIT and split_criterion != INFO_GAIN_SPLIT and split_criterion != HELLINGER:
+            print("Invalid split_criterion option {}', will use default '{}'".format(split_criterion, INFO_GAIN_SPLIT))
             self._split_criterion = INFO_GAIN_SPLIT
         else:
             self._split_criterion = split_criterion
@@ -876,7 +882,8 @@ class HoeffdingTree(StreamModel):
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction != MAJORITY_CLASS and leaf_prediction != NAIVE_BAYES \
                 and leaf_prediction != NAIVE_BAYES_ADAPTIVE:
-            logger.info("Invalid option {}', will use default '{}'".format(leaf_prediction, NAIVE_BAYES_ADAPTIVE))
+            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction,
+                                                                                     NAIVE_BAYES_ADAPTIVE))
             self._leaf_prediction = NAIVE_BAYES_ADAPTIVE
         else:
             self._leaf_prediction = leaf_prediction
@@ -895,9 +902,6 @@ class HoeffdingTree(StreamModel):
 
     @nominal_attributes.setter
     def nominal_attributes(self, nominal_attributes):
-        if nominal_attributes is None:
-            nominal_attributes = []
-            logger.debug("No Nominal attributes have been defined, will consider all attributes as numerical.")
         self._nominal_attributes = nominal_attributes
 
     @property
@@ -933,13 +937,30 @@ class HoeffdingTree(StreamModel):
             self._remove_poor_atts = None
         self._train_weight_seen_by_model = 0.0
 
-    def fit(self, X, y, classes=None, weight=None):
-        raise NotImplementedError
+        return self
 
-    def partial_fit(self, X, y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ Incrementally trains the model. Train samples (instances) are composed of X attributes and their
         corresponding targets y.
 
+        Parameters
+        ----------
+        X: numpy.ndarray of shape (n_samples, n_features)
+            Instance attributes.
+        y: array_like
+            Classes (targets) for all samples in X.
+        classes: numpy.array
+            Contains the class values in the stream. If defined, will be used to define the length of the arrays
+            returned by `predict_proba`
+        sample_weight: float or array-like
+            Samples weight. If not provided, uniform weights are assumed.
+
+        Returns
+        -------
+            self
+
+        Notes
+        -----
         Tasks performed before training:
 
         * Verify instance weight. if not provided, uniform weights (1.0) are assumed.
@@ -954,45 +975,36 @@ class HoeffdingTree(StreamModel):
         * If growth is allowed and the number of instances that the leaf has observed between split attempts
           exceed the grace period then attempt to split.
 
-        Parameters
-        ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
-            Instance attributes.
-        y: array_like
-            Classes (targets) for all samples in X.
-        classes: list or numpy.array
-            Contains the class values in the stream. If defined, will be used to define the length of the arrays
-            returned by `predict_proba`
-        weight: float or array-like
-            Instance weight. If not provided, uniform weights are assumed.
-
         """
         if self.classes is None and classes is not None:
             self.classes = classes
         if y is not None:
             row_cnt, _ = get_dimensions(X)
-            if weight is None:
-                weight = np.ones(row_cnt)
-            if row_cnt != len(weight):
-                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt, len(weight)))
+            if sample_weight is None:
+                sample_weight = np.ones(row_cnt)
+            if row_cnt != len(sample_weight):
+                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt,
+                                                                                                  len(sample_weight)))
             for i in range(row_cnt):
-                if weight[i] != 0.0:
-                    self._train_weight_seen_by_model += weight[i]
-                    self._partial_fit(X[i], y[i], weight[i])
+                if sample_weight[i] != 0.0:
+                    self._train_weight_seen_by_model += sample_weight[i]
+                    self._partial_fit(X[i], y[i], sample_weight[i])
 
-    def _partial_fit(self, X, y, weight):
+        return self
+
+    def _partial_fit(self, X, y, sample_weight):
         """ Trains the model on samples X and corresponding targets y.
 
         Private function where actual training is carried on.
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (1, n_features)
             Instance attributes.
-        y: array_like
-            Classes (targets) for all samples in X.
-        weight: float or array-like
-            Instance weight. If not provided, uniform weights are assumed.
+        y: int
+            Class label for sample X.
+        sample_weight: float
+            Sample weight.
 
         """
         if self._tree_root is None:
@@ -1006,7 +1018,7 @@ class HoeffdingTree(StreamModel):
             self._active_leaf_node_cnt += 1
         if isinstance(leaf_node, self.LearningNode):
             learning_node = leaf_node
-            learning_node.learn_from_instance(X, y, weight, self)
+            learning_node.learn_from_instance(X, y, sample_weight, self)
             if self._growth_allowed and isinstance(learning_node, self.ActiveLearningNode):
                 active_learning_node = learning_node
                 weight_seen = active_learning_node.get_weight_seen()
@@ -1183,7 +1195,7 @@ class HoeffdingTree(StreamModel):
             Range value.
         confidence: float
             Confidence of choosing the correct attribute.
-        n: int
+        n: int or float
             Number of samples.
 
         Returns
@@ -1227,6 +1239,8 @@ class HoeffdingTree(StreamModel):
                 split_criterion = GiniSplitCriterion()
             elif self._split_criterion == INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
+            elif self._split_criterion == HELLINGER:
+                split_criterion = HellingerDistanceCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
             best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
@@ -1423,29 +1437,37 @@ class HoeffdingTree(StreamModel):
                 for i in range(split_node.num_children()):
                     self.__find_learning_nodes(split_node.get_child(i), split_node, i, found)
 
-    def score(self, X, y):
-        raise NotImplementedError
-
-    def get_info(self):
-        """ Collect information about the Hoeffding Tree configuration.
+    def get_model_rules(self):
+        """ Returns list of list describing the tree.
 
         Returns
         -------
-        string
-            Configuration for the Hoeffding Tree.
+        list (Rule)
+            list of the rules describing the tree
         """
-        description = type(self).__name__ + ': '
-        description += 'max_byte_size: {} - '.format(self.max_byte_size)
-        description += 'memory_estimate_period: {} - '.format(self.memory_estimate_period)
-        description += 'grace_period: {} - '.format(self.grace_period)
-        description += 'split_criterion: {} - '.format(self.split_criterion)
-        description += 'split_confidence: {} - '.format(self.split_confidence)
-        description += 'tie_threshold: {} - '.format(self.tie_threshold)
-        description += 'binary_split: {} - '.format(self.binary_split)
-        description += 'stop_mem_management: {} - '.format(self.stop_mem_management)
-        description += 'remove_poor_atts: {} - '.format(self.remove_poor_atts)
-        description += 'no_pre_prune: {} - '.format(self.no_preprune)
-        description += 'leaf_prediction: {} - '.format(self.leaf_prediction)
-        description += 'nb_threshold: {} - '.format(self.nb_threshold)
-        description += 'nominal_attributes: {} - '.format(self.nominal_attributes)
+        root = self._tree_root
+        rules = []
+
+        def recurse(node, cur_rule, ht):
+            if isinstance(node, ht.SplitNode):
+                for i, child in node._children.items():
+                    predicate = node.get_predicate(i)
+                    r = copy.deepcopy(cur_rule)
+                    r.predicate_set.append(predicate)
+                    recurse(child, r, ht)
+            else:
+                cur_rule.observed_class_distribution = node.get_observed_class_distribution().copy()
+                cur_rule.class_idx = max(node.get_observed_class_distribution().items(), key=itemgetter(1))[0]
+                rules.append(cur_rule)
+
+        rule = Rule()
+        recurse(root, rule, self)
+        return rules
+
+    def get_rules_description(self):
+        """ Prints the the description of tree using rules."""
+        description = ''
+        for rule in self.get_model_rules():
+            description += str(rule) + '\n'
+
         return description

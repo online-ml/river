@@ -1,9 +1,10 @@
 import numpy as np
+
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class EDDM(BaseDriftDetector):
-    """ EDDM method for concept drift detection
+    """ Early Drift Detection Method.
 
     Notes
     -----
@@ -19,18 +20,18 @@ class EDDM(BaseDriftDetector):
 
     The algorithm works similarly to the DDM algorithm, by keeping
     track of statistics only. It works with the running average
-    distance (`pi'`) and the running standard deviation (`si'`), as
-    well as `p'max` and `s'max`, which are the values of `pi'` and `si'`
-    when `(pi' + 2 * si')` reaches its maximum.
+    distance (:math:`p_i^'`) and the running standard deviation (:math:`s_i^'`), as
+    well as :math:`p^'_{max}` and :math:`s^'_{max}`, which are the values of :math:`p_i^'` and :math:`s_i^'`
+    when :math:`(p_i^' + 2 * s_i^')` reaches its maximum.
 
     Like DDM, there are two threshold values that define the
     borderline between no change, warning zone, and drift detected.
     These are as follows:
 
-    * if `(pi' + 2 * si')/(p'max + 2 * s'max)` < `alpha` -> Warning zone
-    * if `(pi' + 2 * si')/(p'max + 2 * s'max)` < `beta` -> Change detected
+    * if :math:`(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \alpha` -> Warning zone
+    * if :math:`(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \beta` -> Change detected
 
-    `alpha` and `beta` are set to 0.95 and 0.9, respectively.
+    :math:`\alpha` and :math:`\beta` are set to 0.95 and 0.9, respectively.
 
     References
     ----------
@@ -151,14 +152,3 @@ class EDDM(BaseDriftDetector):
 
                 else:
                     self.in_warning_zone = False
-
-    def get_info(self):
-        """ Collect information about the concept drift detector.
-
-        Returns
-        -------
-        string
-            Configuration for the concept drift detector.
-        """
-        description = type(self).__name__
-        return description

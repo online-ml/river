@@ -1,7 +1,4 @@
-from skmultiflow.core.base_object import BaseObject
-
-
-class InstanceHeader(BaseObject):
+class InstanceHeader(object):
     """ InstanceHeader
 
     Stores the header from an instance, simply keeps feature and
@@ -39,9 +36,6 @@ class InstanceHeader(BaseObject):
             return self.header[header_index]
         else:
             return None
-
-    def get_class_type(self):
-        return 'instance'
 
     def get_info(self):
         return 'InstanceHeader: header: ' + str(self.header)

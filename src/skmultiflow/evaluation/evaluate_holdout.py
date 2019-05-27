@@ -1,14 +1,18 @@
 import os
 import warnings
-from numpy import unique
+import re
 from timeit import default_timer as timer
+
+from numpy import unique
+
 from skmultiflow.evaluation.base_evaluator import StreamEvaluator
 from skmultiflow.utils import constants, get_dimensions
 
 
 class EvaluateHoldout(StreamEvaluator):
-    """ The holdout evaluation method, or periodic holdout evaluation method,
-    analyses each arriving sample by updating its statistics, without computing
+    """ The holdout evaluation method or periodic holdout evaluation method.
+
+    Analyses each arriving sample by updating its statistics, without computing
     performance metrics, nor predicting labels or regression values.
 
     The performance evaluation happens at every n_wait analysed samples, at which
@@ -50,6 +54,10 @@ class EvaluateHoldout(StreamEvaluator):
         | 'kappa_t'
         | 'kappa_m'
         | 'true_vs_predicted'
+        | 'precision'
+        | 'recall'
+        | 'f1'
+        | 'gmean'
         | *Multi-target Classification*
         | 'hamming_score'
         | 'hamming_loss'
@@ -322,10 +330,8 @@ class EvaluateHoldout(StreamEvaluator):
 
         return self.model
 
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """ partial_fit
-
-        Partially fit all the learners on the given data.
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially fit all the learners on the given data.
 
         Parameters
         ----------
@@ -333,13 +339,13 @@ class EvaluateHoldout(StreamEvaluator):
             The data upon which the algorithm will create its model.
 
         y: Array-like
-            An array-like containing the classification targets for all samples in X.
+            An array-like containing the classification labels / target values for all samples in X.
 
         classes: list
-            Stores all the classes that may be encountered during the classification task.
+            Stores all the classes that may be encountered during the classification task. Not used for regressors.
 
-        weight: Array-like
-            Instance weight. If not provided, uniform weights are assumed.
+        sample_weight: Array-like
+            Samples weight. If not provided, uniform weights are assumed.
 
         Returns
         -------
@@ -349,16 +355,17 @@ class EvaluateHoldout(StreamEvaluator):
         """
         if self.model is not None:
             for i in range(self.n_models):
-                self.model[i].partial_fit(X, y, classes, weight)
+                if self._task_type == constants.CLASSIFICATION or \
+                        self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
+                    self.model[i].partial_fit(X=X, y=y, classes=classes, sample_weight=sample_weight)
+                else:
+                    self.model[i].partial_fit(X=X, y=y, sample_weight=sample_weight)
             return self
         else:
             return self
 
     def predict(self, X):
-        """ predict
-
-        Predicts the labels of the X samples, by calling the predict
-        function of all the learners.
+        """ Predicts with the estimator(s) being evaluated.
 
         Parameters
         ----------
@@ -367,9 +374,8 @@ class EvaluateHoldout(StreamEvaluator):
 
         Returns
         -------
-        list
-            A list containing the predicted labels for all instances in X in
-            all learners.
+        list of numpy.ndarray
+            Model(s) predictions
 
         """
         predictions = None
@@ -380,49 +386,10 @@ class EvaluateHoldout(StreamEvaluator):
 
         return predictions
 
-    def set_params(self, parameter_dict):
-        """ set_params
-
-        This function allows the users to change some of the evaluator's parameters,
-        by passing a dictionary where keys are the parameters names, and values are
-        the new parameters' values.
-
-        Parameters
-        ----------
-        parameter_dict: Dictionary
-            A dictionary where the keys are the names of attributes the user
-            wants to change, and the values are the new values of those attributes.
-
-        """
-        for name, value in parameter_dict.items():
-            if name == 'n_wait':
-                self.n_wait = value
-            elif name == 'max_samples':
-                self.max_samples = value
-            elif name == 'pretrain_size':
-                self.pretrain_size = value
-            elif name == 'batch_size':
-                self.batch_size = value
-            elif name == 'max_time':
-                self.max_time = value
-            elif name == 'output_file':
-                self.output_file = value
-            elif name == 'show_plot':
-                self.show_plot = value
-            elif name == 'test_size':
-                self.test_size = value
-
     def get_info(self):
-        filename = "None"
+        info = self.__repr__()
         if self.output_file is not None:
-            path, filename = os.path.split(self.output_file)
-        return 'Holdout Evaluator: n_wait: ' + str(self.n_wait) + \
-               ' - max_samples: ' + str(self.max_samples) + \
-               ' - max_time: ' + str(self.max_time) + \
-               ' - output_file: ' + filename + \
-               ' - batch_size: ' + str(self.batch_size) + \
-               ' - task_type: ' + self._task_type + \
-               ' - show_plot: ' + ('True' if self.show_plot else 'False') + \
-               ' - metrics: ' + (str(self.metrics) if self.metrics is not None else 'None') + \
-               ' - test_size: ' + str(self.test_size) + \
-               ' - dynamic_test_set: ' + ('True' if self.dynamic_test_set else 'False')
+            _, filename = os.path.split(self.output_file)
+            info = re.sub(r"output_file=(.\S+),", "output_file='{}',".format(filename), info)
+
+        return info

@@ -1,20 +1,22 @@
 import numpy as np
+
 import copy
-from skmultiflow.core.base import StreamModel
+
 from sklearn.linear_model import SGDRegressor
+
+from skmultiflow.core import BaseSKMObject, RegressorMixin, MetaEstimatorMixin, MultiOutputMixin
 from skmultiflow.utils import check_random_state
 
 
-class RegressorChain(StreamModel):
-    """ Classifier Chains for multi-label learning.
+class RegressorChain(BaseSKMObject, RegressorMixin, MetaEstimatorMixin, MultiOutputMixin):
+    """ Regressor Chains for multi-output learning.
 
     Parameters
     ----------
-    base_estimator: StreamModel or sklearn model
-        This is the ensemble classifier type, each ensemble classifier is going
-        to be a copy of the base_estimator.
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=SGDRegressor)
+        Each member of the ensemble is an instance of the base estimator.
 
-    order : str
+    order : str (default=None)
         `None` to use default order, 'random' for random order.
 
     random_state: int, RandomState instance or None, optional (default=None)
@@ -36,70 +38,106 @@ class RegressorChain(StreamModel):
         super().__init__()
         self.base_estimator = base_estimator
         self.order = order
+        self.random_state = random_state
         self.chain = None
         self.ensemble = None
         self.L = None
-        self._init_random_state = random_state
+        self._random_state = None   # This is the actual random_state object used internally
         self.__configure()
 
     def __configure(self):
         self.ensemble = None
         self.L = -1
-        self.random_state = check_random_state(self._init_random_state)
+        self._random_state = check_random_state(self.random_state)
 
-    def fit(self, X, Y):
-        """ fit
+    def fit(self, X, y, sample_weight=None):
+        """ Fit the model.
+
+        Parameters
+        ----------
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
+
+        y: numpy.ndarray of shape (n_samples, n_targets)
+            An array-like with the target values of all samples in X.
+
+        sample_weight: Not used (default=None)
+
+        Returns
+        -------
+        self
+
         """
-        N, self.L = Y.shape
+        N, self.L = y.shape
         L = self.L
         N, D = X.shape
 
         self.chain = np.arange(L)
         if self.order == 'random':
-            self.random_state.shuffle(self.chain)
+            self._random_state.shuffle(self.chain)
 
         # Set the chain order
-        Y = Y[:, self.chain]
+        y = y[:, self.chain]
 
         # Train
         self.ensemble = [copy.deepcopy(self.base_estimator) for _ in range(L)]
         XY = np.zeros((N, D + L-1))
         XY[:, 0:D] = X
-        XY[:, D:] = Y[:, 0:L-1]
+        XY[:, D:] = y[:, 0:L - 1]
         for j in range(self.L):
-            self.ensemble[j].fit(XY[:, 0:D + j], Y[:, j])
+            self.ensemble[j].fit(XY[:, 0:D + j], y[:, j])
         return self
 
-    def partial_fit(self, X, Y):
-        """ partial_fit
+    def partial_fit(self, X, y, sample_weight=None):
+        """ Partially (incrementally) fit the model.
 
-            N.B. Assume that fit has already been called
-            (i.e., this is more of an 'update')
+        Parameters
+        ----------
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The features to train the model.
+
+        y: numpy.ndarray of shape (n_samples)
+            An array-like with the target values of all samples in X.
+
+        sample_weight: Not used (default=None)
+
+        Returns
+        -------
+        self
+
         """
         if self.ensemble is None:
-            # This was not the first time that the model is fit
-            self.fit(X, Y)
+            # This is the first time that the model is fit
+            self.fit(X, y)
             return self
 
-        N, self.L = Y.shape
+        N, self.L = y.shape
         L = self.L
         N, D = X.shape
 
         # Set the chain order
-        Y = Y[:, self.chain]
+        y = y[:, self.chain]
 
         XY = np.zeros((N, D + L-1))
         XY[:, 0:D] = X
-        XY[:, D:] = Y[:, 0:L-1]
+        XY[:, D:] = y[:, 0:L - 1]
         for j in range(L):
-            self.ensemble[j].partial_fit(XY[:, 0:D + j], Y[:, j])
+            self.ensemble[j].partial_fit(XY[:, 0:D + j], y[:, j])
 
         return self
 
     def predict(self, X):
-        """ predict
+        """ Predict target values for the passed data.
 
-            Returns predictions for X
+        Parameters
+        ----------
+        X : numpy.ndarray of shape (n_samples, n_features)
+            The set of data samples to predict the target values for.
+
+        Returns
+        -------
+        A numpy.ndarray with all the predictions for the samples in X.
+
         """
         N, D = X.shape
         Y = np.zeros((N,self.L))
@@ -111,17 +149,15 @@ class RegressorChain(StreamModel):
         # Unset the chain order (back to default)
         return Y[:, np.argsort(self.chain)]
 
-    def score(self, X, y):
-        raise NotImplementedError
-
     def reset(self):
         self.__configure()
-
-    def get_info(self):
-        return 'RegressorChain estimator:' \
-               ' - base_estimator: {}'.format(self.base_estimator) + \
-               ' - order: {}'.format(self.order) + \
-               ' - random_state: {}'.format(self._init_random_state)
+        return self
 
     def predict_proba(self, X):
+        """ Not implemented for this method.
+        """
         raise NotImplementedError
+
+    def _more_tags(self):
+        return {'multioutput': True,
+                'multioutput_only': True}

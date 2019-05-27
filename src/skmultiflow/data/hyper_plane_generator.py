@@ -4,22 +4,23 @@ from skmultiflow.utils import check_random_state
 
 
 class HyperplaneGenerator(Stream):
-    """ HyperplaneGenerator
+    r""" Hyperplane stream generator.
+
     Generates a problem of prediction class of a rotation hyperplane. It was
     used as testbed for CVFDT and VFDT in [1]_.
 
-    A hyperplane in d-dimensional space is the set of points x that satisfy
-    :math:`\sum^{d}_{i=1} w_i x_i = w_0 = \sum^{d}_{i=1} w_i` where
-    :math:`x_i`, is the ith coordinate of x. Examples for which
-    :math:`\sum^{d}_{i=1} w_i x_i > w_0` are labeled positive, and examples
-    for which :math:`\sum^{d}_{i=1} w_i x_i \leq w_0` are labeled negative.
+    A hyperplane in d-dimensional space is the set of points :math:`x` that satisfy
+    :math:`\sum^{d}_{i=1} w_i x_i = w_0 = \sum^{d}_{i=1} w_i`, where
+    :math:`x_i` is the ith coordinate of :math:`x`. Examples for which
+    :math:`\sum^{d}_{i=1} w_i x_i > w_0`, are labeled positive, and examples
+    for which :math:`\sum^{d}_{i=1} w_i x_i \leq w_0`, are labeled negative.
 
-    Hyperplanes are useful for simulation time-changing concepts, because we
-    can change the orientation and position of the hyperplane ina  smooth
+    Hyperplanes are useful for simulating time-changing concepts, because we
+    can change the orientation and position of the hyperplane in a smooth
     manner by changing the relative size of the weights. We introduce change
-    to this dataset adding drift to each weight feature :math:`w_i = w_i + d \sigma`,
+    to this dataset by adding drift to each weight feature :math:`w_i = w_i + d \sigma`,
     where :math:`\sigma` is the probability that the direction of change is
-    reversed and d is the change applied to every example.
+    reversed and :math:`d` is the change applied to every example.
 
     Parameters
     ----------
@@ -60,7 +61,7 @@ class HyperplaneGenerator(Stream):
                  noise_percentage=0.05, sigma_percentage=0.1):
         super().__init__()
 
-        self._original_random_state = random_state
+        self.random_state = random_state
         self.n_num_features = n_features
         self.n_features = self.n_num_features
         self.n_classes = 2
@@ -69,7 +70,7 @@ class HyperplaneGenerator(Stream):
         self.sigma_percentage = sigma_percentage
         self.noise_percentage = noise_percentage
         self.n_targets = 1
-        self.random_state = None
+        self._random_state = None   # This is the actual random_state object used internally
         self._next_class_should_be_zero = False
         self._weights = np.zeros(self.n_features)
         self._sigma = np.zeros(self.n_features)
@@ -178,23 +179,27 @@ class HyperplaneGenerator(Stream):
 
     def prepare_for_use(self):
         """
-        Should be called before generating the samples.
+        Prepares the stream for use.
+
+        Notes
+        -----
+        This functions should always be called after the stream initialization.
 
         """
-        self.random_state = check_random_state(self._original_random_state)
+        self._random_state = check_random_state(self.random_state)
         self._next_class_should_be_zero = False
         self.sample_idx = 0
         for i in range(self.n_features):
-            self._weights[i] = self.random_state.rand()
+            self._weights[i] = self._random_state.rand()
             self._sigma[i] = 1 if (i < self.n_drift_features) else 0
 
     def next_sample(self, batch_size=1):
         """ next_sample
 
-        The sample generation works as follows: The n_features are generated
+        The sample generation works as follows: The features are generated
         with the random generator, initialized with the seed passed by the
-        user. Then, the classification function decides, as a function of the
-        sum and weight' sum, whether to classify the instance as class 0 or
+        user. Then the classification function decides, as a function of the
+        sum and weight's sum, whether to instance belongs to class 0 or
         class 1. The next step is to add noise if requested by the user and
         than generate drift.
 
@@ -217,13 +222,13 @@ class HyperplaneGenerator(Stream):
         for j in range(batch_size):
             self.sample_idx += 1
             for i in range(self.n_features):
-                data[j, i] = self.random_state.rand()
+                data[j, i] = self._random_state.rand()
                 sum += self._weights[i] * data[j, i]
                 sum_weights += self._weights[i]
 
             group = 1 if sum >= sum_weights * 0.5 else 0
 
-            if 0.01 + self.random_state.rand() <= self.noise_percentage:
+            if 0.01 + self._random_state.rand() <= self.noise_percentage:
                 group = 1 if (group == 0) else 0
 
             data[j, -1] = group
@@ -231,7 +236,7 @@ class HyperplaneGenerator(Stream):
         self._generate_drift()
 
         self.current_sample_x = data[:, :self.n_features]
-        self.current_sample_y = data[:, self.n_features:].flatten()
+        self.current_sample_y = data[:, self.n_features:].flatten().astype(int)
 
         return self.current_sample_x, self.current_sample_y
 
@@ -242,14 +247,5 @@ class HyperplaneGenerator(Stream):
         """
         for i in range(self.n_drift_features):
             self._weights[i] += float(float(self._sigma[i]) * float(self.mag_change))
-            if (0.01 + self.random_state.rand()) <= self.sigma_percentage:
+            if (0.01 + self._random_state.rand()) <= self.sigma_percentage:
                 self._sigma[i] *= -1
-
-    def get_info(self):
-        return 'HyperplaneGenerator: - random_state: ' + str(self._original_random_state) + \
-               ' - n_features: ' + str(self.n_features) + \
-               ' - n_classes: ' + str(self.n_classes) + \
-               ' - n_drift_features: ' + str(self.n_drift_features) + \
-               ' - perturbation: ' + str(self.noise_percentage) + \
-               ' - sigma_percentage: ' + str(self.sigma_percentage) + \
-               ' - mag_change: ' + str(self.mag_change)

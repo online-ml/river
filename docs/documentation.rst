@@ -1,8 +1,31 @@
-=============
-Documentation
-=============
+=================
+API Documentation
+=================
 
 This is the API documentation for ``scikit-multiflow``.
+
+.. _data_ref:
+
+Core: :mod:`skmultiflow.core`
+=============================
+
+.. automodule:: skmultiflow.core
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   core.base.BaseEstimator
+   core.BaseSKMObject
+   core.ClassifierMixin
+   core.RegressorMixin
+   core.MetaEstimatorMixin
+   core.MultiOutputMixin
+   core.Pipeline
 
 Data: :mod:`skmultiflow.data`
 =============================
@@ -11,77 +34,58 @@ Data: :mod:`skmultiflow.data`
     :no-members:
     :no-inherited-members:
 
+.. currentmodule:: skmultiflow
+
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   skmultiflow.data.base_stream
-   skmultiflow.data.data_stream
-   skmultiflow.data.file_stream
+   data.base_stream.Stream
+   data.DataStream
+   data.FileStream
 
 Stream Generators
 -----------------
 
-.. autosummary::
-   :toctree: _autosummary
-
-   skmultiflow.data.agrawal_generator
-   skmultiflow.data.hyper_plane_generator
-   skmultiflow.data.led_generator
-   skmultiflow.data.led_generator_drift
-   skmultiflow.data.mixed_generator
-   skmultiflow.data.random_rbf_generator
-   skmultiflow.data.random_rbf_generator_drift
-   skmultiflow.data.random_tree_generator
-   skmultiflow.data.sea_generator
-   skmultiflow.data.sine_generator
-   skmultiflow.data.stagger_generator
-   skmultiflow.data.waveform_generator
-   skmultiflow.data.multilabel_generator
-   skmultiflow.data.regression_generator
-   skmultiflow.data.concept_drift_stream
-
 .. currentmodule:: skmultiflow
 
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   data.AGRAWALGenerator
+   data.HyperplaneGenerator
+   data.LEDGenerator
+   data.LEDGeneratorDrift
+   data.MIXEDGenerator
+   data.RandomRBFGenerator
+   data.RandomRBFGeneratorDrift
+   data.RandomTreeGenerator
+   data.SEAGenerator
+   data.SineGenerator
+   data.STAGGERGenerator
+   data.WaveformGenerator
+   data.MultilabelGenerator
+   data.RegressionGenerator
+   data.ConceptDriftStream
+
 Learning methods
-=================================================
+================
 
 Bayes methods
-----------------
+-------------
 
 .. automodule:: skmultiflow.bayes
     :no-members:
     :no-inherited-members:
 
-.. autosummary::
-   :toctree: _autosummary
-
-
-   skmultiflow.bayes.naive_bayes
-
 .. currentmodule:: skmultiflow
 
-Ensemble methods
-----------------
-
-.. automodule:: skmultiflow.meta
-   :no-members:
-   :no-inherited-members:
-
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   skmultiflow.meta.adaptive_random_forests
-   skmultiflow.meta.leverage_bagging
-   skmultiflow.meta.oza_bagging
-   skmultiflow.meta.oza_bagging_adwin
-   skmultiflow.meta.multi_output_learner
-   skmultiflow.meta.classifier_chains
-   skmultiflow.meta.regressor_chains
-   skmultiflow.meta.batch_incremental
-   skmultiflow.meta.learn_pp
-   skmultiflow.meta.learn_nse
-
-.. currentmodule:: skmultiflow
+   bayes.NaiveBayes
 
 Lazy learning methods
 ---------------------
@@ -90,15 +94,50 @@ Lazy learning methods
    :no-members:
    :no-inherited-members:
 
+.. currentmodule:: skmultiflow
+
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   skmultiflow.lazy.kdtree
-   skmultiflow.lazy.knn
-   skmultiflow.lazy.knn_adwin
-   skmultiflow.lazy.sam_knn
+   lazy.KNN
+   lazy.KNNAdwin
+   lazy.SAMKNN
+
+Ensemble methods
+----------------
+
+.. automodule:: skmultiflow.meta
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   meta.AccuracyWeightedEnsemble
+   meta.AdaptiveRandomForest
+   meta.AdditiveExpertEnsemble
+   meta.BatchIncremental
+   meta.ClassifierChain
+   meta.ProbabilisticClassifierChain
+   meta.MonteCarloClassifierChain
+   meta.DynamicWeightedMajority
+   meta.LearnNSE
+   meta.LearnPP
+   meta.LeverageBagging
+   meta.MultiOutputLearner
+   meta.OnlineAdaC2
+   meta.OnlineBoosting
+   meta.OnlineCSB2
+   meta.OnlineRUSBoost
+   meta.OnlineSMOTEBagging
+   meta.OnlineUnderOverBagging
+   meta.OzaBagging
+   meta.OzaBaggingAdwin
+   meta.RegressorChain
 
 Neural Networks
 ---------------
@@ -107,12 +146,13 @@ Neural Networks
     :no-members:
     :no-inherited-members:
 
+.. currentmodule:: skmultiflow
+
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   skmultiflow.neural_networks.perceptron
-
-.. currentmodule:: skmultiflow
+   neural_networks.PerceptronMask
 
 Tree methods
 ------------
@@ -121,36 +161,52 @@ Tree methods
    :no-members:
    :no-inherited-members:
 
+.. currentmodule:: skmultiflow
+
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   skmultiflow.trees.hoeffding_tree
-   skmultiflow.trees.hoeffding_adaptive_tree
-   skmultiflow.trees.hoeffding_anytime_tree
-   skmultiflow.trees.arf_hoeffding_tree
-   skmultiflow.trees.lc_hoeffding_tree
-   skmultiflow.trees.regression_hoeffding_tree
-   skmultiflow.trees.regression_hoeffding_adaptive_tree
-   skmultiflow.trees.multi_target_regression_hoeffding_tree
+   trees.HoeffdingTree
+   trees.HAT
+   trees.HATT
+   trees.LCHT
+   trees.RegressionHoeffdingTree
+   trees.RegressionHAT
+   trees.MultiTargetRegressionHoeffdingTree
+
+Rules methods
+-------------
+
+.. automodule:: skmultiflow.rules
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: skmultiflow
 
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   rules.VFDR
+
 Drift Detection: :mod:`skmultiflow.drift_detection`
-======================================================================
+===================================================
 
 .. automodule:: skmultiflow.drift_detection
    :no-members:
    :no-inherited-members:
 
+.. currentmodule:: skmultiflow
+
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   skmultiflow.drift_detection.adwin
-   skmultiflow.drift_detection.ddm
-   skmultiflow.drift_detection.eddm
-   skmultiflow.drift_detection.page_hinkley
-
-.. currentmodule:: skmultiflow
+   drift_detection.ADWIN
+   drift_detection.DDM
+   drift_detection.EDDM
+   drift_detection.PageHinkley
 
 Evaluation: :mod:`skmultiflow.evaluation`
 =========================================
@@ -159,21 +215,52 @@ Evaluation: :mod:`skmultiflow.evaluation`
    :no-members:
    :no-inherited-members:
 
+.. currentmodule:: skmultiflow
+
 .. autosummary::
+   :nosignatures:
    :toctree: _autosummary
 
-   skmultiflow.evaluation.evaluate_holdout
-   skmultiflow.evaluation.evaluate_prequential
+   evaluation.EvaluateHoldout
+   evaluation.EvaluatePrequential
 
+Transform: :mod:`skmultiflow.transform`
+=======================================
 
-Package, Indices and Search
-===========================
+.. automodule:: skmultiflow.transform
+   :no-members:
+   :no-inherited-members:
 
-.. toctree::
-   :maxdepth: 1
+.. currentmodule:: skmultiflow
 
-   modules
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   transform.MissingValuesCleaner
+   transform.OneHotToCategorical
+
+Misc:
+=====
+
+Data structure
+--------------
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   lazy.KDTree
+
+Utilities
+---------
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   core.clone

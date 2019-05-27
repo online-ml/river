@@ -4,12 +4,12 @@ import logging
 import copy as cp
 from sklearn.cluster import KMeans
 from collections import deque
-from skmultiflow.core.base import StreamModel
-from skmultiflow.utils.utils import get_dimensions
+from skmultiflow.core import BaseSKMObject, ClassifierMixin
+from skmultiflow.utils import get_dimensions
 
 
-class SAMKNN(StreamModel):
-    """ SAMKNN - Self Adjusting Memory (SAM) coupled with the k Nearest Neighbor classifier.
+class SAMKNN(BaseSKMObject, ClassifierMixin):
+    """ Self Adjusting Memory coupled with the kNN classifier.
 
     Parameters
     ----------
@@ -34,7 +34,7 @@ class SAMKNN(StreamModel):
         scratch.
         'maxACCApprox' approximates the Interleaved test-train error and is 
         significantly faster than the exact version. If set to None, the STM is not 
-        adapted at all. When additionally useLTM=false, this algorithm is simply a kNN 
+        adapted at all. When additionally use_ltm=false, this algorithm is simply a kNN
         with fixed sliding window size.
         
     min_stm_size : int, optional (default=50)
@@ -83,27 +83,38 @@ class SAMKNN(StreamModel):
 
     """
 
-    def __init__(self, n_neighbors=5, weighting='distance', max_window_size=5000, ltm_size=0.4, min_stm_size=50,
-                 stm_size_option='maxACCApprox', use_ltm=True):
+    def __init__(self, n_neighbors=5,
+                 weighting='distance',
+                 max_window_size=5000,
+                 ltm_size=0.4,
+                 min_stm_size=50,
+                 stm_size_option='maxACCApprox',
+                 use_ltm=True):
         super().__init__()
         self.n_neighbors = n_neighbors
+        self.weighting = weighting
+        self.max_wind_size = max_window_size
+        self.ltm_size = ltm_size
+        self.min_stm_size = min_stm_size
+        self.use_ltm = use_ltm
+        self.stm_size_option = stm_size_option
+
         self._STMSamples = None
         self._STMLabels = np.empty(shape=(0), dtype=np.int32)
         self._LTMSamples = None
         self._LTMLabels = np.empty(shape=(0), dtype=np.int32)
-        self.maxLTMSize = ltm_size * max_window_size
-        self.maxSTMSize = max_window_size - self.maxLTMSize
-        self.minSTMSize = min_stm_size
+        self.maxLTMSize = self.ltm_size * self.max_wind_size
+        self.maxSTMSize = self.max_wind_size - self.maxLTMSize
+        self.minSTMSize = self.min_stm_size
 
-        if stm_size_option is not None:
+        if self.stm_size_option is not None:
             self.STMDistances = np.zeros(shape=(max_window_size + 1, max_window_size + 1))
-        if weighting == 'distance':
+        if self.weighting == 'distance':
             self.getLabelsFct = SAMKNN.get_distance_weighted_label
-        elif weighting == 'uniform':
+        elif self.weighting == 'uniform':
             self.getLabelsFct = SAMKNN.get_maj_label
-        self.STMSizeAdaption = stm_size_option
-        self.useLTM = use_ltm
-        if use_ltm:
+        self.STMSizeAdaption = self.stm_size_option
+        if self.use_ltm:
             self.predictFct = self._predict_by_all_memories
             self.sizeCheckFct = self.size_check_STMLTM
         else:
@@ -148,7 +159,7 @@ class SAMKNN(StreamModel):
         return newSamples, newLabels
 
     def size_check_fade_out(self):
-        """Makes sure that the STM does not surpass the maximum size, only used when useLTM=False."""
+        """Makes sure that the STM does not surpass the maximum size, only used when use_ltm=False."""
         STMShortened = False
         if len(self._STMLabels) > self.maxSTMSize + self.maxLTMSize:
             STMShortened = True
@@ -161,19 +172,21 @@ class SAMKNN(StreamModel):
                 # if self.interLeavedPredHistories.has_key(0):
                 if 0 in keyset:
                     self.interLeavedPredHistories[0].pop(0)
+                updated_histories = cp.deepcopy(self.interLeavedPredHistories)
                 for key in self.interLeavedPredHistories.keys():
                     if key > 0:
                         if key == 1:
-                            self.interLeavedPredHistories.pop(0, None)
-                        tmp = self.interLeavedPredHistories[key]
-                        self.interLeavedPredHistories.pop(key, None)
-                        self.interLeavedPredHistories[key-1] = tmp
+                            updated_histories.pop(0, None)
+                        tmp = updated_histories[key]
+                        updated_histories.pop(key, None)
+                        updated_histories[key - 1] = tmp
+                self.interLeavedPredHistories = updated_histories
             else:
                 self.interLeavedPredHistories = {}
         return STMShortened
 
     def size_check_STMLTM(self):
-        """Makes sure that the STM and LTM combined doe not surpass the maximum size, only used when useLTM=True."""
+        """Makes sure that the STM and LTM combined doe not surpass the maximum size, only used when use_ltm=True."""
         STMShortened = False
         if len(self._STMLabels) + len(self._LTMLabels) > self.maxSTMSize + self.maxLTMSize:
             if len(self._LTMLabels) > self.maxLTMSize:
@@ -224,7 +237,7 @@ class SAMKNN(StreamModel):
     def _partial_fit(self, x, y):
         """Processes a new sample."""
         distancesSTM = SAMKNN.get_distances(x, self._STMSamples)
-        if not self.useLTM:
+        if not self.use_ltm:
             self._partial_fit_by_stm(x, y, distancesSTM)
         else:
             self._partial_fit_by_all_memories(x, y, distancesSTM)
@@ -252,7 +265,7 @@ class SAMKNN(StreamModel):
                 self._STMLabels = np.delete(self._STMLabels, delrange, 0)
                 self.STMDistances[:len(self._STMLabels),:len(self._STMLabels)] = self.STMDistances[(oldWindowSize-newWindowSize):(oldWindowSize-newWindowSize)+len(self._STMLabels),(oldWindowSize-newWindowSize):(oldWindowSize-newWindowSize)+len(self._STMLabels)]
 
-                if self.useLTM:
+                if self.use_ltm:
                     for i in delrange:
                         self.STMPredHistory.popleft()
                         self.LTMPredHistory.popleft()
@@ -266,7 +279,7 @@ class SAMKNN(StreamModel):
         self.LTMSizes.append(len(self._LTMLabels))
 
     def _partial_fit_by_all_memories(self, sample, label, distancesSTM):
-        """Predicts the label of a given sample by using the STM, LTM and the CM, only used when useLTM=True."""
+        """Predicts the label of a given sample by using the STM, LTM and the CM, only used when use_ltm=True."""
         predictedLabelLTM = 0
         predictedLabelSTM = 0
         predictedLabelBoth = 0
@@ -344,18 +357,34 @@ class SAMKNN(StreamModel):
         pass
 
     def _predict_by_stm(self, sample, label, distancesSTM):
-        """Predicts the label of a given sample by the STM, only used when useLTM=False."""
+        """Predicts the label of a given sample by the STM, only used when use_ltm=False."""
         predictedLabel = 0
         currLen = len(self._STMLabels)
         if currLen > 0:
             predictedLabel = self.getLabelsFct(distancesSTM, self._STMLabels, min(self.n_neighbors, currLen))[0]
         return predictedLabel
 
-    def fit(self, X, y, classes = None, weight=None):
-        self.partial_fit(X, y, classes, weight)
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
+        """ Partially (incrementally) fit the model.
 
-    def partial_fit(self, X, y, classes=None, weight=None):
-        """Processes a new sample."""
+            Parameters
+            ----------
+            X : numpy.ndarray of shape (n_samples, n_features)
+                The features to train the model.
+
+            y: numpy.ndarray of shape (n_samples)
+                An array-like with the labels of all samples in X.
+
+            classes: numpy.ndarray, optional (default=None)
+                Array with all possible/known classes. Usage varies depending on the learning method.
+
+            sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+                Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+
+            Returns
+            -------
+            self
+        """
         r, c = get_dimensions(X)
         if self._STMSamples is None:
             self._STMSamples = np.empty(shape=(0, c))
@@ -379,12 +408,6 @@ class SAMKNN(StreamModel):
         return np.asarray(predictedLabel)
 
     def predict_proba(self, X):
-        raise NotImplementedError
-
-    def reset(self):
-        raise NotImplementedError
-
-    def score(self, X, y):
         raise NotImplementedError
 
     @staticmethod
@@ -436,13 +459,6 @@ class SAMKNN(StreamModel):
     @property
     def LTMLabels(self):
         return self._LTMLabels
-
-    def get_info(self):
-        result = ''
-        result += 'avg. STMSize %f LTMSize %f' % (np.mean(self.STMSizes), np.mean(self.LTMSizes)) + '; '
-        result += 'num correct STM %d LTM %d CM %d ' % (self.numSTMCorrect, self.numLTMCorrect, self.numCMCorrect) + '; '
-        result += 'num correct %d/%d' % (self.numCorrectPredictions, self.numPossibleCorrectPredictions) + '\n'
-        return result
 
 
 class STMSizer(object):

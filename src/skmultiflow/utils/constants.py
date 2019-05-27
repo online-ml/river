@@ -15,6 +15,10 @@ ARMSE = 'average_root_mean_square_error'
 TRUE_VS_PREDICTED = 'true_vs_predicted'
 RUNNING_TIME = 'running_time'
 MODEL_SIZE = 'model_size'
+F1_SCORE = 'f1'
+GMEAN = 'gmean'
+PRECISION = 'precision'
+RECALL = 'recall'
 
 PLOT_TYPES = [ACCURACY,
               KAPPA,
@@ -30,6 +34,10 @@ PLOT_TYPES = [ACCURACY,
               AMAE,
               ARMSE,
               TRUE_VS_PREDICTED,
+              PRECISION,
+              RECALL,
+              F1_SCORE,
+              GMEAN,
 
               DATA_POINTS,
               RUNNING_TIME,
@@ -39,6 +47,10 @@ CLASSIFICATION_METRICS = [ACCURACY,
                           KAPPA_T,
                           KAPPA_M,
                           TRUE_VS_PREDICTED,
+                          RECALL,
+                          PRECISION,
+                          GMEAN,
+                          F1_SCORE,
 
                           DATA_POINTS,
                           RUNNING_TIME,

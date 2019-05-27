@@ -5,16 +5,10 @@ from skmultiflow.data.base_stream import Stream
 
 
 class FileStream(Stream):
-    """ FileStream
+    """ Creates a stream from a file source.
 
-    A stream generated from the entries of a file. For the moment only
-    csv files are supported, but the idea is to support different formats,
-    as long as there is a function that correctly reads, interprets, and
-    returns a pandas' DataFrame or numpy.ndarray with the data.
-
-    The stream is able to provide, as requested, a number of samples, in
-    a way that old samples cannot be accessed in a later time. This is done
-    so that a stream context can be correctly simulated.
+    For the moment only csv files are supported, but the goal is to support different formats, as long as there is a
+    function that correctly reads, interprets, and returns a pandas' DataFrame or numpy.ndarray with the data.
 
     Parameters
     ----------
@@ -27,8 +21,14 @@ class FileStream(Stream):
     n_targets: int, optional (default=1)
         The number of targets.
 
-    cat_features_idx: list, optional (default=None)
+    cat_features: list, optional (default=None)
         A list of indices corresponding to the location of categorical features.
+
+    Notes
+    -----
+    The stream object provides upon request a number of samples, in a way such that old samples cannot be accessed
+    at a later time. This is done to correctly simulate the stream context.
+
     Examples
     --------
     >>> # Imports
@@ -61,17 +61,19 @@ class FileStream(Stream):
     _CLASSIFICATION = 'classification'
     _REGRESSION = 'regression'
 
-    def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features_idx=None):
+    def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features=None):
         super().__init__()
-        self.filename = ''
-        self.X = None
-        self.y = None
-        self.cat_features_idx = [] if cat_features_idx is None else cat_features_idx
+
+        self.filepath = filepath
         self.n_targets = n_targets
         self.target_idx = target_idx
+        self.cat_features = cat_features
+        self.cat_features_idx = [] if self.cat_features is None else self.cat_features
+
+        self.X = None
+        self.y = None
         self.task_type = None
         self.n_classes = 0
-        self.filepath = filepath
         self.filename = ''
         self.basename = ''
 
@@ -167,8 +169,11 @@ class FileStream(Stream):
     def prepare_for_use(self):
         """ prepare_for_use
 
-        Prepares the stream for use. This functions should always be
-        called after the stream initialization.
+        Prepares the stream for use.
+
+        Notes
+        -----
+        This functions should always be called after the stream initialization.
 
         """
         self._load_data()
@@ -177,6 +182,8 @@ class FileStream(Stream):
         self.current_sample_y = None
 
     def _load_data(self):
+        """ Reads the data provided by the user and separates the features and targets.
+        """
         try:
             raw_data = self.read_function(self.filepath)
 
@@ -185,7 +192,6 @@ class FileStream(Stream):
             rows, cols = raw_data.shape
             self.n_samples = rows
             labels = raw_data.columns.values.tolist()
-
 
             if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
                 # Take everything to the right of target_idx
@@ -285,13 +291,18 @@ class FileStream(Stream):
         """
         return self.n_samples - self.sample_idx
 
-    def print_df(self):
+    def get_all_samples(self):
         """
-        Prints all the samples in the stream.
+        returns all the samples in the stream.
 
+        Returns
+        -------
+        X: pd.DataFrame
+            The features' columns.
+        y: pd.DataFrame
+            The targets' columns.
         """
-        print(self.X)
-        print(self.y)
+        return self.X, self.y
 
     def get_data_info(self):
         if self.task_type == self._CLASSIFICATION:
@@ -309,5 +320,5 @@ class FileStream(Stream):
             return [float] * self.n_targets
 
     def get_info(self):
-        return 'File Stream: filename: ' + str(self.basename) + \
-               '  -  n_targets: ' + str(self.n_targets)
+        return 'FileStream(filename={}, target_idx={}, n_targets={}, cat_features={})'\
+            .format("'" + self.basename + "'", self.target_idx, self. n_targets, self.cat_features)

@@ -1,14 +1,17 @@
 import numpy as np
+
 from array import array
 import os
+
 from skmultiflow.data import SEAGenerator
 from skmultiflow.neural_networks import PerceptronMask
 from sklearn.metrics import accuracy_score
 
-import warnings
-warnings.filterwarnings("ignore", category=RuntimeWarning)
+import pytest
+from sklearn import __version__ as sklearn_version
 
 
+@pytest.mark.filterwarnings('ignore::FutureWarning')
 def test_perceptron(test_path):
     stream = SEAGenerator(random_state=1)
     stream.prepare_for_use()
@@ -45,20 +48,25 @@ def test_perceptron(test_path):
     y_proba_expected = np.load(test_file)
     assert np.allclose(y_proba, y_proba_expected)
 
-    expected_info = 'PerceptronMask: - penalty: None - alpha: 0.0001 - fit_intercept: True - max_iter: 1000 ' \
-                    '- tol: 0.001 - shuffle: True - eta0: 1.0 - warm_start: False - class_weight: None - n_jobs: 1'
-
+    expected_info = "PerceptronMask(alpha=0.0001, class_weight=None, early_stopping=False, eta0=1.0,\n" \
+                    "               fit_intercept=True, max_iter=None, n_iter=None,\n" \
+                    "               n_iter_no_change=5, n_jobs=None, penalty=None, random_state=1,\n" \
+                    "               shuffle=True, tol=None, validation_fraction=0.1, verbose=0,\n" \
+                    "               warm_start=False)"
     assert learner.get_info() == expected_info
 
     # Coverage tests
     learner.reset()
-    learner.fit(X=X_batch[:4500], y=y_batch[:4500])
+    if not sklearn_version.startswith("0.21"):
+        learner.fit(X=np.asarray(X_batch[:4500]), y=np.asarray(y_batch[:4500]), classes=stream.target_values)
+    else:
+        # Root cause of failure (TypeError: an integer is required) is in the fit() method in sklearn 0.21.0,
+        # This is a workaround until a fix is made available in sklearn
+        learner.partial_fit(X=np.asarray(X_batch[:4500]), y=np.asarray(y_batch[:4500]), classes=stream.target_values)
     y_pred = learner.predict(X=X_batch[4501:])
     accuracy = accuracy_score(y_true=y_batch[4501:], y_pred=y_pred)
-    expected_accuracy = 0.8897795591182365
-    # assert np.isclose(expected_accuracy, accuracy)  # Removed due to npn-replicable error in Travis build
-
-    assert 'estimator' == learner.get_class_type()
+    expected_accuracy = 0.9478957915831663
+    assert np.isclose(expected_accuracy, accuracy)
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray

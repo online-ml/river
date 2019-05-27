@@ -23,7 +23,7 @@ error_width_threshold = 300
 
 
 class HATT(HoeffdingTree):
-    """ Hoeffding Anytime Tree or EVDT.
+    """ Hoeffding Anytime Tree or Extremely Fast Decision Tree.
 
     Parameters
     ----------
@@ -552,7 +552,7 @@ class HATT(HoeffdingTree):
         self.min_samples_reevaluate = min_samples_reevaluate
 
     # Override partial_fit
-    def partial_fit(self, X, y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ Incrementally trains the model. Train samples (instances) are composed of X attributes and their
         corresponding targets y.
 
@@ -565,8 +565,8 @@ class HATT(HoeffdingTree):
         classes: list or numpy.array
             Contains the class values in the stream. If defined, will be used to define the length of the arrays
             returned by `predict_proba`
-        weight: float or array-like
-            Instance weight. If not provided, uniform weights are assumed.
+        sample_weight: float or array-like
+            Samples weight. If not provided, uniform weights are assumed.
 
         Notes
         -----
@@ -588,31 +588,31 @@ class HATT(HoeffdingTree):
         if self.classes is None and classes is not None:
             self.classes = classes
         if y is not None:
-            if weight is None:
-                weight = np.array([1.0])
+            if sample_weight is None:
+                sample_weight = np.array([1.0])
             row_cnt, _ = get_dimensions(X)
-            wrow_cnt, _ = get_dimensions(weight)
+            wrow_cnt, _ = get_dimensions(sample_weight)
             if row_cnt != wrow_cnt:
-                weight = [weight[0]] * row_cnt
+                sample_weight = [sample_weight[0]] * row_cnt
             for i in range(row_cnt):
-                if weight[i] != 0.0:
-                    self._train_weight_seen_by_model += weight[i]
-                    self._partial_fit(X[i], y[i], weight[i])
+                if sample_weight[i] != 0.0:
+                    self._train_weight_seen_by_model += sample_weight[i]
+                    self._partial_fit(X[i], y[i], sample_weight[i])
 
     #  Override _partial_fit
-    def _partial_fit(self, X, y, weight):
+    def _partial_fit(self, X, y, sample_weight):
         """ Trains the model on samples X and corresponding targets y.
 
         Private function where actual training is carried on.
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
+        X: numpy.ndarray of shape (1, n_features)
             Instance attributes.
-        y: array_like
-            Classes (targets) for all samples in X.
-        weight: float or array-like
-            Instance weight. If not provided, uniform weights are assumed.
+        y: int
+            Class label for sample X.
+        sample_weight: float
+            Sample weight.
 
         """
 
@@ -621,10 +621,10 @@ class HATT(HoeffdingTree):
             self._active_leaf_node_cnt = 1
 
         # Sort instance X into a leaf
-        self._sort_instance_into_leaf(X, y, weight)
+        self._sort_instance_into_leaf(X, y, sample_weight)
 
         # Process all nodes, starting from root to the leaf where the instance X belongs.
-        self._process_nodes(X, y, weight, self._tree_root, None, None)
+        self._process_nodes(X, y, sample_weight, self._tree_root, None, None)
 
     def _process_nodes(self, X, y, weight, node, parent, branch_index):
         """ Processing nodes from root to leaf where instance belongs.
@@ -1110,27 +1110,3 @@ class HATT(HoeffdingTree):
             for line in range(len(buffer)):
                 description += buffer[line]
             return description
-
-    # Override
-    def get_info(self):
-        """ Collects information about the model.
-
-        Returns
-        -------
-        string
-            Configuration for the model.
-        """
-        description = type(self).__name__ + ': '
-        description += 'max_byte_size: {} - '.format(self.max_byte_size)
-        description += 'memory_estimate_period: {} - '.format(self.memory_estimate_period)
-        description += 'grace_period: {} - '.format(self.grace_period)
-        description += 'min_samples_reevaluate: {} - '.format(self.min_samples_reevaluate)
-        description += 'split_criterion: {} - '.format(self.split_criterion)
-        description += 'split_confidence: {} - '.format(self.split_confidence)
-        description += 'tie_threshold: {} - '.format(self.tie_threshold)
-        description += 'binary_split: {} - '.format(self.binary_split)
-        description += 'stop_mem_management: {} - '.format(self.stop_mem_management)
-        description += 'leaf_prediction: {} - '.format(self.leaf_prediction)
-        description += 'nb_threshold: {} - '.format(self.nb_threshold)
-        description += 'nominal_attributes: {} - '.format(self.nominal_attributes)
-        return description

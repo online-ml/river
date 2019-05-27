@@ -24,7 +24,7 @@ def demo(instances=2000):
     stream.prepare_for_use()
     # Setup the classifier
     clf = SGDClassifier()
-    # classifier = KNNAdwin(n_neighbors=8, max_window_size=2000,leaf_size=40, categorical_list=None)
+    # classifier = KNNAdwin(n_neighbors=8, max_window_size=2000,leaf_size=40, nominal_attributes=None)
     # classifier = OzaBaggingAdwin(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30, categorical_list=None))
     clf_one = KNNAdwin(n_neighbors=8, max_window_size=1000, leaf_size=30)
     # clf_two = KNN(n_neighbors=8, max_window_size=1000, leaf_size=30)

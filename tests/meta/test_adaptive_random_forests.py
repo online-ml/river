@@ -5,7 +5,7 @@ from skmultiflow.meta.adaptive_random_forests import AdaptiveRandomForest
 
 
 def test_adaptive_random_forests():
-    stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112)
+    stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112, n_classes=2)
     stream.prepare_for_use()
 
     learner = AdaptiveRandomForest(n_estimators=3,
@@ -38,10 +38,22 @@ def test_adaptive_random_forests():
 
     # Performance below does not need to be guaranteed. This check is set up so that anything that changes
     # to predictions are caught in the unit test. This helps prevent accidental changes.
-    # If these tests fail, make sure that what is worked on *should* change the predictions of ARF.
 
     assert type(learner.predict(X)) == np.ndarray
     assert np.alltrue(predictions == last_version_predictions)
+
+    expected_info = "AdaptiveRandomForest(binary_split=False, disable_weighted_vote=False,\n" \
+                    "                     drift_detection_method=ADWIN(delta=0.001), grace_period=50,\n" \
+                    "                     lambda_value=6, leaf_prediction='nba',\n" \
+                    "                     max_byte_size=33554432, max_features=5,\n" \
+                    "                     memory_estimate_period=2000000, n_estimators=3,\n" \
+                    "                     nb_threshold=0, no_preprune=False, nominal_attributes=None,\n" \
+                    "                     performance_metric='acc', random_state=112,\n" \
+                    "                     remove_poor_atts=False, split_confidence=0.01,\n" \
+                    "                     split_criterion='info_gain', stop_mem_management=False,\n" \
+                    "                     tie_threshold=0.05,\n" \
+                    "                     warning_detection_method=ADWIN(delta=0.01))"
+    assert learner.get_info() == expected_info
 
 
 def test_adaptive_random_forests_labels_given():

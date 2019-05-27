@@ -63,7 +63,7 @@ class EvaluationVisualizer(BaseListener):
         self._last_draw_timestamp = 0
 
         # Configuration
-        self._data_dict = data_dict
+        self.data_dict = data_dict
         self.n_wait = n_wait
         self.dataset_name = dataset_name
         self.n_models = n_models
@@ -186,7 +186,7 @@ class EvaluationVisualizer(BaseListener):
 
         # Subplots handler
         for metric_id in self.metrics:
-            data_ids = self._data_dict[metric_id]
+            data_ids = self.data_dict[metric_id]
             self._plot_trackers[metric_id] = PlotDataTracker(data_ids)
             plot_tracker = self._plot_trackers[metric_id]
             if metric_id not in [constants.RUNNING_TIME, constants.MODEL_SIZE]:
@@ -488,9 +488,6 @@ class EvaluationVisualizer(BaseListener):
     @staticmethod
     def hold():
         plt.show(block=True)
-
-    def get_info(self):
-        pass
 
 
 class PlotDataTracker(object):

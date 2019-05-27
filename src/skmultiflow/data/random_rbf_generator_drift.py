@@ -4,7 +4,7 @@ import numpy as np
 
 
 class RandomRBFGeneratorDrift(RandomRBFGenerator):
-    """ RandomRBFGeneratorDrift
+    """ Random Radial Basis Function stream generator with concept drift.
     
     This class is an extension from the RandomRBFGenerator. It functions 
     as the parent class, except that drift can be introduced in objects 
@@ -133,7 +133,7 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
             data[k, :] = np.append(X, y)
 
         self.current_sample_x = data[:, :self.n_num_features]
-        self.current_sample_y = data[:, self.n_num_features:].flatten()
+        self.current_sample_y = data[:, self.n_num_features:].flatten().astype(int)
         return self.current_sample_x, self.current_sample_y
 
     def generate_centroids(self):
@@ -143,13 +143,13 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
         the difference is the extra step taken to setup the drift, if there's 
         any.
         
-        To __configure the drift, random offset speeds are chosen for 
-        self.num_drift_centroids centroids. Finally, the speed are 
+        To configure the drift, random offset speeds are chosen for
+        ``self.num_drift_centroids`` centroids. Finally, the speed is
         normalized.
         
         """
         super().generate_centroids()
-        model_random_state = check_random_state(self._original_model_random_state)
+        model_random_state = check_random_state(self.model_random_state)
         num_drift_centroids = self.num_drift_centroids
         self.centroid_speed = []
         if num_drift_centroids > self.n_centroids:
@@ -161,7 +161,7 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
 
             for j in range(self.n_num_features):
                 rand_speed.append(model_random_state.rand())
-                norm_speed += rand_speed[j]*rand_speed[j]
+                norm_speed += rand_speed[j] * rand_speed[j]
 
             norm_speed = np.sqrt(norm_speed)
 
@@ -169,12 +169,3 @@ class RandomRBFGeneratorDrift(RandomRBFGenerator):
                 rand_speed[j] /= norm_speed
 
             self.centroid_speed.append(rand_speed)
-
-    def get_info(self):
-        return 'RandomRBFGenerator: model_random_state: ' + str(self._original_model_random_state) + \
-               ' - sample_random_state: ' + str(self._original_sample_random_state) + \
-               ' - n_classes: ' + str(self.n_classes) + \
-               ' - num_att: ' + str(self.n_num_features) + \
-               ' - n_centroids: ' + str(self.n_centroids) + \
-               ' - change_speed: ' + str(self.change_speed) + \
-               ' - num_drift_centroids: ' + str(self.num_drift_centroids)

@@ -1,8 +1,9 @@
-from skmultiflow.core.base_object import BaseObject
+from skmultiflow.core import BaseSKMObject
+
 from abc import ABCMeta, abstractmethod
 
 
-class StreamTransform(BaseObject, metaclass=ABCMeta):
+class StreamTransform(BaseSKMObject, metaclass=ABCMeta):
     """ BaseTransform
     
     Abstract class that explicits the constraints to all Transform objects 
@@ -16,16 +17,10 @@ class StreamTransform(BaseObject, metaclass=ABCMeta):
     NotImplementedError: This is an abstract class.
     
     """
+    _estimator_type = 'transform'
 
     def __init__(self):
         super().__init__()
-
-    def get_class_type(self):
-        return 'transform'
-
-    @abstractmethod
-    def get_info(self):
-        raise NotImplementedError
 
     @abstractmethod
     def transform(self, X):
