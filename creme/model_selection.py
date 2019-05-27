@@ -67,7 +67,7 @@ def online_qa_score(X_y, model, metric, on, lag, print_every=math.inf):
         on (str): The attribute used for measuring time.
         lag (datetime.timedelta or int or float): Amount to wait before revealing the target
             associated with each observation. This value is expected to be able to sum with the
-            `on` attribute.
+            ``on`` attribute.
         print_every (int): Iteration number at which to print the current metric.
 
     Returns:
