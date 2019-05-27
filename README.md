@@ -13,7 +13,7 @@
   </a>
   <!-- Codacy -->
   <a href="https://www.codacy.com/app/MaxHalford/creme">
-    <img src="https://img.shields.io/codacy/grade/56da6d188f4a417da0b7eaa435303862.svg?style=flat-square" alt="codecov" />
+    <img src="https://img.shields.io/codacy/grade/56da6d188f4a417da0b7eaa435303862.svg?style=for-the-badge" alt="codecov" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">
