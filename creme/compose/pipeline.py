@@ -284,13 +284,11 @@ class Pipeline(collections.OrderedDict):
 
             union_ending_node_ix = None
 
-            for key in list(d.keys()):
+            for name, step in d.items():
 
                 if skip_first:
                     skip_first = False
                     continue
-
-                step = d.get(key)
 
                 # If step is a Pipeline recurse on step
                 if isinstance(step, Pipeline):
@@ -302,9 +300,7 @@ class Pipeline(collections.OrderedDict):
                     node_before_union = nodes[-1]
 
                     # Draw each TransformerUnion steps
-                    for sub_key in step.keys():
-
-                        sub_step = step.get(sub_key)
+                    for sub_name, sub_step in step.items():
 
                         # If sub step is another nested step, draw its first estimator and recurse
                         if isinstance(sub_step, (Pipeline, union.TransformerUnion)):
@@ -313,12 +309,12 @@ class Pipeline(collections.OrderedDict):
                             draw_steps(d=sub_step, skip_first=True)
                         # Else just draw it
                         else:
-                            draw_step(node=sub_key, previous_node=node_before_union)
+                            draw_step(node=sub_name, previous_node=node_before_union)
 
                     union_ending_node_ix = len(nodes)
 
                 else:
-                    draw_step(key, nodes[-1])
+                    draw_step(name, nodes[-1])
 
                 # If previous step was a TransformerUnion and following node have been drawn
                 if union_ending_node_ix == len(nodes) - 1:
