@@ -20,7 +20,7 @@ from creme import utils
 ESTIMATORS = [
     naive_bayes.GaussianNB(),
     preprocessing.StandardScaler(),
-    cluster.KMeans(random_state=42),
+    cluster.KMeans(n_clusters=5, random_state=42),
     preprocessing.MinMaxScaler(),
     preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
     preprocessing.PolynomialExtender(),

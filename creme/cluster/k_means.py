@@ -71,7 +71,7 @@ class KMeans(base.Clusterer):
 
     """
 
-    def __init__(self, n_clusters=8, halflife=0.5, mu=0, sigma=1, distance=euclidean_distance,
+    def __init__(self, n_clusters, halflife=0.5, mu=0, sigma=1, distance=euclidean_distance,
                  random_state=None):
         self.n_clusters = n_clusters
         self.halflife = halflife
@@ -96,7 +96,8 @@ class KMeans(base.Clusterer):
             for coords in self.centers.values()
         ])
 
-    def fit_one(self, x, y=None):
+    def fit_predict_one(self, x, y=None):
+        """Equivalent to ``k_means.fit_one(x).predict_one(x)``, but faster."""
 
         # Find the cluster with the closest center
         closest = self.predict_one(x)
@@ -105,6 +106,10 @@ class KMeans(base.Clusterer):
         for i, xi in x.items():
             self.centers[closest][i] += self.halflife * (xi - self.centers[closest][i])
 
+        return closest
+
+    def fit_one(self, x, y=None):
+        self.fit_predict_one(x)
         return self
 
     def predict_one(self, x):

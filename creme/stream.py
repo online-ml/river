@@ -159,7 +159,7 @@ def simulate_qa(X_y, on, lag):
         on (str): The attribute used for measuring time.
         lag (datetime.timedelta or int or float): Amount to wait before revealing the target
             associated with each observation. This value is expected to be able to sum with the
-            `on` attribute.
+            ``on`` attribute.
 
     Yields:
         (``q_a``, ``x``, ``y``) pairs where ``q_a`` is a `bool` that indicates if the current
