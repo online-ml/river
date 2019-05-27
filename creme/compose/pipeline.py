@@ -302,7 +302,7 @@ class Pipeline(collections.OrderedDict):
                     node_before_union = nodes[-1]
 
                     # Draw each TransformerUnion steps
-                    for ix, sub_key in enumerate(step.keys()):
+                    for sub_key in step.keys():
 
                         sub_step = step.get(sub_key)
 
