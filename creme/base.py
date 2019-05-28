@@ -14,7 +14,7 @@ class Regressor(Estimator):
     """A regressor."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: float):
+    def fit_one(self, x: dict, y: float) -> 'Regressor':
         """Fits to a set of features ``x`` and a real-valued target ``y``.
 
         Parameters:
@@ -42,7 +42,7 @@ class Regressor(Estimator):
 class Classifier(Estimator):
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: bool):
+    def fit_one(self, x: dict, y: bool) -> 'Classifier':
         """Fits to a set of features ``x`` and a boolean target ``y``.
 
         Parameters:
@@ -92,7 +92,7 @@ class MultiClassifier(BinaryClassifier):
 
 class Transformer(Estimator):
     """A transformer."""
-
+    # FIXME : return is of type dict or Transformer ?
     def fit_one(self, x: dict, y=None) -> dict:
         """Fits to a set of features ``x`` and an optional target ``y``.
 
@@ -166,7 +166,7 @@ class Transformer(Estimator):
 
 class Clusterer(Estimator):
     """A clusterer."""
-
+   # FIXME: wrong return hint (int vs Clusterer)
     @abc.abstractmethod
     def fit_one(self, x: dict, y=None) -> int:
         """Fits to a set of features ``x``.
