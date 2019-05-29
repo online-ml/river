@@ -92,8 +92,7 @@ class MultiClassifier(BinaryClassifier):
 
 class Transformer(Estimator):
     """A transformer."""
-    # FIXME : return is of type dict or Transformer ?
-    def fit_one(self, x: dict, y=None) -> dict:
+    def fit_one(self, x: dict, y=None) -> 'Transformer':
         """Fits to a set of features ``x`` and an optional target ``y``.
 
         A lot of transformers don't actually have to do anything during the ``fit_one`` step
@@ -166,9 +165,8 @@ class Transformer(Estimator):
 
 class Clusterer(Estimator):
     """A clusterer."""
-   # FIXME: wrong return hint (int vs Clusterer)
     @abc.abstractmethod
-    def fit_one(self, x: dict, y=None) -> int:
+    def fit_one(self, x: dict, y=None) -> 'Clusterer':
         """Fits to a set of features ``x``.
 
         Parameters:
