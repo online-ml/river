@@ -84,8 +84,9 @@ class EvaluatePrequential(StreamEvaluator):
         If True, the stream is restarted once the evaluation is complete.
 
     data_points_for_classification: bool(Default: False)
-        If True , the visualization used is a cloud of data points
-        (only works for classification)
+        If True, the visualization used is a cloud of data points (only works for classification) and default
+        performance metrics are ignored. If specific metrics are required, then they *must* be explicitly set
+        using the ``metrics`` attribute.
 
     Notes
     -----
@@ -191,14 +192,26 @@ class EvaluatePrequential(StreamEvaluator):
         self.show_plot = show_plot
         self.data_points_for_classification = data_points_for_classification
 
-        if metrics is None and data_points_for_classification is False:
-            self.metrics = [constants.ACCURACY, constants.KAPPA]
+        if not self.data_points_for_classification:
+            if metrics is None:
+                self.metrics = [constants.ACCURACY, constants.KAPPA]
 
-        elif data_points_for_classification is True:
-            self.metrics = [constants.DATA_POINTS]
+            else:
+                if isinstance(metrics, list):
+                    self.metrics = metrics
+                else:
+                    raise ValueError("Attribute 'metrics' must be 'None' or 'list', passed {}".format(type(metrics)))
 
         else:
-            self.metrics = metrics
+            if metrics is None:
+                self.metrics = [constants.DATA_POINTS]
+
+            else:
+                if isinstance(metrics, list):
+                    self.metrics = metrics
+                    self.metrics.append(constants.DATA_POINTS)
+                else:
+                    raise ValueError("Attribute 'metrics' must be 'None' or 'list', passed {}".format(type(metrics)))
 
         self.restart_stream = restart_stream
         self.n_sliding = n_wait
@@ -359,7 +372,10 @@ class EvaluatePrequential(StreamEvaluator):
         # Flush file buffer, in case it contains data
         self._flush_file_buffer()
 
-        self.evaluation_summary()
+        if len(set(self.metrics).difference({constants.DATA_POINTS})) > 0:
+            self.evaluation_summary()
+        else:
+            print('Done')
 
         if self.restart_stream:
             self.stream.restart()
