@@ -14,7 +14,7 @@ class Regressor(Estimator):
     """A regressor."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: float):
+    def fit_one(self, x: dict, y: float) -> 'Regressor':
         """Fits to a set of features ``x`` and a real-valued target ``y``.
 
         Parameters:
@@ -42,7 +42,7 @@ class Regressor(Estimator):
 class Classifier(Estimator):
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: bool):
+    def fit_one(self, x: dict, y: bool) -> 'Classifier':
         """Fits to a set of features ``x`` and a boolean target ``y``.
 
         Parameters:
@@ -92,8 +92,7 @@ class MultiClassifier(BinaryClassifier):
 
 class Transformer(Estimator):
     """A transformer."""
-
-    def fit_one(self, x: dict, y=None) -> dict:
+    def fit_one(self, x: dict, y=None) -> 'Transformer':
         """Fits to a set of features ``x`` and an optional target ``y``.
 
         A lot of transformers don't actually have to do anything during the ``fit_one`` step
@@ -166,9 +165,8 @@ class Transformer(Estimator):
 
 class Clusterer(Estimator):
     """A clusterer."""
-
     @abc.abstractmethod
-    def fit_one(self, x: dict, y=None) -> int:
+    def fit_one(self, x: dict, y=None) -> 'Clusterer':
         """Fits to a set of features ``x``.
 
         Parameters:
