@@ -10,7 +10,29 @@ from .. import base
 __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 
-class BaggingClassifier(base.Classifier):
+class BaseBagging(collections.UserDict):
+
+    def __init__(self, model=None, n_models=10, random_state=None):
+        super().__init__()
+        self.model = model
+        for i in range(n_models):
+            self[i] = copy.deepcopy(model)
+        self.rng = utils.check_random_state(random_state)
+
+    @property
+    def __class__(self):
+        return self.model.__class__
+
+    def fit_one(self, x, y):
+
+        for model in self.values():
+            for _ in range(self.rng.poisson(1)):
+                model.fit_one(x, y)
+
+        return self
+
+
+class BaggingClassifier(BaseBagging, base.Classifier):
     """Bagging for classification.
 
     For each incoming observation, each model's ``fit_one`` method is called ``k`` times where
@@ -50,8 +72,8 @@ class BaggingClassifier(base.Classifier):
             ...     ('learn', linear_model.LogisticRegression(optimiser))
             ... ])
             >>> model = ensemble.BaggingClassifier(
-            ...     classifier=model,
-            ...     n_classifiers=3,
+            ...     model=model,
+            ...     n_models=3,
             ...     random_state=42
             ... )
             >>> metric = metrics.F1Score()
@@ -65,25 +87,8 @@ class BaggingClassifier(base.Classifier):
 
     """
 
-    def __init__(self, classifier=None, n_classifiers=10, random_state=None):
-        self.classifier = classifier
-        self.classifiers = [copy.deepcopy(classifier) for _ in range(n_classifiers)]
-        self.rng = utils.check_random_state(random_state)
-
-    @property
-    def __class__(self):
-        return self.classifier.__class__
-
     def __str__(self):
-        return f'BaggingClassifier({str(self.classifier)})'
-
-    def fit_one(self, x, y):
-
-        for classifier in self.classifiers:
-            for _ in range(self.rng.poisson(1)):
-                classifier.fit_one(x, y)
-
-        return self
+        return f'BaggingClassifier({str(self.model)})'
 
     def predict_proba_one(self, x):
         """Averages the predictions of each classifier."""
@@ -91,18 +96,18 @@ class BaggingClassifier(base.Classifier):
         y_pred = collections.defaultdict(float)
 
         # Sum the predictions
-        for classifier in self.classifiers:
+        for classifier in self.values():
             for label, proba in classifier.predict_proba_one(x).items():
                 y_pred[label] += proba
 
         # Divide by the number of predictions
         for label in y_pred:
-            y_pred[label] /= len(self.classifiers)
+            y_pred[label] /= len(self)
 
         return dict(y_pred)
 
 
-class BaggingRegressor(base.Regressor):
+class BaggingRegressor(BaseBagging, base.Regressor):
     """Bagging for regression.
 
     For each incoming observation, each model's `fit_one` method is called ``k`` times where ``k``
@@ -136,11 +141,16 @@ class BaggingRegressor(base.Regressor):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', linear_model.LinearRegression())
-            ... ])
-            >>> metric = metrics.MSE()
+            >>> model = preprocessing.StandardScaler()
+            >>> model |= ensemble.BaggingRegressor(
+            ...     model=linear_model.LinearRegression(),
+            ...     n_models=3,
+            ...     random_state=42
+            ... )
+            >>> metric = metrics.MAE()
+
+            >>> model_selection.online_score(X_y, model, metric)
+            MAE: 3.969173
 
     References:
 
@@ -148,22 +158,9 @@ class BaggingRegressor(base.Regressor):
 
     """
 
-    def __init__(self, regressor=None, n_regressors=10, random_state=42):
-        self.regressor = regressor
-        self.regressors = [copy.deepcopy(regressor) for _ in range(n_regressors)]
-        self.rng = utils.check_random_state(random_state)
-
     def __str__(self):
-        return f'BaggingRegressor({str(self.regressor)})'
-
-    def fit_one(self, x, y):
-
-        for regressor in self.regressors:
-            for _ in range(self.rng.poisson(1)):
-                regressor.fit_one(x, y)
-
-        return self
+        return f'BaggingRegressor({str(self.model)})'
 
     def predict_one(self, x):
         """Averages the predictions of each regressor."""
-        return statistics.mean((regressor.predict_one(x) for regressor in self.regressors))
+        return statistics.mean((regressor.predict_one(x) for regressor in self.values()))

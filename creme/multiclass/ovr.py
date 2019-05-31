@@ -1,3 +1,4 @@
+import collections
 import copy
 
 from .. import base
@@ -7,7 +8,7 @@ from .. import utils
 __all__ = ['OneVsRestClassifier']
 
 
-class OneVsRestClassifier(base.MultiClassClassifier):
+class OneVsRestClassifier(collections.UserDict, base.MultiClassClassifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
@@ -57,17 +58,17 @@ class OneVsRestClassifier(base.MultiClassClassifier):
     """
 
     def __init__(self, binary_classifier: base.BinaryClassifier):
+        super().__init__()
         self.binary_classifier = binary_classifier
-        self.classifiers = {}
 
     def fit_one(self, x, y):
 
         # Instantiate a new binary classifier if the class is new
-        if y not in self.classifiers:
-            self.classifiers[y] = copy.deepcopy(self.binary_classifier)
+        if y not in self:
+            self[y] = copy.deepcopy(self.binary_classifier)
 
         # Train each label's associated classifier
-        for label, model in self.classifiers.items():
+        for label, model in self.items():
             model.fit_one(x, y == label)
 
         return self
@@ -75,7 +76,7 @@ class OneVsRestClassifier(base.MultiClassClassifier):
     def predict_proba_one(self, x):
         y_pred = {
             label: model.predict_proba_one(x)[True]
-            for label, model in self.classifiers.items()
+            for label, model in self.items()
         }
         return utils.softmax(y_pred)
 

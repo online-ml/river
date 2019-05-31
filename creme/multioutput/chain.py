@@ -1,9 +1,10 @@
+import collections
 import copy
 
 from .. import base
 
 
-class ClassifierChain(base.MultiOutputClassifier):
+class ClassifierChain(collections.OrderedDict, base.MultiOutputClassifier):
     """A multi-label model that arranges classifiers into a chain.
 
     Example:
@@ -47,17 +48,18 @@ class ClassifierChain(base.MultiOutputClassifier):
     """
 
     def __init__(self, classifier, order):
-        self.order = list(order)
-        self.classifiers = {c: copy.deepcopy(classifier) for c in self.order}
+        super().__init__()
+        for o in order:
+            self[o] = copy.deepcopy(classifier)
 
     def fit_one(self, x, y):
 
         x = copy.copy(x)
 
-        for c in self.order:
-            y_pred = self.classifiers[c].predict_one(x)
-            self.classifiers[c].fit_one(x, y[c])
-            x[c] = y_pred
+        for o, clf in self.items():
+            y_pred = clf.predict_one(x)
+            clf.fit_one(x, y[o])
+            x[o] = y_pred
 
         return self
 
@@ -66,8 +68,8 @@ class ClassifierChain(base.MultiOutputClassifier):
         x = copy.copy(x)
         y_pred = {}
 
-        for c in self.order:
-            y_pred[c] = self.classifiers[c].predict_proba_one(x)
-            x[c] = max(y_pred[c], key=y_pred[c].get)
+        for o, clf in self.items():
+            y_pred[o] = clf.predict_proba_one(x)
+            x[o] = max(y_pred[o], key=y_pred[o].get)
 
         return y_pred
