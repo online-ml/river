@@ -28,7 +28,7 @@ class BaseF1Score:
         return True
 
 
-class F1Score(BaseF1Score, base.BinaryClassificationMetric):
+class F1Score(BaseF1Score, base.BinaryMetric):
     """Binary F1 score.
 
     The F1 score is the harmonic mean of the precision and the recall.
@@ -99,7 +99,7 @@ class RollingF1Score(F1Score):
         self.recall = recall.RollingRecall(window_size=window_size)
 
 
-class MacroF1Score(BaseF1Score, base.MultiClassificationMetric):
+class MacroF1Score(BaseF1Score, base.MultiClassMetric):
     """Macro-average F1 score.
 
     The macro-average F1 score is the arithmetic average of the binary F1 scores of each label.

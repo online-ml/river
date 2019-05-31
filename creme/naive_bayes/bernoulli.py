@@ -11,7 +11,7 @@ class BernoulliNB(base.BaseNB):
     """Bernoulli Naive Bayes.
 
     This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
-    ``predict_one`` from `base.MultiClassifier`.
+    ``predict_one`` from `base.MultiClassClassifier`.
 
     Parameters:
         alpha (float): Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).

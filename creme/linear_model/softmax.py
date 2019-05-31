@@ -10,7 +10,7 @@ from .. import utils
 __all__ = ['SoftmaxRegression']
 
 
-class SoftmaxRegression(base.MultiClassifier):
+class SoftmaxRegression(base.MultiClassClassifier):
     """Softmax regression is a generalization of logistic regression to multiple classes.
 
     Softmax regression is also known as "multinomial logistic regression". There are a set weights
@@ -39,7 +39,7 @@ class SoftmaxRegression(base.MultiClassifier):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_iris,
+            ...     dataset=datasets.load_iris(),
             ...     shuffle=True,
             ...     random_state=42
             ... )

@@ -6,7 +6,7 @@ from . import base
 __all__ = ['Accuracy', 'RollingAccuracy']
 
 
-class BaseAccuracy(base.MultiClassificationMetric):
+class BaseAccuracy(base.MultiClassMetric):
 
     @property
     def bigger_is_better(self):

@@ -210,7 +210,7 @@ def find_best_split(class_counts, feature_counts, split_enum):
     return best_gain, second_best_gain, best_feature, best_values
 
 
-class DecisionTreeClassifier(base.MultiClassifier):
+class DecisionTreeClassifier(base.MultiClassClassifier):
     """
 
     Parameters:

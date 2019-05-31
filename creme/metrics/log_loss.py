@@ -7,7 +7,7 @@ from . import base
 __all__ = ['LogLoss', 'RollingLogLoss']
 
 
-class BaseLogLoss(base.BinaryClassificationMetric):
+class BaseLogLoss(base.BinaryMetric):
 
     @property
     def bigger_is_better(self):

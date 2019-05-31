@@ -24,7 +24,7 @@ def make_random_targets(model, n_observations):
     if isinstance(model, base.Regressor):
         random_func = random.random
 
-    elif isinstance(model, base.MultiClassifier):
+    elif isinstance(model, base.MultiClassClassifier):
         random_func = functools.partial(random.choice, ['a', 'b', 'c', 'd'])
 
     elif isinstance(model, base.BinaryClassifier):
@@ -120,7 +120,7 @@ def check_better_than_dummy_binary(classifier):
         (dummy.NoChangeClassifier(), dummy.PriorClassifier()),
         (functools.partial(
             stream.iter_sklearn_dataset,
-            datasets.load_breast_cancer,
+            datasets.load_breast_cancer(),
             shuffle=True,
             random_state=42,
         ),),
@@ -144,7 +144,7 @@ def check_better_than_dummy_multi(classifier):
         (dummy.NoChangeClassifier(), dummy.PriorClassifier()),
         (functools.partial(
             stream.iter_sklearn_dataset,
-            datasets.load_iris,
+            datasets.load_iris(),
             shuffle=True,
             random_state=42,
         ),),
@@ -169,7 +169,7 @@ def check_better_than_dummy_regression(regressor):
         (dummy.StatisticRegressor(stats.Mean()),),
         (functools.partial(
             stream.iter_sklearn_dataset,
-            datasets.load_boston,
+            datasets.load_boston(),
             shuffle=True,
             random_state=42,
         ),),
@@ -202,15 +202,15 @@ def yield_all_checks(model):
     if isinstance(model, base.Classifier):
         yield check_predict_proba_one
 
-    # MultiClassifiers are also BinaryClassifiers so binary will apply to both
+    # MultiClassClassifiers are also BinaryClassifiers so binary will apply to both
     if isinstance(model, base.BinaryClassifier):
         yield check_better_than_dummy_binary
 
-        # Some tests work for BinaryClassifiers but not for MultiClassifiers
-        if not isinstance(model, base.MultiClassifier):
+        # Some tests work for BinaryClassifiers but not for MultiClassClassifiers
+        if not isinstance(model, base.MultiClassClassifier):
             yield check_predict_proba_one_binary
 
-    if isinstance(model, base.MultiClassifier):
+    if isinstance(model, base.MultiClassClassifier):
         yield check_better_than_dummy_multi
 
     if isinstance(model, base.Regressor):

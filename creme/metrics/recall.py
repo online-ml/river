@@ -29,7 +29,7 @@ class BaseRecall:
         return True
 
 
-class Recall(stats.Mean, BaseRecall, base.BinaryClassificationMetric):
+class Recall(stats.Mean, BaseRecall, base.BinaryMetric):
     """Binary recall score.
 
     Example:
@@ -58,7 +58,7 @@ class Recall(stats.Mean, BaseRecall, base.BinaryClassificationMetric):
         return self
 
 
-class RollingRecall(stats.RollingMean, BaseRecall, base.BinaryClassificationMetric):
+class RollingRecall(stats.RollingMean, BaseRecall, base.BinaryMetric):
     """Rolling binary recall score.
 
     Example:
@@ -88,7 +88,7 @@ class RollingRecall(stats.RollingMean, BaseRecall, base.BinaryClassificationMetr
         return self
 
 
-class MacroRecall(BaseRecall, base.MultiClassificationMetric):
+class MacroRecall(BaseRecall, base.MultiClassMetric):
     """Macro-average recall score.
 
     Example:

@@ -4,7 +4,10 @@ from .. import base
 from .. import utils
 
 
-class OneVsRestClassifier(base.MultiClassifier):
+__all__ = ['OneVsRestClassifier']
+
+
+class OneVsRestClassifier(base.MultiClassClassifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
@@ -33,7 +36,7 @@ class OneVsRestClassifier(base.MultiClassifier):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_iris,
+            ...     dataset=datasets.load_iris(),
             ...     shuffle=True,
             ...     random_state=42
             ... )

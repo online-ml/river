@@ -30,7 +30,7 @@ class TargetModifierRegressor(base.Regressor):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_boston,
+            ...     dataset=datasets.load_boston(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
@@ -90,7 +90,7 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_boston,
+            ...     dataset=datasets.load_boston(),
             ...     shuffle=True,
             ...     random_state=42
             ... )

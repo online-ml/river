@@ -20,7 +20,7 @@ class BaggingClassifier(base.Classifier):
     ``scipy.stats.poisson(1).pmf(k)`` to obtain more detailed values.
 
     Parameters:
-        classifier (BinaryClassifier or MultiClassifier): The classifier to bag.
+        classifier (BinaryClassifier or MultiClassClassifier): The classifier to bag.
 
     Example:
 
@@ -40,7 +40,7 @@ class BaggingClassifier(base.Classifier):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_breast_cancer,
+            ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
@@ -132,7 +132,7 @@ class BaggingRegressor(base.Regressor):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_boston,
+            ...     dataset=datasets.load_boston(),
             ...     shuffle=True,
             ...     random_state=42
             ... )

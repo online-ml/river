@@ -2,6 +2,24 @@
 Base classes used throughout the library.
 """
 import abc
+import typing
+
+
+__all__ = [
+    'BinaryClassifier',
+    'Clusterer',
+    'Estimator',
+    'MultiClassClassifier',
+    'MultiOutputClassifier',
+    'Regressor',
+    'Transformer'
+]
+
+
+# Input and output types
+Label = typing.Union[bool, str, int]
+Proba = float
+Probas = typing.Dict[Label, Proba]
 
 
 class Estimator:
@@ -40,9 +58,14 @@ class Regressor(Estimator):
 
 
 class Classifier(Estimator):
+    """A classifier."""
+
+
+class BinaryClassifier(Classifier):
+    """A binary classifier."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: bool) -> 'Classifier':
+    def fit_one(self, x: dict, y: bool) -> 'BinaryClassifier':
         """Fits to a set of features ``x`` and a boolean target ``y``.
 
         Parameters:
@@ -55,14 +78,57 @@ class Classifier(Estimator):
         """
 
     @abc.abstractmethod
-    def predict_proba_one(self, x: dict) -> dict:
+    def predict_proba_one(self, x: dict) -> Probas:
         """Predicts the probability output of a set of features ``x``
 
         Parameters:
             x (dict)
 
         Returns:
-            dict
+            dict of floats
+
+        """
+
+    def predict_one(self, x: dict) -> bool:
+        """Predicts the target value of a set of features ``x``
+
+        Parameters:
+            x (dict)
+
+        Returns:
+            bool
+
+        """
+        if self.predict_proba_one(x)[True] > 0.5:
+            return True
+        return False
+
+
+class MultiClassClassifier(BinaryClassifier):
+    """A multi-class classifier."""
+
+    @abc.abstractmethod
+    def fit_one(self, x: dict, y: Label) -> 'MultiClassClassifier':
+        """Fits to a set of features ``x`` and a label ``y``.
+
+        Parameters:
+            x (dict)
+            y (Label)
+
+        Returns:
+            self
+
+        """
+
+    @abc.abstractmethod
+    def predict_proba_one(self, x: dict) -> Probas:
+        """Predicts the probability output of a set of features ``x``
+
+        Parameters:
+            x (dict)
+
+        Returns:
+            dict of floats
 
         """
 
@@ -82,16 +148,9 @@ class Classifier(Estimator):
         return None
 
 
-class BinaryClassifier(Classifier):
-    """A binary classifier."""
-
-
-class MultiClassifier(BinaryClassifier):
-    """A multi-class classifier."""
-
-
 class Transformer(Estimator):
     """A transformer."""
+
     def fit_one(self, x: dict, y=None) -> 'Transformer':
         """Fits to a set of features ``x`` and an optional target ``y``.
 
@@ -165,6 +224,7 @@ class Transformer(Estimator):
 
 class Clusterer(Estimator):
     """A clusterer."""
+
     @abc.abstractmethod
     def fit_one(self, x: dict, y=None) -> 'Clusterer':
         """Fits to a set of features ``x``.
@@ -187,5 +247,49 @@ class Clusterer(Estimator):
 
         Returns:
             int
+
+        """
+
+
+class MultiOutputEstimator(Estimator):
+    """A multi-output estimator."""
+
+
+class MultiOutputClassifier(MultiOutputEstimator):
+
+    def fit_one(self, x: dict, y: typing.Dict[str, Label]) -> 'MultiOutputClassifier':
+        """Fits to a set of features ``x`` and a set of labels ``y``.
+
+        Parameters:
+            x (dict)
+            y (dict of Label)
+
+        Returns:
+            self
+
+        """
+
+    def predict_one(self, x: dict) -> typing.Dict[str, Label]:
+        """Given a set of features ``x``, predicts a label for each output.
+
+        Parameters:
+            x (dict)
+
+        Returns:
+
+        """
+        y_pred = self.predict_proba_one(x)
+        return {
+            c: max(y_pred[c], key=y_pred[c].get)
+            for c in y_pred
+        }
+
+    def predict_proba_one(self, x: dict) -> typing.Dict[str, Probas]:
+        """Given a set of features ``x``, predicts a the probability of each label for each output.
+
+        Parameters:
+            x (dict)
+
+        Returns:
 
         """

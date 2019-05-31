@@ -7,7 +7,7 @@ from . import base
 __all__ = ['CrossEntropy', 'RollingCrossEntropy']
 
 
-class BaseCrossEntropy(base.MultiClassificationMetric):
+class BaseCrossEntropy(base.MultiClassMetric):
 
     @property
     def bigger_is_better(self):
