@@ -60,6 +60,33 @@ class Regressor(Estimator):
 class Classifier(Estimator):
     """A classifier."""
 
+    @abc.abstractmethod
+    def predict_proba_one(self, x: dict) -> Probas:
+        """Predicts the probability output of a set of features ``x``
+
+        Parameters:
+            x (dict)
+
+        Returns:
+            dict of floats
+
+        """
+
+    def predict_one(self, x: dict) -> Label:
+        """Predicts the target value of a set of features ``x``
+
+        Parameters:
+            x (dict)
+
+        Returns:
+            Label
+
+        """
+        y_pred = self.predict_proba_one(x)
+        if y_pred:
+            return max(self.predict_proba_one(x), key=y_pred.get)
+        return None
+
 
 class BinaryClassifier(Classifier):
     """A binary classifier."""
@@ -77,32 +104,6 @@ class BinaryClassifier(Classifier):
 
         """
 
-    @abc.abstractmethod
-    def predict_proba_one(self, x: dict) -> Probas:
-        """Predicts the probability output of a set of features ``x``
-
-        Parameters:
-            x (dict)
-
-        Returns:
-            dict of floats
-
-        """
-
-    def predict_one(self, x: dict) -> bool:
-        """Predicts the target value of a set of features ``x``
-
-        Parameters:
-            x (dict)
-
-        Returns:
-            bool
-
-        """
-        if self.predict_proba_one(x)[True] > 0.5:
-            return True
-        return False
-
 
 class MultiClassClassifier(BinaryClassifier):
     """A multi-class classifier."""
@@ -119,33 +120,6 @@ class MultiClassClassifier(BinaryClassifier):
             self
 
         """
-
-    @abc.abstractmethod
-    def predict_proba_one(self, x: dict) -> Probas:
-        """Predicts the probability output of a set of features ``x``
-
-        Parameters:
-            x (dict)
-
-        Returns:
-            dict of floats
-
-        """
-
-    def predict_one(self, x: dict) -> bool:
-        """Predicts the target value of a set of features ``x``
-
-        Parameters:
-            x (dict)
-
-        Returns:
-            bool
-
-        """
-        y_pred = self.predict_proba_one(x)
-        if y_pred:
-            return max(self.predict_proba_one(x), key=y_pred.get)
-        return None
 
 
 class Transformer(Estimator):
