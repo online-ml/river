@@ -1,3 +1,4 @@
+import collections
 import math
 
 from .. import base
@@ -7,7 +8,7 @@ from .. import optim
 __all__ = ['HedgeClassifier']
 
 
-class HedgeClassifier(base.BinaryClassifier):
+class HedgeClassifier(collections.UserDict, base.BinaryClassifier):
     """A binary classifier that uses the Hedge algorithm to mix models.
 
     Parameters:
@@ -54,7 +55,7 @@ class HedgeClassifier(base.BinaryClassifier):
             F1Score: 0.91372
 
             >>> model['hedge'].weights
-            [9.992806...e-28, 0.999999..., 9.978434...e-28]
+            {0: 9.992806...e-28, 1: 0.999999..., 2: 9.978434...e-28}
 
     References:
 
@@ -63,19 +64,22 @@ class HedgeClassifier(base.BinaryClassifier):
     """
 
     def __init__(self, models=None, weights=None, loss=optim.LogLoss(), learning_rate=0.5):
-        self.models = models
-        self.weights = [1 / len(models)] * len(models) if weights is None else weights
+        super().__init__()
+        for i, model in enumerate(models):
+            self[i] = model
+        weights = [1 / len(models)] * len(models) if weights is None else weights
+        self.weights = dict(zip(self.keys(), weights))
         self.loss = loss
         self.learning_rate = learning_rate
 
     def fit_one(self, x, y):
 
         # Normalize the weights so that they sum up to 1
-        total = sum(self.weights)
-        for i, _ in enumerate(self.weights):
+        total = sum(self.weights.values())
+        for i in self.weights:
             self.weights[i] /= total
 
-        for i, model in enumerate(self.models):
+        for i, model in self.items():
             y_pred = model.predict_one(x)
             loss = self.loss(y, y_pred)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
@@ -85,7 +89,7 @@ class HedgeClassifier(base.BinaryClassifier):
 
     def predict_proba_one(self, x):
         y_pred = sum(
-            model.predict_proba_one(x)[True] * weight
-            for model, weight in zip(self.models, self.weights)
+            model.predict_proba_one(x)[True] * self.weights[i]
+            for i, model in self.items()
         )
         return {False: 1 - y_pred, True: y_pred}
