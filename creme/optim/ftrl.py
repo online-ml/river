@@ -25,7 +25,7 @@ class FTRLProximal(base.Optimizer):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_breast_cancer,
+            ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
             ...     random_state=42
             ... )

@@ -13,6 +13,7 @@ from .f1_score import MicroF1Score
 from .f1_score import RollingF1Score
 from .f1_score import RollingMacroF1Score
 from .f1_score import RollingMicroF1Score
+from .jaccard import Jaccard
 from .log_loss import LogLoss
 from .log_loss import RollingLogLoss
 from .mae import MAE
@@ -44,6 +45,7 @@ __all__ = [
     'ConfusionMatrix',
     'CrossEntropy',
     'F1Score',
+    'Jaccard',
     'LogLoss',
     'MacroF1Score',
     'MacroPrecision',

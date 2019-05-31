@@ -19,7 +19,7 @@ class GaussianNB(base.BaseNB):
     of each feature associated with each class.
 
     This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
-    ``predict_one`` from `base.MultiClassifier`.
+    ``predict_one`` from `base.MultiClassClassifier`.
 
     Example:
 

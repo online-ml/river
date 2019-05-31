@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Added
+
+- `Jaccard` to `metrics`
+- `ClassifierChain` to `multioutput`
+
+### Modified
+
+- `stream.iter_sklearn` now receives an `sklearn.utils.Bunch` instead of a callable, the parameter `load_dataset` was thus renamed `dataset`
+
 ## [0.2.0](https://pypi.org/project/creme/0.2.0/) - 2019-05-27
 
 ### Added

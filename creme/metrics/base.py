@@ -5,14 +5,10 @@ from .. import base
 
 
 __all__ = [
-    'BinaryClassificationMetric',
-    'MultiClassificationMetric',
+    'BinaryMetric',
+    'MultiClassMetric',
     'RegressionMetric'
 ]
-
-
-Label = typing.Union[bool, str, int]
-Proba = float
 
 
 class BaseMetric(abc.ABC):
@@ -42,35 +38,46 @@ class ClassificationMetric(BaseMetric):
 
     @property
     @abc.abstractmethod
-    def requires_labels(self):
+    def requires_labels(self) -> bool:
         """Helps to indicate if labels are required instead of probabilities."""
 
 
-class BinaryClassificationMetric(ClassificationMetric):
+class BinaryMetric(ClassificationMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: bool, y_pred: typing.Union[bool, typing.Dict[Label, Proba]]):
+    def update(self, y_true: bool, y_pred: typing.Union[bool, base.Probas]) -> 'BinaryMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
+    def works_with(self, model) -> bool:
         return isinstance(model, base.BinaryClassifier)
 
 
-class MultiClassificationMetric(BinaryClassificationMetric):
+class MultiClassMetric(BinaryMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: Label, y_pred: typing.Union[Label, typing.Dict[Label, Proba]]):
+    def update(self, y_true: base.Label,
+               y_pred: typing.Union[base.Label, base.Probas]) -> 'MultiClassMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
-        return isinstance(model, (base.BinaryClassifier, base.MultiClassifier))
+    def works_with(self, model) -> bool:
+        return isinstance(model, (base.BinaryClassifier, base.MultiClassClassifier))
 
 
 class RegressionMetric(BaseMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: float, y_pred: float):
+    def update(self, y_true: float, y_pred: float) -> 'RegressionMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
+    def works_with(self, model) -> bool:
         return isinstance(model, base.Regressor)
+
+
+class MultiOutputMetric(BaseMetric):
+
+    def update(self, y_true: typing.Dict[str, typing.Union[float, base.Label]],
+               y_pred: typing.Dict[str, typing.Union[float, base.Label, base.Probas]]):
+        """Updates the metric."""
+
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.MultiOutputEstimator)

@@ -28,7 +28,7 @@ class BasePrecision:
         return True
 
 
-class Precision(stats.Mean, BasePrecision, base.BinaryClassificationMetric):
+class Precision(stats.Mean, BasePrecision, base.BinaryMetric):
     """Binary precision score.
 
     Example:
@@ -57,7 +57,7 @@ class Precision(stats.Mean, BasePrecision, base.BinaryClassificationMetric):
         return self
 
 
-class RollingPrecision(stats.RollingMean, BasePrecision, base.BinaryClassificationMetric):
+class RollingPrecision(stats.RollingMean, BasePrecision, base.BinaryMetric):
     """Rolling binary precision score.
 
     Example:
@@ -87,7 +87,7 @@ class RollingPrecision(stats.RollingMean, BasePrecision, base.BinaryClassificati
         return self
 
 
-class MacroPrecision(BasePrecision, base.MultiClassificationMetric):
+class MacroPrecision(BasePrecision, base.MultiClassMetric):
     """Macro-average precision score.
 
     Example:
@@ -163,7 +163,7 @@ class RollingMacroPrecision(MacroPrecision):
         self.classes = set()
 
 
-class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassificationMetric):
+class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassMetric):
     """Micro-average precision score.
 
     The micro-average precision score is exactly equivalent to the micro-average recall as well as
@@ -203,7 +203,7 @@ class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassificationMetric):
         return self
 
 
-class RollingMicroPrecision(stats.RollingMean, BasePrecision, base.MultiClassificationMetric):
+class RollingMicroPrecision(stats.RollingMean, BasePrecision, base.MultiClassMetric):
     """Rolling micro-average precision score.
 
     The micro-average precision score is exactly equivalent to the micro-average recall as well as

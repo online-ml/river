@@ -6,10 +6,10 @@ from scipy import special
 from .. import base
 
 
-class BaseNB(base.MultiClassifier, abc.ABC):
+class BaseNB(base.MultiClassClassifier, abc.ABC):
     """Base Naive Bayes class.
 
-    This class inherits ``predict_one`` from ``base.MultiClassifier``.
+    This class inherits ``predict_one`` from ``base.MultiClassClassifier``.
 
     """
 
