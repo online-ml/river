@@ -5,6 +5,12 @@ import csv
 import datetime as dt
 import itertools
 
+import numpy as np
+try:
+    import pandas as pd
+    PANDAS_INSTALLED = True
+except ImportError:
+    PANDAS_INSTALLED = False
 from sklearn import utils
 
 
@@ -36,15 +42,18 @@ def iter_numpy(X, y=None, feature_names=None, target_names=None, shuffle=False, 
 
     """
     feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
-    if y is not None and y.ndim == 2 and target_names is None:
-        target_names = list(range(y.shape[1]))
-    rng = utils.check_random_state(random_state)
 
+    multioutput = y is not None and not np.isscalar(y[0])
+    if multioutput and target_names is None:
+        target_names = list(range(len(y[0])))
+
+    # Shuffle the data
+    rng = utils.check_random_state(random_state)
     if shuffle:
         order = rng.permutation(len(X))
         X, y = X[order], y if y is None else y[order]
 
-    if y is not None and y.ndim == 2:
+    if multioutput:
 
         for x, yi in itertools.zip_longest(X, y if hasattr(y, '__iter__') else []):
             yield dict(zip(feature_names, x)), dict(zip(target_names, yi))
@@ -85,6 +94,9 @@ def iter_pandas(X, y=None, **kwargs):
 
     """
     kwargs['feature_names'] = X.columns
+    if isinstance(y, pd.DataFrame):
+        kwargs['target_names'] = y.columns
+
     for x, yi in iter_numpy(X.to_numpy(), y, **kwargs):
         yield x, yi
 
