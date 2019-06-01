@@ -11,6 +11,7 @@ __all__ = [
     'Estimator',
     'MultiClassClassifier',
     'MultiOutputClassifier',
+    'MultiOutputRegressor',
     'Regressor',
     'Transformer'
 ]
@@ -265,5 +266,31 @@ class MultiOutputClassifier(MultiOutputEstimator):
             x (dict)
 
         Returns:
+
+        """
+
+
+class MultiOutputRegressor(MultiOutputEstimator):
+
+    def fit_one(self, x: dict, y: typing.Dict[str, float]) -> 'MultiOutputRegressor':
+        """Fits to a set of features ``x`` and a set of outputs ``y``.
+
+        Parameters:
+            x (dict)
+            y (dict of Label)
+
+        Returns:
+            self
+
+        """
+
+    def predict_one(self, x: dict) -> typing.Dict[str, float]:
+        """Given a set of features ``x``, predicts a label for each output.
+
+        Parameters:
+            x (dict)
+
+        Returns:
+            dict
 
         """

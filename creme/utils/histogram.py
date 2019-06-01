@@ -106,12 +106,8 @@ class Histogram(collections.Counter):
 
             # Merge the two bins by summing their count and making a weighted average for each one
             total_count = self[left_bin] + self[right_bin]
-
             new_bin = left_bin * self[left_bin] + right_bin * self[right_bin]
             new_bin /= total_count
-
-            if math.isnan(new_bin):
-                print(left_bin, right_bin, total_count)
 
             bisect.insort_left(self.sorted_bins, new_bin)
 
@@ -123,6 +119,10 @@ class Histogram(collections.Counter):
             super().update({new_bin: total_count})
 
         return self
+
+    def bin(self, x):
+        """Returns the number of the bin where ``x`` belongs."""
+        return bisect.bisect_left(self.sorted_bins, x)
 
     def __str__(self):
 

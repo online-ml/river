@@ -12,3 +12,4 @@ Multi-output learning
    :nosignatures:
 
    ClassifierChain
+   RegressorChain

@@ -6,7 +6,7 @@ from . import base
 __all__ = ['Jaccard']
 
 
-class Jaccard(stats.Mean, base.MultiOutputMetric):
+class Jaccard(stats.Mean, base.MultiOutputClassificationMetric):
     """Jaccard index for binary multi-outputs.
 
     Example:

@@ -20,6 +20,7 @@ from .mae import MAE
 from .mae import RollingMAE
 from .mse import MSE
 from .mse import RollingMSE
+from .multioutput import RegressionMultiOutput
 from .precision import MacroPrecision
 from .precision import MicroPrecision
 from .precision import Precision
@@ -57,6 +58,7 @@ __all__ = [
     'MSE',
     'Precision',
     'Recall',
+    'RegressionMultiOutput',
     'RMSE',
     'RMSLE',
     'RollingAccuracy',
