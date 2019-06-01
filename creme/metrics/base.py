@@ -73,11 +73,20 @@ class RegressionMetric(BaseMetric):
         return isinstance(model, base.Regressor)
 
 
-class MultiOutputMetric(BaseMetric):
+class MultiOutputClassificationMetric(ClassificationMetric):
 
-    def update(self, y_true: typing.Dict[str, typing.Union[float, base.Label]],
-               y_pred: typing.Dict[str, typing.Union[float, base.Label, base.Probas]]):
+    def update(self, y_true: typing.Dict[str, base.Label],
+               y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]]):
         """Updates the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(model, base.MultiOutputEstimator)
+        return isinstance(model, base.MultiOutputClassifier)
+
+
+class MultiOutputRegressionMetric(RegressionMetric):
+
+    def update(self, y_true: typing.Dict[str, float], y_pred: typing.Dict[str, float]):
+        """Updates the metric."""
+
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.MultiOutputRegressor)
