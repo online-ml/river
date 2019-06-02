@@ -1,5 +1,7 @@
 class Branch:
 
+    __slots__ = 'split', 'left', 'right', 'tree'
+
     def __init__(self, split, left, right, tree):
         self.split = split
         self.left = left

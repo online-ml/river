@@ -6,7 +6,21 @@ import operator
 from .. import utils
 
 
+class Op(collections.namedtuple('Op', 'symbol operator')):
+
+    def __call__(self, a, b):
+        return self.operator(a, b)
+
+    def __str__(self):
+        return self.symbol
+
+
+LT = Op('<', operator.lt)
+EQ = Op('=', operator.eq)
+
+
 class Split:
+    """A data class for storing split details."""
 
     __slots__ = 'feature', 'operator', 'value'
 
@@ -16,7 +30,7 @@ class Split:
         self.value = value
 
     def __str__(self):
-        return f'{self.feature} {self.operator.__name__} {self.value}'
+        return f'{self.feature} {self.operator} {self.value}'
 
     def test(self, x):
         return self.operator(x[self.feature], self.value)
@@ -28,15 +42,15 @@ def enum_unary(values):
     Example:
 
         >>> for op, val in enum_unary(['a', 'b', 'c', 'd']):
-        ...     print(op.__name__, val)
-        eq a
-        eq b
-        eq c
-        eq d
+        ...     print(op, val)
+        = a
+        = b
+        = c
+        = d
 
     """
     for val in values:
-        yield operator.eq, val
+        yield EQ, val
 
 
 def enum_contiguous(values):
@@ -45,14 +59,14 @@ def enum_contiguous(values):
     Example:
 
         >>> for op, val in enum_contiguous([0, 1, 2, 3]):
-        ...     print(op.__name__, val)
-        lt 1
-        lt 2
-        lt 3
+        ...     print(op, val)
+        < 1
+        < 2
+        < 3
 
     """
     for val in values[1:]:
-        yield operator.lt, val
+        yield LT, val
 
 
 def search_split_info_gain(class_counts, feature_counts, categoricals):

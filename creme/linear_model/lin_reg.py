@@ -117,6 +117,7 @@ class LinearRegression(base.Regressor):
         return y
 
     def debug_one(self, x):
+        """Prints an explanation of how ``x`` is predicted."""
 
         def format_weight(w):
             if w > 0:
