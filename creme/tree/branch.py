@@ -1,14 +1,3 @@
-class Split:
-
-    def __init__(self, feature, operator, value):
-        self.feature = feature
-        self.operator = operator
-        self.value = value
-
-    def test(self, x):
-        return self.operator(x[self.feature], self.value)
-
-
 class Branch:
 
     def __init__(self, split, left, right, tree):

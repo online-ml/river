@@ -1,11 +1,9 @@
 import collections
 import functools
 import math
-import operator
-
-from .. import utils
 
 from . import branch
+from . import splitting
 
 
 class Leaf:
@@ -52,15 +50,6 @@ class Leaf:
     def get_leaf(self, x):
         return self
 
-    def split(self, feature, values):
-        """Returns a branch that splits the leaf based on a given and some values."""
-        return branch.Branch(
-            split=branch.Split(feature=feature, values=set(values)),
-            left=Leaf(depth=self.depth + 1, tree=self.tree),
-            right=Leaf(depth=self.depth + 1, tree=self.tree),
-            tree=self.tree
-        )
-
     def update(self, x, y):
 
         # Update the leaf's overall class counts
@@ -87,10 +76,10 @@ class Leaf:
             return self
 
         # Search for the best split given the current information
-        best_gain, second_best_gain, best_feature, best_values = find_best_split(
+        top_2_diff, split = splitting.search_split_info_gain(
             class_counts=self.class_counts,
             feature_counts=self.feature_counts,
-            split_enum=self.tree.split_enum
+            categoricals=set(self.feature_counts.keys()) - set(self.tree.histograms.keys())
         )
 
         # Calculate the Hoeffding bound
@@ -99,48 +88,19 @@ class Leaf:
         δ = self.tree.delta
         ε = math.sqrt(R ** 2 * math.log(1 / δ) / (2 * n))  # Hoeffding bound
 
-        if best_gain - second_best_gain > ε or ε < self.tree.bound_threshold:
-            return self.split(feature=best_feature, values=best_values)
+        if top_2_diff > ε or ε < self.tree.bound_threshold:
+
+            if split.feature in self.tree.histograms:
+                split.value = self.tree.histograms[feature].sorted_bins[split.value + 1]
+
+            return branch.Branch(
+                split=split,
+                left=Leaf(depth=self.depth + 1, tree=self.tree),
+                right=Leaf(depth=self.depth + 1, tree=self.tree),
+                tree=self.tree
+            )
         return self
 
     @property
     def is_pure(self):
         return len(self.class_counts) <= 1
-
-
-def sum_counters(counters):
-    return functools.reduce(operator.add, counters, collections.Counter())
-
-
-def find_best_split(class_counts, feature_counts, split_enum):
-
-    best_gain = -math.inf
-    second_best_gain = -math.inf
-    best_feature = None
-    best_values = None
-
-    current_entropy = utils.entropy(class_counts)
-
-    for feature, counts in feature_counts.items():
-
-        for left, right in split_enum(sorted(counts.keys())):
-
-            left_counts = sum_counters(counts[v] for v in left)
-            right_counts = sum_counters(counts[v] for v in right)
-            left_total = sum(left_counts.values())
-            right_total = sum(right_counts.values())
-
-            entropy = left_total * utils.entropy(left_counts) + \
-                right_total * utils.entropy(right_counts)
-            entropy /= (left_total + right_total)
-
-            gain = current_entropy - entropy
-
-            if gain > best_gain:
-                best_gain, second_best_gain = gain, best_gain
-                best_feature = feature
-                best_values = left
-            elif gain > second_best_gain and gain != best_gain:
-                second_best_gain = gain
-
-    return best_gain, second_best_gain, best_feature, best_values

@@ -244,6 +244,11 @@ class Pipeline(collections.OrderedDict):
         final = self.final_estimator
         if not isinstance(final, base.Transformer):
             print_title(f'{len(self)}. {final}')
+
+            if hasattr(final, 'debug_one'):
+                final.debug_one(x)
+                print()
+
             if isinstance(final, base.Classifier):
                 print_features(final.predict_proba_one(x), space_after=False)
             else:
@@ -326,13 +331,13 @@ class Pipeline(collections.OrderedDict):
                     # Reset TransformerUnion flag
                     union_ending_node_ix = None
 
-        nodes, edges = ['input'], []
+        nodes, edges = [r'$x$'], []
         graph = graphviz.Digraph()
-        graph.node('input')
+        graph.node(r'$x$')
 
         draw_steps()
 
-        graph.node('output')
-        graph.edge(nodes[-1], 'output')
+        graph.node(r'$y$')
+        graph.edge(nodes[-1], r'$y$')
 
         return graph
