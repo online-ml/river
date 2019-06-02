@@ -9,6 +9,16 @@ from .. import utils
 __all__ = ['LinearRegression']
 
 
+class bcolors:
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 class LinearRegression(base.Regressor):
     """Linear regression.
 
@@ -105,3 +115,17 @@ class LinearRegression(base.Regressor):
         if self.intercept:
             y += self.intercept.get()
         return y
+
+    def debug_one(self, x):
+
+        def format_weight(w):
+            if w > 0:
+                return f'{bcolors.GREEN} {w}'
+            elif w < 0:
+                return f'{bcolors.RED} {w}'
+            return f'{bcolors.YELLOW} {w}'
+
+        print(' +\n'.join(
+            f'{format_weight(self.weights[i])}{bcolors.ENDC} * {x[i]} ({i})'
+            for i in x
+        ))

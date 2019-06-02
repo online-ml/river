@@ -11,7 +11,6 @@ from .. import base
 from .. import utils
 
 from . import leaf
-from . import enum
 
 
 class DecisionTreeClassifier(base.MultiClassClassifier):
@@ -31,7 +30,6 @@ class DecisionTreeClassifier(base.MultiClassClassifier):
         self.min_samples_split = min_samples_split
         self.patience = patience
         self.max_bins = max_bins
-        self.split_enum = enum.ContiguousEnumerator()  # enum.UnaryEnumerator()
         self.delta = 0.1
         self.bound_threshold = 0.05
         self.histograms = collections.defaultdict(functools.partial(

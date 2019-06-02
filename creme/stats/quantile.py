@@ -46,7 +46,7 @@ class Quantile(base.Univariate):
 
     References:
 
-        1. `The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations  <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
+        1. `The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
         2. `Python implementation <https://github.com/cxxr/LiveStats/blob/master/livestats/livestats.py>`_
 
     """
