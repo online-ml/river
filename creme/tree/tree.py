@@ -10,6 +10,7 @@ except ImportError:
 from .. import base
 from .. import utils
 
+from . import branch
 from . import leaf
 
 
@@ -63,7 +64,7 @@ class DecisionTreeClassifier(base.MultiClassClassifier):
             if isinstance(node, leaf.Leaf):
                 dot.node(code, str(node.class_counts))
             else:
-                dot.node(code, f'{node.split.feature}\n{str(node.split.values)}')
+                dot.node(code, str(node.split))
                 add_node(node.left, f'{code}0')
                 add_node(node.right, f'{code}1')
 
@@ -75,3 +76,17 @@ class DecisionTreeClassifier(base.MultiClassClassifier):
         add_node(self.root, '0')
 
         return dot
+
+    def debug_one(self, x):
+        """Prints an explanation of how ``x`` is predicted."""
+        node = self.root
+
+        while isinstance(node, branch.Branch):
+            if node.split.test(x):
+                print('not', node.split)
+                node = node.left
+            else:
+                print(node.split)
+                node = node.right
+
+        print(node.class_counts)

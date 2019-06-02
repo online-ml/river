@@ -33,6 +33,8 @@ class Leaf:
 
     """
 
+    __slots__ = 'depth', 'tree', 'class_counts', 'n_samples', 'feature_counts'
+
     def __init__(self, depth, tree, class_counts=None, feature_counts=None):
         self.depth = depth
         self.tree = tree
