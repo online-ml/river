@@ -57,7 +57,7 @@ class Precision(stats.Mean, BasePrecision, base.BinaryMetric):
         return self
 
 
-class RollingPrecision(stats.RollingMean, BasePrecision, base.BinaryMetric):
+class RollingPrecision(BasePrecision, base.BinaryMetric):
     """Rolling binary precision score.
 
     Example:
@@ -76,15 +76,31 @@ class RollingPrecision(stats.RollingMean, BasePrecision, base.BinaryMetric):
             RollingPrecision: 1.
             RollingPrecision: 0.5
             RollingPrecision: 0.5
-            RollingPrecision: 0.666667
-            RollingPrecision: 0.666667
+            RollingPrecision: 0.5
+            RollingPrecision: 1.
 
     """
 
+    def __init__(self, window_size):
+        self.tp_ratio = stats.RollingMean(window_size=window_size)
+        self.fp_ratio = stats.RollingMean(window_size=window_size)
+
+    @property
+    def window_size(self):
+        return self.tp_ratio.size
+
     def update(self, y_true, y_pred):
-        if y_pred:
-            return super().update(y_true == y_pred)
+        self.tp_ratio.update(y_pred and y_true)
+        self.fp_ratio.update(y_pred and not y_true)
         return self
+
+    def get(self):
+        tp = self.tp_ratio.get()
+        fp = self.fp_ratio.get()
+        try:
+            return tp / (tp + fp)
+        except ZeroDivisionError:
+            return 0.
 
 
 class MacroPrecision(BasePrecision, base.MultiClassMetric):
@@ -147,19 +163,20 @@ class RollingMacroPrecision(MacroPrecision):
             >>> metric = metrics.RollingMacroPrecision(window_size=2)
             >>> for y_t, y_p in zip(y_true, y_pred):
             ...     print(metric.update(y_t, y_p).get())
-            0.333333...
-            0.125
-            0.194444...
+            1.0
             0.25
-            0.25
+            0.5
+            0.5
+            0.5
 
             >>> metric
-            RollingMacroPrecision: 0.25
+            RollingMacroPrecision: 0.5
 
     """
 
     def __init__(self, window_size):
-        self.precisions = collections.defaultdict(functools.partial(Precision, window_size))
+        self.window_size = window_size
+        self.precisions = collections.defaultdict(functools.partial(RollingPrecision, window_size))
         self.classes = set()
 
 

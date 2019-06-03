@@ -58,7 +58,7 @@ class Recall(stats.Mean, BaseRecall, base.BinaryMetric):
         return self
 
 
-class RollingRecall(stats.RollingMean, BaseRecall, base.BinaryMetric):
+class RollingRecall(BaseRecall, base.BinaryMetric):
     """Rolling binary recall score.
 
     Example:
@@ -77,15 +77,31 @@ class RollingRecall(stats.RollingMean, BaseRecall, base.BinaryMetric):
             1.0
             1.0
             0.5
-            0.666666...
-            0.666666...
+            0.5
+            0.6666666666666666
 
     """
 
+    def __init__(self, window_size):
+        self.tp_ratio = stats.RollingMean(window_size=window_size)
+        self.fn_ratio = stats.RollingMean(window_size=window_size)
+
+    @property
+    def window_size(self):
+        return self.tp_ratio.size
+
     def update(self, y_true, y_pred):
-        if y_true:
-            return super().update(y_true == y_pred)
+        self.tp_ratio.update(y_true and y_pred)
+        self.fn_ratio.update(y_true and not y_pred)
         return self
+
+    def get(self):
+        tp = self.tp_ratio.get()
+        fn = self.fn_ratio.get()
+        try:
+            return tp / (tp + fn)
+        except ZeroDivisionError:
+            return 0.
 
 
 class MacroRecall(BaseRecall, base.MultiClassMetric):
