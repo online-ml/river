@@ -44,6 +44,7 @@ Note that every multi-class classification metric also works for binary classifi
    MicroPrecision
    MicroRecall
    RollingAccuracy
+   RollingConfusionMatrix
    RollingCrossEntropy
    RollingMacroF1Score
    RollingMacroPrecision
