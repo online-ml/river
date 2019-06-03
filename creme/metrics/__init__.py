@@ -5,6 +5,7 @@ loss in precision.
 from .accuracy import Accuracy
 from .accuracy import RollingAccuracy
 from .confusion import ConfusionMatrix
+from .confusion import RollingConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .cross_entropy import RollingCrossEntropy
 from .f1_score import F1Score
@@ -62,6 +63,7 @@ __all__ = [
     'RMSE',
     'RMSLE',
     'RollingAccuracy',
+    'RollingConfusionMatrix',
     'RollingCrossEntropy',
     'RollingF1Score',
     'RollingLogLoss',

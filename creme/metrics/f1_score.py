@@ -38,17 +38,18 @@ class F1Score(BaseF1Score, base.BinaryMetric):
         ::
 
             >>> from creme import metrics
-            >>> from sklearn.metrics import f1_score
 
             >>> y_true = [True, False, True, True, True]
             >>> y_pred = [True, True, False, True, True]
 
             >>> metric = metrics.F1Score()
-            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-            ...     metric = metric.update(y_t, y_p)
-            ...     assert metric.get() == f1_score(y_true[:i+1], y_pred[:i+1])
 
-            >>> metric
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp))
+            F1Score: 1.
+            F1Score: 0.666667
+            F1Score: 0.5
+            F1Score: 0.666667
             F1Score: 0.75
 
     """
@@ -67,42 +68,6 @@ class F1Score(BaseF1Score, base.BinaryMetric):
         return statistics.harmonic_mean((self.precision.get(), self.recall.get()))
 
 
-class RollingF1Score(F1Score):
-    """Rolling binary F1 score.
-
-    The F1 score is the harmonic mean of the precision and the recall.
-
-    Example:
-
-        ::
-
-            >>> from creme import metrics
-            >>> from sklearn.metrics import f1_score
-
-            >>> y_true = [True, False, True, True, True]
-            >>> y_pred = [True, True, False, True, True]
-
-            >>> metric = metrics.RollingF1Score(window_size=3)
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(metric.update(y_t, y_p).get())
-            1.0
-            0.6666666666666666
-            0.5
-            0.5
-            0.8
-
-    """
-
-    def __init__(self, window_size):
-        super().__init__()
-        self.precision = precision.RollingPrecision(window_size=window_size)
-        self.recall = recall.RollingRecall(window_size=window_size)
-
-    @property
-    def window_size(self):
-        return self.precision.window_size
-
-
 class MacroF1Score(BaseF1Score, base.MultiClassMetric):
     """Macro-average F1 score.
 
@@ -113,22 +78,18 @@ class MacroF1Score(BaseF1Score, base.MultiClassMetric):
         ::
 
             >>> from creme import metrics
-            >>> from sklearn.metrics import f1_score
 
             >>> y_true = [0, 1, 2, 2, 2]
             >>> y_pred = [0, 0, 2, 2, 1]
 
             >>> metric = metrics.MacroF1Score()
-            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-            ...     metric = metric.update(y_t, y_p)
-            ...     print(metric.get(), f1_score(y_true[:i+1], y_pred[:i+1], average='macro'))
-            1.0 1.0
-            0.333333... 0.333333...
-            0.555555... 0.555555...
-            0.555555... 0.555555...
-            0.488888... 0.488888...
 
-            >>> metric
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp))
+            MacroF1Score: 1.
+            MacroF1Score: 0.333333
+            MacroF1Score: 0.555556
+            MacroF1Score: 0.555556
             MacroF1Score: 0.488889
 
     """
@@ -150,40 +111,6 @@ class MacroF1Score(BaseF1Score, base.MultiClassMetric):
         return total / len(self.f1_scores)
 
 
-class RollingMacroF1Score(MacroF1Score):
-    """Rolling macro-average F1 score.
-
-    The macro-average F1 score is the arithmetic average of the binary F1 scores of each label.
-
-    Example:
-
-        ::
-
-            >>> from creme import metrics
-            >>> from sklearn.metrics import f1_score
-
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
-
-            >>> metric = metrics.RollingMacroF1Score(window_size=3)
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(metric.update(y_t, y_p).get())
-            1.0
-            0.3333333333333333
-            0.5555555555555555
-            0.3333333333333333
-            0.26666666666666666
-
-            >>> metric
-            RollingMacroF1Score: 0.266667
-
-    """
-
-    def __init__(self, window_size):
-        self.f1_scores = collections.defaultdict(functools.partial(RollingF1Score, window_size))
-        self.classes = set()
-
-
 class MicroF1Score(precision.MicroPrecision):
     """Micro-average F1 score.
 
@@ -195,28 +122,91 @@ class MicroF1Score(precision.MicroPrecision):
         ::
 
             >>> from creme import metrics
-            >>> from sklearn.metrics import f1_score
 
             >>> y_true = [0, 1, 2, 2, 2]
             >>> y_pred = [0, 0, 2, 2, 1]
 
             >>> metric = metrics.MicroF1Score()
-            >>> for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
-            ...     metric = metric.update(y_t, y_p)
-            ...     print(metric.get(), f1_score(y_true[:i+1], y_pred[:i+1], average='micro'))
-            1.0 1.0
-            0.5 0.5
-            0.666666... 0.666666...
-            0.75 0.75
-            0.6 0.6
 
-            >>> metric
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp))
+            MicroF1Score: 1.
+            MicroF1Score: 0.5
+            MicroF1Score: 0.666667
+            MicroF1Score: 0.75
             MicroF1Score: 0.6
 
     References:
         1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
 
     """
+
+
+class RollingF1Score(F1Score):
+    """Rolling binary F1 score.
+
+    The F1 score is the harmonic mean of the precision and the recall.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+
+            >>> y_true = [True, False, True, True, True]
+            >>> y_pred = [True, True, False, True, True]
+
+            >>> metric = metrics.RollingF1Score(window_size=3)
+
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp))
+            RollingF1Score: 1.
+            RollingF1Score: 0.666667
+            RollingF1Score: 0.5
+            RollingF1Score: 0.5
+            RollingF1Score: 0.8
+
+    """
+
+    def __init__(self, window_size):
+        super().__init__()
+        self.precision = precision.RollingPrecision(window_size=window_size)
+        self.recall = recall.RollingRecall(window_size=window_size)
+
+    @property
+    def window_size(self):
+        return self.precision.window_size
+
+
+class RollingMacroF1Score(MacroF1Score):
+    """Rolling macro-average F1 score.
+
+    The macro-average F1 score is the arithmetic average of the binary F1 scores of each label.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
+
+            >>> metric = metrics.RollingMacroF1Score(window_size=3)
+
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp))
+            RollingMacroF1Score: 1.
+            RollingMacroF1Score: 0.333333
+            RollingMacroF1Score: 0.555556
+            RollingMacroF1Score: 0.333333
+            RollingMacroF1Score: 0.266667
+
+    """
+
+    def __init__(self, window_size):
+        self.f1_scores = collections.defaultdict(functools.partial(RollingF1Score, window_size))
+        self.classes = set()
 
 
 class RollingMicroF1Score(precision.RollingMicroPrecision):
@@ -230,14 +220,14 @@ class RollingMicroF1Score(precision.RollingMicroPrecision):
         ::
 
             >>> from creme import metrics
-            >>> from sklearn.metrics import f1_score
 
             >>> y_true = [0, 1, 2, 2, 2]
             >>> y_pred = [0, 0, 2, 2, 1]
 
             >>> metric = metrics.RollingMicroF1Score(window_size=3)
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(metric.update(y_t, y_p).get())
+
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp).get())
             1.0
             0.5
             0.666666...
