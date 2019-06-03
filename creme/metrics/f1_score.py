@@ -86,10 +86,10 @@ class RollingF1Score(F1Score):
             >>> for y_t, y_p in zip(y_true, y_pred):
             ...     print(metric.update(y_t, y_p).get())
             1.0
-            0.666666...
+            0.6666666666666666
             0.5
-            0.666666...
-            0.666666...
+            0.5
+            0.8
 
     """
 
@@ -97,6 +97,10 @@ class RollingF1Score(F1Score):
         super().__init__()
         self.precision = precision.RollingPrecision(window_size=window_size)
         self.recall = recall.RollingRecall(window_size=window_size)
+
+    @property
+    def window_size(self):
+        return self.precision.window_size
 
 
 class MacroF1Score(BaseF1Score, base.MultiClassMetric):
@@ -165,13 +169,13 @@ class RollingMacroF1Score(MacroF1Score):
             >>> for y_t, y_p in zip(y_true, y_pred):
             ...     print(metric.update(y_t, y_p).get())
             1.0
-            0.333333...
-            0.555555...
-            0.555555...
-            0.488888...
+            0.3333333333333333
+            0.5555555555555555
+            0.3333333333333333
+            0.26666666666666666
 
             >>> metric
-            RollingMacroF1Score: 0.488889
+            RollingMacroF1Score: 0.266667
 
     """
 
