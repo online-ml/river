@@ -106,9 +106,10 @@ class MacroF1Score(BaseF1Score, base.MultiClassMetric):
 
     def get(self):
         total = sum(f1.get() for f1 in self.f1_scores.values())
-        if total == 0.:
+        try:
+            return total / len(self.f1_scores)
+        except ZeroDivisionError:
             return 0.
-        return total / len(self.f1_scores)
 
 
 class MicroF1Score(precision.MicroPrecision):

@@ -105,6 +105,10 @@ class RollingVar(base.Univariate):
         self.rolling_mean = mean.RollingMean(window_size=window_size)
 
     @property
+    def window_size(self):
+        return self.rolling_mean.window_size
+
+    @property
     def name(self):
         return f'rolling_{self.rolling_mean.size}_variance'
 
@@ -124,5 +128,8 @@ class RollingVar(base.Univariate):
         return 1
 
     def get(self):
-        variance = (self.sos / len(self.rolling_mean)) - self.rolling_mean.get() ** 2
-        return self.correction_factor * variance
+        try:
+            variance = (self.sos / len(self.rolling_mean)) - self.rolling_mean.get() ** 2
+            return self.correction_factor * variance
+        except ZeroDivisionError:
+            return 0.

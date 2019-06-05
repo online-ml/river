@@ -89,11 +89,12 @@ from sklearn import metrics as sk_metrics
 )
 def test_metric(metric, sk_metric, y_true, y_pred):
 
-    for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+    for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
 
-        if isinstance(y_p, list):
-            y_p = {i: p for i, p in enumerate(y_p)}
-        metric.update(y_t, y_p)
+        if isinstance(yp, list):
+            yp = dict(enumerate(yp))
+
+        metric.update(yt, yp)
 
         if i >= 1:
             assert math.isclose(metric.get(), sk_metric(y_true[:i + 1], y_pred[:i + 1]))
@@ -153,11 +154,12 @@ def test_rolling_metric(metric, sk_metric, y_true, y_pred):
 
     n = metric.window_size
 
-    for i, (y_t, y_p) in enumerate(zip(y_true, y_pred)):
+    for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
 
-        if isinstance(y_p, list):
-            y_p = {i: p for i, p in enumerate(y_p)}
-        metric.update(y_t, y_p)
+        if isinstance(yp, list):
+            yp = dict(enumerate(yp))
+
+        metric.update(yt, yp)
 
         if i >= 1:
             assert math.isclose(
