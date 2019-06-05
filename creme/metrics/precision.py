@@ -162,12 +162,9 @@ class RollingPrecision(BasePrecision, base.BinaryMetric):
     """
 
     def __init__(self, window_size):
+        self.window_size = window_size
         self.tp_ratio = stats.RollingMean(window_size=window_size)
         self.fp_ratio = stats.RollingMean(window_size=window_size)
-
-    @property
-    def window_size(self):
-        return self.tp_ratio.size
 
     def update(self, y_true, y_pred):
         self.tp_ratio.update(y_pred and y_true)
@@ -208,11 +205,8 @@ class RollingMacroPrecision(BasePrecision, base.MultiClassMetric):
     """
 
     def __init__(self, window_size):
+        self.window_size = window_size
         self.rcm = confusion.RollingConfusionMatrix(window_size=window_size)
-
-    @property
-    def window_size(self):
-        return self.rcm.window_size
 
     def update(self, y_true, y_pred):
         self.rcm.update(y_true, y_pred)
