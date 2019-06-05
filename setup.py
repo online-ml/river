@@ -22,7 +22,7 @@ REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
 # Package requirements.
-base_packages = ['numpy>=1.14.0', 'scipy>=1.0.1', 'scikit-learn>=0.19.0']
+base_packages = ['numpy>=1.16.4', 'scipy>=1.3.0', 'scikit-learn>=0.21.2']
 
 dev_packages = [
     'graphviz>=0.10.1',

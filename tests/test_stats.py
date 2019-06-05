@@ -97,9 +97,5 @@ def test_bivariate(stat, func):
     for i, (x, y) in enumerate(zip(X, Y)):
         stat.update(x, y)
 
-        try:
+        if i >= 1:
             assert math.isclose(stat.get(), func(X[:i + 1], Y[:i + 1]), abs_tol=1e-10)
-        except AssertionError:
-            # Errors for the first value are acceptable
-            if i == 0:
-                continue
