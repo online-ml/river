@@ -270,10 +270,6 @@ class RollingMicroPrecision(stats.RollingMean, BasePrecision, base.MultiClassMet
 
     """
 
-    def __init__(self, window_size):
-        super().__init__(window_size=window_size)
-        self.window_size = window_size
-
     def update(self, y_true, y_pred):
         super().update(y_true == y_pred)
         return self

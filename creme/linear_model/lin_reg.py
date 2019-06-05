@@ -121,10 +121,10 @@ class LinearRegression(base.Regressor):
 
         def format_weight(w):
             if w > 0:
-                return f'{bcolors.GREEN} {w}'
+                return f'{bcolors.GREEN}{w}'
             elif w < 0:
-                return f'{bcolors.RED} {w}'
-            return f'{bcolors.YELLOW} {w}'
+                return f'{bcolors.RED}{w}'
+            return f'{bcolors.YELLOW}{w}'
 
         print(' +\n'.join(
             f'{format_weight(self.weights[i])}{bcolors.ENDC} * {x[i]} ({i})'
