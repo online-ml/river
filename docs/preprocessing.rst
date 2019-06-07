@@ -13,6 +13,7 @@ Preprocessing
 
    FeatureHasher
    MinMaxScaler
+   Normalizer
    OneHotEncoder
    PolynomialExtender
    StandardScaler
