@@ -13,4 +13,5 @@ Ensemble models
 
    BaggingClassifier
    BaggingRegressor
+   GroupRegressor
    HedgeClassifier

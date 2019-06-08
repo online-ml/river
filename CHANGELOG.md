@@ -11,10 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Jaccard` and `RollingConfusionMatrix` to `metrics`
 - `ClassifierChain` and `RegressorChain` to `multioutput`
 - `Normalizer` to `preprocessing`
+- `load_chick_weights` to `datasets`
 
 ### Modified
 
 - `stream.iter_sklearn` now receives an `sklearn.utils.Bunch` instead of a callable, the parameter `load_dataset` was thus renamed `dataset`
+- Moved `SplitRegressor` from `compose` to `ensemble` and renamed it to `GroupRegressor`
 
 ### Removed
 

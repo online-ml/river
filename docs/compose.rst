@@ -15,7 +15,6 @@ Model composition
    BoxCoxTransformRegressor
    FuncTransformer
    Pipeline
-   SplitRegressor
    TargetModifierRegressor
    TransformerUnion
    Whitelister
