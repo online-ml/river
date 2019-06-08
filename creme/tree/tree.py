@@ -11,7 +11,11 @@ from .. import base
 from .. import utils
 
 from . import branch
+from . import criterion
 from . import leaf
+
+
+CRITERIA_CLF = {'gini': criterion.gini_impurity, 'entropy': criterion.entropy}
 
 
 class DecisionTreeClassifier(base.MultiClassClassifier):
@@ -26,7 +30,9 @@ class DecisionTreeClassifier(base.MultiClassClassifier):
 
     """
 
-    def __init__(self, max_depth=5, min_samples_split=10, patience=10, max_bins=30):
+    def __init__(self, criterion='gini', max_depth=5, min_samples_split=10, patience=10,
+                 max_bins=30):
+        self.criterion = CRITERIA_CLF[criterion]
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.patience = patience

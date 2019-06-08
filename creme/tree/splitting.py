@@ -3,8 +3,6 @@ import functools
 import math
 import operator
 
-from .. import utils
-
 
 class Op(collections.namedtuple('Op', 'symbol operator')):
 
@@ -69,13 +67,13 @@ def enum_contiguous(values):
         yield LT, val
 
 
-def search_split_info_gain(class_counts, feature_counts, categoricals):
+def search_split_info_gain(class_counts, feature_counts, categoricals, criterion):
 
     best_gain = -math.inf
     second_best_gain = -math.inf
     split = None
 
-    current_entropy = utils.entropy(class_counts)
+    current_impurity = criterion(class_counts)
 
     for feature, counts in feature_counts.items():
 
@@ -84,23 +82,26 @@ def search_split_info_gain(class_counts, feature_counts, categoricals):
 
         for op, val in split_enum(sorted(counts.keys())):
 
-            left_counts = collections.Counter()
-            right_counts = collections.Counter()
+            # 1. Build the counts according to the proposed split
+
+            l_counts = collections.Counter()
+            r_counts = collections.Counter()
 
             for v in counts:
                 if op(v, val):
-                    left_counts += counts[v]
+                    l_counts += counts[v]
                 else:
-                    right_counts += counts[v]
+                    r_counts += counts[v]
 
-            left_total = sum(left_counts.values())
-            right_total = sum(right_counts.values())
+            # 2. Calculate the gain in impurity
 
-            entropy = left_total * utils.entropy(left_counts) + \
-                right_total * utils.entropy(right_counts)
-            entropy /= (left_total + right_total)
+            l_count, l_impurity = sum(l_counts.values()), criterion(l_counts)
+            r_count, r_impurity = sum(r_counts.values()), criterion(r_counts)
 
-            gain = current_entropy - entropy
+            impurity = (l_count * l_impurity + r_count * r_impurity) / (l_count + r_count)
+            gain = current_impurity - impurity
+
+            # 3. Check if the split is better
 
             if gain > best_gain:
                 best_gain, second_best_gain = gain, best_gain
