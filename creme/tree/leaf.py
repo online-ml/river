@@ -81,7 +81,8 @@ class Leaf:
         top_2_diff, split = splitting.search_split_info_gain(
             class_counts=self.class_counts,
             feature_counts=self.feature_counts,
-            categoricals=set(self.feature_counts.keys()) - set(self.tree.histograms.keys())
+            categoricals=set(self.feature_counts.keys()) - set(self.tree.histograms.keys()),
+            criterion=self.tree.criterion
         )
 
         # Calculate the Hoeffding bound
