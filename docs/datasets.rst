@@ -15,3 +15,4 @@ Dataset loading utilities
    fetch_electricity
    fetch_restaurants
    load_airline
+   load_chick_weights
