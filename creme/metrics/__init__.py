@@ -8,16 +8,18 @@ from .confusion import ConfusionMatrix
 from .confusion import RollingConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .cross_entropy import RollingCrossEntropy
-from .f1 import F1
-from .f1 import MicroF1
-from .f1 import MultiF1
-from .f1 import RollingF1
-from .f1 import RollingMicroF1
-from .f1 import RollingMultiF1
+from .fbeta import F1
 from .fbeta import FBeta
+from .fbeta import MacroF1
+from .fbeta import MacroFBeta
+from .fbeta import MicroF1
 from .fbeta import MicroFBeta
 from .fbeta import MultiFBeta
+from .fbeta import RollingF1
 from .fbeta import RollingFBeta
+from .fbeta import RollingMacroF1
+from .fbeta import RollingMacroFBeta
+from .fbeta import RollingMicroF1
 from .fbeta import RollingMicroFBeta
 from .fbeta import RollingMultiFBeta
 from .jaccard import Jaccard
@@ -56,16 +58,17 @@ __all__ = [
     'FBeta',
     'Jaccard',
     'LogLoss',
+    'MAE',
+    'MacroF1',
+    'MacroFBeta',
     'MacroPrecision',
     'MacroRecall',
     'MicroF1',
-    'MicroFBeta'
+    'MicroFBeta',
     'MicroPrecision',
     'MicroRecall',
-    'MultiF1',
-    'MultiFBeta',
-    'MAE',
     'MSE',
+    'MultiFBeta',
     'Precision',
     'Recall',
     'RegressionMultiOutput',
@@ -77,16 +80,17 @@ __all__ = [
     'RollingF1',
     'RollingFBeta',
     'RollingLogLoss',
+    'RollingMAE',
+    'RollingMacroF1',
+    'RollingMacroFBeta',
     'RollingMacroPrecision',
     'RollingMacroRecall',
-    'RollingMAE',
     'RollingMicroF1',
     'RollingMicroFBeta',
     'RollingMicroPrecision',
     'RollingMicroRecall',
-    'RollingMultiF1',
-    'RollingMultiFBeta',
     'RollingMSE',
+    'RollingMultiFBeta',
     'RollingPrecision',
     'RollingRecall',
     'RollingRMSE',

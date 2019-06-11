@@ -49,10 +49,10 @@ class HedgeClassifier(collections.UserDict, base.BinaryClassifier):
             ...         learning_rate=0.9
             ...     ))
             ... ])
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.91372
+            F1: 0.91372
 
             >>> model['hedge'].weights
             {0: 9.992806...e-28, 1: 0.999999..., 2: 9.978434...e-28}

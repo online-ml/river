@@ -32,10 +32,10 @@ class Momentum(base.Optimizer):
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', linear_model.LogisticRegression(optimiser))
             ... ])
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.947075
+            F1: 0.947075
 
     """
 

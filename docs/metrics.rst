@@ -17,11 +17,13 @@ Binary classification
    :nosignatures:
 
    LogLoss
-   F1Score
+   F1
+   FBeta
    Precision
    Recall
    RollingLogLoss
-   RollingF1Score
+   RollingF1
+   RollingFBeta
    RollingPrecision
    RollingRecall
 
@@ -37,21 +39,27 @@ Note that every multi-class classification metric also works for binary classifi
    Accuracy
    ConfusionMatrix
    CrossEntropy
-   MacroF1Score
+   MacroF1
+   MacroFBeta
    MacroPrecision
    MacroRecall
-   MicroF1Score
+   MicroF1
+   MicroFBeta
    MicroPrecision
    MicroRecall
+   MultiFBeta
    RollingAccuracy
    RollingConfusionMatrix
    RollingCrossEntropy
-   RollingMacroF1Score
+   RollingMacroF1
+   RollingMacroFBeta
    RollingMacroPrecision
    RollingMacroRecall
-   RollingMicroF1Score
+   RollingMicroF1
+   RollingMicroFBeta
    RollingMicroPrecision
    RollingMicroRecall
+   RollingMultiFBeta
 
 Regression
 ++++++++++
@@ -79,3 +87,4 @@ Multi-output
    :nosignatures:
 
    Jaccard
+   RegressionMultiOutput

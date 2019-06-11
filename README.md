@@ -74,7 +74,7 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 >>> lin_reg = linear_model.LogisticRegression(optimizer=optim.AdaGrad())
 >>> model = scaler | lin_reg
 
->>> metric = metrics.F1Score()
+>>> metric = metrics.F1()
 
 >>> for x, y in X_y:
 ...     y_pred = model.predict_one(x)
@@ -82,7 +82,7 @@ In the following snippet we'll be fitting an online logistic regression. The wei
 ...     metric = metric.update(y, y_pred)
 
 >>> metric
-F1Score: 0.97191
+F1: 0.97191
 
 ```
 

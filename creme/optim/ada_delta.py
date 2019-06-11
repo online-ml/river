@@ -32,10 +32,10 @@ class AdaDelta(base.Optimizer):
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', linear_model.LogisticRegression(optimiser))
             ... ])
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.950912
+            F1: 0.950912
 
     References:
 

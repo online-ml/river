@@ -32,10 +32,10 @@ class RMSProp(base.Optimizer):
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', linear_model.LogisticRegression(optimiser))
             ... ])
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.971989
+            F1: 0.971989
 
     References:
         1. `Divide the gradient by a running average of itsrecent magnitude <https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf>`_
