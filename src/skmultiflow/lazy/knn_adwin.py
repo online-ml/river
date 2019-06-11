@@ -78,7 +78,7 @@ class KNNAdwin(KNN):
 
     """
 
-    def __init__(self, n_neighbors=5, max_window_size=5000, leaf_size=30, nominal_attributes=None):
+    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, nominal_attributes=None):
         super().__init__(n_neighbors=n_neighbors,
                          max_window_size=max_window_size,
                          leaf_size=leaf_size,
