@@ -76,10 +76,10 @@ class BaggingClassifier(BaseBagging, base.Classifier):
             ...     n_models=3,
             ...     random_state=42
             ... )
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.970464
+            F1: 0.970464
 
     References:
 

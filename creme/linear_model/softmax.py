@@ -48,10 +48,10 @@ class SoftmaxRegression(base.MultiClassClassifier):
             >>> model |= preprocessing.StandardScaler()
             >>> model |= linear_model.SoftmaxRegression()
 
-            >>> metric = metrics.MacroF1Score()
+            >>> metric = metrics.MacroF1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MacroF1Score: 0.809381
+            MacroF1: 0.809381
 
     References:
 

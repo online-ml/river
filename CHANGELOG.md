@@ -8,15 +8,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- `Jaccard` and `RollingConfusionMatrix` to `metrics`
+- `Jaccard`, `RollingConfusionMatrix`, and `RegressionMultiOutput` to `metrics`
 - `ClassifierChain` and `RegressorChain` to `multioutput`
 - `Normalizer` to `preprocessing`
 - `load_chick_weights` to `datasets`
+- F-Beta metrics:
+    - `FBeta`
+    - `MacroFBeta`
+    - `MicroFBeta`
+    - `MultiFBeta`
+    - `RollingFBeta`
+    - `RollingMacroFBeta`
+    - `RollingMicroFBeta`
+    - `RollingMultiFBeta`
 
 ### Modified
 
 - `stream.iter_sklearn` now receives an `sklearn.utils.Bunch` instead of a callable, the parameter `load_dataset` was thus renamed `dataset`
 - Moved `SplitRegressor` from `compose` to `ensemble` and renamed it to `GroupRegressor`
+- Renamed `F1Score` to `F1`
 
 ### Removed
 
@@ -33,13 +43,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Rolling metrics:
     - `RollingAccuracy`
     - `RollingCrossEntropy`
-    - `RollingF1Score`
+    - `RollingF1`
     - `RollingLogLoss`
-    - `RollingMacroF1Score`
+    - `RollingMacroF1`
     - `RollingMacroPrecision`
     - `RollingMacroRecall`
     - `RollingMAE`
-    - `RollingMicroF1Score`
+    - `RollingMicroF1`
     - `RollingMicroPrecision`
     - `RollingMicroRecall`
     - `RollingMSE`
@@ -76,10 +86,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `metrics`:
     - `ConfusionMatrix`
     - `CrossEntropy`
-    - `MacroF1Score`
+    - `MacroF1`
     - `MacroPrecision`
     - `MacroRecall`
-    - `MicroF1Score`
+    - `MicroF1`
     - `MicroPrecision`
     - `MicroRecall`
 - Each metric now has a `bigger_is_better` property to indicate if a high value is better than a low one or not
@@ -126,7 +136,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `SMAPE`
     - `Precision` (binary)
     - `Recall` (binary)
-    - `F1Score` (binary)
+    - `F1` (binary)
 - `CategoricalImputer` to `impute`
 - `stats`:
     - `Mode`

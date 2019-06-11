@@ -22,6 +22,8 @@ class DecisionTreeClassifier(base.MultiClassClassifier):
     """
 
     Parameters:
+        criterion (str): The function to measure the quality of a split. Set to `'gini'` in order
+        to use Gini impurity and `'entropy'` for information gain.
         max_bins (int): Maximum number of bins used for discretizing continuous values when using
             `utils.Histogram`.
 
@@ -30,7 +32,7 @@ class DecisionTreeClassifier(base.MultiClassClassifier):
 
     """
 
-    def __init__(self, criterion='gini', max_depth=5, min_samples_split=10, patience=10,
+    def __init__(self, criterion='entropy', max_depth=5, min_samples_split=10, patience=10,
                  max_bins=30):
         self.criterion = CRITERIA_CLF[criterion]
         self.max_depth = max_depth
