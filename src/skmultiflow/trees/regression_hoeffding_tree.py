@@ -628,8 +628,9 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
                 node.get_observed_class_distribution()), self.split_confidence, node.get_weight_seen())
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
-            if (second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
-                    or hoeffding_bound < self.tie_threshold):    # best_suggestion.merit > 1e-10 and \
+            if best_suggestion.merit > 0.0 and \
+                    (second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
+                        or hoeffding_bound < self.tie_threshold):
                 should_split = True
             if self.remove_poor_atts is not None and self.remove_poor_atts:
                 poor_atts = set()
