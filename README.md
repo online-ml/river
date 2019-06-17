@@ -39,6 +39,7 @@
 - [Package releases](https://pypi.org/project/creme/#history)
 - [Change history](CHANGELOG.md)
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), video incoming)
+- [Blog post from pyimagesearch for image classification](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
 
 ## Installation
 
