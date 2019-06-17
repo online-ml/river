@@ -39,7 +39,8 @@ class VarianceReductionSplitCriterion(SplitCriterion):
         sum = dist[1]
         sum_sq = dist[2]
 
-        return np.sqrt((sum_sq - (sum * sum)/N)/N)
+        var = (sum_sq - (sum * sum)/N)/N
+        return np.sqrt(var) if var > 0.0 else 0.0
 
     @staticmethod
     def get_range_of_merit(pre_split_dist):
