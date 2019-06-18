@@ -82,6 +82,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jrosebr1",
+      "name": "Adrian Rosebrock",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/759645?v=4",
+      "profile": "http://www.pyimagesearch.com",
+      "contributions": [
+        "blog"
+      ]
     }
   ],
   "contributorsPerLine": 7
