@@ -209,7 +209,7 @@ class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassClassifier):
     def predict_proba_one(self, x):
         try:
             y_pred = self.sklearn_estimator.predict_proba([list(x.values())])[0]
-            return {c: y_pred[i] for i, c in enumerate(self.classes)}
+            return {self.classes[i]: p for i, p in enumerate(y_pred)}
         except exceptions.NotFittedError:
             return {c: 1 / len(self.classes) for c in self.classes}
 

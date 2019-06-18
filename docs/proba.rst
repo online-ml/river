@@ -12,3 +12,4 @@ Probability distributions
    :nosignatures:
 
    Gaussian
+   Multinomial

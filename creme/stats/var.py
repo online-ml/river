@@ -40,25 +40,26 @@ class Var(base.Univariate):
     def __init__(self, ddof=1):
         self.ddof = ddof
         self.mean = mean.Mean()
-        self.var = mean.Mean()
-        self.n = 0
+        self.sos = 0.
 
     @property
     def name(self):
         return 'variance'
 
+    @property
+    def n(self):
+        return self.mean.n
+
     def update(self, x):
-        self.n += 1
         mean = self.mean.get()
         self.mean.update(x)
-        self.var.update((x - mean) * (x - self.mean.get()))
+        self.sos += (x - mean) * (x - self.mean.get())
         return self
 
     def get(self):
-        try:
-            return self.var.get() * (self.n / (self.n - self.ddof))
-        except ZeroDivisionError:
-            return 0.
+        if self.sos:
+            return self.sos / (self.n - self.ddof)
+        return 0.
 
 
 class RollingVar(base.Univariate):

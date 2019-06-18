@@ -16,7 +16,7 @@ class StandardScaler(base.Transformer):
     performance.
 
     Attributes:
-        variances (dict): Mapping between features and instances of ``stats.Variance``.
+        variances (dict): Mapping between features and instances of `stats.Var`.
         eps (float): Used for avoiding divisions by zero.
 
     Example:
@@ -37,18 +37,17 @@ class StandardScaler(base.Transformer):
               {'x': 0.707106781053423}
               {'x': 0.1589936150008511}
               {'x': -0.27053221501993885}
-              {'x': -1.316174126551126}
+              {'x': -1.3161741265511262}
               {'x': -1.0512188306232884}
               {'x': -1.1096762393237039}
               {'x': 1.0914126848882046}
-              {'x': 0.3109060849393408}
+              {'x': 0.31090608493934085}
               {'x': 0.5949866913888866}
               {'x': -1.3540960657565435}
-              {'x': 1.295917634373787}
+              {'x': 1.2959176343737868}
               {'x': 0.8426620963810948}
               {'x': -0.8843412114527541}
               {'x': -0.9118818053170898}
-
 
               >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
               >>> preprocessing.StandardScaler().fit_transform(X)
