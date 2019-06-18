@@ -1,6 +1,3 @@
-import collections
-import functools
-
 try:
     import graphviz
     GRAPHVIZ_INSTALLED = True
@@ -8,14 +5,16 @@ except ImportError:
     GRAPHVIZ_INSTALLED = False
 
 from .. import base
-from .. import utils
 
 from . import branch
-from . import criterion
+from . import criteria
 from . import leaf
 
 
-CRITERIA_CLF = {'gini': criterion.gini_impurity, 'entropy': criterion.entropy}
+# TODO: Test Naive Bayes prediction using MOA paper (from page 79 onwards of https://www.cs.waikato.ac.nz/~abifet/MOA/StreamMining.pdf)
+# TODO: initialize new leafs with class counts after split
+
+CRITERIA_CLF = {'gini': criteria.gini, 'entropy': criteria.entropy}
 
 
 class DecisionTreeClassifier(base.MultiClassClassifier):
@@ -32,19 +31,14 @@ class DecisionTreeClassifier(base.MultiClassClassifier):
 
     """
 
-    def __init__(self, criterion='entropy', max_depth=5, min_samples_split=10, patience=10,
-                 max_bins=30):
+    def __init__(self, criterion='entropy', patience=10, max_depth=5, min_child_samples=20):
         self.criterion = CRITERIA_CLF[criterion]
-        self.max_depth = max_depth
-        self.min_samples_split = min_samples_split
         self.patience = patience
-        self.max_bins = max_bins
-        self.delta = 0.1
-        self.bound_threshold = 0.05
-        self.histograms = collections.defaultdict(functools.partial(
-            utils.Histogram,
-            max_bins=max_bins
-        ))
+        self.max_depth = max_depth
+        self.min_child_samples = min_child_samples
+
+        self.confidence = 0.00001
+        self.tie_threshold = 0.05
         self.root = leaf.Leaf(depth=0, tree=self)
 
     def fit_one(self, x, y):
@@ -52,13 +46,9 @@ class DecisionTreeClassifier(base.MultiClassClassifier):
         return self
 
     def predict_proba_one(self, x):
-        l = self.root.get_leaf(x)
-        return {
-            label: count / l.n_samples
-            for label, count in l.class_counts.items()
-        }
+        return self.root.get_leaf(x).predict(x)
 
-    def to_dot(self):
+    def draw(self):
         """Returns a GraphViz representation of the decision tree."""
 
         if not GRAPHVIZ_INSTALLED:

@@ -1,7 +1,8 @@
+import abc
 import collections
-import functools
-import math
 import operator
+
+from .. import proba
 
 
 class Op(collections.namedtuple('Op', 'symbol operator')):
@@ -17,100 +18,155 @@ LT = Op('<', operator.lt)
 EQ = Op('=', operator.eq)
 
 
-class Split:
-    """A data class for storing split details."""
+class SplitSearcher(abc.ABC):
 
-    __slots__ = 'feature', 'operator', 'value'
+    @abc.abstractmethod
+    def update(self, x, y):
+        """Updates the sufficient statistics used for evaluting splits."""
 
-    def __init__(self, feature, operator, value):
-        self.feature = feature
-        self.operator = operator
-        self.value = value
+    @abc.abstractmethod
+    def enumerate_splits(self):
+        """Yields candidate split points and associated operators."""
 
-    def __str__(self):
-        return f'{self.feature} {self.operator} {self.value}'
+    @abc.abstractmethod
+    def p_feature_given_class(self, x, y):
+        """Returns P(x | y)."""
 
-    def test(self, x):
-        return self.operator(x[self.feature], self.value)
+    def do_split(self, at, class_counts, debug=False):
+        """Evaluate the impurity of a candidate split.
+
+        We have the distribution of each class P(ci). We also have the distribution of values with
+        respect to each class: P(a | ci). Imagine we split so that the attribute is less than 5.
+        What we want to is to know the distribution inside each induced leaf. This can be done
+        using Bayes' rule:
+
+            - P(ci | a < 5) = P(a < 5 | ci) * P(ci) / P(a < 5)
+            - P(ci | a >= 5) = P(a >= 5 | ci) * P(ci) / P(a >= 5)
+
+        The size of the left leaf will be P(a < 5) whilst that of the right leaf will be P(a >= 5).
+
+        Example:
+
+            >>> sf = CategoricalSplitSearcher()
+
+            >>> sf[True]['blue']    = 50
+            >>> sf[True]['red']     = 10
+            >>> sf[True]['yellow']  = 20
+            >>> sf[True].total = sum(sf[True].values())
+
+            >>> sf[False]['blue']   = 5
+            >>> sf[False]['red']    = 80
+            >>> sf[False]['yellow'] = 15
+            >>> sf[False].total = sum(sf[False].values())
+
+            >>> class_counts = {c: sum(dist.values()) for c, dist in sf.items()}
+            >>> class_counts
+            {True: 80, False: 100}
+
+            >>> left, right = sf.do_split('blue', class_counts)
+            >>> left
+            {True: 50.0, False: 5.0}
+            >>> right
+            {True: 30.0, False: 95.0}
+
+        """
+
+        l_class_counts, r_class_counts = {}, {}
+
+        for y, count in class_counts.items():
+            p = self.p_feature_given_class(at, y)
+            l_class_counts[y] = p * count
+            r_class_counts[y] = (1. - p) * count
+
+        return l_class_counts, r_class_counts
 
 
-def enum_unary(values):
+class CategoricalSplitSearcher(SplitSearcher, collections.defaultdict):
     """
 
     Example:
 
-        >>> for op, val in enum_unary(['a', 'b', 'c', 'd']):
-        ...     print(op, val)
-        = a
-        = b
-        = c
-        = d
+        >>> import collections
+        >>> import random
+
+        >>> sf = CategoricalSplitSearcher()
+        >>> class_counts = collections.Counter()
+
+        >>> random.seed(42)
+        >>> X = ['a'] * 30 + ['b'] * 30 + ['c'] * 20 + ['d'] * 20
+        >>> Y = (
+        ...     random.choices([0, 1, 2], weights=[0.3, 0.3, 0.4], k=30) +
+        ...     random.choices([0, 1, 2], weights=[0.5, 0.2, 0.3], k=30) +
+        ...     random.choices([0, 1, 2], weights=[0.1, 0.8, 0.1], k=20) +
+        ...     random.choices([0, 1, 2], weights=[0.4, 0.2, 0.4], k=20)
+        ... )
+
+        >>> for x, y in zip(X, Y):
+        ...     sf = sf.update(x, y)
+        ...     class_counts.update([y])
 
     """
-    for val in values:
-        yield EQ, val
+
+    def __init__(self):
+        super().__init__(proba.Multinomial)
+        self.categories = set()
+
+    def update(self, x, y):
+        self[y].update(x)
+        self.categories.add(x)
+        return self
+
+    def p_feature_given_class(self, x, y):
+        return self[y].pmf(x)
+
+    def enumerate_splits(self):
+        for cat in self.categories:
+            yield cat, EQ
 
 
-def enum_contiguous(values):
+class GaussianSplitSearcher(SplitSearcher, collections.defaultdict):
     """
 
     Example:
 
-        >>> for op, val in enum_contiguous([0, 1, 2, 3]):
-        ...     print(op, val)
-        < 1
-        < 2
-        < 3
+        >>> import collections
+        >>> import random
+
+        >>> sf = GaussianSplitSearcher(n=10)
+        >>> class_dist = collections.Counter()
+
+        >>> random.seed(42)
+        >>> X = (
+        ...     [random.gauss(3, 2) for _ in range(60)] +
+        ...     [random.gauss(7, 2) for _ in range(40)]
+        ... )
+        >>> Y = [False] * 60 + [True] * 40
+
+        >>> for x, y in zip(X, Y):
+        ...     sf = sf.update(x, y)
+        ...     class_dist.update([y])
 
     """
-    for val in values[1:]:
-        yield LT, val
 
+    def __init__(self, n):
+        super().__init__(proba.Gaussian)
+        self.n = n
 
-def search_split_info_gain(class_counts, feature_counts, categoricals, criterion):
+    def update(self, x, y):
+        self[y].update(x)
+        return self
 
-    best_gain = -math.inf
-    second_best_gain = -math.inf
-    split = None
+    def p_feature_given_class(self, x, y):
+        return self[y].cdf(x)
 
-    current_impurity = criterion(class_counts)
+    def enumerate_splits(self):
+        a = min(d.mu - 2. * d.sigma for d in self.values())
+        b = min(d.mu + 2. * d.sigma for d in self.values())
 
-    for feature, counts in feature_counts.items():
+        step = (b - a) / (self.n - 1)
 
-        # Decide how to enumerate the splits
-        split_enum = enum_unary if feature in categoricals else enum_contiguous
+        if step == 0:
+            return
 
-        for op, val in split_enum(sorted(counts.keys())):
-
-            # 1. Build the counts according to the proposed split
-
-            l_counts = collections.Counter()
-            r_counts = collections.Counter()
-
-            for v in counts:
-                if op(v, val):
-                    l_counts += counts[v]
-                else:
-                    r_counts += counts[v]
-
-            # 2. Calculate the gain in impurity
-
-            l_count, l_impurity = sum(l_counts.values()), criterion(l_counts)
-            r_count, r_impurity = sum(r_counts.values()), criterion(r_counts)
-
-            impurity = (l_count * l_impurity + r_count * r_impurity) / (l_count + r_count)
-            gain = current_impurity - impurity
-
-            # 3. Check if the split is better
-
-            if gain > best_gain:
-                best_gain, second_best_gain = gain, best_gain
-                split = Split(feature, op, val)
-            elif gain > second_best_gain:
-                second_best_gain = gain
-
-    return best_gain - second_best_gain, split
-
-
-def sum_counters(counters):
-    return functools.reduce(operator.add, counters, collections.Counter())
+        for i in range(self.n):
+            yield a + i * step, LT
