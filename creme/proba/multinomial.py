@@ -19,9 +19,9 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
             >>> p = p.update('red')
 
             >>> p.pmf('red')
-            1.
+            1.0
 
-            >>> p.update(6).update(1).update(6).p.pmf('red')
+            >>> p.update(6).update(1).update(6).pmf('red')
             0.25
 
     """
