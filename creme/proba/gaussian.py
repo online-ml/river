@@ -17,17 +17,12 @@ class Gaussian(base.ContinuousDistribution):
 
             >>> from creme import proba
 
-            >>> p = proba.Gaussian().update(6)
-            >>> p.mode
-            6.0
-
-            >>> p.update(7).mode
-            6.5
+            >>> p = proba.Gaussian().update(6).update(7)
 
             >>> p
             𝒩(μ=6.500, σ=0.707)
 
-            >>> p.query(6.5)
+            >>> p.pdf(6.5)
             0.564189...
 
     """
