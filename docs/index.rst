@@ -44,5 +44,4 @@ Contents
    install
    api
    user-guide
-   benchmarks
    faq
