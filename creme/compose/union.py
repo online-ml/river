@@ -85,7 +85,8 @@ class TransformerUnion(collections.UserDict, base.Transformer):
 
         # Infer a name if none is given
         if not isinstance(other, (list, tuple)):
-            name, transformer = (str(other), other)
+            other = (str(other), other)
+        name, transformer = other
 
         # If a function is given then wrap it in a FuncTransformer
         if isinstance(transformer, types.FunctionType):
