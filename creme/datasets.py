@@ -25,7 +25,7 @@ def get_data_home(data_home=None):
     return data_home
 
 
-def fetch_csv_dataset(data_home, url, name, **iter_csv_params):
+def fetch_csv_dataset(data_home, url, name, silent=True, **iter_csv_params):
 
     data_home = get_data_home(data_home=data_home)
 
@@ -37,9 +37,10 @@ def fetch_csv_dataset(data_home, url, name, **iter_csv_params):
     # If the ZIP file exists then unzip it
     zip_path = os.path.join(data_home, f'{name}.zip')
     if os.path.exists(zip_path):
-        print('Unzipping data...')
 
         # Unzip the ZIP file
+        if not silent:
+            print('Unzipping data...')
         with zipfile.ZipFile(zip_path, 'r') as zf:
             zf.extractall(data_home)
 
@@ -49,14 +50,15 @@ def fetch_csv_dataset(data_home, url, name, **iter_csv_params):
         return fetch_csv_dataset(data_home, url, name, **iter_csv_params)
 
     # Download the ZIP file
-    print('Downloading data...')
+    if not silent:
+        print('Downloading data...')
     with urllib.request.urlopen(url) as r, open(zip_path, 'wb') as f:
         shutil.copyfileobj(r, f)
 
     return fetch_csv_dataset(data_home, url, name, **iter_csv_params)
 
 
-def fetch_bikes(data_home=None):
+def fetch_bikes(data_home=None, silent=True):
     """Bike sharing station information from the city of Toulouse.
 
     The data contains 182,470 items and 8 features. The goal is to predict the number of bikes in
@@ -64,6 +66,7 @@ def fetch_bikes(data_home=None):
 
     Parameters:
         data_home (str): The directory where you wish to store the data.
+        silent (bool): Whether to indicate download progress or not.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
@@ -80,6 +83,7 @@ def fetch_bikes(data_home=None):
         data_home=data_home,
         url=url,
         name=name,
+        silent=silent,
         target_name='bikes',
         types={
             'clouds': int,
@@ -93,7 +97,7 @@ def fetch_bikes(data_home=None):
     )
 
 
-def fetch_electricity(data_home=None):
+def fetch_electricity(data_home=None, silent=True):
     """A day of electricity prices in New South Wales.
 
     The data contains 45,312 items and 8 features. The goal is to predict whether the price of
@@ -101,6 +105,7 @@ def fetch_electricity(data_home=None):
 
     Parameters:
         data_home (str): The directory where you wish to store the data.
+        silent (bool): Whether to indicate download progress or not.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
@@ -117,6 +122,7 @@ def fetch_electricity(data_home=None):
         data_home=data_home,
         url=url,
         name=name,
+        silent=silent,
         target_name='class',
         types={
             'date': float,
@@ -132,7 +138,7 @@ def fetch_electricity(data_home=None):
     )
 
 
-def fetch_restaurants(data_home=None):
+def fetch_restaurants(data_home=None, silent=True):
     """Data from the Kaggle Recruit Restaurants challenge.
 
     The data contains 252,108 items and 7 features. The goal is to predict the number of visitors
@@ -141,6 +147,7 @@ def fetch_restaurants(data_home=None):
 
     Parameters:
         data_home (str): The directory where you wish to store the data.
+        silent (bool): Whether to indicate download progress or not.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
@@ -157,6 +164,7 @@ def fetch_restaurants(data_home=None):
         data_home=data_home,
         url=url,
         name=name,
+        silent=silent,
         target_name='visitors',
         types={
             'latitude': float,
