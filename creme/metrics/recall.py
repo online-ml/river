@@ -134,6 +134,9 @@ class MicroRecall(precision.MicroPrecision):
 class RollingRecall(BaseRecall, base.BinaryMetric):
     """Rolling binary recall score.
 
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
+
     Example:
 
         ::
@@ -176,6 +179,9 @@ class RollingRecall(BaseRecall, base.BinaryMetric):
 
 class RollingMacroRecall(MacroRecall):
     """Rolling macro-average recall score.
+
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
 
     Example:
 
@@ -233,6 +239,9 @@ class RollingMicroRecall(precision.RollingMicroPrecision):
 
     The micro-average recall is exactly equivalent to the micro-average precision as well as the
     micro-average F1 score.
+
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
 
     Example:
 

@@ -44,6 +44,9 @@ class MAE(stats.Mean, base.RegressionMetric):
 class RollingMAE(stats.RollingMean, base.RegressionMetric):
     """Rolling mean absolute error.
 
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
+
     Example:
 
         ::

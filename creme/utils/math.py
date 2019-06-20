@@ -9,7 +9,6 @@ __all__ = [
     'chain_dot',
     'clamp',
     'dot',
-    'entropy',
     'norm',
     'prod',
     'sigmoid',

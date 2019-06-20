@@ -102,9 +102,17 @@ from sklearn import metrics as sk_metrics
                 [0.42860913, 0.33380113, 0.23758974],
                 [0.44941979, 0.32962558, 0.22095463]
             ]
+        ),
+        (
+            metrics.MCC(),
+            sk_metrics.matthews_corrcoef,
+            [True, True, True, False],
+            [True, False, True, True],
         )
     ]
 )
+@pytest.mark.filterwarnings('ignore::RuntimeWarning')
+@pytest.mark.filterwarnings('ignore::sklearn.metrics.classification.UndefinedMetricWarning')
 def test_metric(metric, sk_metric, y_true, y_pred):
 
     for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
@@ -192,9 +200,17 @@ def test_metric(metric, sk_metric, y_true, y_pred):
             functools.partial(sk_metrics.f1_score, average='micro'),
             [0, 1, 0, 2, 2],
             [0, 0, 1, 1, 2]
+        ),
+        (
+            metrics.RollingMCC(3),
+            sk_metrics.matthews_corrcoef,
+            [True, True, True, False, False],
+            [True, False, True, True, False],
         )
     ]
 )
+@pytest.mark.filterwarnings('ignore::RuntimeWarning')
+@pytest.mark.filterwarnings('ignore::sklearn.metrics.classification.UndefinedMetricWarning')
 def test_rolling_metric(metric, sk_metric, y_true, y_pred):
 
     def tail(iterable, n):
@@ -216,6 +232,7 @@ def test_rolling_metric(metric, sk_metric, y_true, y_pred):
             )
 
 
+@pytest.mark.filterwarnings('ignore::sklearn.metrics.classification.UndefinedMetricWarning')
 def test_multi_fbeta():
 
     fbeta = metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2})
@@ -238,6 +255,7 @@ def test_multi_fbeta():
             assert math.isclose(fbeta.get(), multi_fbeta)
 
 
+@pytest.mark.filterwarnings('ignore::sklearn.metrics.classification.UndefinedMetricWarning')
 def test_rolling_multi_f1():
 
     def tail(iterable, n):

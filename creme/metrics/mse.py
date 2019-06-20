@@ -44,6 +44,9 @@ class MSE(stats.Mean, base.RegressionMetric):
 class RollingMSE(stats.RollingMean, base.RegressionMetric):
     """Rolling mean squared error.
 
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
+
     Example:
 
         ::

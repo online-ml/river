@@ -140,6 +140,9 @@ class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassMetric):
 class RollingPrecision(BasePrecision, base.BinaryMetric):
     """Rolling binary precision score.
 
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
+
     Example:
 
         ::
@@ -182,6 +185,9 @@ class RollingPrecision(BasePrecision, base.BinaryMetric):
 
 class RollingMacroPrecision(BasePrecision, base.MultiClassMetric):
     """Rolling macro-average precision score.
+
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
 
     Example:
 
@@ -239,6 +245,9 @@ class RollingMicroPrecision(stats.RollingMean, BasePrecision, base.MultiClassMet
 
     The micro-average precision score is exactly equivalent to the micro-average recall as well as
     the micro-average F1 score.
+
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
 
     Example:
 

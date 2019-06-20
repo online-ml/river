@@ -13,9 +13,9 @@ python setup.py develop
 pip install -e ".[dev]"
 ```
 
-:point_up: We recommend you use [Anaconda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
+:point_up: We recommend that you use [Anaconda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
 
-:point_up: We also recommend you to use a [virtual environment](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/)
+:point_up: We also recommend that you to use a [virtual environment](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/)
 
 ### Making changes
 
