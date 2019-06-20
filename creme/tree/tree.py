@@ -29,6 +29,27 @@ class DecisionTreeClassifier(base.MultiClassifier):
     Attributes:
         root
 
+    Example:
+
+        ::
+
+            >>> from creme import datasets
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import tree
+
+            >>> X_y = datasets.fetch_electricity()
+
+            >>> model = tree.DecisionTreeClassifier(
+            ...     patience=200,
+            ...     criterion='gini'
+            ... )
+
+            >>> metric = metrics.ROCAUC()
+
+            >>> model_selection.online_score(X_y, model, metric)
+            ROCAUC: 0.773134
+
     """
 
     def __init__(self, criterion='entropy', patience=10, max_depth=5, min_child_samples=20,

@@ -69,6 +69,10 @@ class RegressionMetric(Metric):
     def update(self, y_true: float, y_pred: float) -> 'RegressionMetric':
         """Updates the metric."""
 
+    @property
+    def bigger_is_better(self):
+        return False
+
     def works_with(self, model) -> bool:
         return isinstance(model, base.Regressor)
 

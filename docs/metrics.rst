@@ -13,14 +13,17 @@ Binary classification
    :nosignatures:
    :template: class.rst
 
+   AUC
    LogLoss
    F1
    FBeta
+   MCC
    Precision
    Recall
    RollingLogLoss
    RollingF1
    RollingFBeta
+   RollingMCC
    RollingPrecision
    RollingRecall
 

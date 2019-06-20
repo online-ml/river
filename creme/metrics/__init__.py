@@ -48,6 +48,7 @@ from .rmse import RMSE
 from .rmse import RollingRMSE
 from .rmsle import RMSLE
 from .rmsle import RollingRMSLE
+from .roc_auc import ROCAUC
 from .smape import RollingSMAPE
 from .smape import SMAPE
 
@@ -77,6 +78,7 @@ __all__ = [
     'RegressionMultiOutput',
     'RMSE',
     'RMSLE',
+    'ROCAUC',
     'RollingAccuracy',
     'RollingConfusionMatrix',
     'RollingCrossEntropy',

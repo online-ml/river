@@ -68,11 +68,11 @@ class ConfusionMatrix(collections.defaultdict):
         row_format = '{:>{width}}' * (len(classes) + 1)
 
         # Write down the header
-        table = row_format.format('', *classes, width=width) + '\n'
+        table = row_format.format('', *map(str, classes), width=width) + '\n'
 
         # Write down the true labels row by row
         table += '\n'.join((
-            row_format.format(y_true, *[self[y_true][y_pred] for y_pred in classes], width=width)
+            row_format.format(str(y_true), *[self[y_true][y_pred] for y_pred in classes], width=width)
             for y_true in sorted(self)
         ))
 

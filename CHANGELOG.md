@@ -8,11 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- `Jaccard`, `RollingConfusionMatrix`, `RegressionMultiOutput`, `MCC`, and `RollingMCC` to `metrics`
 - `ClassifierChain` and `RegressorChain` to `multioutput`
 - `Normalizer` to `preprocessing`
 - `load_chick_weights` to `datasets`
-- F-Beta metrics:
+- More metrics:
     - `FBeta`
     - `MacroFBeta`
     - `MicroFBeta`
@@ -21,6 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `RollingMacroFBeta`
     - `RollingMicroFBeta`
     - `RollingMultiFBeta`
+    - `Jaccard`
+    - `RollingConfusionMatrix`
+    - `RegressionMultiOutput`
+    - `MCC`
+    - `RollingMCC`
+    - `AUC`
 - `Multinomial` to `proba`
 - `HedgeRegressor` to `ensemble`
 
@@ -29,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `stream.iter_sklearn` now receives an `sklearn.utils.Bunch` instead of a callable, the parameter `load_dataset` was thus renamed `dataset`
 - Moved `SplitRegressor` from `compose` to `ensemble` and renamed it to `GroupRegressor`
 - Renamed `F1Score` to `F1`
+- Improved the performance of `HedgeClassifier`
 
 ### Removed
 
