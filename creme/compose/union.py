@@ -75,7 +75,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
 
     def __str__(self):
         """Returns a human friendly representation of the pipeline."""
-        return f'{{{", ".join(self.keys())}}}'
+        return f' + '.join(map(str, self.keys()))
 
     def __repr__(self):
         return str(self)

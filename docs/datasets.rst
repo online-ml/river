@@ -1,15 +1,12 @@
 Dataset loading utilities
 -------------------------
 
-.. automodule:: creme.datasets
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.datasets
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: function.rst
 
    fetch_bikes
    fetch_electricity

@@ -73,7 +73,7 @@ def convert_creme_to_sklearn(estimator):
     wrappers = [
         (base.BinaryClassifier, SKLClassifierWrapper),
         (base.Clusterer, SKLClustererWrapper),
-        (base.MultiClassClassifier, SKLClassifierWrapper),
+        (base.MultiClassifier, SKLClassifierWrapper),
         (base.Regressor, SKLRegressorWrapper),
         (base.Transformer, SKLTransformerWrapper)
     ]
@@ -157,7 +157,7 @@ class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
             return 0
 
 
-class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassClassifier):
+class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
     """Wraps an ``sklearn`` classifier to make it compatible with ``creme``.
 
     Example:
@@ -353,9 +353,9 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         """
 
-        # Check the estimator is either a BinaryClassifier or a MultiClassClassifier
-        if not isinstance(self.creme_estimator, (base.BinaryClassifier, base.MultiClassClassifier)):
-            raise ValueError('creme_estimator is not a BinaryClassifier nor a MultiClassClassifier')
+        # Check the estimator is either a BinaryClassifier or a MultiClassifier
+        if not isinstance(self.creme_estimator, (base.BinaryClassifier, base.MultiClassifier)):
+            raise ValueError('creme_estimator is not a BinaryClassifier nor a MultiClassifier')
 
         # Check the inputs
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
@@ -365,12 +365,12 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         # Check the number of classes agrees with the type of classifier
         self.classes_ = np.unique(y)
-        if len(self.classes_) > 2 and not isinstance(self.creme_estimator, base.MultiClassClassifier):
+        if len(self.classes_) > 2 and not isinstance(self.creme_estimator, base.MultiClassifier):
             raise ValueError(f'n_classes is more than 2 but {self.creme_estimator} is a ' +
                              'BinaryClassifier')
 
         # creme's BinaryClassifier expects bools or 0/1 values
-        if not isinstance(self.creme_estimator, base.MultiClassClassifier):
+        if not isinstance(self.creme_estimator, base.MultiClassifier):
             self.label_encoder_ = preprocessing.LabelEncoder().fit(y)
             y = self.label_encoder_.transform(y)
 

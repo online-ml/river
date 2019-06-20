@@ -29,11 +29,9 @@ dev_packages = [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
     'matplotlib>=3.0.2',
+    'nbval>=0.9.1',
     'pytest>=4.5.0',
-    'pytest-cov>=2.6.1'
-]
-
-docs_packages = dev_packages + [
+    'pytest-cov>=2.6.1',
     'nbsphinx>=0.4.2',
     'Sphinx>=2.0.1',
     'sphinx-rtd-theme>=0.4.3'
@@ -116,10 +114,7 @@ setup(
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
     install_requires=base_packages,
-    extras_require={
-        'dev': dev_packages,
-        'docs': docs_packages
-    },
+    extras_require={'dev': dev_packages},
     include_package_data=True,
     license='BSD-3',
     classifiers=[

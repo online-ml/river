@@ -331,13 +331,13 @@ class Pipeline(collections.OrderedDict):
                     # Reset TransformerUnion flag
                     union_ending_node_ix = None
 
-        nodes, edges = [r'$x$'], []
+        nodes, edges = ['x'], []
         graph = graphviz.Digraph()
-        graph.node(r'$x$')
+        graph.node('x')
 
         draw_steps()
 
-        graph.node(r'$y$')
-        graph.edge(nodes[-1], r'$y$')
+        graph.node('y')
+        graph.edge(nodes[-1], 'y')
 
         return graph

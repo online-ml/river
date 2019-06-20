@@ -1,7 +1,7 @@
 from creme import compose
 
 
-def test_union():
+def test_func_union():
 
     def a(x):
         pass

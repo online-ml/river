@@ -13,7 +13,7 @@ class ComplementNB(base.BaseNB):
     The input vector has to contain positive values, such as counts or TF-IDF values.
 
     This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
-    ``predict_one`` from `base.MultiClassClassifier`.
+    ``predict_one`` from `base.MultiClassifier`.
 
     Parameters:
         alpha (float): Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).

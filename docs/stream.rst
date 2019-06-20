@@ -1,15 +1,12 @@
 Streaming utilities
 -------------------
 
-.. automodule:: creme.stream
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.stream
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: function.rst
 
    iter_csv
    iter_numpy

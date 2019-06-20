@@ -42,7 +42,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     ``scipy.stats.poisson(1).pmf(k)`` to obtain more detailed values.
 
     Parameters:
-        classifier (BinaryClassifier or MultiClassClassifier): The classifier to bag.
+        classifier (BinaryClassifier or MultiClassifier): The classifier to bag.
 
     Example:
 
@@ -110,10 +110,10 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 class BaggingRegressor(BaseBagging, base.Regressor):
     """Bagging for regression.
 
-    For each incoming observation, each model's `fit_one` method is called ``k`` times where ``k``
-    is sampled from a Poisson distribution of parameter 1. ``k`` thus has a 36% chance of being
-    equal to 0, a 36% chance of being equal to 1, an 18% chance of being equal to 2, a 6% chance of
-    being equal to 3, a 1% chance of being equal to 4, etc. You can do
+    For each incoming observation, each model's ``fit_one`` method is called ``k`` times where
+    ``k`` is sampled from a Poisson distribution of parameter 1. ``k`` thus has a 36% chance of
+    being equal to 0, a 36% chance of being equal to 1, an 18% chance of being equal to 2, a 6%
+    chance of being equal to 3, a 1% chance of being equal to 4, etc. You can do
     ``scipy.stats.poisson(1).pmf(k)`` for more detailed values.
 
     Parameters:

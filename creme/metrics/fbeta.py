@@ -41,9 +41,10 @@ class BaseFBeta:
 class FBeta(BaseFBeta, base.BinaryMetric):
     """Binary F-Beta score.
 
-    The FBeta score is a weighted harmonic mean between precision and recall. The higher the `beta`
-    value, the higher the recall will be taken into account. When `beta` equals 1, precision and
-    recall and equivalently weighted, which results in the F1 score (see `metrics.F1`).
+    The FBeta score is a weighted harmonic mean between precision and recall. The higher the
+    ``beta`` value, the higher the recall will be taken into account. When ``beta`` equals 1,
+    precision and recall and equivalently weighted, which results in the F1 score (see
+    `metrics.F1`).
 
     Parameters:
         beta (float): Weight of precision in harmonic mean.
@@ -259,9 +260,10 @@ class MultiFBeta(BaseFBeta, base.MultiClassMetric):
 class RollingFBeta(FBeta):
     """Rolling binary F-Beta score.
 
-    The FBeta score is a weighted harmonic mean between precision and recall. The higher the `beta`
-    value, the higher the recall will be taken into account. When `beta` equals 1, precision and
-    recall and equivalently weighted, which results in the F1 score (see `metrics.RollingF1`).
+    The FBeta score is a weighted harmonic mean between precision and recall. The higher the
+    ``beta`` value, the higher the recall will be taken into account. When ``beta`` equals 1,
+    precision and recall and equivalently weighted, which results in the F1 score (see
+    `metrics.RollingF1`).
 
     Parameters:
         beta (float): Weight of precision in harmonic mean.
@@ -379,9 +381,9 @@ class RollingMicroFBeta(RollingFBeta, base.MultiClassMetric):
 
     The Micro FBeta score is a specific case of the FBeta score where the metric is globally
     computed by counting the total true positives, false negatives and false positives.
-    `beta` parameter allows to weight recall higher than precision if sets to more than 1 or lower
-    if sets between 0 and 1. For `beta` equals to 1, precision and recall and equivalently weighted
-    resulting to traditional micro F1 score (see `metrics.MicroF1`).
+    ``beta`` parameter allows to weight recall higher than precision if sets to more than 1 or
+    lower if sets between 0 and 1. For ``beta`` equals to 1, precision and recall and equivalently
+    weighted resulting to traditional micro F1 score (see `metrics.MicroF1`).
 
     Parameters:
         beta (float): Weight of precision in harmonic mean.

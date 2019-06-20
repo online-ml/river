@@ -7,7 +7,7 @@ __all__ = ['Multinomial']
 
 
 class Multinomial(collections.Counter, base.DiscreteDistribution):
-    """Normal distribution with parameters mu and sigma.
+    """Multinomial distribution for categorical data.
 
     Example:
 

@@ -8,7 +8,7 @@ from . import base
 __all__ = ['NoChangeClassifier', 'PriorClassifier', 'StatisticRegressor']
 
 
-class NoChangeClassifier(base.MultiClassClassifier):
+class NoChangeClassifier(base.MultiClassifier):
     """Dummy classifier which returns the last class seen.
 
     The ``predict_one`` method will output the last class seen whilst ``predict_proba_one`` will
@@ -66,7 +66,7 @@ class NoChangeClassifier(base.MultiClassClassifier):
         return probas
 
 
-class PriorClassifier(base.MultiClassClassifier):
+class PriorClassifier(base.MultiClassifier):
     """Dummy classifier which uses the prior distribution.
 
     The ``predict_one`` method will output the most common class whilst ``predict_proba_one`` will
