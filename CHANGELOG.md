@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- `Jaccard`, `RollingConfusionMatrix`, and `RegressionMultiOutput` to `metrics`
+- `Jaccard`, `RollingConfusionMatrix`, `RegressionMultiOutput`, `MCC`, and `RollingMCC` to `metrics`
 - `ClassifierChain` and `RegressorChain` to `multioutput`
 - `Normalizer` to `preprocessing`
 - `load_chick_weights` to `datasets`

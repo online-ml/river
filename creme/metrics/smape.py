@@ -43,6 +43,9 @@ class SMAPE(stats.Mean, base.RegressionMetric):
 class RollingSMAPE(stats.RollingMean, base.RegressionMetric):
     """Rolling symmetric mean absolute percentage error.
 
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
+
     Example:
 
         ::

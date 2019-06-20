@@ -53,6 +53,9 @@ class LogLoss(stats.Mean, BaseLogLoss):
 class RollingLogLoss(stats.RollingMean, BaseLogLoss):
     """Rolling binary logarithmic loss.
 
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
+
     Example:
 
         ::

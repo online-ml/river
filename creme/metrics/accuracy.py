@@ -48,6 +48,9 @@ class Accuracy(stats.Mean, BaseAccuracy):
 class RollingAccuracy(stats.RollingMean, BaseAccuracy):
     """Rolling accuracy score, which is the percentage of exact matches over a window.
 
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
+
     Example:
 
         ::

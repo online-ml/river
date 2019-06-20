@@ -27,6 +27,8 @@ from .log_loss import LogLoss
 from .log_loss import RollingLogLoss
 from .mae import MAE
 from .mae import RollingMAE
+from .mcc import MCC
+from .mcc import RollingMCC
 from .mse import MSE
 from .mse import RollingMSE
 from .multioutput import RegressionMultiOutput
@@ -63,6 +65,7 @@ __all__ = [
     'MacroFBeta',
     'MacroPrecision',
     'MacroRecall',
+    'MCC',
     'MicroF1',
     'MicroFBeta',
     'MicroPrecision',
@@ -85,6 +88,7 @@ __all__ = [
     'RollingMacroFBeta',
     'RollingMacroPrecision',
     'RollingMacroRecall',
+    'RollingMCC',
     'RollingMicroF1',
     'RollingMicroFBeta',
     'RollingMicroPrecision',
