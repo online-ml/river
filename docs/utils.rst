@@ -1,19 +1,22 @@
 Developper utilities
 --------------------
 
-.. automodule:: creme.utils
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.utils
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
-   check_estimator
    Histogram
    SDFT
    Skyline
    SortedWindow
    Window
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+   :template: function.rst
+
+   check_estimator

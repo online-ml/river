@@ -32,8 +32,9 @@ def test_univariate(stat, func):
     # Statistics need to be deep-copyable
     copy.deepcopy(stat)
 
-    # Check the statistic has a working __str__ method, which is more important than it may seem
+    # Check the statistic has a working __str__ and name method
     assert isinstance(str(stat), str)
+    assert isinstance(stat.name, str)
 
     X = [random.random() for _ in range(30)]
 
@@ -63,8 +64,9 @@ def test_rolling_univariate(stat, func):
     # Statistics need to be deep-copyable
     copy.deepcopy(stat)
 
-    # Check the statistic has a working __str__ method, which is more important than it may seem
+    # Check the statistic has a working __str__ and name method
     assert isinstance(str(stat), str)
+    assert isinstance(stat.name, str)
 
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)

@@ -9,7 +9,7 @@ __all__ = [
     'BinaryClassifier',
     'Clusterer',
     'Estimator',
-    'MultiClassClassifier',
+    'MultiClassifier',
     'MultiOutputClassifier',
     'MultiOutputRegressor',
     'Regressor',
@@ -106,11 +106,11 @@ class BinaryClassifier(Classifier):
         """
 
 
-class MultiClassClassifier(BinaryClassifier):
+class MultiClassifier(BinaryClassifier):
     """A multi-class classifier."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: Label) -> 'MultiClassClassifier':
+    def fit_one(self, x: dict, y: Label) -> 'MultiClassifier':
         """Fits to a set of features ``x`` and a label ``y``.
 
         Parameters:
@@ -231,6 +231,7 @@ class MultiOutputEstimator(Estimator):
 
 
 class MultiOutputClassifier(MultiOutputEstimator):
+    """A multi-output classifier."""
 
     def fit_one(self, x: dict, y: typing.Dict[str, Label]) -> 'MultiOutputClassifier':
         """Fits to a set of features ``x`` and a set of labels ``y``.
@@ -271,6 +272,7 @@ class MultiOutputClassifier(MultiOutputEstimator):
 
 
 class MultiOutputRegressor(MultiOutputEstimator):
+    """A multi-output regressor."""
 
     def fit_one(self, x: dict, y: typing.Dict[str, float]) -> 'MultiOutputRegressor':
         """Fits to a set of features ``x`` and a set of outputs ``y``.

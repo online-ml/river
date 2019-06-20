@@ -1,10 +1,6 @@
 Running statistics
 ------------------
 
-.. automodule:: creme.stats
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.stats
 
 Univariate statistics
@@ -13,6 +9,7 @@ Univariate statistics
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    AutoCorrelation
    BayesianMean
@@ -49,6 +46,7 @@ Bivariate statistics
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    Bivariate
    Covariance

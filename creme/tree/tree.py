@@ -11,34 +11,35 @@ from . import criteria
 from . import leaf
 
 
-# TODO: Test Naive Bayes prediction using MOA paper (from page 79 onwards of https://www.cs.waikato.ac.nz/~abifet/MOA/StreamMining.pdf)
-# TODO: initialize new leafs with class counts after split
-
 CRITERIA_CLF = {'gini': criteria.gini, 'entropy': criteria.entropy}
 
 
-class DecisionTreeClassifier(base.MultiClassClassifier):
-    """
+class DecisionTreeClassifier(base.MultiClassifier):
+    """Decision tree classifier.
 
     Parameters:
-        criterion (str): The function to measure the quality of a split. Set to `'gini'` in order
-        to use Gini impurity and `'entropy'` for information gain.
-        max_bins (int): Maximum number of bins used for discretizing continuous values when using
-            `utils.Histogram`.
+        criterion (str): The function to measure the quality of a split. Set to ``'gini'`` in order
+        to use Gini impurity and ``'entropy'`` for information gain.
+        patience (int): Time to wait between split attempts.
+        max_depth (int): Maximum tree depth.
+        min_child_samples (int): Minimum number of data needed in a leaf.
+        confidence (float): Threshold used to compare with the Hoeffding bound.
+        tie_threshold (float): Threshold to handle ties between equally performing attributes.
 
     Attributes:
-        histograms (collections.defaultdict)
+        root
 
     """
 
-    def __init__(self, criterion='entropy', patience=10, max_depth=5, min_child_samples=20):
+    def __init__(self, criterion='entropy', patience=10, max_depth=5, min_child_samples=20,
+                 confidence=1e-5, tie_threshold=5e-2):
         self.criterion = CRITERIA_CLF[criterion]
         self.patience = patience
         self.max_depth = max_depth
         self.min_child_samples = min_child_samples
 
-        self.confidence = 0.00001
-        self.tie_threshold = 0.05
+        self.confidence = confidence
+        self.tie_threshold = tie_threshold
         self.root = leaf.Leaf(depth=0, tree=self)
 
     def fit_one(self, x, y):

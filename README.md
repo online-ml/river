@@ -34,7 +34,7 @@
 - [Documentation](https://creme-ml.github.io/)
   - [API reference](https://creme-ml.github.io/api.html)
   - [User guide](https://creme-ml.github.io/user-guide.html)
-  - [Benchmarks](https://creme-ml.github.io/benchmarks.html)
+  - [FAQ](https://creme-ml.github.io/faq.html)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
 - [Change history](CHANGELOG.md)
@@ -53,39 +53,67 @@ pip install creme
 
 ## Quick example
 
-In the following snippet we'll be fitting an online logistic regression. The weights of the model will be optimized with the [AdaGrad](http://akyrillidis.github.io/notes/AdaGrad) algorithm. We'll scale the data so that each variable has a mean of 0 and a standard deviation of 1. The standard scaling and the logistic regression are combined into a pipeline using the `|` operator. We'll be using the `stream.iter_sklearn_dataset` function for streaming over the [Wisconsin breast cancer dataset](http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+%28diagnostic%29). We'll measure the [F1-score](https://www.wikiwand.com/en/F1_score) using [progressive validation](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.153.3925&rep=rep1&type=pdf).
+In the following snippet we'll be training a linear regression to forecast the number of available bikes in bike stations from the city of Toulouse. We'll use the available numeric features, as well as calculate running averages of the target. Before being fed to the linear regression, the data will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead and delaying the true answers, which ensures we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
 
 ```python
 >>> from creme import compose
+>>> from creme import datasets
+>>> from creme import feature_extraction
 >>> from creme import linear_model
 >>> from creme import metrics
 >>> from creme import model_selection
->>> from creme import optim
 >>> from creme import preprocessing
->>> from creme import stream
->>> from sklearn import datasets
 
->>> X_y = stream.iter_sklearn_dataset(
-...     dataset=datasets.load_breast_cancer(),
-...     shuffle=True,
-...     random_state=42
+>>> X_y = datasets.fetch_bikes()
+
+>>> def add_hour(x):
+...     x['hour'] = x['moment'].hour
+...     return x
+
+>>> model = compose.Whitelister('clouds', 'humidity', 'pressure', 'temperature', 'wind')
+>>> model += (
+...     add_hour |
+...     feature_extraction.TargetAgg(by=['station', 'hour'], how=stats.Mean())
 ... )
+>>> model += feature_extraction.TargetAgg(by='station', how=stats.EWMean(0.5))
+>>> model |= preprocessing.StandardScaler()
+>>> model |= linear_model.LinearRegression()
 
->>> scaler = preprocessing.StandardScaler()
->>> lin_reg = linear_model.LogisticRegression(optimizer=optim.AdaGrad())
->>> model = scaler | lin_reg
+>>> metric = metrics.MAE()
 
->>> metric = metrics.F1()
-
->>> for x, y in X_y:
-...     y_pred = model.predict_one(x)
-...     model = model.fit_one(x, y)
-...     metric = metric.update(y, y_pred)
-
->>> metric
-F1: 0.97191
+>>> model_selection.online_qa_score(
+...     X_y=datasets.fetch_bikes(),
+...     model=model,
+...     metric=metrics.MAE(),
+...     on='moment',
+...     lag=dt.timedelta(minutes=30),
+...     print_every=20_000
+... )
+[20,000] MAE: 13.743465
+[40,000] MAE: 7.990616
+[60,000] MAE: 6.101015
+[80,000] MAE: 5.159895
+[100,000] MAE: 4.593369
+[120,000] MAE: 4.19251
+[140,000] MAE: 3.904753
+[160,000] MAE: 3.725466
+[180,000] MAE: 3.568893
+MAE: 3.555296
 
 ```
+
+We can also draw the model to understand how the data flows through.
+
+```python
+>>> model.draw()
+```
+
+<div align="center">
+  <img src="docs/_static/bikes_pipeline.svg" alt="bikes_pipeline"/>
+</div>
+
+
+By only using a few lines of code, we've built a robust model and evaluated it by simulating a production scenario. You can find a more detailed version of this example [here](https://creme-ml.github.io/notebooks/bike-sharing-forecasting.html). `creme` is a framework that has a lot to offer, and as such we kindly refer you to the [documentation](https://creme-ml.github.io/) if you want to know more.
 
 ## Comparison with other solutions
 

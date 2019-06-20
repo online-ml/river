@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-class BaseMetric(abc.ABC):
+class Metric(abc.ABC):
 
     @abc.abstractmethod
     def get(self) -> float:
@@ -34,7 +34,7 @@ class BaseMetric(abc.ABC):
         return str(self)
 
 
-class ClassificationMetric(BaseMetric):
+class ClassificationMetric(Metric):
 
     @property
     @abc.abstractmethod
@@ -60,10 +60,10 @@ class MultiClassMetric(BinaryMetric):
         """Updates the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(model, (base.BinaryClassifier, base.MultiClassClassifier))
+        return isinstance(model, (base.BinaryClassifier, base.MultiClassifier))
 
 
-class RegressionMetric(BaseMetric):
+class RegressionMetric(Metric):
 
     @abc.abstractmethod
     def update(self, y_true: float, y_pred: float) -> 'RegressionMetric':

@@ -24,7 +24,7 @@ def make_random_targets(model, n_observations):
     if isinstance(model, base.Regressor):
         random_func = random.random
 
-    elif isinstance(model, base.MultiClassClassifier):
+    elif isinstance(model, base.MultiClassifier):
         random_func = functools.partial(random.choice, ['a', 'b', 'c', 'd'])
 
     elif isinstance(model, base.BinaryClassifier):
@@ -202,15 +202,15 @@ def yield_all_checks(model):
     if isinstance(model, base.Classifier):
         yield check_predict_proba_one
 
-    # MultiClassClassifiers are also BinaryClassifiers so binary will apply to both
+    # MultiClassifiers are also BinaryClassifiers so binary will apply to both
     if isinstance(model, base.BinaryClassifier):
         yield check_better_than_dummy_binary
 
-        # Some tests work for BinaryClassifiers but not for MultiClassClassifiers
-        if not isinstance(model, base.MultiClassClassifier):
+        # Some tests work for BinaryClassifiers but not for MultiClassifiers
+        if not isinstance(model, base.MultiClassifier):
             yield check_predict_proba_one_binary
 
-    if isinstance(model, base.MultiClassClassifier):
+    if isinstance(model, base.MultiClassifier):
         yield check_better_than_dummy_multi
 
     if isinstance(model, base.Regressor):
@@ -218,6 +218,12 @@ def yield_all_checks(model):
 
 
 def check_estimator(model):
+    """Check if a model adheres to ``creme``'s API.
+
+    Parameters:
+        model (base.Estimator)
+
+    """
 
     for check in yield_all_checks(model):
         check(copy.deepcopy(model))

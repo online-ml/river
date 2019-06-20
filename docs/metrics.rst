@@ -3,10 +3,6 @@ Streaming metrics
 
 Most of the metrics have a rolling version which only applies to a window of most recent values.
 
-.. automodule:: creme.metrics
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.metrics
 
 Binary classification
@@ -15,6 +11,7 @@ Binary classification
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    LogLoss
    F1
@@ -35,6 +32,7 @@ Note that every multi-class classification metric also works for binary classifi
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    Accuracy
    ConfusionMatrix
@@ -67,6 +65,7 @@ Regression
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    MAE
    MSE
@@ -85,6 +84,7 @@ Multi-output
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    Jaccard
    RegressionMultiOutput
