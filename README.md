@@ -56,6 +56,7 @@ pip install creme
 In the following snippet we'll be training a linear regression to forecast the number of available bikes in bike stations from the city of Toulouse. We'll use the available numeric features, as well as calculate running averages of the target. Before being fed to the linear regression, the data will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead and delaying the true answers, which ensures we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
 
 ```python
+>>> import datetime as dt
 >>> from creme import compose
 >>> from creme import datasets
 >>> from creme import feature_extraction
@@ -63,6 +64,7 @@ In the following snippet we'll be training a linear regression to forecast the n
 >>> from creme import metrics
 >>> from creme import model_selection
 >>> from creme import preprocessing
+>>> from creme import stats
 
 >>> X_y = datasets.fetch_bikes()
 
@@ -105,7 +107,8 @@ MAE: 3.555296
 We can also draw the model to understand how the data flows through.
 
 ```python
->>> model.draw()
+>>> dot = model.draw()
+
 ```
 
 <div align="center">
