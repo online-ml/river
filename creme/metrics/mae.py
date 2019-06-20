@@ -33,10 +33,6 @@ class MAE(stats.Mean, base.RegressionMetric):
 
     """
 
-    @property
-    def bigger_is_better(self):
-        return False
-
     def update(self, y_true, y_pred):
         return super().update(abs(y_true - y_pred))
 
@@ -67,10 +63,6 @@ class RollingMAE(stats.RollingMean, base.RegressionMetric):
             0.5
 
     """
-
-    @property
-    def bigger_is_better(self):
-        return False
 
     def update(self, y_true, y_pred):
         return super().update(abs(y_true - y_pred))
