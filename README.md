@@ -81,10 +81,8 @@ In the following snippet we'll be training a linear regression to forecast the n
 >>> model |= preprocessing.StandardScaler()
 >>> model |= linear_model.LinearRegression()
 
->>> metric = metrics.MAE()
-
 >>> model_selection.online_qa_score(
-...     X_y=datasets.fetch_bikes(),
+...     X_y=X_y,
 ...     model=model,
 ...     metric=metrics.MAE(),
 ...     on='moment',
