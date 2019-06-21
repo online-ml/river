@@ -6,16 +6,15 @@ from .. import base
 from .. import optim
 
 
-__all__ = ['HedgeClassifier', 'HedgeRegressor']
+__all__ = ['HedgeBinaryClassifier', 'HedgeRegressor']
 
 
-class BaseHedge(collections.UserDict):
+class BaseHedge(collections.UserList):
 
     def __init__(self, models, weights, loss, learning_rate):
         super().__init__()
-        self.update(dict(enumerate(models)))
-        weights = [1 / len(models)] * len(models) if weights is None else weights
-        self.weights = dict(zip(self.keys(), weights))
+        self.extend(models)
+        self.weights = [1 / len(models)] * len(models) if weights is None else weights
         self.loss = loss
         self.learning_rate = learning_rate
 
@@ -26,29 +25,29 @@ class BaseHedge(collections.UserDict):
     def fit_one(self, x, y):
 
         # Make a prediction and update the weights accordingly for each model
-        for i, model in self.items():
+        for i, model in enumerate(self):
             y_pred = self._get_prediction(model, x)
             loss = self.loss(y, y_pred)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
             model.fit_one(x, y)
 
         # Normalize the weights so that they sum up to 1
-        total = sum(self.weights.values())
-        for i in self.weights:
+        total = sum(self.weights)
+        for i, _ in enumerate(self.weights):
             self.weights[i] /= total
 
         return self
 
 
-class HedgeClassifier(BaseHedge, base.BinaryClassifier):
-    """Hedge Algorithm for classification.
+class HedgeBinaryClassifier(BaseHedge, base.BinaryClassifier):
+    """Hedge Algorithm for binary classification.
 
     The Hedge Algorithm is a special case of the Weighted Majority Algorithm for arbitrary losses.
 
     Parameters:
-        models (list): The set of binary classifiers to hedge.
-        weights (list): The initial weight of each model. If ``None`` then a uniform set of
-            weights is assumed. This roughly translates to the prior amount of trust we have in
+        models (list of `base.BinaryClassifier`): The set of binary classifiers to hedge.
+        weights (list of `float`): The initial weight of each model. If ``None`` then a uniform set
+            of weights is assumed. This roughly translates to the prior amount of trust we have in
             each model.
         loss (optim.BinaryClassificationLoss): The binary loss function that has to be minimized.
         learning_rate (float): The learning rate by which the model weights are multiplied at each
@@ -73,11 +72,11 @@ class HedgeClassifier(BaseHedge, base.BinaryClassifier):
             ... )
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('hedge', ensemble.HedgeClassifier(
-            ...         models=[
+            ...     ('hedge', ensemble.HedgeBinaryClassifier(
+            ...         classifiers=[
             ...             linear_model.PAClassifier(mode=0),
             ...             linear_model.PAClassifier(mode=1),
-            ...             linear_model.PAClassifier(mode=2),
+            ...             linear_model.PAClassifier(mode=2)
             ...         ],
             ...         learning_rate=0.9
             ...     ))
@@ -88,7 +87,7 @@ class HedgeClassifier(BaseHedge, base.BinaryClassifier):
             F1: 0.944369
 
             >>> model['hedge'].weights
-            {0: 0.999999..., 1: 1.127738...e-07, 2: 3.705275...e-17}
+            [0.999999..., 1.127738...e-07, 3.705275...e-17]
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
@@ -96,23 +95,23 @@ class HedgeClassifier(BaseHedge, base.BinaryClassifier):
 
     """
 
-    def __init__(self, models, weights=None, loss=optim.LogLoss(), learning_rate=0.5):
+    def __init__(self, classifiers, weights=None, loss=optim.LogLoss(), learning_rate=0.5):
         super().__init__(
-            models=models,
+            models=classifiers,
             weights=weights,
             loss=loss,
             learning_rate=learning_rate
         )
 
     def _get_prediction(self, model, x):
-        return model.predict_proba_one(x)[True]
+        return model.predict_proba_one(x).get(True, .5)
 
     def predict_proba_one(self, x):
         y_pred = sum(
-            model.predict_proba_one(x)[True] * self.weights[i]
-            for i, model in self.items()
+            model.predict_proba_one(x).get(True, .5) * weight
+            for model, weight in zip(self, self.weights)
         )
-        return {False: 1 - y_pred, True: y_pred}
+        return {False: 1. - y_pred, True: y_pred}
 
 
 class HedgeRegressor(BaseHedge, base.Regressor):
@@ -121,9 +120,9 @@ class HedgeRegressor(BaseHedge, base.Regressor):
     The Hedge Algorithm is a special case of the Weighted Majority Algorithm for arbitrary losses.
 
     Parameters:
-        models (list): The set of binary classifiers to hedge.
-        weights (list): The initial weight of each model. If ``None`` then a uniform set of
-            weights is assumed. This roughly translates to the prior amount of trust we have in
+        regressors (list of `base.Regressor`): The set of regressor to hedge.
+        weights (list of `float`): The initial weight of each model. If ``None`` then a uniform set
+            of weights is assumed. This roughly translates to the prior amount of trust we have in
             each model.
         loss (optim.BinaryClassificationLoss): The binary loss function that has to be minimized.
         learning_rate (float): The learning rate by which the model weights are multiplied at each
@@ -150,7 +149,7 @@ class HedgeRegressor(BaseHedge, base.Regressor):
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('hedge', ensemble.HedgeRegressor(
-            ...         models=[
+            ...         regressors=[
             ...             linear_model.LinearRegression(optim.VanillaSGD()),
             ...             linear_model.LinearRegression(optim.RMSProp()),
             ...             linear_model.LinearRegression(optim.AdaGrad()),
@@ -169,9 +168,9 @@ class HedgeRegressor(BaseHedge, base.Regressor):
 
     """
 
-    def __init__(self, models, weights=None, loss=optim.SquaredLoss(), learning_rate=0.5):
+    def __init__(self, regressors, weights=None, loss=optim.SquaredLoss(), learning_rate=0.5):
         super().__init__(
-            models=models,
+            models=regressors,
             weights=weights,
             loss=loss,
             learning_rate=learning_rate
@@ -181,4 +180,4 @@ class HedgeRegressor(BaseHedge, base.Regressor):
         return model.predict_one(x)
 
     def predict_one(self, x):
-        return sum(model.predict_one(x) * self.weights[i] for i, model in self.items())
+        return sum(model.predict_one(x) * weight for model, weight in zip(self, self.weights))

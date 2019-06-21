@@ -13,7 +13,7 @@ then
   else
     fname=Miniconda3-latest-Linux-x86_64.sh
   fi
-  wget https://repo.continuum.io/miniconda/$fname -O downloads/miniconda.sh
+  wget https://repo.continuum.io/miniconda/$fname -quiet -output downloads/miniconda.sh
 fi
 
 # Install and update Miniconda
