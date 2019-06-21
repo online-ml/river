@@ -27,7 +27,7 @@
 
 <br/>
 
-`creme` is a library for online machine learning, also known as in**creme**ntal learning. Online learning is a machine learning regime where a model learns one observation at a time. This is in contrast to batch learning where all the data is processed in one go. Incremental learning is desirable when the data is too big to fit in memory, or simply when you want to handle data in a streaming fashion. In addition to many online machine learning algorithms, `creme` provides utilities for extracting features from a stream of data. The API is heavily inspired from that of [scikit-learn](https://scikit-learn.org/stable/), meaning that users who are familiar with it will feel comfortable.
+`creme` is a library for online machine learning, also known as in**creme**ntal learning. Online learning is a machine learning regime where a model learns one observation at a time. This is in contrast to batch learning where all the data is processed in one go. Incremental learning is desirable when the data is too big to fit in memory, or simply when you want to handle data in a streaming fashion. In addition to many online machine learning algorithms, `creme` provides utilities for extracting features from a stream of data. The API is heavily inspired from that of [scikit-learn](https://scikit-learn.org/stable/), meaning that users who are familiar with it should feel comfortable.
 
 ## Useful links
 
@@ -45,15 +45,20 @@
 
 :point_up: `creme` is tested with Python 3.6 and above.
 
-`creme` mostly relies on Python's standard library. Sometimes it relies on `numpy`, `scipy`, and `scikit-learn` so as not to reinvent the wheel. `creme` can simply be installed with `pip`.
+`creme` mostly relies on Python's standard library. Sometimes it relies on `numpy`, `scipy`, and `scikit-learn` to avoid reinventing the wheel. `creme` can simply be installed with `pip`.
 
-```sh
-pip install creme
-```
+    pip install creme
+
+You can also install the latest development version as so:
+
+    pip install git+https://github.com/creme-ml/creme --upgrade
+
 
 ## Quick example
 
-In the following snippet we'll be training a linear regression to forecast the number of available bikes in bike stations from the city of Toulouse. We'll use the available numeric features, as well as calculate running averages of the target. Before being fed to the linear regression, the data will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead and delaying the true answers, which ensures we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
+In the following example we'll use a linear regression to forecast the number of available bikes in [bike stations](https://www.wikiwand.com/en/Bicycle-sharing_system) from the city of Toulouse :bike:.
+
+We'll use the available numeric features, as well as calculate running averages of the target. Before being fed to the linear regression, the features will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead and delaying the true answers, which ensures that we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
 
 ```python
 >>> import datetime as dt

@@ -10,13 +10,12 @@ from .. import base
 __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 
-class BaseBagging(collections.UserDict):
+class BaseBagging(collections.UserList):
 
     def __init__(self, model=None, n_models=10, random_state=None):
         super().__init__()
         self.model = model
-        for i in range(n_models):
-            self[i] = copy.deepcopy(model)
+        self.extend([copy.deepcopy(model) for _ in range(n_models)])
         self.rng = utils.check_random_state(random_state)
 
     @property
@@ -25,7 +24,7 @@ class BaseBagging(collections.UserDict):
 
     def fit_one(self, x, y):
 
-        for model in self.values():
+        for model in self:
             for _ in range(self.rng.poisson(1)):
                 model.fit_one(x, y)
 
@@ -96,7 +95,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
         y_pred = collections.defaultdict(float)
 
         # Sum the predictions
-        for classifier in self.values():
+        for classifier in self:
             for label, proba in classifier.predict_proba_one(x).items():
                 y_pred[label] += proba
 
@@ -163,4 +162,4 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
     def predict_one(self, x):
         """Averages the predictions of each regressor."""
-        return statistics.mean((regressor.predict_one(x) for regressor in self.values()))
+        return statistics.mean((regressor.predict_one(x) for regressor in self))

@@ -27,7 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `RollingMCC`
     - `AUC`
 - `Multinomial` to `proba`
-- `HedgeRegressor` to `ensemble`
+- `HedgeRegressor` and `StackingBinaryClassifier` to `ensemble`
 
 ### Modified
 
