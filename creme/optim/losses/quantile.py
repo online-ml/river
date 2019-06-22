@@ -1,4 +1,7 @@
-class QuantileLoss:
+from . import base
+
+
+class QuantileLoss(base.RegressionLoss):
     """Quantile loss.
 
     Parameters:

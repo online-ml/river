@@ -16,6 +16,7 @@ Optimizers
    AdaGrad
    Adam
    FTRLProximal
+   MiniBatcher
    Momentum
    NesterovMomentum
    Optimizer

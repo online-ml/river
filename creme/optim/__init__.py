@@ -22,6 +22,7 @@ from .losses.squared import SquaredLoss
 from .lr_schedule import ConstantLR
 from .lr_schedule import InverseScalingLR
 from .lr_schedule import OptimalLR
+from .mini_batch import MiniBatcher
 from .momentum import Momentum
 from .nesterov import NesterovMomentum
 from .rms_prop import RMSProp
@@ -43,6 +44,7 @@ __all__ = [
     'HingeLoss',
     'InverseScalingLR',
     'LogLoss',
+    'MiniBatcher',
     'Momentum',
     'MultiClassificationLoss',
     'NesterovMomentum',
