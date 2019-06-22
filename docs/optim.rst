@@ -52,5 +52,6 @@ Loss functions
    HingeLoss
    LogLoss
    MultiClassificationLoss
+   QuantileLoss
    RegressionLoss
    SquaredLoss

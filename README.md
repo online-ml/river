@@ -39,13 +39,14 @@
 - [Package releases](https://pypi.org/project/creme/#history)
 - [Change history](CHANGELOG.md)
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), video incoming)
+- [Toulouse Data Science presentation](https://maxhalford.github.io/slides/creme-tds/)
 - [Blog post from pyimagesearch for image classification](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
 
 ## Installation
 
-:point_up: `creme` is tested with Python 3.6 and above.
+:point_up: `creme` is intended to work with Python 3.6 and above.
 
-`creme` mostly relies on Python's standard library. Sometimes it relies on `numpy`, `scipy`, and `scikit-learn` to avoid reinventing the wheel. `creme` can simply be installed with `pip`.
+`creme` can simply be installed with `pip`.
 
     pip install creme
 
@@ -53,6 +54,7 @@ You can also install the latest development version as so:
 
     pip install git+https://github.com/creme-ml/creme --upgrade
 
+As for dependencies, `creme` mostly relies on Python's standard library. Sometimes it relies on `numpy`, `scipy`, and `scikit-learn` to avoid reinventing the wheel.
 
 ## Quick example
 
