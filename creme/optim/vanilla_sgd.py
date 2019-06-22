@@ -25,10 +25,10 @@ class VanillaSGD(base.Optimizer):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimiser = optim.VanillaSGD()
+            >>> optimizer = optim.VanillaSGD()
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', linear_model.LogisticRegression(optimiser))
+            ...     ('learn', linear_model.LogisticRegression(optimizer))
             ... ])
             >>> metric = metrics.F1()
 
