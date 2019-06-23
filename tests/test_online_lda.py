@@ -1,6 +1,6 @@
-'''
+"""
 The tests performed here confirm that the outputs of the online LDA are exactly the same as those of
-the original with a batch_size of size 1. Coverage are 100%.
+the original with a batch_size of size 1. Coverage is 100%.
 
 References:
     1. Jordan Boyd-Graber, Ke Zhai, Online Latent Dirichlet Allocation with Infinite Vocabulary.
@@ -9,12 +9,11 @@ References:
     2. Creme's Online LDA reproduces exactly the same results of the original one with a size of
     batch 1:
     https://github.com/kzhai/PyInfVoc.
-'''
-# Third parties
+"""
 import numpy as np
 
-# Creme
-from creme.decomposition import OnlineLda
+from creme.decomposition import LDA
+
 
 DOC_SET = [
     'weather cold',
@@ -116,18 +115,18 @@ def test_extraction_words_ids():
     '''
     np.random.seed(42)
 
-    online_lda = OnlineLda(2, number_of_documents=5)
+    lda = LDA(2, number_of_documents=5)
 
     word_indexes_list = []
 
-    for document in DOC_SET:
+    for doc in DOC_SET:
 
-        word_list = OnlineLda._extract_word(document=document)
+        words = lda.tokenize(lda.preprocess(lda._get_text(doc)))
 
-        online_lda._update_indexes(word_list=word_list)
+        lda._update_indexes(word_list=words)
 
         word_indexes_list.append(
-            [online_lda.word_to_index[word] for word in word_list]
+            [lda.word_to_index[word] for word in words]
         )
 
     assert word_indexes_list == [
@@ -147,25 +146,25 @@ def test_statistics_two_components():
 
     np.random.seed(42)
 
-    online_lda = OnlineLda(n_components, number_of_documents=60)
+    lda = LDA(n_components, number_of_documents=60)
 
     statistics_list = []
 
-    for document in DOC_SET:
+    for doc in DOC_SET:
 
-        word_list = online_lda._extract_word(document=document)
+        word_list = lda.tokenize(lda.preprocess(lda._get_text(doc)))
 
-        online_lda._update_indexes(word_list=word_list)
+        lda._update_indexes(word_list=word_list)
 
-        word_indexes = [online_lda.word_to_index[word] for word in word_list]
+        word_indexes = [lda.word_to_index[word] for word in word_list]
 
-        statistics, _ = online_lda._compute_statistics_components(
+        statistics, _ = lda._compute_statistics_components(
             words_indexes_list=word_indexes,
         )
 
         statistics_list.append(statistics)
 
-        online_lda._update_weights(
+        lda._update_weights(
             statistics=statistics
         )
 
@@ -185,7 +184,7 @@ def test_statistics_five_components():
 
     n_components = 5
 
-    online_lda = OnlineLda(
+    lda = LDA(
         n_components=n_components,
         number_of_documents=60,
         maximum_size_vocabulary=100,
@@ -195,21 +194,21 @@ def test_statistics_five_components():
 
     statistics_list = []
 
-    for document in DOC_SET:
+    for doc in DOC_SET:
 
-        word_list = online_lda._extract_word(document=document)
+        word_list = lda.tokenize(lda.preprocess(lda._get_text(doc)))
 
-        online_lda._update_indexes(word_list=word_list)
+        lda._update_indexes(word_list=word_list)
 
-        word_indexes = [online_lda.word_to_index[word] for word in word_list]
+        word_indexes = [lda.word_to_index[word] for word in word_list]
 
-        statistics, _ = online_lda._compute_statistics_components(
+        statistics, _ = lda._compute_statistics_components(
             words_indexes_list=word_indexes,
         )
 
         statistics_list.append(statistics)
 
-        online_lda._update_weights(
+        lda._update_weights(
             statistics=statistics
         )
 
@@ -229,7 +228,7 @@ def test_five_components():
 
     n_components = 5
 
-    online_lda = OnlineLda(
+    online_lda = LDA(
         n_components=n_components,
         number_of_documents=60,
         maximum_size_vocabulary=100,
@@ -244,7 +243,7 @@ def test_five_components():
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
-            a1=component,
+            a1=list(component.values()),
             a2=REFERENCE_FIVE_COMPONENTS[index],
         )
 
@@ -257,7 +256,7 @@ def test_prunning_vocabulary():
     '''
     np.random.seed(42)
 
-    online_lda = OnlineLda(
+    online_lda = LDA(
         n_components=2,
         number_of_documents=60,
         vocab_prune_interval=2,
@@ -268,12 +267,12 @@ def test_prunning_vocabulary():
 
     for document in DOC_SET:
         components_list.append(
-            online_lda.fit_transform_one(document=document)
+            online_lda.fit_transform_one(x=document)
         )
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
-            a1=component,
+            a1=list(component.values()),
             a2=REFERENCE_COMPONENTS_WITH_PRUNNING[index]
         )
 
@@ -284,7 +283,7 @@ def test_fit_transform():
     '''
     np.random.seed(42)
 
-    online_lda = OnlineLda(
+    online_lda = LDA(
         n_components=2,
         number_of_documents=60,
         vocab_prune_interval=2,
@@ -293,14 +292,14 @@ def test_fit_transform():
     components_list = []
 
     for document in DOC_SET:
-        online_lda = online_lda.fit_one(document=document)
+        online_lda = online_lda.fit_one(x=document)
 
         components_list.append(
-            online_lda.transform_one(document=document)
+            online_lda.transform_one(x=document)
         )
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
-            a1=component,
+            a1=list(component.values()),
             a2=REFERENCE_FIT_ONE_PREDICT_ONE[index]
         )

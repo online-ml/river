@@ -1,6 +1,5 @@
 import collections
 
-import numpy as np
 from sklearn import utils
 
 from .. import base

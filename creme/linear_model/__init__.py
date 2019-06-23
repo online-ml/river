@@ -1,6 +1,5 @@
 """
-Generalized linear models optimized with online gradient descent using the
-:mod:`creme.optim` module.
+Generalized linear models optimized with online gradient descent from :mod:`creme.optim`.
 """
 from .fm import FMRegressor
 from .lin_reg import LinearRegression

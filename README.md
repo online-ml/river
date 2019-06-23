@@ -120,7 +120,6 @@ We can also draw the model to understand how the data flows through.
   <img src="docs/_static/bikes_pipeline.svg" alt="bikes_pipeline"/>
 </div>
 
-
 By only using a few lines of code, we've built a robust model and evaluated it by simulating a production scenario. You can find a more detailed version of this example [here](https://creme-ml.github.io/notebooks/bike-sharing-forecasting.html). `creme` is a framework that has a lot to offer, and as such we kindly refer you to the [documentation](https://creme-ml.github.io/) if you want to know more.
 
 ## Comparison with other solutions
