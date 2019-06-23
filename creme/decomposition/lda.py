@@ -157,7 +157,7 @@ class LDA(base.Transformer, utils.VectorizerMixin):
 
         return dict(enumerate(batch_document_topic_distribution))
 
-    def fit_one(self, x):
+    def fit_one(self, x, y=None):
         """Updates the LDA.
 
         Tokenizes the document, then updates the word indexes, and then updates the online
