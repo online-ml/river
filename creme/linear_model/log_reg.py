@@ -33,7 +33,7 @@ class LogisticRegression(base.BinaryClassifier):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_breast_cancer,
+            ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
@@ -43,10 +43,10 @@ class LogisticRegression(base.BinaryClassifier):
             ...         optimizer=optim.VanillaSGD(optim.OptimalLR(t0=30))
             ...     ))
             ... ])
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.966197
+            F1: 0.966197
 
     """
 

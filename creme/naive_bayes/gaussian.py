@@ -62,7 +62,7 @@ class GaussianNB(base.BaseNB):
     def joint_log_likelihood(self, x):
         return {
             c: math.log(self.p_class(c)) + sum(
-                math.log(10e-10 + gaussians[i].proba_of(xi))
+                math.log(10e-10 + gaussians[i].pdf(xi))
                 for i, xi in x.items()
             )
             for c, gaussians in self.gaussians.items()

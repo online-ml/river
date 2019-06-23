@@ -7,7 +7,7 @@ from . import base
 __all__ = ['LogLoss', 'RollingLogLoss']
 
 
-class BaseLogLoss(base.BinaryClassificationMetric):
+class BaseLogLoss(base.BinaryMetric):
 
     @property
     def bigger_is_better(self):
@@ -52,6 +52,9 @@ class LogLoss(stats.Mean, BaseLogLoss):
 
 class RollingLogLoss(stats.RollingMean, BaseLogLoss):
     """Rolling binary logarithmic loss.
+
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
 
     Example:
 

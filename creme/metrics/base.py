@@ -5,17 +5,13 @@ from .. import base
 
 
 __all__ = [
-    'BinaryClassificationMetric',
-    'MultiClassificationMetric',
+    'BinaryMetric',
+    'MultiClassMetric',
     'RegressionMetric'
 ]
 
 
-Label = typing.Union[bool, str, int]
-Proba = float
-
-
-class BaseMetric(abc.ABC):
+class Metric(abc.ABC):
 
     @abc.abstractmethod
     def get(self) -> float:
@@ -38,39 +34,63 @@ class BaseMetric(abc.ABC):
         return str(self)
 
 
-class ClassificationMetric(BaseMetric):
+class ClassificationMetric(Metric):
 
     @property
     @abc.abstractmethod
-    def requires_labels(self):
+    def requires_labels(self) -> bool:
         """Helps to indicate if labels are required instead of probabilities."""
 
 
-class BinaryClassificationMetric(ClassificationMetric):
+class BinaryMetric(ClassificationMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: bool, y_pred: typing.Union[bool, typing.Dict[Label, Proba]]):
+    def update(self, y_true: bool, y_pred: typing.Union[bool, base.Probas]) -> 'BinaryMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
+    def works_with(self, model) -> bool:
         return isinstance(model, base.BinaryClassifier)
 
 
-class MultiClassificationMetric(BinaryClassificationMetric):
+class MultiClassMetric(BinaryMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: Label, y_pred: typing.Union[Label, typing.Dict[Label, Proba]]):
+    def update(self, y_true: base.Label,
+               y_pred: typing.Union[base.Label, base.Probas]) -> 'MultiClassMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
+    def works_with(self, model) -> bool:
         return isinstance(model, (base.BinaryClassifier, base.MultiClassifier))
 
 
-class RegressionMetric(BaseMetric):
+class RegressionMetric(Metric):
 
     @abc.abstractmethod
-    def update(self, y_true: float, y_pred: float):
+    def update(self, y_true: float, y_pred: float) -> 'RegressionMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
+    @property
+    def bigger_is_better(self):
+        return False
+
+    def works_with(self, model) -> bool:
         return isinstance(model, base.Regressor)
+
+
+class MultiOutputClassificationMetric(ClassificationMetric):
+
+    def update(self, y_true: typing.Dict[str, base.Label],
+               y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]]):
+        """Updates the metric."""
+
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.MultiOutputClassifier)
+
+
+class MultiOutputRegressionMetric(RegressionMetric):
+
+    def update(self, y_true: typing.Dict[str, float], y_pred: typing.Dict[str, float]):
+        """Updates the metric."""
+
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.MultiOutputRegressor)

@@ -8,19 +8,21 @@ from .ada_grad import AdaGrad
 from .adam import Adam
 from .base import Optimizer
 from .ftrl import FTRLProximal
-from .losses import AbsoluteLoss
-from .losses import BinaryClassificationLoss
-from .losses import CauchyLoss
-from .losses import CrossEntropy
-from .losses import EpsilonInsensitiveHingeLoss
-from .losses import HingeLoss
-from .losses import LogLoss
-from .losses import MultiClassificationLoss
-from .losses import RegressionLoss
-from .losses import SquaredLoss
+from .losses.absolute import AbsoluteLoss
+from .losses.base import BinaryClassificationLoss
+from .losses.base import MultiClassificationLoss
+from .losses.base import RegressionLoss
+from .losses.cauchy import CauchyLoss
+from .losses.cross_entropy import CrossEntropy
+from .losses.hinge import EpsilonInsensitiveHingeLoss
+from .losses.hinge import HingeLoss
+from .losses.log_loss import LogLoss
+from .losses.quantile import QuantileLoss
+from .losses.squared import SquaredLoss
 from .lr_schedule import ConstantLR
 from .lr_schedule import InverseScalingLR
 from .lr_schedule import OptimalLR
+from .mini_batch import MiniBatcher
 from .momentum import Momentum
 from .nesterov import NesterovMomentum
 from .rms_prop import RMSProp
@@ -42,11 +44,13 @@ __all__ = [
     'HingeLoss',
     'InverseScalingLR',
     'LogLoss',
+    'MiniBatcher',
     'Momentum',
     'MultiClassificationLoss',
     'NesterovMomentum',
     'OptimalLR',
     'Optimizer',
+    'QuantileLoss',
     'RegressionLoss',
     'RMSProp',
     'SquaredLoss',

@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Added
+
+- `ClassifierChain` and `RegressorChain` to `multioutput`
+- `Normalizer` to `preprocessing`
+- `load_chick_weights` to `datasets`
+- More metrics:
+    - `FBeta`
+    - `MacroFBeta`
+    - `MicroFBeta`
+    - `MultiFBeta`
+    - `RollingFBeta`
+    - `RollingMacroFBeta`
+    - `RollingMicroFBeta`
+    - `RollingMultiFBeta`
+    - `Jaccard`
+    - `RollingConfusionMatrix`
+    - `RegressionMultiOutput`
+    - `MCC`
+    - `RollingMCC`
+    - `AUC`
+- `Multinomial` to `proba`
+- `HedgeRegressor` and `StackingBinaryClassifier` to `ensemble`
+- `QuantileLoss` and `MiniBatcher` to `optim`
+
+### Modified
+
+- `stream.iter_sklearn` now receives an `sklearn.utils.Bunch` instead of a callable, the parameter `load_dataset` was thus renamed `dataset`
+- Moved `SplitRegressor` from `compose` to `ensemble` and renamed it to `GroupRegressor`
+- Renamed `F1Score` to `F1`
+- Improved the performance of `HedgeClassifier`
+
+### Removed
+
+- `utils.Window` because using `collections.deque` directly is fine
+
 ## [0.2.0](https://pypi.org/project/creme/0.2.0/) - 2019-05-27
 
 ### Added
@@ -17,13 +52,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Rolling metrics:
     - `RollingAccuracy`
     - `RollingCrossEntropy`
-    - `RollingF1Score`
+    - `RollingF1`
     - `RollingLogLoss`
-    - `RollingMacroF1Score`
+    - `RollingMacroF1`
     - `RollingMacroPrecision`
     - `RollingMacroRecall`
     - `RollingMAE`
-    - `RollingMicroF1Score`
+    - `RollingMicroF1`
     - `RollingMicroPrecision`
     - `RollingMicroRecall`
     - `RollingMSE`
@@ -60,10 +95,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `metrics`:
     - `ConfusionMatrix`
     - `CrossEntropy`
-    - `MacroF1Score`
+    - `MacroF1`
     - `MacroPrecision`
     - `MacroRecall`
-    - `MicroF1Score`
+    - `MicroF1`
     - `MicroPrecision`
     - `MicroRecall`
 - Each metric now has a `bigger_is_better` property to indicate if a high value is better than a low one or not
@@ -110,7 +145,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `SMAPE`
     - `Precision` (binary)
     - `Recall` (binary)
-    - `F1Score` (binary)
+    - `F1` (binary)
 - `CategoricalImputer` to `impute`
 - `stats`:
     - `Mode`

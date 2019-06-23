@@ -19,6 +19,7 @@ API
    metrics
    model_selection
    multiclass
+   multioutput
    naive_bayes
    optim
    plot

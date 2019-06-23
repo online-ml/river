@@ -21,19 +21,19 @@ class VanillaSGD(base.Optimizer):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_breast_cancer,
+            ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimiser = optim.VanillaSGD()
+            >>> optimizer = optim.VanillaSGD()
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', linear_model.LogisticRegression(optimiser))
+            ...     ('learn', linear_model.LogisticRegression(optimizer))
             ... ])
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.966102
+            F1: 0.966102
 
     References:
         1. `A Stochastic Approximation Method <https://pdfs.semanticscholar.org/34dd/d8865569c2c32dec9bf7ffc817ff42faaa01.pdf>`_

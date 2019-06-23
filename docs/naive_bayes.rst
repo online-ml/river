@@ -1,15 +1,12 @@
 Naive Bayes models
 ------------------
 
-.. automodule:: creme.naive_bayes
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.naive_bayes
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    BernoulliNB
    ComplementNB

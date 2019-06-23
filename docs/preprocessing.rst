@@ -1,18 +1,16 @@
 Preprocessing
 -------------
 
-.. automodule:: creme.preprocessing
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.preprocessing
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    FeatureHasher
    MinMaxScaler
+   Normalizer
    OneHotEncoder
    PolynomialExtender
    StandardScaler

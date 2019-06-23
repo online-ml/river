@@ -1,15 +1,12 @@
 Recommendation algorithms
 -------------------------
 
-.. automodule:: creme.reco
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.reco
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    RandomNormal
    SGDBaseline

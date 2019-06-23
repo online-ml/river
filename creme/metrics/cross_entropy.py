@@ -7,7 +7,7 @@ from . import base
 __all__ = ['CrossEntropy', 'RollingCrossEntropy']
 
 
-class BaseCrossEntropy(base.MultiClassificationMetric):
+class BaseCrossEntropy(base.MultiClassMetric):
 
     @property
     def bigger_is_better(self):
@@ -58,6 +58,9 @@ class CrossEntropy(stats.Mean, BaseCrossEntropy):
 
 class RollingCrossEntropy(stats.RollingMean, BaseCrossEntropy):
     """Rolling cross-entropy.
+
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
 
     Example:
 

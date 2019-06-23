@@ -5,7 +5,10 @@ from .. import stats
 from . import base
 
 
-class Gaussian(base.Distribution):
+__all__ = ['Gaussian']
+
+
+class Gaussian(base.ContinuousDistribution):
     """Normal distribution with parameters mu and sigma.
 
     Example:
@@ -14,17 +17,12 @@ class Gaussian(base.Distribution):
 
             >>> from creme import proba
 
-            >>> p = proba.Gaussian().update(6)
-            >>> p.mode()
-            6.0
-
-            >>> p.update(7).mode()
-            6.5
+            >>> p = proba.Gaussian().update(6).update(7)
 
             >>> p
             𝒩(μ=6.500, σ=0.707)
 
-            >>> p.proba_of(6.5)
+            >>> p.pdf(6.5)
             0.564189...
 
     """
@@ -43,20 +41,18 @@ class Gaussian(base.Distribution):
     def __str__(self):
         return f'𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})'
 
-    def __repr__(self):
-        return str(self)
-
     def update(self, x):
         self.variance.update(x)
         return self
 
-    def mode(self):
-        return self.mu
+    def pdf(self, x):
+        var = self.variance.get()
+        if var:
+            return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
+        return 0.
 
-    def proba_of(self, x):
-        variance = self.variance.get()
-
-        if variance == 0:
-            return 0
-
-        return math.exp((x - self.mu) ** 2 / (-2 * variance)) / math.sqrt(math.tau * variance)
+    def cdf(self, x):
+        try:
+            return 0.5 * (1. + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.))))
+        except ZeroDivisionError:
+            return 0.

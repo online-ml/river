@@ -24,7 +24,7 @@ class AdaBound(base.Optimizer):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_breast_cancer,
+            ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
@@ -33,10 +33,10 @@ class AdaBound(base.Optimizer):
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', linear_model.LogisticRegression(optimiser))
             ... ])
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.963277
+            F1: 0.963277
 
     References:
         1. `Adaptive Gradient Methods with Dynamic Bound of Learning Rate <https://openreview.net/forum?id=Bkg3g2R9FX>`_
