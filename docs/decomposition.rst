@@ -11,4 +11,4 @@ Decomposition models
    :toctree: generated/
    :nosignatures:
 
-   OnlineLDa
+   OnlineLda
