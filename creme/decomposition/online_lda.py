@@ -75,7 +75,7 @@ class OnlineLda:
 
                     >>> online_lda = decomposition.OnlineLda(n_components=2, number_of_documents=60)
                     >>> for x in X:
-                    ...     print(online_lda.update(x))
+                    ...     print(online_lda.fit_transform_one(x))
                     [0.5 2.5]
                     [3.5 0.5]
                     [0.5 3.5]
@@ -87,7 +87,8 @@ class OnlineLda:
         1. Jordan Boyd-Graber, Ke Zhai, Online Latent Dirichlet Allocation with Infinite Vocabulary.
         http://proceedings.mlr.press/v28/zhai13.pdf
 
-        2. Creme's Online LDA reproduces exactly the same results of the original one:
+        2. Creme's Online LDA reproduces exactly the same results of the original one with a size of
+        batch 1:
         https://github.com/kzhai/PyInfVoc.
     """
 
@@ -131,51 +132,114 @@ class OnlineLda:
             self.nu_1[topic] = np.ones(1)
             self.nu_2[topic] = np.array([self.alpha_beta])
 
-    def update(self, document):
+    def fit_transform_one(self, document):
         """
-        Updates running latent Dirichlet allocation. Splits the words of the document into a list.
-        Updates the word indexes. Assign topics to the document. Runs the online variational
-        inference.
+        Updates of the Dirichlet latent allocation. Splits the words in the document into a list.
+        Updates word indexes. Break down the document into components. Performs the variational
+        online inference. fit_transform_one is the most effective way to run OnlineLda and to reduce
+        calculation costs.
 
         Args:
-            document (str): Current document to reduce dimensionally.
+            document (str): Current document to be encoded and reduced in size.
 
         Returns
-            list: Distribution of the topics for the input document.
+            list: Components of the input document.
         """
         # Updates number of documents:
         self.counter += 1
 
         # Extracts words of the document as a list of words:
-        word_list = self._extract_word(
-            document=document
-        )
+        word_list = self._extract_word(document=document)
 
         # Update words indexes:
-        self._update_indexes(
-            word_list=word_list
-        )
+        self._update_indexes(word_list=word_list)
 
         # Replace the words by their index:
-        words_ids_list = [self.word_to_index[word] for word in word_list]
+        words_indexes_list = [self.word_to_index[word] for word in word_list]
 
         # Sample empirical topic assignment:
-        sufficient_statistics, batch_document_topic_distribution = self._get_document_topics_representation(
-            words_ids_list
+        statistics, batch_document_topic_distribution = self._compute_statistics_components(
+            words_indexes_list
         )
 
         # Oline variational inference
-        self._update_documents_topics_representation(
-            sufficient_statistics=sufficient_statistics
-        )
+        self._update_weights(
+            statistics=statistics)
 
         if self.counter % self.vocab_prune_interval == 0:
-            self._prune_word_indexes()
+            self._prune_vocabulary()
 
         return batch_document_topic_distribution
 
+    def fit_one(self, document):
+        """
+        Updates running latent Dirichlet allocation. Splits the words of the document into a list.
+        Updates the word indexes. Runs the online variational inference.
+
+        Args:
+            document (str): Current document to update the model.
+
+        Returns
+            self
+        """
+        # Updates number of documents:
+        self.counter += 1
+
+        # Extracts words of the document as a list of words:
+        word_list = self._extract_word(document=document)
+
+        # Update words indexes:
+        self._update_indexes(word_list=word_list)
+
+        # Replace the words by their index:
+        words_indexes_list = [self.word_to_index[word] for word in word_list]
+
+        # Sample empirical topic assignment:
+        statistics, _ = self._compute_statistics_components(
+            words_indexes_list
+        )
+
+        # Oline variational inference
+        self._update_weights(
+            statistics=statistics)
+
+        if self.counter % self.vocab_prune_interval == 0:
+            self._prune_vocabulary()
+
+        return self
+
+    def transform_one(self, document):
+        """
+        Splits the words of the document into a list. Updates the word indexes.
+        Assign topics to the document.
+
+        Args:
+            document (str): Current document to be encoded and reduced in size.
+
+        Returns
+            list: Components of the input document.
+        """
+        # Extracts words of the document as a list of words:
+        word_list = self._extract_word(document=document)
+
+        # Update words indexes:
+        self._update_indexes(word_list=word_list)
+
+        # Replace the words by their index:
+        words_indexes_list = [self.word_to_index[word] for word in word_list]
+
+        # Sample empirical topic assignment:
+        _, components = self._compute_statistics_components(
+            words_indexes_list
+        )
+
+        return components
+
     @classmethod
     def _extract_word(cls, document):
+        '''
+        Split the words into
+        '''
         return document.split(' ')
 
     def _update_indexes(self, word_list):
@@ -197,14 +261,13 @@ class OnlineLda:
                 self.truncation_size_prime += 1
 
     @classmethod
-    def _get_document_latent_variables(cls, n_components, nu_1, nu_2):
+    def _compute_weights(cls, n_components, nu_1, nu_2):
         """
-        Calculates the weighting of the vocabulary according to the distribution of words in the
-        previous vocabulary. documents. The Psi function is the logarithmic derivative of the gamma
-        function.
+        Calculates the vocabulary weighting according to the word distribution present in the
+        vocabulary. The Psi function is the logarithmic derivative of the gamma function.
 
         Args:
-            n_components (int): Number of topics
+            n_components (int): Number of topics.
             nu_1 (dict): Weights of the words of the vocabulary.
             nu_2 (dict): Weights of the words of the vocabulary.
 
@@ -219,18 +282,13 @@ class OnlineLda:
             psi_nu_1 = special.psi(nu_1[topic])
             psi_nu_2 = special.psi(nu_2[topic])
 
-            psi_nu_1_nu_2 = special.psi(
-                nu_1[topic] + nu_2[topic]
-            )
+            psi_nu_1_nu_2 = special.psi(nu_1[topic] + nu_2[topic])
 
             psi_nu_1_nu_2_minus_psi_nu_2 = np.cumsum(
-                [psi_nu_2 - psi_nu_1_nu_2],
-                axis=1
-            )
+                [psi_nu_2 - psi_nu_1_nu_2], axis=1)
 
             exp_oov_weights[topic] = np.exp(
-                psi_nu_1_nu_2_minus_psi_nu_2[0][-1]
-            )
+                psi_nu_1_nu_2_minus_psi_nu_2[0][-1])
 
             psi_nu_1_nu_2_minus_psi_nu_2 = ndimage.interpolation.shift(
                 input=psi_nu_1_nu_2_minus_psi_nu_2[0],
@@ -244,13 +302,12 @@ class OnlineLda:
 
         return exp_weights, exp_oov_weights
 
-    def _update_documents_topics_representation(self, sufficient_statistics):
+    def _update_weights(self, statistics):
         """
-        Learns documents and word representations. Calculates the variational approximation. Update
-        of latent variables for words.
+        Learns documents and word representations. Calculates the variational approximation.
 
         Args:
-            sufficient_statistics (defaultdict): Weights associated to the words.
+            statistics (defaultdict): Weights associated to the words.
 
         Returns:
             None
@@ -260,7 +317,7 @@ class OnlineLda:
         for k in range(self.n_components):
 
             reverse_cumulated_phi[k] = ndimage.interpolation.shift(
-                input=sufficient_statistics[k],
+                input=statistics[k],
                 shift=-1,
                 cval=0
             )
@@ -280,64 +337,46 @@ class OnlineLda:
                 difference_truncation = self.truncation_size_prime - self.truncation_size
 
                 self.nu_1[k] = np.append(
-                    self.nu_1[k], np.ones(difference_truncation)
-                )
-
+                    self.nu_1[k], np.ones(difference_truncation))
                 self.nu_2[k] = np.append(
-                    self.nu_2[k], np.ones(difference_truncation)
-                )
+                    self.nu_2[k], np.ones(difference_truncation))
 
             # Variational Approximation
-            self.nu_1[k] += (
-                self.epsilon
-                * (self.number_of_documents*np.array(sufficient_statistics[k])
-                   + 1 - self.nu_1[k])
-            )
+            self.nu_1[k] += (self.epsilon * (self.number_of_documents *
+                                             np.array(statistics[k]) + 1 - self.nu_1[k]))
 
-            self.nu_2[k] += (
-                self.epsilon
-                * (self.alpha_beta + self.number_of_documents*np.array(reverse_cumulated_phi[k])
-                   - self.nu_2[k])
-            )
+            self.nu_2[k] += (self.epsilon * (self.alpha_beta + self.number_of_documents *
+                                             np.array(reverse_cumulated_phi[k]) - self.nu_2[k]))
 
         self.truncation_size = self.truncation_size_prime
 
-    def _get_document_topics_representation(self, words_ids_list):
+    def _compute_statistics_components(self, words_indexes_list):
         """
         Extract latent variables from the document and words.
 
         Args:
-            words_ids_list (list): Ids of the words of the input document.
+            words_indexes_list (list): Ids of the words of the input document.
 
         Returns:
             Tuple[dict, dict]: Computed statistics over the words. Document reprensetation across
             topics.
         """
-        sufficient_statistics = defaultdict(
-            lambda: np.zeros(self.truncation_size_prime)
-        )
+        statistics = defaultdict(
+            lambda: np.zeros(self.truncation_size_prime))
 
-        exp_weights, exp_oov_weights = self._get_document_latent_variables(
+        exp_weights, exp_oov_weights = self._compute_weights(
             n_components=self.n_components,
             nu_1=self.nu_1,
             nu_2=self.nu_2,
         )
 
-        size_vocab = len(words_ids_list)
+        size_vocab = len(words_indexes_list)
 
-        phi = np.random.random(
-            (self.n_components, size_vocab)
-        )
+        phi = np.random.random((self.n_components, size_vocab))
 
-        phi = phi / np.sum(
-            phi,
-            axis=0,
-        )
+        phi = phi / np.sum(phi, axis=0)
 
-        phi_sum = np.sum(
-            phi,
-            axis=1,
-        )
+        phi_sum = np.sum(phi, axis=1)
 
         for sample_index in range(self.number_of_samples):
 
@@ -349,11 +388,11 @@ class OnlineLda:
 
                 for k in range(self.n_components):
 
-                    if words_ids_list[word_index] >= self.truncation_size:
+                    if words_indexes_list[word_index] >= self.truncation_size:
 
                         temp_phi[k] *= exp_oov_weights[k]
                     else:
-                        temp_phi[k] *= exp_weights[k][words_ids_list[word_index]]
+                        temp_phi[k] *= exp_weights[k][words_indexes_list[word_index]]
 
                 # Normalize document topic distribution before applying multinomial distribution:
                 temp_phi /= temp_phi.sum()
@@ -369,23 +408,21 @@ class OnlineLda:
 
                     for k in range(self.n_components):
 
-                        index = words_ids_list[word_index]
+                        index = words_indexes_list[word_index]
 
-                        sufficient_statistics[k][index] += temp_phi[k]
+                        statistics[k][index] += temp_phi[k]
 
         document_topic_distribution = self.alpha_theta + phi_sum
 
         for k in range(self.n_components):
 
-            sufficient_statistics[k] /= (self.number_of_samples -
-                                         self.burn_in_sweeps)
+            statistics[k] /= (self.number_of_samples - self.burn_in_sweeps)
 
-        return sufficient_statistics, document_topic_distribution
+        return statistics, document_topic_distribution
 
-    def _prune_word_indexes(self):
+    def _prune_vocabulary(self):
         """
-        Prunes word indexes and latent word variables when the vocabulary size is larger than
-        the maximum allowed size of the vocabulary.
+        Reduces the size of the index exceeds the maximum size.
 
         Args:
             None
