@@ -10,6 +10,7 @@ API
    compose
    datasets
    dummy
+   decomposition
    ensemble
    feature_extraction
    feature_selection
