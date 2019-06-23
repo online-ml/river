@@ -10,9 +10,6 @@ References:
     batch 1:
     https://github.com/kzhai/PyInfVoc.
 '''
-# Python
-import functools
-
 # Third parties
 import numpy as np
 
