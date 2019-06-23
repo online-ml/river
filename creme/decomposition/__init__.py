@@ -1,10 +1,9 @@
 """
-Module for running decomposition methods
+Online matrix decomposition algorithms.
 """
-
-from .online_lda import OnlineLda
+from .lda import LDA
 
 
 __all__ = [
-    'OnlineLda',
+    'LDA',
 ]

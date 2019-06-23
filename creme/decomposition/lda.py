@@ -1,53 +1,50 @@
-# Python
 from collections import defaultdict
 
-# Third-parties:
 import numpy as np
-
 from scipy import special
 from scipy import ndimage
 
-__all__ = ['OnlineLda']
+from .. import base
+from .. import utils
 
 
-class OnlineLda:
+__all__ = ['LDA']
+
+
+class LDA(base.Transformer, utils.VectorizerMixin):
     """Online Latent Dirichlet Allocation with Infinite Vocabulary.
 
     Latent Dirichlet allocation (LDA) is a probabilistic approach for exploring topics in document
-    collections.
+    collections. The key advantage of this variant is that it assumes an infinite vocabulary,
+    meaning that the set of tokens does not have to known in advance, as opposed to the
+    `implementation from sklearn <https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html>`.
+    The results produced by this implementation are identical to those from `the original
+    implementation <https://github.com/kzhai/PyInfVoc>`_ proposed by the method's authors.
 
-    Args:
+    Parameters:
         n_components (int): Number of topics of the latent Drichlet allocation.
         number_of_documents (int): Estimated number of documents.
-        alpha_theta (float): Hyper-parameter for Dirichlet distribution of topics,
-            1.0/n_components in the paper.
-        alpha_beta (float): Hyper-parameter for Dirichlet process of distribution over words 1e3
-            in the paper.
-        tau (float): The learning inertia tau prevents premature convergence.
-        kappa (float): The learning rate kappa controls how quickly new parameters estimates replace
-            the old ones. kappa ∈ (0.5, 1] is required for convergence.
-        vocab_prune_interval (int): Interval to refresh the words topics distribution.
+        on (str): The name of the feature that contains the text to vectorize. If ``None``, then
+            the input is treated as a document instead of a set of features.
+        strip_accents (bool): Whether or not to strip accent characters.
+        lowercase (bool): Whether or not to convert all characters to lowercase.
+        preprocessor (callable): The function used to preprocess the text. A default one is used
+            if it is not provided by the user.
+        tokenizer (callable): The function used to convert preprocessed text into a `dict` of
+            tokens. A default one is used if it is not provided by the user.
+        alpha_theta (float): Hyper-parameter of the Dirichlet distribution of topics.
+        alpha_beta (float): Hyper-parameter of the Dirichlet process of distribution over words.
+        tau (float): Learning inertia to prevent premature convergence.
+        kappa (float): The learning rate kappa controls how quickly new parameters estimates
+            replace the old ones. kappa ∈ (0.5, 1] is required for convergence.
+        vocab_prune_interval (int): Interval at which to refresh the words topics distribution.
         number_of_samples (int): Number of iteration to computes documents topics distribution.
         burn_in_sweeps (int): Number of iteration necessaries while analyzing a document
-             before updating document topics distribution.
-        maximum_size_vocabulary (int): Maximum size of the vocabulary stored.
+            before updating document topics distribution.
+        maximum_size_vocabulary (int): Maximum size of the stored vocabulary.
 
     Attributes:
-        n_components (int): Number of topics of the latent Drichlet allocation.
-        number_of_documents (int): Estimated number of documents.
-        alpha_theta (float): Hyper-parameter for Dirichlet distribution of topics,
-            1.0/n_components in the paper.
-        alpha_beta (float): Hyper-parameter for Dirichlet process of distribution over words 1e3
-            in the paper.
-        tau (float): The learning inertia tau prevents premature convergence.
-        kappa (float): The learning rate kappa controls how quickly new parameters estimates replace
-            the old ones. kappa ∈ (0.5, 1] is required for convergence.
-        vocab_prune_interval (int): Interval to refresh the words topics distribution.
-        number_of_samples (int): Number of iteration to computes documents topics distribution.
-        burn_in_sweeps (int): Number of iteration necessaries while analyzing a document
-             before updating document topics distribution.
-        maximum_size_vocabulary (int): Maximum size of the vocabulary stored.
-        counter (int): Number of documents that updated the latent Dirichlet allocation.
+        counter (int): The current number of observed documents.
         truncation_size_prime (int): Number of distincts words stored in the vocabulary. Updated
             before processing a document.
         truncation_size (int) : Number of distincts words stored in the vocabulary. Updated after
@@ -57,55 +54,47 @@ class OnlineLda:
         nu_1 (dict): Weights of the words. Component of the variational inference.
         nu_2 (dict): Weights of the words. Component of the variational inference.
 
+    Example:
 
-        Example:
-                ::
-                    >>> from creme import decomposition
-                    >>> import numpy as np
+            ::
 
-                    >>> np.random.seed(42)
+                >>> from creme import decomposition
+                >>> import numpy as np
 
-                    >>> X = [
-                    ...    'weather cold',
-                    ...    'weather hot dry',
-                    ...    'weather cold rainny',
-                    ...    'weather hot',
-                    ...    'weather cold humid',
-                    ... ]
+                >>> np.random.seed(42)
 
-                    >>> online_lda = decomposition.OnlineLda(n_components=2, number_of_documents=60)
-                    >>> for x in X:
-                    ...     print(online_lda.fit_transform_one(x))
-                    [0.5 2.5]
-                    [3.5 0.5]
-                    [0.5 3.5]
-                    [1.5 1.5]
-                    [2.5 1.5]
+                >>> X = [
+                ...    'weather cold',
+                ...    'weather hot dry',
+                ...    'weather cold rainy',
+                ...    'weather hot',
+                ...    'weather cold humid',
+                ... ]
+
+                >>> online_lda = decomposition.LDA(n_components=2, number_of_documents=60)
+                >>> for x in X:
+                ...     print(online_lda.fit_transform_one(x))
+                {0: 0.5, 1: 2.5}
+                {0: 3.5, 1: 0.5}
+                {0: 0.5, 1: 3.5}
+                {0: 1.5, 1: 1.5}
+                {0: 2.5, 1: 1.5}
 
     References:
+        1. `Jordan Boyd-Graber, Ke Zhai, Online Latent Dirichlet Allocation with Infinite Vocabulary <http://proceedings.mlr.press/v28/zhai13.pdf>`_
+        2. `PyInfVoc <https://github.com/kzhai/PyInfVoc>`_
 
-        1. Jordan Boyd-Graber, Ke Zhai, Online Latent Dirichlet Allocation with Infinite Vocabulary.
-        http://proceedings.mlr.press/v28/zhai13.pdf
-
-        2. Creme's Online LDA reproduces exactly the same results of the original one with a size of
-        batch 1:
-        https://github.com/kzhai/PyInfVoc.
     """
 
-    def __init__(
-        self,
-        n_components,
-        number_of_documents,
-        alpha_theta=0.5,
-        alpha_beta=100.,
-        tau=64.,
-        kappa=0.75,
-        vocab_prune_interval=10,
-        number_of_samples=10,
-        ranking_smooth_factor=1e-12,
-        burn_in_sweeps=5,
-        maximum_size_vocabulary=4000,
-    ):
+    def __init__(self, n_components, number_of_documents, on=None, strip_accents=True,
+                 lowercase=True, preprocessor=None, tokenizer=None, normalize=True,
+                 alpha_theta=0.5, alpha_beta=100., tau=64., kappa=0.75, vocab_prune_interval=10,
+                 number_of_samples=10, ranking_smooth_factor=1e-12, burn_in_sweeps=5,
+                 maximum_size_vocabulary=4000):
+
+        # Initialize the VectorizerMixin part
+        super().__init__(on, strip_accents, lowercase, preprocessor, tokenizer)
+
         self.n_components = n_components
         self.number_of_documents = number_of_documents
         self.alpha_theta = alpha_theta
@@ -132,24 +121,22 @@ class OnlineLda:
             self.nu_1[topic] = np.ones(1)
             self.nu_2[topic] = np.array([self.alpha_beta])
 
-    def fit_transform_one(self, document):
-        """
-        Updates of the Dirichlet latent allocation. Splits the words in the document into a list.
-        Updates word indexes. Break down the document into components. Performs the variational
-        online inference. fit_transform_one is the most effective way to run OnlineLda and to reduce
-        calculation costs.
+    def fit_transform_one(self, x):
+        """Equivalent to ``lda.fit_one(x).transform_one(x)``, but faster.
 
-        Args:
-            document (str): Current document to be encoded and reduced in size.
+        Parameters:
+            x (`dict` or `str`): Input features containing a text document, or text document.
 
         Returns
-            list: Components of the input document.
+            dict: Components of the input document.
+
         """
+
         # Updates number of documents:
         self.counter += 1
 
         # Extracts words of the document as a list of words:
-        word_list = self._extract_word(document=document)
+        word_list = self.tokenize(self.preprocess(self._get_text(x)))
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)
@@ -162,31 +149,32 @@ class OnlineLda:
             words_indexes_list
         )
 
-        # Oline variational inference
-        self._update_weights(
-            statistics=statistics)
+        # Online variational inference
+        self._update_weights(statistics=statistics)
 
         if self.counter % self.vocab_prune_interval == 0:
             self._prune_vocabulary()
 
-        return batch_document_topic_distribution
+        return dict(enumerate(batch_document_topic_distribution))
 
-    def fit_one(self, document):
-        """
-        Updates running latent Dirichlet allocation. Splits the words of the document into a list.
-        Updates the word indexes. Runs the online variational inference.
+    def fit_one(self, x):
+        """Updates the LDA.
+
+        Tokenizes the document, then updates the word indexes, and then updates the online
+        variational inference.
 
         Args:
-            document (str): Current document to update the model.
+            x (`dict` or `str`): Input features containing a text document, or text document.
 
         Returns
-            self
+            dict: Components of the input document.
+
         """
         # Updates number of documents:
         self.counter += 1
 
         # Extracts words of the document as a list of words:
-        word_list = self._extract_word(document=document)
+        word_list = self.tokenize(self.preprocess(self._get_text(x)))
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)
@@ -195,32 +183,31 @@ class OnlineLda:
         words_indexes_list = [self.word_to_index[word] for word in word_list]
 
         # Sample empirical topic assignment:
-        statistics, _ = self._compute_statistics_components(
-            words_indexes_list
-        )
+        statistics, _ = self._compute_statistics_components(words_indexes_list)
 
         # Oline variational inference
-        self._update_weights(
-            statistics=statistics)
+        self._update_weights(statistics=statistics)
 
         if self.counter % self.vocab_prune_interval == 0:
             self._prune_vocabulary()
 
         return self
 
-    def transform_one(self, document):
-        """
-        Splits the words of the document into a list. Updates the word indexes.
-        Assign topics to the document.
+    def transform_one(self, x):
+        """Returns document topics.
+
+        Tokenizes the document, then updates the word indexes, and then assigns topics to the
+        document.
 
         Args:
-            document (str): Current document to be encoded and reduced in size.
+            x (`dict` or `str`): Input features containing a text document, or text document.
 
         Returns
-            list: Components of the input document.
+            dict: Components of the input document.
+
         """
         # Extracts words of the document as a list of words:
-        word_list = self._extract_word(document=document)
+        word_list = self.tokenize(self.preprocess(self._get_text(x)))
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)
@@ -229,23 +216,9 @@ class OnlineLda:
         words_indexes_list = [self.word_to_index[word] for word in word_list]
 
         # Sample empirical topic assignment:
-        _, components = self._compute_statistics_components(
-            words_indexes_list
-        )
+        _, components = self._compute_statistics_components(words_indexes_list)
 
-        return components
-
-    @classmethod
-    def _extract_word(cls, document):
-        '''
-        Split the sentence into a list of words.
-
-        Args:
-            document (str): Input document.
-        Returns:
-            list: Words of the input document.
-        '''
-        return document.split(' ')
+        return dict(enumerate(components))
 
     def _update_indexes(self, word_list):
         """
@@ -259,7 +232,7 @@ class OnlineLda:
             None
         """
         for word in word_list:
-            if word not in self.word_to_index.keys():
+            if word not in self.word_to_index:
                 new_index = len(self.word_to_index) + 1
                 self.word_to_index[word] = new_index
                 self.index_to_word[new_index] = word
@@ -289,11 +262,9 @@ class OnlineLda:
 
             psi_nu_1_nu_2 = special.psi(nu_1[topic] + nu_2[topic])
 
-            psi_nu_1_nu_2_minus_psi_nu_2 = np.cumsum(
-                [psi_nu_2 - psi_nu_1_nu_2], axis=1)
+            psi_nu_1_nu_2_minus_psi_nu_2 = np.cumsum([psi_nu_2 - psi_nu_1_nu_2], axis=1)
 
-            exp_oov_weights[topic] = np.exp(
-                psi_nu_1_nu_2_minus_psi_nu_2[0][-1])
+            exp_oov_weights[topic] = np.exp(psi_nu_1_nu_2_minus_psi_nu_2[0][-1])
 
             psi_nu_1_nu_2_minus_psi_nu_2 = ndimage.interpolation.shift(
                 input=psi_nu_1_nu_2_minus_psi_nu_2[0],
@@ -301,9 +272,7 @@ class OnlineLda:
                 cval=0
             )
 
-            exp_weights[topic] = np.exp(
-                psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2
-            )
+            exp_weights[topic] = np.exp(psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2)
 
         return exp_weights, exp_oov_weights
 
@@ -341,10 +310,8 @@ class OnlineLda:
 
                 difference_truncation = self.truncation_size_prime - self.truncation_size
 
-                self.nu_1[k] = np.append(
-                    self.nu_1[k], np.ones(difference_truncation))
-                self.nu_2[k] = np.append(
-                    self.nu_2[k], np.ones(difference_truncation))
+                self.nu_1[k] = np.append(self.nu_1[k], np.ones(difference_truncation))
+                self.nu_2[k] = np.append(self.nu_2[k], np.ones(difference_truncation))
 
             # Variational Approximation
             self.nu_1[k] += (self.epsilon * (self.number_of_documents *
@@ -366,8 +333,7 @@ class OnlineLda:
             Tuple[dict, dict]: Computed statistics over the words. Document reprensetation across
             topics.
         """
-        statistics = defaultdict(
-            lambda: np.zeros(self.truncation_size_prime))
+        statistics = defaultdict(lambda: np.zeros(self.truncation_size_prime))
 
         exp_weights, exp_oov_weights = self._compute_weights(
             n_components=self.n_components,

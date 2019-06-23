@@ -37,7 +37,7 @@ jobs:
       - sudo apt-get install graphviz pandoc
       - python setup.py install
       - pip install -e ".[dev]"
-      - pytest --nbval-lax=docs/tutorials/*.ipynb
+      - pytest --nbval-lax docs/notebooks/*.ipynb
     script: cd docs && make html && cd ..
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
