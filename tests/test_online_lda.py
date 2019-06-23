@@ -222,7 +222,6 @@ def test_statistics_five_components():
                 a1=statistics[component],
                 a2=REFERENCE_STATISTICS_FIVE_COMPONENTS[index][component],
             )
-    print(statistics)
 
 
 def test_five_components():
