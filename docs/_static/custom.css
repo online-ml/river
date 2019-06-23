@@ -45,3 +45,7 @@ th {
 .wy-table-odd td {
      background-color: #fff;
 }
+
+.toctree-l1 + .toctree-l1 {
+  margin-top: 12px;
+}

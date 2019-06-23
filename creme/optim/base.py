@@ -1,4 +1,5 @@
 import abc
+import numbers
 import typing
 
 from . import lr_schedule
@@ -7,7 +8,7 @@ from . import lr_schedule
 class Optimizer(abc.ABC):
 
     def __init__(self, lr: typing.Union[lr_schedule.LRScheduler, float]):
-        self.lr = lr_schedule.ConstantLR(lr) if isinstance(lr, float) else lr
+        self.lr = lr_schedule.ConstantLR(lr) if isinstance(lr, numbers.Number) else lr
         self.n_iterations = 0
 
     @property

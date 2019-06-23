@@ -2,9 +2,10 @@ import collections
 
 from .. import base
 from .. import stats
+from .. import utils
 
 
-__all__ = ['MinMaxScaler', 'StandardScaler']
+__all__ = ['MinMaxScaler', 'Normalizer', 'StandardScaler']
 
 
 class StandardScaler(base.Transformer):
@@ -15,7 +16,7 @@ class StandardScaler(base.Transformer):
     performance.
 
     Attributes:
-        variances (dict): Mapping between features and instances of ``stats.Variance``.
+        variances (dict): Mapping between features and instances of `stats.Var`.
         eps (float): Used for avoiding divisions by zero.
 
     Example:
@@ -47,7 +48,6 @@ class StandardScaler(base.Transformer):
               {'x': 0.8426620963810948}
               {'x': -0.8843412114527541}
               {'x': -0.9118818053170898}
-
 
               >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
               >>> preprocessing.StandardScaler().fit_transform(X)
@@ -167,3 +167,40 @@ class MinMaxScaler(base.Transformer):
             i: (xi - self.min[i].get()) / (self.max[i].get() - self.min[i].get() + self.eps)
             for i, xi in x.items()
         }
+
+
+class Normalizer(base.Transformer):
+    """Scales a set of features so that it has unit norm.
+
+    This is particularly useful when used after a `feature_extraction.TFIDFVectorizer`.
+
+    Parameters:
+        order (int): Order of the norm (e.g. 2 corresponds to the $L^2$ norm).
+
+    Example:
+
+        ::
+
+            >>> from creme import preprocessing
+            >>> from creme import stream
+
+            >>> scaler = preprocessing.Normalizer(order=2)
+
+            >>> X = [[4, 1, 2, 2],
+            ...      [1, 3, 9, 3],
+            ...      [5, 7, 5, 1]]
+
+            >>> for x, _ in stream.iter_numpy(X):
+            ...     print(scaler.transform_one(x))
+            {0: 0.8, 1: 0.2, 2: 0.4, 3: 0.4}
+            {0: 0.1, 1: 0.3, 2: 0.9, 3: 0.3}
+            {0: 0.5, 1: 0.7, 2: 0.5, 3: 0.1}
+
+    """
+
+    def __init__(self, order=2):
+        self.order = order
+
+    def transform_one(self, x):
+        norm = utils.norm(x, order=self.order)
+        return {i: xi / norm for i, xi in x.items()}

@@ -66,7 +66,6 @@ class KMeans(base.Clusterer):
             array([0, 1], dtype=int32)
 
     References:
-
         1. `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
 
     """
@@ -87,14 +86,6 @@ class KMeans(base.Clusterer):
     def random_normal(self):
         """Returns a random value sampled from a normal distribution."""
         return self.random_state.normal(self.mu, self.sigma)
-
-    @property
-    def cluster_centers_(self):
-        """Returns the cluster centers in the same format as scikit-learn."""
-        return np.array([
-            list(coords.values())
-            for coords in self.centers.values()
-        ])
 
     def fit_predict_one(self, x, y=None):
         """Equivalent to ``k_means.fit_one(x).predict_one(x)``, but faster."""

@@ -47,11 +47,11 @@ class SDFT(window.Window):
     def update(self, x):
 
         # Simply append the new value if the window isn't full yet
-        if len(self.window) < self.size - 1:
+        if len(self.window) < self.window.size - 1:
             self.window.append(x)
 
         # Compute an initial FFT the first time the window is full
-        elif len(self.window) == self.size - 1:
+        elif len(self.window) == self.window.size - 1:
             self.window.append(x)
             self.extend(np.fft.fft(self.window))
 

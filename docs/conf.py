@@ -60,7 +60,7 @@ extensions = [
     'nbsphinx'
 ]
 
-#nbsphinx_execute = 'never'
+nbsphinx_execute = 'never'
 nbsphinx_timeout = -1
 
 # The reST default role (used for this markup: `text`) to use for all

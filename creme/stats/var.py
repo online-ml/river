@@ -40,7 +40,7 @@ class Var(base.Univariate):
     def __init__(self, ddof=1):
         self.ddof = ddof
         self.mean = mean.Mean()
-        self.sos = 0
+        self.sos = 0.
 
     @property
     def name(self):
@@ -51,11 +51,15 @@ class Var(base.Univariate):
         return self.mean.n
 
     def update(self, x):
-        self.sos += (x - self.mean.get()) * (x - self.mean.update(x).get())
+        mean = self.mean.get()
+        self.mean.update(x)
+        self.sos += (x - mean) * (x - self.mean.get())
         return self
 
     def get(self):
-        return self.sos / max(1, self.mean.n - self.ddof)
+        if self.sos:
+            return self.sos / (self.n - self.ddof)
+        return 0.
 
 
 class RollingVar(base.Univariate):
@@ -105,6 +109,10 @@ class RollingVar(base.Univariate):
         self.rolling_mean = mean.RollingMean(window_size=window_size)
 
     @property
+    def window_size(self):
+        return self.rolling_mean.window_size
+
+    @property
     def name(self):
         return f'rolling_{self.rolling_mean.size}_variance'
 
@@ -124,5 +132,8 @@ class RollingVar(base.Univariate):
         return 1
 
     def get(self):
-        variance = (self.sos / len(self.rolling_mean)) - self.rolling_mean.get() ** 2
-        return self.correction_factor * variance
+        try:
+            variance = (self.sos / len(self.rolling_mean)) - self.rolling_mean.get() ** 2
+            return self.correction_factor * variance
+        except ZeroDivisionError:
+            return 0.

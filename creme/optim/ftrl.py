@@ -25,7 +25,7 @@ class FTRLProximal(base.Optimizer):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_breast_cancer,
+            ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
@@ -34,13 +34,12 @@ class FTRLProximal(base.Optimizer):
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', linear_model.LogisticRegression(optimiser))
             ... ])
-            >>> metric = metrics.F1Score()
+            >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1Score: 0.964639
+            F1: 0.964639
 
     References:
-
         1. `Ad Click Prediction: a View from the Trenches - Research - Google <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
         2. `tf.train.FtrlOptimizer <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
 

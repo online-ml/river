@@ -29,10 +29,6 @@ class SMAPE(stats.Mean, base.RegressionMetric):
 
     """
 
-    @property
-    def bigger_is_better(self):
-        return False
-
     def update(self, y_true, y_pred):
         return super().update(abs(y_true - y_pred) / (abs(y_true) + abs(y_pred)))
 
@@ -42,6 +38,9 @@ class SMAPE(stats.Mean, base.RegressionMetric):
 
 class RollingSMAPE(stats.RollingMean, base.RegressionMetric):
     """Rolling symmetric mean absolute percentage error.
+
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
 
     Example:
 
@@ -60,10 +59,6 @@ class RollingSMAPE(stats.RollingMean, base.RegressionMetric):
             RollingSMAPE: 8.187135
 
     """
-
-    @property
-    def bigger_is_better(self):
-        return False
 
     def update(self, y_true, y_pred):
         return super().update(abs(y_true - y_pred) / (abs(y_true) + abs(y_pred)))

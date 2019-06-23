@@ -75,7 +75,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
 
     def __str__(self):
         """Returns a human friendly representation of the pipeline."""
-        return f'{{{", ".join(self.keys())}}}'
+        return f' + '.join(map(str, self.keys()))
 
     def __repr__(self):
         return str(self)
@@ -85,7 +85,8 @@ class TransformerUnion(collections.UserDict, base.Transformer):
 
         # Infer a name if none is given
         if not isinstance(other, (list, tuple)):
-            name, transformer = (str(other), other)
+            other = (str(other), other)
+        name, transformer = other
 
         # If a function is given then wrap it in a FuncTransformer
         if isinstance(transformer, types.FunctionType):

@@ -76,6 +76,10 @@ class RollingSum(base.Univariate, utils.Window):
         self.sum = 0
 
     @property
+    def window_size(self):
+        return self.size
+
+    @property
     def name(self):
         return f'rolling_{self.size}_sum'
 

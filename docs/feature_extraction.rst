@@ -1,15 +1,12 @@
 Feature extraction
 ------------------
 
-.. automodule:: creme.feature_extraction
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.feature_extraction
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    Agg
    CountVectorizer

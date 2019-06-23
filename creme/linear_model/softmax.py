@@ -39,7 +39,7 @@ class SoftmaxRegression(base.MultiClassifier):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_iris,
+            ...     dataset=datasets.load_iris(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
@@ -48,10 +48,10 @@ class SoftmaxRegression(base.MultiClassifier):
             >>> model |= preprocessing.StandardScaler()
             >>> model |= linear_model.SoftmaxRegression()
 
-            >>> metric = metrics.MacroF1Score()
+            >>> metric = metrics.MacroF1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MacroF1Score: 0.809381
+            MacroF1: 0.809381
 
     References:
 
