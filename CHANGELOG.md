@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+## [0.3.0](https://pypi.org/project/creme/0.3.0/) - 2019-06-23
+
 ### Added
 
 - `ClassifierChain` and `RegressorChain` to `multioutput`
@@ -29,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Multinomial` to `proba`
 - `HedgeRegressor` and `StackingBinaryClassifier` to `ensemble`
 - `QuantileLoss` and `MiniBatcher` to `optim`
+- `LDA` to `decomposition`
 
 ### Modified
 
