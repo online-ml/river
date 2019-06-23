@@ -238,7 +238,12 @@ class OnlineLda:
     @classmethod
     def _extract_word(cls, document):
         '''
-        Split the words into
+        Split the sentence into a list of words.
+
+        Args:
+            document (str): Input document.
+        Returns:
+            list: Words of the input document.
         '''
         return document.split(' ')
 
