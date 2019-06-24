@@ -285,3 +285,12 @@ def test_rolling_multi_f1():
             multi_fbeta /= (1 + 1 + 2)
 
             assert math.isclose(fbeta.get(), multi_fbeta)
+
+
+def test_compose():
+
+    with pytest.raises(ValueError):
+        metrics.MSE() + metrics.LogLoss()
+
+    with pytest.raises(ValueError):
+        metrics.MSE() + metrics.MAE() + metrics.LogLoss()

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Added
+
+- Metrics can now be composed using the `+` operator, which is useful for evaluating multiple metrics
+
 ## [0.3.0](https://pypi.org/project/creme/0.3.0/) - 2019-06-23
 
 ### Added
