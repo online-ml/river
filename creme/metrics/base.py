@@ -138,7 +138,8 @@ class Metrics(Metric, collections.UserList):
     def works_with(self, model):
         return all(m.works_with(model) for m in self)
 
-    def bigger_is_better(self, model):
+    @property
+    def bigger_is_better(self):
         raise NotImplementedError
 
     @property
