@@ -290,7 +290,7 @@ def test_rolling_multi_f1():
 def test_compose():
 
     with pytest.raises(ValueError):
-        metrics.MSE() + metrics.LogLoss()
+        _ = metrics.MSE() + metrics.LogLoss()
 
     with pytest.raises(ValueError):
-        metrics.MSE() + metrics.MAE() + metrics.LogLoss()
+        _ = metrics.MSE() + metrics.MAE() + metrics.LogLoss()
