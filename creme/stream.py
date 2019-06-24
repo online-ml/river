@@ -76,7 +76,10 @@ def iter_sklearn_dataset(dataset, **kwargs):
     """
     kwargs['X'] = dataset.data
     kwargs['y'] = dataset.target
-    kwargs['feature_names'] = dataset.feature_names
+    try:
+        kwargs['feature_names'] = dataset.feature_names
+    except AttributeError:
+        pass
 
     for x, yi in iter_numpy(**kwargs):
         yield x, yi
