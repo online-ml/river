@@ -1,4 +1,5 @@
 import abc
+import collections
 import typing
 
 from .. import base
@@ -41,6 +42,12 @@ class ClassificationMetric(Metric):
     def requires_labels(self) -> bool:
         """Helps to indicate if labels are required instead of probabilities."""
 
+    def __add__(self, other) -> 'Metrics':
+        if not isinstance(other, ClassificationMetric):
+            raise ValueError(f'{self.__class__.__name__} and {other.__class__.__name__} metrics '
+                             'are not compatible')
+        return Metrics([self, other])
+
 
 class BinaryMetric(ClassificationMetric):
 
@@ -76,6 +83,12 @@ class RegressionMetric(Metric):
     def works_with(self, model) -> bool:
         return isinstance(model, base.Regressor)
 
+    def __add__(self, other) -> 'Metrics':
+        if not isinstance(other, RegressionMetric):
+            raise ValueError(f'{self.__class__.__name__} and {other.__class__.__name__} metrics '
+                             'are not compatible')
+        return Metrics([self, other])
+
 
 class MultiOutputClassificationMetric(ClassificationMetric):
 
@@ -94,3 +107,51 @@ class MultiOutputRegressionMetric(RegressionMetric):
 
     def works_with(self, model) -> bool:
         return isinstance(model, base.MultiOutputRegressor)
+
+
+class Metrics(Metric, collections.UserList):
+    """A container class for handling multiple metrics at once."""
+
+    def __init__(self, metrics, str_sep=', '):
+        super().__init__(metrics)
+        self.str_sep = str_sep
+
+    def update(self, y_true, y_pred):
+
+        # If the metrics are classification metrics, then we have to handle the case where some
+        # of the metrics require labels, whilst others need to be fed probabilities
+        if hasattr(self, 'requires_labels') and not self.requires_labels:
+            for m in self:
+                if m.requires_labels:
+                    m.update(y_true, max(y_pred, key=y_pred.get))
+                else:
+                    m.update(y_true, y_pred)
+            return self
+
+        for m in self:
+            m.update(y_true, y_pred)
+        return self
+
+    def get(self):
+        return [m.get() for m in self]
+
+    def works_with(self, model):
+        return all(m.works_with(model) for m in self)
+
+    def bigger_is_better(self, model):
+        raise NotImplementedError
+
+    @property
+    def requires_labels(self):
+        return all(m.requires_labels for m in self)
+
+    def __str__(self):
+        return self.str_sep.join((str(m) for m in self))
+
+    def __add__(self, other):
+        try:
+            other + self[0]  # Will raise a ValueError if incompatible
+        except IndexError:
+            pass
+        self.append(other)
+        return self
