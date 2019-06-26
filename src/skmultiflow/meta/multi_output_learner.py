@@ -87,9 +87,11 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
         y: numpy.ndarray of shape (n_samples, n_targets)
             An array-like with the class labels of all samples in X.
 
-        classes: not used (default=None)
+        classes:  numpy.ndarray, optional (default=None)
+            Array with all possible/known class labels. Usage varies depending on the base estimator.
 
-        sample_weight: not used (default=None)
+        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the base estimator.
 
         Returns
         -------
@@ -102,7 +104,10 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
         self.__configure()
 
         for j in range(self.n_labels):
-            self.ensemble[j].fit(X, y[:, j])
+            if 'sample_weight' and 'classes' in signature(self.ensemble[j].fit).parameters:
+                self.ensemble[j].fit(X, y[:, j], classes=classes, sample_weight=sample_weight)
+            else:
+                self.ensemble[j].fit(X, y[:, j])
         return self
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
@@ -135,7 +140,7 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
         """
         if self.n_labels is None:
             # This is the first time that the model is fit
-            self.fit(X, y)
+            self.fit(X=X, y=y, classes=classes, sample_weight=sample_weight)
             return self
 
         N, self.n_labels = y.shape
@@ -144,8 +149,8 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
             self.__configure()
 
         for j in range(self.n_labels):
-            if 'sample_weight' in signature(self.ensemble[j].partial_fit).parameters:
-                self.ensemble[j].partial_fit(X, y[:, j], sample_weight=sample_weight)
+            if 'sample_weight' and 'classes' in signature(self.ensemble[j].partial_fit).parameters:
+                self.ensemble[j].partial_fit(X, y[:, j], classes=classes, sample_weight=sample_weight)
             else:
                 self.ensemble[j].partial_fit(X, y[:, j])
 
