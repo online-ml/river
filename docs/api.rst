@@ -10,6 +10,7 @@ API
    compose
    datasets
    dummy
+   decomposition
    ensemble
    feature_extraction
    feature_selection
@@ -18,6 +19,7 @@ API
    metrics
    model_selection
    multiclass
+   multioutput
    naive_bayes
    optim
    plot

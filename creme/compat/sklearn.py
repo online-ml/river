@@ -130,7 +130,7 @@ class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_boston,
+            ...     dataset=datasets.load_boston(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
@@ -172,7 +172,7 @@ class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
             >>> from sklearn import datasets
 
             >>> X_y = stream.iter_sklearn_dataset(
-            ...     load_dataset=datasets.load_breast_cancer,
+            ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
             ...     random_state=42
             ... )
@@ -209,7 +209,7 @@ class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
     def predict_proba_one(self, x):
         try:
             y_pred = self.sklearn_estimator.predict_proba([list(x.values())])[0]
-            return {c: y_pred[i] for i, c in enumerate(self.classes)}
+            return {self.classes[i]: p for i, p in enumerate(y_pred)}
         except exceptions.NotFittedError:
             return {c: 1 / len(self.classes) for c in self.classes}
 

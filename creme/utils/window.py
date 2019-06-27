@@ -2,10 +2,12 @@ import bisect
 import collections
 
 
-class Window(collections.deque):
+class Window:
     """Running window data structure.
 
-    This is just a convenience layer on top of a `collections.deque`.
+    This is just a convenience layer on top of a `collections.deque`. The only reason this exists
+    is that deepcopying a class which inherits from `collections.deque` seems bugs out when the
+    class has a parameter with no default value.
 
     Parameters:
         window_size (int): Size of the rolling window.
@@ -30,17 +32,31 @@ class Window(collections.deque):
     """
 
     def __init__(self, size):
-        super().__init__([], maxlen=size)
-
-    def __repr__(self):
-        return str(list(self))
+        self.values = collections.deque(maxlen=size)
 
     @property
     def size(self):
-        return self.maxlen
+        return self.values.maxlen
+
+    def __repr__(self):
+        return str(list(self.values))
+
+    def __len__(self):
+        return len(self.values)
+
+    def __getitem__(self, idx):
+        return self.values[idx]
+
+    def __setitem__(self, idx, val):
+        self.values[idx] = val
+        return self
+
+    def extend(self, values):
+        self.values.extend(values)
+        return self
 
     def append(self, x):
-        super().append(x)
+        self.values.append(x)
         return self
 
 
@@ -85,7 +101,7 @@ class SortedWindow(collections.UserList):
 
     def append(self, x):
 
-        if len(self) >= self.unsorted_window.maxlen:
+        if len(self) >= self.size:
             self.remove(self.unsorted_window[0])
 
         bisect.insort_left(self, x)

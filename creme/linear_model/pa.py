@@ -57,7 +57,7 @@ class PARegressor(BasePA, base.Regressor):
             ...     mode=2,
             ...     eps=0.1
             ... )
-            >>> metric = metrics.MAE()
+            >>> metric = metrics.MAE() + metrics.MSE()
 
             >>> for xi, yi in stream.iter_numpy(X, y):
             ...     y_pred = model.predict_one(xi)
@@ -65,10 +65,9 @@ class PARegressor(BasePA, base.Regressor):
             ...     metric = metric.update(yi, y_pred)
 
             >>> print(metric)
-            MAE: 10.123199
+            MAE: 10.123199, MSE: 843.816135
 
         References:
-
             1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
 
     """
@@ -134,15 +133,15 @@ class PAClassifier(BasePA, base.BinaryClassifier):
             >>> for xi, yi in stream.iter_numpy(X_train, y_train):
             ...     y_pred = model.fit_one(xi, yi)
 
-            >>> metric = metrics.Accuracy()
+            >>> metric = metrics.Accuracy() + metrics.LogLoss()
+
             >>> for xi, yi in stream.iter_numpy(X_test, y_test):
-            ...     metric = metric.update(yi, model.predict_one(xi))
+            ...     metric = metric.update(yi, model.predict_proba_one(xi))
 
             >>> print(metric)
-            Accuracy: 0.884571
+            Accuracy: 0.884571, LogLoss: 0.327341
 
     References:
-
         1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
 
     """

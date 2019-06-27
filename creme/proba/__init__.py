@@ -1,4 +1,5 @@
 from .gaussian import Gaussian
+from .multinomial import Multinomial
 
 
-__all__ = ['Gaussian']
+__all__ = ['Gaussian', 'Multinomial']

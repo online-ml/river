@@ -8,8 +8,8 @@ from . import base
 class Quantile(base.Univariate):
     """Running quantile.
 
-    Uses the P-square algorithm to calculate the quantile. The code is inspired by
-    LiveStat's implementation [2].
+    Uses the P-square algorithm to calculate the quantile. The code is inspired by LiveStat's
+    implementation [2].
 
     Attributes:
         quantile (float): quantile you want compute the value
@@ -45,8 +45,7 @@ class Quantile(base.Univariate):
             The real value of the 17th quantile is -0.9072
 
     References:
-
-        1. `The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations  <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
+        1. `The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
         2. `Python implementation <https://github.com/cxxr/LiveStats/blob/master/livestats/livestats.py>`_
 
     """
@@ -169,10 +168,13 @@ class Quantile(base.Univariate):
     def get(self):
         if self.heights_sorted:
             return self.heights[2]
-        else:
+
+        if self.heights:
             self.heights.sort()
             length = len(self.heights)
             return self.heights[int(min(max(length - 1, 0), length * self.quantile))]
+
+        return 0
 
 
 class RollingQuantile(base.Univariate, utils.SortedWindow):
@@ -190,14 +192,15 @@ class RollingQuantile(base.Univariate, utils.SortedWindow):
         ::
 
             >>> from creme import stats
-            >>> import numpy as np
 
-            >>> rolling_quantile = stats.RollingQuantile(window_size = 100,
-            ...                                          quantile = 0.5)
+            >>> rolling_quantile = stats.RollingQuantile(
+            ...     window_size=100,
+            ...     quantile=0.5
+            ... )
 
-            >>> for i in range(0,1001):
-            ...     _ = rolling_quantile.update(i)
-            ...     if i%100 == 0:
+            >>> for i in range(0, 1001):
+            ...     rolling_quantile = rolling_quantile.update(i)
+            ...     if i % 100 == 0:
             ...         print(rolling_quantile.get())
             0
             50
@@ -212,7 +215,6 @@ class RollingQuantile(base.Univariate, utils.SortedWindow):
             950
 
     References:
-
         1. `Left sorted <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
 
     """

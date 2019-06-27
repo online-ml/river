@@ -36,6 +36,9 @@ class RMSE(mse.MSE):
 class RollingRMSE(mse.RollingMSE):
     """Rolling root mean squared error.
 
+    Parameters:
+        window_size (int): Size of the window of recent values to consider.
+
     Example:
 
         ::

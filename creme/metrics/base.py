@@ -1,21 +1,18 @@
 import abc
+import collections
 import typing
 
 from .. import base
 
 
 __all__ = [
-    'BinaryClassificationMetric',
-    'MultiClassificationMetric',
+    'BinaryMetric',
+    'MultiClassMetric',
     'RegressionMetric'
 ]
 
 
-Label = typing.Union[bool, str, int]
-Proba = float
-
-
-class BaseMetric(abc.ABC):
+class Metric(abc.ABC):
 
     @abc.abstractmethod
     def get(self) -> float:
@@ -38,39 +35,124 @@ class BaseMetric(abc.ABC):
         return str(self)
 
 
-class ClassificationMetric(BaseMetric):
+class ClassificationMetric(Metric):
 
     @property
     @abc.abstractmethod
-    def requires_labels(self):
+    def requires_labels(self) -> bool:
         """Helps to indicate if labels are required instead of probabilities."""
 
+    def __add__(self, other) -> 'Metrics':
+        if not isinstance(other, ClassificationMetric):
+            raise ValueError(f'{self.__class__.__name__} and {other.__class__.__name__} metrics '
+                             'are not compatible')
+        return Metrics([self, other])
 
-class BinaryClassificationMetric(ClassificationMetric):
+
+class BinaryMetric(ClassificationMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: bool, y_pred: typing.Union[bool, typing.Dict[Label, Proba]]):
+    def update(self, y_true: bool, y_pred: typing.Union[bool, base.Probas]) -> 'BinaryMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
+    def works_with(self, model) -> bool:
         return isinstance(model, base.BinaryClassifier)
 
 
-class MultiClassificationMetric(BinaryClassificationMetric):
+class MultiClassMetric(BinaryMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: Label, y_pred: typing.Union[Label, typing.Dict[Label, Proba]]):
+    def update(self, y_true: base.Label,
+               y_pred: typing.Union[base.Label, base.Probas]) -> 'MultiClassMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
+    def works_with(self, model) -> bool:
         return isinstance(model, (base.BinaryClassifier, base.MultiClassifier))
 
 
-class RegressionMetric(BaseMetric):
+class RegressionMetric(Metric):
 
     @abc.abstractmethod
-    def update(self, y_true: float, y_pred: float):
+    def update(self, y_true: float, y_pred: float) -> 'RegressionMetric':
         """Updates the metric."""
 
-    def works_with(self, model):
+    @property
+    def bigger_is_better(self):
+        return False
+
+    def works_with(self, model) -> bool:
         return isinstance(model, base.Regressor)
+
+    def __add__(self, other) -> 'Metrics':
+        if not isinstance(other, RegressionMetric):
+            raise ValueError(f'{self.__class__.__name__} and {other.__class__.__name__} metrics '
+                             'are not compatible')
+        return Metrics([self, other])
+
+
+class MultiOutputClassificationMetric(ClassificationMetric):
+
+    def update(self, y_true: typing.Dict[str, base.Label],
+               y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]]):
+        """Updates the metric."""
+
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.MultiOutputClassifier)
+
+
+class MultiOutputRegressionMetric(RegressionMetric):
+
+    def update(self, y_true: typing.Dict[str, float], y_pred: typing.Dict[str, float]):
+        """Updates the metric."""
+
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.MultiOutputRegressor)
+
+
+class Metrics(Metric, collections.UserList):
+    """A container class for handling multiple metrics at once."""
+
+    def __init__(self, metrics, str_sep=', '):
+        super().__init__(metrics)
+        self.str_sep = str_sep
+
+    def update(self, y_true, y_pred):
+
+        # If the metrics are classification metrics, then we have to handle the case where some
+        # of the metrics require labels, whilst others need to be fed probabilities
+        if hasattr(self, 'requires_labels') and not self.requires_labels:
+            for m in self:
+                if m.requires_labels:
+                    m.update(y_true, max(y_pred, key=y_pred.get))
+                else:
+                    m.update(y_true, y_pred)
+            return self
+
+        for m in self:
+            m.update(y_true, y_pred)
+        return self
+
+    def get(self):
+        return [m.get() for m in self]
+
+    def works_with(self, model):
+        return all(m.works_with(model) for m in self)
+
+    @property
+    def bigger_is_better(self):
+        raise NotImplementedError
+
+    @property
+    def requires_labels(self):
+        return all(m.requires_labels for m in self)
+
+    def __str__(self):
+        return self.str_sep.join((str(m) for m in self))
+
+    def __add__(self, other):
+        try:
+            other + self[0]  # Will raise a ValueError if incompatible
+        except IndexError:
+            pass
+        self.append(other)
+        return self

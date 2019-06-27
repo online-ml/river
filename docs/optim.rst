@@ -1,10 +1,6 @@
 Optimization
 ------------
 
-.. automodule:: creme.optim
-   :no-members:
-   :no-inherited-members:
-
 .. currentmodule:: creme.optim
 
 Optimizers
@@ -13,12 +9,14 @@ Optimizers
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    AdaBound
    AdaDelta
    AdaGrad
    Adam
    FTRLProximal
+   MiniBatcher
    Momentum
    NesterovMomentum
    Optimizer
@@ -32,6 +30,7 @@ Learning rate schedulers
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    ConstantLR
    InverseScalingLR
@@ -44,6 +43,7 @@ Loss functions
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: class.rst
 
    AbsoluteLoss
    BinaryClassificationLoss
@@ -53,5 +53,6 @@ Loss functions
    HingeLoss
    LogLoss
    MultiClassificationLoss
+   QuantileLoss
    RegressionLoss
    SquaredLoss

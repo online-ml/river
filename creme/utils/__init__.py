@@ -3,11 +3,11 @@ from .histogram import Histogram
 from .math import chain_dot
 from .math import clamp
 from .math import dot
-from .math import entropy
 from .math import norm
 from .math import prod
 from .math import sigmoid
 from .math import softmax
+from .nlp import VectorizerMixin
 from .sdft import SDFT
 from .skyline import Skyline
 from .window import Window
@@ -19,7 +19,6 @@ __all__ = [
     'check_estimator',
     'clamp',
     'dot',
-    'entropy',
     'Histogram',
     'norm',
     'prod',
@@ -28,5 +27,6 @@ __all__ = [
     'Skyline',
     'softmax',
     'SortedWindow',
+    'VectorizerMixin',
     'Window'
 ]
