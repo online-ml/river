@@ -84,10 +84,7 @@ class HedgeBinaryClassifier(BaseHedge, base.BinaryClassifier):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.944369
-
-            >>> model['hedge'].weights
-            [0.999999..., 1.127738...e-07, 3.705275...e-17]
+            F1: 0.955307
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
@@ -150,9 +147,9 @@ class HedgeRegressor(BaseHedge, base.Regressor):
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('hedge', ensemble.HedgeRegressor(
             ...         regressors=[
-            ...             linear_model.LinearRegression(optim.VanillaSGD()),
-            ...             linear_model.LinearRegression(optim.RMSProp()),
-            ...             linear_model.LinearRegression(optim.AdaGrad()),
+            ...             linear_model.LinearRegression(optimizer=optim.VanillaSGD()),
+            ...             linear_model.LinearRegression(optimizer=optim.RMSProp()),
+            ...             linear_model.LinearRegression(optimizer=optim.AdaGrad()),
             ...         ],
             ...         learning_rate=0.9
             ...     ))
@@ -160,7 +157,7 @@ class HedgeRegressor(BaseHedge, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.388058
+            MAE: 3.387649
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_

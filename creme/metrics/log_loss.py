@@ -1,4 +1,5 @@
-from .. import optim
+import math
+
 from .. import stats
 
 from . import base
@@ -46,8 +47,13 @@ class LogLoss(stats.Mean, BaseLogLoss):
     """
 
     def update(self, y_true, y_pred):
-        ll = optim.LogLoss().__call__
-        return super().update(ll(y_true, y_pred[True] if isinstance(y_pred, dict) else y_pred))
+        p_true = y_pred[True] if isinstance(y_pred, dict) else y_pred
+        y_pred = self.clamp_proba(p_true)
+        if y_true:
+            ll = -math.log(p_true)
+        else:
+            ll = -math.log(1 - p_true)
+        return super().update(ll)
 
 
 class RollingLogLoss(stats.RollingMean, BaseLogLoss):
@@ -81,5 +87,10 @@ class RollingLogLoss(stats.RollingMean, BaseLogLoss):
     """
 
     def update(self, y_true, y_pred):
-        ll = optim.LogLoss().__call__
-        return super().update(ll(y_true, y_pred[True] if isinstance(y_pred, dict) else y_pred))
+        p_true = y_pred[True] if isinstance(y_pred, dict) else y_pred
+        y_pred = self.clamp_proba(p_true)
+        if y_true:
+            ll = -math.log(p_true)
+        else:
+            ll = -math.log(1 - p_true)
+        return super().update(ll)

@@ -53,7 +53,7 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
             >>> metric = metrics.MacroF1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MacroF1: 0.809381
+            MacroF1: 0.827448
 
     """
 

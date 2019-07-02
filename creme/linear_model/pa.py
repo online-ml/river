@@ -12,10 +12,12 @@ __all__ = ['PAClassifier', 'PARegressor']
 
 class BasePA:
 
-    def __init__(self, C, mode):
+    def __init__(self, C, mode, fit_intercept):
         self.C = C
         self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[mode]
+        self.fit_intercept = fit_intercept
         self.weights = collections.defaultdict(float)
+        self.intercept = 0.
 
     @classmethod
     def _calc_tau_0(self, x, loss):
@@ -72,8 +74,8 @@ class PARegressor(BasePA, base.Regressor):
 
     """
 
-    def __init__(self, C=0.01, mode=1, eps=0.1):
-        super().__init__(C=C, mode=mode)
+    def __init__(self, C=0.01, mode=1, eps=0.1, fit_intercept=False):
+        super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
         self.loss = optim.EpsilonInsensitiveHingeLoss(eps=eps)
 
     def fit_one(self, x, y):
@@ -84,11 +86,13 @@ class PARegressor(BasePA, base.Regressor):
 
         for i, xi in x.items():
             self.weights[i] += step * xi
+        if self.fit_intercept:
+            self.intercept += step
 
         return self
 
     def predict_one(self, x):
-        return utils.dot(x, self.weights)
+        return utils.dot(x, self.weights) + self.intercept
 
 
 class PAClassifier(BasePA, base.BinaryClassifier):
@@ -139,28 +143,30 @@ class PAClassifier(BasePA, base.BinaryClassifier):
             ...     metric = metric.update(yi, model.predict_proba_one(xi))
 
             >>> print(metric)
-            Accuracy: 0.884571, LogLoss: 0.327341
+            Accuracy: 0.884571, LogLoss: 0.325727
 
     References:
         1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
 
     """
 
-    def __init__(self, C=0.01, mode=1):
-        super().__init__(C=C, mode=mode)
+    def __init__(self, C=0.01, mode=1, fit_intercept=True):
+        super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
         self.loss = optim.HingeLoss()
 
     def fit_one(self, x, y):
 
-        y_pred = utils.dot(x, self.weights)
+        y_pred = utils.dot(x, self.weights) + self.intercept
         tau = self.calc_tau(x, self.loss(y, y_pred))
         step = tau * (y or -1)  # y == False becomes -1
 
         for i, xi in x.items():
             self.weights[i] += step * xi
+        if self.fit_intercept:
+            self.intercept += step
 
         return self
 
     def predict_proba_one(self, x):
-        y_pred = utils.sigmoid(utils.dot(x, self.weights))
+        y_pred = utils.sigmoid(utils.dot(x, self.weights) + self.intercept)
         return {False: 1. - y_pred, True: y_pred}

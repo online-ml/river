@@ -35,7 +35,7 @@ class NesterovMomentum(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.950774
+            F1: 0.948396
 
     """
 

@@ -10,6 +10,7 @@ from .base import Optimizer
 from .ftrl import FTRLProximal
 from .losses.absolute import AbsoluteLoss
 from .losses.base import BinaryClassificationLoss
+from .losses.base import Loss
 from .losses.base import MultiClassificationLoss
 from .losses.base import RegressionLoss
 from .losses.cauchy import CauchyLoss
@@ -44,6 +45,7 @@ __all__ = [
     'HingeLoss',
     'InverseScalingLR',
     'LogLoss',
+    'Loss',
     'MiniBatcher',
     'Momentum',
     'MultiClassificationLoss',

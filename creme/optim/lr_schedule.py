@@ -41,21 +41,20 @@ class InverseScalingLR(LRScheduler):
         self.power = power
 
     def get(self, t):
-        return self.learning_rate / (t + 1) ** self.power
+        return self.learning_rate / pow(t + 1, self.power)
 
 
 class OptimalLR(LRScheduler):
     """Optimal learning schedule as proposed by Léon Bottou.
 
     References:
-
         1. `Stochastic Gradient Descent <https://leon.bottou.org/projects/sgd>`_
 
     """
 
-    def __init__(self, t0=1000, alpha=1e-4):
+    def __init__(self, t0=4e3, alpha=1e-4):
         self.t0 = t0
         self.alpha = alpha
 
     def get(self, t):
-        return 1. / (self.alpha * (t + self.t0))
+        return 1. / (self.alpha * (self.t0 + t))

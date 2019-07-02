@@ -53,7 +53,6 @@ class HingeLoss(base.BinaryClassificationLoss):
         """Returns the gradient with respect to ``y_pred``.
 
         References:
-
             1. `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
 
         """

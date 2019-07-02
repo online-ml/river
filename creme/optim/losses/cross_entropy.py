@@ -37,7 +37,6 @@ class CrossEntropy(base.MultiClassificationLoss):
             {0: 0.44941979, 1: 0.32962558, 2: -0.77904537}
 
     References:
-
         1. `What is Softmax regression and how is it related to Logistic regression? <https://github.com/rasbt/python-machine-learning-book/blob/master/faq/softmax_regression.md>`_
 
     """
