@@ -65,23 +65,20 @@ class BaggingClassifier(BaseBagging, base.Classifier):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimiser = optim.VanillaSGD()
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', linear_model.LogisticRegression(optimiser))
-            ... ])
             >>> model = ensemble.BaggingClassifier(
-            ...     model=model,
+            ...     model=(
+            ...         preprocessing.StandardScaler() |
+            ...         linear_model.LogisticRegression()
+            ...     ),
             ...     n_models=3,
             ...     random_state=42
             ... )
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.970464
+            F1: 0.970547
 
     References:
-
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
 
     """
@@ -149,10 +146,9 @@ class BaggingRegressor(BaseBagging, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.969173
+            MAE: 3.96921
 
     References:
-
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
 
     """

@@ -64,7 +64,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             ...     model = model.fit_one(x, y)
 
             >>> metric
-            Jaccard: 0.458292
+            Jaccard: 0.304314
 
     """
 
@@ -109,7 +109,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 13.744367
+            MAE: 13.744369
 
     """
 

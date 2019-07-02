@@ -3,6 +3,7 @@ import collections
 import typing
 
 from .. import base
+from .. import utils
 
 
 __all__ = [
@@ -41,6 +42,10 @@ class ClassificationMetric(Metric):
     @abc.abstractmethod
     def requires_labels(self) -> bool:
         """Helps to indicate if labels are required instead of probabilities."""
+
+    @staticmethod
+    def clamp_proba(p):
+        return utils.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
 
     def __add__(self, other) -> 'Metrics':
         if not isinstance(other, ClassificationMetric):

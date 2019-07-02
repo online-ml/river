@@ -34,7 +34,7 @@ class StackingBinaryClassifier(base.BinaryClassifier):
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('stack', ensemble.StackingBinaryClassifier(
             ...         classifiers=[
-            ...             linear_model.PAClassifier(mode=0),
+            ...             linear_model.LogisticRegression(),
             ...             linear_model.PAClassifier(mode=1),
             ...             linear_model.PAClassifier(mode=2)
             ...         ],
@@ -44,7 +44,7 @@ class StackingBinaryClassifier(base.BinaryClassifier):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.95212
+            F1: 0.951591
 
     References:
         1. `A Kaggler's Guide to Model Stacking in Practice <http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/>`_

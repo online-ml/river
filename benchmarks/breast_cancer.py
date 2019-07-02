@@ -1,10 +1,12 @@
+import functools
+
 from creme import compat
-from creme import datasets
-from creme import dummy
 from creme import linear_model
 from creme import metrics
 from creme import optim
 from creme import preprocessing
+from creme import stream
+from sklearn import datasets
 from sklearn import linear_model as sk_linear_model
 
 import benchmark
@@ -13,27 +15,41 @@ import benchmark
 def main():
 
     benchmark.benchmark(
-        get_X_y=datasets.fetch_electricity,
-        n=45312,
+        get_X_y=functools.partial(stream.iter_sklearn_dataset, datasets.load_breast_cancer()),
+        n=569,
         get_pp=preprocessing.StandardScaler,
         models=[
-            # ('No-change', 'No-change', dummy.NoChangeClassifier()),
-            ('creme', 'Logistic regression', linear_model.LogisticRegression(
-                optimizer=optim.VanillaSGD(0.05),
+            ('creme', 'Log reg', linear_model.LogisticRegression(
+                optimizer=optim.VanillaSGD(0.01),
                 l2=0,
-                intercept_lr=0.05
+                intercept_lr=0.01
             )),
-            # ('creme', 'PA-I', linear_model.PAClassifier(C=1, mode=1)),
-            # ('creme', 'PA-II', linear_model.PAClassifier(C=1, mode=2)),
-            ('sklearn', 'Logistic regression', compat.CremeClassifierWrapper(
+            ('sklearn', 'SGD', compat.CremeClassifierWrapper(
                 sklearn_estimator=sk_linear_model.SGDClassifier(
                     loss='log',
                     learning_rate='constant',
-                    eta0=0.05,
+                    eta0=0.01,
                     penalty='none'
                 ),
                 classes=[False, True]
             )),
+
+            ('creme', 'PA-I', linear_model.PAClassifier(
+                C=0.01,
+                mode=1,
+                fit_intercept=True
+            )),
+            ('sklearn', 'PA-I', compat.CremeClassifierWrapper(
+                sklearn_estimator=sk_linear_model.PassiveAggressiveClassifier(
+                    C=0.01,
+                    loss='hinge',
+                    fit_intercept=True
+                ),
+                classes=[False, True]
+            )),
+
+            # ('creme', 'PA-I', linear_model.PAClassifier(C=1, mode=1)),
+            # ('creme', 'PA-II', linear_model.PAClassifier(C=1, mode=2)),
             # ('sklearn', 'PA-I', compat.CremeClassifierWrapper(
             #     sklearn_estimator=sk_linear_model.PassiveAggressiveClassifier(
             #         C=1,

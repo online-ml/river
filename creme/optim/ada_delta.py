@@ -35,7 +35,7 @@ class AdaDelta(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.950912
+            F1: 0.94751
 
     References:
 

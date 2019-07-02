@@ -9,16 +9,6 @@ from .. import utils
 __all__ = ['LinearRegression']
 
 
-class bcolors:
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
 class LinearRegression(base.Regressor):
     """Linear regression.
 
@@ -30,11 +20,11 @@ class LinearRegression(base.Regressor):
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
             Defaults to `optim.VanillaSGD`.
-        loss (optim.RegressionLoss): The loss function to minimize. Defaults to
+        loss (optim.RegressionLoss): The loss function to optimize for. Defaults to
             `optim.SquaredLoss`.
+        intercept (stats.Univariate): Statistic used to estimate the intercept. Defaults to
+            `stats.Mean`.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
-        intercept (stats.Univariate): The univariate statistic used to compute the intercept
-            online. Defaults to `stats.Mean`.
 
     Attributes:
         weights (collections.defaultdict)
@@ -58,20 +48,17 @@ class LinearRegression(base.Regressor):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('lin_reg', linear_model.LinearRegression(
-            ...         loss=optim.CauchyLoss(),
-            ...         optimizer=optim.VanillaSGD(optim.InverseScalingLR(0.1))
-            ...     ))
-            ... ])
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.LinearRegression()
+            ... )
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.584663
+            MAE: 3.668134
 
-            >>> model['lin_reg'].intercept.get()
-            22.532806...
+            >>> model['LinearRegression'].intercept
+            Mean: 22.532806
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -79,11 +66,11 @@ class LinearRegression(base.Regressor):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=0., intercept=None):
+    def __init__(self, optimizer=None, loss=None, intercept=None, l2=0.0001):
         self.optimizer = optim.VanillaSGD(0.01) if optimizer is None else optimizer
         self.loss = optim.SquaredLoss() if loss is None else loss
-        self.l2 = l2
         self.intercept = stats.Mean() if intercept is None else intercept
+        self.l2 = l2
         self.weights = collections.defaultdict(float)
 
     def fit_one(self, x, y):
@@ -91,42 +78,25 @@ class LinearRegression(base.Regressor):
         # Some optimizers need to do something before a prediction is made
         self.weights = self.optimizer.update_before_pred(w=self.weights)
 
-        # Make a prediction for the given features
-        y_pred = self.predict_one(x)
+        # Obtain the gradient of the loss with respect to the raw output
+        g_loss = self.loss.gradient(y_true=y, y_pred=self.predict_one(x))
 
-        # Compute the gradient w.r.t. each feature
-        loss_gradient = self.loss.gradient(y_true=y, y_pred=y_pred)
+        # Clip the gradient of the loss to avoid numerical instabilities
+        g_loss = utils.clamp(g_loss, -1e12, 1e12)
+
+        # Calculate the gradient
         gradient = {
-            i: xi * loss_gradient + self.l2 * self.weights.get(i, 0)
+            i: xi * g_loss + 2. * self.l2 * self.weights.get(i, 0)
             for i, xi in x.items()
         }
 
-        # Update the weights by using the gradient
+        # Update the weights
         self.weights = self.optimizer.update_after_pred(g=gradient, w=self.weights)
 
         # Update the intercept
-        if self.intercept:
-            self.intercept.update(y)
+        self.intercept.update(y)
 
         return self
 
     def predict_one(self, x):
-        y = utils.dot(x, self.weights)
-        if self.intercept:
-            y += self.intercept.get()
-        return y
-
-    def debug_one(self, x):
-        """Prints an explanation of how ``x`` is predicted."""
-
-        def format_weight(w):
-            if w > 0:
-                return f'{bcolors.GREEN}{w}'
-            elif w < 0:
-                return f'{bcolors.RED}{w}'
-            return f'{bcolors.YELLOW}{w}'
-
-        print(' +\n'.join(
-            f'{format_weight(self.weights[i])}{bcolors.ENDC} * {x[i]} ({i})'
-            for i in x
-        ))
+        return utils.dot(self.weights, x) + self.intercept.get()

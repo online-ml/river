@@ -36,7 +36,7 @@ class AdaBound(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.963277
+            F1: 0.965326
 
     References:
         1. `Adaptive Gradient Methods with Dynamic Bound of Learning Rate <https://openreview.net/forum?id=Bkg3g2R9FX>`_
