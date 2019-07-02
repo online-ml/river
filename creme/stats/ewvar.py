@@ -1,5 +1,5 @@
 from . import base
-from .ewmean import EWMean
+from . import ewmean
 
 
 class EWVar(base.Univariate):
@@ -22,7 +22,7 @@ class EWVar(base.Univariate):
             >>> from creme import stats
 
             >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
-            >>> ewv = EWVar(alpha=0.5)
+            >>> ewv = stats.EWVar(alpha=0.5)
             >>> for x in X:
             ...     print(ewv.update(x).get())
             0
@@ -44,8 +44,8 @@ class EWVar(base.Univariate):
 
     def __init__(self, alpha=0.5):
         self.alpha = alpha
-        self.mean = EWMean(alpha=alpha)
-        self.sq_mean = EWMean(alpha=alpha)
+        self.mean = ewmean.EWMean(alpha=alpha)
+        self.sq_mean = ewmean.EWMean(alpha=alpha)
 
     @property
     def name(self):

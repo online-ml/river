@@ -32,7 +32,6 @@ class EWMean(base.Univariate):
             9.4296875
 
     References:
-
         1. `Incremental calculation of weighted mean and variance <http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf>`_
         2. `Exponential Moving Average on Streaming Data <https://dev.to/nestedsoftware/exponential-moving-average-on-streaming-data-4hhl>`_
 
@@ -47,7 +46,7 @@ class EWMean(base.Univariate):
         return f'ewm_{self.alpha}'
 
     def update(self, x):
-        self.mean = (1 - self.alpha) * x + self.alpha * self.mean if self.mean else x
+        self.mean = self.alpha * x + (1. - self.alpha) * self.mean if self.mean else x
         return self
 
     def get(self):
