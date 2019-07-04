@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Metrics can now be composed using the `+` operator, which is useful for evaluating multiple metrics
-- `LogisticRegression` now has a `intercept_lr` parameter that allows fitting an intercept term. Performance is now strictly equal to `sklearn`'s `SGDClassifier`.
+- `LogisticRegression` and `LinearRegression` now have a `intercept_lr` parameter
 
 ## [0.3.0](https://pypi.org/project/creme/0.3.0/) - 2019-06-23
 

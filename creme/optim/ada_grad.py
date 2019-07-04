@@ -13,7 +13,6 @@ class AdaGrad(base.Optimizer):
 
         ::
 
-            >>> from creme import compose
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
@@ -27,11 +26,11 @@ class AdaGrad(base.Optimizer):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimiser = optim.AdaGrad()
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', linear_model.LogisticRegression(optimiser))
-            ... ])
+            >>> optimizer = optim.AdaGrad()
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.LogisticRegression(optimizer)
+            ... )
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)

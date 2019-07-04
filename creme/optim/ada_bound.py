@@ -14,7 +14,7 @@ class AdaBound(base.Optimizer):
     Example:
 
         ::
-            >>> from creme import compose
+
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
@@ -28,11 +28,11 @@ class AdaBound(base.Optimizer):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimiser = optim.AdaBound()
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', linear_model.LogisticRegression(optimiser))
-            ... ])
+            >>> optimizer = optim.AdaBound()
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.LogisticRegression(optimizer)
+            ... )
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)

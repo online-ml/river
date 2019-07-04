@@ -33,6 +33,7 @@ __all__ = [
     'reco',
     'stats',
     'stream',
+    'time_series',
     'tree',
     'utils'
 ]

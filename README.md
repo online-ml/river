@@ -86,7 +86,7 @@ We'll use the available numeric features, as well as calculate running averages 
 ... )
 >>> model += feature_extraction.TargetAgg(by='station', how=stats.EWMean(0.5))
 >>> model |= preprocessing.StandardScaler()
->>> model |= linear_model.LinearRegression()
+>>> model |= linear_model.LinearRegression(intercept_lr=0.5)
 
 >>> model_selection.online_qa_score(
 ...     X_y=X_y,
@@ -96,16 +96,16 @@ We'll use the available numeric features, as well as calculate running averages 
 ...     lag=dt.timedelta(minutes=30),
 ...     print_every=20_000
 ... )
-[20,000] MAE: 13.743465
-[40,000] MAE: 7.990616
-[60,000] MAE: 6.101015
-[80,000] MAE: 5.159895
-[100,000] MAE: 4.593369
-[120,000] MAE: 4.19251
-[140,000] MAE: 3.904753
-[160,000] MAE: 3.725466
-[180,000] MAE: 3.568893
-MAE: 3.555296
+[20,000] MAE: 10.378064
+[40,000] MAE: 6.58481
+[60,000] MAE: 5.208563
+[80,000] MAE: 4.512842
+[100,000] MAE: 4.088168
+[120,000] MAE: 3.777035
+[140,000] MAE: 3.552973
+[160,000] MAE: 3.421611
+[180,000] MAE: 3.304656
+MAE: 3.295097
 
 ```
 
