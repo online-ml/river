@@ -6,7 +6,7 @@ from .. import base
 __all__ = ['GroupRegressor']
 
 
-class GroupRegressor(base.Regressor):
+class GroupRegressor(base.Regressor, base.Wrapper):
     """Runs a different regressor based on the value of a specified attribute.
 
     Parameters:
@@ -40,7 +40,7 @@ class GroupRegressor(base.Regressor):
             ... )
 
             >>> model_selection.online_score(X_y, model, metrics.MAE())
-            MAE: 27.668246
+            MAE: 26.502444
 
     """
 

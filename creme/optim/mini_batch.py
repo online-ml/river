@@ -24,7 +24,6 @@ class MiniBatcher(base.Optimizer):
 
         ::
 
-            >>> from creme import compose
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
@@ -38,11 +37,11 @@ class MiniBatcher(base.Optimizer):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimizer = optim.MiniBatcher(optim.VanillaSGD(), 4)
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', linear_model.LogisticRegression(optimizer))
-            ... ])
+            >>> optimizer = optim.MiniBatcher(optim.VanillaSGD(0.1), 4)
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.LogisticRegression(optimizer)
+            ... )
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)

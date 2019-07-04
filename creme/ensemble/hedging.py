@@ -33,8 +33,9 @@ class BaseHedge(collections.UserList):
 
         # Normalize the weights so that they sum up to 1
         total = sum(self.weights)
-        for i, _ in enumerate(self.weights):
-            self.weights[i] /= total
+        if total:
+            for i, _ in enumerate(self.weights):
+                self.weights[i] /= total
 
         return self
 
@@ -82,9 +83,6 @@ class HedgeBinaryClassifier(BaseHedge, base.BinaryClassifier):
             ...     ))
             ... ])
             >>> metric = metrics.F1()
-
-            >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.955307
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
@@ -143,21 +141,24 @@ class HedgeRegressor(BaseHedge, base.Regressor):
             ...     dataset=datasets.load_boston(),
             ...     shuffle=False
             ... )
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('hedge', ensemble.HedgeRegressor(
+
+            >>> lin_reg = linear_model.LinearRegression
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     ensemble.HedgeRegressor(
             ...         regressors=[
-            ...             linear_model.LinearRegression(optimizer=optim.VanillaSGD()),
-            ...             linear_model.LinearRegression(optimizer=optim.RMSProp()),
-            ...             linear_model.LinearRegression(optimizer=optim.AdaGrad()),
+            ...             lin_reg(optimizer=optim.VanillaSGD(0.05)),
+            ...             lin_reg(optimizer=optim.RMSProp()),
+            ...             lin_reg(optimizer=optim.AdaGrad())
             ...         ],
             ...         learning_rate=0.9
-            ...     ))
-            ... ])
+            ...     )
+            ... )
+
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.387649
+            MAE: 3.155537
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_

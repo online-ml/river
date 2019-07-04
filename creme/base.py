@@ -9,6 +9,7 @@ __all__ = [
     'BinaryClassifier',
     'Clusterer',
     'Estimator',
+    'Wrapper',
     'MultiClassifier',
     'MultiOutputClassifier',
     'MultiOutputRegressor',
@@ -296,3 +297,16 @@ class MultiOutputRegressor(MultiOutputEstimator):
             dict
 
         """
+
+
+class Wrapper(abc.ABC):
+
+    @property
+    def __class__(self):
+        return self.model.__class__
+
+    def __str__(self):
+        return f'{self.__class__.__name__}({self.model})'
+
+    def draw(self):
+        return self.model.draw()

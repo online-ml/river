@@ -10,17 +10,13 @@ from .. import base
 __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 
-class BaseBagging(collections.UserList):
+class BaseBagging(base.Wrapper, collections.UserList):
 
     def __init__(self, model=None, n_models=10, random_state=None):
         super().__init__()
         self.model = model
         self.extend([copy.deepcopy(model) for _ in range(n_models)])
         self.rng = utils.check_random_state(random_state)
-
-    @property
-    def __class__(self):
-        return self.model.__class__
 
     def fit_one(self, x, y):
 
@@ -77,6 +73,9 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
             >>> model_selection.online_score(X_y, model, metric)
             F1: 0.970547
+
+            >>> print(model)
+            BaggingClassifier(StandardScaler | LogisticRegression)
 
     References:
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
@@ -146,7 +145,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.96921
+            MAE: 4.501659
 
     References:
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
