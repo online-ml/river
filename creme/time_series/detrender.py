@@ -16,6 +16,10 @@ class Detrender(base.Regressor):
         self.regressor = regressor
         self.mean = stats.Mean()
 
+    @property
+    def model(self):
+        return self.regressor
+
     def fit_one(self, x, y):
         self.regressor.fit_one(x, y - self.mean.get())
         self.mean.update(y)
@@ -38,6 +42,10 @@ class GroupDetrender(base.Regressor):
         self.regressor = regressor
         self.by = by
         self.means = collections.defaultdict(stats.Mean)
+
+    @property
+    def model(self):
+        return self.regressor
 
     def fit_one(self, x, y):
         key = x[self.by]

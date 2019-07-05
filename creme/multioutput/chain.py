@@ -88,7 +88,6 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
         ::
 
             >>> from creme import linear_model
-            >>> from creme import meta
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import multioutput
@@ -105,7 +104,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             >>> model = multioutput.RegressorChain(
             ...     model=(
             ...         preprocessing.StandardScaler() |
-            ...         meta.Detrender(linear_model.LinearRegression(intercept_lr=0))
+            ...         linear_model.LinearRegression(intercept_lr=0.7)
             ...     ),
             ...     order=[0, 1, 2]
             ... )
@@ -113,7 +112,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 13.744369
+            MAE: 16.170443
 
     """
 

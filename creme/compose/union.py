@@ -1,6 +1,12 @@
 import collections
 import types
 
+try:
+    import graphviz
+    GRAPHVIZ_INSTALLED = True
+except ImportError:
+    GRAPHVIZ_INSTALLED = False
+
 from .. import base
 
 from . import func
@@ -119,3 +125,17 @@ class TransformerUnion(collections.UserDict, base.Transformer):
             transformer.transform_one(x)
             for transformer in self.values()
         )))
+
+    def draw(self):
+
+        if not GRAPHVIZ_INSTALLED:
+            raise ImportError('graphviz is not installed')
+
+        g = graphviz.Digraph(engine='fdp')
+
+        for part in self.values():
+            if hasattr(part, 'draw'):
+                g.subgraph(part.draw())
+            else:
+                g.node(str(part))
+        return g

@@ -301,12 +301,13 @@ class MultiOutputRegressor(MultiOutputEstimator):
 
 class Wrapper(abc.ABC):
 
+    @abc.abstractproperty
+    def model(self):
+        """Provides access to the wrapped model."""
+
+    def __str__(self):
+        return f'{type(self).__name__}({self.model})'
+
     @property
     def __class__(self):
         return self.model.__class__
-
-    def __str__(self):
-        return f'{self.__class__.__name__}({self.model})'
-
-    def draw(self):
-        return self.model.draw()
