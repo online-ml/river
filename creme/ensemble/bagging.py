@@ -14,9 +14,13 @@ class BaseBagging(base.Wrapper, collections.UserList):
 
     def __init__(self, model=None, n_models=10, random_state=None):
         super().__init__()
-        self.model = model
+        self._model = model
         self.extend([copy.deepcopy(model) for _ in range(n_models)])
         self.rng = utils.check_random_state(random_state)
+
+    @property
+    def model(self):
+        return self._model
 
     def fit_one(self, x, y):
 

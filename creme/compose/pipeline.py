@@ -19,6 +19,80 @@ from . import union
 __all__ = ['Pipeline']
 
 
+class Network(collections.UserList):
+    """An abstraction to help with drawing pipelines."""
+
+    def __init__(self, nodes, links, directed, name=None):
+        super().__init__()
+        for node in nodes:
+            self.append(node)
+        self.links = set()
+        for link in links:
+            self.link(*link)
+        self.directed = directed
+        self.name = name
+
+    def append(self, a):
+        if a not in self:
+            super().append(a)
+
+    def link(self, a, b):
+        self.append(a)
+        self.append(b)
+        self.links.add((self.index(a), self.index(b)))
+
+    def draw(self):
+        dot = graphviz.Digraph()
+
+        def draw_node(a):
+            if isinstance(a, Network):
+                for part in a:
+                    draw_node(part)
+            else:
+                dot.node(a)
+
+        for a in self:
+            draw_node(a)
+
+        def draw_link(a, b):
+
+            if isinstance(a, Network):
+                # Connect the last part of a with b
+                if a.directed:
+                    draw_link(a[-1], b)
+                # Connect each part of a with b
+                else:
+                    for part in a:
+                        draw_link(part, b)
+
+            elif isinstance(b, Network):
+                # Connect the first part of b with a
+                if b.directed:
+
+                    if b.name is not None:
+                        # If the graph has a name, then we treat is as a cluster
+                        c = b.draw()
+                        c.attr(label=b.name)
+                        c.name = f'cluster_{b.name}'
+                        dot.subgraph(c)
+                    else:
+                        dot.subgraph(b.draw())
+
+                    draw_link(a, b[0])
+                # Connect each part of b with a
+                else:
+                    for part in b:
+                        draw_link(a, part)
+
+            else:
+                dot.edge(a, b)
+
+        for a, b in self.links:
+            draw_link(self[a], self[b])
+
+        return dot
+
+
 class Pipeline(collections.OrderedDict):
     """Chains a sequence of estimators.
 
@@ -227,6 +301,7 @@ class Pipeline(collections.OrderedDict):
         print_title('0. Input')
         print_features(x)
 
+        # Print the state of x at each step
         for i, t in enumerate(self.transformers):
             if isinstance(t, union.TransformerUnion):
                 print_title(f'{i+1}. Transformer union')
@@ -257,87 +332,46 @@ class Pipeline(collections.OrderedDict):
     def draw(self):
         """Draws the pipeline using the ``graphviz`` library."""
 
-        if not GRAPHVIZ_INSTALLED:
-            raise ImportError('graphviz is not installed')
+        def networkify(step):
 
-        def get_first_estimator(d):
-            """Gets first estimator key of a Pipeline or TransformerUnion."""
+            # Unions are converted to an undirected network
+            if type(step) is union.TransformerUnion:
+                return Network(nodes=map(networkify, step.values()), links=[], directed=False)
 
-            for first_key in d.keys():
-                first_step = d.get(first_key)
-                break
+            # Pipelines are converted to a directed network
+            if type(step) is Pipeline:
+                return Network(
+                    nodes=[],
+                    links=zip(
+                        map(networkify, list(step.values())[:-1]),
+                        map(networkify, list(step.values())[1:])
+                    ),
+                    directed=True
+                )
 
-            if isinstance(first_step, (Pipeline, union.TransformerUnion)):
-                # Recurse
-                first_key = get_first_estimator(first_step)
+            # Wrapper models are unrolled
+            if isinstance(step, base.Wrapper):
+                return Network(
+                    nodes=[networkify(step.model)],
+                    links=[],
+                    directed=True,
+                    name=type(step).__name__
+                )
 
-            return first_key
+            # Other steps are treated as strings
+            return str(step)
 
-        def draw_step(node, previous_node):
-            """Draws a node and its previous edge."""
-            if node in nodes:
-                node = node + '_'
-                return draw_step(node, previous_node)
+        # Draw input
+        net = Network(nodes=['x'], links=[], directed=True)
+        previous = 'x'
 
-            graph.node(node, node.rstrip('_'))
-            graph.edge(previous_node, node)
-            nodes.append(node)
-            edges.append(previous_node)
+        # Draw each step
+        for step in self.values():
+            current = networkify(step)
+            net.link(previous, current)
+            previous = current
 
-        def draw_steps(d=self, skip_first=False):
-            """Draws all estimators graph nodes and edges."""
+        # Draw output
+        net.link(previous, 'y')
 
-            union_ending_node_ix = None
-
-            for name, step in d.items():
-
-                if skip_first:
-                    skip_first = False
-                    continue
-
-                # If step is a Pipeline recurse on step
-                if isinstance(step, Pipeline):
-                    draw_steps(step)
-
-                # If step is a TransformerUnion, dive inside
-                elif isinstance(step, union.TransformerUnion):
-
-                    node_before_union = nodes[-1]
-
-                    # Draw each TransformerUnion steps
-                    for sub_name, sub_step in step.items():
-
-                        # If sub step is another nested step, draw its first estimator and recurse
-                        if isinstance(sub_step, (Pipeline, union.TransformerUnion)):
-                            sub_sub_key = get_first_estimator(sub_step)
-                            draw_step(node=sub_sub_key, previous_node=node_before_union)
-                            draw_steps(d=sub_step, skip_first=True)
-                        # Else just draw it
-                        else:
-                            draw_step(node=sub_name, previous_node=node_before_union)
-
-                    union_ending_node_ix = len(nodes)
-
-                else:
-                    draw_step(name, nodes[-1])
-
-                # If previous step was a TransformerUnion and following node have been drawn
-                if union_ending_node_ix == len(nodes) - 1:
-                    # Connect TransformerUnion child nodes with the next step
-                    for node in nodes[1: -1]:
-                        if node not in edges:
-                            graph.edge(node, nodes[union_ending_node_ix])
-                            edges.append(node)
-                    # Reset TransformerUnion flag
-                    union_ending_node_ix = None
-
-        nodes, edges = ['x'], []
-        graph = graphviz.Digraph()
-        graph.node('x')
-
-        draw_steps()
-
-        graph.node('y')
-        graph.edge(nodes[-1], 'y')
-
-        return graph
+        return net.draw()

@@ -28,5 +28,6 @@ API
    reco
    stats
    stream
+   time_series
    tree
    utils
