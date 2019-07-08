@@ -1,4 +1,3 @@
-import sys
 from skmultiflow.lazy import KNN
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.utils.data_structures import InstanceWindow
@@ -23,13 +22,13 @@ class KNNAdwin(KNN):
     
     Parameters
     ----------
-    n_neighbors: int
+    n_neighbors: int (default=5)
         The number of nearest neighbors to search for.
         
-    max_window_size: int
+    max_window_size: int (default=1000)
         The maximum size of the window storing the last viewed samples.
         
-    leaf_size: int
+    leaf_size: int (default=30)
         The maximum number of samples that can be stored in one leaf node, 
         which determines from which point the algorithm will switch for a 
         brute-force approach. The bigger this number the faster the tree 
@@ -79,7 +78,7 @@ class KNNAdwin(KNN):
 
     """
 
-    def __init__(self, n_neighbors=5, max_window_size=sys.maxsize, leaf_size=30, nominal_attributes=None):
+    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, nominal_attributes=None):
         super().__init__(n_neighbors=n_neighbors,
                          max_window_size=max_window_size,
                          leaf_size=leaf_size,
