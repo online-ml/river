@@ -1,6 +1,7 @@
 import math
 import sys
 import numbers
+import copy
 
 from collections import deque
 
@@ -56,7 +57,7 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True):
     if math.isnan(factor):
         raise ValueError('Can not normalize, normalization factor is NaN')
     if not inplace:
-        dictionary = dictionary.copy()
+        dictionary = copy.deepcopy(dictionary)
     for key, value in dictionary.items():  # loop over the keys, values in the dictionary
         dictionary[key] = value / factor
 

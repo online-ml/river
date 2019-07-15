@@ -32,9 +32,11 @@ def test_adaptive_random_forests():
 
         learner.partial_fit(X, y)
         cnt += 1
-
-    last_version_predictions = [1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1,
-                                1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0]
+    last_version_predictions = [1, 1, 0, 1, 1, 0, 0, 1, 0, 1,
+                                1, 1, 1, 0, 1, 0, 1, 1, 0, 1,
+                                1, 1, 0, 1, 1, 1, 1, 1, 1, 1,
+                                1, 1, 1, 1, 0, 1, 1, 1, 0, 1,
+                                0, 0, 0, 1, 1, 1, 0, 0, 0]
 
     # Performance below does not need to be guaranteed. This check is set up so that anything that changes
     # to predictions are caught in the unit test. This helps prevent accidental changes.

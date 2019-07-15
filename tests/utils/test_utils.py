@@ -41,7 +41,7 @@ def test_get_max_value_key():
 
 def test_normalize_values_in_dict():
     a_dictionary = {}
-    for k in range(10):
+    for k in range(1, 11):
         a_dictionary[k] = k*10
 
     reference = copy(a_dictionary)
@@ -53,7 +53,12 @@ def test_normalize_values_in_dict():
 
     normalize_values_in_dict(a_dictionary, factor=1/sum_of_values)
     for k, v in a_dictionary.items():
-        assert a_dictionary[k] == reference[k]
+        assert np.isclose(a_dictionary[k], reference[k])
+
+    b_dictionary = normalize_values_in_dict(a_dictionary, factor=1 / sum_of_values, inplace=False)
+    for k, v in a_dictionary.items():
+        assert a_dictionary[k] != b_dictionary[k]
+    assert id(a_dictionary) != id(b_dictionary)
 
 
 def test_calculate_object_size():

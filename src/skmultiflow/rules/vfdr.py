@@ -380,9 +380,9 @@ class VFDR(BaseSKMObject, ClassifierMixin):
         final_votes = self.default_rule.get_class_votes(X, self)
         for rule in self.rule_set:
             if rule.covers_instance(X):
-                votes = rule.get_class_votes(X, self).copy()
+                votes = copy.deepcopy(rule.get_class_votes(X, self))
                 if sum(votes.values()) != 0:
-                    votes = normalize_values_in_dict(votes)
+                    votes = normalize_values_in_dict(votes, inplace=False)
                 for v in votes.values():
                     if v >= highest:
                         highest = v
@@ -410,9 +410,9 @@ class VFDR(BaseSKMObject, ClassifierMixin):
         for rule in self.rule_set:
             if rule.covers_instance(X):
                 fired_rule = True
-                votes = rule.get_class_votes(X, self).copy()
+                votes = copy.deepcopy(rule.get_class_votes(X, self))
                 if sum(votes.values()) != 0:
-                    votes = normalize_values_in_dict(votes)
+                    votes = normalize_values_in_dict(votes, inplace=False)
                 final_votes = {k: final_votes.get(k, 0) + votes.get(k, 0) for k in set(final_votes) | set(votes)}
                 if sum(final_votes.values()) != 0:
                     normalize_values_in_dict(final_votes)
@@ -791,13 +791,13 @@ class VFDR(BaseSKMObject, ClassifierMixin):
         r, _ = get_dimensions(X)
         predictions = []
         for i in range(r):
-            votes = self.get_votes_for_instance(X[i]).copy()
+            votes = copy.deepcopy(self.get_votes_for_instance(X[i]))
             if votes == {}:
                 # Tree is empty, all classes equal, default to zero
                 predictions.append([0])
             else:
                 if sum(votes.values()) != 0:
-                    normalize_values_in_dict(votes)
+                    votes = normalize_values_in_dict(votes, inplace=False)
                 if self.classes is not None:
                     y_proba = np.zeros(int(max(self.classes)) + 1)
                 else:
