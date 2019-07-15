@@ -29,11 +29,11 @@ def test_hat_mc(test_path):
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('i', [1, 0, 0, 1, 1, 1, 1, 1, 1, 1,
-                                       0, 1, 1, 1, 1, 0, 1, 1, 1, 1,
+    expected_predictions = array('i', [1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                                       1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
-                                       1, 1, 1, 0, 1, 0, 1, 0, 1])
+                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       1, 1, 1, 1, 1, 1, 1, 1, 1])
     assert np.alltrue(y_pred == expected_predictions)
 
     test_file = os.path.join(test_path, 'test_hoeffding_adaptive_tree_mc.npy')
@@ -48,16 +48,9 @@ def test_hat_mc(test_path):
 
     assert learner.get_info() == expected_info
 
-    expected_model_1 = 'Leaf = Class 1.0 | {0.0: 0.005295278636481529, 1.0: 1.9947047213635185}\n'
-    expected_model_2 = 'Leaf = Class 1.0 | {0.0: 0.0052952786364815294, 1.0: 1.9947047213635185}\n'
-    expected_model_3 = 'Leaf = Class 1.0 | {1.0: 1.9947047213635185, 0.0: 0.0052952786364815294}\n'
-    expected_model_4 = 'Leaf = Class 1.0 | {1.0: 1.9947047213635185, 0.0: 0.005295278636481529}\n'
+    expected_model_1 = 'Leaf = Class 1.0 | {0.0: 277.0, 1.0: 723.0}\n'
 
-    assert (learner.get_model_description() == expected_model_1) \
-           or  (learner.get_model_description() == expected_model_2) \
-           or  (learner.get_model_description() == expected_model_3) \
-           or  (learner.get_model_description() == expected_model_4) \
-
+    assert (learner.get_model_description() == expected_model_1)
 
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray

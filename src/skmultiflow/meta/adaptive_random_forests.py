@@ -319,9 +319,9 @@ class AdaptiveRandomForest(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         combined_votes = {}
 
         for i in range(self.n_estimators):
-            vote = self.ensemble[i].get_votes_for_instance(X)
+            vote = deepcopy(self.ensemble[i].get_votes_for_instance(X))
             if vote != {} and sum(vote.values()) > 0:
-                normalize_values_in_dict(vote)
+                vote = normalize_values_in_dict(vote, inplace=False)
                 if not self.disable_weighted_vote:
                     performance = self.ensemble[i].evaluator.get_accuracy()\
                         if self.performance_metric == 'acc'\

@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import math
+import copy
 
 from skmultiflow.utils.utils import get_max_value_key, normalize_values_in_dict
 from skmultiflow.drift_detection import ADWIN
@@ -365,7 +366,7 @@ class HAT(HoeffdingTree):
             normalization_factor = dist_sum * self.get_error_estimation() * self.get_error_estimation()
 
             if normalization_factor > 0.0:
-                normalize_values_in_dict(dist, normalization_factor)
+                dist = normalize_values_in_dict(dist, normalization_factor, inplace=False)
 
             return dist
 

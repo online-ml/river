@@ -1090,13 +1090,13 @@ class HoeffdingTree(BaseSKMObject, ClassifierMixin):
         r, _ = get_dimensions(X)
         predictions = []
         for i in range(r):
-            votes = self.get_votes_for_instance(X[i]).copy()
+            votes = copy.deepcopy(self.get_votes_for_instance(X[i]))
             if votes == {}:
                 # Tree is empty, all classes equal, default to zero
                 predictions.append([0])
             else:
                 if sum(votes.values()) != 0:
-                    normalize_values_in_dict(votes)
+                    votes = normalize_values_in_dict(votes, inplace=False)
                 if self.classes is not None:
                     y_proba = np.zeros(int(max(self.classes)) + 1)
                 else:
