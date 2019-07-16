@@ -48,7 +48,7 @@ def test_hat_mc(test_path):
 
     assert learner.get_info() == expected_info
 
-    expected_model_1 = 'Leaf = Class 1.0 | {0.0: 277.0, 1.0: 723.0}\n'
+    expected_model_1 = 'Leaf = Class 1.0 | {0.0: 398.0, 1.0: 1000.0}\n'
 
     assert (learner.get_model_description() == expected_model_1)
 
@@ -130,11 +130,11 @@ def test_hat_nba(test_path):
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('i', [0, 0, 1, 0, 1, 1, 0, 1, 1, 1,
+    expected_predictions = array('i', [1, 0, 1, 0, 1, 1, 0, 1, 1, 1,
                                        0, 1, 0, 1, 0, 1, 1, 1, 1, 1,
-                                       1, 1, 1, 1, 1, 0, 0, 0, 0, 1,
+                                       1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
                                        1, 0, 1, 1, 0, 0, 0, 0, 1, 1,
-                                       1, 0, 1, 1, 0, 1, 1, 1, 0])
+                                       1, 0, 0, 1, 0, 1, 0, 1, 0])
     assert np.alltrue(y_pred == expected_predictions)
 
     test_file = os.path.join(test_path, 'test_hoeffding_adaptive_tree_nba.npy')
