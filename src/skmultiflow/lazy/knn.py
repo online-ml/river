@@ -26,13 +26,13 @@ class KNN(BaseSKMObject, ClassifierMixin):
     
     Parameters
     ----------
-    n_neighbors: int
+    n_neighbors: int (default=5)
         The number of nearest neighbors to search for.
         
-    max_window_size: int
+    max_window_size: int (default=1000)
         The maximum size of the window storing the last viewed samples.
         
-    leaf_size: int
+    leaf_size: int (default=30)
         The maximum number of samples that can be stored in one leaf node, 
         which determines from which point the algorithm will switch for a 
         brute-force approach. The bigger this number the faster the tree 
