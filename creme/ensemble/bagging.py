@@ -149,7 +149,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 4.501659
+            MAE: 4.186543
 
     References:
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_

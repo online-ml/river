@@ -3,17 +3,24 @@ from creme import compose
 from creme import datasets
 from creme import feature_extraction
 from creme import linear_model
-from creme import meta
 from creme import metrics
 from creme import preprocessing
 from creme import optim
 from creme import stats
 from sklearn import linear_model as sk_linear_model
+import torch
 
 import benchmark
+import wrap
 
 
 def main():
+
+    lr = 0.005
+
+    torch_model = torch.nn.Linear(in_features=6, out_features=1, bias=True)
+    torch.nn.init.constant_(torch_model.weight, 0)
+    torch.nn.init.constant_(torch_model.bias, 0)
 
     def add_hour(x):
         x['hour'] = x['moment'].hour
@@ -31,39 +38,32 @@ def main():
             preprocessing.StandardScaler()
         ),
         models=[
-            # ('creme', 'LinReg', linear_model.LinearRegression(
-            #     optimizer=optim.VanillaSGD(0.01),
-            #     l2=0.
-            # )),
-
-            ('creme', 'GLM', linear_model.GLMRegressor(
-                optimizer=optim.VanillaSGD(0.01),
-                l2=0.
+            ('PyTorch (CPU)', 'Linear', wrap.PyTorchRegressor(
+                model=torch_model,
+                loss_fn=torch.nn.MSELoss(),
+                optimizer=torch.optim.SGD(torch_model.parameters(), lr=lr)
             )),
 
-            ('creme', 'GLM', meta.Detrender(linear_model.GLMRegressor(
-                optimizer=optim.VanillaSGD(0.01),
-                l2=0.
-            ))),
+            ('Vowpal Wabbit', 'Linear', wrap.VowpalWabbitRegressor(
+                loss_function='squared',
+                sgd=True,
+                learning_rate=lr
+            )),
 
 
+            ('creme', 'LinearRegression', linear_model.LinearRegression(
+                optimizer=optim.VanillaSGD(lr),
+                l2=0.,
+                intercept_lr=lr
+            )),
 
-            # ('sklearn', 'SGD', compat.CremeRegressorWrapper(
-            #     sklearn_estimator=sk_linear_model.SGDRegressor(
-            #         learning_rate='constant',
-            #         eta0=0.01,
-            #         fit_intercept=True,
-            #         penalty='none'
-            #     ),
-            # )),
-            # ('sklearn', 'SGD no intercept', compat.CremeRegressorWrapper(
-            #     sklearn_estimator=sk_linear_model.SGDRegressor(
-            #         learning_rate='constant',
-            #         eta0=0.01,
-            #         fit_intercept=False,
-            #         penalty='none'
-            #     ),
-            # )),
+            ('scikit-learn', 'SGD', wrap.ScikitLearnRegressor(
+                sklearn_estimator=sk_linear_model.SGDRegressor(
+                    learning_rate='constant',
+                    eta0=lr,
+                    penalty='none'
+                ),
+            ))
         ],
         get_metric=metrics.MSE
     )

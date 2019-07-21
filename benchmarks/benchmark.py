@@ -1,5 +1,6 @@
 import collections
 import time
+import os
 
 from creme import base
 import pandas as pd
@@ -29,7 +30,7 @@ def pprint_ns(d):
     return ', '.join(parts)
 
 
-def benchmark(get_X_y, n, get_pp, models, get_metric):
+def benchmark(output_name, get_X_y, n, get_pp, models, get_metric):
 
     Result = collections.namedtuple('Result', 'lib model score fit_time pred_time')
     results = []
@@ -77,3 +78,6 @@ def benchmark(get_X_y, n, get_pp, models, get_metric):
 
     print()
     print(results)
+
+    with open(f'benchmarks/{output_name}.html', 'w') as f:
+        results.to_html(f)

@@ -54,7 +54,7 @@ class SGDBaseline(base.Recommender):
             ...     _ = model.fit_one(user, movie, rating)
 
             >>> model.predict_one('Bob', 'Harry Potter')
-            6.554288...
+            6.552432...
 
     """
 

@@ -33,14 +33,14 @@ class GroupRegressor(base.Regressor):
             ...     models={
             ...         i: (
             ...             preprocessing.StandardScaler() |
-            ...             linear_model.LinearRegression(intercept_lr=0.4)
+            ...             linear_model.LinearRegression(intercept_lr=0.2)
             ...         )
             ...         for i in range(1, 5)
             ...     }
             ... )
 
             >>> model_selection.online_score(X_y, model, metrics.MAE())
-            MAE: 25.786695
+            MAE: 25.673848
 
     """
 

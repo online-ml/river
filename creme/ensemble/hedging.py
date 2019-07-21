@@ -147,18 +147,17 @@ class HedgeRegressor(BaseHedge, base.Regressor):
             ...     preprocessing.StandardScaler() |
             ...     ensemble.HedgeRegressor(
             ...         regressors=[
-            ...             lin_reg(optimizer=optim.VanillaSGD(0.05)),
+            ...             lin_reg(optimizer=optim.VanillaSGD(0.01)),
             ...             lin_reg(optimizer=optim.RMSProp()),
             ...             lin_reg(optimizer=optim.AdaGrad())
-            ...         ],
-            ...         learning_rate=0.9
+            ...         ]
             ...     )
             ... )
 
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.155537
+            MAE: 3.253601
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
