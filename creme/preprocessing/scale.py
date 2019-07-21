@@ -82,7 +82,7 @@ class StandardScaler(base.Transformer):
         return {
             i: (xi - self.variances[i].mean.get()) / self.variances[i].get() ** 0.5
             if self.variances[i].get() > 0
-            else xi - self.variances[i].mean.get()
+            else 0.
             for i, xi in x.items()
         }
 
