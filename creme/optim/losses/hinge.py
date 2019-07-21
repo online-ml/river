@@ -35,11 +35,11 @@ class HingeLoss(base.BinaryClassificationLoss):
             >>> y_pred = lin_svm.decision_function([[-2], [3], [0.5]])
 
             >>> hinge_loss([0, 1, 1], y_pred)
-            0.303022...
+            0.303036...
 
             >>> loss = optim.HingeLoss()
             >>> np.mean([loss(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
-            0.303022...
+            0.303036...
 
     """
 
