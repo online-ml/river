@@ -17,7 +17,6 @@ class StandardScaler(base.Transformer):
 
     Attributes:
         variances (dict): Mapping between features and instances of `stats.Var`.
-        eps (float): Used for avoiding divisions by zero.
 
     Example:
 
@@ -34,20 +33,20 @@ class StandardScaler(base.Transformer):
               >>> for x in X:
               ...     print(scaler.fit_one(x).transform_one(x))
               {'x': 0.0}
-              {'x': 0.707106781053423}
-              {'x': 0.1589936150008511}
-              {'x': -0.27053221501993885}
-              {'x': -1.3161741265511262}
-              {'x': -1.0512188306232884}
-              {'x': -1.1096762393237039}
-              {'x': 1.0914126848882046}
-              {'x': 0.31090608493934085}
-              {'x': 0.5949866913888866}
-              {'x': -1.3540960657565435}
-              {'x': 1.2959176343737868}
-              {'x': 0.8426620963810948}
-              {'x': -0.8843412114527541}
-              {'x': -0.9118818053170898}
+              {'x': 0.7071067811865474}
+              {'x': 0.15899361505958234}
+              {'x': -0.27053221516496234}
+              {'x': -1.3161741269826}
+              {'x': -1.051218830939811}
+              {'x': -1.1096762396286515}
+              {'x': 1.09141268517007}
+              {'x': 0.31090608502985784}
+              {'x': 0.5949866915752465}
+              {'x': -1.3540960661327464}
+              {'x': 1.2959176347038681}
+              {'x': 0.8426620966002304}
+              {'x': -0.8843412116857523}
+              {'x': -0.91188180555936}
 
               >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
               >>> preprocessing.StandardScaler().fit_transform(X)
@@ -71,7 +70,6 @@ class StandardScaler(base.Transformer):
 
     def __init__(self):
         self.variances = collections.defaultdict(stats.Var)
-        self.eps = 10e-10
 
     def fit_one(self, x, y=None):
 
@@ -82,7 +80,9 @@ class StandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: (xi - self.variances[i].mean.get()) / (self.variances[i].get() + self.eps) ** 0.5
+            i: (xi - self.variances[i].mean.get()) / self.variances[i].get() ** 0.5
+            if self.variances[i].get() > 0
+            else xi - self.variances[i].mean.get()
             for i, xi in x.items()
         }
 
