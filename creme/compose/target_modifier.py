@@ -45,7 +45,7 @@ class TargetModifierRegressor(base.Regressor):
             >>> metric = metrics.MSE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MSE: 36.149014
+            MSE: 34.715156
 
     """
 
@@ -104,7 +104,7 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
             >>> metric = metrics.MSE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MSE: 34.768331
+            MSE: 33.601067
 
     """
 

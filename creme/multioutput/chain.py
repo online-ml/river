@@ -104,7 +104,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             >>> model = multioutput.RegressorChain(
             ...     model=(
             ...         preprocessing.StandardScaler() |
-            ...         linear_model.LinearRegression(intercept_lr=0.7)
+            ...         linear_model.LinearRegression(intercept_lr=0.3)
             ...     ),
             ...     order=[0, 1, 2]
             ... )
@@ -112,7 +112,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 16.170443
+            MAE: 16.96118
 
     """
 

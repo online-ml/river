@@ -6,11 +6,15 @@ class SquaredLoss(base.RegressionLoss):
 
     Mathematically, it is defined as
 
-    .. math:: L = \\frac{(p_i - y_i)^2}{2}
+    .. math:: L = (p_i - y_i) ^ 2
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math:: \\frac{\\partial L}{\\partial p_i} = p_i - y_i
+    .. math:: \\frac{\\partial L}{\\partial p_i} = 2 \times (p_i - y_i)
+
+    One thing to note is that this convention is consistent with Vowpal Wabbit and PyTorch, but
+    not with scikit-learn. Indeed scikit-learn divides the loss by 2, making the 2 dissapear in
+    the gradient.
 
     Example:
 
@@ -20,16 +24,16 @@ class SquaredLoss(base.RegressionLoss):
 
             >>> loss = optim.SquaredLoss()
             >>> loss(-4, 5)
-            40.5
-            >>> loss.gradient(1, 4)
-            3
-            >>> loss.gradient(4, 1)
-            -3
+            81
+            >>> loss.gradient(-4, 5)
+            18.0
+            >>> loss.gradient(5, -4)
+            -18.0
 
     """
 
     def __call__(self, y_true, y_pred):
-        return .5 * (y_pred - y_true) * (y_pred - y_true)
+        return (y_pred - y_true) * (y_pred - y_true)
 
     def gradient(self, y_true, y_pred):
-        return y_pred - y_true
+        return 2. * (y_pred - y_true)

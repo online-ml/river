@@ -8,7 +8,7 @@ from .. import utils
 __all__ = ['OneVsRestClassifier']
 
 
-class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
+class OneVsRestClassifier(collections.UserDict, base.MultiClassifier, base.Wrapper):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
@@ -61,6 +61,10 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
         super().__init__()
         self.binary_classifier = binary_classifier
 
+    @property
+    def model(self):
+        return self.binary_classifier
+
     def fit_one(self, x, y):
 
         # Instantiate a new binary classifier if the class is new
@@ -79,6 +83,3 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
             for label, model in self.items()
         }
         return utils.softmax(y_pred)
-
-    def __str__(self):
-        return f'OneVsRest({self.binary_classifier})'

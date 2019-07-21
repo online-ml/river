@@ -71,7 +71,7 @@ class SVD(base.Recommender):
             ...     _ = model.fit_one(user, movie, rating)
 
             >>> model.predict_one('Bob', 'Harry Potter')
-            6.554339...
+            6.552539...
 
     """
 

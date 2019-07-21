@@ -93,15 +93,15 @@ class LinearRegression(GLM, base.Regressor):
             ... )
             >>> model = (
             ...     preprocessing.StandardScaler() |
-            ...     linear_model.LinearRegression(intercept_lr=0.2)
+            ...     linear_model.LinearRegression()
             ... )
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.9871
+            MAE: 4.087855
 
             >>> model['LinearRegression'].intercept
-            22.490190...
+            22.764649...
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -109,7 +109,7 @@ class LinearRegression(GLM, base.Regressor):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=0.0001, intercept=0., intercept_lr=0.5):
+    def __init__(self, optimizer=None, loss=None, l2=0.0001, intercept=0., intercept_lr=0.1):
         super().__init__(
             optimizer=optim.VanillaSGD(0.01) if optimizer is None else optimizer,
             loss=optim.SquaredLoss() if loss is None else loss,
