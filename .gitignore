@@ -56,3 +56,6 @@ coverage/
 
 # pytest
 .pytest_cache
+
+# IDE
+.spyproject/
