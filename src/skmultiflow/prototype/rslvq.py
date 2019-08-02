@@ -5,10 +5,13 @@ from sklearn.utils import validation
 from skmultiflow.core.base import ClassifierMixin, BaseSKMObject
 from sklearn.metrics import euclidean_distances
 
+
 class RSLVQ(ClassifierMixin, BaseSKMObject):
-    """Robust Soft Learning Vector Quantization for Streaming and Non-Streaming Data
-    By choosing another gradient descent method the RSLVQ can be used as an adaptive version.
-    
+    """Robust Soft Learning Vector Quantization for Streaming and Non-Streaming
+    Data
+    By choosing another gradient descent method the RSLVQ can be used as an
+    adaptive version.
+
     Parameters
     ----------
     prototypes_per_class : int or list of int, optional (default=1)
@@ -27,8 +30,10 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
         by `np.random`.
     gamma : float, Decay rate, optional (default=0.9)
         Decay rate used for momentum-based algorithm
-    gradient_descent: string, specify gradient optimizer, optional (default='vanilla')
-        To use momentum-based gradient descent, choose 'adadelta' instead of 'vanilla'
+    gradient_descent: string, specify gradient optimizer, optional
+    (default='vanilla')
+        To use momentum-based gradient descent, choose 'adadelta' instead
+        of 'vanilla'
     Attributes
     ----------
     w_ : array-like, shape = [n_prototypes, n_features]
@@ -38,25 +43,28 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
         Prototype classes
     classes_ : array-like, shape = [n_classes]
         Array containing labels.
-        
+
     Notes
     -----
     The RSLVQ [2]_ can be used with vanilla SGD as gradient descent method or
-    with a momentum-based gradient descent technique called Adadelta as proposed
-    in [1]_.
-    
+    with a momentum-based gradient descent technique called Adadelta as
+    proposed in [1]_.
+
     References
     ----------
-    .. [1] Heusinger, M., Raab, C., Schleif, F.M.: Passive concept drift handling via momentum based robust soft learning vector quantization.\
-    In: Vellido, A., Gibert,
-K., Angulo, C., Martı́n Guerrero, J.D. (eds.) Advances in Self-Organizing Maps,
-Learning Vector Quantization, Clustering and Data Visualization. pp. 200–209.
-Springer International Publishing, Cham (2020)
-    .. [2] Sambu Seo and Klaus Obermayer. 2003. Soft learning vector quantization.\ Neural Comput. 15, 7 (July 2003), 1589-1604
+    .. [1] Heusinger, M., Raab, C., Schleif, F.M.: Passive concept drift
+    handling via momentum based robust soft learning vector quantization.\
+    In: Vellido, A., Gibert, K., Angulo, C., Martı́n Guerrero, J.D. (eds.)
+    Advances in Self-Organizing Maps, Learning Vector Quantization,
+    Clustering and Data Visualization. pp. 200–209. Springer International
+    Publishing, Cham (2020)
+    .. [2] Sambu Seo and Klaus Obermayer. 2003. Soft learning vector
+    quantization. Neural Comput. 15, 7 (July 2003), 1589-1604
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 sigma=1.0, random_state=None, gradient_descent='vanilla', gamma=0.9):
+                 sigma=1.0, random_state=None, gradient_descent='vanilla',
+                 gamma=0.9):
         self.sigma = sigma
         self.random_state = random_state
         self.epsilon = 1e-8
@@ -73,29 +81,34 @@ Springer International Publishing, Cham (2020)
         if prototypes_per_class <= 0:
             raise ValueError('Prototypes per class must be more than 0')
         if gamma >= 1 or gamma < 0:
-            raise ValueError('Decay rate gamma has to be between 0 and less than 1')
+            raise ValueError('Decay rate gamma has to be between 0 and\
+                             less than 1')
         allowed_gradient_optimizers = ['adadelta', 'vanilla']
-        
+
         if gradient_descent not in allowed_gradient_optimizers:
-            raise ValueError('{} is not a valid gradient optimizer, please use one of\
-                              {}'.format(gradient_descent, allowed_gradient_optimizers))
-            
+            raise ValueError('{} is not a valid gradient optimizer, please\
+                             use one of {}'
+                             .format(gradient_descent,
+                                     allowed_gradient_optimizers))
+
         if gradient_descent == 'adadelta':
             self._update_prototype = self._update_prototype_adadelta
         else:
-            self._update_prototype = self._update_prototype_vanilla           
+            self._update_prototype = self._update_prototype_vanilla
 
     def _update_prototype_vanilla(self, j, xi, c_xi, prototypes):
         """Vanilla SGD"""
         d = xi - prototypes[j]
-        
+
         if self.c_w_[j] == c_xi:
             # Attract prototype to data point
-            self.w_[j] += self.learning_rate * (self._p(j, xi, prototypes=self.w_, y=c_xi) -
-                         self._p(j, xi, prototypes=self.w_)) * d
+            self.w_[j] += self.learning_rate * \
+                (self._p(j, xi, prototypes=self.w_, y=c_xi) -
+                 self._p(j, xi, prototypes=self.w_)) * d
         else:
             # Distance prototype from data point
-            self.w_[j] -= self.learning_rate * self._p(j, xi, prototypes=self.w_) * d   
+            self.w_[j] -= self.learning_rate * self._p(
+                    j, xi, prototypes=self.w_) * d
 
     def _update_prototype_adadelta(self, j, c_xi, xi, prototypes):
         """Implementation of Adadelta"""
@@ -103,28 +116,31 @@ Springer International Publishing, Cham (2020)
 
         if self.c_w_[j] == c_xi:
             gradient = (self._p(j, xi, prototypes=self.w_, y=c_xi) -
-                         self._p(j, xi, prototypes=self.w_)) * d
+                        self._p(j, xi, prototypes=self.w_)) * d
         else:
             gradient = - self._p(j, xi, prototypes=self.w_) * d
-            
-         # Accumulate gradient
-        self.squared_mean_gradient[j] = self.decay_rate * self.squared_mean_gradient[j] + \
-                    (1 - self.decay_rate) * gradient ** 2
-        
+
+        # Accumulate gradient
+        self.squared_mean_gradient[j] = self.decay_rate * \
+            self.squared_mean_gradient[j] + (1 - self.decay_rate) \
+            * gradient ** 2
+
         # Compute update/step
-        step = ((self.squared_mean_step[j] + self.epsilon) / \
-                  (self.squared_mean_gradient[j] + self.epsilon)) ** 0.5 * gradient
-                  
+        step = ((self.squared_mean_step[j] + self.epsilon) /
+                (self.squared_mean_gradient[j] + self.epsilon)) ** 0.5 * \
+            gradient
+
         # Accumulate updates
-        self.squared_mean_step[j] = self.decay_rate * self.squared_mean_step[j] + \
-        (1 - self.decay_rate) * step ** 2
-        
+        self.squared_mean_step[j] = self.decay_rate * \
+            self.squared_mean_step[j] + (1 - self.decay_rate) * step ** 2
+
         # Attract/Distract prototype to/from data point
         self.w_[j] += step
-        
+
     def _validate_train_parms(self, train_set, train_lab, classes=None):
         random_state = validation.check_random_state(self.random_state)
-        train_set, train_lab = validation.check_X_y(train_set, train_lab.ravel())
+        train_set, train_lab = validation.check_X_y(train_set,
+                                                    train_lab.ravel())
 
         if self.initial_fit:
             if classes:
@@ -133,11 +149,12 @@ Springer International Publishing, Cham (2020)
             else:
                 self.classes_ = unique_labels(train_lab)
                 self.protos_initialized = np.zeros(self.classes_.size)
-                
-            # Validate that labels have correct format    
+
+            # Validate that labels have correct format
             for i in range(len(self.classes_)):
                 if i not in self.classes_:
-                    raise ValueError('Labels have to be ascending int, starting at 0, got {}'
+                    raise ValueError('Labels have to be ascending int,\
+                                     starting at 0, got {}'
                                      .format(self.classes_))
 
         nb_classes = len(self.classes_)
@@ -152,7 +169,8 @@ Springer International Publishing, Cham (2020)
             nb_ppc = np.ones([nb_classes],
                              dtype='int') * self.prototypes_per_class
         else:
-            # its an array containing individual number of protos per class - not fully supported yet
+            # its an array containing individual number of protos per class
+            # - not fully supported yet
             nb_ppc = validation.column_or_1d(
                 validation.check_array(self.prototypes_per_class,
                                        ensure_2d=False, dtype='int'))
@@ -165,20 +183,22 @@ Springer International Publishing, Cham (2020)
                     " does not fit the number of classes"
                     "classes=%d"
                     "length=%d" % (nb_classes, nb_ppc.size))
-        
+
         # initialize prototypes
         if self.initial_prototypes is None:
             if self.initial_fit:
-                self.w_ = np.empty([np.sum(nb_ppc), nb_features], dtype=np.double)
+                self.w_ = np.empty([np.sum(nb_ppc), nb_features],
+                                   dtype=np.double)
                 self.c_w_ = np.empty([nb_ppc.sum()], dtype=self.classes_.dtype)
             pos = 0
             for actClassIdx in range(len(self.classes_)):
                 actClass = self.classes_[actClassIdx]
-                nb_prot = nb_ppc[actClassIdx] # nb_ppc: prototypes per class
-                if (self.protos_initialized[actClassIdx] == 0 and actClass in unique_labels(train_lab)):
+                nb_prot = nb_ppc[actClassIdx]  # nb_ppc: prototypes per class
+                if (self.protos_initialized[actClassIdx] == 0 and
+                        actClass in unique_labels(train_lab)):
                     mean = np.mean(
                         train_set[train_lab == actClass, :], 0)
-                    
+
                     if self.prototypes_per_class == 1:
                         # If only one prototype we init it to mean
                         self.w_[pos:pos + nb_prot] = mean
@@ -186,9 +206,10 @@ Springer International Publishing, Cham (2020)
                         # else we add some random noise to distribute them
                         self.w_[pos:pos + nb_prot] = mean + (
                             random_state.rand(nb_prot, nb_features) * 2 - 1)
-                    
+
                     if math.isnan(self.w_[pos, 0]):
-                        raise ValueError('Prototype on position {} for class {} is NaN.'
+                        raise ValueError('Prototype on position {} for class\
+                                         {} is NaN.'
                                          .format(pos, actClass))
                     else:
                         self.protos_initialized[actClassIdx] = 1
@@ -217,7 +238,7 @@ Springer International Publishing, Cham (2020)
             self.initial_fit = False
 
         return train_set, train_lab
-    
+
     def fit(self, X, y, classes=None):
         """Fit the LVQ model to the given training data and parameters using
         l-bfgs-b.
@@ -233,15 +254,17 @@ Springer International Publishing, Cham (2020)
         --------
         self
         """
-        if set(unique_labels(y)).issubset(set(self.classes_)) or self.initial_fit == True:
+        if set(unique_labels(y)).issubset(set(self.classes_)) or \
+                self.initial_fit is True:
             X, y = self._validate_train_parms(X, y, classes=classes)
         else:
             raise ValueError('Class {} was not learned - please declare all \
-                             classes in first call of fit/partial_fit'.format(y))
-            
+                             classes in first call of fit/partial_fit'
+                             .format(y))
+
         self._optimize(X, y)
         return self
-    
+
     def partial_fit(self, X, y, classes=None):
         """Fit the LVQ model to the given training data and parameters using
         l-bfgs-b.
@@ -257,18 +280,20 @@ Springer International Publishing, Cham (2020)
         --------
         self
         """
-        if set(unique_labels(y)).issubset(set(self.classes_)) or self.initial_fit == True:
+        if set(unique_labels(y)).issubset(set(self.classes_)) or \
+                self.initial_fit is True:
             X, y = self._validate_train_parms(X, y, classes=classes)
         else:
             raise ValueError('Class {} was not learned - please declare all \
-                             classes in first call of fit/partial_fit'.format(y))
-            
+                             classes in first call of fit/partial_fit'
+                             .format(y))
+
         self._optimize(X, y)
         return self
-    
+
     def _optimize(self, X, y):
         nb_prototypes = self.c_w_.size
-        
+
         n_data, n_dim = X.shape
         prototypes = self.w_.reshape(nb_prototypes, n_dim)
 
@@ -276,27 +301,35 @@ Springer International Publishing, Cham (2020)
             xi = X[i]
             c_xi = int(y[i])
             best_euclid_corr = np.inf
-            best_euclid_incorr = np.inf   
-            
+            best_euclid_incorr = np.inf
+
             # find nearest correct and nearest wrong prototype
             for j in range(prototypes.shape[0]):
                 if self.c_w_[j] == c_xi:
-                    eucl_dis = euclidean_distances(xi.reshape(1, xi.size), prototypes[j].reshape(1, prototypes[j].size))
+                    eucl_dis = euclidean_distances(xi.reshape(1, xi.size),
+                                                   prototypes[j]
+                                                   .reshape(1, prototypes[j]
+                                                   .size))
                     if eucl_dis < best_euclid_corr:
                         best_euclid_corr = eucl_dis
-                        corr_index = j            
+                        corr_index = j
                 else:
-                    eucl_dis = euclidean_distances(xi.reshape(1, xi.size), prototypes[j].reshape(1, prototypes[j].size))                    
+                    eucl_dis = euclidean_distances(xi.reshape(1, xi.size),
+                                                   prototypes[j]
+                                                   .reshape(1, prototypes[j]
+                                                   .size))
                     if eucl_dis < best_euclid_incorr:
                         best_euclid_incorr = eucl_dis
                         incorr_index = j
-            
-            # Update nearest wrong prototype and nearest correct prototype if correct prototype isn't the nearest
-            if best_euclid_incorr < best_euclid_corr:
-                self._update_prototype(j=corr_index, c_xi=c_xi, xi=xi, prototypes=prototypes)
-                self._update_prototype(j=incorr_index, c_xi=c_xi, xi=xi, prototypes=prototypes)
 
-    
+            # Update nearest wrong prototype and nearest correct prototype
+            # if correct prototype isn't the nearest
+            if best_euclid_incorr < best_euclid_corr:
+                self._update_prototype(j=corr_index, c_xi=c_xi, xi=xi,
+                                       prototypes=prototypes)
+                self._update_prototype(j=incorr_index, c_xi=c_xi, xi=xi,
+                                       prototypes=prototypes)
+
     def predict(self, x):
         """Predict class membership index for each input sample.
         This function does classification on an array of
@@ -309,10 +342,12 @@ Springer International Publishing, Cham (2020)
         C : array, shape = (n_samples)
             Returns predicted values.
         """
-        return np.array([self.c_w_[np.array([self._costf(xi,p) for p in self.w_]).argmax()] for xi in x])
-    
+        return np.array([self.c_w_[np.array([self._costf(xi, p)
+                                             for p in self.w_]).argmax()]
+                        for xi in x])
+
     def _costf(self, x, w):
-        d = (x - w)[np.newaxis].T 
+        d = (x - w)[np.newaxis].T
         d = d.T.dot(d)
         return - d / (2 * self.sigma)
 
@@ -329,33 +364,32 @@ Springer International Publishing, Cham (2020)
         o = np.math.exp(
             self._costf(e, prototypes[j]) - fs_max) / s
         return o
-    
+
     def predict_proba(self, X):
         """ predict_proba
-        
-        Predicts the probability of each sample belonging to each one of the 
+        Predicts the probability of each sample belonging to each one of the
         known target_values.
-        
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             A matrix of the samples we want to predict.
-        
+
         Returns
         -------
         numpy.ndarray
-            An array of shape (n_samples, n_features), in which each outer entry is 
-            associated with the X entry of the same index. And where the list in 
-            index [i] contains len(self.target_values) elements, each of which represents
-            the probability that the i-th sample of X belongs to a certain label.
-        
+            An array of shape (n_samples, n_features), in which each outer
+            entry is associated with the X entry of the same index. And where
+            the list in index [i] contains len(self.target_values) elements,
+            each of which represents the probability that the i-th sample of
+            X belongs to a certain label.
         """
         return 'Not implemented'
-    
+
     def reset(self):
         """Reset the model"""
         self.__init__(gradient_descent=self.gradient_descent)
-        
+
     def get_prototypes(self):
         """Returns the prototypes"""
         return self.w_
