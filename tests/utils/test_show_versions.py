@@ -22,7 +22,7 @@ def test_get_deps_info():
     assert set(info.keys()) == set(expected_keys)
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
+@pytest.mark.skipif(sys.platform == "win32", reason="does not work on windows")
 def test_show_versions(capsys):
     show_versions()
     captured = capsys.readouterr()
@@ -30,5 +30,5 @@ def test_show_versions(capsys):
 
     show_versions(github=True)
     captured = capsys.readouterr()
-    assert captured.out.startswith("<details><summary>System, BLAS, and Dependencies</summary>\n\n"
+    assert captured.out.startswith("<details><summary>System, Dependencies</summary>\n\n"
                                    "**System Information**\n\n")
