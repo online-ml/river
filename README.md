@@ -96,16 +96,16 @@ We'll use the available numeric features, as well as calculate running averages 
 ...     lag=dt.timedelta(minutes=30),
 ...     print_every=20_000
 ... )
-[20,000] MAE: 10.378064
-[40,000] MAE: 6.58481
-[60,000] MAE: 5.208563
-[80,000] MAE: 4.512842
-[100,000] MAE: 4.088168
-[120,000] MAE: 3.777035
-[140,000] MAE: 3.552973
-[160,000] MAE: 3.421611
-[180,000] MAE: 3.304656
-MAE: 3.295097
+[20,000] MAE: 2.205013
+[40,000] MAE: 2.228264
+[60,000] MAE: 2.2746
+[80,000] MAE: 2.304324
+[100,000] MAE: 2.318586
+[120,000] MAE: 2.301552
+[140,000] MAE: 2.288296
+[160,000] MAE: 2.315333
+[180,000] MAE: 2.32161
+MAE: 2.325374
 
 ```
 
@@ -134,7 +134,7 @@ Feel free to open an issue if you feel like other solutions are worth mentioning
 
 ## Contributing
 
-Like many subfields of machine learning, online learning is far from being an exact science and so there is still a lot to do. Feel free to contribute in any way you like, we're always open to new ideas and approaches. If you want to contribute to the code base please check out the [`CONTRIBUTING.md` file](`CONTRIBUTING.md`). Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
+Like many subfields of machine learning, online learning is far from being an exact science and so there is still a lot to do. Feel free to contribute in any way you like, we're always open to new ideas and approaches. If you want to contribute to the code base please check out the [`CONTRIBUTING.md` file](CONTRIBUTING.md). Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
 
 Last but not least you are more than welcome to share with us how you're using `creme` or online learning in general! We believe that online learning solves a lot of pain points in practice and we would love to share experiences.
 
