@@ -7,9 +7,9 @@ import numpy as np
 from sklearn import utils
 
 __all__ = [
-    "Zeros",
-    "Constant",
-    "Normal"
+    'Zeros',
+    'Constant',
+    'Normal'
 ]
 
 class Initializer:
