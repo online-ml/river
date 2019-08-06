@@ -286,6 +286,15 @@ class EvaluationVisualizer(BaseListener):
                 elif metric_id == constants.KAPPA_M:
                     plot_tracker.sub_plot_obj.set_title('Kappa M')
                     plot_tracker.sub_plot_obj.set_ylabel('kappa m')
+                elif metric_id == constants.PRECISION:
+                    plot_tracker.sub_plot_obj.set_title('Precision')
+                    plot_tracker.sub_plot_obj.set_ylabel('precision')
+                elif metric_id == constants.RECALL:
+                    plot_tracker.sub_plot_obj.set_title('Recall')
+                    plot_tracker.sub_plot_obj.set_ylabel('recall')
+                elif metric_id == constants.F1_SCORE:
+                    plot_tracker.sub_plot_obj.set_title('F1 Score')
+                    plot_tracker.sub_plot_obj.set_ylabel('f1 score')
                 elif metric_id == constants.HAMMING_SCORE:
                     plot_tracker.sub_plot_obj.set_title('Hamming score')
                     plot_tracker.sub_plot_obj.set_ylabel('hamming score')

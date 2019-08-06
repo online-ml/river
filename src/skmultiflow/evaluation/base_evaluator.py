@@ -611,6 +611,18 @@ class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
                 print('{} - Kappa M      : {:.4f}'.format(
                     self.model_names[i],
                     self._data_buffer.get_data(metric_id=constants.KAPPA_M, data_id=constants.MEAN)[i]))
+            if constants.PRECISION in self.metrics:
+                print('{} - Precision: {:.4f}'.format(
+                    self.model_names[i],
+                    self._data_buffer.get_data(metric_id=constants.PRECISION, data_id=constants.MEAN)[i]))
+            if constants.RECALL in self.metrics:
+                print('{} - Recall: {:.4f}'.format(
+                    self.model_names[i],
+                    self._data_buffer.get_data(metric_id=constants.RECALL, data_id=constants.MEAN)[i]))
+            if constants.F1_SCORE in self.metrics:
+                print('{} - F1 score: {:.4f}'.format(
+                    self.model_names[i],
+                    self._data_buffer.get_data(metric_id=constants.F1_SCORE, data_id=constants.MEAN)[i]))
             if constants.HAMMING_SCORE in self.metrics:
                 print('{} - Hamming score: {:.4f}'.format(
                     self.model_names[i],
