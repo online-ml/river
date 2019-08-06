@@ -96,6 +96,11 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
                              .format(gradient_descent,
                                      allowed_gradient_optimizers))
 
+        if self.gradient_descent == 'adadelta':
+            self._update_prototype = self._update_prototype_adadelta
+        else:
+            self._update_prototype = self._update_prototype_vanilla
+
     def _update_prototype_vanilla(self, j, xi, c_xi, prototypes):
         """Vanilla SGD"""
         d = xi - prototypes[j]
@@ -143,11 +148,6 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
                                                     train_lab.ravel())
 
         if self.initial_fit:
-            if self.gradient_descent == 'adadelta':
-                self._update_prototype = self._update_prototype_adadelta
-            else:
-                self._update_prototype = self._update_prototype_vanilla
-
             if classes:
                 self.classes_ = np.asarray(classes)
                 self.protos_initialized = np.zeros(self.classes_.size)
