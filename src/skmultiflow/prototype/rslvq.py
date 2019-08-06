@@ -371,7 +371,8 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
             each of which represents the probability that the i-th sample of
             X belongs to a certain label.
         """
-        return 'Not implemented'
+        raise NotImplementedError('This method does not exist on Robust Soft '
+                                  'Learning Vector Qunatization')
 
     @property
     def prototypes(self):
