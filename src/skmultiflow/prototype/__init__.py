@@ -2,6 +2,6 @@
 The :mod:`skmultiflow.prototype` module includes prototype-based learning methods.
 """
 
-from .rslvq import RSLVQ
+from .rslvq import RobustSoftLearningVectorQuantization
 
-__all__ = ["RSLVQ"]
+__all__ = ["RobustSoftLearningVectorQuantization"]

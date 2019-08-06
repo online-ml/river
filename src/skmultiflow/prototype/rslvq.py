@@ -1,12 +1,12 @@
 import math
 import numpy as np
-from sklearn.utils.multiclass import unique_labels
 from sklearn.utils import validation
-from skmultiflow.core.base import ClassifierMixin, BaseSKMObject
 from sklearn.metrics import euclidean_distances
+from sklearn.utils.multiclass import unique_labels
+from skmultiflow.core.base import ClassifierMixin, BaseSKMObject
 
 
-class RSLVQ(ClassifierMixin, BaseSKMObject):
+class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
     """Robust Soft Learning Vector Quantization for Streaming and Non-Streaming
     Data
     By choosing another gradient descent method the RSLVQ can be used as an
@@ -21,6 +21,10 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
      optional
         Prototypes to start with. If not given initialization near the class
         means. Class label must be placed as last entry of each prototype.
+        Example for one prototype per class on a binary classification
+        problem:
+            initial_prototypes = [[2.59922826, 2.57368134, 4.92501, 0],
+                                 [6.05801971, 6.01383352, 5.02135783, 1]]
     sigma : float, optional (default=1.0)
         Variance of the distribution.
     random_state : int, RandomState instance or None, optional (default=None)
@@ -34,6 +38,7 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
     (default='vanilla')
         To use momentum-based gradient descent, choose 'adadelta' instead
         of 'vanilla'
+
     Attributes
     ----------
     w_ : array-like, shape = [n_prototypes, n_features]
@@ -73,7 +78,7 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
         self.initial_fit = True
         self.classes_ = []
         self.learning_rate = 1 / sigma
-        self.decay_rate = gamma
+        self.gamma = gamma
         self.gradient_descent = gradient_descent
 
         if sigma <= 0:
@@ -91,11 +96,6 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
                              .format(gradient_descent,
                                      allowed_gradient_optimizers))
 
-        if gradient_descent == 'adadelta':
-            self._update_prototype = self._update_prototype_adadelta
-        else:
-            self._update_prototype = self._update_prototype_vanilla
-
     def _update_prototype_vanilla(self, j, xi, c_xi, prototypes):
         """Vanilla SGD"""
         d = xi - prototypes[j]
@@ -108,7 +108,7 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
         else:
             # Distance prototype from data point
             self.w_[j] -= self.learning_rate * self._p(
-                    j, xi, prototypes=self.w_) * d
+                j, xi, prototypes=self.w_) * d
 
     def _update_prototype_adadelta(self, j, c_xi, xi, prototypes):
         """Implementation of Adadelta"""
@@ -121,8 +121,8 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
             gradient = - self._p(j, xi, prototypes=self.w_) * d
 
         # Accumulate gradient
-        self.squared_mean_gradient[j] = self.decay_rate * \
-            self.squared_mean_gradient[j] + (1 - self.decay_rate) \
+        self.squared_mean_gradient[j] = self.gamma * \
+            self.squared_mean_gradient[j] + (1 - self.gamma) \
             * gradient ** 2
 
         # Compute update/step
@@ -131,8 +131,8 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
             gradient
 
         # Accumulate updates
-        self.squared_mean_step[j] = self.decay_rate * \
-            self.squared_mean_step[j] + (1 - self.decay_rate) * step ** 2
+        self.squared_mean_step[j] = self.gamma * \
+            self.squared_mean_step[j] + (1 - self.gamma) * step ** 2
 
         # Attract/Distract prototype to/from data point
         self.w_[j] += step
@@ -143,6 +143,11 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
                                                     train_lab.ravel())
 
         if self.initial_fit:
+            if self.gradient_descent == 'adadelta':
+                self._update_prototype = self._update_prototype_adadelta
+            else:
+                self._update_prototype = self._update_prototype_vanilla
+
             if classes:
                 self.classes_ = np.asarray(classes)
                 self.protos_initialized = np.zeros(self.classes_.size)
@@ -164,11 +169,11 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
         if isinstance(self.prototypes_per_class, int):
             # ppc is int so we can give same number ppc to for all classes
             if self.prototypes_per_class < 0:
-                raise ValueError("prototypes_per_class must be a positive int")
+                raise ValueError('prototypes_per_class must be a positive int')
             # nb_ppc = number of protos per class
             nb_ppc = np.ones([nb_classes],
                              dtype='int') * self.prototypes_per_class
-        else:
+        elif isinstance(self.prototypes_per_class, list):
             # its an array containing individual number of protos per class
             # - not fully supported yet
             nb_ppc = validation.column_or_1d(
@@ -176,13 +181,16 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
                                        ensure_2d=False, dtype='int'))
             if nb_ppc.min() <= 0:
                 raise ValueError(
-                    "values in prototypes_per_class must be positive")
+                    'values in prototypes_per_class must be positive')
             if nb_ppc.size != nb_classes:
                 raise ValueError(
-                    "length of prototypes per class"
-                    " does not fit the number of classes"
-                    "classes=%d"
-                    "length=%d" % (nb_classes, nb_ppc.size))
+                    'length of prototypes_per_class'
+                    ' does not fit the number of classes'
+                    'classes=%d'
+                    'length=%d' % (nb_classes, nb_ppc.size))
+        else:
+            raise ValueError('Invalid data type for prototypes_per_class, '
+                             'must be int or list of int')
 
         # initialize prototypes
         if self.initial_prototypes is None:
@@ -239,43 +247,22 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
 
         return train_set, train_lab
 
-    def fit(self, X, y, classes=None):
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
         """Fit the LVQ model to the given training data and parameters using
-        l-bfgs-b.
+        gradient ascent.
+
         Parameters
         ----------
         x : array-like, shape = [n_samples, n_features]
-          Training vector, where n_samples in the number of samples and
-          n_features is the number of features.
-        y : array, shape = [n_samples]
-          Target values (integers in classification, real numbers in
-          regression)
-        Returns
-        --------
-        self
-        """
-        if set(unique_labels(y)).issubset(set(self.classes_)) or \
-                self.initial_fit is True:
-            X, y = self._validate_train_parms(X, y, classes=classes)
-        else:
-            raise ValueError('Class {} was not learned - please declare all \
-                             classes in first call of fit/partial_fit'
-                             .format(y))
+            Training vector, where n_samples in the number of samples and
+            n_features is the number of features.
+        y : numpy.ndarray of shape (n_samples, n_targets)
+            An array-like with the class labels of all samples in X
+        classes : numpy.ndarray, optional (default=None)
+            Contains all possible/known class labels. Usage varies depending
+            on the learning method.
+        sample_weight : Not used.
 
-        self._optimize(X, y)
-        return self
-
-    def partial_fit(self, X, y, classes=None):
-        """Fit the LVQ model to the given training data and parameters using
-        l-bfgs-b.
-        Parameters
-        ----------
-        x : array-like, shape = [n_samples, n_features]
-          Training vector, where n_samples in the number of samples and
-          n_features is the number of features.
-        y : array, shape = [n_samples]
-          Target values (integers in classification, real numbers in
-          regression)
         Returns
         --------
         self
@@ -386,10 +373,7 @@ class RSLVQ(ClassifierMixin, BaseSKMObject):
         """
         return 'Not implemented'
 
-    def reset(self):
-        """Reset the model"""
-        self.__init__(gradient_descent=self.gradient_descent)
-
-    def get_prototypes(self):
+    @property
+    def prototypes(self):
         """Returns the prototypes"""
         return self.w_
