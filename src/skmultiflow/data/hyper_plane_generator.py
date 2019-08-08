@@ -216,15 +216,14 @@ class HyperplaneGenerator(Stream):
 
         """
         data = np.zeros([batch_size, self.n_features + 1])
-        sum = 0
-        sum_weights = 0.0
+        sum_weights = np.sum(self._weights)
 
         for j in range(batch_size):
             self.sample_idx += 1
+            sum = 0
             for i in range(self.n_features):
                 data[j, i] = self._random_state.rand()
                 sum += self._weights[i] * data[j, i]
-                sum_weights += self._weights[i]
 
             group = 1 if sum >= sum_weights * 0.5 else 0
 
