@@ -1,3 +1,4 @@
+import copy
 import random
 
 from sklearn.preprocessing import normalize
@@ -342,7 +343,7 @@ class HalfSpaceTree:
         r, _ = get_dimensions(X)
         predictions = []
         for i in range(r):
-            votes = self.get_votes_for_instance(X[i], max_score).copy()
+            votes = copy.deepcopy(self.get_votes_for_instance(X[i], max_score))
             y_proba = np.zeros(int(max(votes.keys())) + 1)
             for key, value in votes.items():
                 y_proba[int(key)] = value
