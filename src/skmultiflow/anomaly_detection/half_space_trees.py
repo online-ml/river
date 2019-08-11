@@ -149,7 +149,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         r, _ = get_dimensions(X)
         predictions = []
         for i in range(r):
-            votes = self.get_votes_for_instance(X[i])
+            votes = self._predict(X[i])
             if votes == {}:
                 # Ensemble is empty, all classes equal, default to zero
                 predictions.append(0)
@@ -157,8 +157,8 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
                 predictions.append(max(votes, key=votes.get))
         return np.asarray(predictions)
 
-    def get_votes_for_instance(self, X):
-        """ Get class votes for a single instance.
+    def _predict(self, X):
+        """ Predict class votes for a single instance.
 
         Parameters
         ----------
