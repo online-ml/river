@@ -1,3 +1,4 @@
+import os
 from array import array
 
 import numpy as np
@@ -6,12 +7,11 @@ from skmultiflow.anomaly_detection import HalfSpaceTrees
 from skmultiflow.data import SEAGenerator
 
 
-def test_half_space_trees():
-    np.random.seed(1)
-    stream = SEAGenerator(classification_function=0, noise_percentage=0.1)
+def test_half_space_trees(test_path):
+    stream = SEAGenerator(classification_function=0, noise_percentage=0.1, random_state=1)
     stream.prepare_for_use()
-    learner = HalfSpaceTrees(n_features=stream.n_features, n_estimators=25, size_limit=25, anomaly_threshold=0.90,
-                             depth=10, tree_random_state=5)
+    learner = HalfSpaceTrees(n_features=stream.n_features, n_estimators=13, size_limit=75, anomaly_threshold=0.90,
+                             depth=10, random_state=5)
 
     cnt = 0
     max_samples = 5000
@@ -29,5 +29,8 @@ def test_half_space_trees():
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('i', [1, 0, 0, 0, 0, 1, 0, 0, 0])
+    expected_predictions = array('i', [1, 0, 0, 0, 1, 0, 0, 1, 0])
     assert np.alltrue(y_pred == expected_predictions)
+    test_file = os.path.join(test_path, 'test_half_space_trees.npy')
+    expected_proba = np.load(test_file)
+    assert np.allclose(y_proba, expected_proba)

@@ -1,8 +1,9 @@
 import copy
-import random
 
 from sklearn.preprocessing import normalize
+
 from skmultiflow.core import BaseSKMObject, ClassifierMixin
+from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 
 
@@ -37,8 +38,11 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         The threshold for declaring anomalies.
         Any instance prediction probability above this threshold will be declared as an anomaly.
 
-    tree_random_state: int (Default: None)
-        Seed for random generation of tree.
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
 
     Implements the Streaming Half - Space Trees one - class classifier described in
     S.C.Tan, K.M.Ting, and T.F.Liu, “Fast anomaly detection for streaming data,”
@@ -53,7 +57,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
                  n_estimators=25,
                  size_limit=50,
                  anomaly_threshold=0.5,
-                 tree_random_state=None):
+                 random_state=None):
 
         super().__init__()
         self.window_size = window_size
@@ -67,7 +71,8 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         self.samples_seen = 0
         self.anomaly_threshold = anomaly_threshold
         self.is_learning_phase_on = True
-        self.tree_random_state = tree_random_state
+        self.random_state = random_state
+        self._random_state = None
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ Partially (incrementally) fit the model.
@@ -89,6 +94,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         row_cnt, _ = X.shape
 
         if self.samples_seen == 0:
+            self._random_state = check_random_state(self.random_state)
             self.build_trees()
 
         for i in range(row_cnt):
@@ -142,49 +148,18 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         r, _ = get_dimensions(X)
         predictions = []
         for i in range(r):
-            votes = self._predict(X[i])
-            if votes == {}:
+            y_proba = self.predict_proba(X)
+            if y_proba is None:
                 # Ensemble is empty, all classes equal, default to zero
                 predictions.append(0)
             else:
-                predictions.append(max(votes, key=votes.get))
+                # if prediction of this instance being anomaly is greater than the threshold defined,
+                # then this instance is classified as an anomaly.
+                if y_proba[0][1] > self.anomaly_threshold:
+                    predictions.append(1)
+                else:
+                    predictions.append(0)
         return np.asarray(predictions)
-
-    def _predict(self, X):
-        """ Predict class votes for a single instance.
-
-        Parameters
-        ----------
-        X: numpy.ndarray of length equal to the number of features.
-            Instance attributes.
-
-        Returns
-        -------
-        dict (class_value, weight)
-
-        """
-
-        combined_votes = {}
-        max_score = self.window_size * pow(2.0, self.depth)
-
-        for i in range(self.n_estimators):
-            vote = self.ensemble[i].get_votes_for_instance(X, max_score)
-            if vote != {}:
-                # Add values
-                for k in vote:
-                    try:
-                        # if prediction of this instance being anomaly is greater than the threshold defined,
-                        # then this instance is classified as an anomaly.
-                        if vote[1] > self.anomaly_threshold:
-                            combined_votes[1] += 1
-                        else:
-                            try:
-                                combined_votes[0] += 1
-                            except KeyError:
-                                combined_votes[0] = 1
-                    except KeyError:
-                        combined_votes[1] = 1
-        return combined_votes
 
     def predict_proba(self, X):
         """ Estimates the probability of each sample in X belonging to each of the class-labels (normal and outlier).
@@ -220,7 +195,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         For every dimension in the feature space, creates a minimum and a maximum work range.
         """
         for i in range(self.n_features):
-            sq = random.uniform(0, 1)
+            sq = self._random_state.uniform(0, 1)
             min_element = sq - 2 * max(sq, 1 - sq)
             max_element = sq + 2 * max(sq, 1 - sq)
             try:
@@ -239,7 +214,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         for i in range(self.n_estimators):
             self.initialise_work_space()
             tree = HalfSpaceTree(self.depth, self.n_features, self.size_limit, self.min_values, self.max_values,
-                                 self.tree_random_state)
+                                 self._random_state)
             self.ensemble.append(tree)
 
     def update_mass(self, X, boolean):
@@ -282,7 +257,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
 
 class HalfSpaceTree:
 
-    def __init__(self, max_depth, n_features, size_limit, min_values, max_values, tree_random_state=None):
+    def __init__(self, max_depth, n_features, size_limit, min_values, max_values, random_state=None):
         """
         Half Space Tree
 
@@ -305,16 +280,20 @@ class HalfSpaceTree:
         max_values: Array of floats
             Maximum work range for every dimension.
 
-        tree_random_state: int (Default: None)
-            Seed for random generation of tree.
+        random_state: int, RandomState instance or None, optional (default=None)
+            If int, random_state is the seed used by the random number generator;
+            If RandomState instance, random_state is the random number generator;
+            If None, the random number generator is the RandomState instance used
+            by `np.random`.
         """
         super().__init__()
         self.max_depth = max_depth
         self.n_features = n_features
         self.size_limit = size_limit
         self.is_learning_phase_on = True
+        self.random_state = random_state
+        self._random_state = check_random_state(random_state)
         self.root = self.build_tree(min_values, max_values)
-        random.seed(tree_random_state)
 
     def predict_proba(self, X, max_score):
         """ Predicts probabilities of all label of the X instance(s)
@@ -340,7 +319,7 @@ class HalfSpaceTree:
             y_proba = np.zeros(int(max(votes.keys())) + 1)
             for key, value in votes.items():
                 y_proba[int(key)] = value
-                predictions.append(y_proba)
+            predictions.append(y_proba)
         return np.array(predictions)
 
     def get_votes_for_instance(self, X, max_score):
@@ -426,7 +405,7 @@ class HalfSpaceTree:
         if self.max_depth == current_depth:
             return HalfSpaceTreeNode(depth=current_depth, internal_node=False)
         else:
-            random_feature_idx = random.randint(0, self.n_features - 1)
+            random_feature_idx = self._random_state.randint(0, self.n_features - 1)
             p = (min_values[random_feature_idx] + max_values[random_feature_idx]) / 2.0
             temp = max_values[random_feature_idx]
             max_values[random_feature_idx] = p
