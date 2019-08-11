@@ -80,13 +80,6 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         y: numpy.ndarray of shape (n_samples)
             An array-like with the class labels of all samples in X.
 
-        classes: numpy.ndarray, optional (default=None)
-            Array with all possible/known class labels. This is an optional parameter, except
-            for the first partial_fit call where it is compulsory.
-
-        sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed.
-
         Returns
         -------
         self
