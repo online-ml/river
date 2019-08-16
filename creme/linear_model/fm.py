@@ -57,7 +57,7 @@ class FMRegressor(base.Regressor):
             intercept = stats.Mean()
         self.intercept = intercept
 
-        optimizer = optim.VanillaSGD(0.01) if optimizer is None else optimizer
+        optimizer = optim.SGD(0.01) if optimizer is None else optimizer
         self.weights_optimizer = copy.deepcopy(optimizer)
         self.latents_optimizer = copy.deepcopy(optimizer)
 
@@ -78,6 +78,7 @@ class FMRegressor(base.Regressor):
         # Update the weights
         self.weights = self.weights_optimizer.update_after_pred(
             w=self.weights,
+            x=x,
             g={j: xj * loss_gradient for j, xj in x.items()}
         )
 
@@ -95,6 +96,7 @@ class FMRegressor(base.Regressor):
         for j, xj in x.items():
             self.latents[j] = self.latents_optimizer.update_after_pred(
                 w=self.latents[j],
+                x=x,
                 g={
                     f: xj * (vs[f] - v[j][f] * xj)
                     for f in range(self.n_components)

@@ -35,7 +35,7 @@ class GLM:
     def fit_one(self, x, y):
 
         # Some optimizers need to do something before a prediction is made
-        self.weights = self.optimizer.update_before_pred(w=self.weights)
+        self.weights = self.optimizer.update_before_pred(w=self.weights, x=x)
 
         # Obtain the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self.raw_dot(x))
@@ -50,7 +50,7 @@ class GLM:
         }
 
         # Update the weights
-        self.weights = self.optimizer.update_after_pred(g=gradient, w=self.weights)
+        self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient)
 
         # Update the intercept
         self.intercept -= g_loss * self.intercept_lr
@@ -63,7 +63,7 @@ class LinearRegression(GLM, base.Regressor):
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to `optim.VanillaSGD(0.01)`.
+            Defaults to `optim.SGD(0.01)`.
         loss (optim.Loss): The loss function to optimize for. Defaults to `optim.SquaredLoss`.
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
@@ -111,7 +111,7 @@ class LinearRegression(GLM, base.Regressor):
 
     def __init__(self, optimizer=None, loss=None, l2=0.0001, intercept=0., intercept_lr=0.1):
         super().__init__(
-            optimizer=optim.VanillaSGD(0.01) if optimizer is None else optimizer,
+            optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.SquaredLoss() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
@@ -127,7 +127,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to `optim.VanillaSGD(0.05)`.
+            Defaults to `optim.SGD(0.05)`.
         loss (optim.Loss): The loss function to optimize for. Defaults to `optim.LogLoss`.
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
@@ -172,7 +172,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     def __init__(self, optimizer=None, loss=None, l2=0.0001, intercept=0., intercept_lr=0.01):
         super().__init__(
-            optimizer=optim.VanillaSGD(0.05) if optimizer is None else optimizer,
+            optimizer=optim.SGD(0.05) if optimizer is None else optimizer,
             loss=optim.LogLoss() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,

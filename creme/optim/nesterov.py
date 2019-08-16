@@ -43,7 +43,7 @@ class NesterovMomentum(base.Optimizer):
         self.rho = rho
         self.s = collections.defaultdict(float)
 
-    def update_before_pred(self, w):
+    def update_before_pred(self, w, x):
 
         for i in w:
             w[i] -= self.rho * self.s[i]

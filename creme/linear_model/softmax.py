@@ -63,7 +63,7 @@ class SoftmaxRegression(base.MultiClassifier):
     def __init__(self, optimizer=None, loss=None, l2=0):
         self.optimizers = collections.defaultdict(functools.partial(
             copy.deepcopy,
-            optim.VanillaSGD(0.01) if optimizer is None else optimizer
+            optim.SGD(0.01) if optimizer is None else optimizer
         ))
         self.loss = optim.CrossEntropy() if loss is None else loss
         self.l2 = l2
@@ -73,7 +73,7 @@ class SoftmaxRegression(base.MultiClassifier):
 
         # Some optimizers need to do something before a prediction is made
         for label, weights in self.weights.items():
-            self.optimizers[label].update_before_pred(w=weights)
+            self.optimizers[label].update_before_pred(w=weights, x=x)
 
         # Make a prediction for the given features
         y_pred = self.predict_proba_one(x)

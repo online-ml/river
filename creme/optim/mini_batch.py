@@ -37,7 +37,7 @@ class MiniBatcher(base.Optimizer):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimizer = optim.MiniBatcher(optim.VanillaSGD(0.1), 4)
+            >>> optimizer = optim.MiniBatcher(optim.SGD(0.1), 4)
             >>> model = (
             ...     preprocessing.StandardScaler() |
             ...     linear_model.LogisticRegression(optimizer)
@@ -60,8 +60,8 @@ class MiniBatcher(base.Optimizer):
     def learning_rate(self):
         return self.optimizer.learning_rate
 
-    def update_before_pred(self, w):
-        return self.optimizer.update_before_pred(w)
+    def update_before_pred(self, w, x):
+        return self.optimizer.update_before_pred(w, x)
 
     def _update_after_pred(self, w, g):
 
