@@ -21,7 +21,7 @@ Optimizers
    NesterovMomentum
    Optimizer
    RMSProp
-   VanillaSGD
+   SGD
 
 
 Learning rate schedulers

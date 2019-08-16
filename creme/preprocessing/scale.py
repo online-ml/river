@@ -8,6 +8,12 @@ from .. import utils
 __all__ = ['MinMaxScaler', 'Normalizer', 'StandardScaler']
 
 
+def safe_div(a, b):
+    if b == 0:
+        return a
+    return a / b
+
+
 class StandardScaler(base.Transformer):
     """Scales the data so that it has zero mean and unit variance.
 
@@ -80,9 +86,7 @@ class StandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: (xi - self.variances[i].mean.get()) / self.variances[i].get() ** 0.5
-            if self.variances[i].get() > 0
-            else 0.
+            i: safe_div(xi - self.variances[i].mean.get(), self.variances[i].get() ** 0.5)
             for i, xi in x.items()
         }
 
@@ -97,7 +101,6 @@ class MinMaxScaler(base.Transformer):
     Attributes:
         min (dict): Mapping between features and instances of `stats.Min`.
         max (dict): Mapping between features and instances of `stats.Max`.
-        eps (float): Used for avoiding divisions by zero.
 
     Example:
 
@@ -114,20 +117,20 @@ class MinMaxScaler(base.Transformer):
             >>> for x in X:
             ...     print(scaler.fit_one(x).transform_one(x))
             {'x': 0.0}
-            {'x': 0.999999...}
-            {'x': 0.620391...}
-            {'x': 0.388976...}
+            {'x': 1.0}
+            {'x': 0.6203919416734277}
+            {'x': 0.3889767542308411}
             {'x': 0.0}
             {'x': 0.0}
             {'x': 0.0}
-            {'x': 0.905293...}
-            {'x': 0.608349...}
-            {'x': 0.728172...}
+            {'x': 0.9052932403284701}
+            {'x': 0.6083494586037179}
+            {'x': 0.7281723223510779}
             {'x': 0.0}
-            {'x': 0.999999...}
-            {'x': 0.855194...}
-            {'x': 0.201990...}
-            {'x': 0.169847...}
+            {'x': 1.0}
+            {'x': 0.8551948389216542}
+            {'x': 0.20199040802352813}
+            {'x': 0.16984743067826635}
 
             >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
             >>> preprocessing.MinMaxScaler().fit_transform(X)
@@ -152,7 +155,6 @@ class MinMaxScaler(base.Transformer):
     def __init__(self):
         self.min = collections.defaultdict(stats.Min)
         self.max = collections.defaultdict(stats.Max)
-        self.eps = 10e-10
 
     def fit_one(self, x, y=None):
 
@@ -164,7 +166,7 @@ class MinMaxScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: (xi - self.min[i].get()) / (self.max[i].get() - self.min[i].get() + self.eps)
+            i: safe_div(xi - self.min[i].get(), self.max[i].get() - self.min[i].get())
             for i, xi in x.items()
         }
 

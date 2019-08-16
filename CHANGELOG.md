@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Metrics can now be composed using the `+` operator, which is useful for evaluating multiple metrics
 - `LogisticRegression` and `LinearRegression` now have a `intercept_lr` parameter
 
+### Modified
+
+- Renamed `VanillaSGD` to `SGD`
+- Fixed a bug where `utils.dot` could take longer than necessary
+
 ## [0.3.0](https://pypi.org/project/creme/0.3.0/) - 2019-06-23
 
 ### Added

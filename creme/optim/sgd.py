@@ -1,10 +1,10 @@
 from . import base
 
 
-__all__ = ['VanillaSGD']
+__all__ = ['SGD']
 
 
-class VanillaSGD(base.Optimizer):
+class SGD(base.Optimizer):
     """Plain stochastic gradient descent.
 
     Example:
@@ -24,7 +24,7 @@ class VanillaSGD(base.Optimizer):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimizer = optim.VanillaSGD(0.1)
+            >>> optimizer = optim.SGD(0.1)
             >>> model = (
             ...     preprocessing.StandardScaler() |
             ...     linear_model.LogisticRegression(optimizer)

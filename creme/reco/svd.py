@@ -62,8 +62,8 @@ class SVD(base.Recommender):
 
             >>> model = reco.SVD(
             ...     n_factors=10,
-            ...     row_optimizer=optim.VanillaSGD(0.005),
-            ...     col_optimizer=optim.VanillaSGD(0.005),
+            ...     row_optimizer=optim.SGD(0.005),
+            ...     col_optimizer=optim.SGD(0.005),
             ...     random_state=42
             ... )
 
@@ -79,8 +79,8 @@ class SVD(base.Recommender):
                  loss=None, l2=0., random_state=None):
 
         self.n_factors = n_factors
-        self.row_optimizer = optim.VanillaSGD() if row_optimizer is None else row_optimizer
-        self.col_optimizer = optim.VanillaSGD() if col_optimizer is None else row_optimizer
+        self.row_optimizer = optim.SGD() if row_optimizer is None else row_optimizer
+        self.col_optimizer = optim.SGD() if col_optimizer is None else row_optimizer
         self.loss = optim.SquaredLoss() if loss is None else row_optimizer
         self.l2 = l2
         self.global_mean = stats.Mean()

@@ -27,7 +27,7 @@ from .mini_batch import MiniBatcher
 from .momentum import Momentum
 from .nesterov import NesterovMomentum
 from .rms_prop import RMSProp
-from .vanilla_sgd import VanillaSGD
+from .sgd import SGD
 
 
 __all__ = [
@@ -55,6 +55,6 @@ __all__ = [
     'QuantileLoss',
     'RegressionLoss',
     'RMSProp',
-    'SquaredLoss',
-    'VanillaSGD'
+    'SGD',
+    'SquaredLoss'
 ]
