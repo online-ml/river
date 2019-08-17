@@ -85,6 +85,12 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         y: numpy.ndarray of shape (n_samples)
             An array-like with the class labels of all samples in X.
 
+        classes: None
+            Not used by this method.
+
+        sample_weight: None
+            Not used by this method.
+
         Returns
         -------
         self
