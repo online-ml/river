@@ -121,9 +121,7 @@ By only using a few lines of code, we've built a robust model and evaluated it b
 
 ## Benchmarks
 
-The code for running the benchmarks is available [here](benchmarks).
-
-### Linear regression with SGD
+All the benchmarks, including reproducible code, are available [here](benchmarks).
 
 The following results compare different implementations of linear regression trained with plain stochastic gradient descent. We used the bikes dataset and measured the mean squared error (MSE). We also measured the time taken for updating each model as well as for making predictions.
 
@@ -142,33 +140,33 @@ The following results compare different implementations of linear regression tra
     <tr>
       <td>creme</td>
       <td>23.035085</td>
-      <td>1s, 636ms, 782μs, 413ns</td>
+      <td>1s, 636ms</td>
       <td>8μs, 970ns</td>
-      <td>516ms, 695μs, 69ns</td>
+      <td>516ms, 695μs</td>
       <td>2μs, 832ns</td>
     </tr>
     <tr>
       <td>scikit-learn</td>
       <td>25.295369</td>
-      <td>22s, 777ms, 224μs, 908ns</td>
+      <td>22s, 777ms</td>
       <td>124μs, 827ns</td>
-      <td>9s, 235ms, 157μs, 565ns</td>
+      <td>9s, 235ms</td>
       <td>50μs, 612ns</td>
     </tr>
     <tr>
       <td>PyTorch (CPU)</td>
-      <td>171.185606</td>
-      <td>35s, 24ms, 575μs, 207ns</td>
+      <td>23.035086</td>
+      <td>35s, 24ms</td>
       <td>191μs, 947ns</td>
-      <td>12s, 133ms, 76μs, 983ns</td>
+      <td>12s, 133ms</td>
       <td>66μs, 494ns</td>
     </tr>
     <tr>
       <td>Keras on Tensorflow (CPU)</td>
       <td>23.035086</td>
-      <td>50s, 929ms, 900μs, 360ns</td>
+      <td>50s, 929ms</td>
       <td>279μs, 114ns</td>
-      <td>32s, 616ms, 215μs, 989ns</td>
+      <td>32s, 616ms</td>
       <td>178μs, 748ns</td>
     </tr>
   </tbody>
