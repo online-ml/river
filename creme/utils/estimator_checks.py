@@ -10,6 +10,18 @@ from sklearn import datasets
 __all__ = ['check_estimator']
 
 
+def guess_model(model):
+
+    from .. import base
+    from .. import compose
+
+    if isinstance(model, compose.Pipeline):
+        return guess_model(model.final_estimator)
+    elif isinstance(model, base.Wrapper):
+        return guess_model(model.model)
+    return model
+
+
 def make_random_features(model, n_observations, n_features):
     for _ in range(n_observations):
         yield {i: random.random() for i in range(n_features)}
@@ -20,6 +32,7 @@ def make_random_targets(model, n_observations):
     from .. import base
 
     random_func = None
+    model = guess_model(model)
 
     if isinstance(model, base.Regressor):
         random_func = random.random

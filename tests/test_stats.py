@@ -2,6 +2,7 @@ import collections
 import copy
 import functools
 import math
+import pickle
 import random
 import statistics
 
@@ -29,8 +30,11 @@ def test_univariate(stat, func):
     # Shut up
     np.warnings.filterwarnings('ignore')
 
-    # Statistics need to be deep-copyable
+    # Check deepcopying works
     copy.deepcopy(stat)
+
+    # Check pickling works
+    pickle.loads(pickle.dumps(stat))
 
     # Check the statistic has a working __str__ and name method
     assert isinstance(str(stat), str)
@@ -61,8 +65,11 @@ def test_rolling_univariate(stat, func):
     # We know what we're doing
     np.warnings.filterwarnings('ignore')
 
-    # Statistics need to be deep-copyable
+    # Check deepcopying works
     copy.deepcopy(stat)
+
+    # Check pickling works
+    pickle.loads(pickle.dumps(stat))
 
     # Check the statistic has a working __str__ and name method
     assert isinstance(str(stat), str)
@@ -97,8 +104,11 @@ def test_bivariate(stat, func):
     # Shhh
     np.warnings.filterwarnings('ignore')
 
-    # Statistics need to be deep-copyable
+    # Check deepcopying works
     copy.deepcopy(stat)
+
+    # Check pickling works
+    pickle.loads(pickle.dumps(stat))
 
     # Check the statistic has a working __str__ method, which is more important than it may seem
     assert isinstance(str(stat), str)
