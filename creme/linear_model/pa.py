@@ -81,7 +81,7 @@ class PARegressor(BasePA, base.Regressor):
     def fit_one(self, x, y):
 
         y_pred = self.predict_one(x)
-        tau = self.calc_tau(x, self.loss(y, y_pred))
+        tau = self.calc_tau(x, self.loss.eval(y, y_pred))
         step = tau * np.sign(y - y_pred)
 
         for i, xi in x.items():
@@ -157,7 +157,7 @@ class PAClassifier(BasePA, base.BinaryClassifier):
     def fit_one(self, x, y):
 
         y_pred = utils.dot(x, self.weights) + self.intercept
-        tau = self.calc_tau(x, self.loss(y, y_pred))
+        tau = self.calc_tau(x, self.loss.eval(y, y_pred))
         step = tau * (y or -1)  # y == False becomes -1
 
         for i, xi in x.items():

@@ -26,6 +26,7 @@ VERSION = None
 base_packages = ['numpy>=1.16.4', 'scipy>=1.3.0', 'scikit-learn>=0.21.2']
 
 dev_packages = [
+    'Cython>=0.29.6',
     'graphviz>=0.10.1',
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
@@ -33,6 +34,7 @@ dev_packages = [
     'nbval>=0.9.1',
     'pytest>=4.5.0',
     'pytest-cov>=2.6.1',
+    'pytest-cython>=0.1.0',
     'nbsphinx>=0.4.2',
     'Sphinx>=2.0.1',
     'sphinx-rtd-theme>=0.4.3'
@@ -134,6 +136,6 @@ setup(
         'upload': UploadCommand,
     },
     ext_modules=cythonize([
-        Extension('*', ['**/*.pyx'])
+        Extension('*', sources=['**/*.pyx'], libraries=['m'])
     ])
 )
