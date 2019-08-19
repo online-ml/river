@@ -4,10 +4,19 @@ Utilities for measuring the performance of online learning algorithms.
 import math
 
 from . import base
+from . import compose
 from . import stream
 
 
 __all__ = ['online_score', 'online_qa_score']
+
+
+def is_classifier(model):
+    if isinstance(model, compose.Pipeline):
+        return is_classifier(model.final_estimator)
+    elif isinstance(model, base.Wrapper):
+        return is_classifier(model.model)
+    return isinstance(model, base.Classifier)
 
 
 def online_score(X_y, model, metric, print_every=math.inf):
@@ -31,7 +40,7 @@ def online_score(X_y, model, metric, print_every=math.inf):
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     pred_func = model.predict_one
-    if isinstance(model, base.Classifier) and not metric.requires_labels:
+    if is_classifier(model) and not metric.requires_labels:
         pred_func = model.predict_proba_one
 
     # Handle the first observation separately
@@ -83,7 +92,7 @@ def online_qa_score(X_y, model, metric, on, lag, print_every=math.inf):
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     pred_func = model.predict_one
-    if isinstance(model, base.Classifier) and not metric.requires_labels:
+    if is_classifier(model) and not metric.requires_labels:
         pred_func = model.predict_proba_one
 
     n_questions = 0

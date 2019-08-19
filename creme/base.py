@@ -307,7 +307,3 @@ class Wrapper(abc.ABC):
 
     def __str__(self):
         return f'{type(self).__name__}({self.model})'
-
-    @property
-    def __class__(self):
-        return self.model.__class__

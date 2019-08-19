@@ -10,7 +10,7 @@ from .. import base
 __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 
-class BaseBagging(base.Wrapper, collections.UserList):
+class BaseBagging(collections.UserList, base.Wrapper):
 
     def __init__(self, model, n_models=10, random_state=None):
         super().__init__()
@@ -86,9 +86,6 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
     """
 
-    def __str__(self):
-        return f'BaggingClassifier({str(self.model)})'
-
     def predict_proba_one(self, x):
         """Averages the predictions of each classifier."""
 
@@ -155,9 +152,6 @@ class BaggingRegressor(BaseBagging, base.Regressor):
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
 
     """
-
-    def __str__(self):
-        return f'BaggingRegressor({str(self.model)})'
 
     def predict_one(self, x):
         """Averages the predictions of each regressor."""
