@@ -4,7 +4,7 @@ from . import base
 from . import pearson
 
 
-class AutoCorrelation(base.Univariate, collections.deque):
+class AutoCorrelation(base.Univariate):
     """Measures the serial correlation.
 
     This method computes the Pearson correlation between the current value and the value seen ``n``
@@ -45,7 +45,7 @@ class AutoCorrelation(base.Univariate, collections.deque):
     """
 
     def __init__(self, lag):
-        super().__init__(maxlen=lag)
+        self.window = collections.deque(maxlen=lag)
         self.lag = lag
         self.pearson = pearson.PearsonCorrelation(ddof=1)
 
@@ -56,11 +56,11 @@ class AutoCorrelation(base.Univariate, collections.deque):
     def update(self, x):
 
         # The correlation can be update once enough elements have been seen
-        if len(self) == self.lag:
-            self.pearson.update(x, self[0])
+        if len(self.window) == self.lag:
+            self.pearson.update(x, self.window[0])
 
         # Add x to the window
-        super().append(x)
+        self.window.append(x)
 
         return self
 

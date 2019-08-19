@@ -52,7 +52,7 @@ class VarianceThreshold(base.Transformer):
     def check_feature(self, feature):
         if feature not in self.variances:
             return True
-        if self.variances[feature].n < self.min_samples:
+        if self.variances[feature].mean.n < self.min_samples:
             return True
         return self.variances[feature].get() > self.threshold
 

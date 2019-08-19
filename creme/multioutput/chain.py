@@ -64,7 +64,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             ...     model = model.fit_one(x, y)
 
             >>> metric
-            Jaccard: 0.304314
+            Jaccard: 0.417059
 
     """
 

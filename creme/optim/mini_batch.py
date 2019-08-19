@@ -60,8 +60,8 @@ class MiniBatcher(base.Optimizer):
     def learning_rate(self):
         return self.optimizer.learning_rate
 
-    def update_before_pred(self, w, x):
-        return self.optimizer.update_before_pred(w, x)
+    def update_before_pred(self, w):
+        return self.optimizer.update_before_pred(w)
 
     def _update_after_pred(self, w, g):
 

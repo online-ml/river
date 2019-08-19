@@ -9,7 +9,8 @@ import os
 import sys
 from shutil import rmtree
 
-from setuptools import find_packages, setup, Command
+from setuptools import Extension, find_packages, setup, Command
+from Cython.Build import cythonize
 
 # Package meta-data.
 NAME = 'creme'
@@ -132,4 +133,7 @@ setup(
     cmdclass={
         'upload': UploadCommand,
     },
+    ext_modules=cythonize([
+        Extension('*', ['**/*.pyx'])
+    ])
 )

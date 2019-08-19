@@ -73,7 +73,7 @@ class SoftmaxRegression(base.MultiClassifier):
 
         # Some optimizers need to do something before a prediction is made
         for label, weights in self.weights.items():
-            self.optimizers[label].update_before_pred(w=weights, x=x)
+            self.optimizers[label].update_before_pred(w=weights)
 
         # Make a prediction for the given features
         y_pred = self.predict_proba_one(x)

@@ -35,7 +35,7 @@ class GLM:
     def fit_one(self, x, y):
 
         # Some optimizers need to do something before a prediction is made
-        self.weights = self.optimizer.update_before_pred(w=self.weights, x=x)
+        self.weights = self.optimizer.update_before_pred(w=self.weights)
 
         # Obtain the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self.raw_dot(x))

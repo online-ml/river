@@ -98,8 +98,8 @@ class SVD(base.Recommender):
 
     def fit_one(self, r_id, c_id, y):
 
-        self.row_optimizer.update_before_pred(self.row_biases)
-        self.col_optimizer.update_before_pred(self.col_biases)
+        self.row_optimizer.update_before_pred(w=self.row_biases)
+        self.col_optimizer.update_before_pred(w=self.col_biases)
 
         # Predict the value
         y_pred = self.predict_one(r_id, c_id)
