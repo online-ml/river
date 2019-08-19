@@ -52,8 +52,7 @@ class CrossEntropy(stats.Mean, BaseCrossEntropy):
     """
 
     def update(self, y_true, y_pred):
-        ce = optim.CrossEntropy().__call__
-        return super().update(ce(y_true, y_pred))
+        return super().update(optim.CrossEntropy().eval(y_true, y_pred))
 
 
 class RollingCrossEntropy(stats.RollingMean, BaseCrossEntropy):
@@ -93,5 +92,4 @@ class RollingCrossEntropy(stats.RollingMean, BaseCrossEntropy):
     """
 
     def update(self, y_true, y_pred):
-        ce = optim.CrossEntropy().__call__
-        return super().update(ce(y_true, y_pred))
+        return super().update(optim.CrossEntropy().eval(y_true, y_pred))

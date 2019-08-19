@@ -27,7 +27,7 @@ class BaseHedge(collections.UserList):
         # Make a prediction and update the weights accordingly for each model
         for i, model in enumerate(self):
             y_pred = self._get_prediction(model, x)
-            loss = self.loss(y, y_pred)
+            loss = self.loss.eval(y, y_pred)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
             model.fit_one(x, y)
 
