@@ -35,6 +35,7 @@ jobs:
   - stage: docs
     install:
       - sudo apt-get install graphviz pandoc
+      - pip install cython
       - python setup.py install
       - pip install -e ".[dev]"
       - pytest --nbval-lax docs/notebooks/*.ipynb
