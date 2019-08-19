@@ -2,7 +2,7 @@ from libc cimport math
 
 
 cdef double clamp_proba(double x):
-    return math.fmax(math.fmin(x, 1), 0)
+    return math.fmax(math.fmin(x, 1 - 1e-15), 1e-15)
 
 
 cdef class Loss:

@@ -123,9 +123,10 @@ class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
         ::
 
             >>> from creme import compat
-            >>> from creme import model_selection
             >>> from creme import metrics
+            >>> from creme import model_selection
             >>> from creme import preprocessing
+            >>> from creme import stream
             >>> from sklearn import linear_model
             >>> from sklearn import datasets
 
@@ -165,9 +166,10 @@ class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
         ::
 
             >>> from creme import compat
-            >>> from creme import model_selection
             >>> from creme import metrics
+            >>> from creme import model_selection
             >>> from creme import preprocessing
+            >>> from creme import stream
             >>> from sklearn import linear_model
             >>> from sklearn import datasets
 
