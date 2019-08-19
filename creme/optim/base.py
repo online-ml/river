@@ -16,7 +16,7 @@ class Optimizer(abc.ABC):
         return self.lr.get(self.n_iterations)
 
     @classmethod
-    def update_before_pred(self, w: dict, x: dict) -> dict:
+    def update_before_pred(self, w: dict) -> dict:
         return w
 
     def _update_after_pred(self, w: dict, g: dict) -> dict:
