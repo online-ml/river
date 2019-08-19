@@ -12,7 +12,7 @@ __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 class BaseBagging(base.Wrapper, collections.UserList):
 
-    def __init__(self, model=None, n_models=10, random_state=None):
+    def __init__(self, model, n_models=10, random_state=None):
         super().__init__()
         self._model = model
         self.extend([copy.deepcopy(model) for _ in range(n_models)])
