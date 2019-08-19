@@ -8,7 +8,7 @@ from .. import utils
 __all__ = ['OneVsRestClassifier']
 
 
-class OneVsRestClassifier(collections.UserDict, base.MultiClassifier, base.Wrapper):
+class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
