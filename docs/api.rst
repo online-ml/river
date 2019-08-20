@@ -21,6 +21,7 @@ API
    multiclass
    multioutput
    naive_bayes
+   neighbors
    optim
    plot
    preprocessing

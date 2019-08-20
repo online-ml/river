@@ -3,13 +3,10 @@ import collections
 from sklearn import utils
 
 from .. import base
+from .. import neighbors
 
 
 __all__ = ['KMeans']
-
-
-def euclidean_distance(a, b):
-    return sum((a.get(k, 0) - b.get(k, 0)) ** 2 for k in set([*a.keys(), *b.keys()]))
 
 
 class KMeans(base.Clusterer):
@@ -32,7 +29,8 @@ class KMeans(base.Clusterer):
         mu (float): Mean of the normal distribution used to instantiate cluster positions.
         sigma (float): Standard deviation of the normal distribution used to instantiate cluster
             positions.
-        distance (callable): Metric used to compute distances between an observation and a cluster.
+        p (int): Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
+            Manhattan distance, while ``p=2`` corresponds to the Euclidean distance.
         random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
             the seed used by the random number generator; if ``RandomState`` instance,
             ``random_state`` is the random number generator; if ``None``, the random number
@@ -69,13 +67,13 @@ class KMeans(base.Clusterer):
 
     """
 
-    def __init__(self, n_clusters, halflife=0.5, mu=0, sigma=1, distance=euclidean_distance,
+    def __init__(self, n_clusters, halflife=0.5, mu=0, sigma=1, p=2,
                  random_state=None):
         self.n_clusters = n_clusters
         self.halflife = halflife
         self.mu = mu
         self.sigma = sigma
-        self.distance = distance
+        self.p = p
         self.random_state = utils.check_random_state(random_state)
         self.centers = {
             i: collections.defaultdict(self.random_normal)
@@ -103,4 +101,8 @@ class KMeans(base.Clusterer):
         return self
 
     def predict_one(self, x):
-        return min(self.centers, key=lambda c: self.distance(x, self.centers[c]))
+
+        def get_distance(c):
+            return neighbors.minkowski_distance(a=self.centers[c], b=x, p=self.p)
+
+        return min(self.centers, key=get_distance)
