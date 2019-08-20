@@ -27,6 +27,7 @@ __all__ = [
     'multiclass',
     'multioutput',
     'naive_bayes',
+    'neighbors',
     'optim',
     'plot',
     'preprocessing',

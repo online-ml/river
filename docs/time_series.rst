@@ -1,7 +1,7 @@
 Clustering
 ----------
 
-.. currentmodule:: creme.cluster
+.. currentmodule:: creme.time_series
 
 .. autosummary::
    :toctree: generated/

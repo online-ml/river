@@ -11,12 +11,12 @@ from . import stream
 __all__ = ['online_score', 'online_qa_score']
 
 
-def is_classifier(model):
+def get_model_class(model):
     if isinstance(model, compose.Pipeline):
-        return is_classifier(model.final_estimator)
+        return get_model_class(model.final_estimator)
     elif isinstance(model, base.Wrapper):
-        return is_classifier(model.model)
-    return isinstance(model, base.Classifier)
+        return get_model_class(model.model)
+    return model
 
 
 def online_score(X_y, model, metric, print_every=math.inf):
@@ -33,14 +33,16 @@ def online_score(X_y, model, metric, print_every=math.inf):
 
     """
 
+    klass = get_model_class(model)
+
     # Check that the model and the metric are in accordance
-    if not metric.works_with(model):
+    if not metric.works_with(klass):
         raise ValueError(f"{metric.__class__.__name__} metric can't be used to evaluate a " +
-                         f'{model.__class__.__name__}')
+                         f'{klass.__class__.__name__}')
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     pred_func = model.predict_one
-    if is_classifier(model) and not metric.requires_labels:
+    if isinstance(klass, base.Classifier) and not metric.requires_labels:
         pred_func = model.predict_proba_one
 
     # Handle the first observation separately
@@ -85,14 +87,16 @@ def online_qa_score(X_y, model, metric, on, lag, print_every=math.inf):
 
     """
 
+    klass = get_model_class(model)
+
     # Check that the model and the metric are in accordance
-    if not metric.works_with(model):
+    if not metric.works_with(klass):
         raise ValueError(f"{metric.__class__.__name__} metric can't be used to evaluate a " +
-                         f'{model.__class__.__name__}')
+                         f'{klass.__class__.__name__}')
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     pred_func = model.predict_one
-    if is_classifier(model) and not metric.requires_labels:
+    if isinstance(klass, base.Classifier) and not metric.requires_labels:
         pred_func = model.predict_proba_one
 
     n_questions = 0
