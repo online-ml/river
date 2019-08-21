@@ -140,7 +140,7 @@ The following table summarizes the performance of regression methods from variou
   <tbody>
     <tr>
       <td>creme</td>
-      <td>LinearRegression</td>
+      <td>`LinearRegression`</td>
       <td>118.549437</td>
       <td>2s, 580ms</td>
       <td>10μs</td>
@@ -149,7 +149,7 @@ The following table summarizes the performance of regression methods from variou
     </tr>
     <tr>
       <td>creme</td>
-      <td>PARegressor</td>
+      <td>`PARegressor`</td>
       <td>143.477210</td>
       <td>6s, 994ms</td>
       <td>27μs</td>
@@ -158,7 +158,7 @@ The following table summarizes the performance of regression methods from variou
     </tr>
     <tr>
       <td>creme</td>
-      <td>KNeighborsRegressor</td>
+      <td>`KNeighborsRegressor`</td>
       <td>155.585250</td>
       <td>394ms</td>
       <td>1μs</td>
@@ -167,7 +167,7 @@ The following table summarizes the performance of regression methods from variou
     </tr>
     <tr>
       <td>scikit-learn</td>
-      <td>SGDRegressor</td>
+      <td>`SGDRegressor`</td>
       <td>120.185848</td>
       <td>36s, 433ms</td>
       <td>144μs</td>
@@ -176,7 +176,7 @@ The following table summarizes the performance of regression methods from variou
     </tr>
     <tr>
       <td>scikit-learn</td>
-      <td>PassiveAggressiveRegressor</td>
+      <td>`PassiveAggressiveRegressor`</td>
       <td>143.477210</td>
       <td>35s, 551ms</td>
       <td>141μs</td>
@@ -185,7 +185,7 @@ The following table summarizes the performance of regression methods from variou
     </tr>
     <tr>
       <td>PyTorch (CPU)</td>
-      <td>Linear</td>
+      <td>`Linear`</td>
       <td>142.495995</td>
       <td>47s, 335ms</td>
       <td>187μs</td>
@@ -194,7 +194,7 @@ The following table summarizes the performance of regression methods from variou
     </tr>
     <tr>
       <td>Keras on Tensorflow (CPU)</td>
-      <td>Dense</td>
+      <td>`Dense`</td>
       <td>142.494512</td>
       <td>1m, 18s, 296ms</td>
       <td>310μs</td>
@@ -203,7 +203,7 @@ The following table summarizes the performance of regression methods from variou
     </tr>
     <tr>
       <td>scikit-garden</td>
-      <td>MondrianTreeRegressor</td>
+      <td>`MondrianTreeRegressor`</td>
       <td>201.687033</td>
       <td>35s, 983ms</td>
       <td>142μs</td>
@@ -212,7 +212,7 @@ The following table summarizes the performance of regression methods from variou
     </tr>
     <tr>
       <td>scikit-garden</td>
-      <td>MondrianForestRegressor</td>
+      <td>`MondrianForestRegressor`</td>
       <td>142.364156</td>
       <td>5m, 58s, 226ms</td>
       <td>1ms, 420μs</td>
