@@ -157,6 +157,10 @@ class Pipeline(collections.OrderedDict):
         return ' | '.join(self.keys())
 
     @property
+    def __class__(self):
+        return self.final_estimator.__class__
+
+    @property
     def transformers(self):
         """If a pipeline has $n$ steps, then the first $n-1$ are necessarily transformers."""
         if isinstance(self.final_estimator, base.Transformer):

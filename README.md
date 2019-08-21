@@ -96,13 +96,13 @@ We'll use the available numeric features, as well as calculate running averages 
 ...     lag=dt.timedelta(minutes=30),
 ...     print_every=30_000
 ... )
-[30,000] MAE: 2.178272
-[60,000] MAE: 2.252304
-[90,000] MAE: 2.295292
-[120,000] MAE: 2.273231
-[150,000] MAE: 2.274828
-[180,000] MAE: 2.291274
-MAE: 2.295017
+[30,000] MAE: 2.193069
+[60,000] MAE: 2.249345
+[90,000] MAE: 2.288321
+[120,000] MAE: 2.265257
+[150,000] MAE: 2.2674
+[180,000] MAE: 2.282485
+MAE: 2.285921
 
 ```
 
@@ -123,12 +123,13 @@ By only using a few lines of code, we've built a robust model and evaluated it b
 
 All the benchmarks, including reproducible code, are available [here](benchmarks).
 
-The following results compare different implementations of linear regression trained with plain stochastic gradient descent. We used the bikes dataset and measured the mean squared error (MSE). We also measured the time taken for updating each model as well as for making predictions.
+The following table summarizes the performance of regression methods from various libraries, using their default parameters.
 
 <table border="0" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th>Library</th>
+      <th>Model</th>
       <th>MSE</th>
       <th>Fit time</th>
       <th>Average fit time</th>
@@ -139,40 +140,87 @@ The following results compare different implementations of linear regression tra
   <tbody>
     <tr>
       <td>creme</td>
-      <td>23.035085</td>
-      <td>1s, 636ms</td>
-      <td>8μs, 970ns</td>
-      <td>516ms, 695μs</td>
-      <td>2μs, 832ns</td>
+      <td>LinearRegression</td>
+      <td>118.549437</td>
+      <td>2s, 580ms</td>
+      <td>10μs</td>
+      <td>759ms</td>
+      <td>3μs</td>
+    </tr>
+    <tr>
+      <td>creme</td>
+      <td>PARegressor</td>
+      <td>143.477210</td>
+      <td>6s, 994ms</td>
+      <td>27μs</td>
+      <td>1s, 305ms</td>
+      <td>5μs</td>
+    </tr>
+    <tr>
+      <td>creme</td>
+      <td>KNeighborsRegressor</td>
+      <td>155.585250</td>
+      <td>394ms</td>
+      <td>1μs</td>
+      <td>37s, 4ms</td>
+      <td>146μs</td>
     </tr>
     <tr>
       <td>scikit-learn</td>
-      <td>25.295369</td>
-      <td>22s, 777ms</td>
-      <td>124μs, 827ns</td>
-      <td>9s, 235ms</td>
-      <td>50μs, 612ns</td>
+      <td>SGDRegressor</td>
+      <td>120.185848</td>
+      <td>36s, 433ms</td>
+      <td>144μs</td>
+      <td>14s, 766ms</td>
+      <td>58μs</td>
+    </tr>
+    <tr>
+      <td>scikit-learn</td>
+      <td>PassiveAggressiveRegressor</td>
+      <td>143.477210</td>
+      <td>35s, 551ms</td>
+      <td>141μs</td>
+      <td>14s, 599ms</td>
+      <td>57μs</td>
     </tr>
     <tr>
       <td>PyTorch (CPU)</td>
-      <td>23.035086</td>
-      <td>35s, 24ms</td>
-      <td>191μs, 947ns</td>
-      <td>12s, 133ms</td>
-      <td>66μs, 494ns</td>
+      <td>Linear</td>
+      <td>142.495995</td>
+      <td>47s, 335ms</td>
+      <td>187μs</td>
+      <td>14s, 822ms</td>
+      <td>58μs</td>
     </tr>
     <tr>
       <td>Keras on Tensorflow (CPU)</td>
-      <td>23.035086</td>
-      <td>50s, 929ms</td>
-      <td>279μs, 114ns</td>
-      <td>32s, 616ms</td>
-      <td>178μs, 748ns</td>
+      <td>Dense</td>
+      <td>142.494512</td>
+      <td>1m, 18s, 296ms</td>
+      <td>310μs</td>
+      <td>49s, 225ms</td>
+      <td>195μs</td>
+    </tr>
+    <tr>
+      <td>scikit-garden</td>
+      <td>MondrianTreeRegressor</td>
+      <td>201.687033</td>
+      <td>35s, 983ms</td>
+      <td>142μs</td>
+      <td>23s, 502ms</td>
+      <td>93μs</td>
+    </tr>
+    <tr>
+      <td>scikit-garden</td>
+      <td>MondrianForestRegressor</td>
+      <td>142.364156</td>
+      <td>5m, 58s, 226ms</td>
+      <td>1ms, 420μs</td>
+      <td>2m, 40s, 728ms</td>
+      <td>637μs</td>
     </tr>
   </tbody>
 </table>
-
-`creme` produces the same MSE as the rest of the libraries. Note that the single reason why scikit-learn is slightly worse is because it has a different squared loss convention – that is, it uses `0.5 * (y_true - y_pred) ** 2` instead of `(y_true - y_pred) ** 2`. Meanwhile, `creme` is an order of magnitude faster than other libraries, for the simple reason that it is a pure online learning library, whereas other libraries are focused on (mini) batch learning.
 
 ## Contributing
 

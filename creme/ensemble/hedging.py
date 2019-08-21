@@ -147,9 +147,9 @@ class HedgeRegressor(BaseHedge, base.Regressor):
             ...     preprocessing.StandardScaler() |
             ...     ensemble.HedgeRegressor(
             ...         regressors=[
-            ...             lin_reg(optimizer=optim.SGD(0.01)),
-            ...             lin_reg(optimizer=optim.RMSProp()),
-            ...             lin_reg(optimizer=optim.AdaGrad())
+            ...             lin_reg(optimizer=optim.SGD(0.01), intercept_lr=0.1),
+            ...             lin_reg(optimizer=optim.RMSProp(), intercept_lr=0.1),
+            ...             lin_reg(optimizer=optim.AdaGrad(), intercept_lr=0.1)
             ...         ]
             ...     )
             ... )

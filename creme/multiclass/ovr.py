@@ -8,7 +8,7 @@ from .. import utils
 __all__ = ['OneVsRestClassifier']
 
 
-class OneVsRestClassifier(collections.UserDict, base.MultiClassifier, base.Wrapper):
+class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
@@ -61,9 +61,8 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier, base.Wrapp
         super().__init__()
         self.binary_classifier = binary_classifier
 
-    @property
-    def model(self):
-        return self.binary_classifier
+    def __str__(self):
+        return f'OneVsRestClassifier({self.binary_classifier})'
 
     def fit_one(self, x, y):
 
