@@ -139,14 +139,14 @@ class BaggingRegressor(BaseBagging, base.Regressor):
             ... )
             >>> model = preprocessing.StandardScaler()
             >>> model |= ensemble.BaggingRegressor(
-            ...     model=linear_model.LinearRegression(),
+            ...     model=linear_model.LinearRegression(intercept_lr=0.1),
             ...     n_models=3,
             ...     random_state=42
             ... )
             >>> metric = metrics.MAE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 4.186543
+            MAE: 4.26101
 
     References:
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_

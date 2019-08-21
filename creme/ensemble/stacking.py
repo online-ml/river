@@ -35,8 +35,8 @@ class StackingBinaryClassifier(base.BinaryClassifier):
             ...     ('stack', ensemble.StackingBinaryClassifier(
             ...         classifiers=[
             ...             linear_model.LogisticRegression(),
-            ...             linear_model.PAClassifier(mode=1),
-            ...             linear_model.PAClassifier(mode=2)
+            ...             linear_model.PAClassifier(mode=1, C=0.01),
+            ...             linear_model.PAClassifier(mode=2, C=0.01)
             ...         ],
             ...         meta_classifier=linear_model.LogisticRegression()
             ...     ))

@@ -1,10 +1,8 @@
 import abc
 import collections
-import itertools
 import typing
 
 from .. import base
-from .. import compose
 from .. import utils
 
 
@@ -23,21 +21,12 @@ class Metric(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def compatible_classes(self) -> tuple:
-        """Enumerates supported classes."""
-
-    @property
-    @abc.abstractmethod
     def bigger_is_better(self) -> bool:
         """Indicates if a high value is better than a low one or not."""
 
+    @abc.abstractmethod
     def works_with(self, model) -> bool:
-        """Tells if a metric can work with a given model or not."""
-        if isinstance(model, compose.Pipeline):
-            return self.works_with(model.final_estimator)
-        elif isinstance(model, base.Wrapper):
-            return self.works_with(model.model)
-        return isinstance(model, self.compatible_classes)
+        """Indicates whether or not a metric can work with a given model."""
 
     def __str__(self):
         """Returns the class name along with the current value of the metric."""
@@ -71,9 +60,8 @@ class BinaryMetric(ClassificationMetric):
     def update(self, y_true: bool, y_pred: typing.Union[bool, base.Probas]) -> 'BinaryMetric':
         """Updates the metric."""
 
-    @property
-    def compatible_classes(self):
-        return (base.BinaryClassifier,)
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.BinaryClassifier)
 
 
 class MultiClassMetric(BinaryMetric):
@@ -83,9 +71,8 @@ class MultiClassMetric(BinaryMetric):
                y_pred: typing.Union[base.Label, base.Probas]) -> 'MultiClassMetric':
         """Updates the metric."""
 
-    @property
-    def compatible_classes(self):
-        return (base.BinaryClassifier,)
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.Classifier)
 
 
 class RegressionMetric(Metric):
@@ -98,9 +85,8 @@ class RegressionMetric(Metric):
     def bigger_is_better(self):
         return False
 
-    @property
-    def compatible_classes(self):
-        return (base.Regressor,)
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.Regressor)
 
     def __add__(self, other) -> 'Metrics':
         if not isinstance(other, RegressionMetric):
@@ -115,9 +101,8 @@ class MultiOutputClassificationMetric(ClassificationMetric):
                y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]]):
         """Updates the metric."""
 
-    @property
-    def compatible_classes(self):
-        return (base.MultiOutputClassifier,)
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.MultiOutputClassifier)
 
 
 class MultiOutputRegressionMetric(RegressionMetric):
@@ -125,9 +110,8 @@ class MultiOutputRegressionMetric(RegressionMetric):
     def update(self, y_true: typing.Dict[str, float], y_pred: typing.Dict[str, float]):
         """Updates the metric."""
 
-    @property
-    def compatible_classes(self):
-        return (base.MultiOutputRegressor,)
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.MultiOutputRegressor)
 
 
 class Metrics(Metric, collections.UserList):
@@ -156,9 +140,8 @@ class Metrics(Metric, collections.UserList):
     def get(self):
         return [m.get() for m in self]
 
-    @property
-    def compatible_classes(self):
-        return tuple(itertools.chain.from_iterable(m.compatible_classes for m in self))
+    def works_with(self, model) -> bool:
+        return all(m.works_with(model) for m in self)
 
     @property
     def bigger_is_better(self):

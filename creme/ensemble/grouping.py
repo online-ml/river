@@ -40,7 +40,7 @@ class GroupRegressor(base.Regressor):
             ... )
 
             >>> model_selection.online_score(X_y, model, metrics.MAE())
-            MAE: 25.673848
+            MAE: 25.943235
 
     """
 

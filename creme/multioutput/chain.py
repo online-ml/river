@@ -112,7 +112,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
             >>> model_selection.online_score(X_y, model, metric)
-            MAE: 16.96118
+            MAE: 16.970895...
 
     """
 

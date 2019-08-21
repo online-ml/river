@@ -57,7 +57,8 @@ class PARegressor(BasePA, base.Regressor):
             >>> model = linear_model.PARegressor(
             ...     C=0.01,
             ...     mode=2,
-            ...     eps=0.1
+            ...     eps=0.1,
+            ...     fit_intercept=False
             ... )
             >>> metric = metrics.MAE() + metrics.MSE()
 
@@ -74,7 +75,7 @@ class PARegressor(BasePA, base.Regressor):
 
     """
 
-    def __init__(self, C=0.01, mode=1, eps=0.1, fit_intercept=False):
+    def __init__(self, C=1.0, mode=1, eps=0.1, fit_intercept=True):
         super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
         self.loss = optim.EpsilonInsensitiveHingeLoss(eps=eps)
 
@@ -150,7 +151,7 @@ class PAClassifier(BasePA, base.BinaryClassifier):
 
     """
 
-    def __init__(self, C=0.01, mode=1, fit_intercept=True):
+    def __init__(self, C=1.0, mode=1, fit_intercept=True):
         super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
         self.loss = optim.HingeLoss()
 

@@ -37,7 +37,7 @@ class TargetModifierRegressor(base.Regressor):
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', compose.TargetModifierRegressor(
-            ...         regressor=linear_model.LinearRegression(),
+            ...         regressor=linear_model.LinearRegression(intercept_lr=0.15),
             ...         func=math.log,
             ...         inverse_func=math.exp
             ...     ))
@@ -45,7 +45,7 @@ class TargetModifierRegressor(base.Regressor):
             >>> metric = metrics.MSE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MSE: 34.715156
+            MSE: 37.499423
 
     """
 
@@ -104,7 +104,7 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
             >>> metric = metrics.MSE()
 
             >>> model_selection.online_score(X_y, model, metric)
-            MSE: 33.601067
+            MSE: 37.225174
 
     """
 

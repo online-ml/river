@@ -305,5 +305,9 @@ class Wrapper(abc.ABC):
     def model(self):
         """Provides access to the wrapped model."""
 
+    @property
+    def __class__(self):
+        return self.model.__class__
+
     def __str__(self):
         return f'{type(self).__name__}({self.model})'
