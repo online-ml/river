@@ -6,7 +6,7 @@ from skmultiflow.trees import MultiTargetRegressionHoeffdingTree
 
 
 def test_multi_target_regression_hoeffding_tree_mean(test_path):
-    stream = RegressionGenerator(n_samples=500, n_features=20,
+    stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
     stream.prepare_for_use()
@@ -14,8 +14,8 @@ def test_multi_target_regression_hoeffding_tree_mean(test_path):
     learner = MultiTargetRegressionHoeffdingTree(leaf_prediction='mean')
 
     cnt = 0
-    max_samples = 500
-    wait_samples = 10
+    max_samples = 2000
+    wait_samples = 200
     y_pred = np.zeros((int(max_samples / wait_samples), 3))
     y_true = np.zeros((int(max_samples / wait_samples), 3))
 
@@ -32,11 +32,10 @@ def test_multi_target_regression_hoeffding_tree_mean(test_path):
                              'expected_preds_multi_target_regression_mean.npy')
     expected_predictions = np.load(test_file)
 
-    # print(expected_predictions.shape)
     assert np.allclose(y_pred, expected_predictions)
 
     error = mean_absolute_error(y_true, y_pred)
-    expected_error = 167.40626294018753
+    expected_error = 191.2823924547882
     assert np.isclose(error, expected_error)
 
     expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
@@ -58,7 +57,7 @@ def test_multi_target_regression_hoeffding_tree_mean(test_path):
 
 
 def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
-    stream = RegressionGenerator(n_samples=500, n_features=20,
+    stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
     stream.prepare_for_use()
@@ -67,8 +66,8 @@ def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
                                                  random_state=1)
 
     cnt = 0
-    max_samples = 500
-    wait_samples = 10
+    max_samples = 2000
+    wait_samples = 200
     y_pred = np.zeros((int(max_samples / wait_samples), 3))
     y_true = np.zeros((int(max_samples / wait_samples), 3))
 
@@ -85,11 +84,11 @@ def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
         test_path,
         'expected_preds_multi_target_regression_perceptron.npy'
     )
-    expected_predictions = np.load(test_file)
 
+    expected_predictions = np.load(test_file)
     assert np.allclose(y_pred, expected_predictions)
     error = mean_absolute_error(y_true, y_pred)
-    expected_error = 134.54152831279887
+    expected_error = 144.44877909957646
     assert np.isclose(error, expected_error)
 
     expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
@@ -110,7 +109,7 @@ def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
 
 
 def test_multi_target_regression_hoeffding_tree_adaptive(test_path):
-    stream = RegressionGenerator(n_samples=500, n_features=20,
+    stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
     stream.prepare_for_use()
@@ -119,8 +118,8 @@ def test_multi_target_regression_hoeffding_tree_adaptive(test_path):
                                                  random_state=1)
 
     cnt = 0
-    max_samples = 500
-    wait_samples = 10
+    max_samples = 2000
+    wait_samples = 200
     y_pred = np.zeros((int(max_samples / wait_samples), 3))
     y_true = np.zeros((int(max_samples / wait_samples), 3))
 
@@ -137,11 +136,12 @@ def test_multi_target_regression_hoeffding_tree_adaptive(test_path):
         test_path,
         'expected_preds_multi_target_regression_adaptive.npy'
     )
+    np.save(test_file, y_pred)
     expected_predictions = np.load(test_file)
 
     assert np.allclose(y_pred, expected_predictions)
     error = mean_absolute_error(y_true, y_pred)
-    expected_error = 134.38731296533115
+    expected_error = 150.63043466390528
     assert np.isclose(error, expected_error)
 
     expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
