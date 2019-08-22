@@ -61,7 +61,7 @@ cdef class Var(base.Univariate):
         return 0.
 
 
-class RollingVar(base.Univariate):
+class RollingVar(base.RollingUnivariate):
     """Running variance over a window.
 
     Parameters:
@@ -110,10 +110,6 @@ class RollingVar(base.Univariate):
     @property
     def window_size(self):
         return self.rolling_mean.window_size
-
-    @property
-    def name(self):
-        return f'rolling_{self.rolling_mean.size}_variance'
 
     def update(self, x):
         if len(self.rolling_mean) >= self.rolling_mean.size:

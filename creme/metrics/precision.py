@@ -227,9 +227,9 @@ class RollingMacroPrecision(BasePrecision, base.MultiClassMetric):
 
         for yt, yp in itertools.product(classes, repeat=2):
             if yt == yp:
-                tps[yp] = self.rcm.get(yt, {}).get(yp, 0)
+                tps[yp] = self.rcm.counts.get(yt, {}).get(yp, 0)
             else:
-                fps[yp] += self.rcm.get(yt, {}).get(yp, 0)
+                fps[yp] += self.rcm.counts.get(yt, {}).get(yp, 0)
 
         def div_or_0(a, b):
             try:

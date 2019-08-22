@@ -4,53 +4,119 @@ General tests for all estimators.
 import copy
 import pytest
 
-from sklearn.utils import estimator_checks
+import importlib
+import inspect
 
+from creme import base
+from creme import dummy
 from creme import cluster
-from creme import compat
+from creme import compose
+from creme import ensemble
+from creme import feature_extraction
 from creme import feature_selection
 from creme import linear_model
 from creme import multiclass
+from creme import multioutput
 from creme import naive_bayes
 from creme import preprocessing
 from creme import stats
+from creme import tree
 from creme import utils
+from creme.compat.sklearn import CremeBaseWrapper
+from creme.compat.sklearn import SKLBaseWrapper
 
 
-ESTIMATORS = [
-    naive_bayes.GaussianNB(),
-    preprocessing.StandardScaler(),
-    cluster.KMeans(n_clusters=5, random_state=42),
-    preprocessing.MinMaxScaler(),
-    preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
-    preprocessing.PolynomialExtender(),
-    feature_selection.VarianceThreshold(),
-    feature_selection.SelectKBest(similarity=stats.PearsonCorrelation())
-]
+def get_all_estimators():
 
+    ignored = (
+        CremeBaseWrapper,
+        SKLBaseWrapper,
+        base.Wrapper,
+        compose.FuncTransformer,
+        ensemble.GroupRegressor,
+        ensemble.StackingBinaryClassifier,
+        feature_extraction.Agg,
+        feature_extraction.TargetAgg,
+        feature_extraction.Differ,
+        linear_model.FMRegressor,
+        linear_model.SoftmaxRegression,
+        multioutput.ClassifierChain,
+        multioutput.RegressorChain,
+        naive_bayes.BernoulliNB,
+        naive_bayes.ComplementNB,
+        preprocessing.OneHotEncoder,
+        tree.DecisionTreeClassifier
+    )
 
-@pytest.mark.parametrize(
-    'estimator',
-    [pytest.param(copy.deepcopy(estimator), id=str(estimator)) for estimator in ESTIMATORS]
-)
-def test_sklearn_check_estimator(estimator):
-    estimator_checks.check_estimator(compat.convert_creme_to_sklearn(estimator))
+    def is_estimator(obj):
+        return inspect.isclass(obj) and issubclass(obj, base.Estimator)
+
+    for submodule in importlib.import_module('creme').__all__:
+        for name, obj in inspect.getmembers(importlib.import_module(f'creme.{submodule}'), is_estimator):
+
+            if issubclass(obj, ignored):
+                continue
+
+            if issubclass(obj, dummy.StatisticRegressor):
+                inst = obj(statistic=stats.Mean())
+
+            elif issubclass(obj, ensemble.BaggingClassifier):
+                inst = obj(linear_model.LogisticRegression())
+
+            elif issubclass(obj, ensemble.BaggingRegressor):
+                inst = obj(linear_model.LinearRegression())
+
+            elif issubclass(obj, ensemble.HedgeBinaryClassifier):
+                inst = obj([linear_model.LogisticRegression(), linear_model.PAClassifier()])
+
+            elif issubclass(obj, ensemble.HedgeRegressor):
+                inst = obj([
+                    preprocessing.StandardScaler() | linear_model.LinearRegression(intercept_lr=0.1),
+                    preprocessing.StandardScaler() | linear_model.PARegressor(),
+                ])
+
+            elif issubclass(obj, feature_selection.RandomDiscarder):
+                inst = obj(n_to_keep=5)
+
+            elif issubclass(obj, feature_selection.SelectKBest):
+                inst = obj(similarity=stats.PearsonCorrelation())
+
+            elif issubclass(obj, linear_model.LinearRegression):
+                inst = preprocessing.StandardScaler() | obj(intercept_lr=0.1)
+
+            elif issubclass(obj, linear_model.PARegressor):
+                inst = preprocessing.StandardScaler() | obj()
+
+            elif issubclass(obj, multiclass.OneVsRestClassifier):
+                inst = obj(binary_classifier=linear_model.LogisticRegression())
+
+            else:
+                inst = obj()
+
+            yield inst
 
 
 @pytest.mark.parametrize(
     'estimator',
     [
         pytest.param(copy.deepcopy(estimator), id=str(estimator))
-        for estimator in ESTIMATORS + [
-            # sklearn's check_estimator doesn't binary classifiers yet
+        for estimator in list(get_all_estimators()) + [
+            feature_extraction.TFIDFVectorizer(),
             linear_model.LogisticRegression(),
-            # sklearn's check_estimator doesn't support pipelines yet
             preprocessing.StandardScaler() | linear_model.LinearRegression(),
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.LogisticRegression()),
             preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.PAClassifier()),
+            naive_bayes.GaussianNB(),
+            preprocessing.StandardScaler(),
+            cluster.KMeans(n_clusters=5, random_state=42),
+            preprocessing.MinMaxScaler(),
+            preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
+            preprocessing.PolynomialExtender(),
+            feature_selection.VarianceThreshold(),
+            feature_selection.SelectKBest(similarity=stats.PearsonCorrelation())
         ]
     ]
 )
-def test_creme_check_estimator(estimator):
+def test_check_estimator(estimator):
     utils.check_estimator(estimator)

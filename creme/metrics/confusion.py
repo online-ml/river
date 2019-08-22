@@ -6,7 +6,7 @@ import operator
 __all__ = ['ConfusionMatrix', 'RollingConfusionMatrix']
 
 
-class ConfusionMatrix(collections.defaultdict):
+class ConfusionMatrix:
     """Confusion matrix.
 
     This class is different from the rest of the classes from the `metrics` module in that it
@@ -42,11 +42,15 @@ class ConfusionMatrix(collections.defaultdict):
     """
 
     def __init__(self):
-        super().__init__(collections.Counter)
+        self.counts = collections.defaultdict(collections.Counter)
         self.classes_ = set()
 
+    def __getitem__(self, idx):
+        """Syntactic sugar for accessing the counts directly."""
+        return self.counts[idx]
+
     def update(self, y_true, y_pred):
-        self[y_true].update([y_pred])
+        self.counts[y_true].update([y_pred])
         self.classes_.update({y_true, y_pred})
         return self
 
@@ -61,7 +65,7 @@ class ConfusionMatrix(collections.defaultdict):
 
         # Determine the required width of each column in the table
         largest_label_len = max(len(str(c)) for c in classes)
-        largest_number_len = len(str(max(max(counter.values()) for counter in self.values())))
+        largest_number_len = len(str(max(max(c.values()) for c in self.counts.values())))
         width = max(largest_label_len, largest_number_len) + 2
 
         # Make a template to print out rows one by one
@@ -72,8 +76,12 @@ class ConfusionMatrix(collections.defaultdict):
 
         # Write down the true labels row by row
         table += '\n'.join((
-            row_format.format(str(y_true), *[self[y_true][y_pred] for y_pred in classes], width=width)
-            for y_true in sorted(self)
+            row_format.format(
+                str(y_true),
+                *[self.counts[y_true][y_pred] for y_pred in classes],
+                width=width
+            )
+            for y_true in sorted(self.counts)
         ))
 
         return table
@@ -144,18 +152,18 @@ class RollingConfusionMatrix(ConfusionMatrix):
     def update(self, y_true, y_pred):
 
         # Update the appropriate counter
-        self[y_true].update([y_pred])
+        self.counts[y_true].update([y_pred])
 
         # If the events window is full then decrement the appropriate counter
         if len(self.events) == self.events.maxlen:
             yt, yp = self.events[0][0], self.events[0][1]
-            self[yt].subtract([yp])
+            self.counts[yt].subtract([yp])
 
             # Remove empty counters
-            if not self[yt][yp]:
-                del self[yt][yp]
-            if not self[yt]:
-                del self[yt]
+            if not self.counts[yt][yp]:
+                del self.counts[yt][yp]
+            if not self.counts[yt]:
+                del self.counts[yt]
 
         self.events.append((y_true, y_pred))
         return self
@@ -164,5 +172,5 @@ class RollingConfusionMatrix(ConfusionMatrix):
     def classes(self):
         return functools.reduce(
             operator.or_,
-            [set(self[yt].keys()) for yt in self] + [set(self.keys())]
+            [set(self.counts[yt].keys()) for yt in self.counts] + [set(self.counts.keys())]
         )

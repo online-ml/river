@@ -90,6 +90,9 @@ class MultinomialNB(base.BaseNB):
         self.feature_counts = collections.defaultdict(collections.Counter)
         self.class_totals = collections.Counter()
 
+    def _more_tags(self):
+        return {'requires_positive_data': True}
+
     def fit_one(self, x, y):
         self.class_counts.update((y,))
 

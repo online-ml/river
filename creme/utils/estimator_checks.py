@@ -2,6 +2,7 @@ import copy
 import functools
 import itertools
 import math
+import pickle
 import random
 
 from sklearn import datasets
@@ -18,13 +19,36 @@ def guess_model(model):
     if isinstance(model, compose.Pipeline):
         return guess_model(model.final_estimator)
     elif isinstance(model, base.Wrapper):
-        return guess_model(model.model)
+        return guess_model(model._model)
     return model
 
 
+def make_random_sentence():
+
+    nouns = ('puppy', 'car', 'rabbit', 'girl', 'monkey')
+    verbs = ('runs', 'hits', 'jumps', 'drives', 'barfs')
+    adj = ('adorable', 'clueless', 'dirty', 'odd', 'stupid')
+    adv = ('crazily', 'dutifully', 'foolishly', 'merrily', 'occasionally')
+
+    return ' '.join([random.choice(i) for i in [nouns, verbs, adj, adv]])
+
+
 def make_random_features(model, n_observations, n_features):
-    for _ in range(n_observations):
-        yield {i: random.random() for i in range(n_features)}
+
+    model = guess_model(model)
+    tags = model._get_tags()
+
+    if tags['handles_text']:
+        for _ in range(n_observations):
+            yield make_random_sentence()
+
+    elif tags['requires_positive_data']:
+        for _ in range(n_observations):
+            yield {i: random.uniform(0, 10) for i in range(n_features)}
+
+    else:
+        for _ in range(n_observations):
+            yield {i: random.random() for i in range(n_features)}
 
 
 def make_random_targets(model, n_observations):
@@ -206,28 +230,34 @@ def check_predict_proba_one_binary(classifier):
         assert False in y_pred
 
 
+def check_pickling(model):
+    assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
+
+
 def yield_all_checks(model):
 
     from .. import base
 
     yield check_fit_one
+    yield check_pickling
+
+    model = guess_model(model)
+    tags = model._get_tags()
 
     if isinstance(model, base.Classifier):
         yield check_predict_proba_one
 
-    # MultiClassifiers are also BinaryClassifiers so binary will apply to both
-    if isinstance(model, base.BinaryClassifier):
-        yield check_better_than_dummy_binary
-
-        # Some tests work for BinaryClassifiers but not for MultiClassifiers
         if not isinstance(model, base.MultiClassifier):
             yield check_predict_proba_one_binary
 
-    if isinstance(model, base.MultiClassifier):
-        yield check_better_than_dummy_multi
-
-    if isinstance(model, base.Regressor):
-        yield check_better_than_dummy_regression
+    if not tags['poor_score']:
+        if isinstance(model, base.BinaryClassifier):
+            yield check_better_than_dummy_binary
+        if isinstance(model, base.MultiClassifier):
+            yield check_better_than_dummy_binary
+            yield check_better_than_dummy_multi
+        if isinstance(model, base.Regressor):
+            yield check_better_than_dummy_regression
 
 
 def check_estimator(model):

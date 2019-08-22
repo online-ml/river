@@ -1,14 +1,58 @@
 import collections
 import math
+import re
+
+from sklearn import feature_extraction
 
 from .. import base
-from .. import utils
 
 
 __all__ = ['CountVectorizer', 'TFIDFVectorizer']
 
 
-class CountVectorizer(base.Transformer, utils.VectorizerMixin):
+class VectorizerMixin:
+    """Contains common processing steps used by each vectorizer.
+
+    Parameters:
+        on (str): The name of the feature that contains the text to vectorize. If `None`, then each
+            ``fit_one`` and ``transform_one`` should treat ``x`` as a `str` and not as a ``dict``.
+        strip_accents (bool): Whether or not to strip accent characters.
+        lowercase (bool): Whether or not to convert all characters to lowercase.
+        preprocessor (callable): The function used to preprocess the text. A default one is used
+            if it is not provided by the user.
+        tokenizer (callable): The function used to convert preprocessed text into a `dict` of
+            tokens. A default one is used if it is not provided by the user.
+
+    """
+
+    def __init__(self, on=None, strip_accents=True, lowercase=True, preprocessor=None,
+                 tokenizer=None):
+        self.on = on
+        self.strip_accents = strip_accents
+        self.lowercase = lowercase
+        self.tokenize = re.compile(r'(?u)\b\w\w+\b').findall if tokenizer is None else tokenizer
+
+    def _get_text(self, x):
+        if self.on is not None:
+            return x[self.on]
+        return x
+
+    def _more_tags(self):
+        return {'handles_text': True}
+
+    def preprocess(self, text):
+        """Returns a function to preprocess the text before tokenization."""
+
+        if self.strip_accents:
+            text = feature_extraction.text.strip_accents_unicode(text)
+
+        if self.lowercase:
+            text = text.lower()
+
+        return text
+
+
+class CountVectorizer(base.Transformer, VectorizerMixin):
     """Counts the number of occurrences of each token.
 
     This returns exactly the same results as `sklearn.feature_extraction.text.CountVectorizer`.
@@ -48,7 +92,7 @@ class CountVectorizer(base.Transformer, utils.VectorizerMixin):
         return collections.Counter(self.tokenize(self.preprocess(self._get_text(x))))
 
 
-class TFIDFVectorizer(base.Transformer, utils.VectorizerMixin):
+class TFIDFVectorizer(base.Transformer, VectorizerMixin):
     """Computes values TF-IDF values.
 
     We use the same definition as scikit-learn. The only difference in the results comes the fact

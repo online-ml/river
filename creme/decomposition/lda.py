@@ -1,17 +1,18 @@
 from collections import defaultdict
+import functools
 
 import numpy as np
 from scipy import special
 from scipy import ndimage
 
 from .. import base
-from .. import utils
+from ..feature_extraction import vectorize
 
 
 __all__ = ['LDA']
 
 
-class LDA(base.Transformer, utils.VectorizerMixin):
+class LDA(base.Transformer, vectorize.VectorizerMixin):
     """Online Latent Dirichlet Allocation with Infinite Vocabulary.
 
     Latent Dirichlet allocation (LDA) is a probabilistic approach for exploring topics in document
@@ -86,7 +87,7 @@ class LDA(base.Transformer, utils.VectorizerMixin):
 
     """
 
-    def __init__(self, n_components, number_of_documents, on=None, strip_accents=True,
+    def __init__(self, n_components=10, number_of_documents=1e6, on=None, strip_accents=True,
                  lowercase=True, preprocessor=None, tokenizer=None, normalize=True,
                  alpha_theta=0.5, alpha_beta=100., tau=64., kappa=0.75, vocab_prune_interval=10,
                  number_of_samples=10, ranking_smooth_factor=1e-12, burn_in_sweeps=5,
@@ -114,8 +115,8 @@ class LDA(base.Transformer, utils.VectorizerMixin):
         self.word_to_index = {}
         self.index_to_word = {}
 
-        self.nu_1 = defaultdict(lambda: np.ones(1))
-        self.nu_2 = defaultdict(lambda: np.array([self.alpha_beta]))
+        self.nu_1 = defaultdict(functools.partial(np.ones, 1))
+        self.nu_2 = defaultdict(functools.partial(np.array, [self.alpha_beta]))
 
         for topic in range(self.n_components):
             self.nu_1[topic] = np.ones(1)

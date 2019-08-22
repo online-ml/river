@@ -31,10 +31,6 @@ class Sum(base.Univariate):
     def __init__(self):
         self.sum = 0.
 
-    @property
-    def name(self):
-        return 'sum'
-
     def update(self, x):
         self.sum += x
         return self
@@ -43,7 +39,7 @@ class Sum(base.Univariate):
         return self.sum
 
 
-class RollingSum(base.Univariate, utils.Window):
+class RollingSum(base.RollingUnivariate, utils.Window):
     """Running sum over a window.
 
     Parameters:
@@ -78,10 +74,6 @@ class RollingSum(base.Univariate, utils.Window):
     @property
     def window_size(self):
         return self.size
-
-    @property
-    def name(self):
-        return f'rolling_{self.size}_sum'
 
     def update(self, x):
         if len(self) == self.size:

@@ -75,10 +75,6 @@ class Quantile(base.Univariate):
         self.heights = []
         self.heights_sorted = False
 
-    @property
-    def name(self):
-        return 'quantile'
-
     def _find_k(self, x):
 
         if x < self.heights[0]:
@@ -177,7 +173,7 @@ class Quantile(base.Univariate):
         return 0
 
 
-class RollingQuantile(base.Univariate, utils.SortedWindow):
+class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
     """Running quantile over a window.
 
     Parameters:
@@ -225,8 +221,8 @@ class RollingQuantile(base.Univariate, utils.SortedWindow):
         self.idx = int(round(self.quantile * self.size + 0.5)) - 1
 
     @property
-    def name(self):
-        return f'rolling_{self.size}_quantile'
+    def window_size(self):
+        return self.size
 
     def update(self, x):
         self.append(x)

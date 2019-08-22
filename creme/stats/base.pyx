@@ -1,3 +1,8 @@
+import abc
+
+from .. import utils
+
+
 cdef class Statistic:
 
     cpdef double get(self):
@@ -20,6 +25,17 @@ cdef class Univariate(Statistic):
     @property
     def name(self):
         return self.__class__.__name__.lower()
+
+
+class RollingUnivariate(Univariate):
+
+    @abc.abstractproperty
+    def window_size(self):
+        pass
+
+    @property
+    def name(self):
+        return f'rolling_{super().name}_{self.window_size}'
 
 
 cdef class Bivariate(Statistic):

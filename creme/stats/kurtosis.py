@@ -85,10 +85,6 @@ class Kurtosis(moments.CentralMoments):
         super().__init__()
         self.bias = bias
 
-    @property
-    def name(self):
-        return 'kurtosis'
-
     def update(self, x):
         self.count.update()
         self._update_delta(x)

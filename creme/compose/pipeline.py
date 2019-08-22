@@ -346,7 +346,7 @@ class Pipeline(collections.OrderedDict):
             # Wrapper models are unrolled
             if isinstance(step, base.Wrapper):
                 return Network(
-                    nodes=[networkify(step.model)],
+                    nodes=[networkify(step._model)],
                     links=[],
                     directed=True,
                     name=type(step).__name__

@@ -4,6 +4,8 @@ Dummy estimators.
 import collections
 
 from . import base
+from . import stats
+
 
 __all__ = ['NoChangeClassifier', 'PriorClassifier', 'StatisticRegressor']
 
@@ -65,6 +67,9 @@ class NoChangeClassifier(base.MultiClassifier):
         probas[self.last_class] = 1
         return probas
 
+    def _more_tags(self):
+        return {'poor_score': True}
+
 
 class PriorClassifier(base.MultiClassifier):
     """Dummy classifier which uses the prior distribution.
@@ -116,6 +121,9 @@ class PriorClassifier(base.MultiClassifier):
     def predict_proba_one(self, x):
         return {label: count / self.n for label, count in self.counts.items()}
 
+    def _more_tags(self):
+        return {'poor_score': True}
+
 
 class StatisticRegressor(base.Regressor):
     """Dummy regressor that uses a univariate statistic to make predictions.
@@ -158,3 +166,6 @@ class StatisticRegressor(base.Regressor):
 
     def predict_one(self, x):
         return self.statistic.get()
+
+    def _more_tags(self):
+        return {'poor_score': True}

@@ -18,10 +18,6 @@ class RegressionMultiOutput(base.MultiOutputRegressionMetric):
     def __init__(self, metric: 'RegressionMetric'):
         self.metric = metric
 
-    @property
-    def __class__(self):
-        return self.metric.__class__
-
     def bigger_is_better(self):
         return self.metric.bigger_is_better
 
@@ -32,3 +28,6 @@ class RegressionMultiOutput(base.MultiOutputRegressionMetric):
 
     def get(self):
         return self.metric.get()
+
+    def __str__(self):
+        return str(self.metric)

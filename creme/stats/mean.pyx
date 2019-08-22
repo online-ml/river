@@ -79,10 +79,6 @@ class RollingMean(summing.RollingSum):
 
     """
 
-    @property
-    def name(self):
-        return f'rolling_{self.window_size}_mean'
-
     def get(self):
         return super().get() / len(self) if len(self) > 0 else 0
 

@@ -1,11 +1,33 @@
 import collections
+import copy
 import functools
+import importlib
+import inspect
 import math
+import pickle
 
 import pytest
 
 from creme import metrics
 from sklearn import metrics as sk_metrics
+
+
+def load_metrics():
+    for name, obj in inspect.getmembers(importlib.import_module('creme.metrics'), inspect.isclass):
+        if name == 'RegressionMultiOutput':
+            yield obj(metric=metrics.MSE())
+            continue
+        try:
+            sig = inspect.signature(obj)
+            yield obj(**{arg: 5 for arg in sig.parameters})
+        except ValueError:
+            yield obj()
+
+
+@pytest.mark.parametrize('metric', load_metrics(), ids=lambda metric: metric.__class__.__name__)
+def test_pickling(metric):
+    assert isinstance(pickle.loads(pickle.dumps(metric)), metric.__class__)
+    assert isinstance(copy.deepcopy(metric), metric.__class__)
 
 
 @pytest.mark.parametrize(

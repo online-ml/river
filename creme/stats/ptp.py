@@ -47,7 +47,7 @@ class PeakToPeak(base.Univariate):
         return self.max.get() - self.min.get()
 
 
-class RollingPeakToPeak(base.Univariate):
+class RollingPeakToPeak(base.RollingUnivariate):
     """Running peak to peak (max - min) over a window.
 
     Parameters:
@@ -77,13 +77,12 @@ class RollingPeakToPeak(base.Univariate):
     """
 
     def __init__(self, window_size):
-        self.window_size = window_size
         self.max = maximum.RollingMax(window_size)
         self.min = minimum.RollingMin(window_size)
 
     @property
-    def name(self):
-        return f'rolling_{self.window_size}_ptp'
+    def window_size(self):
+        return self.max.window_size
 
     def update(self, x):
         self.max.update(x)
