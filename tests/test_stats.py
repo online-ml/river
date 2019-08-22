@@ -1,6 +1,8 @@
 import collections
 import copy
 import functools
+import importlib
+import inspect
 import math
 import pickle
 import random
@@ -11,6 +13,27 @@ import pytest
 from scipy import stats as sp_stats
 
 from creme import stats
+
+
+def load_stats():
+    for name, obj in inspect.getmembers(importlib.import_module('creme.stats'), inspect.isclass):
+        try:
+            sig = inspect.signature(obj)
+            yield obj(**{arg: 1 for arg in sig.parameters})
+        except ValueError:
+            yield obj()
+
+
+@pytest.mark.parametrize('stat', load_stats(), ids=lambda stat: stat.__class__.__name__)
+def test_pickling(stat):
+    assert isinstance(pickle.loads(pickle.dumps(stat)), stat.__class__)
+    assert isinstance(copy.deepcopy(stat), stat.__class__)
+
+    # Check the statistic has a working __str__ and name method
+    assert isinstance(str(stat), str)
+
+    if isinstance(stat, stats.Univariate):
+        assert isinstance(stat.name, str)
 
 
 @pytest.mark.parametrize(
@@ -30,21 +53,10 @@ def test_univariate(stat, func):
     # Shut up
     np.warnings.filterwarnings('ignore')
 
-    # Check deepcopying works
-    copy.deepcopy(stat)
-
-    # Check pickling works
-    pickle.loads(pickle.dumps(stat))
-
-    # Check the statistic has a working __str__ and name method
-    assert isinstance(str(stat), str)
-    assert isinstance(stat.name, str)
-
     X = [random.random() for _ in range(30)]
 
     for i, x in enumerate(X):
         stat.update(x)
-
         try:
             assert math.isclose(stat.get(), func(X[:i + 1]), abs_tol=1e-10)
         except AssertionError:
@@ -65,26 +77,14 @@ def test_rolling_univariate(stat, func):
     # We know what we're doing
     np.warnings.filterwarnings('ignore')
 
-    # Check deepcopying works
-    copy.deepcopy(stat)
-
-    # Check pickling works
-    pickle.loads(pickle.dumps(stat))
-
-    # Check the statistic has a working __str__ and name method
-    assert isinstance(str(stat), str)
-    assert isinstance(stat.name, str)
-
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
 
     n = stat.window_size
-
     X = [random.random() for _ in range(30)]
 
     for i, x in enumerate(X):
         stat.update(x)
-
         try:
             assert math.isclose(stat.get(), func(tail(X[:i + 1], n)), abs_tol=1e-10)
         except AssertionError:
@@ -104,20 +104,10 @@ def test_bivariate(stat, func):
     # Shhh
     np.warnings.filterwarnings('ignore')
 
-    # Check deepcopying works
-    copy.deepcopy(stat)
-
-    # Check pickling works
-    pickle.loads(pickle.dumps(stat))
-
-    # Check the statistic has a working __str__ method, which is more important than it may seem
-    assert isinstance(str(stat), str)
-
     X = [random.random() for _ in range(30)]
     Y = [random.random() * x for x in X]
 
     for i, (x, y) in enumerate(zip(X, Y)):
         stat.update(x, y)
-
         if i >= 1:
             assert math.isclose(stat.get(), func(X[:i + 1], Y[:i + 1]), abs_tol=1e-10)

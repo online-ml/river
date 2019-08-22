@@ -16,10 +16,6 @@ class Max(base.Univariate):
     def __init__(self):
         self.max = -math.inf
 
-    @property
-    def name(self):
-        return 'max'
-
     def update(self, x):
         if x > self.max:
             self.max = x
@@ -29,7 +25,7 @@ class Max(base.Univariate):
         return self.max
 
 
-class RollingMax(base.Univariate, utils.SortedWindow):
+class RollingMax(base.RollingUnivariate, utils.SortedWindow):
     """Running max over a window.
 
     Parameters:
@@ -58,8 +54,8 @@ class RollingMax(base.Univariate, utils.SortedWindow):
         super().__init__(size=window_size)
 
     @property
-    def name(self):
-        return f'rolling_{self.window_size}_max'
+    def window_size(self):
+        return self.size
 
     def update(self, x):
         self.append(x)

@@ -31,10 +31,10 @@ class MCC(base.BinaryMetric):
         return self
 
     def get(self):
-        tp = self.cm.get(True, {}).get(True, 0)
-        tn = self.cm.get(False, {}).get(False, 0)
-        fp = self.cm.get(False, {}).get(True, 0)
-        fn = self.cm.get(True, {}).get(False, 0)
+        tp = self.cm.counts.get(True, {}).get(True, 0)
+        tn = self.cm.counts.get(False, {}).get(False, 0)
+        fp = self.cm.counts.get(False, {}).get(True, 0)
+        fn = self.cm.counts.get(True, {}).get(False, 0)
 
         n = tp + tn + fp + fn
         s = (tp + fn) / n

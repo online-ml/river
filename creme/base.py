@@ -2,6 +2,7 @@
 Base classes used throughout the library.
 """
 import abc
+import inspect
 import typing
 
 
@@ -24,10 +25,45 @@ Proba = float
 Probas = typing.Dict[Label, Proba]
 
 
+DEFAULT_TAGS = {
+    'handles_text': False,
+    'requires_positive_data': False,
+    'handles_categorical_features': False,
+    'poor_score': False
+}
+
+
+def _update_if_consistent(dict1, dict2):
+    common_keys = set(dict1.keys()).intersection(dict2.keys())
+    for key in common_keys:
+        if dict1[key] != dict2[key]:
+            raise TypeError(f'Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}')
+    dict1.update(dict2)
+    return dict1
+
+
 class Estimator:
 
     def __str__(self):
         return self.__class__.__name__
+
+    def _more_tags(self) -> dict:
+        """Specific tags for this estimator."""
+        return {}
+
+    def _get_tags(self) -> dict:
+        """Returns the estimator's tags."""
+
+        tags = {}
+
+        for base_class in inspect.getmro(self.__class__):
+            if hasattr(base_class, '_more_tags') and base_class != self.__class__:
+                tags = _update_if_consistent(tags, base_class._more_tags(self))
+
+        if hasattr(self, '_more_tags'):
+            tags = _update_if_consistent(tags, self._more_tags())
+
+        return {**DEFAULT_TAGS, **tags}
 
 
 class Regressor(Estimator):
@@ -302,12 +338,12 @@ class MultiOutputRegressor(MultiOutputEstimator):
 class Wrapper(abc.ABC):
 
     @abc.abstractproperty
-    def model(self):
+    def _model(self):
         """Provides access to the wrapped model."""
 
     @property
     def __class__(self):
-        return self.model.__class__
+        return self._model.__class__
 
     def __str__(self):
-        return f'{type(self).__name__}({self.model})'
+        return f'{type(self).__name__}({self._model})'

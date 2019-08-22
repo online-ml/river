@@ -221,9 +221,9 @@ class RollingMacroRecall(MacroRecall):
 
         for yt, yp in itertools.product(classes, repeat=2):
             if yt == yp:
-                tps[yp] = self.rcm.get(yt, {}).get(yp, 0)
+                tps[yp] = self.rcm.counts.get(yt, {}).get(yp, 0)
             else:
-                fns[yp] += self.rcm.get(yp, {}).get(yt, 0)
+                fns[yp] += self.rcm.counts.get(yp, {}).get(yt, 0)
 
         def div_or_0(a, b):
             try:

@@ -19,7 +19,6 @@ __all__ = [
     'ensemble',
     'feature_extraction',
     'feature_selection',
-    'graph',
     'impute',
     'linear_model',
     'metrics',

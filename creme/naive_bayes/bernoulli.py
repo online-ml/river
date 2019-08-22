@@ -91,12 +91,11 @@ class BernoulliNB(base.BaseNB):
             'no'
 
     References:
-
         1. `The Bernoulli model <https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html>`_
 
     """
 
-    def __init__(self, alpha=1., true_threshold=0.0):
+    def __init__(self, alpha=1., true_threshold=0.):
         self.alpha = alpha
         self.true_threshold = true_threshold
         self.class_counts = collections.Counter()

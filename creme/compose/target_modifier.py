@@ -6,7 +6,7 @@ from .. import base
 __all__ = ['TargetModifierRegressor', 'BoxCoxTransformRegressor']
 
 
-class TargetModifierRegressor(base.Regressor):
+class TargetModifierRegressor(base.Regressor, base.Wrapper):
     """Model wrapper that modifies the target before training.
 
     The user is expected to check that ``func`` and ``inverse_func`` are coherent with each other.
@@ -53,6 +53,10 @@ class TargetModifierRegressor(base.Regressor):
         self.regressor = regressor
         self.func = func
         self.inverse_func = inverse_func
+
+    @property
+    def _model(self):
+        return self.regressor
 
     def fit_one(self, x, y):
         self.regressor.fit_one(x, self.func(y))

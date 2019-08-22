@@ -57,10 +57,10 @@ class ROCAUC(base.BinaryMetric):
                 return 0.
 
         for i, cm in enumerate(reversed(self.cms)):
-            tp = cm.get(True, {}).get(True, 0)
-            tn = cm.get(False, {}).get(False, 0)
-            fp = cm.get(False, {}).get(True, 0)
-            fn = cm.get(True, {}).get(False, 0)
+            tp = cm.counts.get(True, {}).get(True, 0)
+            tn = cm.counts.get(False, {}).get(False, 0)
+            fp = cm.counts.get(False, {}).get(True, 0)
+            fn = cm.counts.get(True, {}).get(False, 0)
 
             tprs[i] = safe_div(tp, tp + fn)
             fprs[i] = safe_div(fp, fp + tn)

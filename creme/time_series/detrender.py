@@ -17,7 +17,7 @@ class Detrender(base.Regressor, base.Wrapper):
         self.mean = stats.Mean()
 
     @property
-    def model(self):
+    def _model(self):
         return self.regressor
 
     def fit_one(self, x, y):
@@ -44,7 +44,7 @@ class GroupDetrender(base.Regressor, base.Wrapper):
         self.means = collections.defaultdict(stats.Mean)
 
     @property
-    def model(self):
+    def _model(self):
         return self.regressor
 
     def fit_one(self, x, y):

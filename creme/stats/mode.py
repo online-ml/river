@@ -67,7 +67,7 @@ class Mode(base.Univariate):
         return max(self.counts, key=self.counts.get)
 
 
-class RollingMode(base.Univariate, utils.Window):
+class RollingMode(base.RollingUnivariate, utils.Window):
     """Running mode over a window.
 
     The mode is the most common value.
@@ -114,8 +114,8 @@ class RollingMode(base.Univariate, utils.Window):
         self.counts = collections.defaultdict(int)
 
     @property
-    def name(self):
-        return f'rolling_{self.size}_mode'
+    def window_size(self):
+        return self.size
 
     def update(self, x):
         if len(self) >= self.size:

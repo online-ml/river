@@ -35,10 +35,6 @@ class SEM(var.Var):
 
     """
 
-    @property
-    def name(self):
-        return 'sem'
-
     def get(self):
         return (super().get() / self.mean.n) ** 0.5
 
@@ -78,10 +74,6 @@ class RollingSEM(var.RollingVar):
             2.309401...
 
     """
-
-    @property
-    def name(self):
-        return f'rolling_{self.size}_sem'
 
     def get(self):
         return (super().get() / len(self.rolling_mean)) ** 0.5
