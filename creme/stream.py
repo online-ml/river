@@ -4,6 +4,7 @@ Utilities for streaming data from various sources.
 import csv
 import datetime as dt
 import itertools
+import random
 
 import numpy as np
 try:
@@ -104,15 +105,53 @@ def iter_pandas(X, y=None, **kwargs):
         yield x, yi
 
 
-def iter_csv(filepath_or_buffer, target_name, types=None, parse_dates=None):
+class DictReader(csv.DictReader):
+    """Custom DictReader which allows sampling."""
+
+    def __init__(self, fraction, rng, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fraction = fraction
+        self.rng = rng
+
+    def __next__(self):
+
+        if self.line_num == 0:
+            self.fieldnames
+
+        row = next(self.reader)
+
+        if self.fraction < 1:
+            while self.rng.random() > self.fraction:
+                row = next(self.reader)
+
+        self.line_num = self.reader.line_num
+
+        while row == []:
+            row = next(self.reader)
+        d = dict(zip(self.fieldnames, row))
+        lf = len(self.fieldnames)
+        lr = len(row)
+        if lf < lr:
+            d[self.restkey] = row[lf:]
+        elif lf > lr:
+            for key in self.fieldnames[lr:]:
+                d[key] = self.restval
+        return d
+
+
+def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None, fraction=1.,
+             seed=None):
     """Yields rows from a CSV file.
 
     Parameters:
         filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer
             object that has a ``read`` method.
-        types (dict): The type of each feature.
+        converters (dict): A `dict` mapping feature names to callables used to parse their
+            associated values.
         parse_dates (dict): A `dict` mapping feature names to a format passed to the
             `datetime.datetime.strptime` method.
+        fraction (float): Sampling fraction.
+        seed (int): If specified, the sampling will be deterministic.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
@@ -138,9 +177,9 @@ def iter_csv(filepath_or_buffer, target_name, types=None, parse_dates=None):
 
             >>> for x, y in stream.iter_csv(data, **params):
             ...     print(x, y)
-            OrderedDict([('name', 'Breaking Bad'), ('day', datetime.datetime(2018, 3, 14, 0, 0))]) 1337
-            OrderedDict([('name', 'The Sopranos'), ('day', datetime.datetime(2018, 3, 14, 0, 0))]) 42
-            OrderedDict([('name', 'Breaking Bad'), ('day', datetime.datetime(2018, 3, 15, 0, 0))]) 7331
+            {'name': 'Breaking Bad', 'day': datetime.datetime(2018, 3, 14, 0, 0)} 1337
+            {'name': 'The Sopranos', 'day': datetime.datetime(2018, 3, 14, 0, 0)} 42
+            {'name': 'Breaking Bad', 'day': datetime.datetime(2018, 3, 15, 0, 0)} 7331
 
     """
 
@@ -149,11 +188,13 @@ def iter_csv(filepath_or_buffer, target_name, types=None, parse_dates=None):
     if not hasattr(file, 'read'):
         file = open(file)
 
-    for x in csv.DictReader(file):
+    for x in DictReader(fraction=fraction, rng=random.Random(seed), f=file):
+
+        print(x)
 
         # Cast the values to the given types
-        if types is not None:
-            for i, t in types.items():
+        if converters is not None:
+            for i, t in converters.items():
                 x[i] = t(x[i])
 
         # Parse the dates
