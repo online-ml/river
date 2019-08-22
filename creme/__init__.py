@@ -28,6 +28,7 @@ __all__ = [
     'naive_bayes',
     'neighbors',
     'optim',
+    'outlier',
     'plot',
     'preprocessing',
     'proba',

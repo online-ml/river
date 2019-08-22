@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Metrics can now be composed using the `+` operator, which is useful for evaluating multiple metrics
 - `LogisticRegression` and `LinearRegression` now have a `intercept_lr` parameter
 - `KNeighborsRegressor` to `neighbors`
+- `fetch_kdd99_http` to `datasets`
 
 ### Modified
 
@@ -20,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Cythonized all the loss functions in `optim`
 - `CountVectorizer` and `TFIDFVectorizer` won't raise an error when being pickled anymore
 - Tests are now much more extensive, thanks mostly to estimator tags
+- `iter_csv` now has `fraction` and `seed` parameters to sample rows, deterministically or not
 
 ## [0.3.0](https://pypi.org/project/creme/0.3.0/) - 2019-06-23
 

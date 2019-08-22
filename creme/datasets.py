@@ -1,3 +1,4 @@
+import ast
 import os
 import shutil
 import urllib
@@ -9,6 +10,7 @@ from . import stream
 __all__ = [
     'fetch_bikes',
     'fetch_electricity',
+    'fetch_kdd99_http',
     'fetch_restaurants',
     'load_airline',
     'load_chick_weights'
@@ -85,7 +87,7 @@ def fetch_bikes(data_home=None, silent=True):
         name=name,
         silent=silent,
         target_name='bikes',
-        types={
+        converters={
             'clouds': int,
             'humidity': int,
             'pressure': float,
@@ -124,7 +126,7 @@ def fetch_electricity(data_home=None, silent=True):
         name=name,
         silent=silent,
         target_name='class',
-        types={
+        converters={
             'date': float,
             'day': int,
             'period': float,
@@ -133,7 +135,43 @@ def fetch_electricity(data_home=None, silent=True):
             'vicprice': float,
             'vicdemand': float,
             'transfer': float,
-            'class': lambda x: True if x == 'UP' else False
+            'class': lambda x: x == 'UP'
+        }
+    )
+
+
+def fetch_kdd99_http(data_home=None, silent=True):
+    """Data from the HTTP dataset of the KDD'99 cup.
+
+    The data contains 567,498 items and 3 features. The goal is to predict whether or not an HTTP
+    connection is anomalous or not. The dataset only contains 2,211 (0.4%) positive labels.
+
+    Parameters:
+        data_home (str): The directory where you wish to store the data.
+        silent (bool): Whether to indicate download progress or not.
+
+    Yields:
+        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+
+    References:
+        1. `HTTP (KDDCUP99) dataset <http://odds.cs.stonybrook.edu/http-kddcup99-dataset/>`_
+
+    """
+
+    name = 'kdd99_http'
+    url = 'https://maxhalford.github.io/files/datasets/kdd99_http.zip'
+
+    return fetch_csv_dataset(
+        data_home=data_home,
+        url=url,
+        name=name,
+        silent=silent,
+        target_name='service',
+        converters={
+            'duration': float,
+            'src_bytes': float,
+            'dst_bytes': float,
+            'service': int
         }
     )
 
@@ -166,11 +204,11 @@ def fetch_restaurants(data_home=None, silent=True):
         name=name,
         silent=silent,
         target_name='visitors',
-        types={
+        converters={
             'latitude': float,
             'longitude': float,
             'visitors': int,
-            'is_holiday': bool
+            'is_holiday': ast.literal_eval
         },
         parse_dates={'date': '%Y-%m-%d'}
     )
@@ -193,7 +231,7 @@ def load_airline():
     return stream.iter_csv(
         os.path.join(os.path.dirname(__file__), 'data', 'airline-passengers.csv'),
         target_name='passengers',
-        types={'passengers': int},
+        converters={'passengers': int},
         parse_dates={'month': '%Y-%m'}
     )
 
@@ -215,5 +253,5 @@ def load_chick_weights():
     return stream.iter_csv(
         os.path.join(os.path.dirname(__file__), 'data', 'chick-weights.csv'),
         target_name='weight',
-        types={'time': int, 'weight': int, 'chick': int, 'diet': int}
+        converters={'time': int, 'weight': int, 'chick': int, 'diet': int}
     )

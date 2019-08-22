@@ -9,6 +9,7 @@ Dataset loading utilities
    :template: function.rst
 
    fetch_bikes
+   fetch_kdd99_http
    fetch_electricity
    fetch_restaurants
    load_airline
