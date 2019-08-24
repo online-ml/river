@@ -190,8 +190,6 @@ def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None,
 
     for x in DictReader(fraction=fraction, rng=random.Random(seed), f=file):
 
-        print(x)
-
         # Cast the values to the given types
         if converters is not None:
             for i, t in converters.items():

@@ -23,6 +23,7 @@ API
    naive_bayes
    neighbors
    optim
+   outlier
    plot
    preprocessing
    proba
