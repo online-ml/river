@@ -171,7 +171,7 @@ def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None,
 
             >>> params = dict(
             ...     target_name='viewers',
-            ...     types={'viewers': int},
+            ...     converters={'viewers': int},
             ...     parse_dates={'day': '%Y-%m-%d'}
             ... )
 
