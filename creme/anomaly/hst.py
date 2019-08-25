@@ -63,7 +63,7 @@ class Node:
 
 
 def make_limits(rng):
-    sq = rng.uniform(0, 1)
+    sq = rng.random()
     return Limits(lower=sq - 2 * max(sq, 1 - sq), upper=sq + 2 * max(sq, 1 - sq))
 
 
@@ -138,10 +138,10 @@ class HalfSpaceTrees(base.OutlierDetector):
 
         ::
 
-            >>> from creme import outlier
+            >>> from creme import anomaly
 
             >>> X = [0.5, 0.45, 0.43, 0.44, 0.445, 0.45, 0.0]
-            >>> hst = outlier.HalfSpaceTrees(
+            >>> hst = anomaly.HalfSpaceTrees(
             ...     n_trees=5,
             ...     tree_height=3,
             ...     window_size=3,
@@ -183,7 +183,8 @@ class HalfSpaceTrees(base.OutlierDetector):
 
         # Scale the features between 0 and 1
         if self.scale:
-            x = self.min_max_scaler.fit_one(x).transform_one(x)
+            x = self.min_max_scaler.transform_one(x)
+            self.min_max_scaler.fit_one(x)
 
         # The trees are built when the first observation comes in
         if not self.trees:

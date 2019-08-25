@@ -1,7 +1,7 @@
-Outlier detection
+Anomaly detection
 -----------------
 
-.. currentmodule:: creme.outliers
+.. currentmodule:: creme.anomaly
 
 .. autosummary::
    :toctree: generated/
