@@ -10,6 +10,7 @@ from .__version__ import __version__
 
 
 __all__ = [
+    'anomaly',
     'cluster',
     'compat',
     'compose',
@@ -28,7 +29,6 @@ __all__ = [
     'naive_bayes',
     'neighbors',
     'optim',
-    'outlier',
     'plot',
     'preprocessing',
     'proba',

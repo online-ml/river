@@ -4,6 +4,7 @@ API
 .. toctree::
    :maxdepth: 2
 
+   anomaly
    base
    cluster
    compat
@@ -23,7 +24,6 @@ API
    naive_bayes
    neighbors
    optim
-   outlier
    plot
    preprocessing
    proba
