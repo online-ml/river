@@ -131,7 +131,7 @@ class Skyline(collections.UserList):
     References:
         1. `Skyline queries in Python <https://maxhalford.github.io/blog/skyline-queries-in-python>`_
         2. `The Skyline Operator <https://infolab.usc.edu/csci599/Fall2007/papers/e-1.pdf>`_
-        3. `Maintaining Sliding Window Skylineson Data Streams <http://www.cs.ust.hk/~dimitris/PAPERS/TKDE06-Sky.pdf>`_
+        3. `Maintaining Sliding Window Skylines on Data Streams <http://www.cs.ust.hk/~dimitris/PAPERS/TKDE06-Sky.pdf>`_
 
     """
 
