@@ -62,7 +62,7 @@ class Leaf:
             return self
 
         # Search for the best split given the current information
-        top_2_diff, split, left_class_counts, right_class_counts = self.find_best_split()
+        top_2_diff, split, _, _ = self.find_best_split()
 
         # Calculate the Hoeffding bound
         R = math.log(self.n_classes)
