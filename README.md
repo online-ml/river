@@ -11,10 +11,6 @@
   <a href="https://codecov.io/gh/creme-ml/creme">
     <img src="https://img.shields.io/codecov/c/gh/creme-ml/creme.svg?style=for-the-badge" alt="codecov" />
   </a>
-  <!-- Codacy -->
-  <a href="https://www.codacy.com/app/MaxHalford/creme">
-    <img src="https://img.shields.io/codacy/grade/56da6d188f4a417da0b7eaa435303862.svg?style=for-the-badge" alt="codecov" />
-  </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">
     <img src="https://img.shields.io/pypi/v/creme.svg?style=for-the-badge" alt="pypi" />
