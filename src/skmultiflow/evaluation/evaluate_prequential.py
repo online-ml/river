@@ -117,8 +117,6 @@ class EvaluatePrequential(StreamEvaluator):
     >>>                                 show_plot=True,
     >>>                                 metrics=['accuracy', 'kappa'])
     >>>
-    >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
-    >>>
     >>> # Run evaluation
     >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
 
@@ -163,7 +161,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>>                                 show_plot=True,
     >>>                                 metrics=['accuracy'],
     >>>                                 data_points_for_classification=True)
-    >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
+    >>>
     >>> # Run evaluation
     >>> evaluator.evaluate(stream=stream, model=ht, model_names=['HT'])
 
