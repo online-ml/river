@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `LogisticRegression` and `LinearRegression` now have a `intercept_lr` parameter
 - `KNeighborsRegressor` to `neighbors`
 - `fetch_kdd99_http` to `datasets`
+- `AdaMax` to `optim`
 
 ### Modified
 

@@ -15,6 +15,7 @@ Optimizers
    AdaDelta
    AdaGrad
    Adam
+   AdaMax
    FTRLProximal
    MiniBatcher
    Momentum
