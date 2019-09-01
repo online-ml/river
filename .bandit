@@ -1,3 +1,0 @@
-[bandit]
-skips: B101,B310,B311
-exclude: ./setup.py

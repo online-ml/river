@@ -20,7 +20,7 @@ class BasePA:
         self.intercept = 0.
 
     @classmethod
-    def _calc_tau_0(self, x, loss):
+    def _calc_tau_0(cls, x, loss):
         norm = utils.norm(x, order=2) ** 2
         if norm > 0:
             return loss / utils.norm(x, order=2) ** 2
