@@ -10,7 +10,15 @@ import sys
 from shutil import rmtree
 
 from setuptools import Extension, find_packages, setup, Command
-from Cython.Build import cythonize
+
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    # Create closure for deferred import
+    def cythonize(*args, **kwargs):
+        from Cython.Build import cythonize
+        return cythonize(*args, ** kwargs)
+
 
 # Package meta-data.
 NAME = 'creme'
