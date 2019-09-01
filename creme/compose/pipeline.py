@@ -329,11 +329,11 @@ class Pipeline(collections.OrderedDict):
         def networkify(step):
 
             # Unions are converted to an undirected network
-            if type(step) is union.TransformerUnion:
+            if isinstance(step, union.TransformerUnion):
                 return Network(nodes=map(networkify, step.values()), links=[], directed=False)
 
             # Pipelines are converted to a directed network
-            if type(step) is Pipeline:
+            if isinstance(step, Pipeline):
                 return Network(
                     nodes=[],
                     links=zip(
