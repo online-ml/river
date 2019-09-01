@@ -11,7 +11,6 @@ from .softmax import SoftmaxRegression
 
 __all__ = [
     'FMRegressor',
-    'GLMRegressor',
     'LinearRegression',
     'LogisticRegression',
     'PAClassifier',

@@ -4,7 +4,6 @@ Utilities for measuring the performance of online learning algorithms.
 import math
 
 from . import base
-from . import compose
 from . import stream
 
 

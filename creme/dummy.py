@@ -4,7 +4,6 @@ Dummy estimators.
 import collections
 
 from . import base
-from . import stats
 
 
 __all__ = ['NoChangeClassifier', 'PriorClassifier', 'StatisticRegressor']
