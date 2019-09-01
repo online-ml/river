@@ -6,6 +6,7 @@ from .ada_bound import AdaBound
 from .ada_delta import AdaDelta
 from .ada_grad import AdaGrad
 from .adam import Adam
+from .adamax import AdaMax
 from .base import Optimizer
 from .ftrl import FTRLProximal
 from .losses import AbsoluteLoss
@@ -36,6 +37,7 @@ __all__ = [
     'AdaDelta',
     'AdaGrad',
     'Adam',
+    'AdaMax',
     'BinaryClassificationLoss',
     'CauchyLoss',
     'ConstantLR',
