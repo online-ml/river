@@ -62,7 +62,7 @@ class PARegressor(BasePA, base.Regressor):
             ... )
             >>> metric = metrics.MAE() + metrics.MSE()
 
-            >>> for xi, yi in stream.iter_numpy(X, y):
+            >>> for xi, yi in stream.iter_array(X, y):
             ...     y_pred = model.predict_one(xi)
             ...     model = model.fit_one(xi, yi)
             ...     metric = metric.update(yi, y_pred)
@@ -135,12 +135,12 @@ class PAClassifier(BasePA, base.BinaryClassifier):
             ...     mode=1
             ... )
 
-            >>> for xi, yi in stream.iter_numpy(X_train, y_train):
+            >>> for xi, yi in stream.iter_array(X_train, y_train):
             ...     y_pred = model.fit_one(xi, yi)
 
             >>> metric = metrics.Accuracy() + metrics.LogLoss()
 
-            >>> for xi, yi in stream.iter_numpy(X_test, y_test):
+            >>> for xi, yi in stream.iter_array(X_test, y_test):
             ...     metric = metric.update(yi, model.predict_proba_one(xi))
 
             >>> print(metric)

@@ -22,7 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Cythonized all the loss functions in `optim`
 - `CountVectorizer` and `TFIDFVectorizer` won't raise an error when being pickled anymore
 - Tests are now much more extensive, thanks mostly to estimator tags
-- `iter_csv` now has `fraction` and `seed` parameters to sample rows, deterministically or not
+- `stream.iter_csv` now has `fraction` and `seed` parameters to sample rows, deterministically or not
+- Renamed `stream.iter_numpy` to `stream.iter_array`
 
 ## [0.3.0](https://pypi.org/project/creme/0.3.0/) - 2019-06-23
 

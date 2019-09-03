@@ -34,7 +34,7 @@ __all__ = [
 
 
 STREAM_METHODS = {
-    np.ndarray: stream.iter_numpy
+    np.ndarray: stream.iter_array
 }
 
 if PANDAS_INSTALLED:
@@ -309,7 +309,7 @@ class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
 
         # Make a prediction for each observation
         y_pred = np.empty(shape=len(X))
-        for i, (x, _) in enumerate(stream.iter_numpy(X)):
+        for i, (x, _) in enumerate(stream.iter_array(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
         return y_pred
@@ -415,7 +415,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         # Make a prediction for each observation
         y_pred = np.empty(shape=(len(X), len(self.classes_)))
-        for i, (x, _) in enumerate(stream.iter_numpy(X)):
+        for i, (x, _) in enumerate(stream.iter_array(X)):
             y_pred[i] = reshape_probas(self.instance_.predict_proba_one(x))
 
         return y_pred
@@ -442,7 +442,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
 
         # Make a prediction for each observation
         y_pred = [None] * len(X)
-        for i, (x, _) in enumerate(stream.iter_numpy(X)):
+        for i, (x, _) in enumerate(stream.iter_array(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
         return np.asarray(y_pred)
@@ -531,7 +531,7 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)
-        for i, (x, _) in enumerate(stream.iter_numpy(X)):
+        for i, (x, _) in enumerate(stream.iter_array(X)):
             X_trans[i] = list(self.instance_.transform_one(x).values())
 
         return np.asarray(X_trans)
@@ -596,7 +596,7 @@ class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
 
         # Call predict_proba_one for each observation
         y_pred = np.empty(len(X), dtype=np.int32)
-        for i, (x, _) in enumerate(stream.iter_numpy(X)):
+        for i, (x, _) in enumerate(stream.iter_array(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
         return y_pred

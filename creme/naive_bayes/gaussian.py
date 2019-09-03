@@ -34,7 +34,7 @@ class GaussianNB(base.BaseNB):
 
             >>> model = naive_bayes.GaussianNB()
 
-            >>> for x, y in stream.iter_numpy(X, Y):
+            >>> for x, y in stream.iter_array(X, Y):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({0: -0.8, 1: -1})

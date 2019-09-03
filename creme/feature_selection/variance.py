@@ -29,7 +29,7 @@ class VarianceThreshold(base.Transformer):
 
             >>> selector = feature_selection.VarianceThreshold()
 
-            >>> for x, _ in stream.iter_numpy(X):
+            >>> for x, _ in stream.iter_array(X):
             ...     print(selector.fit_one(x).transform_one(x))
             {0: 0, 1: 2, 2: 0, 3: 3}
             {1: 1, 2: 4}

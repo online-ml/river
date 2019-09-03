@@ -192,7 +192,7 @@ class Normalizer(base.Transformer):
             ...      [1, 3, 9, 3],
             ...      [5, 7, 5, 1]]
 
-            >>> for x, _ in stream.iter_numpy(X):
+            >>> for x, _ in stream.iter_array(X):
             ...     print(scaler.transform_one(x))
             {0: 0.8, 1: 0.2, 2: 0.4, 3: 0.4}
             {0: 0.1, 1: 0.3, 2: 0.9, 3: 0.3}
