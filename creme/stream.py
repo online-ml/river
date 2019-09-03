@@ -17,15 +17,17 @@ from sklearn import utils
 
 __all__ = [
     'iter_csv',
-    'iter_numpy',
+    'iter_array',
     'iter_pandas',
     'iter_sklearn_dataset',
     'simulate_qa'
 ]
 
 
-def iter_numpy(X, y=None, feature_names=None, target_names=None, shuffle=False, random_state=None):
+def iter_array(X, y=None, feature_names=None, target_names=None, shuffle=False, random_state=None):
     """Yields rows from an array of features and an array of targets.
+
+    This method is compatible with ``numpy`` arrays as well as Python lists.
 
     Parameters:
         X (array-like of shape (n_samples, n_features))
@@ -82,7 +84,7 @@ def iter_sklearn_dataset(dataset, **kwargs):
     except AttributeError:
         pass
 
-    for x, yi in iter_numpy(**kwargs):
+    for x, yi in iter_array(**kwargs):
         yield x, yi
 
 
@@ -101,7 +103,7 @@ def iter_pandas(X, y=None, **kwargs):
     if isinstance(y, pd.DataFrame):
         kwargs['target_names'] = y.columns
 
-    for x, yi in iter_numpy(X.to_numpy(), y, **kwargs):
+    for x, yi in iter_array(X.to_numpy(), y, **kwargs):
         yield x, yi
 
 

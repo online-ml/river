@@ -48,19 +48,34 @@ class KMeans(base.Clusterer):
         ::
 
             >>> from creme import cluster
-            >>> from creme import compat
-            >>> import numpy as np
-            >>> X = np.array([[1, 2], [1, 4], [1, 0],
-            ...               [4, 2], [4, 4], [4, 0]])
+            >>> from creme import stream
+
+            >>> X = [
+            ...     [1, 2],
+            ...     [1, 4],
+            ...     [1, 0],
+            ...     [4, 2],
+            ...     [4, 4],
+            ...     [4, 0]
+            ... ]
+
             >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, random_state=42)
-            >>> k_means = compat.SKLClustererWrapper(k_means)
-            >>> k_means = k_means.fit(X)
 
-            >>> k_means.predict(X)
-            array([0, 0, 0, 1, 1, 1], dtype=int32)
+            >>> for i, (x, _) in enumerate(stream.iter_array(X)):
+            ...     k_means = k_means.fit_one(x)
+            ...     print(f'{X[i]} is assigned to cluster {k_means.predict_one(x)}')
+            [1, 2] is assigned to cluster 0
+            [1, 4] is assigned to cluster 0
+            [1, 0] is assigned to cluster 0
+            [4, 2] is assigned to cluster 1
+            [4, 4] is assigned to cluster 1
+            [4, 0] is assigned to cluster 1
 
-            >>> k_means.predict([[0, 0], [4, 4]])
-            array([0, 1], dtype=int32)
+            >>> k_means.predict_one({0: 0, 1: 0})
+            0
+
+            >>> k_means.predict_one({0: 4, 1: 4})
+            1
 
     References:
         1. `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_

@@ -38,7 +38,7 @@ class SelectKBest(base.Transformer):
             ...     k=2
             ... )
 
-            >>> for xi, yi, in stream.iter_numpy(X, y):
+            >>> for xi, yi, in stream.iter_array(X, y):
             ...     selector = selector.fit_one(xi, yi)
 
             >>> pprint(selector.leaderboard)

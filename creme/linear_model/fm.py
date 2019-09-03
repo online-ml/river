@@ -34,10 +34,10 @@ class FMRegressor(base.Regressor):
 
             >>> fm = linear_model.FMRegressor(random_state=42)
 
-            >>> for x, y in stream.iter_numpy(features[:5], target[:5]):
+            >>> for x, y in stream.iter_array(features[:5], target[:5]):
             ...     fm = fm.fit_one(x, y)
 
-            >>> for x, y in stream.iter_numpy(features[5:], target[5:]):
+            >>> for x, y in stream.iter_array(features[5:], target[5:]):
             ...     print(fm.predict_one(x), y)
             -8.355825... 1
             -11.355220... 5
