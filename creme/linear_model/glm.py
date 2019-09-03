@@ -123,8 +123,7 @@ class LinearRegression(GLM, base.Regressor):
         )
 
     def predict_one(self, x):
-        import math
-        return math.exp(self.raw_dot(x))
+        return self.raw_dot(x)
 
 
 class LogisticRegression(GLM, base.BinaryClassifier):
