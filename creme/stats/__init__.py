@@ -9,6 +9,8 @@ from .covariance import Covariance
 from .entropy import Entropy
 from .ewmean import EWMean
 from .ewvar import EWVar
+from .iqr import IQR
+from .iqr import RollingIQR
 from .kurtosis import Kurtosis
 from .maximum import Max
 from .maximum import RollingMax
@@ -43,6 +45,7 @@ __all__ = [
     'Entropy',
     'EWMean',
     'EWVar',
+    'IQR',
     'Kurtosis',
     'Max',
     'Mean',
@@ -52,6 +55,7 @@ __all__ = [
     'PeakToPeak',
     'PearsonCorrelation',
     'Quantile',
+    'RollingIQR',
     'RollingMean',
     'RollingQuantile',
     'RollingMax',

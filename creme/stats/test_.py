@@ -8,18 +8,20 @@ import pickle
 import random
 import statistics
 
+from creme import stats
 import numpy as np
 import pytest
 from scipy import stats as sp_stats
-
-from creme import stats
 
 
 def load_stats():
     for name, obj in inspect.getmembers(importlib.import_module('creme.stats'), inspect.isclass):
         try:
             sig = inspect.signature(obj)
-            yield obj(**{arg: 1 for arg in sig.parameters})
+            yield obj(**{
+                param.name: param.default if param.default != param.empty else 1
+                for param in sig.parameters.values()
+            })
         except ValueError:
             yield obj()
 
