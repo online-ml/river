@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `KNeighborsRegressor` to `neighbors`
 - `fetch_kdd99_http` to `datasets`
 - `AdaMax` to `optim`
+- `Renamer` to `compose`
 
 ### Modified
 

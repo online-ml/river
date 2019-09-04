@@ -129,6 +129,59 @@ class Pipeline(collections.OrderedDict):
         .. image:: ../_static/pipeline_docstring.svg
             :align: center
 
+        The following shows an example of using ``debug_one`` to visualize how the information
+        flows and changes throughout the pipeline.
+
+        ::
+
+            >>> from creme import compose
+            >>> from creme import feature_extraction
+            >>> from creme import naive_bayes
+            >>> from sklearn import datasets
+
+            >>> X_y = [
+            ...     ('A positive comment', True),
+            ...     ('A negative comment', False),
+            ...     ('A happy comment', True),
+            ...     ('A lovely comment', True),
+            ...     ('A harsh comment', False)
+            ... ]
+
+            >>> tfidf = feature_extraction.TFIDFVectorizer() | compose.Renamer(prefix='tfidf_')
+            >>> counts = feature_extraction.CountVectorizer() | compose.Renamer(prefix='count_')
+            >>> mnb = naive_bayes.MultinomialNB()
+            >>> model = (tfidf + counts) | mnb
+
+            >>> for x, y in X_y:
+            ...     model = model.fit_one(x, y)
+
+            >>> model.debug_one(X_y[0][0])
+            0. Input
+            --------
+            A positive comment
+            <BLANKLINE>
+            1. Transformer union
+            --------------------
+                1.0 TFIDFVectorizer | Renamer
+                -----------------------------
+                tfidf_positive: 0.8794154802106576 (float)
+                tfidf_comment: 0.476055052662881 (float)
+            <BLANKLINE>
+                1.1 CountVectorizer | Renamer
+                -----------------------------
+                count_positive: 1 (int)
+                count_comment: 1 (int)
+            <BLANKLINE>
+            count_positive: 1 (int)
+            count_comment: 1 (int)
+            tfidf_positive: 0.8610369959439764 (float)
+            tfidf_comment: 0.5085423203783267 (float)
+            <BLANKLINE>
+            2. MultinomialNB
+            ----------------
+            True: 0.8068688958888542
+            False: 0.19313110411114587
+
     """
 
     def __init__(self, steps=None):
@@ -199,7 +252,7 @@ class Pipeline(collections.OrderedDict):
 
         # Move the step to the start of the pipeline if so instructed
         if at_start:
-            self.move_to_end(step[0], last=False)
+            self.move_to_end(name, last=False)
 
     @property
     def final_estimator(self):
@@ -280,10 +333,15 @@ class Pipeline(collections.OrderedDict):
             show_types (bool): Whether or not to display the type of feature along with it's value.
 
         """
-        def print_features(x, indent=False, space_after=True):
-            for k, v in x.items():
-                type_str = f' ({type(v).__name__})' if show_types else ''
-                print(('\t' if indent else '') + f'{k}: {v}' + type_str)
+        def print_features(x, show_types, indent=False, space_after=True):
+
+            # Some transformers accept strings as input instead of dicts
+            if isinstance(x, str):
+                print(x)
+            else:
+                for k, v in x.items():
+                    type_str = f' ({type(v).__name__})' if show_types else ''
+                    print(('\t' if indent else '') + f'{k}: {v}' + type_str)
             if space_after:
                 print()
 
@@ -293,21 +351,23 @@ class Pipeline(collections.OrderedDict):
 
         # Print the initial state of the features
         print_title('0. Input')
-        print_features(x)
+        print_features(x, show_types=show_types)
 
         # Print the state of x at each step
         for i, t in enumerate(self.transformers):
+
             if isinstance(t, union.TransformerUnion):
                 print_title(f'{i+1}. Transformer union')
                 for j, (name, sub_t) in enumerate(t.items()):
                     print_title(f'{i+1}.{j} {name}', indent=True)
-                    print_features(sub_t.transform_one(x), indent=True)
+                    print_features(sub_t.transform_one(x), show_types=show_types, indent=True)
                 x = t.transform_one(x)
-                print_features(x)
+                print_features(x, show_types=show_types)
+
             else:
                 print_title(f'{i+1}. {t}')
                 x = t.transform_one(x)
-                print_features(x)
+                print_features(x, show_types=show_types)
 
         # Print the predicted output from the final estimator
         final = self.final_estimator
@@ -319,7 +379,7 @@ class Pipeline(collections.OrderedDict):
                 print()
 
             if isinstance(final, base.Classifier):
-                print_features(final.predict_proba_one(x), space_after=False)
+                print_features(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
                 print(final.predict_one(x))
 

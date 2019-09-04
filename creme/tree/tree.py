@@ -50,6 +50,10 @@ class DecisionTreeClassifier(base.MultiClassifier):
             >>> model_selection.online_score(X_y, model, metric)
             ROCAUC: 0.773134
 
+    References:
+        1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
+        2. `The Morning Paper <https://blog.acolyer.org/2015/08/26/mining-high-speed-data-streams/>`_
+
     """
 
     def __init__(self, criterion='entropy', patience=10, max_depth=5, min_child_samples=20,

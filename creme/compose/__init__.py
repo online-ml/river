@@ -4,6 +4,7 @@ Meta-estimators for building composite models.
 from .blacklist import Blacklister
 from .func import FuncTransformer
 from .pipeline import Pipeline
+from .rename import Renamer
 from .target_modifier import BoxCoxTransformRegressor
 from .target_modifier import TargetModifierRegressor
 from .union import TransformerUnion
@@ -15,6 +16,7 @@ __all__ = [
     'BoxCoxTransformRegressor',
     'FuncTransformer',
     'Pipeline',
+    'Renamer',
     'TargetModifierRegressor',
     'TransformerUnion',
     'Whitelister'
