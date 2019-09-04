@@ -6,9 +6,8 @@ import inspect
 import math
 import pickle
 
-import pytest
-
 from creme import metrics
+import pytest
 from sklearn import metrics as sk_metrics
 
 

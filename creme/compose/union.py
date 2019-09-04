@@ -111,9 +111,6 @@ class TransformerUnion(collections.UserDict, base.Transformer):
     def __add__(self, other):
         return self.add_step(other)
 
-    def __radd__(self, other):
-        return self.add_step(other)
-
     def fit_one(self, x, y=None):
         for transformer in self.values():
             transformer.fit_one(x, y)
