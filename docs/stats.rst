@@ -17,6 +17,7 @@ Univariate statistics
    Entropy
    EWMean
    EWVar
+   IQR
    Kurtosis
    Max
    Mean
@@ -28,6 +29,7 @@ Univariate statistics
    SEM
    Skew
    Sum
+   RollingIQR
    RollingMax
    RollingMean
    RollingMin
