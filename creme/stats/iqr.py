@@ -48,7 +48,7 @@ class IQR(base.Univariate):
         self.quantile_sup = quantile.Quantile(quantile=self.q_sup)
 
     def __str__(self):
-        return f'rolling_{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
+        return f'{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
 
     def update(self, x):
         self.quantile_inf.update(x)
