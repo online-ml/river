@@ -164,23 +164,23 @@ class Pipeline(collections.OrderedDict):
             --------------------
                 1.0 TFIDFVectorizer | Renamer
                 -----------------------------
-                tfidf_positive: 0.8794154802106576 (float)
                 tfidf_comment: 0.476055052662881 (float)
+                tfidf_positive: 0.8794154802106576 (float)
             <BLANKLINE>
                 1.1 CountVectorizer | Renamer
                 -----------------------------
-                count_positive: 1 (int)
                 count_comment: 1 (int)
+                count_positive: 1 (int)
             <BLANKLINE>
-            count_positive: 1 (int)
             count_comment: 1 (int)
-            tfidf_positive: 0.8610369959439764 (float)
+            count_positive: 1 (int)
             tfidf_comment: 0.5085423203783267 (float)
+            tfidf_positive: 0.8610369959439764 (float)
             <BLANKLINE>
             2. MultinomialNB
             ----------------
-            True: 0.8068688958888542
             False: 0.19313110411114587
+            True: 0.8068688958888542
 
     """
 
@@ -339,9 +339,9 @@ class Pipeline(collections.OrderedDict):
             if isinstance(x, str):
                 print(x)
             else:
-                for k, v in x.items():
+                for k, v in sorted(x.items()):
                     type_str = f' ({type(v).__name__})' if show_types else ''
-                    print(('\t' if indent else '') + f'{k}: {v}' + type_str)
+                    print(('    ' if indent else '') + f'{k}: {v}' + type_str)
             if space_after:
                 print()
 
