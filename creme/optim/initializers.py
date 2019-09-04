@@ -12,30 +12,8 @@ __all__ = [
     'Normal'
 ]
 
-class Initializer:
-    """Base class for weights initializers"""
-    def initializer(self, shape):
-        """This method must return a numpy array with the values of the initialized weights
 
-        Parameters:
-            shape (tuple or int): The shape of each new weight (each new entry in the dictionnary)
-            random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
-            the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by ``np.random``.
-        """
-        raise NotImplementedError()
-
-    def __call__(self, *args, **kwargs):
-        """When you call an Initializer, it will return a ``collections.defaultdict``
-        where each new entry of the defaultdict will be a call for the ``self.initializer``
-        method
-        """
-        init = partial(self.initializer, *args, **kwargs)
-        return defaultdict(init)
-
-
-class Zeros(Initializer):
+class Zeros:
     """Initializer which return zeros for each new weight
 
     Example:
@@ -50,11 +28,14 @@ class Zeros(Initializer):
             [ True  True]
 
     """
-    def initializer(self, shape):
-        return np.zeros(shape)
+    def __init__(self):
+        pass
+
+    def __call__(self, shape):
+        return np.zeros(shape) if shape != 1 else 0
 
 
-class Constant(Initializer):
+class Constant:
     """Constant initializer which always return the same value
 
     Parameters:
@@ -74,11 +55,11 @@ class Constant(Initializer):
     def __init__(self, value):
         self.value = value
 
-    def initializer(self, shape):
-        return np.full(shape, self.value)
+    def __call__(self, shape):
+        return np.full(shape, self.value) if shape != 1 else self.value
 
 
-class Normal(Initializer):
+class Normal:
     """Random normal initializer which simulate a normal distribution with specified parameters
 
     Parameters:
@@ -102,5 +83,9 @@ class Normal(Initializer):
         self.sigma = sigma
         self.random_state = utils.check_random_state(random_state)
 
-    def initializer(self, shape):
-        return self.random_state.normal(loc=self.mu, scale=self.sigma, size=shape)
+    def __call__(self, shape):
+        weights = self.random_state.normal(loc=self.mu, scale=self.sigma, size=shape)
+        if shape == 1:
+            return weights[0]
+        else:
+            return weights
