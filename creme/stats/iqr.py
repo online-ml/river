@@ -1,3 +1,5 @@
+from .. import utils
+
 from . import base
 from . import quantile
 
@@ -34,13 +36,19 @@ class IQR(base.Univariate):
             400
             450
             500
+
     """
 
     def __init__(self, q_inf=0.25, q_sup=0.75):
         if q_inf >= q_sup:
             raise ValueError('q_inf must be strictly less than q_sup')
-        self.quantile_inf = quantile.Quantile(quantile=q_inf)
-        self.quantile_sup = quantile.Quantile(quantile=q_sup)
+        self.q_inf = q_inf
+        self.q_sup = q_sup
+        self.quantile_inf = quantile.Quantile(quantile=self.q_inf)
+        self.quantile_sup = quantile.Quantile(quantile=self.q_sup)
+
+    def __str__(self):
+        return f'rolling_{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
 
     def update(self, x):
         self.quantile_inf.update(x)
@@ -51,7 +59,7 @@ class IQR(base.Univariate):
         return self.quantile_sup.get() - self.quantile_inf.get()
 
 
-class RollingIQR(base.RollingUnivariate):
+class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
     """Computes the rolling interquartile range.
 
     Parameters:
@@ -71,7 +79,7 @@ class RollingIQR(base.RollingUnivariate):
             ... )
 
             >>> for i in range(0, 1001):
-            ...     rolling_iqr = iqr.update(i)
+            ...     rolling_iqr = rolling_iqr.update(i)
             ...     if i % 100 == 0:
             ...         print(rolling_iqr.get())
             0
@@ -85,15 +93,23 @@ class RollingIQR(base.RollingUnivariate):
             50
             50
             50
+
     """
 
     def __init__(self, window_size, q_inf=0.25, q_sup=0.75):
+        super().__init__(size=window_size)
         if q_inf >= q_sup:
             raise ValueError('q_inf must be strictly less than q_sup')
+        self.q_inf = q_inf
+        self.q_sup = q_sup
+
         self.quantile_inf = quantile.RollingQuantile(
-            window_size=window_size, quantile=q_inf)
+            window_size=window_size, quantile=self.q_inf)
         self.quantile_sup = quantile.RollingQuantile(
-            window_size=window_size, quantile=q_sup)
+            window_size=window_size, quantile=self.q_sup)
+
+    def __str__(self):
+        return f'{self.__class__.__name__}_{self.size}_{self.q_inf}_{self.q_sup}'
 
     def update(self, x):
         self.quantile_inf.update(x)
