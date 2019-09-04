@@ -18,7 +18,10 @@ def load_metrics():
             continue
         try:
             sig = inspect.signature(obj)
-            yield obj(**{arg: 5 for arg in sig.parameters})
+            yield obj(**{
+                param.name: param.default if param.default != param.empty else 5
+                for param in sig.parameters.values()
+            })
         except ValueError:
             yield obj()
 
