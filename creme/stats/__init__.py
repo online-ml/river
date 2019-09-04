@@ -45,7 +45,7 @@ __all__ = [
     'Entropy',
     'EWMean',
     'EWVar',
-    'IQR'
+    'IQR',
     'Kurtosis',
     'Max',
     'Mean',
