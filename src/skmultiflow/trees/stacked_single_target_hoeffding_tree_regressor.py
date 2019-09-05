@@ -18,13 +18,12 @@ _PERCEPTRON = 'perceptron'
 _ADAPTIVE = 'adaptive'
 
 
-class StackedSingleTargetHoeffingTreeRegressor(
-        MultiTargetRegressionHoeffdingTree, MultiOutputMixin):
+class StackedSingleTargetHoeffingTreeRegressor(MultiTargetRegressionHoeffdingTree, MultiOutputMixin):
     """Stacked Single-target Regression Hoeffding Tree.
 
-    Implementation of the Stacked Single-target Regression Hoeffding Tree
-    (SST-HT) proposed by S. M. Mastelini, S. Barbon Jr., and A. C. P. L. F. de
-    Carvalho [1]_.
+    Implementation of the Stacked Single-target Hoeffding Tree (SST-HT) method
+    for multi-target regression as proposed by S. M. Mastelini, S. Barbon Jr.,
+    and A. C. P. L. F. de Carvalho [1]_.
 
     Parameters
     ----------
@@ -51,7 +50,7 @@ class StackedSingleTargetHoeffingTreeRegressor(
         | Prediction mechanism used at leafs.
         | 'perceptron' - Stacked perceptron
         | 'adaptive' - Adaptively chooses between the best predictor (mean,
-        perceptron or stacked perceptron)
+          perceptron or stacked perceptron)
     nb_threshold: int (default=0)
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes: list, optional

@@ -72,6 +72,21 @@ Stream Generators
 Learning methods
 ================
 
+Anomaly detection methods
+-------------------------
+
+.. automodule:: skmultiflow.anomaly_detection
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   anomaly_detection.HalfSpaceTrees
+
 Bayes methods
 -------------
 
@@ -154,8 +169,38 @@ Neural Networks
 
    neural_networks.PerceptronMask
 
-Tree methods
-------------
+Prototype based methods
+-----------------------
+
+.. automodule:: skmultiflow.prototype
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   prototype.RobustSoftLearningVectorQuantization
+
+Rules based methods
+-------------------
+
+.. automodule:: skmultiflow.rules
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: skmultiflow
+
+.. autosummary::
+   :nosignatures:
+   :toctree: _autosummary
+
+   rules.VFDR
+
+Trees based methods
+-------------------
 
 .. automodule:: skmultiflow.trees
    :no-members:
@@ -174,21 +219,8 @@ Tree methods
    trees.RegressionHoeffdingTree
    trees.RegressionHAT
    trees.MultiTargetRegressionHoeffdingTree
+   trees.StackedSingleTargetHoeffingTreeRegressor
 
-Rules methods
--------------
-
-.. automodule:: skmultiflow.rules
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: skmultiflow
-
-.. autosummary::
-   :nosignatures:
-   :toctree: _autosummary
-
-   rules.VFDR
 
 Drift Detection: :mod:`skmultiflow.drift_detection`
 ===================================================
