@@ -7,24 +7,22 @@ from skmultiflow.core.base import ClassifierMixin, BaseSKMObject
 
 
 class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
-    """Robust Soft Learning Vector Quantization for Streaming and Non-Streaming
-    Data
-    By choosing another gradient descent method the RSLVQ can be used as an
-    adaptive version.
+    """Robust Soft Learning Vector Quantization for Streaming and Non-Streaming Data.
+
+    By choosing another gradient descent method the Robust Soft Learning Vector Quantization
+    (RSLVQ) method can be used as an adaptive version.
 
     Parameters
     ----------
-    prototypes_per_class : int or list of int, optional (default=1)
+    prototypes_per_class: int or list of int, optional (default=1)
         Number of prototypes per class. Use list to specify different
         numbers per class, not implemented yet.
-    initial_prototypes : array-like, shape =  [n_prototypes, n_features + 1],
-     optional
+    initial_prototypes: array-like, shape =  [n_prototypes, n_features + 1], optional
         Prototypes to start with. If not given initialization near the class
         means. Class label must be placed as last entry of each prototype.
-        Example for one prototype per class on a binary classification
-        problem:
-            initial_prototypes = [[2.59922826, 2.57368134, 4.92501, 0],
-                                 [6.05801971, 6.01383352, 5.02135783, 1]]
+
+        | Example for one prototype per class on a binary classification problem:
+        | `initial_prototypes = [[2.59922826, 2.57368134, 4.92501, 0], [6.05801971, 6.01383352, 5.02135783, 1]]`
     sigma : float, optional (default=1.0)
         Variance of the distribution.
     random_state : int, RandomState instance or None, optional (default=None)
@@ -41,30 +39,29 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
 
     Attributes
     ----------
-    w_ : array-like, shape = [n_prototypes, n_features]
+    prototypes : array-like, shape = [n_prototypes, n_features]
         Prototype vector, where n_prototypes in the number of prototypes and
         n_features is the number of features
-    c_w_ : array-like, shape = [n_prototypes]
+    prototype_classes : array-like, shape = [n_prototypes]
         Prototype classes
-    classes_ : array-like, shape = [n_classes]
+    class_labels : array-like, shape = [n_classes]
         Array containing labels.
 
     Notes
     -----
     The RSLVQ [2]_ can be used with vanilla SGD as gradient descent method or
-    with a momentum-based gradient descent technique called Adadelta as
-    proposed in [1]_.
+    with a momentum-based gradient descent technique called Adadelta as proposed in [1]_.
 
     References
     ----------
     .. [1] Heusinger, M., Raab, C., Schleif, F.M.: Passive concept drift
-    handling via momentum based robust soft learning vector quantization.\
-    In: Vellido, A., Gibert, K., Angulo, C., Martı́n Guerrero, J.D. (eds.)
-    Advances in Self-Organizing Maps, Learning Vector Quantization,
-    Clustering and Data Visualization. pp. 200–209. Springer International
-    Publishing, Cham (2020)
+       handling via momentum based robust soft learning vector quantization.\
+       In: Vellido, A., Gibert, K., Angulo, C., Martı́n Guerrero, J.D. (eds.)
+       Advances in Self-Organizing Maps, Learning Vector Quantization,
+       Clustering and Data Visualization. pp. 200–209. Springer International
+       Publishing, Cham (2020)
     .. [2] Sambu Seo and Klaus Obermayer. 2003. Soft learning vector
-    quantization. Neural Comput. 15, 7 (July 2003), 1589-1604
+       quantization. Neural Comput. 15, 7 (July 2003), 1589-1604
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
@@ -253,7 +250,7 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
 
         Parameters
         ----------
-        x : array-like, shape = [n_samples, n_features]
+        X : array-like, shape = [n_samples, n_features]
             Training vector, where n_samples in the number of samples and
             n_features is the number of features.
         y : numpy.ndarray of shape (n_samples, n_targets)
@@ -317,13 +314,13 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
                 self._update_prototype(j=incorr_index, c_xi=c_xi, xi=xi,
                                        prototypes=prototypes)
 
-    def predict(self, x):
+    def predict(self, X):
         """Predict class membership index for each input sample.
         This function does classification on an array of
         test vectors X.
         Parameters
         ----------
-        x : array-like, shape = [n_samples, n_features]
+        X : array-like, shape = [n_samples, n_features]
         Returns
         -------
         C : array, shape = (n_samples)
@@ -331,7 +328,7 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
         """
         return np.array([self.c_w_[np.array([self._costf(xi, p)
                                              for p in self.w_]).argmax()]
-                        for xi in x])
+                         for xi in X])
 
     def _costf(self, x, w):
         d = (x - w)[np.newaxis].T
@@ -353,28 +350,22 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
         return o
 
     def predict_proba(self, X):
-        """ predict_proba
-        Predicts the probability of each sample belonging to each one of the
-        known target_values.
-
-        Parameters
-        ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            A matrix of the samples we want to predict.
-
-        Returns
-        -------
-        numpy.ndarray
-            An array of shape (n_samples, n_features), in which each outer
-            entry is associated with the X entry of the same index. And where
-            the list in index [i] contains len(self.target_values) elements,
-            each of which represents the probability that the i-th sample of
-            X belongs to a certain label.
+        """ Not implemented for this  method.
         """
         raise NotImplementedError('This method does not exist on Robust Soft '
-                                  'Learning Vector Qunatization')
+                                  'Learning Vector Quantization')
 
     @property
     def prototypes(self):
-        """Returns the prototypes"""
+        """The prototypes"""
         return self.w_
+
+    @property
+    def prototype_classes(self):
+        """The prototype classes"""
+        return self.c_w_
+
+    @property
+    def class_labels(self):
+        """The class labels"""
+        return self.classes_
