@@ -28,9 +28,6 @@ class Zeros:
             [ True  True]
 
     """
-    def __init__(self):
-        pass
-
     def __call__(self, shape):
         return np.zeros(shape) if shape != 1 else 0
 
@@ -87,5 +84,4 @@ class Normal:
         weights = self.random_state.normal(loc=self.mu, scale=self.sigma, size=shape)
         if shape == 1:
             return weights[0]
-        else:
-            return weights
+        return weights
