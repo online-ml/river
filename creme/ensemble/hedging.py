@@ -90,11 +90,11 @@ class HedgeBinaryClassifier(BaseHedge, base.BinaryClassifier):
 
     """
 
-    def __init__(self, classifiers, weights=None, loss=optim.LogLoss(), learning_rate=0.5):
+    def __init__(self, classifiers, weights=None, loss=None, learning_rate=0.5):
         super().__init__(
             models=classifiers,
             weights=weights,
-            loss=loss,
+            loss=optim.losses.Log() if loss is None else loss,
             learning_rate=learning_rate
         )
 
@@ -120,6 +120,7 @@ class HedgeRegressor(BaseHedge, base.Regressor):
             of weights is assumed. This roughly translates to the prior amount of trust we have in
             each model.
         loss (optim.BinaryClassificationLoss): The binary loss function that has to be minimized.
+            Defaults to `optim.losses.Squared`.
         learning_rate (float): The learning rate by which the model weights are multiplied at each
             iteration.
 
@@ -165,11 +166,11 @@ class HedgeRegressor(BaseHedge, base.Regressor):
 
     """
 
-    def __init__(self, regressors, weights=None, loss=optim.SquaredLoss(), learning_rate=0.5):
+    def __init__(self, regressors, weights=None, loss=None, learning_rate=0.5):
         super().__init__(
             models=regressors,
             weights=weights,
-            loss=loss,
+            loss=optim.losses.Squared() if loss is None else loss,
             learning_rate=learning_rate
         )
 

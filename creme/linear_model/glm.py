@@ -112,11 +112,11 @@ class LinearRegression(GLM, base.Regressor):
     def __init__(self, optimizer=None, loss=None, l2=0.0001, intercept=0., intercept_lr=0.01):
         super().__init__(
             optimizer=(
-                optim.SGD(optim.InverseScalingLR(0.01, 0.25))
+                optim.SGD(optim.schedulers.InverseScaling(0.01, 0.25))
                 if optimizer is None else
                 optimizer
             ),
-            loss=optim.SquaredLoss() if loss is None else loss,
+            loss=optim.losses.Squared() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2
@@ -177,7 +177,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     def __init__(self, optimizer=None, loss=None, l2=0.0001, intercept=0., intercept_lr=0.01):
         super().__init__(
             optimizer=optim.SGD(0.05) if optimizer is None else optimizer,
-            loss=optim.LogLoss() if loss is None else loss,
+            loss=optim.losses.Log() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2

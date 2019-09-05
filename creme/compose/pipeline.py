@@ -333,6 +333,9 @@ class Pipeline(collections.OrderedDict):
             show_types (bool): Whether or not to display the type of feature along with it's value.
 
         """
+
+        TAB = ' ' * 4
+
         def print_features(x, show_types, indent=False, space_after=True):
 
             # Some transformers accept strings as input instead of dicts
@@ -341,13 +344,13 @@ class Pipeline(collections.OrderedDict):
             else:
                 for k, v in sorted(x.items()):
                     type_str = f' ({type(v).__name__})' if show_types else ''
-                    print(('    ' if indent else '') + f'{k}: {v}' + type_str)
+                    print((TAB if indent else '') + f'{k}: {v}' + type_str)
             if space_after:
                 print()
 
         def print_title(title, indent=False):
-            print(('\t' if indent else '') + title)
-            print(('\t' if indent else '') + '-' * len(title))
+            print((TAB if indent else '') + title)
+            print((TAB if indent else '') + '-' * len(title))
 
         # Print the initial state of the features
         print_title('0. Input')

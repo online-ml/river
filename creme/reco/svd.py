@@ -81,7 +81,7 @@ class SVD(base.Recommender):
         self.n_factors = n_factors
         self.row_optimizer = optim.SGD() if row_optimizer is None else row_optimizer
         self.col_optimizer = optim.SGD() if col_optimizer is None else row_optimizer
-        self.loss = optim.SquaredLoss() if loss is None else row_optimizer
+        self.loss = optim.losses.Squared() if loss is None else row_optimizer
         self.l2 = l2
         self.global_mean = stats.Mean()
         self.random_state = utils.check_random_state(random_state)
