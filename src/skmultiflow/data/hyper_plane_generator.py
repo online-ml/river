@@ -216,9 +216,9 @@ class HyperplaneGenerator(Stream):
 
         """
         data = np.zeros([batch_size, self.n_features + 1])
-        sum_weights = np.sum(self._weights)
 
         for j in range(batch_size):
+            sum_weights = np.sum(self._weights)
             self.sample_idx += 1
             sum = 0
             for i in range(self.n_features):
@@ -232,7 +232,7 @@ class HyperplaneGenerator(Stream):
 
             data[j, -1] = group
 
-        self._generate_drift()
+            self._generate_drift()
 
         self.current_sample_x = data[:, :self.n_features]
         self.current_sample_y = data[:, self.n_features:].flatten().astype(int)
