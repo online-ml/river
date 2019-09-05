@@ -136,7 +136,6 @@ def test_multi_target_regression_hoeffding_tree_adaptive(test_path):
         test_path,
         'expected_preds_multi_target_regression_adaptive.npy'
     )
-    np.save(test_file, y_pred)
     expected_predictions = np.load(test_file)
 
     assert np.allclose(y_pred, expected_predictions)
