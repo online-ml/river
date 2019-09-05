@@ -45,7 +45,8 @@ class IQR(base.Univariate):
         self.quantile_inf = quantile.Quantile(quantile=self.q_inf)
         self.quantile_sup = quantile.Quantile(quantile=self.q_sup)
 
-    def __str__(self):
+    @property
+    def name(self):
         return f'{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
 
     def update(self, x):
@@ -103,7 +104,8 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
         self.quantile_inf = quantile.RollingQuantile(window_size=window_size, quantile=self.q_inf)
         self.quantile_sup = quantile.RollingQuantile(window_size=window_size, quantile=self.q_sup)
 
-    def __str__(self):
+    @property
+    def name(self):
         return f'{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
 
     def update(self, x):
