@@ -11,10 +11,10 @@ Optimizers
    :nosignatures:
    :template: class.rst
 
+   Adam
    AdaBound
    AdaDelta
    AdaGrad
-   Adam
    AdaMax
    FTRLProximal
    MiniBatcher
@@ -33,9 +33,9 @@ Learning rate schedulers
    :nosignatures:
    :template: class.rst
 
-   ConstantLR
-   InverseScalingLR
-   OptimalLR
+   schedulers.Constant
+   schedulers.InverseScaling
+   schedulers.Optimal
 
 
 Loss functions
@@ -46,14 +46,27 @@ Loss functions
    :nosignatures:
    :template: class.rst
 
-   AbsoluteLoss
-   BinaryClassificationLoss
-   CauchyLoss
-   CrossEntropy
-   EpsilonInsensitiveHingeLoss
-   HingeLoss
-   LogLoss
-   MultiClassificationLoss
-   QuantileLoss
-   RegressionLoss
-   SquaredLoss
+   losses.Absolute
+   losses.BinaryClassificationLoss
+   losses.Cauchy
+   losses.CrossEntropy
+   losses.EpsilonInsensitiveHinge
+   losses.Hinge
+   losses.Log
+   losses.MultiClassification
+   losses.Quantile
+   losses.RegressionLoss
+   losses.Squared
+
+
+Weight initializers
++++++++++++++++++++
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+   :template: class.rst
+
+   initializers.Constant
+   initializers.Normal
+   initializers.Zeros

@@ -2,20 +2,20 @@ import abc
 
 
 __all__ = [
-    'ConstantLR',
-    'InverseScalingLR',
-    'OptimalLR'
+    'Constant',
+    'InverseScaling',
+    'Optimal'
 ]
 
 
-class LRScheduler(abc.ABC):
+class Scheduler(abc.ABC):
 
     @abc.abstractmethod
     def get(self, t: int) -> float:
         """Returns the learning rate at a given iteration."""
 
 
-class ConstantLR(LRScheduler):
+class Constant(Scheduler):
     """Always uses the same learning rate."""
 
     def __init__(self, learning_rate):
@@ -25,7 +25,7 @@ class ConstantLR(LRScheduler):
         return self.learning_rate
 
 
-class InverseScalingLR(LRScheduler):
+class InverseScaling(Scheduler):
     """Reduces the learning rate using a power schedule.
 
     Assuming an iteration counter $t$ starting from 0, the learning rate will be:
@@ -44,7 +44,7 @@ class InverseScalingLR(LRScheduler):
         return self.learning_rate / pow(t + 1, self.power)
 
 
-class OptimalLR(LRScheduler):
+class Optimal(Scheduler):
     """Optimal learning schedule as proposed by Léon Bottou.
 
     References:

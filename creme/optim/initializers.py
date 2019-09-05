@@ -1,39 +1,19 @@
 """
-Initializers module
+This module contains classes used for initializing weights in models such as linear regression.
 """
-from collections import defaultdict
-from functools import partial
 import numpy as np
 from sklearn import utils
 
+
 __all__ = [
-    'Zeros',
     'Constant',
-    'Normal'
+    'Normal',
+    'Zeros'
 ]
 
 
-class Zeros:
-    """Initializer which return zeros for each new weight
-
-    Example:
-
-        ::
-
-            >>> import numpy as np
-            >>> from creme.initializers import Zeros
-
-            >>> init = Zeros()(shape=2)
-            >>> print(init['weights'] == np.zeros(2))
-            [ True  True]
-
-    """
-    def __call__(self, shape):
-        return np.zeros(shape) if shape != 1 else 0
-
-
 class Constant:
-    """Constant initializer which always return the same value
+    """Constant initializer which always return the same value.
 
     Parameters:
         value (float): The constant value
@@ -42,13 +22,18 @@ class Constant:
 
         ::
 
-            >>> import numpy as np
-            >>> from creme.initializers import Constant
+            >>> from creme import optim
 
-            >>> init = Constant(3.14)(shape=2)
-            >>> print(init['weights'] == np.full(2, 3.14))
-            [ True  True]
+            >>> init = optim.initializers.Constant(value=3.14)
+
+            >>> init(shape=1)
+            3.14
+
+            >>> init(shape=2)
+            array([3.14, 3.14])
+
     """
+
     def __init__(self, value):
         self.value = value
 
@@ -56,8 +41,31 @@ class Constant:
         return np.full(shape, self.value) if shape != 1 else self.value
 
 
+class Zeros(Constant):
+    """Initializer which return zeros for each new weight.
+
+    Example:
+
+        ::
+
+            >>> from creme import optim
+
+            >>> init = optim.initializers.Zeros()
+
+            >>> init(shape=1)
+            0.0
+
+            >>> init(shape=2)
+            array([0., 0.])
+
+    """
+
+    def __init__(self):
+        super().__init__(value=0.)
+
+
 class Normal:
-    """Random normal initializer which simulate a normal distribution with specified parameters
+    """Random normal initializer which simulate a normal distribution with specified parameters.
 
     Parameters:
         mu (float): The mean of the normal distribution
@@ -67,14 +75,18 @@ class Normal:
 
         ::
 
-            >>> import numpy as np
-            >>> from creme.initializers import Normal
+            >>> from creme import optim
 
-            >>> init = Normal(mu=0., sigma=1., random_state=42)(shape=2)
-            >>> np.random.seed(42)
-            >>> print(init['weights'] == np.random.normal(0., 1., 2))
-            [ True  True]
+            >>> init = optim.initializers.Normal(mu=0, sigma=1, random_state=42)
+
+            >>> init(shape=1)
+            0.496714...
+
+            >>> init(shape=2)
+            array([-0.1382643 ,  0.64768854])
+
     """
+
     def __init__(self, mu=0., sigma=1., random_state=None):
         self.mu = mu
         self.sigma = sigma

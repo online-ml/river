@@ -65,7 +65,7 @@ class SoftmaxRegression(base.MultiClassifier):
             copy.deepcopy,
             optim.SGD(0.01) if optimizer is None else optimizer
         ))
-        self.loss = optim.CrossEntropy() if loss is None else loss
+        self.loss = optim.losses.CrossEntropy() if loss is None else loss
         self.l2 = l2
         self.weights = collections.defaultdict(functools.partial(collections.defaultdict, float))
 

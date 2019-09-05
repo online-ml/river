@@ -43,7 +43,7 @@ cdef class RegressionLoss(Loss):
         """Returns the gradient with respect to ``y_pred``."""
 
 
-cdef class AbsoluteLoss(RegressionLoss):
+cdef class Absolute(RegressionLoss):
     """Computes the absolute loss, also known as the mean absolute error or L1 loss.
 
     Mathematically, it is defined as
@@ -60,7 +60,7 @@ cdef class AbsoluteLoss(RegressionLoss):
 
             >>> from creme import optim
 
-            >>> loss = optim.AbsoluteLoss()
+            >>> loss = optim.losses.Absolute()
             >>> loss.eval(-42, 42)
             84.0
             >>> loss.gradient(1, 2)
@@ -79,7 +79,7 @@ cdef class AbsoluteLoss(RegressionLoss):
         return -1
 
 
-cdef class CauchyLoss(RegressionLoss):
+cdef class Cauchy(RegressionLoss):
     """Cauchy loss function.
 
     References:
@@ -116,7 +116,7 @@ cdef class CrossEntropy(MultiClassificationLoss):
             ...     {0: 0.44941979, 1: 0.32962558, 2: 0.22095463}
             ... ]
 
-            >>> loss = optim.CrossEntropy()
+            >>> loss = optim.losses.CrossEntropy()
 
             >>> for y_t, y_p in zip(y_true, y_pred):
             ...     print(loss.eval(y_t, y_p))
@@ -153,7 +153,7 @@ cdef class CrossEntropy(MultiClassificationLoss):
         }
 
 
-cdef class HingeLoss(BinaryClassificationLoss):
+cdef class Hinge(BinaryClassificationLoss):
     """Computes the hinge loss.
 
     Mathematically, it is defined as
@@ -189,7 +189,7 @@ cdef class HingeLoss(BinaryClassificationLoss):
             >>> hinge_loss([0, 1, 1], y_pred)
             0.303036...
 
-            >>> loss = optim.HingeLoss()
+            >>> loss = optim.losses.Hinge()
             >>> np.mean([loss.eval(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
             0.303036...
 
@@ -214,7 +214,7 @@ cdef class HingeLoss(BinaryClassificationLoss):
         return 0
 
 
-cdef class EpsilonInsensitiveHingeLoss(RegressionLoss):
+cdef class EpsilonInsensitiveHinge(RegressionLoss):
 
     cdef readonly double eps
 
@@ -242,7 +242,7 @@ cdef class EpsilonInsensitiveHingeLoss(RegressionLoss):
         return 0
 
 
-cdef class LogLoss(BinaryClassificationLoss):
+cdef class Log(BinaryClassificationLoss):
     """Logarithmic loss."""
 
     cpdef double eval(self, double y_true, double y_pred):
@@ -264,7 +264,7 @@ cdef class LogLoss(BinaryClassificationLoss):
         return -y_true / (math.exp(z) + 1.0)
 
 
-cdef class QuantileLoss(RegressionLoss):
+cdef class Quantile(RegressionLoss):
     """Quantile loss.
 
     Parameters:
@@ -276,7 +276,7 @@ cdef class QuantileLoss(RegressionLoss):
 
             >>> from creme import optim
 
-            >>> loss = optim.QuantileLoss(0.5)
+            >>> loss = optim.losses.Quantile(0.5)
             >>> loss.eval(1, 3)
             1.0
 
@@ -305,7 +305,7 @@ cdef class QuantileLoss(RegressionLoss):
         return (y_true < y_pred) - self.alpha
 
 
-cdef class SquaredLoss(RegressionLoss):
+cdef class Squared(RegressionLoss):
     """Computes the squared loss, also known as the L2 loss.
 
     Mathematically, it is defined as
@@ -326,7 +326,7 @@ cdef class SquaredLoss(RegressionLoss):
 
             >>> from creme import optim
 
-            >>> loss = optim.SquaredLoss()
+            >>> loss = optim.losses.Squared()
             >>> loss.eval(-4, 5)
             81.0
             >>> loss.gradient(-4, 5)

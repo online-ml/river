@@ -47,7 +47,7 @@ class FMRegressor(base.Regressor):
     def __init__(self, n_components=5, optimizer=None, loss=None, intercept=None,
                  init_stdev=0.1, random_state=None):
         self.n_components = n_components
-        self.loss = optim.SquaredLoss() if loss is None else loss
+        self.loss = optim.losses.Squared() if loss is None else loss
         self.init_stdev = init_stdev
         self.random_state = sk_utils.check_random_state(random_state)
 
