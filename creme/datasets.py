@@ -1,6 +1,7 @@
 import ast
 import os
 import shutil
+import tarfile
 import urllib
 import zipfile
 
@@ -12,6 +13,8 @@ __all__ = [
     'fetch_electricity',
     'fetch_kdd99_http',
     'fetch_restaurants',
+    'fetch_sms',
+    'fetch_trec07p',
     'load_airline',
     'load_chick_weights'
 ]
@@ -27,37 +30,54 @@ def get_data_home(data_home=None):
     return data_home
 
 
-def fetch_csv_dataset(data_home, url, name, silent=True, **iter_csv_params):
+def download_dataset(name, url, data_home, archive_type=None, silent=True):
+    """Downloads/decompresses a dataset locally if does not exist.
 
+    Parameters:
+        name (str): Dataset filename or directory name.
+        url (str): From where to download the dataset.
+        data_home (str): The directory where you wish to store the data.
+        archive_type (str): Dataset archive type extension name (e.g. 'zip'). Defaults to None.
+        silent (bool): Whether to indicate download progress or not.
+
+    Returns:
+        dataset_path (str): Where the dataset is stored.
+
+    """
     data_home = get_data_home(data_home=data_home)
+    data_dir_path = os.path.join(data_home, f'{name}')
 
-    # If the CSV file exists then iterate over it
-    csv_path = os.path.join(data_home, f'{name}.csv')
-    if os.path.exists(csv_path):
-        return stream.iter_csv(csv_path, **iter_csv_params)
-
-    # If the ZIP file exists then unzip it
-    zip_path = os.path.join(data_home, f'{name}.zip')
-    if os.path.exists(zip_path):
-
-        # Unzip the ZIP file
+    # Download dataset if does not exist
+    if not os.path.exists(data_dir_path):
         if not silent:
-            print('Unzipping data...')
-        with zipfile.ZipFile(zip_path, 'r') as zf:
-            zf.extractall(data_home)
+            print('Downloading data...')
 
-        # Delete the ZIP file now that the CSV file is available
-        os.remove(zip_path)
+        if archive_type:
+            data_dir_path = f'{data_dir_path}.{archive_type}'
 
-        return fetch_csv_dataset(data_home, url, name, **iter_csv_params)
+        with urllib.request.urlopen(url) as r, open(data_dir_path, 'wb') as f:
+            shutil.copyfileobj(r, f)
 
-    # Download the ZIP file
-    if not silent:
-        print('Downloading data...')
-    with urllib.request.urlopen(url) as r, open(zip_path, 'wb') as f:
-        shutil.copyfileobj(r, f)
+        # Uncompress if needed
+        if archive_type:
+            archive_path, data_dir_path = data_dir_path, data_dir_path[:data_dir_path.rfind('.')]
 
-    return fetch_csv_dataset(data_home, url, name, **iter_csv_params)
+            if not silent:
+                print('Uncompressing data...')
+
+            if archive_type == 'zip':
+                with zipfile.ZipFile(archive_path, 'r') as zf:
+                    zf.extractall(data_dir_path)
+            elif archive_type in ['gz', 'tar', 'tar.gz', 'tgz']:
+                mode = 'r:' if archive_type == 'tar' else 'r:gz'
+                tar = tarfile.open(archive_path, mode)
+                tar.extractall(data_dir_path)
+                tar.close()
+
+            # Delete the archive file now that the dataset is available
+            os.remove(archive_path)
+
+    return f'{data_dir_path}/{name}'
 
 
 def fetch_bikes(data_home=None, silent=True):
@@ -81,11 +101,11 @@ def fetch_bikes(data_home=None, silent=True):
     name = 'toulouse_bikes'
     url = 'https://maxhalford.github.io/files/datasets/toulouse_bikes.zip'
 
-    return fetch_csv_dataset(
-        data_home=data_home,
-        url=url,
-        name=name,
-        silent=silent,
+    # Download dataset if does not exist and get its path
+    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+
+    return stream.iter_csv(
+        f'{dataset_path}.csv',
         target_name='bikes',
         converters={
             'clouds': int,
@@ -120,11 +140,11 @@ def fetch_electricity(data_home=None, silent=True):
     name = 'electricity'
     url = 'https://maxhalford.github.io/files/datasets/electricity.zip'
 
-    return fetch_csv_dataset(
-        data_home=data_home,
-        url=url,
-        name=name,
-        silent=silent,
+    # Download dataset if does not exist and get its path
+    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+
+    return stream.iter_csv(
+        f'{dataset_path}.csv',
         target_name='class',
         converters={
             'date': float,
@@ -161,11 +181,11 @@ def fetch_kdd99_http(data_home=None, silent=True):
     name = 'kdd99_http'
     url = 'https://maxhalford.github.io/files/datasets/kdd99_http.zip'
 
-    return fetch_csv_dataset(
-        data_home=data_home,
-        url=url,
-        name=name,
-        silent=silent,
+    # Download dataset if does not exist and get its path
+    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+
+    return stream.iter_csv(
+        f'{dataset_path}.csv',
         target_name='service',
         converters={
             'duration': float,
@@ -198,11 +218,11 @@ def fetch_restaurants(data_home=None, silent=True):
     name = 'kaggle_recruit_restaurants'
     url = 'https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip'
 
-    return fetch_csv_dataset(
-        data_home=data_home,
-        url=url,
-        name=name,
-        silent=silent,
+    # Download dataset if does not exist and get its path
+    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+
+    return stream.iter_csv(
+        f'{dataset_path}.csv',
         target_name='visitors',
         converters={
             'latitude': float,
@@ -211,6 +231,71 @@ def fetch_restaurants(data_home=None, silent=True):
             'is_holiday': ast.literal_eval
         },
         parse_dates={'date': '%Y-%m-%d'}
+    )
+
+
+def fetch_sms(data_home=None, silent=True):
+    """SMS Spam Collection dataset.
+
+    The data contains 5,574 items and 1 feature (i.e. sms body). Spam messages represent
+    13.4% of the dataset. The goal is to predict whether a sms is a spam or not.
+
+    Parameters:
+        data_home (str): The directory where you wish to store the data.
+        silent (bool): Whether to indicate download progress or not.
+
+    Yields:
+        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+
+    References:
+        1. `Contributions to the Study of SMS Spam Filtering: New Collection and Results <http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/doceng11.pdf>`_
+
+    """
+
+    name = 'SMSSpamCollection'
+    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip'
+
+    # Download dataset if does not exist and get its path
+    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+
+    # Stream sms
+    with open(dataset_path) as f:
+        for ix, row in enumerate(f):
+            label, body = row.split('\t')
+            yield ({'body': body}, label)
+
+
+def fetch_trec07p(data_home=None, silent=True):
+    """2007 TREC’s Spam Track dataset.
+
+    The data contains 75,419 chronologically ordered items, i.e. 3 months of emails delivered
+    to a particular server in 2007. Spam messages represent 66.6% of the dataset.
+    The goal is to predict whether an email is a spam or not.
+
+    Parsed features are: sender, recipients, date, subject, body.
+
+    Parameters:
+        data_home (str): The directory where you wish to store the data.
+        silent (bool): Whether to indicate download progress or not.
+
+    Yields:
+        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+
+    References:
+        1. `TREC 2007 Spam Track Overview <https://trec.nist.gov/pubs/trec16/papers/SPAM.OVERVIEW16.pdf>`_
+        2. `Code ran to parse the dataset <https://gist.github.com/gbolmier/b6a942699aaaedec54041a32e4f34d40>`_
+
+    """
+
+    name = 'trec07p'
+    url = 'https://maxhalford.github.io/files/datasets/trec07p.zip'
+
+    # Download dataset if does not exist andCode ran to build trec07p CSV available in `creme` library get its path
+    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+
+    return stream.iter_csv(
+        f'{dataset_path}.csv',
+        target_name='y',
     )
 
 
