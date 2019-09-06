@@ -22,6 +22,10 @@ class DiscreteDistribution(Distribution):
 class ContinuousDistribution(Distribution):
     """A probability distribution for continuous values."""
 
+    @abc.abstractproperty
+    def mode(self):
+        """Most likely value."""
+
     @abc.abstractmethod
     def pdf(self, x):
         """Probability density function, i.e. P(x <= X < x+dx) / dx."""

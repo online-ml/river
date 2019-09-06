@@ -1,23 +1,46 @@
-import collections
 import math
 import numbers
 
 from ..proba.base import ContinuousDistribution
 
-from . import branch
 from . import splitting
+
+
+class Branch:
+
+    def __init__(self, split, left, right, tree):
+        self.split = split
+        self.left = left
+        self.right = right
+        self.tree = tree
+
+    @property
+    def size(self):
+        return self.left.size + self.right.size
+
+    def get_leaf(self, x):
+        if self.split(x):
+            return self.left.get_leaf(x)
+        return self.right.get_leaf(x)
+
+    def update(self, x, y):
+        if self.split(x):
+            self.left = self.left.update(x, y)
+            return self
+        self.right = self.right.update(x, y)
+        return self
 
 
 class Leaf:
 
-    __slots__ = 'depth', 'tree', 'class_counts', 'n_samples', 'split_searchers'
+    __slots__ = 'depth', 'tree', 'target_dist', 'n_samples', 'split_enums'
 
-    def __init__(self, depth, tree, class_counts=None):
+    def __init__(self, depth, tree, target_dist):
         self.depth = depth
         self.tree = tree
-        self.class_counts = collections.Counter(class_counts)
+        self.target_dist = target_dist
         self.n_samples = 0
-        self.split_searchers = {}
+        self.split_enums = {}
 
     @property
     def size(self):
@@ -26,30 +49,46 @@ class Leaf:
     @property
     def n_classes(self):
         """The number of observed classes."""
-        return len(self.class_counts)
+        if isinstance(self.target_dist, ContinuousDistribution):
+            raise ValueError('The target is continuous, hence there are not classes')
+        return len(self.target_dist)
 
     @property
     def is_pure(self):
-        return self.n_classes < 2
+        try:
+            return self.n_classes < 2
+        except ValueError:
+            return False
 
     def get_leaf(self, x):
         return self
 
+    @property
+    def hoeffding_bound(self):
+        """Returns the current Hoeffding bound.
+
+        TODO: handle continuous target
+        """
+        R = math.log(self.n_classes)
+        n = self.n_samples
+        δ = self.tree.confidence
+        return math.sqrt(R ** 2 * math.log2(1 / δ) / (2 * n))
+
     def update(self, x, y):
 
         # Update the class counts
-        self.class_counts[y] += 1
+        self.target_dist.update(y)
         self.n_samples += 1
 
         # Update the sufficient statistics of each feature's split searcher
         for i, xi in x.items():
             try:
-                ss = self.split_searchers[i]
+                ss = self.split_enums[i]
             except KeyError:
-                ss = self.split_searchers[i] = (
-                    splitting.GaussianSplitSearcher(n=30)
+                ss = self.split_enums[i] = (
+                    splitting.HistSplitEnum(feature_name=i, n=30)
                     if isinstance(xi, numbers.Number) else
-                    splitting.CategoricalSplitSearcher()
+                    splitting.CategoricalSplitEnum(feature_name=i)
                 )
             ss.update(xi, y)
 
@@ -62,19 +101,20 @@ class Leaf:
             return self
 
         # Search for the best split given the current information
-        top_2_diff, split, _, _ = self.find_best_split()
+        top_2_diff, split, left_dist, right_dist = self.find_best_split()
 
         # Calculate the Hoeffding bound
-        R = math.log(self.n_classes)
-        n = self.n_samples
-        δ = self.tree.confidence
-        ε = math.sqrt(R ** 2 * math.log2(1 / δ) / (2 * n))  # Hoeffding bound
-
+        ε = self.hoeffding_bound
         if top_2_diff > ε or ε < self.tree.tie_threshold:
-            return branch.Branch(
+            print('SPLIT!', self.n_samples, self.target_dist, split)
+            #l[True] = 1
+            #l[False] = 1
+            #r[True] = 1
+            #r[False] = 1
+            return Branch(
                 split=split,
-                left=Leaf(depth=self.depth + 1, tree=self.tree),
-                right=Leaf(depth=self.depth + 1, tree=self.tree),
+                left=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=left_dist),
+                right=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=right_dist),
                 tree=self.tree
             )
         return self
@@ -82,48 +122,47 @@ class Leaf:
     def find_best_split(self):
         """Returns the best potential split."""
 
-        current_impurity = self.tree.criterion(self.class_counts)
+        current_impurity = self.tree.criterion(dist=self.target_dist)
         best_gain = -math.inf
         second_best_gain = -math.inf
         best_split = None
-        best_l_class_counts = None
-        best_r_class_counts = None
+        best_l_dist = {}
+        best_r_dist = {}
 
         # For each feature
-        for i, ss in self.split_searchers.items():
+        for ss in self.split_enums.values():
 
             # For each candidate split
-            for at, op in ss.enumerate_splits():
-
-                # Get the left and right class counts induced the split
-                l_class_counts, r_class_counts = ss.do_split(at, self.class_counts)
-                l_total = sum(l_class_counts.values())
-                r_total = sum(r_class_counts.values())
+            for split, l_dist, r_dist in ss.enumerate_splits(target_dist=self.target_dist):
 
                 # Ignore the split if it results in a new leaf with not enough samples
-                if l_total < self.tree.min_child_samples or r_total < self.tree.min_child_samples:
+                if l_dist.n < self.tree.min_child_samples or r_dist.n < self.tree.min_child_samples:
                     continue
 
                 # Compute the gain brought by the split
-                l_impurity = self.tree.criterion(l_class_counts)
-                r_impurity = self.tree.criterion(r_class_counts)
-                impurity = (l_total * l_impurity + r_total * r_impurity) / (l_total + r_total)
+                l_impurity = self.tree.criterion(dist=l_dist)
+                r_impurity = self.tree.criterion(dist=r_dist)
+                impurity = (l_dist.n * l_impurity + r_dist.n * r_impurity) / (l_dist.n + r_dist.n)
                 gain = current_impurity - impurity
 
                 # Check if the gain brought by the candidate split is better than the current best
                 if gain > best_gain:
                     best_gain, second_best_gain = gain, best_gain
-                    best_split = branch.Split(on=i, how=op, at=at)
-                    best_l_class_counts = l_class_counts
-                    best_r_class_counts = r_class_counts
+                    best_split = split
+                    best_l_dist = l_dist
+                    best_r_dist = r_dist
                 elif gain > second_best_gain:
                     second_best_gain = gain
 
-        return best_gain - second_best_gain, best_split, best_l_class_counts, best_r_class_counts
+        if best_split is None:
+            raise RuntimeError('No best split was found')
+
+        return best_gain - second_best_gain, best_split, best_l_dist, best_r_dist
 
     def predict(self, x):
-        total = sum(self.class_counts.values())
-        return {label: count / total for label, count in self.class_counts.items()}
+        if isinstance(self.target_dist, ContinuousDistribution):
+            return self.target_dist.mode
+        return {c: self.target_dist.pmf(c) for c in self.target_dist}
 
     def predict_naive_bayes(self, x):
         """
@@ -131,7 +170,7 @@ class Leaf:
         Example:
 
             >>> import itertools
-            >>> from creme.tree.splitting import CategoricalSplitSearcher
+            >>> from creme.tree.splitting import CategoricalSplitEnum
 
             >>> leaf = Leaf(0, None)
 
@@ -157,10 +196,10 @@ class Leaf:
             ... ]
 
             >>> for feature, feature_counts in itertools.groupby(counts, key=lambda x: x[0]):
-            ...     leaf.split_searchers[feature] = CategoricalSplitSearcher()
+            ...     leaf.split_enums[feature] = CategoricalSplitEnum()
             ...     for _, y, x, n in feature_counts:
             ...         for _ in range(n):
-            ...             _ = leaf.split_searchers[feature].update(x, y)
+            ...             _ = leaf.split_enums[feature].update(x, y)
 
             >>> leaf.class_counts = {'C1': 40, 'C2': 60}
 
@@ -174,8 +213,8 @@ class Leaf:
         y_pred = self.predict(x)
 
         for i, xi in x.items():
-            if i in self.split_searchers:
-                for label, dist in self.split_searchers[i].items():
+            if i in self.split_enums:
+                for label, dist in self.split_enums[i].items():
                     if isinstance(dist, ContinuousDistribution):
                         y_pred[label] *= dist.pdf(xi)
                     else:

@@ -3,29 +3,40 @@ import collections
 import math
 
 
-def find_index(seq, val):
-    """Assume ``seq`` is sorted and search for the position of ``val``."""
-    i = bisect.bisect_left(seq, val)
-    if i != len(seq) and seq[i] == val:
-        return i
-    raise ValueError(f'{val} was not found')
+class Bin:
+
+    __slots__ = ['left', 'right', 'count']
+
+    def __init__(self, left, right, count=1):
+        self.left = left
+        self.right = right
+        self.count = count
+
+    def __add__(self, other):
+        return Bin(
+            left=min(self.left, other.left),
+            right=max(self.right, other.right),
+            count=self.count + other.count
+        )
+
+    def __lt__(self, other):
+        return self.right <= other.left
+
+    def __eq__(self, other):
+        return self.left == other.left and self.right == other.right
+
+    def __str__(self):
+        return f'[{self.left:.5f}, {self.right:.5f}]: {self.count}'
 
 
-def is_in(seq, val):
-    """Assume ``seq`` is sorted and check if it contains ``val``."""
-    i = bisect.bisect_left(seq, val)
-    return i < len(seq) and seq[i] == val
-
-
-class Histogram(collections.Counter):
-    """Streaming histogram data structure.
+class Histogram(collections.UserList):
+    """Streaming histogram.
 
     Parameters:
         max_bins (int): Maximal number of bins.
 
     Attributes:
-        n_bins (int): Current number of bins.
-        sorted_bins (list): Sorted left bin values.
+        n (int): Total number of seen values.
 
     Example:
 
@@ -42,94 +53,121 @@ class Histogram(collections.Counter):
             ...     np.random.normal(3, 1, 1000),
             ... ))
 
-            >>> hist = utils.Histogram(max_bins=12)
+            >>> hist = utils.Histogram(max_bins=60)
 
             >>> for x in values:
             ...     hist = hist.update(x)
 
-            >>> print(hist)
-            [-5.53514, -4.55869): 9
-            [-4.55869, -3.61492): 94
-            [-3.61492, -2.58699): 338
-            [-2.58699, -1.44212): 423
-            [-1.44212, -0.12576): 128
-            [-0.12576, 0.98003): 13
-            [0.98003, 1.81977): 31
-            [1.81977, 2.69824): 150
-            [2.69824, 3.57935): 339
-            [3.57935, 4.58907): 329
-            [4.58907, 5.89119): 142
-
-            >>> ax = plt.bar(hist.keys(), hist.values())
+            >>> ax = plt.bar(
+            ...     x=[(b.left + b.right) / 2 for b in hist],
+            ...     height=[b.count for b in hist],
+            ...     width=[(b.right - b.left) / 2 for b in hist]
+            ... )
 
         .. image:: ../_static/histogram_docstring.svg
             :align: center
 
     References:
         1. `A Streaming Parallel Decision Tree Algorithm <http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf>`_
-        2. `Streaming Approximate Histograms in Go <https://www.vividcortex.com/blog/2013/07/08/streaming-approximate-histograms/>`_
-        3. `Go implementation <https://github.com/VividCortex/gohistogram>`_
+        2. `Go implementation <https://github.com/VividCortex/gohistogram>`_
 
     """
 
     def __init__(self, max_bins=256):
-        self.sorted_bins = []
+        super().__init__()
         self.max_bins = max_bins
-
-    @property
-    def n_bins(self):
-        return len(self)
+        self.n = 0
 
     def update(self, x):
 
-        super().update([x])
+        self.n += 1
 
-        # Update the sorted list of bin values
-        if not is_in(self.sorted_bins, x):
-            bisect.insort_left(self.sorted_bins, x)
+        # Insert the value into the histogram
+        b = Bin(left=x, right=x)
+        i = bisect.bisect_left(self, b)
+
+        # Insert the bin if the list is empty or the x is to right edge
+        if not self or i == len(self):
+            self.insert(i, b)
+        else:
+            # Increment the bin counter if x is part of a bin
+            if x >= self[i].left:
+                self[i].count += 1
+            # Insert the bin if it is between bin i-1 and bin i
+            else:
+                self.insert(i, b)
 
         # Bins have to be merged if there are more than max_bins
-        while self.n_bins > self.max_bins:
+        if len(self) == self.max_bins + 1:
 
-            # Find the nearest bins
+            # Find the closest bins
             min_val = math.inf
             min_idx = None
+            for idx, (b1, b2) in enumerate(zip(self[:-1], self[1:])):
+                diff = b2.right - b1.left
+                if diff < min_val:
+                    min_val = diff
+                    min_idx = idx
 
-            # TODO: this loop should be Cythonized
-            for i, (a, b) in enumerate(zip(self.sorted_bins[:-1], self.sorted_bins[1:])):
-                if b - a < min_val:
-                    min_val = b - a
-                    min_idx = i
-
-            left_bin = self.sorted_bins[min_idx]
-            right_bin = self.sorted_bins[min_idx + 1]
-
-            # Merge the two bins by summing their count and making a weighted average for each one
-            total_count = self[left_bin] + self[right_bin]
-            new_bin = left_bin * self[left_bin] + right_bin * self[right_bin]
-            new_bin /= total_count
-
-            bisect.insort_left(self.sorted_bins, new_bin)
-
-            # Deletion of the two bins to replace them with the new one resulting from their merging
-            for k in [left_bin, right_bin]:
-                self.pop(k, None)
-                self.sorted_bins.pop((find_index(self.sorted_bins, k)))
-
-            super().update({new_bin: total_count})
+            # Merge the bins
+            self[min_idx] += self.pop(min_idx + 1)
 
         return self
 
-    def bin(self, x):
-        """Returns the number of the bin where ``x`` belongs."""
-        return bisect.bisect_left(self.sorted_bins, x)
+    def cdf(self, x):
+        """Cumulative distribution function.
+
+        Example:
+
+            >>> from creme import utils
+
+            >>> hist = Histogram()
+            >>> for x in range(4):
+            ...     hist = hist.update(x)
+
+            >>> print(hist)
+            [0.00000, 0.00000]: 1
+            [1.00000, 1.00000]: 1
+            [2.00000, 2.00000]: 1
+            [3.00000, 3.00000]: 1
+
+            >>> hist.cdf(0)
+            0.25
+
+            >>> hist.cdf(.5)
+            0.375
+
+            >>> hist.cdf(1)
+            0.5
+
+            >>> hist.cdf(2.5)
+            0.875
+
+        """
+
+        # Handle edge cases
+        if x < self[0].left:
+            return 0.
+        elif x >= self[-1].right:
+            return 1.
+
+        # Handle the first bin
+        c = 0
+        b = self[0]
+        try:
+            c += b.count * (x - b.left) / (b.right - b.left)
+        except ZeroDivisionError:
+            c += b.count
+
+        # Handle the rest of the bins
+        for b1, b2 in zip(self[:-1], self[1:]):
+            if x < b2.right:
+                # Interpolate
+                c += b2.count * (x - b1.right) / (b2.right - b1.right)
+                break
+            c += b2.count
+
+        return c / self.n
 
     def __str__(self):
-
-        if len(self) == 1:
-            return f'{self.sorted_bins[0]:.5f}: {self[self.sorted_bins[0]]}'
-
-        return '\n'.join(
-            f'[{a:.5f}, {b:.5f}): {self[a]}'
-            for a, b in zip(self.sorted_bins[:-1], self.sorted_bins[1:])
-        )
+        return '\n'.join(str(b) for b in self)

@@ -28,7 +28,7 @@ class BaseHedge(collections.UserList):
         for i, model in enumerate(self):
             y_pred = self._get_prediction(model, x)
             loss = self.loss.eval(y, y_pred)
-            self.weights[i] *= math.exp(-self.learning_rate * loss)
+            self.weights[i] *= (math.exp(-self.learning_rate * loss) + 0.00001)
             model.fit_one(x, y)
 
         # Normalize the weights so that they sum up to 1
