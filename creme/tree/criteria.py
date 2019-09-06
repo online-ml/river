@@ -1,7 +1,7 @@
 import math
 
 
-def entropy(counts):
+def entropy(dist):
     """Returns the entropy of a counter.
 
     If used by a decision tree learning algorithm, the goal is to minimize the entropy inside each
@@ -12,52 +12,64 @@ def entropy(counts):
 
     Example:
 
+        >>> from creme import proba
         >>> from scipy import stats
 
-        >>> counts = {
-        ...     'sunny': 20,
-        ...     'rainy': 30,
-        ...     'snowy': 50,
-        ...     'cloudy': 0
-        ... }
-        >>> entropy(counts)
-        1.485475...
+        >>> events = [
+        ...     'sunny', 'sunny',
+        ...     'rainy', 'rainy', 'rainy',
+        ...     'snowy', 'snomy', 'snowy', 'snomy', 'snowy'
+        ... ]
 
-        >>> stats.entropy([c / 100 for c in counts.values()], base=2)
-        1.485475...
+        >>> dist = proba.Multinomial()
+
+        >>> for e in events:
+        ...     dist = dist.update(e)
+
+        >>> entropy(dist)
+        1.970950...
+
+        >>> stats.entropy([dist.pmf(c) for c in dist], base=2)
+        1.970950...
 
     References:
         1. `A Simple Explanation of Information Gain and Entropy <https://victorzhou.com/blog/information-gain/>`_
         2. `Calculating entropy <https://www.johndcook.com/blog/2013/08/17/calculating-entropy/>`_
 
     """
-    N = sum(counts.values())
-    return math.log2(N) - sum(n * math.log2(n) if n else 0 for n in counts.values()) / N
+    return -sum(dist.pmf(c) * math.log2(dist.pmf(c)) for c in dist)
 
 
-def gini(counts):
+def gini(dist):
     """Returns the Gini impurity of a counter.
 
     If used by a decision tree learning algorithm, the goal is to minimize the Gini impurity inside
     each leaf.
 
     Parameters:
-        counts (dict)
+        dist (proba.Multinomial)
 
     Example:
 
-        >>> counts = {
-        ...     'sunny': 20,
-        ...     'rainy': 30,
-        ...     'snowy': 50,
-        ...     'cloudy': 0
-        ... }
-        >>> gini(counts)
-        0.62
+        >>> from creme import proba
+        >>> from scipy import stats
+
+        >>> events = [
+        ...     'sunny', 'sunny',
+        ...     'rainy', 'rainy', 'rainy',
+        ...     'snowy', 'snomy', 'snowy', 'snomy', 'snowy'
+        ... ]
+
+        >>> dist = proba.Multinomial()
+
+        >>> for e in events:
+        ...     dist = dist.update(e)
+
+        >>> gini(dist)
+        0.74
 
     References:
         1. `A Simple Explanation of Gini Impurity <https://victorzhou.com/blog/gini-impurity/>`_
 
     """
-    N = sum(counts.values())
-    return sum(n / N * (1 - n / N) for n in counts.values())
+    return sum(dist.pmf(c) * (1 - dist.pmf(c)) for c in dist)

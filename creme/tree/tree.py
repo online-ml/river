@@ -5,8 +5,8 @@ except ImportError:
     GRAPHVIZ_INSTALLED = False
 
 from .. import base
+from .. import proba
 
-from . import branch
 from . import criteria
 from . import leaf
 
@@ -65,7 +65,7 @@ class DecisionTreeClassifier(base.MultiClassifier):
 
         self.confidence = confidence
         self.tie_threshold = tie_threshold
-        self.root = leaf.Leaf(depth=0, tree=self)
+        self.root = leaf.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
 
     def fit_one(self, x, y):
         self.root = self.root.update(x, y)
@@ -82,22 +82,22 @@ class DecisionTreeClassifier(base.MultiClassifier):
 
         dot = graphviz.Digraph()
 
-        def add_node(node, code):
+        def add_node(node, path):
 
             # Draw the current node
             if isinstance(node, leaf.Leaf):
-                dot.node(code, str(node.class_counts))
+                dot.node(path, str(node.target_dist))
             else:
-                dot.node(code, str(node.split))
-                add_node(node.left, f'{code}0')
-                add_node(node.right, f'{code}1')
+                dot.node(path, str(node.split))
+                add_node(node.left, f'{path}0')
+                add_node(node.right, f'{path}1')
 
             # Draw the link with the previous node
-            is_root = len(code) == 1
+            is_root = len(path) == 1
             if not is_root:
-                dot.edge(code[:-1], code)
+                dot.edge(path[:-1], path)
 
-        add_node(self.root, '0')
+        add_node(node=self.root, path='0')
 
         return dot
 
@@ -105,7 +105,7 @@ class DecisionTreeClassifier(base.MultiClassifier):
         """Prints an explanation of how ``x`` is predicted."""
         node = self.root
 
-        while isinstance(node, branch.Branch):
+        while isinstance(node, leaf.Branch):
             if node.split.test(x):
                 print('not', node.split)
                 node = node.left
