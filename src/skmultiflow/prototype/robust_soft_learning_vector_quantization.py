@@ -42,8 +42,8 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
     prototypes : array-like, shape = [n_prototypes, n_features]
         Prototype vector, where n_prototypes in the number of prototypes and
         n_features is the number of features
-    prototype_classes : array-like, shape = [n_prototypes]
-        Prototype classes
+    prototypes_classes : array-like, shape = [n_prototypes]
+        Prototypes classes
     class_labels : array-like, shape = [n_classes]
         Array containing labels.
 
@@ -361,8 +361,8 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
         return self.w_
 
     @property
-    def prototype_classes(self):
-        """The prototype classes"""
+    def prototypes_classes(self):
+        """The prototypes classes"""
         return self.c_w_
 
     @property

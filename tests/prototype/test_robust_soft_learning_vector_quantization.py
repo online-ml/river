@@ -54,7 +54,10 @@ def test_rslvq():
     assert np.alltrue(y_pred_adadelta == expected_predictions_adadelta)
 
     # Check get_info method
-    expected_info = "RobustSoftLearningVectorQuantization(gamma=0.9, gradient_descent='vanilla',\n                                     initial_prototypes=None,\n                                     prototypes_per_class=1, random_state=None,\n                                     sigma=1.0)"
+    expected_info = "RobustSoftLearningVectorQuantization(gamma=0.9, gradient_descent='vanilla',\n" \
+                    "                                     initial_prototypes=None,\n" \
+                    "                                     prototypes_per_class=1, random_state=None,\n" \
+                    "                                     sigma=1.0)"
 
     assert learner_vanilla.get_info() == expected_info
 
@@ -96,8 +99,16 @@ def test_rslvq():
     assert type(learner_vanilla.predict(X)) == np.ndarray
     assert type(learner_adadelta.predict(X)) == np.ndarray
 
-    # Check prototypes after learning
+    # Check properties after learning
     expected_prototypes = np.array([[2.59922826, 2.57368134, 4.92501],
                                     [6.05801971, 6.01383352, 5.02135783]])
 
     assert np.allclose(learner_adadelta.prototypes, expected_prototypes)
+
+    expected_prototypes_classes = np.array([0, 1])
+
+    assert np.allclose(learner_adadelta.prototypes_classes, expected_prototypes_classes)
+
+    expected_class_labels = np.array([0, 1])
+
+    assert np.allclose(learner_adadelta.class_labels, expected_class_labels)
