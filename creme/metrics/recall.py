@@ -95,7 +95,7 @@ class MacroRecall(BaseRecall, base.MultiClassMetric):
 
     def get(self):
         return statistics.mean((
-            0 if c not in self.recalls else self.recalls[c].get()
+            0. if c not in self.recalls else self.recalls[c].get()
             for c in self.classes
         ))
 

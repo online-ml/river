@@ -33,7 +33,7 @@ class Branch:
 
 class Leaf:
 
-    __slots__ = 'depth', 'tree', 'target_dist', 'n_samples', 'split_enums'
+    __slots__ = 'depth', 'tree', 'target_dist', 'n_samples', 'split_enums', 'window'
 
     def __init__(self, depth, tree, target_dist):
         self.depth = depth
@@ -101,20 +101,24 @@ class Leaf:
             return self
 
         # Search for the best split given the current information
-        top_2_diff, split, left_dist, right_dist = self.find_best_split()
+        split, gain = self.find_best_split()
 
         # Calculate the Hoeffding bound
         ε = self.hoeffding_bound
-        if top_2_diff > ε or ε < self.tree.tie_threshold:
-            print('SPLIT!', self.n_samples, self.target_dist, split)
-            #l[True] = 1
-            #l[False] = 1
-            #r[True] = 1
-            #r[False] = 1
+        if gain > ε or ε < self.tree.tie_threshold:
+            print(split)
             return Branch(
                 split=split,
-                left=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=left_dist),
-                right=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=right_dist),
+                left=Leaf(
+                    depth=self.depth + 1,
+                    tree=self.tree,
+                    target_dist=self.target_dist.__class__().update(True).update(False)
+                ),
+                right=Leaf(
+                    depth=self.depth + 1,
+                    tree=self.tree,
+                    target_dist=self.target_dist.__class__().update(True).update(False)
+                ),
                 tree=self.tree
             )
         return self
@@ -126,38 +130,27 @@ class Leaf:
         best_gain = -math.inf
         second_best_gain = -math.inf
         best_split = None
-        best_l_dist = {}
-        best_r_dist = {}
 
         # For each feature
         for ss in self.split_enums.values():
 
             # For each candidate split
-            for split, l_dist, r_dist in ss.enumerate_splits(target_dist=self.target_dist):
+            for split in ss.enumerate_splits(target_dist=self.target_dist, criterion=self.tree.criterion):
 
-                # Ignore the split if it results in a new leaf with not enough samples
-                if l_dist.n < self.tree.min_child_samples or r_dist.n < self.tree.min_child_samples:
-                    continue
-
-                # Compute the gain brought by the split
-                l_impurity = self.tree.criterion(dist=l_dist)
-                r_impurity = self.tree.criterion(dist=r_dist)
-                impurity = (l_dist.n * l_impurity + r_dist.n * r_impurity) / (l_dist.n + r_dist.n)
-                gain = current_impurity - impurity
+                # Determine the gain incurred by the split
+                gain = current_impurity - split.impurity
 
                 # Check if the gain brought by the candidate split is better than the current best
                 if gain > best_gain:
                     best_gain, second_best_gain = gain, best_gain
                     best_split = split
-                    best_l_dist = l_dist
-                    best_r_dist = r_dist
                 elif gain > second_best_gain:
                     second_best_gain = gain
 
         if best_split is None:
             raise RuntimeError('No best split was found')
 
-        return best_gain - second_best_gain, best_split, best_l_dist, best_r_dist
+        return best_split, best_gain - second_best_gain
 
     def predict(self, x):
         if isinstance(self.target_dist, ContinuousDistribution):

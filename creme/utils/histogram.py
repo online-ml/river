@@ -3,7 +3,11 @@ import collections
 import math
 
 
+__all__ = ['Histogram']
+
+
 class Bin:
+    """A Bin is an element of a Histogram."""
 
     __slots__ = ['left', 'right', 'count']
 
@@ -20,7 +24,7 @@ class Bin:
         )
 
     def __lt__(self, other):
-        return self.right <= other.left
+        return self.right < other.left
 
     def __eq__(self, other):
         return self.left == other.left and self.right == other.right
@@ -90,7 +94,7 @@ class Histogram(collections.UserList):
         if not self or i == len(self):
             self.insert(i, b)
         else:
-            # Increment the bin counter if x is part of a bin
+            # Increment the bin counter if x is part of the ith bin
             if x >= self[i].left:
                 self[i].count += 1
             # Insert the bin if it is between bin i-1 and bin i
@@ -146,18 +150,19 @@ class Histogram(collections.UserList):
         """
 
         # Handle edge cases
-        if x < self[0].left:
+        if not self or x < self[0].left:
             return 0.
         elif x >= self[-1].right:
             return 1.
 
-        # Handle the first bin
         c = 0
+
+        # Handle the first bin
         b = self[0]
-        try:
+        if x < b.right:
             c += b.count * (x - b.left) / (b.right - b.left)
-        except ZeroDivisionError:
-            c += b.count
+            return c / self.n
+        c += b.count
 
         # Handle the rest of the bins
         for b1, b2 in zip(self[:-1], self[1:]):

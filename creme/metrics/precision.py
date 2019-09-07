@@ -94,9 +94,7 @@ class MacroPrecision(BasePrecision, base.MultiClassMetric):
 
     def get(self):
         return statistics.mean((
-            0.
-            if c not in self.precisions
-            else self.precisions[c].get()
+            0. if c not in self.precisions else self.precisions[c].get()
             for c in self.classes
         ))
 
