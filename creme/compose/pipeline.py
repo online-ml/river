@@ -325,16 +325,22 @@ class Pipeline(collections.OrderedDict):
         x = self.transform_one(x)
         return self.final_estimator.predict_proba_one(x)
 
-    def debug_one(self, x, show_types=True):
+    def debug_one(self, x, show_types=True, n_decimals=5):
         """Displays the state of a set of features as it goes through the pipeline.
 
         Parameters:
             x (dict) A set of features.
             show_types (bool): Whether or not to display the type of feature along with it's value.
+            n_decimals (int): Number of decimals to display for each floating point value.
 
         """
 
         TAB = ' ' * 4
+
+        def format_value(x):
+            if isinstance(x, float):
+                return '{:.{prec}f}'.format(x, prec=n_decimals)
+            return x
 
         def print_features(x, show_types, indent=False, space_after=True):
 
@@ -344,7 +350,7 @@ class Pipeline(collections.OrderedDict):
             else:
                 for k, v in sorted(x.items()):
                     type_str = f' ({type(v).__name__})' if show_types else ''
-                    print((TAB if indent else '') + f'{k}: {v}' + type_str)
+                    print((TAB if indent else '') + f'{k}: {format_value(v)}' + type_str)
             if space_after:
                 print()
 
