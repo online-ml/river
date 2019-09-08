@@ -41,7 +41,7 @@ def download_dataset(name, url, data_home, archive_type=None, silent=True):
         silent (bool): Whether to indicate download progress or not.
 
     Returns:
-        dataset_path (str): Where the dataset is stored.
+        data_dir_path (str): Where the dataset is stored.
 
     """
     data_home = get_data_home(data_home=data_home)
@@ -60,7 +60,7 @@ def download_dataset(name, url, data_home, archive_type=None, silent=True):
 
         # Uncompress if needed
         if archive_type:
-            archive_path, data_dir_path = data_dir_path, data_dir_path[:data_dir_path.rfind('.')]
+            archive_path, data_dir_path = data_dir_path, data_dir_path[:-len(archive_type) - 1]
 
             if not silent:
                 print('Uncompressing data...')
@@ -77,7 +77,7 @@ def download_dataset(name, url, data_home, archive_type=None, silent=True):
             # Delete the archive file now that the dataset is available
             os.remove(archive_path)
 
-    return f'{data_dir_path}/{name}'
+    return data_dir_path
 
 
 def fetch_bikes(data_home=None, silent=True):
@@ -102,10 +102,11 @@ def fetch_bikes(data_home=None, silent=True):
     url = 'https://maxhalford.github.io/files/datasets/toulouse_bikes.zip'
 
     # Download dataset if does not exist and get its path
-    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+    data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+
 
     return stream.iter_csv(
-        f'{dataset_path}.csv',
+        f'{data_dir_path}/{name}.csv',
         target_name='bikes',
         converters={
             'clouds': int,
@@ -141,10 +142,10 @@ def fetch_electricity(data_home=None, silent=True):
     url = 'https://maxhalford.github.io/files/datasets/electricity.zip'
 
     # Download dataset if does not exist and get its path
-    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+    data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
     return stream.iter_csv(
-        f'{dataset_path}.csv',
+        f'{data_dir_path}/{name}.csv',
         target_name='class',
         converters={
             'date': float,
@@ -182,10 +183,10 @@ def fetch_kdd99_http(data_home=None, silent=True):
     url = 'https://maxhalford.github.io/files/datasets/kdd99_http.zip'
 
     # Download dataset if does not exist and get its path
-    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+    data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
     return stream.iter_csv(
-        f'{dataset_path}.csv',
+        f'{data_dir_path}/{name}.csv',
         target_name='service',
         converters={
             'duration': float,
@@ -219,10 +220,10 @@ def fetch_restaurants(data_home=None, silent=True):
     url = 'https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip'
 
     # Download dataset if does not exist and get its path
-    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+    data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
     return stream.iter_csv(
-        f'{dataset_path}.csv',
+        f'{data_dir_path}/{name}.csv',
         target_name='visitors',
         converters={
             'latitude': float,
@@ -256,10 +257,10 @@ def fetch_sms(data_home=None, silent=True):
     url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip'
 
     # Download dataset if does not exist and get its path
-    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+    data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
     # Stream sms
-    with open(dataset_path) as f:
+    with open('{data_dir_path}/{name}') as f:
         for ix, row in enumerate(f):
             label, body = row.split('\t')
             yield ({'body': body}, label)
@@ -291,10 +292,10 @@ def fetch_trec07p(data_home=None, silent=True):
     url = 'https://maxhalford.github.io/files/datasets/trec07p.zip'
 
     # Download dataset if does not exist andCode ran to build trec07p CSV available in `creme` library get its path
-    dataset_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+    data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
     return stream.iter_csv(
-        f'{dataset_path}.csv',
+        f'{data_dir_path}/{name}.csv',
         target_name='y',
     )
 
