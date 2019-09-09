@@ -2,7 +2,7 @@ import os
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from skmultiflow.data import RegressionGenerator
-from skmultiflow.trees import StackedSingleTargetHoeffingTreeRegressor
+from skmultiflow.trees import StackedSingleTargetHoeffdingTreeRegressor
 
 
 def test_stacked_single_target_hoeffding_tree_regressor_perceptron(test_path):
@@ -11,7 +11,7 @@ def test_stacked_single_target_hoeffding_tree_regressor_perceptron(test_path):
                                  n_targets=3)
     stream.prepare_for_use()
 
-    learner = StackedSingleTargetHoeffingTreeRegressor(
+    learner = StackedSingleTargetHoeffdingTreeRegressor(
         leaf_prediction='perceptron',
         random_state=1
     )
@@ -41,19 +41,20 @@ def test_stacked_single_target_hoeffding_tree_regressor_perceptron(test_path):
     expected_error = 151.52171404209466
     assert np.isclose(error, expected_error)
 
-    expected_info = "StackedSingleTargetHoeffingTreeRegressor(binary_split=False, grace_period=200,\n" \
-                    "                                         leaf_prediction='perceptron',\n" \
-                    "                                         learning_ratio_const=True,\n" \
-                    "                                         learning_ratio_decay=0.001,\n" \
-                    "                                         learning_ratio_perceptron=0.02,\n" \
-                    "                                         max_byte_size=33554432,\n" \
-                    "                                         memory_estimate_period=1000000,\n" \
-                    "                                         nb_threshold=0, no_preprune=False,\n" \
-                    "                                         nominal_attributes=None,\n" \
-                    "                                         random_state=1, remove_poor_atts=False,\n" \
-                    "                                         split_confidence=1e-07,\n" \
-                    "                                         stop_mem_management=False,\n" \
-                    "                                         tie_threshold=0.05)"
+    expected_info = "StackedSingleTargetHoeffdingTreeRegressor(binary_split=False, grace_period=200,\n" \
+                    "                                          leaf_prediction='perceptron',\n" \
+                    "                                          learning_ratio_const=True,\n" \
+                    "                                          learning_ratio_decay=0.001,\n" \
+                    "                                          learning_ratio_perceptron=0.02,\n" \
+                    "                                          max_byte_size=33554432,\n" \
+                    "                                          memory_estimate_period=1000000,\n" \
+                    "                                          nb_threshold=0, no_preprune=False,\n" \
+                    "                                          nominal_attributes=None,\n" \
+                    "                                          random_state=1,\n" \
+                    "                                          remove_poor_atts=False,\n" \
+                    "                                          split_confidence=1e-07,\n" \
+                    "                                          stop_mem_management=False,\n" \
+                    "                                          tie_threshold=0.05)"
     assert learner.get_info() == expected_info
     assert isinstance(learner.get_model_description(), type(''))
 
@@ -64,7 +65,7 @@ def test_stacked_single_target_hoeffding_tree_regressor_adaptive(test_path):
                                  n_targets=3)
     stream.prepare_for_use()
 
-    learner = StackedSingleTargetHoeffingTreeRegressor(
+    learner = StackedSingleTargetHoeffdingTreeRegressor(
         leaf_prediction='adaptive',
         random_state=1
     )
@@ -95,19 +96,20 @@ def test_stacked_single_target_hoeffding_tree_regressor_adaptive(test_path):
     expected_error = 150.7836894811965
     assert np.isclose(error, expected_error)
 
-    expected_info = "StackedSingleTargetHoeffingTreeRegressor(binary_split=False, grace_period=200,\n" \
-                    "                                         leaf_prediction='adaptive',\n" \
-                    "                                         learning_ratio_const=True,\n" \
-                    "                                         learning_ratio_decay=0.001,\n" \
-                    "                                         learning_ratio_perceptron=0.02,\n" \
-                    "                                         max_byte_size=33554432,\n" \
-                    "                                         memory_estimate_period=1000000,\n" \
-                    "                                         nb_threshold=0, no_preprune=False,\n" \
-                    "                                         nominal_attributes=None,\n" \
-                    "                                         random_state=1, remove_poor_atts=False,\n" \
-                    "                                         split_confidence=1e-07,\n" \
-                    "                                         stop_mem_management=False,\n" \
-                    "                                         tie_threshold=0.05)"
+    expected_info = "StackedSingleTargetHoeffdingTreeRegressor(binary_split=False, grace_period=200,\n" \
+                    "                                          leaf_prediction='adaptive',\n" \
+                    "                                          learning_ratio_const=True,\n" \
+                    "                                          learning_ratio_decay=0.001,\n" \
+                    "                                          learning_ratio_perceptron=0.02,\n" \
+                    "                                          max_byte_size=33554432,\n" \
+                    "                                          memory_estimate_period=1000000,\n" \
+                    "                                          nb_threshold=0, no_preprune=False,\n" \
+                    "                                          nominal_attributes=None,\n" \
+                    "                                          random_state=1,\n" \
+                    "                                          remove_poor_atts=False,\n" \
+                    "                                          split_confidence=1e-07,\n" \
+                    "                                          stop_mem_management=False,\n" \
+                    "                                          tie_threshold=0.05)"
 
     assert learner.get_info() == expected_info
     assert isinstance(learner.get_model_description(), type(''))
@@ -121,7 +123,7 @@ def test_hoeffding_tree_coverage(test_path):
     Y = data['Y']
 
     # Will generate a warning concerning the invalid leaf prediction option
-    learner = StackedSingleTargetHoeffingTreeRegressor(
+    learner = StackedSingleTargetHoeffdingTreeRegressor(
         leaf_prediction='mean',
         nominal_attributes=[i for i in range(3)],
         learning_ratio_const=False
