@@ -164,8 +164,8 @@ class Pipeline(collections.OrderedDict):
             --------------------
                 1.0 TFIDFVectorizer | Renamer
                 -----------------------------
-                tfidf_comment: 0.476055052662881 (float)
-                tfidf_positive: 0.8794154802106576 (float)
+                tfidf_comment: 0.47606 (float)
+                tfidf_positive: 0.87942 (float)
             <BLANKLINE>
                 1.1 CountVectorizer | Renamer
                 -----------------------------
@@ -174,13 +174,13 @@ class Pipeline(collections.OrderedDict):
             <BLANKLINE>
             count_comment: 1 (int)
             count_positive: 1 (int)
-            tfidf_comment: 0.5085423203783267 (float)
-            tfidf_positive: 0.8610369959439764 (float)
+            tfidf_comment: 0.50854 (float)
+            tfidf_positive: 0.86104 (float)
             <BLANKLINE>
             2. MultinomialNB
             ----------------
-            False: 0.19313110411114587
-            True: 0.8068688958888542
+            False: 0.19313
+            True: 0.80687
 
     """
 
