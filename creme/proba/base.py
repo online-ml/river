@@ -7,6 +7,10 @@ class Distribution(abc.ABC):
     def update(self, x):
         """Updates the parameters of the distribution given a new observation."""
 
+    @abc.abstractproperty
+    def n_samples(self):
+        """The number of observed samples."""
+
     def __repr__(self):
         return str(self)
 

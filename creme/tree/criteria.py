@@ -37,7 +37,7 @@ def entropy(dist):
         2. `Calculating entropy <https://www.johndcook.com/blog/2013/08/17/calculating-entropy/>`_
 
     """
-    return -sum(p * math.log2(1 - p) for p in dist.values())
+    return -sum(dist.pmf(c) * math.log2(1 - dist.pmf(c)) for c in dist)
 
 
 def gini(dist):
@@ -72,4 +72,4 @@ def gini(dist):
         1. `A Simple Explanation of Gini Impurity <https://victorzhou.com/blog/gini-impurity/>`_
 
     """
-    return sum(p * (1 - p) for p in dist.values())
+    return sum(dist.pmf(c) * (1 - dist.pmf(c)) for c in dist)

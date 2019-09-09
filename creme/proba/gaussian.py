@@ -28,19 +28,19 @@ class Gaussian(base.ContinuousDistribution):
     """
 
     def __init__(self):
-        self.variance = stats.Var()
+        self._var = stats.Var()
 
     @property
-    def n(self):
-        return self.variance.mean.n
+    def n_samples(self):
+        return self._var.mean.n
 
     @property
     def mu(self):
-        return self.variance.mean.get()
+        return self._var.mean.get()
 
     @property
     def sigma(self):
-        return self.variance.get() ** 0.5
+        return self._var.get() ** 0.5
 
     @property
     def mode(self):
@@ -50,11 +50,11 @@ class Gaussian(base.ContinuousDistribution):
         return f'𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})'
 
     def update(self, x):
-        self.variance.update(x)
+        self._var.update(x)
         return self
 
     def pdf(self, x):
-        var = self.variance.get()
+        var = self._var.get()
         if var:
             return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
         return 0.

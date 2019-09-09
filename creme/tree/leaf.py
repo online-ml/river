@@ -126,19 +126,33 @@ class Leaf:
     def find_best_split(self):
         """Returns the best potential split."""
 
-        current_impurity = self.tree.criterion(dist=self.target_dist)
         best_gain = -math.inf
         second_best_gain = -math.inf
         best_split = None
+
+        current_impurity = self.tree.criterion(dist=self.target_dist)
 
         # For each feature
         for ss in self.split_enums.values():
 
             # For each candidate split
-            for split in ss.enumerate_splits(target_dist=self.target_dist, criterion=self.tree.criterion):
+            for split, l_dist, r_dist in ss.enumerate_splits(target_dist=self.target_dist):
+
+                # Ignore this split if it results in a tree with too few samples
+                if (
+                    l_dist.n_samples < self.tree.min_child_samples or
+                    r_dist.n_samples < self.tree.min_child_samples
+                ):
+                    continue
+
+                # Calculate the impurity of the split
+                l_imp = self.tree.criterion(l_dist)
+                r_imp = self.tree.criterion(r_dist)
+                impurity = l_dist.n_samples * l_imp + r_dist.n_samples * r_imp
+                impurity /= l_dist.n_samples + r_dist.n_samples
 
                 # Determine the gain incurred by the split
-                gain = current_impurity - split.impurity
+                gain = current_impurity - impurity
 
                 # Check if the gain brought by the candidate split is better than the current best
                 if gain > best_gain:

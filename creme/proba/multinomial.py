@@ -27,19 +27,26 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
     """
 
     def __init__(self, initial_counts=None):
-        self.n = 0
+        self._n = 0
         if initial_counts is not None:
             for label, count in initial_counts.items():
                 self[label] += count
-                self.n += count
+                self._n += count
+
+    @property
+    def n_samples(self):
+        return self._n
 
     def update(self, x):
         super().update([x])
-        self.n += 1
+        self._n += 1
         return self
 
     def pmf(self, x):
         try:
-            return self[x] / self.n
+            return self[x] / self._n
         except ZeroDivisionError:
             return 0.
+
+    def _to_dict(self):
+        return {c: self.pmf(c) for c in self}
