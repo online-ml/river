@@ -48,7 +48,7 @@ class DecisionTreeClassifier(base.MultiClassifier):
             >>> metric = metrics.ROCAUC()
 
             >>> model_selection.online_score(X_y, model, metric)
-            ROCAUC: 0.773134
+            ROCAUC: 0.80453
 
     References:
         1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_

@@ -104,7 +104,7 @@ class Histogram(collections.UserList):
         # Bins have to be merged if there are more than max_bins
         if len(self) == self.max_bins + 1:
 
-            # Find the closest bins
+            # Find the closest pair of bins
             min_val = math.inf
             min_idx = None
             for idx, (b1, b2) in enumerate(zip(self[:-1], self[1:])):
@@ -114,6 +114,8 @@ class Histogram(collections.UserList):
                     min_idx = idx
 
             # Merge the bins
+            if min_idx is None:
+                raise ValueError
             self[min_idx] += self.pop(min_idx + 1)
 
         return self

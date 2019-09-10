@@ -33,7 +33,7 @@ class Branch:
 
 class Leaf:
 
-    __slots__ = 'depth', 'tree', 'target_dist', 'n_samples', 'split_enums', 'window'
+    __slots__ = 'depth', 'tree', 'target_dist', 'n_samples', 'split_enums'
 
     def __init__(self, depth, tree, target_dist):
         self.depth = depth
@@ -106,7 +106,6 @@ class Leaf:
         # Calculate the Hoeffding bound
         ε = self.hoeffding_bound
         if gain > ε or ε < self.tree.tie_threshold:
-            print(split)
             return Branch(
                 split=split,
                 left=Leaf(
@@ -172,51 +171,7 @@ class Leaf:
         return {c: self.target_dist.pmf(c) for c in self.target_dist}
 
     def predict_naive_bayes(self, x):
-        """
 
-        Example:
-
-            >>> import itertools
-            >>> from creme.tree.splitting import CategoricalSplitEnum
-
-            >>> leaf = Leaf(0, None)
-
-            >>> counts = [
-            ...     ('A1', 'C1', 'A', 12),
-            ...     ('A1', 'C1', 'B', 28),
-            ...     ('A1', 'C2', 'A', 34),
-            ...     ('A1', 'C2', 'B', 26),
-            ...     ('A2', 'C1', 'C', 5),
-            ...     ('A2', 'C1', 'D', 10),
-            ...     ('A2', 'C1', 'E', 25),
-            ...     ('A2', 'C2', 'C', 21),
-            ...     ('A2', 'C2', 'D', 8),
-            ...     ('A2', 'C2', 'E', 31),
-            ...     ('A3', 'C1', 'F', 13),
-            ...     ('A3', 'C1', 'G', 9),
-            ...     ('A3', 'C1', 'H', 3),
-            ...     ('A3', 'C1', 'I', 15),
-            ...     ('A3', 'C2', 'F', 11),
-            ...     ('A3', 'C2', 'G', 21),
-            ...     ('A3', 'C2', 'H', 19),
-            ...     ('A3', 'C2', 'I', 9)
-            ... ]
-
-            >>> for feature, feature_counts in itertools.groupby(counts, key=lambda x: x[0]):
-            ...     leaf.split_enums[feature] = CategoricalSplitEnum()
-            ...     for _, y, x, n in feature_counts:
-            ...         for _ in range(n):
-            ...             _ = leaf.split_enums[feature].update(x, y)
-
-            >>> leaf.class_counts = {'C1': 40, 'C2': 60}
-
-            >>> x = {'A1': 'B', 'A2': 'E', 'A3': 'I'}
-            >>> leaf.predict(x)
-            {'C1': 0.4, 'C2': 0.6}
-            >>> leaf.predict_naive_bayes(x)
-            {'C1': 0.7650830661614689, 'C2': 0.23491693383853113}
-
-        """
         y_pred = self.predict(x)
 
         for i, xi in x.items():
