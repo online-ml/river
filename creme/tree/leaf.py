@@ -101,23 +101,15 @@ class Leaf:
             return self
 
         # Search for the best split given the current information
-        split, gain = self.find_best_split()
+        top_2_diff, split, left_dist, right_dist = self.find_best_split()
 
         # Calculate the Hoeffding bound
         ε = self.hoeffding_bound
-        if gain > ε or ε < self.tree.tie_threshold:
+        if top_2_diff > ε or ε < self.tree.tie_threshold:
             return Branch(
                 split=split,
-                left=Leaf(
-                    depth=self.depth + 1,
-                    tree=self.tree,
-                    target_dist=self.target_dist.__class__().update(True).update(False)
-                ),
-                right=Leaf(
-                    depth=self.depth + 1,
-                    tree=self.tree,
-                    target_dist=self.target_dist.__class__().update(True).update(False)
-                ),
+                left=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=left_dist),
+                right=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=right_dist),
                 tree=self.tree
             )
         return self
@@ -125,9 +117,12 @@ class Leaf:
     def find_best_split(self):
         """Returns the best potential split."""
 
+        current_impurity = self.tree.criterion(dist=self.target_dist)
         best_gain = -math.inf
         second_best_gain = -math.inf
         best_split = None
+        best_l_dist = None
+        best_r_dist = None
 
         current_impurity = self.tree.criterion(dist=self.target_dist)
 
@@ -137,33 +132,33 @@ class Leaf:
             # For each candidate split
             for split, l_dist, r_dist in ss.enumerate_splits(target_dist=self.target_dist):
 
-                # Ignore this split if it results in a tree with too few samples
+                # Ignore the split if it results in a new leaf with not enough samples
                 if (
                     l_dist.n_samples < self.tree.min_child_samples or
                     r_dist.n_samples < self.tree.min_child_samples
                 ):
                     continue
 
-                # Calculate the impurity of the split
-                l_imp = self.tree.criterion(l_dist)
-                r_imp = self.tree.criterion(r_dist)
-                impurity = l_dist.n_samples * l_imp + r_dist.n_samples * r_imp
+                # Compute the gain brought by the split
+                l_impurity = self.tree.criterion(dist=l_dist)
+                r_impurity = self.tree.criterion(dist=r_dist)
+                impurity = l_dist.n_samples * l_impurity + r_dist.n_samples * r_impurity
                 impurity /= l_dist.n_samples + r_dist.n_samples
-
-                # Determine the gain incurred by the split
                 gain = current_impurity - impurity
 
                 # Check if the gain brought by the candidate split is better than the current best
                 if gain > best_gain:
                     best_gain, second_best_gain = gain, best_gain
                     best_split = split
+                    best_l_dist = l_dist
+                    best_r_dist = r_dist
                 elif gain > second_best_gain:
                     second_best_gain = gain
 
         if best_split is None:
             raise RuntimeError('No best split was found')
 
-        return best_split, best_gain - second_best_gain
+        return best_gain - second_best_gain, best_split, best_l_dist, best_r_dist
 
     def predict(self, x):
         if isinstance(self.target_dist, ContinuousDistribution):
