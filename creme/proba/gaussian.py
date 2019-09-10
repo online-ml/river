@@ -35,12 +35,20 @@ class Gaussian(base.ContinuousDistribution):
         return self._var.mean.n
 
     @property
+    def n(self):
+        return self.variance.mean.n
+
+    @property
     def mu(self):
         return self._var.mean.get()
 
     @property
     def sigma(self):
         return self._var.get() ** 0.5
+
+    @property
+    def mode(self):
+        return self.mu
 
     @property
     def mode(self):
