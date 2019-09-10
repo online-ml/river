@@ -19,7 +19,7 @@ _ADAPTIVE = 'adaptive'
 
 
 class StackedSingleTargetHoeffdingTreeRegressor(MultiTargetRegressionHoeffdingTree, MultiOutputMixin):
-    """Stacked Single-target Regression Hoeffding Tree.
+    """Stacked Single-target Hoeffding Tree Regressor.
 
     Implementation of the Stacked Single-target Hoeffding Tree (SST-HT) method
     for multi-target regression as proposed by S. M. Mastelini, S. Barbon Jr.,

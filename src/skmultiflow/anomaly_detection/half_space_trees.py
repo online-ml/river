@@ -8,8 +8,13 @@ from skmultiflow.utils.utils import *
 
 
 class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
-    """
-    Half Space Trees
+    """Half--Space Trees.
+
+    Implementation of the Streaming Half--Space--Trees (HS--Trees) [1]_, a fast one-class anomaly detector
+    for evolving data streams. It requires only normal data for training and works well when anomalous
+    data are rare. The model features an ensemble of random HS--Trees, and the tree structure is
+    constructed without any data. This makes the method highly efficient because it requires no model
+    restructuring when adapting to evolving data streams.
 
     Parameters
     ----------
@@ -44,10 +49,11 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         If None, the random number generator is the RandomState instance used
         by `np.random`.
 
-    Implements the Streaming Half - Space Trees one - class classifier described in
-    S.C.Tan, K.M.Ting, and T.F.Liu, “Fast anomaly detection for streaming data,”
-    in IJCAI Proceedings - International Joint Conference on Artificial Intelligence,
-    2011, vol. 22, no. 1, pp. 1511–1516.
+    References
+    ----------
+    .. [1] S.C.Tan, K.M.Ting, and T.F.Liu, “Fast anomaly detection for streaming data,”
+       in IJCAI Proceedings - International Joint Conference on Artificial Intelligence,
+       2011, vol. 22, no. 1, pp. 1511–1516.
     """
 
     def __init__(self,
