@@ -108,14 +108,12 @@ class Histogram(collections.UserList):
             min_val = math.inf
             min_idx = None
             for idx, (b1, b2) in enumerate(zip(self[:-1], self[1:])):
-                diff = b2.right - b1.left
+                diff = b2.left - b1.right
                 if diff < min_val:
                     min_val = diff
                     min_idx = idx
 
             # Merge the bins
-            if min_idx is None:
-                raise ValueError
             self[min_idx] += self.pop(min_idx + 1)
 
         return self
