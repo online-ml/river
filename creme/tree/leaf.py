@@ -33,7 +33,7 @@ class Branch:
 
 class Leaf:
 
-    __slots__ = 'depth', 'tree', 'target_dist', 'n_samples', 'split_enums', 'window'
+    __slots__ = 'depth', 'tree', 'target_dist', 'n_samples', 'split_enums'
 
     def __init__(self, depth, tree, target_dist):
         self.depth = depth
@@ -101,24 +101,15 @@ class Leaf:
             return self
 
         # Search for the best split given the current information
-        split, gain = self.find_best_split()
+        top_2_diff, split, left_dist, right_dist = self.find_best_split()
 
         # Calculate the Hoeffding bound
         ε = self.hoeffding_bound
-        if gain > ε or ε < self.tree.tie_threshold:
-            print(split)
+        if top_2_diff > ε or ε < self.tree.tie_threshold:
             return Branch(
                 split=split,
-                left=Leaf(
-                    depth=self.depth + 1,
-                    tree=self.tree,
-                    target_dist=self.target_dist.__class__().update(True).update(False)
-                ),
-                right=Leaf(
-                    depth=self.depth + 1,
-                    tree=self.tree,
-                    target_dist=self.target_dist.__class__().update(True).update(False)
-                ),
+                left=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=left_dist),
+                right=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=right_dist),
                 tree=self.tree
             )
         return self
@@ -126,9 +117,12 @@ class Leaf:
     def find_best_split(self):
         """Returns the best potential split."""
 
+        current_impurity = self.tree.criterion(dist=self.target_dist)
         best_gain = -math.inf
         second_best_gain = -math.inf
         best_split = None
+        best_l_dist = None
+        best_r_dist = None
 
         current_impurity = self.tree.criterion(dist=self.target_dist)
 
@@ -138,33 +132,33 @@ class Leaf:
             # For each candidate split
             for split, l_dist, r_dist in ss.enumerate_splits(target_dist=self.target_dist):
 
-                # Ignore this split if it results in a tree with too few samples
+                # Ignore the split if it results in a new leaf with not enough samples
                 if (
                     l_dist.n_samples < self.tree.min_child_samples or
                     r_dist.n_samples < self.tree.min_child_samples
                 ):
                     continue
 
-                # Calculate the impurity of the split
-                l_imp = self.tree.criterion(l_dist)
-                r_imp = self.tree.criterion(r_dist)
-                impurity = l_dist.n_samples * l_imp + r_dist.n_samples * r_imp
+                # Compute the gain brought by the split
+                l_impurity = self.tree.criterion(dist=l_dist)
+                r_impurity = self.tree.criterion(dist=r_dist)
+                impurity = l_dist.n_samples * l_impurity + r_dist.n_samples * r_impurity
                 impurity /= l_dist.n_samples + r_dist.n_samples
-
-                # Determine the gain incurred by the split
                 gain = current_impurity - impurity
 
                 # Check if the gain brought by the candidate split is better than the current best
                 if gain > best_gain:
                     best_gain, second_best_gain = gain, best_gain
                     best_split = split
+                    best_l_dist = l_dist
+                    best_r_dist = r_dist
                 elif gain > second_best_gain:
                     second_best_gain = gain
 
         if best_split is None:
             raise RuntimeError('No best split was found')
 
-        return best_split, best_gain - second_best_gain
+        return best_gain - second_best_gain, best_split, best_l_dist, best_r_dist
 
     def predict(self, x):
         if isinstance(self.target_dist, ContinuousDistribution):
@@ -172,51 +166,7 @@ class Leaf:
         return {c: self.target_dist.pmf(c) for c in self.target_dist}
 
     def predict_naive_bayes(self, x):
-        """
 
-        Example:
-
-            >>> import itertools
-            >>> from creme.tree.splitting import CategoricalSplitEnum
-
-            >>> leaf = Leaf(0, None)
-
-            >>> counts = [
-            ...     ('A1', 'C1', 'A', 12),
-            ...     ('A1', 'C1', 'B', 28),
-            ...     ('A1', 'C2', 'A', 34),
-            ...     ('A1', 'C2', 'B', 26),
-            ...     ('A2', 'C1', 'C', 5),
-            ...     ('A2', 'C1', 'D', 10),
-            ...     ('A2', 'C1', 'E', 25),
-            ...     ('A2', 'C2', 'C', 21),
-            ...     ('A2', 'C2', 'D', 8),
-            ...     ('A2', 'C2', 'E', 31),
-            ...     ('A3', 'C1', 'F', 13),
-            ...     ('A3', 'C1', 'G', 9),
-            ...     ('A3', 'C1', 'H', 3),
-            ...     ('A3', 'C1', 'I', 15),
-            ...     ('A3', 'C2', 'F', 11),
-            ...     ('A3', 'C2', 'G', 21),
-            ...     ('A3', 'C2', 'H', 19),
-            ...     ('A3', 'C2', 'I', 9)
-            ... ]
-
-            >>> for feature, feature_counts in itertools.groupby(counts, key=lambda x: x[0]):
-            ...     leaf.split_enums[feature] = CategoricalSplitEnum()
-            ...     for _, y, x, n in feature_counts:
-            ...         for _ in range(n):
-            ...             _ = leaf.split_enums[feature].update(x, y)
-
-            >>> leaf.class_counts = {'C1': 40, 'C2': 60}
-
-            >>> x = {'A1': 'B', 'A2': 'E', 'A3': 'I'}
-            >>> leaf.predict(x)
-            {'C1': 0.4, 'C2': 0.6}
-            >>> leaf.predict_naive_bayes(x)
-            {'C1': 0.7650830661614689, 'C2': 0.23491693383853113}
-
-        """
         y_pred = self.predict(x)
 
         for i, xi in x.items():
