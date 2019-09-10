@@ -16,8 +16,8 @@ Version 0.3.0
 - |Enhancement| Project documentation overhaul. Improved documentation layout to ease navigation. Documentation for
   multiple methods were revisited and corrections/extensions were included. Multiple typos fixed. A map of methods in
   ``scikit-multiflow`` is added to help users navigate the project.
-- |FIX| Update :class:`lazy.SAMKNN` since changing a dictionary inside a loop now raises a `RunTimeError` (Python 3.7+).
-- |FIX| Fix bug in :class:`meta.LeverageBagging`, use ``set(self.classes)`` instead of ``self.classes``.
+- |Fix| Update :class:`lazy.SAMKNN` since changing a dictionary inside a loop now raises a `RunTimeError` (Python 3.7+).
+- |Fix| Fix bug in :class:`meta.LeverageBagging`, use ``set(self.classes)`` instead of ``self.classes``.
 - |Fix| Fix bug in :class:`meta.OzaBagging`, now re-sampling is correctly calculated for each sample (instance).
   There was a corner case were this value was incorrectly calculated for batches of samples.
 - |API| Rename ``weight`` to ``sample_weight`` in ``partial_fit`` and ``fit`` abstract method
