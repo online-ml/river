@@ -36,14 +36,29 @@ Random number generators are handled as in `scikit-learn`. Meaning that, random 
 
 ## Testing
 ### Run tests
-We use [pytest](https://docs.pytest.org/) to maintain the quality of the framework. Always run the tests to ensure that everything is working as expected. To run the tests, from the package's root directory:
+We use [pytest](https://docs.pytest.org/) to maintain the quality of the framework. Always run the tests before and after your changes to ensure that everything is working as expected. To run the tests, from the package's root directory:
 ```bash
 python setup.py test
 ```
+or
+```bash
+pytest tests/some_module/some_file.py --showlocals -v
+```
 
-### Write tests
-If you are adding new code to `scikit-multiflow`, it is highly encouraged that you include the corresponding test(s) as part of your Pull Request.
 
+### Write/update tests
+If you are adding new code:
+* It is your responsibility to ensure that the code is correct and maintainable (by people other than you). The development team can provide support during the code review.
+* Evidence of **correctness** of the results must be provided, this includes (but it is not limited to) plots, benchmarks, etc.
+* Functional test(s) must be included as part of the Pull Request. These tests shall focus on providing coverage and ensuring the integrity of the project. They are intended to catch **unintentional** changes that could be introduced by unrelated development efforts.
+  * We use [codecov](https://codecov.io/gh/scikit-multiflow/scikit-multiflow) to check for coverage and the corresponding report is automatically generated (updated) as part of the Pull Request.
+  * You can generate the coverage report locally to ensure that the tests are reaching (activating) most of the code. For this you need the [pytest-cov](https://github.com/pytest-dev/pytest-cov) plugin
+    ```bash
+    pytest --cov=src/skmultiflow tests/some_module/some_file.py --showlocals -v
+    ```
+
+If you are modifying existing code:
+* Same rules apply regarding correctness ad testing of code. However, tests might only require to be updated.
 
 ## Sphinx documentation
 * We generate our documentation using `sphinx` with the following dependencies: `sphinx_rtd_theme` 
@@ -55,3 +70,5 @@ If you are adding new code to `scikit-multiflow`, it is highly encouraged that y
       This will generate the documentation page in `docs/_build/html`
      
     * The documentation page is hosted in the **gh-pages** branch.
+
+* When adding/modifying documentation, it is recommended to generate the html page locally to ensure that it is correctly generated and the content is rendered as expected.
