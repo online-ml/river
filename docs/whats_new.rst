@@ -16,6 +16,7 @@ Release notes for current and recent releases are detailed on this page.
    - |API|: you will need to change your code to have the same effect in the
      future; or a feature will be removed in the future.
 
+.. include:: changelog/v0.4.rst
 .. include:: changelog/v0.3.rst
 .. include:: changelog/v0.2.rst
 .. include:: changelog/v0.1.rst

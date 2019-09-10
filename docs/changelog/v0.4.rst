@@ -1,0 +1,13 @@
+.. currentmodule:: skmultiflow
+.. include:: _labels.rst
+
+Version 0.4.0
+-------------
+
+**Sep 2019**
+
+- |Feature| Robust Soft Learning Vector Quantization classifier :class:`prototype.RobustSoftLearningVectorQuantization`
+- |Feature| Stacked Single-Target Hoeffding Tree regressor :class:`trees.StackedSingleTargetHoeffdingTreeRegressor`
+- |Feature| Half-Space Tress one-class classifier for anomaly detection :class:`anomaly_detection.HalfSpaceTrees`
+- |FIX| Fix bug in :class:`data.HyperplaneGenerator` which resulted in corrupted data when using `batch_size > 1`.
+- |Enhancement| Documentation improvements.

@@ -182,7 +182,7 @@ Prototype based methods
    :nosignatures:
    :toctree: _autosummary
 
-   prototype.RobustSoftLearningVectorQuantization
+       prototype.RobustSoftLearningVectorQuantization
 
 Rules based methods
 -------------------
@@ -219,7 +219,7 @@ Trees based methods
    trees.RegressionHoeffdingTree
    trees.RegressionHAT
    trees.MultiTargetRegressionHoeffdingTree
-   trees.StackedSingleTargetHoeffingTreeRegressor
+   trees.StackedSingleTargetHoeffdingTreeRegressor
 
 
 Drift Detection: :mod:`skmultiflow.drift_detection`
