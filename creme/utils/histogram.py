@@ -9,28 +9,22 @@ __all__ = ['Histogram']
 class Bin:
     """A Bin is an element of a Histogram."""
 
-    __slots__ = ['left', 'right', 'count']
-
-    def __init__(self, left, right, count=1):
-        self.left = left
+    def __init__(self, right, count=1):
         self.right = right
         self.count = count
 
-    def __add__(self, other):
-        return Bin(
-            left=min(self.left, other.left),
-            right=max(self.right, other.right),
-            count=self.count + other.count
-        )
-
     def __lt__(self, other):
-        return self.right < other.left
+        return self.right < other.right
 
-    def __eq__(self, other):
-        return self.left == other.left and self.right == other.right
+    def __le__(self, other):
+        return self.right <= other.right
 
-    def __str__(self):
-        return f'[{self.left:.5f}, {self.right:.5f}]: {self.count}'
+    def __add__(self, other):
+        total = self.count + other.count
+        return Bin(
+            right=(self.right * self.count + other.right * other.count) / total,
+            count=total
+        )
 
 
 class Histogram(collections.UserList):
@@ -57,15 +51,15 @@ class Histogram(collections.UserList):
             ...     np.random.normal(3, 1, 1000),
             ... ))
 
-            >>> hist = utils.Histogram(max_bins=60)
+            >>> hist = utils.Histogram(max_bins=80)
 
             >>> for x in values:
             ...     hist = hist.update(x)
 
-            >>> ax = plt.bar(
-            ...     x=[(b.left + b.right) / 2 for b in hist],
-            ...     height=[b.count for b in hist],
-            ...     width=[(b.right - b.left) / 2 for b in hist]
+            >>> ax = plt.vlines(
+            ...     x=[h.right for h in hist],
+            ...     ymin=0,
+            ...     ymax=[h.count for h in hist]
             ... )
 
         .. image:: ../_static/histogram_docstring.svg
@@ -80,37 +74,27 @@ class Histogram(collections.UserList):
     def __init__(self, max_bins=256):
         super().__init__()
         self.max_bins = max_bins
+        self.min = math.inf
         self.n = 0
 
     def update(self, x):
 
         self.n += 1
+        self.min = min(self.min, x)
 
-        # Insert the value into the histogram
-        b = Bin(left=x, right=x)
-        i = bisect.bisect_left(self, b)
+        # Insert the value
+        bisect.insort_left(self, Bin(x))
 
-        # Insert the bin if the list is empty or the x is to right edge
-        if not self or i == len(self):
-            self.insert(i, b)
-        else:
-            # Increment the bin counter if x is part of the ith bin
-            if x >= self[i].left:
-                self[i].count += 1
-            # Insert the bin if it is between bin i-1 and bin i
-            else:
-                self.insert(i, b)
-
-        # Bins have to be merged if there are more than max_bins
-        if len(self) == self.max_bins + 1:
+        # Merge the two closest bins if there are more than max_bins
+        if len(self) > self.max_bins:
 
             # Find the closest pair of bins
-            min_val = math.inf
-            min_idx = 0
+            min_diff = math.inf
+            min_idx = None
             for idx, (b1, b2) in enumerate(zip(self[:-1], self[1:])):
-                diff = b2.left - b1.right
-                if diff < min_val:
-                    min_val = diff
+                diff = b2.right - b1.right
+                if diff < min_diff:
+                    min_diff = diff
                     min_idx = idx
 
             # Merge the bins
@@ -123,34 +107,36 @@ class Histogram(collections.UserList):
 
         Example:
 
-            >>> from creme import utils
+            ::
 
-            >>> hist = Histogram()
-            >>> for x in range(4):
-            ...     hist = hist.update(x)
+                >>> from creme import utils
 
-            >>> print(hist)
-            [0.00000, 0.00000]: 1
-            [1.00000, 1.00000]: 1
-            [2.00000, 2.00000]: 1
-            [3.00000, 3.00000]: 1
+                >>> hist = Histogram()
+                >>> for x in range(4):
+                ...     hist = hist.update(x)
 
-            >>> hist.cdf(0)
-            0.25
+                >>> print(hist)
+                [0.00000, 0.00000]: 1
+                (0.00000, 1.00000]: 1
+                (1.00000, 2.00000]: 1
+                (2.00000, 3.00000]: 1
 
-            >>> hist.cdf(.5)
-            0.375
+                >>> hist.cdf(0)
+                0.25
 
-            >>> hist.cdf(1)
-            0.5
+                >>> hist.cdf(.5)
+                0.375
 
-            >>> hist.cdf(2.5)
-            0.875
+                >>> hist.cdf(1)
+                0.5
+
+                >>> hist.cdf(2.5)
+                0.875
 
         """
 
         # Handle edge cases
-        if not self or x < self[0].left:
+        if not self or x < self.min:
             return 0.
         elif x >= self[-1].right:
             return 1.
@@ -160,7 +146,7 @@ class Histogram(collections.UserList):
         # Handle the first bin
         b = self[0]
         if x < b.right:
-            c += b.count * (x - b.left) / (b.right - b.left)
+            c += b.count * (x - self.min) / (b.right - self.min)
             return c / self.n
         c += b.count
 
@@ -175,4 +161,10 @@ class Histogram(collections.UserList):
         return c / self.n
 
     def __str__(self):
-        return '\n'.join(str(b) for b in self)
+        return (
+            f'[{self.min:.5f}, {self[0].right:.5f}]: {self[0].count}\n' +
+            '\n'.join(
+                f'({b1.right:.5f}, {b2.right:.5f}]: {b1.count}'
+                for b1, b2 in zip(self[:-1], self[1:])
+            )
+        )
