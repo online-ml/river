@@ -1,7 +1,6 @@
 import abc
 import collections
 import functools
-import math
 import operator
 
 from .. import proba
@@ -76,47 +75,3 @@ class HistSplitEnum(SplitEnum, collections.defaultdict):
             r_dist = proba.Multinomial(r_dist)
 
             yield Split(on=self.feature_name, how=LT, at=x), l_dist, r_dist
-
-
-class CategoricalSplitEnum(SplitEnum):
-    """
-
-    Example:
-
-        >>> import collections
-        >>> import random
-
-        >>> sf = CategoricalSplitEnum()
-        >>> class_counts = collections.Counter()
-
-        >>> random.seed(42)
-        >>> X = ['a'] * 30 + ['b'] * 30 + ['c'] * 20 + ['d'] * 20
-        >>> Y = (
-        ...     random.choices([0, 1, 2], weights=[0.3, 0.3, 0.4], k=30) +
-        ...     random.choices([0, 1, 2], weights=[0.5, 0.2, 0.3], k=30) +
-        ...     random.choices([0, 1, 2], weights=[0.1, 0.8, 0.1], k=20) +
-        ...     random.choices([0, 1, 2], weights=[0.4, 0.2, 0.4], k=20)
-        ... )
-
-        >>> for x, y in zip(X, Y):
-        ...     sf = sf.update(x, y)
-        ...     class_counts.update([y])
-
-    """
-
-    def __init__(self, feature_name):
-        super().__init__(feature_name)
-        self.P_xy = collections.defaultdict(proba.Multinomial)
-        self.categories = set()
-
-    def update(self, x, y):
-        self.P_xy[y].update(x)
-        self.categories.add(x)
-        return self
-
-    def p_feature_given_class(self, x, y):
-        return self.P_xy[y].pmf(x)
-
-    def enumerate_splits(self):
-        for cat in self.categories:
-            yield cat, EQ
