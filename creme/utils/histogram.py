@@ -106,7 +106,7 @@ class Histogram(collections.UserList):
 
             # Find the closest pair of bins
             min_val = math.inf
-            min_idx = None
+            min_idx = 0
             for idx, (b1, b2) in enumerate(zip(self[:-1], self[1:])):
                 diff = b2.left - b1.right
                 if diff < min_val:
