@@ -145,28 +145,22 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
         ::
 
-            >>> from creme import compose
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
-            >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.fetch_electricity()
+
             >>> model = (
             ...     preprocessing.StandardScaler() |
             ...     linear_model.LogisticRegression()
             ... )
-            >>> metric = metrics.F1()
+            >>> metric = metrics.LogLoss()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.971989
+            LogLoss: 0.320065
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer

@@ -86,11 +86,11 @@ class Leaf:
                 ss = self.split_enums[i]
             except KeyError:
                 ss = self.split_enums[i] = (
-                    splitting.HistSplitEnum(feature_name=i, n=30)
+                    splitting.HistSplitEnum(feature_name=i, n_bins=30, n_splits=30)
                     if isinstance(xi, numbers.Number) else
                     splitting.CategoricalSplitEnum(feature_name=i)
                 )
-            ss.update(xi, y)
+            ss.update(x=xi, y=y)
 
         # Check if splitting is authorized or not
         if (
