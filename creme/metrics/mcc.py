@@ -36,7 +36,7 @@ class MCC(base.BinaryMetric):
         fp = self.cm.counts.get(False, {}).get(True, 0)
         fn = self.cm.counts.get(True, {}).get(False, 0)
 
-        n = tp + tn + fp + fn
+        n = (tp + tn + fp + fn) or 1
         s = (tp + fn) / n
         p = (tp + fp) / n
 
