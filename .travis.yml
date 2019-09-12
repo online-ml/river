@@ -17,7 +17,7 @@ jobs:
 
   - stage: test
     install: skip
-    script: ./ci/test.sh 3.7
+    script: ./ci/test.sh 3.7.3
 
   - stage: pypi
     install: echo "skipping install"

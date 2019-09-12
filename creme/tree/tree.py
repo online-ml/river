@@ -45,10 +45,10 @@ class DecisionTreeClassifier(base.MultiClassifier):
             ...     criterion='gini'
             ... )
 
-            >>> metric = metrics.ROCAUC()
+            >>> metric = metrics.LogLoss()
 
             >>> model_selection.online_score(X_y, model, metric)
-            ROCAUC: 0.764129
+            LogLoss: 0.552987
 
     References:
         1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
