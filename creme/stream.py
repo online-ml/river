@@ -3,9 +3,12 @@ Utilities for streaming data from various sources.
 """
 import csv
 import datetime as dt
+import functools
+import gzip
 import itertools
 import random
 import types
+import os
 
 import numpy as np
 try:
@@ -110,7 +113,7 @@ def iter_pandas(X, y=None, **kwargs):
 
 
 class DictReader(csv.DictReader):
-    """Custom DictReader which allows sampling."""
+    """Overlay on top of `csv.DictReader` which allows sampling."""
 
     def __init__(self, fraction, rng, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -143,18 +146,24 @@ class DictReader(csv.DictReader):
         return d
 
 
-def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None, fraction=1.,
-             seed=None):
+def iter_csv(filepath_or_buffer, target_name, names=None, converters=None, parse_dates=None, fraction=1.,
+             compression='infer', seed=None):
     """Yields rows from a CSV file.
 
     Parameters:
         filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer
             object that has a ``read`` method.
+        target_name (str): The name of the target.
+        names (list of str): A list of names to associate with each element in a row. If ``None``,
+            then the first row will be assumed to contain the names.
         converters (dict): A `dict` mapping feature names to callables used to parse their
             associated values.
         parse_dates (dict): A `dict` mapping feature names to a format passed to the
             `datetime.datetime.strptime` method.
         fraction (float): Sampling fraction.
+        compression (str): For on-the-fly decompression of on-disk data. If 'infer' and
+            ``filepath_or_buffer`` is path-like, then the decompression method is inferred for the
+            following extensions: '.gz'.
         seed (int): If specified, the sampling will be deterministic.
 
     Yields:
@@ -187,12 +196,32 @@ def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None,
 
     """
 
-    file = filepath_or_buffer
+    # If a file is not opened, then we open it
+    if not hasattr(filepath_or_buffer, 'read'):
 
-    if not hasattr(file, 'read'):
-        file = open(file)
+        # Determine the compression from the file extension if "infer" has been specified
+        if compression == 'infer':
+            _, ext = os.path.splitext(filepath_or_buffer)
+            compression = {
+                '.csv': 'csv',
+                '.gz': 'gzip'
+            }[ext]
 
-    for x in DictReader(fraction=fraction, rng=random.Random(seed), f=file):
+        # Determine the file opening method from the compression
+        open_func = {
+            'csv': open,
+            'gzip': functools.partial(gzip.open, mode='rt')
+        }[compression]
+
+        # Open the file using the opening method
+        filepath_or_buffer = open_func(filepath_or_buffer)
+
+    for x in DictReader(
+        fraction=fraction,
+        rng=random.Random(seed),
+        f=filepath_or_buffer,
+        fieldnames=names
+    ):
 
         # Cast the values to the given types
         if converters is not None:
@@ -208,6 +237,9 @@ def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None,
         y = x.pop(target_name)
 
         yield x, y
+
+    # Close the file
+    filepath_or_buffer.close()
 
 
 def simulate_qa(X_y, on, lag):

@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `stream.iter_csv` now has `fraction` and `seed` parameters to sample rows, deterministically or not
 - Renamed `stream.iter_numpy` to `stream.iter_array`
 - The module `optim` has been reorganized into submodules; namely `schedulers`, `initializers`, and `losses`. The top-level now only contains optimizers. Some classes have renamed accordingly. See the documentation for details.
+- `stream.iter_csv` can now read from `gzip` files
 
 ## [0.3.0](https://pypi.org/project/creme/0.3.0/) - 2019-06-23
 
