@@ -72,7 +72,7 @@ class Leaf:
         R = math.log(self.n_classes)
         n = self.n_samples
         δ = self.tree.confidence
-        return math.sqrt(R ** 2 * math.log2(1 / δ) / (2 * n))
+        return math.sqrt(R ** 2 * math.log(1 / δ) / (2 * n))
 
     def update(self, x, y):
 
@@ -105,6 +105,7 @@ class Leaf:
 
         # Calculate the Hoeffding bound
         ε = self.hoeffding_bound
+
         if top_2_diff > ε or ε < self.tree.tie_threshold:
             return Branch(
                 split=split,

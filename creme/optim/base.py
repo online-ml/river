@@ -20,9 +20,9 @@ class Optimizer(abc.ABC):
         """Updates a weight vector before a prediction is made."""
         return w
 
-    @abc.abstractmethod
     def _update_after_pred(self, w: dict, g: dict) -> dict:
         """Updates a weight vector given a gradient."""
+        raise NotImplementedError
 
     def update_after_pred(self, w: dict, g: dict) -> dict:
 

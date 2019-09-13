@@ -48,7 +48,7 @@ class DecisionTreeClassifier(base.MultiClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.online_score(X_y, model, metric)
-            LogLoss: 0.552987
+            LogLoss: 0.541821
 
     References:
         1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
