@@ -17,10 +17,12 @@ class Optimizer(abc.ABC):
 
     @classmethod
     def update_before_pred(self, w: dict) -> dict:
+        """Updates a weight vector before a prediction is made."""
         return w
 
+    @abc.abstractmethod
     def _update_after_pred(self, w: dict, g: dict) -> dict:
-        raise NotImplementedError
+        """Updates a weight vector given a gradient."""
 
     def update_after_pred(self, w: dict, g: dict) -> dict:
 

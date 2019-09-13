@@ -56,10 +56,6 @@ class MiniBatcher(base.Optimizer):
         self.current_size = 0
         self.n_iterations = 0
 
-    @property
-    def learning_rate(self):
-        return self.optimizer.learning_rate
-
     def update_before_pred(self, w):
         return self.optimizer.update_before_pred(w)
 
