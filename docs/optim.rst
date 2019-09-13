@@ -53,7 +53,7 @@ Loss functions
    losses.EpsilonInsensitiveHinge
    losses.Hinge
    losses.Log
-   losses.MultiClassification
+   losses.MultiClassificationLoss
    losses.Quantile
    losses.RegressionLoss
    losses.Squared

@@ -5,6 +5,7 @@ import csv
 import datetime as dt
 import itertools
 import random
+import types
 
 import numpy as np
 try:
@@ -20,7 +21,8 @@ __all__ = [
     'iter_array',
     'iter_pandas',
     'iter_sklearn_dataset',
-    'simulate_qa'
+    'simulate_qa',
+    'shuffle'
 ]
 
 
@@ -276,3 +278,43 @@ def simulate_qa(X_y, on, lag):
     # Yield the final answers that remain
     for x, y in answers:
         yield False, x, y
+
+
+def shuffle(stream, buffer_size, seed=None):
+    """Shuffles a stream of data.
+
+    This works by maintaining a buffer of elements. The first buffer_size elements are stored in
+    memory. Once the buffer is full, a random element inside the buffer is yielded. Everytime an
+    element is yielded, the next element in the stream replaces it and the buffer is sampled again.
+    Increasing buffer_size will improve the quality of the shuffling.
+
+    If you really want to stream over your dataset in a "good" random order, the best way is to
+    split your dataset into smaller datasets and loop over them in a round-robin fashion. You may
+    do this by using the ``roundrobin`` recipe from the `itertools` module.
+
+    References:
+        1. `Visualizing TensorFlow's streaming shufflers <http://www.moderndescartes.com/essays/shuffle_viz/>`_
+
+    """
+
+    # If stream is not a generator, then we coerce it to one
+    if not isinstance(stream, types.GeneratorType):
+        stream = iter(stream)
+
+    # Initialize the buffer
+    buff = list(itertools.islice(stream, buffer_size))
+
+    # Deplete the stream until it is empty
+    for element in stream:
+
+        # Pick a random element from the buffer and yield it
+        i = random.randint(0, len(buff) - 1)
+        yield buff[i]
+
+        # Replace the yielded element from the buffer with the new element from the stream
+        buff[i] = element
+
+    # Shuffle the remaining buffer elements and yield them one by one
+    random.shuffle(buff)
+    for element in buff:
+        yield element
