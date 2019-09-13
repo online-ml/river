@@ -78,17 +78,8 @@ class HistSplitEnum(SplitEnum, collections.defaultdict):
 
     def enumerate_splits(self, target_dist):
 
-        a = None
-        b = None
-        try:
-            a = min(h[0].right for h in self.P_xy.values())
-            b = min(h[-1].right for h in self.P_xy.values())
-        except IndexError:
-            print(a, b)
-            for l, h in self.P_xy.items():
-                print(l, len(h))
-                print(h)
-            raise IndexError
+        a = min(h[0].right for h in self.P_xy.values())
+        b = min(h[-1].right for h in self.P_xy.values())
 
         # If only one single value has been observed, then no split can be proposed
         if a >= b:

@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Renamer` to `compose`
 - `IQR` and `RollingIQR` to `stats`
 - The `initializers` submodule has been added to the `optim` module, it can be used for initializing weights in weight-based models such as linear regression
+- `shuffle` to `stream`
 
 ### Modified
 

@@ -13,3 +13,4 @@ Streaming utilities
    iter_sklearn_dataset
    iter_pandas
    simulate_qa
+   shuffle
