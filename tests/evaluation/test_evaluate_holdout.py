@@ -68,48 +68,6 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
     assert evaluator.get_info() == expected_info
 
 
-    stream = RandomTreeGenerator(tree_random_state=23, sample_random_state=12, n_classes=2, n_cat_features=2,
-                                 n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
-                                 fraction_leaves_per_level=0.15)
-    stream.prepare_for_use()
-
-    # Setup learner
-    nominal_attr_idx = [x for x in range(15, len(stream.feature_names))]
-    learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
-
-    # Setup evaluator
-    n_wait = 200
-    max_samples = 1000
-    metrics = ['f1', 'precision', 'recall', 'gmean']
-    evaluator = EvaluateHoldout(n_wait=n_wait,
-                                max_samples=max_samples,
-                                test_size=50,
-                                metrics=metrics)
-
-    # Evaluate
-    evaluator.evaluate(stream=stream, model=learner)
-    mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
-
-
-    expected_current_f1_score = 0.6818181818181818
-    expected_current_precision = 0.625
-    expected_current_recall = 0.75
-    expected_current_g_mean = 0.7245688373094719
-    expected_mean_f1_score = 0.6431718061674009
-    expected_mean_precision = 0.5748031496062992
-    expected_mean_recall = 0.73
-    expected_mean_g_mean = 0.6835202996254025
-
-    assert np.isclose(current_performance.get_f1_score(), expected_current_f1_score)
-    assert np.isclose(current_performance.get_precision(), expected_current_precision)
-    assert np.isclose(current_performance.get_recall(), expected_current_recall)
-    assert np.isclose(current_performance.get_g_mean(), expected_current_g_mean)
-    assert np.isclose(mean_performance.get_f1_score(), expected_mean_f1_score)
-    assert np.isclose(mean_performance.get_precision(), expected_mean_precision)
-    assert np.isclose(mean_performance.get_recall(), expected_mean_recall)
-    assert np.isclose(mean_performance.get_g_mean(), expected_mean_g_mean)
-
-
 def compare_files(test, expected):
     lines_expected = open(expected).readlines()
     lines_test = open(test).readlines()
