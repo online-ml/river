@@ -7,18 +7,21 @@ from timeit import default_timer as timer
 
 
 class ClassificationMeasurements(object):
-    """ Class used to keep updated statistics about a classifier, in order
+    """ Classification measurements.
+
+    Class used to keep updated statistics about a classifier, in order
     to be able to provide, at any given moment, any relevant metric about
     that classifier.
 
     It combines a ConfusionMatrix object, with some additional statistics,
-    to compute a range of performance metrics.
+    to compute a range of performance metrics. Important: indices in the
+    confusion matrix depend on the arrival order of observed classes.
 
     In order to keep statistics updated, the class won't require lots of
     information, but two: the predictions and true labels.
 
-    At any given moment, it can compute the following statistics: accuracy,
-    kappa, kappa_t, kappa_m, majority_class and error rate.
+    At any given moment, it can compute the multiple statistics including
+    accuracy, kappa, kappa_t, kappa_m, majority_class, error rate, etc.
 
     Parameters
     ----------
@@ -217,69 +220,6 @@ class ClassificationMeasurements(object):
             return 1
         return (p0 - pc) / (1.0 - pc)
 
-    def get_g_mean(self):
-        """ Compute the G-mean of the classifier.
-
-        Returns
-        -------
-        float
-            The G-mean
-        """
-        tn = self.confusion_matrix.value_at(0, 0)
-        fp = self.confusion_matrix.value_at(0, 1)
-        if tn + fp == 0:
-            specificity = 0
-        else:
-            specificity =  tn / (tn + fp)
-        sensitivity = self.get_recall()
-        return np.sqrt((sensitivity * specificity))
-
-    def get_f1_score(self):
-        """ Compute the F1-score of the classifier.
-
-        Returns
-        -------
-        float
-            The F1-score
-        """
-        precision = self.get_precision()
-        recall = self.get_recall()
-        if recall + precision == 0:
-            return 0.0
-        else:
-            return 2 * (precision * recall) / (precision + recall)
-
-    def get_precision(self):
-        """ compute the precision of the classifier.
-
-
-        Returns
-        -------
-        float
-            The precision
-        """
-        tp = self.confusion_matrix.value_at(1, 1)
-        fp = self.confusion_matrix.value_at(0, 1)
-        if tp + fp == 0:
-            return 0.0
-        else:
-            return tp / (tp + fp)
-
-    def get_recall(self):
-        """ Compute the recall.
-
-        Returns
-        -------
-        float
-            The recall.
-        """
-        tp = self.confusion_matrix.value_at(1, 1)
-        fn = self.confusion_matrix.value_at(1, 0)
-        if tp + fn == 0:
-            return 0.0
-        else:
-            return tp / (tp + fn)
-
     def get_kappa_m(self):
         """ Computes the Cohen's kappa M coefficient.
 
@@ -298,6 +238,72 @@ class ClassificationMeasurements(object):
             return 1
         return (p0 - pc) / (1.0 - pc)
 
+    def get_g_mean(self):
+        """ Compute the G-mean of the classifier. Binary-classification only.
+
+        Returns
+        -------
+        float
+            The G-mean
+        """
+        negative_idx = self._get_target_index(0)
+        tn = self.confusion_matrix.value_at(negative_idx, negative_idx)
+        fp = self.confusion_matrix.value_at(negative_idx, 1-negative_idx)
+        if tn + fp == 0:
+            specificity = 0
+        else:
+            specificity = tn / (tn + fp)
+        sensitivity = self.get_recall()
+        return np.sqrt((sensitivity * specificity))
+
+    def get_f1_score(self):
+        """ Compute the F1-score of the classifier. Binary-classification only.
+
+        Returns
+        -------
+        float
+            The F1-score
+        """
+        precision = self.get_precision()
+        recall = self.get_recall()
+        if recall + precision == 0:
+            return 0.0
+        else:
+            return 2 * ((precision * recall) / (precision + recall))
+
+    def get_precision(self):
+        """ compute the precision of the classifier. Binary-classification only.
+
+
+        Returns
+        -------
+        float
+            The precision
+        """
+        positive_idx = self._get_target_index(1)
+        tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
+        fp = self.confusion_matrix.value_at(1-positive_idx, positive_idx)
+        if tp + fp == 0:
+            return 0.0
+        else:
+            return tp / (tp + fp)
+
+    def get_recall(self):
+        """ Compute the recall of the classifier. Binary-classification only.
+
+        Returns
+        -------
+        float
+            The recall.
+        """
+        positive_idx = self._get_target_index(1)
+        tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
+        fn = self.confusion_matrix.value_at(positive_idx, 1-positive_idx)
+        if tp + fn == 0:
+            return 0.0
+        else:
+            return tp / (tp + fn)
+
     @property
     def _matrix(self):
         return self.confusion_matrix.matrix
@@ -312,7 +318,7 @@ class ClassificationMeasurements(object):
                ' - f1-score: {:.6f}'.format(self.get_f1_score()) + \
                ' - precision: {:.6f}'.format(self.get_precision()) + \
                ' - recall: {:.6f}'.format(self.get_recall()) + \
-               ' - G-mean: {:.6f}'.format(self.get_g_mean()) + \
+               ' - g-mean: {:.6f}'.format(self.get_g_mean()) + \
                ' - majority_class: {}'.format(self.get_majority_class())
 
 
@@ -330,8 +336,8 @@ class WindowClassificationMeasurements(object):
     kept by this class are local, or partial, while the statistics kept by
     the ClassificationMeasurements class are global.
 
-    At any given moment, it can compute the following statistics: accuracy,
-    kappa, kappa_t, kappa_m, majority_class and error rate.
+    At any given moment, it can compute multiple statistics including accuracy,
+    kappa, kappa_t, kappa_m, majority_class, error rate, etc.
 
     Parameters
     ----------
@@ -587,24 +593,25 @@ class WindowClassificationMeasurements(object):
         return (p0 - pc) / (1.0 - pc)
 
     def get_g_mean(self):
-        """ Compute the G-mean of the classifier.
+        """ Compute the G-mean of the classifier. Binary-classification only.
 
         Returns
         -------
         float
             The G-mean
         """
-        tn = self.confusion_matrix.value_at(0, 0)
-        fp = self.confusion_matrix.value_at(0, 1)
+        negative_idx = self._get_target_index(0)
+        tn = self.confusion_matrix.value_at(negative_idx, negative_idx)
+        fp = self.confusion_matrix.value_at(negative_idx, 1 - negative_idx)
         if tn + fp == 0:
             specificity = 0
         else:
-            specificity =  tn / (tn + fp)
+            specificity = tn / (tn + fp)
         sensitivity = self.get_recall()
         return np.sqrt((sensitivity * specificity))
 
     def get_f1_score(self):
-        """ Compute the F1-score of the classifier.
+        """ Compute the F1-score of the classifier. Binary-classification only.
 
         Returns
         -------
@@ -616,10 +623,10 @@ class WindowClassificationMeasurements(object):
         if recall + precision == 0:
             return 0.0
         else:
-            return 2 * (precision * recall) / (precision + recall)
+            return 2 * ((precision * recall) / (precision + recall))
 
     def get_precision(self):
-        """ compute the precision of the classifier.
+        """ compute the precision of the classifier. Binary-classification only.
 
 
         Returns
@@ -627,23 +634,25 @@ class WindowClassificationMeasurements(object):
         float
             The precision
         """
-        tp = self.confusion_matrix.value_at(1, 1)
-        fp = self.confusion_matrix.value_at(0, 1)
+        positive_idx = self._get_target_index(1)
+        tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
+        fp = self.confusion_matrix.value_at(1 - positive_idx, positive_idx)
         if tp + fp == 0:
             return 0.0
         else:
             return tp / (tp + fp)
 
     def get_recall(self):
-        """ Compute the recall.
+        """ Compute the recall of the classifier. Binary-classification only.
 
         Returns
         -------
         float
             The recall.
         """
-        tp = self.confusion_matrix.value_at(1, 1)
-        fn = self.confusion_matrix.value_at(1, 0)
+        positive_idx = self._get_target_index(1)
+        tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
+        fn = self.confusion_matrix.value_at(positive_idx, 1 - positive_idx)
         if tp + fn == 0:
             return 0.0
         else:
@@ -668,7 +677,7 @@ class WindowClassificationMeasurements(object):
                ' - f1-score: {:.6f}'.format(self.get_f1_score()) + \
                ' - precision: {:.6f}'.format(self.get_precision()) + \
                ' - recall: {:.6f}'.format(self.get_recall()) + \
-               ' - G-mean: {:.6f}'.format(self.get_g_mean()) + \
+               ' - g-mean: {:.6f}'.format(self.get_g_mean()) + \
                ' - majority_class: {}'.format(self.get_majority_class())
 
 

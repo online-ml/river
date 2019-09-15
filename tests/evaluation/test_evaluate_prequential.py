@@ -27,7 +27,7 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
                                     output_file=output_file)
 
     # Evaluate
-    result = evaluator.evaluate(stream=stream, model=learner)
+    result = evaluator.evaluate(stream=stream, model=[learner])
     result_learner = result[0]
 
     assert isinstance(result_learner, HoeffdingTree)
@@ -39,6 +39,7 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
 
     mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
 
+    # Simple test. Tests for metrics are placed in the corresponding test module.
     expected_mean_accuracy = 0.436250
     assert np.isclose(mean_performance.get_accuracy(), expected_mean_accuracy)
 
@@ -65,50 +66,123 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
     assert evaluator.get_info() == expected_info
 
 
-def test_evaluate_classification_metrics():
-
+def test_evaluate_classification_coverage(tmpdir):
+    # A simple coverage test. Tests for metrics are placed in the corresponding test module.
     stream = RandomTreeGenerator(tree_random_state=23, sample_random_state=12, n_classes=2, n_cat_features=2,
                                  n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
                                  fraction_leaves_per_level=0.15)
     stream.prepare_for_use()
 
-    # Setup learner
+    # Learner
     nominal_attr_idx = [x for x in range(15, len(stream.feature_names))]
     learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
 
     max_samples = 1000
-    metrics = ['f1', 'precision', 'recall', 'gmean']
+    output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
+    metrics = ['accuracy', 'kappa', 'kappa_t', 'kappa_m', 'f1', 'precision', 'recall', 'gmean', 'true_vs_predicted']
     evaluator = EvaluatePrequential(max_samples=max_samples,
-                                    metrics=metrics)
+                                    metrics=metrics,
+                                    output_file=output_file)
 
     # Evaluate
     evaluator.evaluate(stream=stream, model=learner)
     mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
 
-    expected_current_f1_score = 0.7096774193548387
-    expected_current_precision = 0.6814159292035398
-    expected_current_recall = 0.7403846153846154
-    expected_current_g_mean = 0.6802502367624613
-    expected_mean_f1_score = 0.7009803921568628
-    expected_mean_precision = 0.7185929648241206
-    expected_mean_recall = 0.6842105263157895
-    expected_mean_g_mean = 0.6954166367760247
-    print(mean_performance.get_g_mean())
-    print(mean_performance.get_recall())
-    print(mean_performance.get_precision())
-    print(mean_performance.get_f1_score())
-    print(current_performance.get_g_mean())
-    print(current_performance.get_recall())
-    print(current_performance.get_precision())
-    print(current_performance.get_f1_score())
-    assert np.isclose(current_performance.get_f1_score(), expected_current_f1_score)
-    assert np.isclose(current_performance.get_precision(), expected_current_precision)
-    assert np.isclose(current_performance.get_recall(), expected_current_recall)
-    assert np.isclose(current_performance.get_g_mean(), expected_current_g_mean)
-    assert np.isclose(mean_performance.get_f1_score(), expected_mean_f1_score)
-    assert np.isclose(mean_performance.get_precision(), expected_mean_precision)
-    assert np.isclose(mean_performance.get_recall(), expected_mean_recall)
-    assert np.isclose(mean_performance.get_g_mean(), expected_mean_g_mean)
+    expected_current_accuracy = 0.685
+    assert np.isclose(current_performance.get_accuracy(), expected_current_accuracy)
+
+
+def test_evaluate_regression_coverage(tmpdir):
+    # A simple coverage test. Tests for metrics are placed in the corresponding test module.
+    from skmultiflow.data import RegressionGenerator
+    from skmultiflow.trees import RegressionHoeffdingTree
+
+    max_samples = 1000
+
+    # Stream
+    stream = RegressionGenerator(n_samples=max_samples)
+    stream.prepare_for_use()
+
+    # Learner
+    htr = RegressionHoeffdingTree()
+
+    output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
+    metrics = ['mean_square_error', 'mean_absolute_error']
+    evaluator = EvaluatePrequential(max_samples=max_samples,
+                                    metrics=metrics,
+                                    output_file=output_file)
+
+    evaluator.evaluate(stream=stream, model=htr, model_names=['HTR'])
+
+
+def test_evaluate_multi_target_classification_coverage(tmpdir):
+    # A simple coverage test. Tests for metrics are placed in the corresponding test module.
+    from skmultiflow.data import MultilabelGenerator
+    from skmultiflow.meta import MultiOutputLearner
+
+    max_samples = 1000
+
+    # Stream
+    stream = MultilabelGenerator(n_samples=max_samples, random_state=1)
+    stream.prepare_for_use()
+
+    # Learner
+    mol = MultiOutputLearner()
+
+    output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
+    metrics = ['hamming_score', 'hamming_loss', 'exact_match', 'j_index']
+    evaluator = EvaluatePrequential(max_samples=max_samples,
+                                    metrics=metrics,
+                                    output_file=output_file)
+
+    evaluator.evaluate(stream=stream, model=[mol], model_names=['MOL'])
+
+
+def test_evaluate_multi_target_regression_coverage(tmpdir):
+    from skmultiflow.data import RegressionGenerator
+    from skmultiflow.trees import MultiTargetRegressionHoeffdingTree
+
+    max_samples = 1000
+
+    # Stream
+    stream = RegressionGenerator(n_samples=max_samples, n_features=20,
+                                 n_informative=15, random_state=1,
+                                 n_targets=7)
+    stream.prepare_for_use()
+
+    # Learner
+    mtrht = MultiTargetRegressionHoeffdingTree(leaf_prediction='adaptive')
+
+    output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
+    metrics = ['average_mean_square_error', 'average_mean_absolute_error', 'average_root_mean_square_error']
+    evaluator = EvaluatePrequential(max_samples=max_samples,
+                                    metrics=metrics,
+                                    output_file=output_file)
+
+    evaluator.evaluate(stream=stream, model=mtrht, model_names=['MTRHT'])
+
+
+def test_evaluate_coverage(tmpdir):
+    from skmultiflow.data import SEAGenerator
+    from skmultiflow.bayes import NaiveBayes
+
+    max_samples = 1000
+
+    # Stream
+    stream = SEAGenerator(random_state =1)
+    stream.prepare_for_use()
+
+    # Learner
+    nb = NaiveBayes()
+
+    output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
+    metrics = ['running_time', 'model_size']
+    evaluator = EvaluatePrequential(max_samples=max_samples,
+                                    metrics=metrics,
+                                    data_points_for_classification=True,
+                                    output_file=output_file)
+
+    evaluator.evaluate(stream=stream, model=nb, model_names=['NB'])
 
 
 def compare_files(test, expected):
