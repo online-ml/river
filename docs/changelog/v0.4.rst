@@ -1,6 +1,14 @@
 .. currentmodule:: skmultiflow
 .. include:: _labels.rst
 
+Version 0.4.1
+-------------
+
+**Sep 2019**
+
+- |FIX| Fix bug in the calculation of Precision and Recall which affects the F1 and Geometric-mean scores. The bug was
+  only triggered by a specific ordering of the class-values.
+
 Version 0.4.0
 -------------
 
