@@ -19,7 +19,7 @@ def test_classification_measurements():
     for i in range(len(y_true)):
         measurements.add_result(y_true[i], y_pred[i])
 
-    expected_acc = .9
+    expected_acc = 90/100
     assert expected_acc == measurements.get_accuracy()
 
     expected_incorrectly_classified_ratio = 1 - expected_acc
@@ -34,9 +34,21 @@ def test_classification_measurements():
     expected_kappa_t = (expected_acc - .97) / (1 - 0.97)
     assert expected_kappa_t == measurements.get_kappa_t()
 
+    expected_precision = 85 / (85+5)
+    assert np.isclose(expected_precision, measurements.get_precision())
+
+    expected_recall = 85 / (85+5)
+    assert np.isclose(expected_recall, measurements.get_recall())
+
+    expected_f1_score = 2 * ((expected_precision * expected_recall) / (expected_precision + expected_recall))
+    assert np.isclose(expected_f1_score, measurements.get_f1_score())
+
+    expected_g_mean = np.sqrt((5 / (5 + 5)) * expected_recall)
+    assert np.isclose(expected_g_mean, measurements.get_g_mean())
+
     expected_info = 'ClassificationMeasurements: - sample_count: 100 - accuracy: 0.900000 - kappa: 0.444444 ' \
-                    '- kappa_t: -2.333333 - kappa_m: 0.888889 - f1-score: 0.500000 - ' \
-                    'precision: 0.500000 - recall: 0.500000 - G-mean: 0.687184 - majority_class: 0'
+                    '- kappa_t: -2.333333 - kappa_m: 0.888889 - f1-score: 0.944444 - precision: 0.944444 ' \
+                    '- recall: 0.944444 - g-mean: 0.687184 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
     expected_last = (1.0, 0.0)
@@ -50,31 +62,44 @@ def test_classification_measurements():
 
 
 def test_window_classification_measurements():
-    y_true = np.ones(100)
+    y_true = np.concatenate((np.ones(85), np.zeros(10), np.ones(5)))
     y_pred = np.concatenate((np.ones(90), np.zeros(10)))
 
     measurements = WindowClassificationMeasurements(window_size=20)
     for i in range(len(y_true)):
         measurements.add_result(y_true[i], y_pred[i])
 
-    expected_acc = .5
+    expected_acc = 10/20
     assert expected_acc == measurements.get_accuracy()
 
     expected_incorrectly_classified_ratio = 1 - expected_acc
     assert expected_incorrectly_classified_ratio == measurements.get_incorrectly_classified_ratio()
 
     expected_kappa = 0.0
-    assert expected_kappa == measurements.get_kappa()
+    assert np.isclose(expected_kappa, measurements.get_kappa())
 
-    expected_kappa_m = 0.5
-    assert expected_kappa_m == measurements.get_kappa_m()
+    expected_kappa_m = -1.0
+    assert np.isclose(expected_kappa_m, measurements.get_kappa_m())
 
-    expected_kappa_t = 1
-    assert expected_kappa_t == measurements.get_kappa_t()
+    expected_kappa_t = -4.0
+    assert np.isclose(expected_kappa_t, measurements.get_kappa_t())
 
-    expected_info = 'WindowClassificationMeasurements: - sample_count: 20 - window_size: 20 - accuracy: 0.500000 ' \
-                    '- kappa: 0.000000 - kappa_t: 1.000000 - kappa_m: 0.500000 - f1-score: 0.000000 - ' \
-                    'precision: 0.000000 - recall: 0.000000 - G-mean: 0.000000 - majority_class: 0'
+    expected_precision = 5 / (5 + 5)
+    assert np.isclose(expected_precision, measurements.get_precision())
+
+    expected_recall = 5 / (5 + 5)
+    assert np.isclose(expected_recall, measurements.get_recall())
+
+    expected_f1_score = 2 * ((expected_precision * expected_recall) / (expected_precision + expected_recall))
+    assert np.isclose(expected_f1_score, measurements.get_f1_score())
+
+    expected_g_mean = np.sqrt((5 / (5 + 5)) * expected_recall)
+    assert np.isclose(expected_g_mean, measurements.get_g_mean())
+
+    expected_info = 'WindowClassificationMeasurements: - sample_count: 20 - window_size: 20 ' \
+                    '- accuracy: 0.500000 - kappa: 0.000000 - kappa_t: -4.000000 ' \
+                    '- kappa_m: -1.000000 - f1-score: 0.500000 - precision: 0.500000 ' \
+                    '- recall: 0.500000 - g-mean: 0.500000 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
     expected_last = (1.0, 0.0)
