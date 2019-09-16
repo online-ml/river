@@ -347,7 +347,8 @@ class ConfusionMatrix(object):
     the other is associated with the predictions. If we consider the columns
     to represent predictions and the rows to represent true labels. An entry
     in position [1, 2] means that the true label was 1, while the prediction
-    was label 2, thus this was a bad prediction.
+    was label 2, thus this was a bad prediction. Important: indices in the
+    confusion matrix depend on the arrival order of observed classes.
 
     This structure is used to keep updated statistics from a classifier's
     performance, which allows to compute different evaluation metrics.
