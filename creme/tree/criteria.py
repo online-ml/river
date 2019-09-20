@@ -37,7 +37,15 @@ def entropy(dist):
         2. `Calculating entropy <https://www.johndcook.com/blog/2013/08/17/calculating-entropy/>`_
 
     """
-    return -sum(dist.pmf(c) * math.log2(dist.pmf(c)) for c in dist)
+
+    entro = 0.
+
+    for c in dist:
+        p = dist.pmf(c)
+        if p:
+            entro -= p * math.log2(p)
+
+    return entro
 
 
 def gini(dist):

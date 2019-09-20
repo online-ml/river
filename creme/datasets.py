@@ -104,7 +104,6 @@ def fetch_bikes(data_home=None, silent=True):
     # Download dataset if does not exist and get its path
     data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
-
     return stream.iter_csv(
         f'{data_dir_path}/{name}.csv',
         target_name='bikes',
@@ -260,7 +259,7 @@ def fetch_sms(data_home=None, silent=True):
     data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
     # Stream sms
-    with open('{data_dir_path}/{name}') as f:
+    with open(f'{data_dir_path}/{name}') as f:
         for ix, row in enumerate(f):
             label, body = row.split('\t')
             yield ({'body': body}, label)
@@ -294,10 +293,7 @@ def fetch_trec07p(data_home=None, silent=True):
     # Download dataset if does not exist andCode ran to build trec07p CSV available in `creme` library get its path
     data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
-    return stream.iter_csv(
-        f'{data_dir_path}/{name}.csv',
-        target_name='y',
-    )
+    return stream.iter_csv(f'{data_dir_path}/{name}.csv', target_name='y',)
 
 
 def load_airline():
