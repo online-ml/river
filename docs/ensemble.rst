@@ -10,7 +10,5 @@ Ensemble models
 
    BaggingClassifier
    BaggingRegressor
-   GroupRegressor
    HedgeRegressor
    StackingBinaryClassifier
-   WeightedMajorityClassifier
