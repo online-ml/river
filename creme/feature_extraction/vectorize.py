@@ -18,19 +18,16 @@ class VectorizerMixin:
             ``fit_one`` and ``transform_one`` should treat ``x`` as a `str` and not as a ``dict``.
         strip_accents (bool): Whether or not to strip accent characters.
         lowercase (bool): Whether or not to convert all characters to lowercase.
-        preprocessor (callable): The function used to preprocess the text. A default one is used
-            if it is not provided by the user.
         tokenizer (callable): The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
 
     """
 
-    def __init__(self, on=None, strip_accents=True, lowercase=True, preprocessor=None,
-                 tokenizer=None):
+    def __init__(self, on=None, strip_accents=True, lowercase=True, tokenizer=None):
         self.on = on
         self.strip_accents = strip_accents
         self.lowercase = lowercase
-        self.tokenize = re.compile(r'(?u)\b\w\w+\b').findall if tokenizer is None else tokenizer
+        self.tokenizer = re.compile(r'(?u)\b\w\w+\b').findall if tokenizer is None else tokenizer
 
     def _get_text(self, x):
         if self.on is not None:
@@ -62,8 +59,6 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
             the input is treated as a document instead of a set of features.
         strip_accents (bool): Whether or not to strip accent characters.
         lowercase (bool): Whether or not to convert all characters to lowercase.
-        preprocessor (callable): The function used to preprocess the text. A default one is used
-            if it is not provided by the user.
         tokenizer (callable): The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
 
@@ -89,7 +84,7 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
     """
 
     def transform_one(self, x):
-        return collections.Counter(self.tokenize(self.preprocess(self._get_text(x))))
+        return collections.Counter(self.tokenizer(self.preprocess(self._get_text(x))))
 
 
 class TFIDFVectorizer(base.Transformer, VectorizerMixin):
@@ -103,8 +98,6 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
             the input is treated as a document instead of a set of features.
         strip_accents (bool): Whether or not to strip accent characters.
         lowercase (bool): Whether or not to convert all characters to lowercase.
-        preprocessor (callable): The function used to preprocess the text. A default one is used
-            if it is not provided by the user.
         tokenizer (callable): The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
         normalize (bool): Whether or not the TF-IDF values by their L2 norm.
@@ -135,11 +128,11 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
 
     """
 
-    def __init__(self, on=None, strip_accents=True, lowercase=True, preprocessor=None,
-                 tokenizer=None, normalize=True):
-        super().__init__(on, strip_accents, lowercase, preprocessor, tokenizer)
+    def __init__(self, on=None, strip_accents=True, lowercase=True, tokenizer=None,
+                 normalize=True):
+        super().__init__(on, strip_accents, lowercase, tokenizer)
         self.normalize = normalize
-        self.tfs = CountVectorizer(on, strip_accents, lowercase, preprocessor, tokenizer)
+        self.tfs = CountVectorizer(on, strip_accents, lowercase, tokenizer)
         self.dfs = collections.defaultdict(int)
         self.n = 0
 

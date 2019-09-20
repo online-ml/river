@@ -29,8 +29,6 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
             the input is treated as a document instead of a set of features.
         strip_accents (bool): Whether or not to strip accent characters.
         lowercase (bool): Whether or not to convert all characters to lowercase.
-        preprocessor (callable): The function used to preprocess the text. A default one is used
-            if it is not provided by the user.
         tokenizer (callable): The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
         alpha_theta (float): Hyper-parameter of the Dirichlet distribution of topics.
@@ -88,13 +86,17 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
     """
 
     def __init__(self, n_components=10, number_of_documents=1e6, on=None, strip_accents=True,
-                 lowercase=True, preprocessor=None, tokenizer=None, normalize=True,
-                 alpha_theta=0.5, alpha_beta=100., tau=64., kappa=0.75, vocab_prune_interval=10,
-                 number_of_samples=10, ranking_smooth_factor=1e-12, burn_in_sweeps=5,
-                 maximum_size_vocabulary=4000):
+                 lowercase=True, tokenizer=None, alpha_theta=0.5, alpha_beta=100., tau=64.,
+                 kappa=0.75, vocab_prune_interval=10, number_of_samples=10,
+                 ranking_smooth_factor=1e-12, burn_in_sweeps=5, maximum_size_vocabulary=4000):
 
         # Initialize the VectorizerMixin part
-        super().__init__(on, strip_accents, lowercase, preprocessor, tokenizer)
+        super().__init__(
+            on=on,
+            strip_accents=strip_accents,
+            lowercase=lowercase,
+            tokenizer=tokenizer
+        )
 
         self.n_components = n_components
         self.number_of_documents = number_of_documents
@@ -137,7 +139,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         self.counter += 1
 
         # Extracts words of the document as a list of words:
-        word_list = self.tokenize(self.preprocess(self._get_text(x)))
+        word_list = self.tokenizer(self.preprocess(self._get_text(x)))
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)
@@ -175,7 +177,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         self.counter += 1
 
         # Extracts words of the document as a list of words:
-        word_list = self.tokenize(self.preprocess(self._get_text(x)))
+        word_list = self.tokenizer(self.preprocess(self._get_text(x)))
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)
@@ -208,7 +210,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
 
         """
         # Extracts words of the document as a list of words:
-        word_list = self.tokenize(self.preprocess(self._get_text(x)))
+        word_list = self.tokenizer(self.preprocess(self._get_text(x)))
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)

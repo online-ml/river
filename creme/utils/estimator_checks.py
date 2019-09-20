@@ -54,7 +54,6 @@ def make_random_features(model, n_observations, n_features):
 def make_random_targets(model, n_observations):
 
     from .. import base
-    from ..ensemble.base import Ensemble
 
     random_func = None
     model = guess_model(model)
@@ -62,7 +61,7 @@ def make_random_targets(model, n_observations):
     if isinstance(model, base.Regressor):
         random_func = random.random
 
-    elif isinstance(model, Ensemble):
+    elif isinstance(model, base.Ensemble):
         if any(isinstance(m, base.BinaryClassifier) for m in model):
             random_func = functools.partial(random.choice, [True, False])
         else:
@@ -241,12 +240,22 @@ def check_pickling(model):
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
 
 
+def check_repr(model):
+    assert isinstance(repr(model), str)
+
+
+def check_str(model):
+    assert isinstance(str(model), str)
+
+
 def yield_all_checks(model):
 
     from .. import base
 
     yield check_fit_one
     yield check_pickling
+    yield check_repr
+    yield check_str
 
     model = guess_model(model)
     tags = model._get_tags()

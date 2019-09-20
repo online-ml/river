@@ -2,6 +2,7 @@
 Base classes used throughout the library.
 """
 import abc
+import collections
 import inspect
 import typing
 
@@ -46,6 +47,33 @@ class Estimator:
 
     def __str__(self):
         return self.__class__.__name__
+
+    def __repr__(self):
+        rep = f'{self.__class__.__name__} ('
+        init = inspect.signature(self.__init__)
+        at_least_one_param = False
+
+        for param in init.parameters:
+
+            # Retrieve the attribute associated with the parameter
+            try:
+                attr = getattr(self, param)
+            except AttributeError:
+                continue
+            at_least_one_param = True
+
+            # Surround string attributes with quotes
+            if isinstance(attr, str):
+                attr = f"'{attr}'"
+
+            rep += f'\n    {param}={attr}'
+
+        if at_least_one_param:
+            rep += '\n)'
+        else:
+            rep += ')'
+
+        return rep
 
     def _more_tags(self) -> dict:
         """Specific tags for this estimator."""
@@ -347,3 +375,7 @@ class Wrapper(abc.ABC):
 
     def __str__(self):
         return f'{type(self).__name__}({self._model})'
+
+
+class Ensemble(Estimator, collections.UserList):
+    pass

@@ -209,6 +209,13 @@ class Pipeline(collections.OrderedDict):
         """Return a human friendly representation of the pipeline."""
         return ' | '.join(self.keys())
 
+    def __repr__(self):
+        return (
+            'Pipeline (\n    ' +
+            '    '.join(' |\n'.join(map(repr, self.values())).splitlines(True)) +
+            '\n)'
+        )
+
     @property
     def __class__(self):
         return self.final_estimator.__class__

@@ -121,7 +121,7 @@ def test_extraction_words_ids():
 
     for doc in DOC_SET:
 
-        words = lda.tokenize(lda.preprocess(lda._get_text(doc)))
+        words = lda.tokenizer(lda.preprocess(lda._get_text(doc)))
 
         lda._update_indexes(word_list=words)
 
@@ -152,7 +152,7 @@ def test_statistics_two_components():
 
     for doc in DOC_SET:
 
-        word_list = lda.tokenize(lda.preprocess(lda._get_text(doc)))
+        word_list = lda.tokenizer(lda.preprocess(lda._get_text(doc)))
 
         lda._update_indexes(word_list=word_list)
 
@@ -196,7 +196,7 @@ def test_statistics_five_components():
 
     for doc in DOC_SET:
 
-        word_list = lda.tokenize(lda.preprocess(lda._get_text(doc)))
+        word_list = lda.tokenizer(lda.preprocess(lda._get_text(doc)))
 
         lda._update_indexes(word_list=word_list)
 

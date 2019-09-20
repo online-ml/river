@@ -6,13 +6,11 @@ from sklearn import utils
 
 from .. import base
 
-from .base import Ensemble
-
 
 __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 
-class BaseBagging(base.Wrapper, Ensemble):
+class BaseBagging(base.Wrapper, base.Ensemble):
 
     def __init__(self, model, n_models=10, random_state=None):
         super().__init__(copy.deepcopy(model) for i in range(n_models))
