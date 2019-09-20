@@ -1,12 +1,10 @@
 from .. import base
 
-from .base import Ensemble
-
 
 __all__ = ['StackingBinaryClassifier']
 
 
-class StackingBinaryClassifier(Ensemble, base.BinaryClassifier):
+class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
     """Stacking for binary classification.
 
     Parameters:

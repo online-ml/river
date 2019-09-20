@@ -4,13 +4,11 @@ import math
 from .. import base
 from .. import optim
 
-from .base import Ensemble
-
 
 __all__ = ['HedgeRegressor']
 
 
-class Hedge(Ensemble):
+class Hedge(base.Ensemble):
 
     def __init__(self, models, weights, learning_rate):
         super().__init__(models)

@@ -6,7 +6,9 @@ cdef double clamp_proba(double x):
 
 
 cdef class Loss:
-    pass
+
+    def __str__(self):
+        return self.__class__.__name__
 
 
 cdef class ClassificationLoss(Loss):
