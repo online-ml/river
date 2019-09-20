@@ -98,7 +98,6 @@ class Regressor(Estimator):
 class Classifier(Estimator):
     """A classifier."""
 
-    @abc.abstractmethod
     def predict_proba_one(self, x: dict) -> Probas:
         """Predicts the probability output of a set of features ``x``
 
@@ -109,6 +108,7 @@ class Classifier(Estimator):
             dict of floats
 
         """
+        raise NotImplementedError('This classifier is not able to output probabilities')
 
     def predict_one(self, x: dict) -> Label:
         """Predicts the target value of a set of features ``x``

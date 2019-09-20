@@ -249,7 +249,7 @@ def simulate_qa(X_y, on, lag):
     old enough it will be shown once again, this time with the ``y`` value being revealed. Each
     observation will thus be shown twice, once without the target equal to ``None`` and once with
     the actual value. The duration between "questions" and "answers" depends on the ``lag``
-    parameter. For this to work the data is assumed to be sorted with respect to the temporal
+    parameter. For this to work, the data is assumed to be sorted with respect to the temporal
     attribute.
 
     Parameters:
@@ -324,10 +324,36 @@ def shuffle(stream, buffer_size, seed=None):
     split your dataset into smaller datasets and loop over them in a round-robin fashion. You may
     do this by using the ``roundrobin`` recipe from the `itertools` module.
 
+    Example:
+
+        ::
+
+            >>> from creme import stream
+
+            >>> for i in stream.shuffle(range(15), buffer_size=5, seed=42):
+            ...     print(i)
+            0
+            5
+            2
+            1
+            8
+            9
+            6
+            4
+            11
+            12
+            10
+            7
+            14
+            13
+            3
+
     References:
         1. `Visualizing TensorFlow's streaming shufflers <http://www.moderndescartes.com/essays/shuffle_viz/>`_
 
     """
+
+    rng = random.Random(seed)
 
     # If stream is not a generator, then we coerce it to one
     if not isinstance(stream, types.GeneratorType):
@@ -340,13 +366,13 @@ def shuffle(stream, buffer_size, seed=None):
     for element in stream:
 
         # Pick a random element from the buffer and yield it
-        i = random.randint(0, len(buff) - 1)
+        i = rng.randint(0, len(buff) - 1)
         yield buff[i]
 
         # Replace the yielded element from the buffer with the new element from the stream
         buff[i] = element
 
     # Shuffle the remaining buffer elements and yield them one by one
-    random.shuffle(buff)
+    rng.shuffle(buff)
     for element in buff:
         yield element

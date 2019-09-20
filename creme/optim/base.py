@@ -33,3 +33,6 @@ class Optimizer(abc.ABC):
         self.n_iterations += 1
 
         return w
+
+    def __str__(self):
+        return self.__class__.__name__

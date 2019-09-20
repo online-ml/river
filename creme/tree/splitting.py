@@ -45,7 +45,10 @@ class Split(collections.namedtuple('Split', 'on how at')):
     """A data class for storing split details."""
 
     def __str__(self):
-        return f'{self.on} {self.how} {self.at}'
+        at = self.at
+        if isinstance(at, float):
+            at = f'{at:.3f}'
+        return f'{self.on} {self.how} {at}'
 
     def __call__(self, x):
         return self.how(x[self.on], self.at)

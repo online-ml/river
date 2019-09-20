@@ -6,28 +6,26 @@ from .. import base
 from .. import optim
 
 
-__all__ = ['HedgeBinaryClassifier', 'HedgeRegressor']
+__all__ = ['HedgeRegressor']
 
 
 class BaseHedge(collections.UserList):
 
-    def __init__(self, models, weights, loss, learning_rate):
+    def __init__(self, models, weights, learning_rate):
         super().__init__()
         self.extend(models)
         self.weights = [1 / len(models)] * len(models) if weights is None else weights
-        self.loss = loss
         self.learning_rate = learning_rate
 
     @abc.abstractmethod
-    def _get_prediction(self, model, x):
+    def _get_loss(self, model, x, y):
         """Returns a prediction."""
 
     def fit_one(self, x, y):
 
         # Make a prediction and update the weights accordingly for each model
         for i, model in enumerate(self):
-            y_pred = self._get_prediction(model, x)
-            loss = self.loss.eval(y, y_pred)
+            loss = self._get_loss(model=model, x=x, y=y)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
             model.fit_one(x, y)
 
@@ -40,75 +38,6 @@ class BaseHedge(collections.UserList):
         return self
 
 
-class HedgeBinaryClassifier(BaseHedge, base.BinaryClassifier):
-    """Hedge Algorithm for binary classification.
-
-    The Hedge Algorithm is a special case of the Weighted Majority Algorithm for arbitrary losses.
-
-    Parameters:
-        models (list of `base.BinaryClassifier`): The set of binary classifiers to hedge.
-        weights (list of `float`): The initial weight of each model. If ``None`` then a uniform set
-            of weights is assumed. This roughly translates to the prior amount of trust we have in
-            each model.
-        loss (optim.BinaryClassificationLoss): The binary loss function that has to be minimized.
-        learning_rate (float): The learning rate by which the model weights are multiplied at each
-            iteration.
-
-    Example:
-
-        ::
-
-            >>> from creme import compose
-            >>> from creme import ensemble
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
-
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=False
-            ... )
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('hedge', ensemble.HedgeBinaryClassifier(
-            ...         classifiers=[
-            ...             linear_model.PAClassifier(mode=0),
-            ...             linear_model.PAClassifier(mode=1),
-            ...             linear_model.PAClassifier(mode=2)
-            ...         ],
-            ...         learning_rate=0.9
-            ...     ))
-            ... ])
-            >>> metric = metrics.F1()
-
-    References:
-        1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
-        2. `Multiplicative weight update method <https://www.wikiwand.com/en/Multiplicative_weight_update_method>`_
-
-    """
-
-    def __init__(self, classifiers, weights=None, loss=None, learning_rate=0.5):
-        super().__init__(
-            models=classifiers,
-            weights=weights,
-            loss=optim.losses.Log() if loss is None else loss,
-            learning_rate=learning_rate
-        )
-
-    def _get_prediction(self, model, x):
-        return model.predict_proba_one(x).get(True, .5)
-
-    def predict_proba_one(self, x):
-        y_pred = sum(
-            model.predict_proba_one(x).get(True, .5) * weight
-            for model, weight in zip(self, self.weights)
-        )
-        return {False: 1. - y_pred, True: y_pred}
-
-
 class HedgeRegressor(BaseHedge, base.Regressor):
     """Hedge Algorithm for regression.
 
@@ -119,8 +48,8 @@ class HedgeRegressor(BaseHedge, base.Regressor):
         weights (list of `float`): The initial weight of each model. If ``None`` then a uniform set
             of weights is assumed. This roughly translates to the prior amount of trust we have in
             each model.
-        loss (optim.BinaryClassificationLoss): The binary loss function that has to be minimized.
-            Defaults to `optim.losses.Squared`.
+        loss (optim.RegressionLoss): The loss function that has to be minimized. Defaults to
+            `optim.losses.Squared`.
         learning_rate (float): The learning rate by which the model weights are multiplied at each
             iteration.
 
@@ -128,7 +57,6 @@ class HedgeRegressor(BaseHedge, base.Regressor):
 
         ::
 
-            >>> from creme import compose
             >>> from creme import ensemble
             >>> from creme import linear_model
             >>> from creme import metrics
@@ -138,31 +66,54 @@ class HedgeRegressor(BaseHedge, base.Regressor):
             >>> from creme import stream
             >>> from sklearn import datasets
 
+            >>> optimizers = [
+            ...     optim.SGD(0.01),
+            ...     optim.RMSProp(),
+            ...     optim.AdaGrad()
+            ... ]
+
+            >>> for optimizer in optimizers:
+            ...
+            ...     X_y = stream.iter_sklearn_dataset(
+            ...         dataset=datasets.load_boston(),
+            ...         shuffle=False
+            ...     )
+            ...     metric = metrics.MAE()
+            ...     model = (
+            ...         preprocessing.StandardScaler() |
+            ...         linear_model.LinearRegression(
+            ...             optimizer=optimizer,
+            ...             intercept_lr=.1
+            ...         )
+            ...     )
+            ...
+            ...     print(optimizer, model_selection.online_score(X_y, model, metric))
+            SGD MAE: 7.203527
+            RMSProp MAE: 3.312368
+            AdaGrad MAE: 3.984558
+
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_boston(),
             ...     shuffle=False
             ... )
-
-            >>> lin_reg = linear_model.LinearRegression
-            >>> model = (
+            >>> metric = metrics.MAE()
+            >>> hedge = (
             ...     preprocessing.StandardScaler() |
             ...     ensemble.HedgeRegressor(
             ...         regressors=[
-            ...             lin_reg(optimizer=optim.SGD(0.01), intercept_lr=0.1),
-            ...             lin_reg(optimizer=optim.RMSProp(), intercept_lr=0.1),
-            ...             lin_reg(optimizer=optim.AdaGrad(), intercept_lr=0.1)
+            ...             linear_model.LinearRegression(optimizer=o, intercept_lr=.1)
+            ...             for o in optimizers
             ...         ]
             ...     )
             ... )
 
-            >>> metric = metrics.MAE()
-
-            >>> model_selection.online_score(X_y, model, metric)
-            MAE: 3.253601
+            >>> model_selection.online_score(X_y, hedge, metric)
+            MAE: 3.245318
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
         2. `Multiplicative weight update method <https://www.wikiwand.com/en/Multiplicative_weight_update_method>`_
+        3. `Exponentiated Gradient versus GradientDescent for Linear Predictors <https://users.soe.ucsc.edu/~manfred/pubs/J36.pdf>`_
 
     """
 
@@ -170,12 +121,12 @@ class HedgeRegressor(BaseHedge, base.Regressor):
         super().__init__(
             models=regressors,
             weights=weights,
-            loss=optim.losses.Squared() if loss is None else loss,
             learning_rate=learning_rate
         )
+        self.loss = optim.losses.Squared() if loss is None else loss
 
-    def _get_prediction(self, model, x):
-        return model.predict_one(x)
+    def _get_loss(self, model, x, y):
+        return self.loss.eval(y_true=y, y_pred=model.predict_one(x))
 
     def predict_one(self, x):
         return sum(model.predict_one(x) * weight for model, weight in zip(self, self.weights))

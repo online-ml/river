@@ -48,5 +48,5 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
         except ZeroDivisionError:
             return 0.
 
-    def _to_dict(self):
-        return {c: self.pmf(c) for c in self}
+    def __str__(self):
+        return '\n'.join(f'P({c}): {self.pmf(c):.3f}' for c in self)
