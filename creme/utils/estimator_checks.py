@@ -54,12 +54,19 @@ def make_random_features(model, n_observations, n_features):
 def make_random_targets(model, n_observations):
 
     from .. import base
+    from ..ensemble.base import Ensemble
 
     random_func = None
     model = guess_model(model)
 
     if isinstance(model, base.Regressor):
         random_func = random.random
+
+    elif isinstance(model, Ensemble):
+        if any(isinstance(m, base.BinaryClassifier) for m in model):
+            random_func = functools.partial(random.choice, [True, False])
+        else:
+            random_func = functools.partial(random.choice, ['a', 'b', 'c', 'd'])
 
     elif isinstance(model, base.MultiClassifier):
         random_func = functools.partial(random.choice, ['a', 'b', 'c', 'd'])

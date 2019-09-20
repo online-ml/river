@@ -1,10 +1,12 @@
 from .. import base
 
+from .base import Ensemble
+
 
 __all__ = ['StackingBinaryClassifier']
 
 
-class StackingBinaryClassifier(base.BinaryClassifier):
+class StackingBinaryClassifier(Ensemble, base.BinaryClassifier):
     """Stacking for binary classification.
 
     Parameters:
@@ -52,7 +54,7 @@ class StackingBinaryClassifier(base.BinaryClassifier):
     """
 
     def __init__(self, classifiers, meta_classifier, include_features=True):
-        self.classifiers = classifiers
+        super().__init__(classifiers)
         self.meta_classifier = meta_classifier
         self.include_features = include_features
 
@@ -60,9 +62,9 @@ class StackingBinaryClassifier(base.BinaryClassifier):
 
         # Ask each model to make a prediction and then update it
         oof = {}
-        for i, reg in enumerate(self.classifiers):
-            oof[f'oof_{i}'] = reg.predict_proba_one(x).get(True, 0.5)
-            reg.fit_one(x, y)
+        for i, classifier in enumerate(self):
+            oof[f'oof_{i}'] = classifier.predict_proba_one(x).get(True, 0.5)
+            classifier.fit_one(x, y)
 
         # Optionally, add the base features
         if self.include_features:
@@ -76,8 +78,8 @@ class StackingBinaryClassifier(base.BinaryClassifier):
     def predict_proba_one(self, x):
 
         oof = {
-            f'oof_{i}': reg.predict_proba_one(x).get(True, 0.5)
-            for i, reg in enumerate(self.classifiers)
+            f'oof_{i}': classifier.predict_proba_one(x).get(True, 0.5)
+            for i, classifier in enumerate(self)
         }
 
         if self.include_features:

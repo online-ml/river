@@ -33,7 +33,6 @@ def get_all_estimators():
         SKLBaseWrapper,
         base.Wrapper,
         compose.FuncTransformer,
-        ensemble.GroupRegressor,
         ensemble.StackingBinaryClassifier,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
@@ -65,9 +64,6 @@ def get_all_estimators():
 
             elif issubclass(obj, ensemble.BaggingRegressor):
                 inst = obj(linear_model.LinearRegression())
-
-            elif issubclass(obj, ensemble.HedgeBinaryClassifier):
-                inst = obj([linear_model.LogisticRegression(), linear_model.PAClassifier()])
 
             elif issubclass(obj, ensemble.HedgeRegressor):
                 inst = obj([

@@ -1,20 +1,20 @@
 import abc
-import collections
 import math
 
 from .. import base
 from .. import optim
 
+from .base import Ensemble
+
 
 __all__ = ['HedgeRegressor']
 
 
-class BaseHedge(collections.UserList):
+class Hedge(Ensemble):
 
     def __init__(self, models, weights, learning_rate):
-        super().__init__()
-        self.extend(models)
-        self.weights = [1 / len(models)] * len(models) if weights is None else weights
+        super().__init__(models)
+        self.weights = [1] * len(models)
         self.learning_rate = learning_rate
 
     @abc.abstractmethod
@@ -24,13 +24,14 @@ class BaseHedge(collections.UserList):
     def fit_one(self, x, y):
 
         # Make a prediction and update the weights accordingly for each model
+        total = 0
         for i, model in enumerate(self):
             loss = self._get_loss(model=model, x=x, y=y)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
+            total += self.weights[i]
             model.fit_one(x, y)
 
         # Normalize the weights so that they sum up to 1
-        total = sum(self.weights)
         if total:
             for i, _ in enumerate(self.weights):
                 self.weights[i] /= total
@@ -38,7 +39,7 @@ class BaseHedge(collections.UserList):
         return self
 
 
-class HedgeRegressor(BaseHedge, base.Regressor):
+class HedgeRegressor(Hedge, base.Regressor):
     """Hedge Algorithm for regression.
 
     The Hedge Algorithm is a special case of the Weighted Majority Algorithm for arbitrary losses.

@@ -6,16 +6,17 @@ from sklearn import utils
 
 from .. import base
 
+from .base import Ensemble
+
 
 __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 
-class BaseBagging(collections.UserList, base.Wrapper):
+class BaseBagging(base.Wrapper, Ensemble):
 
     def __init__(self, model, n_models=10, random_state=None):
-        super().__init__()
+        super().__init__(copy.deepcopy(model) for i in range(n_models))
         self.model = model
-        self.extend([copy.deepcopy(model) for _ in range(n_models)])
         self.rng = utils.check_random_state(random_state)
 
     @property

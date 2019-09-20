@@ -17,7 +17,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `IQR` and `RollingIQR` to `stats`
 - The `initializers` submodule has been added to the `optim` module, it can be used for initializing weights in weight-based models such as linear regression
 - `shuffle` to `stream`
-- `WeightedMajorityClassifier` to `ensemble`
 
 ### Modified
 
@@ -35,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 
 - `HedgeBinaryClassifier` from `ensemble`, as it's performance was subpar
+- `GroupRegressor` from `ensemble` as this should be a special case of `StackingRegressor`
 
 ## [0.3.0](https://pypi.org/project/creme/0.3.0/) - 2019-06-23
 
