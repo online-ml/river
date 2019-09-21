@@ -19,6 +19,12 @@ class ScikitLearnClassifier(base.MultiClassifier):
         except exceptions.NotFittedError:
             return {c: 1 / len(self.classes) for c in self.classes}
 
+    def predict_one(self, x):
+        try:
+            return self.model.predict([list(x.values())])[0]
+        except exceptions.NotFittedError:
+            return self.classes[0]
+
 
 class ScikitLearnRegressor(base.Regressor):
 
