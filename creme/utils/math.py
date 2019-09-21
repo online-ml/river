@@ -18,9 +18,8 @@ __all__ = [
 
 def softmax(y_pred):
     """Normalizes a dictionary of predicted probabilities, in-place."""
-    exp = {c: math.exp(p) for c, p in y_pred.items()}
-    total = sum(exp.values())
-    return {c: exp[c] / total for c in y_pred}
+    log_sum_exp = math.log(sum(math.exp(p) for p in y_pred.values()))
+    return {c: math.exp(p - log_sum_exp) for c, p in y_pred.items()}
 
 
 def prod(iterable):
