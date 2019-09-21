@@ -44,7 +44,7 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.951591
+            F1: 0.955801
 
     References:
         1. `A Kaggler's Guide to Model Stacking in Practice <http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/>`_

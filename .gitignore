@@ -92,7 +92,7 @@ dmypy.json
 
 # For convenience
 /*.ipynb
-/*.csv
+/*.csv*
 /*.arff
 test.py
 

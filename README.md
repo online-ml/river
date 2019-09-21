@@ -23,7 +23,7 @@
 
 <br/>
 
-`creme` is a library for online machine learning, also known as in**creme**ntal learning. Online learning is a machine learning regime where a **model learns one observation at a time**. This is in contrast to batch learning where all the data is processed in one go. Incremental learning is desirable when the data is too big to fit in memory, or simply when you want to **streaming data**. In addition to many online machine learning algorithms, `creme` provides utilities for extracting features from a stream of data. The API is heavily inspired from that of [scikit-learn](https://scikit-learn.org/stable/), meaning that users who are familiar with it should feel comfortable.
+`creme` is a library for online machine learning, also known as in**creme**ntal learning. Online learning is a machine learning regime where a **model learns one observation at a time**. This is in contrast to batch learning where all the data is processed in one go. Incremental learning is desirable when the data is too big to fit in memory, or simply when you want to **handle streaming data**. In addition to many online machine learning algorithms, `creme` provides utilities for **extracting features from a stream of data**. The API is heavily inspired from that of [scikit-learn](https://scikit-learn.org/stable/), meaning that users who are familiar with it should feel comfortable.
 
 ## Useful links
 
@@ -31,6 +31,7 @@
   - [API reference](https://creme-ml.github.io/api.html)
   - [User guide](https://creme-ml.github.io/user-guide.html)
   - [FAQ](https://creme-ml.github.io/faq.html)
+- [Benchmarks](benchmarks/)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
 - [Change history](CHANGELOG.md)
@@ -53,6 +54,34 @@ You can also install the latest development version as so:
 As for dependencies, `creme` mostly relies on Python's standard library. Sometimes it relies on `numpy`, `scipy`, and `scikit-learn` to avoid reinventing the wheel.
 
 ## Quick example
+
+In the following example, a logistic regression is trained online. For every observation in the dataset, the `predict_one` method is used to obtain the output predicted by the model. The `Accuracy` metric can then be updated online by providing it with the true output and the predicted output. Finally, the model can be updated by calling `fit_one`.
+
+```python
+>>> from creme import datasets
+>>> from creme import linear_model
+>>> from creme import metrics
+>>> from creme import optim
+>>> from creme import preprocessing
+
+>>> X_y = datasets.fetch_electricity()
+
+>>> model = preprocessing.StandardScaler()
+>>> model |= linear_model.LogisticRegression(optimizer=optim.SGD(.1))
+
+>>> metric = metrics.Accuracy()
+
+>>> for x, y in X_y:
+...     y_pred = model.predict_one(x)
+...     metric = metric.update(y, y_pred)
+...     model = model.fit_one(x, y)
+
+>>> print(metric)
+Accuracy: 0.894664
+
+```
+
+## A more involved example
 
 In the following example we'll use a linear regression to forecast the number of available bikes in [bike stations](https://www.wikiwand.com/en/Bicycle-sharing_system) from the city of Toulouse :bike:.
 
@@ -102,7 +131,44 @@ MAE: 2.285921
 
 ```
 
-We can also draw the model to understand how the data flows through.
+You can visualize the pipeline as so:
+
+```python
+>>> model
+Pipeline (
+    TransformerUnion (
+        Whitelister (
+            whitelist=['clouds', 'humidity', 'pressure', 'temperature', 'wind']
+        ),
+        Pipeline (
+            FuncTransformer (
+                func=add_hour
+            ),
+            TargetAgg (
+                by=['station', 'hour']
+                how=Mean: 0.
+                target_name='target'
+            )
+        ),
+        TargetAgg (
+            by=['station']
+            how=EWMean: 0.
+            target_name='target'
+        )
+    ),
+    StandardScaler (),
+    LinearRegression (
+        optimizer=SGD
+        loss=Squared
+        l2=0.0001
+        intercept=0.0
+        intercept_lr=0.01
+    )
+)
+
+```
+
+We can also draw the pipeline.
 
 ```python
 >>> dot = model.draw()
@@ -114,109 +180,6 @@ We can also draw the model to understand how the data flows through.
 </div>
 
 By only using a few lines of code, we've built a robust model and evaluated it by simulating a production scenario. You can find a more detailed version of this example [here](https://creme-ml.github.io/notebooks/bike-sharing-forecasting.html). `creme` is a framework that has a lot to offer, and as such we kindly refer you to the [documentation](https://creme-ml.github.io/) if you want to know more.
-
-## Benchmarks
-
-All the benchmarks, including reproducible code, are available [here](benchmarks).
-
-The following table summarizes the performance of regression methods from various libraries, using their default parameters.
-
-<table border="0" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th>Library</th>
-      <th>Model</th>
-      <th>MSE</th>
-      <th>Fit time</th>
-      <th>Average fit time</th>
-      <th>Predict time</th>
-      <th>Average predict time</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>creme</td>
-      <td><code>LinearRegression</code></td>
-      <td>118.549437</td>
-      <td>2s, 580ms</td>
-      <td>10μs</td>
-      <td>759ms</td>
-      <td>3μs</td>
-    </tr>
-    <tr>
-      <td>creme</td>
-      <td><code>PARegressor</code></td>
-      <td>143.477210</td>
-      <td>6s, 994ms</td>
-      <td>27μs</td>
-      <td>1s, 305ms</td>
-      <td>5μs</td>
-    </tr>
-    <tr>
-      <td>creme</td>
-      <td><code>KNeighborsRegressor</code></td>
-      <td>155.585250</td>
-      <td>394ms</td>
-      <td>1μs</td>
-      <td>37s, 4ms</td>
-      <td>146μs</td>
-    </tr>
-    <tr>
-      <td>scikit-learn</td>
-      <td><code>SGDRegressor</code></td>
-      <td>120.185848</td>
-      <td>36s, 433ms</td>
-      <td>144μs</td>
-      <td>14s, 766ms</td>
-      <td>58μs</td>
-    </tr>
-    <tr>
-      <td>scikit-learn</td>
-      <td><code>PassiveAggressiveRegressor</code></td>
-      <td>143.477210</td>
-      <td>35s, 551ms</td>
-      <td>141μs</td>
-      <td>14s, 599ms</td>
-      <td>57μs</td>
-    </tr>
-    <tr>
-      <td>PyTorch (CPU)</td>
-      <td><code>Linear</code></td>
-      <td>142.495995</td>
-      <td>47s, 335ms</td>
-      <td>187μs</td>
-      <td>14s, 822ms</td>
-      <td>58μs</td>
-    </tr>
-    <tr>
-      <td>Keras on Tensorflow (CPU)</td>
-      <td><code>Dense</td>
-      <td>142.494512</td>
-      <td>1m, 18s, 296ms</td>
-      <td>310μs</td>
-      <td>49s, 225ms</td>
-      <td>195μs</td>
-    </tr>
-    <tr>
-      <td>scikit-garden</td>
-      <td><code>MondrianTreeRegressor</code></td>
-      <td>201.687033</td>
-      <td>35s, 983ms</td>
-      <td>142μs</td>
-      <td>23s, 502ms</td>
-      <td>93μs</td>
-    </tr>
-    <tr>
-      <td>scikit-garden</td>
-      <td><code>MondrianForestRegressor</code></td>
-      <td>142.364156</td>
-      <td>5m, 58s, 226ms</td>
-      <td>1ms, 420μs</td>
-      <td>2m, 40s, 728ms</td>
-      <td>637μs</td>
-    </tr>
-  </tbody>
-</table>
 
 ## Contributing
 

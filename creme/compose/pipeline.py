@@ -212,7 +212,7 @@ class Pipeline(collections.OrderedDict):
     def __repr__(self):
         return (
             'Pipeline (\n    ' +
-            '    '.join(' |\n'.join(map(repr, self.values())).splitlines(True)) +
+            '    '.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
             '\n)'
         )
 

@@ -7,6 +7,7 @@ from .math import norm
 from .math import prod
 from .math import sigmoid
 from .math import softmax
+from .pretty import pretty_format_class
 from .sdft import SDFT
 from .skyline import Skyline
 from .window import Window
@@ -20,6 +21,7 @@ __all__ = [
     'dot',
     'Histogram',
     'norm',
+    'pretty_format_class',
     'prod',
     'SDFT',
     'sigmoid',

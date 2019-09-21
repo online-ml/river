@@ -18,6 +18,8 @@ __all__ = [
 
 def softmax(y_pred):
     """Normalizes a dictionary of predicted probabilities, in-place."""
+    if not y_pred:
+        return {}
     log_sum_exp = math.log(sum(math.exp(p) for p in y_pred.values()))
     return {c: math.exp(p - log_sum_exp) for c, p in y_pred.items()}
 

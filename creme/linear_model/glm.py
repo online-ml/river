@@ -149,18 +149,19 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
+            >>> from creme import optim
             >>> from creme import preprocessing
 
             >>> X_y = datasets.fetch_electricity()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression()
+            ...     linear_model.LogisticRegression(optimizer=optim.SGD(0.1))
             ... )
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.online_score(X_y, model, metric)
-            LogLoss: 0.320065
+            LogLoss: 0.293782
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -170,7 +171,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     def __init__(self, optimizer=None, loss=None, l2=0.0001, intercept=0., intercept_lr=0.01):
         super().__init__(
-            optimizer=optim.SGD(0.05) if optimizer is None else optimizer,
+            optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
