@@ -97,7 +97,7 @@ def check_fit_one(model):
 
     klass = model.__class__
 
-    for x, y in make_random_X_y(model, n_observations=20, n_features=4):
+    for x, y in make_random_X_y(model, n_observations=300, n_features=8):
 
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
@@ -113,7 +113,7 @@ def check_fit_one(model):
 
 def check_predict_proba_one(model):
 
-    for x, y in make_random_X_y(model, n_observations=20, n_features=4):
+    for x, y in make_random_X_y(model, n_observations=300, n_features=8):
 
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
@@ -228,7 +228,7 @@ def check_better_than_dummy_regression(regressor):
 
 def check_predict_proba_one_binary(classifier):
 
-    for x, y in make_random_X_y(classifier, n_observations=20, n_features=4):
+    for x, y in make_random_X_y(classifier, n_observations=300, n_features=8):
         y_pred = classifier.predict_proba_one(x)
         classifier = classifier.fit_one(x, y)
         assert len(y_pred) == 2
