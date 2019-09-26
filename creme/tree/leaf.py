@@ -125,8 +125,6 @@ class Leaf:
         best_l_dist = None
         best_r_dist = None
 
-        current_impurity = self.tree.criterion(dist=self.target_dist)
-
         # For each feature
         for ss in self.split_enums.values():
 
@@ -141,11 +139,15 @@ class Leaf:
                     continue
 
                 # Compute the gain brought by the split
-                l_impurity = self.tree.criterion(dist=l_dist)
-                r_impurity = self.tree.criterion(dist=r_dist)
-                impurity = l_dist.n_samples * l_impurity + r_dist.n_samples * r_impurity
+                left_impurity = self.tree.criterion(dist=l_dist)
+                right_impurity = self.tree.criterion(dist=r_dist)
+                impurity = l_dist.n_samples * left_impurity + r_dist.n_samples * right_impurity
                 impurity /= l_dist.n_samples + r_dist.n_samples
                 gain = current_impurity - impurity
+
+                # Ignore the split if the gain in impurity is too low
+                if gain < self.tree.min_split_gain:
+                    continue
 
                 # Check if the gain brought by the candidate split is better than the current best
                 if gain > best_gain:

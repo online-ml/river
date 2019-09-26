@@ -15,7 +15,7 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
 
             >>> from creme import proba
 
-            >>> p = proba.Multinomial({'green': 3})
+            >>> p = proba.Multinomial(['green'] * 3)
             >>> p = p.update('red')
 
             >>> p.pmf('red')
@@ -26,12 +26,9 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
 
     """
 
-    def __init__(self, initial_counts=None):
-        self._n = 0
-        if initial_counts is not None:
-            for label, count in initial_counts.items():
-                self[label] += count
-                self._n += count
+    def __init__(self, events=None):
+        super().update(events)
+        self._n = sum(self.values())
 
     @property
     def n_samples(self):
