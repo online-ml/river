@@ -11,7 +11,7 @@ from . import criteria
 from . import leaf
 
 
-CRITERIA_CLF = {'gini': criteria.gini, 'entropy': criteria.entropy}
+CRITERIA_CLF = {'gini': criteria.gini_impurity, 'entropy': criteria.entropy}
 
 
 class DecisionTreeClassifier(base.MultiClassifier):
@@ -22,6 +22,7 @@ class DecisionTreeClassifier(base.MultiClassifier):
         to use Gini impurity and ``'entropy'`` for information gain.
         patience (int): Time to wait between split attempts.
         max_depth (int): Maximum tree depth.
+        min_split_gain (float): Minimum impurity gain required to make a split eligible.
         min_child_samples (int): Minimum number of data needed in a leaf.
         confidence (float): Threshold used to compare with the Hoeffding bound.
         tie_threshold (float): Threshold to handle ties between equally performing attributes.
@@ -56,11 +57,12 @@ class DecisionTreeClassifier(base.MultiClassifier):
 
     """
 
-    def __init__(self, criterion='gini', patience=10, max_depth=5, min_child_samples=20,
-                 confidence=1e-5, tie_threshold=5e-2):
+    def __init__(self, criterion='gini', patience=10, max_depth=5, min_split_gain=0.,
+                 min_child_samples=20, confidence=1e-5, tie_threshold=5e-2):
         self.criterion = CRITERIA_CLF[criterion]
         self.patience = patience
         self.max_depth = max_depth
+        self.min_split_gain = min_split_gain
         self.min_child_samples = min_child_samples
 
         self.confidence = confidence

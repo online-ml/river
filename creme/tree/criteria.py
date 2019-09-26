@@ -21,10 +21,7 @@ def entropy(dist):
         ...     'snowy', 'snomy', 'snowy', 'snomy', 'snowy'
         ... ]
 
-        >>> dist = proba.Multinomial()
-
-        >>> for e in events:
-        ...     dist = dist.update(e)
+        >>> dist = proba.Multinomial(events)
 
         >>> entropy(dist)
         1.970950...
@@ -37,18 +34,11 @@ def entropy(dist):
         2. `Calculating entropy <https://www.johndcook.com/blog/2013/08/17/calculating-entropy/>`_
 
     """
-
-    entro = 0.
-
-    for c in dist:
-        p = dist.pmf(c)
-        if p:
-            entro -= p * math.log2(p)
-
-    return entro
+    # TODO: use the walrus operator
+    return -sum(dist.pmf(c) * math.log2(dist.pmf(c)) for c in dist if dist.pmf(c) > 0)
 
 
-def gini(dist):
+def gini_impurity(dist):
     """Returns the Gini impurity of a counter.
 
     If used by a decision tree learning algorithm, the goal is to minimize the Gini impurity inside
@@ -68,16 +58,14 @@ def gini(dist):
         ...     'snowy', 'snomy', 'snowy', 'snomy', 'snowy'
         ... ]
 
-        >>> dist = proba.Multinomial()
+        >>> dist = proba.Multinomial(events)
 
-        >>> for e in events:
-        ...     dist = dist.update(e)
-
-        >>> gini(dist)
+        >>> gini_impurity(dist)
         0.74
 
     References:
         1. `A Simple Explanation of Gini Impurity <https://victorzhou.com/blog/gini-impurity/>`_
 
     """
+    # TODO: use the walrus operator
     return sum(dist.pmf(c) * (1 - dist.pmf(c)) for c in dist)
