@@ -56,7 +56,7 @@ class DecisionTreeClassifier(base.MultiClassifier):
 
     """
 
-    def __init__(self, criterion='entropy', patience=10, max_depth=5, min_child_samples=20,
+    def __init__(self, criterion='gini', patience=10, max_depth=5, min_child_samples=20,
                  confidence=1e-5, tie_threshold=5e-2):
         self.criterion = CRITERIA_CLF[criterion]
         self.patience = patience
@@ -84,10 +84,11 @@ class DecisionTreeClassifier(base.MultiClassifier):
 
         def add_node(node, path):
 
-            # Draw the current node
             if isinstance(node, leaf.Leaf):
-                dot.node(path, str(node.target_dist))
+                # Draw a leaf
+                dot.node(path, str(node.target_dist), shape='box')
             else:
+                # Draw a branch
                 dot.node(path, str(node.split))
                 add_node(node.left, f'{path}0')
                 add_node(node.right, f'{path}1')

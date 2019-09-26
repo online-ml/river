@@ -29,7 +29,7 @@ class Bin:
     def __eq__(self, other):
         return self.left == other.left and self.right == other.right
 
-    def __str__(self):
+    def __repr__(self):
         return f'[{self.left:.5f}, {self.right:.5f}]: {self.count}'
 
 
@@ -177,5 +177,5 @@ class Histogram(collections.UserList):
 
         return c / self.n
 
-    def __str__(self):
+    def __repr__(self):
         return '\n'.join(str(b) for b in self)
