@@ -26,9 +26,12 @@ class DecisionTreeClassifier(base.MultiClassifier):
         min_child_samples (int): Minimum number of data needed in a leaf.
         confidence (float): Threshold used to compare with the Hoeffding bound.
         tie_threshold (float): Threshold to handle ties between equally performing attributes.
+        n_split_points (int): Number of split points considered for splitting numerical variables.
+        max_bins (int): Number of histogram bins used for approximating the distribution of
+            numerical variables.
 
     Attributes:
-        root
+        root (Leaf)
 
     Example:
 
@@ -42,14 +45,15 @@ class DecisionTreeClassifier(base.MultiClassifier):
             >>> X_y = datasets.fetch_electricity()
 
             >>> model = tree.DecisionTreeClassifier(
-            ...     patience=200,
+            ...     patience=2000,
+            ...     confidence=1e-5,
             ...     criterion='gini'
             ... )
 
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.online_score(X_y, model, metric)
-            LogLoss: 0.541821
+            LogLoss: 0.55375
 
     References:
         1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
@@ -57,16 +61,19 @@ class DecisionTreeClassifier(base.MultiClassifier):
 
     """
 
-    def __init__(self, criterion='gini', patience=10, max_depth=5, min_split_gain=0.,
-                 min_child_samples=20, confidence=1e-5, tie_threshold=5e-2):
+    def __init__(self, criterion='gini', patience=250, max_depth=5, min_split_gain=0.,
+                 min_child_samples=20, confidence=1e-10, tie_threshold=5e-2, n_split_points=30,
+                 max_bins=60):
         self.criterion = CRITERIA_CLF[criterion]
         self.patience = patience
         self.max_depth = max_depth
         self.min_split_gain = min_split_gain
         self.min_child_samples = min_child_samples
-
         self.confidence = confidence
         self.tie_threshold = tie_threshold
+        self.n_split_points = n_split_points
+        self.max_bins = max_bins
+
         self.root = leaf.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
 
     def fit_one(self, x, y):

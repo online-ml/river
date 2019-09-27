@@ -2,18 +2,14 @@ import math
 
 
 def entropy(dist):
-    """Returns the entropy of a counter.
-
-    If used by a decision tree learning algorithm, the goal is to minimize the entropy inside each
-    leaf.
+    """Returns the entropy of a multinomial distribution.
 
     Parameters:
-        counts (dict)
+        dist (proba.Multinomial)
 
     Example:
 
         >>> from creme import proba
-        >>> from scipy import stats
 
         >>> events = [
         ...     'sunny', 'sunny',
@@ -26,9 +22,6 @@ def entropy(dist):
         >>> entropy(dist)
         1.970950...
 
-        >>> stats.entropy([dist.pmf(c) for c in dist], base=2)
-        1.970950...
-
     References:
         1. `A Simple Explanation of Information Gain and Entropy <https://victorzhou.com/blog/information-gain/>`_
         2. `Calculating entropy <https://www.johndcook.com/blog/2013/08/17/calculating-entropy/>`_
@@ -39,10 +32,7 @@ def entropy(dist):
 
 
 def gini_impurity(dist):
-    """Returns the Gini impurity of a counter.
-
-    If used by a decision tree learning algorithm, the goal is to minimize the Gini impurity inside
-    each leaf.
+    """Returns the Gini impurity of a multinomial distribution.
 
     Parameters:
         dist (proba.Multinomial)
@@ -50,7 +40,6 @@ def gini_impurity(dist):
     Example:
 
         >>> from creme import proba
-        >>> from scipy import stats
 
         >>> events = [
         ...     'sunny', 'sunny',

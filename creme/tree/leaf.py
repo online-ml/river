@@ -33,8 +33,6 @@ class Branch:
 
 class Leaf:
 
-    __slots__ = 'depth', 'tree', 'target_dist', 'n_samples', 'split_enums'
-
     def __init__(self, depth, tree, target_dist):
         self.depth = depth
         self.tree = tree
@@ -86,7 +84,11 @@ class Leaf:
                 ss = self.split_enums[i]
             except KeyError:
                 ss = self.split_enums[i] = (
-                    splitting.HistSplitEnum(feature_name=i, n_bins=30, n_splits=30)
+                    splitting.HistSplitEnum(
+                        feature_name=i,
+                        n_bins=self.tree.max_bins,
+                        n_splits=self.tree.n_split_points
+                    )
                     if isinstance(xi, numbers.Number) else
                     splitting.CategoricalSplitEnum(feature_name=i)
                 )

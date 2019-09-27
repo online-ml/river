@@ -37,7 +37,6 @@
 - [Change history](CHANGELOG.md)
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
 - [Toulouse Data Science presentation](https://maxhalford.github.io/slides/creme-tds/)
-- [Blog post from pyimagesearch for image classification](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
 
 ## Installation
 
@@ -55,7 +54,7 @@ As for dependencies, `creme` mostly relies on Python's standard library. Sometim
 
 ## Quick example
 
-In the following example, a logistic regression is trained online. For every observation in the dataset, the `predict_one` method is used to obtain the output predicted by the model. The `Accuracy` metric can then be updated online by providing it with the true output and the predicted output. Finally, the model can be updated by calling `fit_one`.
+In the following example, a logistic regression is fitted online on the [electricity dataset](https://creme-ml.github.io/generated/creme.datasets.fetch_electricity.html#creme.datasets.fetch_electricity). For each observation in the dataset, the `predict_one` method is used to obtain the output predicted by the model. The `Accuracy` metric can then be updated online by providing it with the true output and the predicted output. Finally, the model can be updated by calling `fit_one`.
 
 ```python
 >>> from creme import datasets
