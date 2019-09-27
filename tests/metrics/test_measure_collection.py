@@ -28,7 +28,7 @@ def test_classification_measurements():
     expected_kappa = (expected_acc - 0.82) / (1 - 0.82)
     assert np.isclose(expected_kappa, measurements.get_kappa())
 
-    expected_kappa_m = (expected_acc - .1) / (1 - 0.1)
+    expected_kappa_m = (expected_acc - .9) / (1 - 0.9)
     assert np.isclose(expected_kappa_m, measurements.get_kappa_m())
 
     expected_kappa_t = (expected_acc - .97) / (1 - 0.97)
@@ -47,14 +47,14 @@ def test_classification_measurements():
     assert np.isclose(expected_g_mean, measurements.get_g_mean())
 
     expected_info = 'ClassificationMeasurements: - sample_count: 100 - accuracy: 0.900000 - kappa: 0.444444 ' \
-                    '- kappa_t: -2.333333 - kappa_m: 0.888889 - f1-score: 0.944444 - precision: 0.944444 ' \
-                    '- recall: 0.944444 - g-mean: 0.687184 - majority_class: 0'
+                    '- kappa_t: -2.333333 - kappa_m: 0.000000 - f1-score: 0.944444 - precision: 0.944444 ' \
+                    '- recall: 0.944444 - g-mean: 0.687184 - majority_class: 1'
     assert expected_info == measurements.get_info()
 
     expected_last = (1.0, 0.0)
     assert expected_last == measurements.get_last()
 
-    expected_majority_class = 0
+    expected_majority_class = 1
     assert expected_majority_class == measurements.get_majority_class()
 
     measurements.reset()
@@ -78,7 +78,7 @@ def test_window_classification_measurements():
     expected_kappa = 0.0
     assert np.isclose(expected_kappa, measurements.get_kappa())
 
-    expected_kappa_m = -1.0
+    expected_kappa_m = 0.3333333333333333
     assert np.isclose(expected_kappa_m, measurements.get_kappa_m())
 
     expected_kappa_t = -4.0
@@ -98,7 +98,7 @@ def test_window_classification_measurements():
 
     expected_info = 'WindowClassificationMeasurements: - sample_count: 20 - window_size: 20 ' \
                     '- accuracy: 0.500000 - kappa: 0.000000 - kappa_t: -4.000000 ' \
-                    '- kappa_m: -1.000000 - f1-score: 0.500000 - precision: 0.500000 ' \
+                    '- kappa_m: 0.333333 - f1-score: 0.500000 - precision: 0.500000 ' \
                     '- recall: 0.500000 - g-mean: 0.500000 - majority_class: 0'
     assert expected_info == measurements.get_info()
 
