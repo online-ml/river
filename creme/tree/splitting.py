@@ -68,7 +68,7 @@ class SplitEnum(abc.ABC):
         """Yields candidate split points and associated operators."""
 
 
-class HistSplitEnum(SplitEnum, collections.defaultdict):
+class HistSplitEnum(SplitEnum):
 
     def __init__(self, feature_name, n_bins, n_splits):
         super().__init__(feature_name)
