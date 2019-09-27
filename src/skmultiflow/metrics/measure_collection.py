@@ -40,8 +40,10 @@ class ClassificationMeasurements(object):
         super().__init__()
         if targets is not None:
             self.n_targets = len(targets)
+            self.targets = targets
         else:
             self.n_targets = 2
+            self.targets = [0, 1]
         self.confusion_matrix = ConfusionMatrix(self.n_targets, dtype)
         self.last_true_label = None
         self.last_prediction = None
@@ -49,7 +51,6 @@ class ClassificationMeasurements(object):
         self.sample_count = 0
         self.majority_classifier = 0
         self.correct_no_change = 0
-        self.targets = targets
 
     def reset(self):
         if self.targets is not None:
@@ -108,7 +109,7 @@ class ClassificationMeasurements(object):
         """
         if (self.n_targets is None) or (self.n_targets == 0):
             return False
-        majority_class = 0
+        majority_idx = 0
         max_prob = 0.0
         for i in range(self.n_targets):
             sum_value = 0.0
@@ -117,9 +118,8 @@ class ClassificationMeasurements(object):
             sum_value = sum_value / self.sample_count
             if sum_value > max_prob:
                 max_prob = sum_value
-                majority_class = i
-
-        return majority_class
+                majority_idx = i
+        return self.targets[majority_idx]
 
     def get_accuracy(self):
         """ Computes the accuracy.
@@ -165,13 +165,16 @@ class ClassificationMeasurements(object):
             self.targets = []
             self.targets.append(target)
             self.n_targets = len(self.targets)
-            self.confusion_matrix.reshape(len(self.targets), len(self.targets))
+            if self.n_targets > 2:
+                # The default matrix is for the binary case, extend it if necessary
+                self.confusion_matrix.reshape(self.n_targets, self.n_targets)
         elif (self.targets is None) and (not add_label):
             return None
         if (target not in self.targets) and add_label:
             self.targets.append(target)
             self.n_targets = len(self.targets)
-            self.confusion_matrix.reshape(len(self.targets), len(self.targets))
+            if self.confusion_matrix.shape()[0] < self.n_targets:
+                self.confusion_matrix.reshape(self.n_targets, self.n_targets)
         for i in range(len(self.targets)):
             if self.targets[i] == target:
                 return i
@@ -247,14 +250,17 @@ class ClassificationMeasurements(object):
             The G-mean
         """
         negative_idx = self._get_target_index(0)
-        tn = self.confusion_matrix.value_at(negative_idx, negative_idx)
-        fp = self.confusion_matrix.value_at(negative_idx, 1-negative_idx)
-        if tn + fp == 0:
-            specificity = 0
+        if negative_idx is None:
+            return 0.0
         else:
-            specificity = tn / (tn + fp)
-        sensitivity = self.get_recall()
-        return np.sqrt((sensitivity * specificity))
+            tn = self.confusion_matrix.value_at(negative_idx, negative_idx)
+            fp = self.confusion_matrix.value_at(negative_idx, 1-negative_idx)
+            if tn + fp == 0:
+                specificity = 0
+            else:
+                specificity = tn / (tn + fp)
+            sensitivity = self.get_recall()
+            return np.sqrt((sensitivity * specificity))
 
     def get_f1_score(self):
         """ Compute the F1-score of the classifier. Binary-classification only.
@@ -281,12 +287,15 @@ class ClassificationMeasurements(object):
             The precision
         """
         positive_idx = self._get_target_index(1)
-        tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
-        fp = self.confusion_matrix.value_at(1-positive_idx, positive_idx)
-        if tp + fp == 0:
+        if positive_idx is None:
             return 0.0
         else:
-            return tp / (tp + fp)
+            tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
+            fp = self.confusion_matrix.value_at(1-positive_idx, positive_idx)
+            if tp + fp == 0:
+                return 0.0
+            else:
+                return tp / (tp + fp)
 
     def get_recall(self):
         """ Compute the recall of the classifier. Binary-classification only.
@@ -297,12 +306,15 @@ class ClassificationMeasurements(object):
             The recall.
         """
         positive_idx = self._get_target_index(1)
-        tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
-        fn = self.confusion_matrix.value_at(positive_idx, 1-positive_idx)
-        if tp + fn == 0:
+        if positive_idx is None:
             return 0.0
         else:
-            return tp / (tp + fn)
+            tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
+            fn = self.confusion_matrix.value_at(positive_idx, 1-positive_idx)
+            if tp + fn == 0:
+                return 0.0
+            else:
+                return tp / (tp + fn)
 
     @property
     def _matrix(self):
@@ -360,12 +372,13 @@ class WindowClassificationMeasurements(object):
         super().__init__()
         if targets is not None:
             self.n_targets = len(targets)
+            self.targets = targets
         else:
             self.n_targets = 2
+            self.targets = [0, 1]
         self.confusion_matrix = ConfusionMatrix(self.n_targets, dtype)
         self.last_class = None
 
-        self.targets = targets
         self.window_size = window_size
         self.true_labels = FastBuffer(window_size)
         self.predictions = FastBuffer(window_size)
@@ -429,7 +442,8 @@ class WindowClassificationMeasurements(object):
             self.majority_classifier += self.majority_classifier_correction.peek()
 
         # Verify if it's needed to decrease the majority_classifier count
-        if (self.get_majority_class() == y_true) and (self.get_majority_class() is not None):
+        majority_class = self.get_majority_class()
+        if (majority_class == y_true) and (majority_class is not None):
             self.majority_classifier += weight
             self.majority_classifier_correction.add_element([-1])
         else:
@@ -461,7 +475,7 @@ class WindowClassificationMeasurements(object):
         """
         if (self.n_targets is None) or (self.n_targets == 0):
             return None
-        majority_class = 0
+        majority_idx = 0
         max_prob = 0.0
         for i in range(self.n_targets):
             sum_value = 0.0
@@ -470,9 +484,8 @@ class WindowClassificationMeasurements(object):
             sum_value = sum_value / self.true_labels.get_current_size()
             if sum_value > max_prob:
                 max_prob = sum_value
-                majority_class = i
-
-        return majority_class
+                majority_idx = i
+        return self.targets[majority_idx]
 
     def get_accuracy(self):
         """ Computes the window/current accuracy.
@@ -518,13 +531,16 @@ class WindowClassificationMeasurements(object):
             self.targets = []
             self.targets.append(target)
             self.n_targets = len(self.targets)
-            self.confusion_matrix.reshape(len(self.targets), len(self.targets))
+            if self.n_targets > 2:
+                # The default matrix is for the binary case, extend it if necessary
+                self.confusion_matrix.reshape(self.n_targets, self.n_targets)
         elif (self.targets is None) and (not add):
             return None
         if target not in self.targets and add:
             self.targets.append(target)
             self.n_targets = len(self.targets)
-            self.confusion_matrix.reshape(len(self.targets), len(self.targets))
+            if self.confusion_matrix.shape()[0] < self.n_targets:
+                self.confusion_matrix.reshape(self.n_targets, self.n_targets)
         for i in range(len(self.targets)):
             if self.targets[i] == target:
                 return i
@@ -601,14 +617,17 @@ class WindowClassificationMeasurements(object):
             The G-mean
         """
         negative_idx = self._get_target_index(0)
-        tn = self.confusion_matrix.value_at(negative_idx, negative_idx)
-        fp = self.confusion_matrix.value_at(negative_idx, 1 - negative_idx)
-        if tn + fp == 0:
-            specificity = 0
+        if negative_idx is None:
+            return 0.0
         else:
-            specificity = tn / (tn + fp)
-        sensitivity = self.get_recall()
-        return np.sqrt((sensitivity * specificity))
+            tn = self.confusion_matrix.value_at(negative_idx, negative_idx)
+            fp = self.confusion_matrix.value_at(negative_idx, 1 - negative_idx)
+            if tn + fp == 0:
+                specificity = 0
+            else:
+                specificity = tn / (tn + fp)
+            sensitivity = self.get_recall()
+            return np.sqrt((sensitivity * specificity))
 
     def get_f1_score(self):
         """ Compute the F1-score of the classifier. Binary-classification only.
@@ -635,12 +654,15 @@ class WindowClassificationMeasurements(object):
             The precision
         """
         positive_idx = self._get_target_index(1)
-        tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
-        fp = self.confusion_matrix.value_at(1 - positive_idx, positive_idx)
-        if tp + fp == 0:
+        if positive_idx is None:
             return 0.0
         else:
-            return tp / (tp + fp)
+            tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
+            fp = self.confusion_matrix.value_at(1 - positive_idx, positive_idx)
+            if tp + fp == 0:
+                return 0.0
+            else:
+                return tp / (tp + fp)
 
     def get_recall(self):
         """ Compute the recall of the classifier. Binary-classification only.
@@ -651,12 +673,15 @@ class WindowClassificationMeasurements(object):
             The recall.
         """
         positive_idx = self._get_target_index(1)
-        tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
-        fn = self.confusion_matrix.value_at(positive_idx, 1 - positive_idx)
-        if tp + fn == 0:
+        if positive_idx is None:
             return 0.0
         else:
-            return tp / (tp + fn)
+            tp = self.confusion_matrix.value_at(positive_idx, positive_idx)
+            fn = self.confusion_matrix.value_at(positive_idx, 1 - positive_idx)
+            if tp + fn == 0:
+                return 0.0
+            else:
+                return tp / (tp + fn)
 
     @property
     def _matrix(self):
