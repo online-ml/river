@@ -25,8 +25,8 @@ class MIXEDGenerator(Stream):
     Parameters
     ----------
     classification_function: int (default: 0)
-        Which of the four classification functions to use for the generation.
-        The value can vary from 0 to 1.
+        Which of the two classification functions to use for the generation.
+        Valid options are 0 or 1.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -107,7 +107,7 @@ class MIXEDGenerator(Stream):
         Returns
         -------
         int
-            index of the classification function [0,1,2]
+            index of the classification function [0,1]
         """
         return self._classification_function_idx
 
@@ -286,10 +286,7 @@ class MIXEDGenerator(Stream):
 
     def generate_drift(self):
         """
-        Generate drift by switching the classification function randomly.
+        Generate drift by switching the classification function.
 
         """
-        new_function = self._random_state.randint(3)
-        while new_function == self.classification_function:
-            new_function = self._random_state.randint(3)
-        self.classification_function = new_function
+        self.classification_function = 1 - self.classification_function
