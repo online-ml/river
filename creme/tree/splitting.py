@@ -3,6 +3,7 @@ import collections
 import functools
 import operator
 
+from .. import base
 from .. import proba
 from .. import utils
 
@@ -68,34 +69,35 @@ class SplitEnum(abc.ABC):
         """Yields candidate split points and associated operators."""
 
 
-class HistSplitEnum(SplitEnum):
+class ClfNumSplitEnum(SplitEnum):
+    """Split enumerator for classification and numerical attributes."""
 
     def __init__(self, feature_name, n_bins, n_splits):
         super().__init__(feature_name)
         self.P_xy = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
         self.n_splits = n_splits
 
-    def update(self, x, y):
+    def update(self, x: float, y: 'base.Label'):
         self.P_xy[y].update(x)
         return self
 
-    def enumerate_splits(self, target_dist):
+    def enumerate_splits(self, target_dist: 'proba.Multinomial'):
 
-        a = min(h[0].right for h in self.P_xy.values())
-        b = min(h[-1].right for h in self.P_xy.values())
+        low = min(h[0].right for h in self.P_xy.values())
+        high = min(h[-1].right for h in self.P_xy.values())
 
         # If only one single value has been observed, then no split can be proposed
-        if a >= b:
+        if low >= high:
             return
             yield
 
-        for x in decimal_range(start=a, stop=b, num=self.n_splits):
+        for t in decimal_range(start=low, stop=high, num=self.n_splits):
 
             l_dist = {}
             r_dist = {}
 
             for y in target_dist:
-                p_xy = self.P_xy[y].cdf(x) if y in self.P_xy else 0.  # P(x < t | y)
+                p_xy = self.P_xy[y].cdf(x=t) if y in self.P_xy else 0.  # P(x < t | y)
                 p_y = target_dist.pmf(y)  # P(y)
                 l_dist[y] = target_dist.n_samples * p_xy * p_y  # P(y | x < t)
                 r_dist[y] = target_dist.n_samples * (1 - p_xy) * p_y  # P(y | x >= t)
@@ -103,4 +105,25 @@ class HistSplitEnum(SplitEnum):
             l_dist = proba.Multinomial(l_dist)
             r_dist = proba.Multinomial(r_dist)
 
-            yield Split(on=self.feature_name, how=LT, at=x), l_dist, r_dist
+            yield Split(on=self.feature_name, how=LT, at=t), l_dist, r_dist
+
+
+class ClfCatSplitEnum(SplitEnum):
+    """Split enumerator for classification and categorical attributes."""
+
+    def __init__(self, feature_name):
+        super().__init__(feature_name)
+        self.P_xy = collections.defaultdict(proba.Multinomial)
+
+    def update(self, x: str, y: 'base.Label'):
+        self.P_xy[y].update(x)
+        return self
+
+    def enumerate_splits(self, target_dist: 'proba.Multinomial'):
+
+        for cat in set(*(p_x.keys() for p_x in self.P_xy.values())):
+
+            l_dist = {}
+            r_dist = {}
+
+

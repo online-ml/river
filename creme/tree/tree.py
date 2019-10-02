@@ -1,3 +1,5 @@
+import abc
+import numbers
 try:
     import graphviz
     GRAPHVIZ_INSTALLED = True
@@ -9,12 +11,81 @@ from .. import proba
 
 from . import criteria
 from . import leaf
+from . import splitting
 
 
 CRITERIA_CLF = {'gini': criteria.gini_impurity, 'entropy': criteria.entropy}
 
 
-class DecisionTreeClassifier(base.MultiClassifier):
+class BaseDecisionTree(abc.ABC):
+
+    def __init__(self, criterion='gini', patience=250, max_depth=5, min_split_gain=0.,
+                 min_child_samples=20, confidence=1e-10, tie_threshold=5e-2, n_split_points=30,
+                 max_bins=60):
+        self.criterion = CRITERIA_CLF[criterion]
+        self.patience = patience
+        self.max_depth = max_depth
+        self.min_split_gain = min_split_gain
+        self.min_child_samples = min_child_samples
+        self.confidence = confidence
+        self.tie_threshold = tie_threshold
+        self.n_split_points = n_split_points
+        self.max_bins = max_bins
+
+        self.root = leaf.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
+
+    def fit_one(self, x, y):
+        self.root = self.root.update(x, y)
+        return self
+
+    @abc.abstractmethod
+    def _get_split_enum(self, typ):
+        """Returns the appropriate split enumerator for a given type."""
+
+    def draw(self):
+        """Returns a GraphViz representation of the decision tree."""
+
+        if not GRAPHVIZ_INSTALLED:
+            raise RuntimeError('graphviz is not installed')
+
+        dot = graphviz.Digraph()
+
+        def add_node(node, path):
+
+            if isinstance(node, leaf.Leaf):
+                # Draw a leaf
+                dot.node(path, str(node.target_dist), shape='box')
+            else:
+                # Draw a branch
+                dot.node(path, str(node.split))
+                add_node(node.left, f'{path}0')
+                add_node(node.right, f'{path}1')
+
+            # Draw the link with the previous node
+            is_root = len(path) == 1
+            if not is_root:
+                dot.edge(path[:-1], path)
+
+        add_node(node=self.root, path='0')
+
+        return dot
+
+    def debug_one(self, x):
+        """Prints an explanation of how ``x`` is predicted."""
+        node = self.root
+
+        while isinstance(node, leaf.Branch):
+            if node.split.test(x):
+                print('not', node.split)
+                node = node.left
+            else:
+                print(node.split)
+                node = node.right
+
+        print(node.class_counts)
+
+
+class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
     """Decision tree classifier.
 
     Parameters:
@@ -61,66 +132,15 @@ class DecisionTreeClassifier(base.MultiClassifier):
 
     """
 
-    def __init__(self, criterion='gini', patience=250, max_depth=5, min_split_gain=0.,
-                 min_child_samples=20, confidence=1e-10, tie_threshold=5e-2, n_split_points=30,
-                 max_bins=60):
-        self.criterion = CRITERIA_CLF[criterion]
-        self.patience = patience
-        self.max_depth = max_depth
-        self.min_split_gain = min_split_gain
-        self.min_child_samples = min_child_samples
-        self.confidence = confidence
-        self.tie_threshold = tie_threshold
-        self.n_split_points = n_split_points
-        self.max_bins = max_bins
+    def _get_split_enum(self, name, value):
+        if isinstance(value, numbers.Number):
+            return splitting.ClfNumSplitEnum(
+                feature_name=name,
+                n_bins=self.max_bins,
+                n_splits=self.n_split_points
+            )
 
-        self.root = leaf.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
-
-    def fit_one(self, x, y):
-        self.root = self.root.update(x, y)
-        return self
+        raise ValueError(f'Unhandled feature type: {type(value)} (name)')
 
     def predict_proba_one(self, x):
         return self.root.get_leaf(x).predict(x)
-
-    def draw(self):
-        """Returns a GraphViz representation of the decision tree."""
-
-        if not GRAPHVIZ_INSTALLED:
-            raise RuntimeError('graphviz is not installed')
-
-        dot = graphviz.Digraph()
-
-        def add_node(node, path):
-
-            if isinstance(node, leaf.Leaf):
-                # Draw a leaf
-                dot.node(path, str(node.target_dist), shape='box')
-            else:
-                # Draw a branch
-                dot.node(path, str(node.split))
-                add_node(node.left, f'{path}0')
-                add_node(node.right, f'{path}1')
-
-            # Draw the link with the previous node
-            is_root = len(path) == 1
-            if not is_root:
-                dot.edge(path[:-1], path)
-
-        add_node(node=self.root, path='0')
-
-        return dot
-
-    def debug_one(self, x):
-        """Prints an explanation of how ``x`` is predicted."""
-        node = self.root
-
-        while isinstance(node, leaf.Branch):
-            if node.split.test(x):
-                print('not', node.split)
-                node = node.left
-            else:
-                print(node.split)
-                node = node.right
-
-        print(node.class_counts)

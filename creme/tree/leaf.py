@@ -1,9 +1,6 @@
 import math
-import numbers
 
 from ..proba.base import ContinuousDistribution
-
-from . import splitting
 
 
 class Branch:
@@ -83,15 +80,7 @@ class Leaf:
             try:
                 ss = self.split_enums[i]
             except KeyError:
-                ss = self.split_enums[i] = (
-                    splitting.HistSplitEnum(
-                        feature_name=i,
-                        n_bins=self.tree.max_bins,
-                        n_splits=self.tree.n_split_points
-                    )
-                    if isinstance(xi, numbers.Number) else
-                    splitting.CategoricalSplitEnum(feature_name=i)
-                )
+                ss = self.split_enums[i] = self.tree._get_split_enum(name=i, value=xi)
             ss.update(x=xi, y=y)
 
         # Check if splitting is authorized or not
