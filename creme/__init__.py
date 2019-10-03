@@ -39,9 +39,3 @@ __all__ = [
     'tree',
     'utils'
 ]
-
-try:
-    import bokeh
-    __all__ += ['plot']
-except ImportError:
-    pass
