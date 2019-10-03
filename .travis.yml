@@ -38,7 +38,7 @@ jobs:
       - pip install cython
       - python setup.py install
       - pip install -e ".[dev]"
-      - pytest --nbval-lax docs/notebooks/*.ipynb
+      - pytest --nbval-lax --current-env docs/notebooks/*.ipynb
     script: cd docs && make html && cd ..
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"

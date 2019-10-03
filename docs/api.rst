@@ -24,7 +24,6 @@ API
    naive_bayes
    neighbors
    optim
-   plot
    preprocessing
    proba
    reco
