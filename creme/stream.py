@@ -17,11 +17,6 @@ try:
 except ImportError:
     PANDAS_INSTALLED = False
 from sklearn import utils
-try:
-    from vaex.utils import _ensure_strings_from_expressions, _ensure_list
-    VAEX_INSTALLED = True
-except ImportError:
-    VAEX_INSTALLED = False
 
 __all__ = [
     'iter_csv',
@@ -129,8 +124,7 @@ def iter_vaex(X, y=None, features=None, **kwargs):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
     """
 
-    if VAEX_INSTALLED is not True:
-        raise ValueError('Please install vaex befor using this convenience function.')
+    from vaex.utils import _ensure_strings_from_expressions, _ensure_list
 
     features = _ensure_strings_from_expressions(features)
     feature_names = features or X.get_column_names()
