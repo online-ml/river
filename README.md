@@ -46,13 +46,14 @@
 
     pip install creme
 
-You can also install the latest development version as so:
+You can also install the bleeding edge version as so:
 
     pip install git+https://github.com/creme-ml/creme
     # Or through SSH:
     pip install git+ssh://git@github.com/creme-ml/creme.git
 
-As for dependencies, `creme` mostly relies on Python's standard library. Sometimes it relies on `numpy`, `scipy`, and `scikit-learn` to avoid reinventing the wheel.
+If you're looking to contribute to ``creme`` and want to have a development setup, then please check out the [contribution guidelines](CONTRIBUTING.md).
+
 
 ## Quick example
 
@@ -84,7 +85,7 @@ Accuracy: 0.894664
 
 ## A more involved example
 
-In the following example we'll use a linear regression to forecast the number of available bikes in [bike stations](https://www.wikiwand.com/en/Bicycle-sharing_system) from the city of Toulouse :bike:.
+In the following example we'll use a linear regression to forecast the number of available bikes in [bike stations](https://www.wikiwand.com/en/Bicycle-sharing_system) from the city of Toulouse 🚲.
 
 We'll use the available numeric features, as well as calculate running averages of the target. Before being fed to the linear regression, the features will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead while delaying the true answers, which ensures that we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
 
@@ -177,7 +178,7 @@ We can also draw the pipeline.
 ```
 
 <div align="center">
-  <img src="https://github.com/creme-ml/creme/blob/master/docs/_static/bikes_pipeline.svg" alt="bikes_pipeline"/>
+  <img src="./docs/_static/bikes_pipeline.svg" alt="bikes_pipeline"/>
 </div>
 
 By only using a few lines of code, we've built a robust model and evaluated it by simulating a production scenario. You can find a more detailed version of this example [here](https://creme-ml.github.io/notebooks/bike-sharing-forecasting.html). `creme` is a framework that has a lot to offer, and as such we kindly refer you to the [documentation](https://creme-ml.github.io/) if you want to know more.

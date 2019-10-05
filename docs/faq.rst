@@ -1,5 +1,5 @@
-Frequently Asked Questions
-==========================
+FAQ
+===
 
 **Do all classifiers support multi-class classification?**
 
@@ -22,4 +22,4 @@ Each classifier that is part of ``creme`` is either a ``BinaryClassifier`` or a 
 
 **Why doesn't creme do any input validation?**
 
-Python encourages a coding style called `EAFP <https://docs.python.org/2/glossary.html?highlight=EAFP#term-eafp>`_, which stands for "Easier to Ask for Forgiveness than Permission". The idea is to assume that runtime errors don't occur, and instead use try/expects to catch errors. The great benefit is that we don't have to drown our code with `if` statements, which is symptomatic of the `LBYL style <https://docs.python.org/2/glossary.html?highlight=EAFP#term-lbyl>`_, which stands for "look before you leap". This makes our implementations much more readable than, say, scikit-learn, which does a lot of input validation. The catch is that users have to be careful to use sane inputs. As always, `there is no free lunch <https://www.wikiwand.com/en/No_free_lunch_theorem>`_!
+Python encourages a coding style called `EAFP <https://docs.python.org/2/glossary.html?highlight=EAFP#term-eafp>`_, which stands for "Easier to Ask for Forgiveness than Permission". The idea is to assume that runtime errors don't occur, and instead use try/expects to catch errors. The great benefit is that we don't have to drown our code with ``if`` statements, which is symptomatic of the `LBYL style <https://docs.python.org/2/glossary.html?highlight=EAFP#term-lbyl>`_, which stands for "look before you leap". This makes our implementations much more readable than, say, scikit-learn, which does a lot of input validation. The catch is that users have to be careful to use sane inputs. As always, `there is no free lunch <https://www.wikiwand.com/en/No_free_lunch_theorem>`_!

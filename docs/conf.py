@@ -218,7 +218,7 @@ import sphinx_material
 
 html_show_sourcelink = True
 html_sidebars = {
-    '**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']
+    '**': ['logo-text.html', 'globaltoc.html', 'localtoc.html', 'searchbox.html']
 }
 
  # Register the theme as an extension to generate a sitemap.xml
@@ -253,7 +253,7 @@ html_theme_options = {
     'repo_name': 'creme',
 
     # Visible levels of the global TOC; -1 means unlimited
-    'globaltoc_depth': 2,
+    'globaltoc_depth': 1,
     # If False, expand all TOC entries
     'globaltoc_collapse': True,
     # If True, show hidden TOC entries
