@@ -1,3 +1,4 @@
+"""Decision trees."""
 from .tree import DecisionTreeClassifier
 
 

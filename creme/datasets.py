@@ -1,3 +1,4 @@
+"""Toy datasets."""
 import ast
 import os
 import shutil

@@ -1,6 +1,4 @@
-"""
-Base classes used throughout the library.
-"""
+"""Base interfaces."""
 import abc
 import collections
 import inspect
@@ -12,6 +10,7 @@ from . import utils
 __all__ = [
     'BinaryClassifier',
     'Clusterer',
+    'Ensemble',
     'Estimator',
     'Wrapper',
     'MultiClassifier',
@@ -46,6 +45,7 @@ def _update_if_consistent(dict1, dict2):
 
 
 class Estimator:
+    """An estimator."""
 
     def __str__(self):
         return self.__class__.__name__
@@ -90,7 +90,7 @@ class Regressor(Estimator):
 
     @abc.abstractmethod
     def predict_one(self, x: dict) -> float:
-        """Predicts the target value of a set of features ``x``
+        """Predicts the target value of a set of features ``x``.
 
         Parameters:
             x (dict)
@@ -106,7 +106,7 @@ class Classifier(Estimator):
 
     @abc.abstractmethod
     def predict_proba_one(self, x: dict) -> Probas:
-        """Predicts the probability output of a set of features ``x``
+        """Predicts the probability output of a set of features ``x``.
 
         Parameters:
             x (dict)
@@ -117,7 +117,7 @@ class Classifier(Estimator):
         """
 
     def predict_one(self, x: dict) -> Label:
-        """Predicts the target value of a set of features ``x``
+        """Predicts the target value of a set of features ``x``.
 
         Parameters:
             x (dict)
@@ -189,7 +189,7 @@ class Transformer(Estimator):
 
     @abc.abstractmethod
     def transform_one(self, x: dict) -> dict:
-        """Transforms a set of features ``x``
+        """Transforms a set of features ``x``.
 
         Parameters:
             x (dict)
@@ -258,7 +258,7 @@ class Clusterer(Estimator):
 
     @abc.abstractmethod
     def predict_one(self, x: dict) -> int:
-        """Predicts the cluster number of a set of features ``x``
+        """Predicts the cluster number of a set of features ``x``.
 
         Parameters:
             x (dict)
@@ -342,6 +342,7 @@ class MultiOutputRegressor(MultiOutputEstimator):
 
 
 class Wrapper(abc.ABC):
+    """A wrapper model."""
 
     @abc.abstractproperty
     def _model(self):
@@ -356,4 +357,5 @@ class Wrapper(abc.ABC):
 
 
 class Ensemble(Estimator, collections.UserList):
+    """An ensemble model."""
     pass

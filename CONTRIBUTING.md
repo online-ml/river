@@ -4,18 +4,24 @@
 
 ### Installation
 
-Before starting you want to make sure you have Python 3.6 or above installed.
-
-You first want to fork the `dev` branch of the repository, which you can do from GitHub. Once you've done the fork, you can clone it to your work station. Once this is done navigate to the cloned directory and install the required dependencies:
+Before starting you want to make sure you have Python 3.6 or above installed. We recommend you create a [virtual environment](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/) with `conda`, as so:
 
 ```sh
-python setup.py develop
-pip install -e ".[dev]"
+conda create --name creme python=3.6 cython
 ```
 
-:point_up: We recommend that you use [Anaconda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
+You also will need GCC to compile Cython extensions:
 
-:point_up: We also recommend that you to use a [virtual environment](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/)
+```sh
+conda install -c anaconda gcc
+```
+
+Finally, you may fork the `dev` branch of the repository, which you can do from GitHub. Once you've done the fork, you can clone it to your work station. Once this is done navigate to the cloned directory and install the required dependencies:
+
+```sh
+pip install -e ".[dev]"
+python setup.py develop
+```
 
 ### Making changes
 
@@ -32,6 +38,18 @@ If you've added a new functionality, then you will have to write a docstring and
 - Use [Google style Python docstrings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google)
 
 
+## Building Cython extensions
+
+```sh
+python setup.py build_ext --inplace
+```
+
+
+## Testing
+
+Simply run `pytest` execute tests. Additionally, you can test the notebooks by running `pytest --nbval-lax --current-env docs/notebooks/*.ipynb`.
+
+
 ## Making a pull request
 
 Once you're happy with your changes, you can push them to your remote fork. By the way do not hesitate to make small commits rather than one big one, it makes things easier to review. You can create a pull request to `creme`'s `master` branch.
@@ -44,6 +62,6 @@ Once you're happy with your changes, you can push them to your remote fork. By t
 The documentation is built with [Sphinx](http://www.sphinx-doc.org/en/master/).
 
 ```sh
-cd /path/to/creme/docs/
-make html
+pip install -e ".[docs]"
+make doc
 ```

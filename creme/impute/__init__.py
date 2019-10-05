@@ -1,6 +1,4 @@
-"""
-Module for imputing values online.
-"""
+"""Imputation of missing values."""
 from .stat import StatImputer
 
 

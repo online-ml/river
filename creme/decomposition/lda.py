@@ -18,7 +18,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
     Latent Dirichlet allocation (LDA) is a probabilistic approach for exploring topics in document
     collections. The key advantage of this variant is that it assumes an infinite vocabulary,
     meaning that the set of tokens does not have to known in advance, as opposed to the
-    `implementation from sklearn <https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html>`.
+    `implementation from sklearn <https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html>`_.
     The results produced by this implementation are identical to those from `the original
     implementation <https://github.com/kzhai/PyInfVoc>`_ proposed by the method's authors.
 

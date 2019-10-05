@@ -51,6 +51,10 @@ def get_all_estimators():
         return inspect.isclass(obj) and issubclass(obj, base.Estimator)
 
     for submodule in importlib.import_module('creme').__all__:
+
+        if submodule == 'base':
+            continue
+
         for name, obj in inspect.getmembers(importlib.import_module(f'creme.{submodule}'), is_estimator):
 
             if issubclass(obj, ignored):

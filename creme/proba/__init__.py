@@ -1,3 +1,4 @@
+"""Probability distributions."""
 from .gaussian import Gaussian
 from .multinomial import Multinomial
 

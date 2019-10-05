@@ -1,3 +1,4 @@
+"""Utility classes and functions."""
 from .estimator_checks import check_estimator
 from .histogram import Histogram
 from .math import chain_dot

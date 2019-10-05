@@ -1,6 +1,4 @@
-"""
-Meta-estimators that wrap other estimators.
-"""
+"""Time series forecasting."""
 from .detrender import Detrender
 from .detrender import GroupDetrender
 

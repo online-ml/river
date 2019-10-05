@@ -23,7 +23,7 @@
 
 <br/>
 
-`creme` is a library for online machine learning, also known as in**creme**ntal learning. Online learning is a machine learning regime where a **model learns one observation at a time**. This is in contrast to batch learning where all the data is processed in one go. Incremental learning is desirable when the data is too big to fit in memory, or simply when you want to **handle streaming data**. In addition to many online machine learning algorithms, `creme` provides utilities for **extracting features from a stream of data**. The API is heavily inspired from that of [scikit-learn](https://scikit-learn.org/stable/), meaning that users who are familiar with it should feel comfortable.
+`creme` is a library for online machine learning, also known as in**creme**ntal learning. Online learning is a machine learning regime where a **model learns one observation at a time**. This is in contrast to batch learning where all the data is processed in one go. Incremental learning is desirable when the data is too big to fit in memory, or simply when you want to **handle streaming data**. In addition to many online machine learning algorithms, `creme` provides utilities for **extracting features from a stream of data**.
 
 ## Useful links
 
@@ -31,10 +31,10 @@
   - [API reference](https://creme-ml.github.io/api.html)
   - [User guide](https://creme-ml.github.io/user-guide.html)
   - [FAQ](https://creme-ml.github.io/faq.html)
-- [Benchmarks](benchmarks/)
+- [Benchmarks](https://github.com/creme-ml/creme/tree/master/benchmarks)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
-- [Change history](CHANGELOG.md)
+- [Change history](https://github.com/creme-ml/creme/blob/master/CHANGELOG.md)
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
 - [Toulouse Data Science presentation](https://maxhalford.github.io/slides/creme-tds/)
 
@@ -48,7 +48,9 @@
 
 You can also install the latest development version as so:
 
-    pip install git+https://github.com/creme-ml/creme --upgrade
+    pip install git+https://github.com/creme-ml/creme
+    # Or through SSH:
+    pip install git+ssh://git@github.com/creme-ml/creme.git
 
 As for dependencies, `creme` mostly relies on Python's standard library. Sometimes it relies on `numpy`, `scipy`, and `scikit-learn` to avoid reinventing the wheel.
 
@@ -175,14 +177,14 @@ We can also draw the pipeline.
 ```
 
 <div align="center">
-  <img src="docs/_static/bikes_pipeline.svg" alt="bikes_pipeline"/>
+  <img src="https://github.com/creme-ml/creme/blob/master/docs/_static/bikes_pipeline.svg" alt="bikes_pipeline"/>
 </div>
 
 By only using a few lines of code, we've built a robust model and evaluated it by simulating a production scenario. You can find a more detailed version of this example [here](https://creme-ml.github.io/notebooks/bike-sharing-forecasting.html). `creme` is a framework that has a lot to offer, and as such we kindly refer you to the [documentation](https://creme-ml.github.io/) if you want to know more.
 
 ## Contributing
 
-Like many subfields of machine learning, online learning is far from being an exact science and so there is still a lot to do. Feel free to contribute in any way you like, we're always open to new ideas and approaches. If you want to contribute to the code base please check out the [`CONTRIBUTING.md` file](CONTRIBUTING.md). Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
+Like many subfields of machine learning, online learning is far from being an exact science and so there is still a lot to do. Feel free to contribute in any way you like, we're always open to new ideas and approaches. If you want to contribute to the code base please check out the [CONTRIBUTING.md file](https://github.com/creme-ml/creme/blob/master/CONTRIBUTING.md). Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
 
 Last but not least you are more than welcome to share with us on how you're using `creme` or online learning in general! We believe that online learning solves a lot of pain points in practice, and would love to share experiences.
 

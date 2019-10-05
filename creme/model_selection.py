@@ -1,6 +1,4 @@
-"""
-Utilities for measuring the performance of online learning algorithms.
-"""
+"""Model evaluation and selection."""
 import math
 
 from . import base

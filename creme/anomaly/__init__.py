@@ -1,3 +1,4 @@
+"""Anomaly detection."""
 from .hst import HalfSpaceTrees
 
 

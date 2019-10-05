@@ -1,6 +1,4 @@
-"""
-A module for ensemble learning.
-"""
+"""Ensemble learning."""
 from .bagging import BaggingClassifier
 from .bagging import BaggingRegressor
 from .hedging import HedgeRegressor

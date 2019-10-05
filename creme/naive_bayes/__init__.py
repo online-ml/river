@@ -1,6 +1,4 @@
-"""
-Naive Bayes algorithms.
-"""
+"""Naive Bayes algorithms."""
 from .bernoulli import BernoulliNB
 from .complement import ComplementNB
 from .gaussian import GaussianNB

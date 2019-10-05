@@ -1,3 +1,4 @@
+"""Neighbors-based learning."""
 import collections
 import operator
 
