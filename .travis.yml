@@ -23,7 +23,7 @@ jobs:
       - python setup.py install
       - pip install -e ".[dev]"
       - pytest --nbval-lax --current-env docs/notebooks/*.ipynb
-    script: cd docs && make html && cd ..
+    script: make doc
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
