@@ -1,6 +1,4 @@
-"""
-Meta-estimators for building composite models.
-"""
+"""Models composition."""
 from .blacklist import Blacklister
 from .func import FuncTransformer
 from .pipeline import Pipeline

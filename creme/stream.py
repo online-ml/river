@@ -1,6 +1,4 @@
-"""
-Utilities for streaming data from various sources.
-"""
+"""Streaming data utilities."""
 import csv
 import datetime as dt
 import functools
@@ -11,11 +9,6 @@ import types
 import os
 
 import numpy as np
-try:
-    import pandas as pd
-    PANDAS_INSTALLED = True
-except ImportError:
-    PANDAS_INSTALLED = False
 from sklearn import utils
 
 
@@ -104,6 +97,8 @@ def iter_pandas(X, y=None, **kwargs):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     """
+    import pandas as pd
+
     kwargs['feature_names'] = X.columns
     if isinstance(y, pd.DataFrame):
         kwargs['target_names'] = y.columns

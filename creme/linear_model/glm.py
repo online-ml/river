@@ -29,7 +29,7 @@ class GLM:
         self.intercept_lr = intercept_lr
         self.weights = collections.defaultdict(float)
 
-    def raw_dot(self, x):
+    def _raw_dot(self, x):
         return utils.dot(self.weights, x) + self.intercept
 
     def fit_one(self, x, y):
@@ -38,7 +38,7 @@ class GLM:
         self.weights = self.optimizer.update_before_pred(w=self.weights)
 
         # Obtain the gradient of the loss with respect to the raw output
-        g_loss = self.loss.gradient(y_true=y, y_pred=self.raw_dot(x))
+        g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
         # Clip the gradient of the loss to avoid numerical instabilities
         g_loss = utils.clamp(g_loss, -1e12, 1e12)
@@ -63,15 +63,16 @@ class LinearRegression(GLM, base.Regressor):
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to `optim.SGD(0.01)`.
-        loss (optim.Loss): The loss function to optimize for. Defaults to `optim.SquaredLoss`.
+            Defaults to ``optim.SGD(0.01)``.
+        loss (optim.RegressionLoss): The loss function to optimize for. Defaults to
+            ``optim.SquaredLoss``.
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
             means that no intercept will be used, which sometimes helps.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
 
     Attributes:
-        weights (collections.defaultdict)
+        weights (collections.defaultdict): The current weights assigned to the features.
 
     Example:
 
@@ -123,7 +124,7 @@ class LinearRegression(GLM, base.Regressor):
         )
 
     def predict_one(self, x):
-        return self.raw_dot(x)
+        return self._raw_dot(x)
 
 
 class LogisticRegression(GLM, base.BinaryClassifier):
@@ -131,8 +132,8 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to `optim.SGD(0.05)`.
-        loss (optim.Loss): The loss function to optimize for. Defaults to `optim.LogLoss`.
+            Defaults to ``optim.SGD(0.05)``.
+        loss (optim.BinaryLoss): The loss function to optimize for. Defaults to ``optim.LogLoss``.
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
             means that no intercept will be used, which sometimes helps.
@@ -179,5 +180,5 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         )
 
     def predict_proba_one(self, x):
-        p = utils.sigmoid(self.raw_dot(x))
+        p = utils.sigmoid(self._raw_dot(x))
         return {True: p, False: 1. - p}

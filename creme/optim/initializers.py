@@ -1,6 +1,4 @@
-"""
-This module contains classes used for initializing weights in models such as linear regression.
-"""
+"""Weight initialization schemes."""
 import numpy as np
 from sklearn import utils
 

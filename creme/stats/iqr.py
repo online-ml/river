@@ -8,8 +8,8 @@ class IQR(base.Univariate):
     """Computes the interquartile range.
 
     Parameters:
-        q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to `0.25`.
-        q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to `0.75`.
+        q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to ``0.25``.
+        q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to ``0.75``.
 
     Example:
 
@@ -63,8 +63,8 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
 
     Parameters:
         window_size (int): Size of the window.
-        q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to `0.25`.
-        q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to `0.75`.
+        q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to ``0.25``.
+        q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to ``0.75``.
 
     Example:
 

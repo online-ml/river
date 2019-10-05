@@ -1,6 +1,4 @@
-"""
-Module for computing running statistics
-"""
+"""Running statistics"""
 from .auto_corr import AutoCorrelation
 from .base import Bivariate
 from .base import Univariate

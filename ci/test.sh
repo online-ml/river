@@ -29,7 +29,6 @@ source activate testenv
 
 # Install dependencies required for testing
 pip install cython
-python setup.py develop
 pip install -e ".[dev]"
 pip install codecov
 

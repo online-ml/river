@@ -17,3 +17,11 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+update_nb:
+	jupyter nbconvert --execute --to notebook --inplace ../notebooks/*.ipynb --ExecutePreprocessor.timeout=-1
+
+nb_to_html: update_nb
+	rm -rf docs/notebooks
+	mkdir -p docs/notebooks
+	jupyter nbconvert --to html --output-dir notebooks ../notebooks/*.ipynb

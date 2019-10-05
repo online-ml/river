@@ -79,7 +79,7 @@ class KMeans(base.Clusterer):
 
     References:
         1. `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
-        2, `Web-Scale K-Means Clustering <https://www.eecs.tufts.edu/~dsculley/papers/fastkmeans.pdf>`
+        2. `Web-Scale K-Means Clustering <https://www.eecs.tufts.edu/~dsculley/papers/fastkmeans.pdf>`_
 
     """
 

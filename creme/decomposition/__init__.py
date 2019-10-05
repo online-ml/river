@@ -1,6 +1,4 @@
-"""
-Online matrix decomposition algorithms.
-"""
+"""Online matrix decomposition."""
 from .lda import LDA
 
 

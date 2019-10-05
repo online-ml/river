@@ -1,6 +1,4 @@
-"""
-Meta-estimators for performing multi-class classification with binary classifiers.
-"""
+"""Multi-class classification."""
 from .ovr import OneVsRestClassifier
 
 

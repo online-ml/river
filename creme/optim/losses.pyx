@@ -1,4 +1,17 @@
+"""Loss functions."""
 from libc cimport math
+
+
+__all__ = [
+    'Absolute',
+    'Cauchy',
+    'CrossEntropy',
+    'Hinge',
+    'EpsilonInsensitiveHinge',
+    'Log',
+    'Quantile',
+    'Squared'
+]
 
 
 cdef double clamp_proba(double x):
@@ -15,7 +28,7 @@ cdef class ClassificationLoss(Loss):
     pass
 
 
-cdef class BinaryClassificationLoss(ClassificationLoss):
+cdef class BinaryLoss(ClassificationLoss):
     """A loss appropriate binary classification tasks."""
 
     cpdef double eval(self, double y_true, double y_pred):
@@ -25,7 +38,7 @@ cdef class BinaryClassificationLoss(ClassificationLoss):
         """Returns the gradient with respect to ``y_pred``."""
 
 
-cdef class MultiClassificationLoss(ClassificationLoss):
+cdef class MultiClassLoss(ClassificationLoss):
     """A loss appropriate for multi-class classification tasks."""
 
     cpdef double eval(self, object y_true, dict y_pred):
@@ -101,7 +114,7 @@ cdef class Cauchy(RegressionLoss):
         return diff / ((diff / self.C) ** 2 + 1)
 
 
-cdef class CrossEntropy(MultiClassificationLoss):
+cdef class CrossEntropy(MultiClassLoss):
     """Cross entropy is a generalization of logistic loss to multiple classes.
 
     Example:
@@ -155,7 +168,7 @@ cdef class CrossEntropy(MultiClassificationLoss):
         }
 
 
-cdef class Hinge(BinaryClassificationLoss):
+cdef class Hinge(BinaryLoss):
     """Computes the hinge loss.
 
     Mathematically, it is defined as
@@ -207,7 +220,7 @@ cdef class Hinge(BinaryClassificationLoss):
         """Returns the gradient with respect to ``y_pred``.
 
         References:
-            1. `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
+            1. `Wolfram Alpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
 
         """
         y_true = y_true or -1
@@ -244,7 +257,7 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
         return 0
 
 
-cdef class Log(BinaryClassificationLoss):
+cdef class Log(BinaryLoss):
     """Logarithmic loss."""
 
     cpdef double eval(self, double y_true, double y_pred):

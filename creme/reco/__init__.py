@@ -1,7 +1,4 @@
-"""
-Models for predicting ratings from (user, item) pairs.
-"""
-
+"""Recommender systems."""
 from .normal import RandomNormal
 from .sgd_baseline import SGDBaseline
 from .svd import SVD

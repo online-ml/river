@@ -1,7 +1,4 @@
-"""
-A set of sequential optimizers and learning rate schedulers. Also contains loss functions commonly
-used in machine learning.
-"""
+"""Online optimization."""
 from . import initializers
 from . import losses
 from . import schedulers
@@ -20,21 +17,19 @@ from .sgd import SGD
 
 
 __all__ = [
-    'AbsoluteLoss',
     'AdaBound',
     'AdaDelta',
     'AdaGrad',
     'Adam',
     'AdaMax',
-    'ConstantLR',
-    'CrossEntropy',
     'FTRLProximal',
-    'InverseScalingLR',
+    'initializers',
+    'losses',
     'MiniBatcher',
     'Momentum',
     'NesterovMomentum',
-    'OptimalLR',
     'Optimizer',
     'RMSProp',
+    'schedulers',
     'SGD'
 ]

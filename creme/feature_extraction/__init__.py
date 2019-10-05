@@ -1,6 +1,4 @@
-"""
-A module for extracting features from streaming data.
-"""
+"""Feature extraction from a stream."""
 from .agg import Agg
 from .agg import TargetAgg
 from .differ import Differ

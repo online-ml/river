@@ -1,7 +1,4 @@
-"""
-A module for doing unsupervised clustering.
-"""
-
+"""Unsupervised clustering."""
 from .k_means import KMeans
 
 

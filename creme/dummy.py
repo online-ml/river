@@ -1,6 +1,4 @@
-"""
-Dummy estimators.
-"""
+"""Dummy estimators."""
 import collections
 
 from . import base
