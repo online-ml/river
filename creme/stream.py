@@ -16,6 +16,7 @@ __all__ = [
     'iter_array',
     'iter_pandas',
     'iter_sklearn_dataset',
+    'iter_vaex',
     'simulate_qa',
     'shuffle'
 ]
@@ -133,12 +134,18 @@ def iter_vaex(X, y=None, features=None, **kwargs):
 
     if multioutput:
         for i in range(len(X)):
-            yield {key: X.evaluate(key, i, i+1)[0] for key in feature_names}, {key: X.evaluate(key, i, i+1)[0] for key in y}
+            yield (
+                {key: X.evaluate(key, i, i + 1)[0] for key in feature_names},
+                {key: X.evaluate(key, i, i + 1)[0] for key in y}
+            )
 
     else:
 
         for i in range(len(X)):
-            yield {key: X.evaluate(key, i, i+1)[0] for key in feature_names}, X.evaluate(y[0], i, i+1)[0]
+            yield (
+                {key: X.evaluate(key, i, i + 1)[0] for key in feature_names},
+                X.evaluate(y[0], i, i + 1)[0]
+            )
 
 
 class DictReader(csv.DictReader):
