@@ -129,7 +129,7 @@ setup(
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
     install_requires=base_packages,
-    extras_require={'dev': dev_packages},
+    extras_require={'dev': dev_packages, 'docs': docs_packages},
     include_package_data=True,
     license='BSD-3',
     classifiers=[
