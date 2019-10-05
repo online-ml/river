@@ -2,9 +2,12 @@
     :maxdepth: 2
     :hidden:
 
+    home
+    install
     api
     user-guide
     faq
     license
 
-.. mdinclude:: ../README.md
+
+.. include:: home.rst
