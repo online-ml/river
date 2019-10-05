@@ -21,7 +21,7 @@ jobs:
       - sudo apt-get install graphviz pandoc
       - pip install cython
       - python setup.py install
-      - pip install -e ".[dev]"
+      - pip install -e ".[docs]"
       - pytest --nbval-lax --current-env docs/notebooks/*.ipynb
     script: make doc
     after_success:

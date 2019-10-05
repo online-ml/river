@@ -43,7 +43,7 @@ dev_packages = [
     'pytest-cython>=0.1.0',
 ]
 
-docs_packages = [
+docs_packages = dev_packages + [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
     'm2r>=0.2.1',
