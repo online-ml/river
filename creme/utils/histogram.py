@@ -110,7 +110,7 @@ class Histogram(collections.UserList):
             # Find the closest pair of bins
             min_diff = math.inf
             min_idx = None
-            for idx, (b1, b2) in enumerate(zip(self[:-1], self[1:])):
+            for idx, (b1, b2) in enumerate(zip(self.data[:-1], self.data[1:])):
                 diff = b2.right - b1.right
                 if diff < min_diff:
                     min_diff = diff
@@ -168,7 +168,7 @@ class Histogram(collections.UserList):
         c += b.count
 
         # Handle the rest of the bins
-        for b1, b2 in zip(self[:-1], self[1:]):
+        for b1, b2 in zip(self.data[:-1], self.data[1:]):
             if x < b2.right:
                 # Interpolate
                 c += b2.count * (x - b1.right) / (b2.right - b1.right)
