@@ -49,7 +49,7 @@ docs_packages = dev_packages + [
     'm2r>=0.2.1',
     'nbsphinx>=0.4.2',
     'Sphinx>=2.2.0',
-    'git+https://github.com/bashtage/sphinx-material'
+    'sphinx-material>=0.0.12'
 ]
 
 # The rest you shouldn't have to touch too much :)
