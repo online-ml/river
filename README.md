@@ -54,40 +54,33 @@ You can also install the bleeding edge version as so:
 
 If you're looking to contribute to ``creme`` and want to have a development setup, then please check out the [contribution guidelines](CONTRIBUTING.md).
 
+## Example
 
-## Quick example
-
-In the following example, a logistic regression is fitted online on the [electricity dataset](https://creme-ml.github.io/generated/creme.datasets.fetch_electricity.html#creme.datasets.fetch_electricity). For each observation in the dataset, the `predict_one` method is used to obtain the output predicted by the model. The `Accuracy` metric can then be updated online by providing it with the true output and the predicted output. Finally, the model can be updated by calling `fit_one`.
+In the following example we'll use a linear regression to forecast the number of available bikes in [bike stations](https://www.wikiwand.com/en/Bicycle-sharing_system) from the city of Toulouse. Each observation looks like this:
 
 ```python
+>>> import pprint
 >>> from creme import datasets
->>> from creme import linear_model
->>> from creme import metrics
->>> from creme import optim
->>> from creme import preprocessing
 
->>> X_y = datasets.fetch_electricity()
+>>> X_y = datasets.fetch_bikes()
+>>> x, y = next(X_y)
 
->>> model = preprocessing.StandardScaler()
->>> model |= linear_model.LogisticRegression(optimizer=optim.SGD(.1))
+>>> pprint.pprint(x)
+{'clouds': 75,
+ 'description': 'light rain',
+ 'humidity': 81,
+ 'moment': datetime.datetime(2016, 4, 1, 0, 0, 7),
+ 'pressure': 1017.0,
+ 'station': 'metro-canal-du-midi',
+ 'temperature': 6.54,
+ 'wind': 9.3}
 
->>> metric = metrics.Accuracy()
-
->>> for x, y in X_y:
-...     y_pred = model.predict_one(x)
-...     metric = metric.update(y, y_pred)
-...     model = model.fit_one(x, y)
-
->>> print(metric)
-Accuracy: 0.894664
+>>> print(f'Number of bikes: {y}')
+Number of bikes: 1
 
 ```
 
-## A more involved example
-
-In the following example we'll use a linear regression to forecast the number of available bikes in [bike stations](https://www.wikiwand.com/en/Bicycle-sharing_system) from the city of Toulouse 🚲.
-
-We'll use the available numeric features, as well as calculate running averages of the target. Before being fed to the linear regression, the features will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead while delaying the true answers, which ensures that we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
+We will include all the available numeric features in our model. We will also use target encoding by calculating a running average of the target per station and hour. Before being fed to the linear regression, the features will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead while delaying the true answers, which ensures that we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
 
 ```python
 >>> import datetime as dt

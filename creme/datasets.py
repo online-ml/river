@@ -123,8 +123,18 @@ def fetch_bikes(data_home=None, silent=True):
 def fetch_electricity(data_home=None, silent=True):
     """A day of electricity prices in New South Wales.
 
-    The data contains 45,312 items and 8 features. The goal is to predict whether the price of
-    electricity will go up or down at very frequent intervals.
+    This data was collected from the Australian New South Wales Electricity Market. In this market,
+    prices are not fixed and are affected by demand and supply of the market. They are set every
+    five minutes. Electricity transfers to/from the neighboring state of Victoria were done to
+    alleviate fluctuations.
+
+    The dataset (originally named ELEC2) contains 45,312 instances dated from 7 May 1996 to 5
+    December 1998. Each example of the dataset refers to a period of 30 minutes, i.e. there are 48
+    instances for each time period of one day. Each example on the dataset has 5 fields, the day of
+    week, the time stamp, the New South Wales electricity demand, the Victoria electricity demand,
+    the scheduled electricity transfer between states and the class label. The class label
+    identifies the change of the price (UP or DOWN) in New South Wales relative to a moving average
+    of the last 24 hours (and removes the impact of longer term price trends).
 
     Parameters:
         data_home (str): The directory where you wish to store the data.
@@ -135,6 +145,7 @@ def fetch_electricity(data_home=None, silent=True):
 
     References:
         1. `SPLICE-2 Comparative Evaluation: Electricity Pricing <http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.12.9405>`_
+        2. `DataHub description <https://datahub.io/machine-learning/electricity#readme>`_
 
     """
 

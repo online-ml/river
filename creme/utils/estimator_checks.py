@@ -252,6 +252,10 @@ def yield_all_checks(model):
 
     from .. import base
 
+    if isinstance(model, base.OutlierDetector):
+        return
+        yield
+
     yield check_fit_one
     yield check_pickling
     yield check_repr

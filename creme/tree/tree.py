@@ -90,7 +90,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
 
     Parameters:
         criterion (str): The function to measure the quality of a split. Set to ``'gini'`` in order
-        to use Gini impurity and ``'entropy'`` for information gain.
+            to use Gini impurity and ``'entropy'`` for information gain.
         patience (int): Time to wait between split attempts.
         max_depth (int): Maximum tree depth.
         min_split_gain (float): Minimum impurity gain required to make a split eligible.
