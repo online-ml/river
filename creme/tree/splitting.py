@@ -69,7 +69,7 @@ class SplitEnum(abc.ABC):
         """Yields candidate split points and associated operators."""
 
 
-class ClfNumSplitEnum(SplitEnum):
+class NumericSplitEnum(SplitEnum):
     """Split enumerator for classification and numerical attributes."""
 
     def __init__(self, feature_name, n_bins, n_splits):
@@ -99,8 +99,8 @@ class ClfNumSplitEnum(SplitEnum):
             for y in target_dist:
                 p_xy = self.P_xy[y].cdf(x=t) if y in self.P_xy else 0.  # P(x < t | y)
                 p_y = target_dist.pmf(y)  # P(y)
-                l_dist[y] = target_dist.n_samples * p_xy * p_y  # P(y | x < t)
-                r_dist[y] = target_dist.n_samples * (1 - p_xy) * p_y  # P(y | x >= t)
+                l_dist[y] = target_dist.n_samples * p_y * p_xy  # P(y | x < t)
+                r_dist[y] = target_dist.n_samples * p_y * (1 - p_xy)  # P(y | x >= t)
 
             l_dist = proba.Multinomial(l_dist)
             r_dist = proba.Multinomial(r_dist)
@@ -108,7 +108,7 @@ class ClfNumSplitEnum(SplitEnum):
             yield Split(on=self.feature_name, how=LT, at=t), l_dist, r_dist
 
 
-class ClfCatSplitEnum(SplitEnum):
+class CategoricalSplitEnum(SplitEnum):
     """Split enumerator for classification and categorical attributes."""
 
     def __init__(self, feature_name):
@@ -121,9 +121,25 @@ class ClfCatSplitEnum(SplitEnum):
 
     def enumerate_splits(self, target_dist: 'proba.Multinomial'):
 
-        for cat in set(*(p_x.keys() for p_x in self.P_xy.values())):
+        categories = set(*(p_x.keys() for p_x in self.P_xy.values()))
+
+        # There has to be at least two categories for a split to be possible
+        if len(categories) < 2:
+            return
+            yield
+
+        for cat in categories:
 
             l_dist = {}
             r_dist = {}
 
+            for y in target_dist:
+                p_xy = self.P_xy[y].pmf(cat)  # P(cat | y)
+                p_y = target_dist.pmf(y)  # P(y)
+                l_dist[y] = target_dist.n_samples * p_y * p_xy  # P(y | cat)
+                r_dist[y] = target_dist.n_samples * p_y * (1. - p_xy)  # P(y | !cat)
 
+            l_dist = proba.Multinomial(l_dist)
+            r_dist = proba.Multinomial(r_dist)
+
+            yield Split(on=self.feature_name, how=EQ, at=cat), l_dist, r_dist
