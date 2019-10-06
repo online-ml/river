@@ -1,7 +1,7 @@
 Quick example
 =============
 
-In the following example, we will train a logistic regression to predict whether or not the price of electricity will go up or down in the next 30 minutes. We will be using a real world dataset of electricity prices from New South Wales in Australia. The dataset can be streamed by using the :func:`creme.datasets.fetch_electricity` method. Here is what the first observation looks like:
+In the following example, we will train a logistic regression to predict whether or not the price of electricity will go up or down in the next 30 minutes. We will be using a real world dataset of electricity prices from New South Wales in Australia. The dataset can be streamed by using the ``fetch_electricity`` function from the ``datasets`` module. Here is what the first observation looks like:
 
 .. code-block:: python
 
