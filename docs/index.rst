@@ -2,11 +2,12 @@
     :maxdepth: 2
     :hidden:
 
-    home
     install
+    example
     api
     user-guide
     faq
+    changelog
     license
 
 

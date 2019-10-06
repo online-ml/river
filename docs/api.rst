@@ -4,6 +4,8 @@ API reference
 **anomaly**: Anomaly detection
 -------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.anomaly
 .. autosummary::
     :toctree: generated/
@@ -15,6 +17,10 @@ API reference
 
 **base**: Base interfaces
 --------------------------
+
+Every estimator in ``creme`` is a class, and as such inherits from at least one base interface. These are used to categorize, organize, and standardize the many estimators that ``creme`` contains.
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.base
 .. autosummary::
@@ -37,6 +43,8 @@ API reference
 **cluster**: Unsupervised clustering
 -------------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.cluster
 .. autosummary::
     :toctree: generated/
@@ -48,6 +56,8 @@ API reference
 
 **compat**: Compatibility with other libraries
 -----------------------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.compat
 .. autosummary::
@@ -62,8 +72,7 @@ API reference
     SKLRegressorWrapper
     SKLTransformerWrapper
 
-Functions
-~~~~~~~~~
+.. rubric:: Functions
 
 .. currentmodule:: creme.compat
 .. autosummary::
@@ -77,6 +86,8 @@ Functions
 
 **compose**: Models composition
 --------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.compose
 .. autosummary::
@@ -97,8 +108,7 @@ Functions
 **datasets**: Toy datasets
 ---------------------------
 
-Functions
-~~~~~~~~~
+.. rubric:: Functions
 
 .. currentmodule:: creme.datasets
 .. autosummary::
@@ -119,6 +129,8 @@ Functions
 **decomposition**: Online matrix decomposition
 -----------------------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.decomposition
 .. autosummary::
     :toctree: generated/
@@ -130,6 +142,8 @@ Functions
 
 **dummy**: Dummy estimators
 ----------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.dummy
 .. autosummary::
@@ -145,6 +159,8 @@ Functions
 **ensemble**: Ensemble learning
 --------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.ensemble
 .. autosummary::
     :toctree: generated/
@@ -159,6 +175,8 @@ Functions
 
 **feature_extraction**: Feature extraction from a stream
 ---------------------------------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.feature_extraction
 .. autosummary::
@@ -176,6 +194,8 @@ Functions
 **feature_selection**: Online feature selection
 ------------------------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.feature_selection
 .. autosummary::
     :toctree: generated/
@@ -190,6 +210,8 @@ Functions
 **impute**: Imputation of missing values
 -----------------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.impute
 .. autosummary::
     :toctree: generated/
@@ -201,6 +223,8 @@ Functions
 
 **linear_model**: Generalized linear models
 --------------------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.linear_model
 .. autosummary::
@@ -218,6 +242,8 @@ Functions
 
 **metrics**: Streaming metrics
 -------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.metrics
 .. autosummary::
@@ -279,8 +305,7 @@ Functions
 **model_selection**: Model evaluation and selection
 ----------------------------------------------------
 
-Functions
-~~~~~~~~~
+.. rubric:: Functions
 
 .. currentmodule:: creme.model_selection
 .. autosummary::
@@ -295,6 +320,8 @@ Functions
 **multiclass**: Multi-class classification
 -------------------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.multiclass
 .. autosummary::
     :toctree: generated/
@@ -306,6 +333,8 @@ Functions
 
 **multioutput**: Multi-output classification and regression
 ------------------------------------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.multioutput
 .. autosummary::
@@ -319,6 +348,8 @@ Functions
 
 **naive_bayes**: Naive Bayes algorithms
 ----------------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.naive_bayes
 .. autosummary::
@@ -335,6 +366,8 @@ Functions
 **neighbors**: Neighbors-based learning
 ----------------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.neighbors
 .. autosummary::
     :toctree: generated/
@@ -346,6 +379,8 @@ Functions
 
 **optim**: Online optimization
 -------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.optim
 .. autosummary::
@@ -411,6 +446,8 @@ Learning rate schedulers
 **preprocessing**: Feature preprocessing
 -----------------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.preprocessing
 .. autosummary::
     :toctree: generated/
@@ -428,6 +465,8 @@ Learning rate schedulers
 **proba**: Probability distributions
 -------------------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.proba
 .. autosummary::
     :toctree: generated/
@@ -440,6 +479,8 @@ Learning rate schedulers
 
 **reco**: Recommender systems
 ------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.reco
 .. autosummary::
@@ -454,6 +495,8 @@ Learning rate schedulers
 
 **stats**: Running statistics
 ------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.stats
 .. autosummary::
@@ -499,8 +542,7 @@ Learning rate schedulers
 **stream**: Streaming data utilities
 -------------------------------------
 
-Functions
-~~~~~~~~~
+.. rubric:: Functions
 
 .. currentmodule:: creme.stream
 .. autosummary::
@@ -512,12 +554,15 @@ Functions
     iter_csv
     iter_pandas
     iter_sklearn_dataset
+    iter_vaex
     shuffle
     simulate_qa
 
 
 **time_series**: Time series forecasting
 -----------------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.time_series
 .. autosummary::
@@ -532,6 +577,8 @@ Functions
 **tree**: Decision trees
 -------------------------
 
+.. rubric:: Classes
+
 .. currentmodule:: creme.tree
 .. autosummary::
     :toctree: generated/
@@ -543,6 +590,8 @@ Functions
 
 **utils**: Utility classes and functions
 -----------------------------------------
+
+.. rubric:: Classes
 
 .. currentmodule:: creme.utils
 .. autosummary::
@@ -556,8 +605,7 @@ Functions
     SortedWindow
     Window
 
-Functions
-~~~~~~~~~
+.. rubric:: Functions
 
 .. currentmodule:: creme.utils
 .. autosummary::

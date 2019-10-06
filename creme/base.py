@@ -1,4 +1,10 @@
-"""Base interfaces."""
+"""Base interfaces.
+
+Every estimator in ``creme`` is a class, and as such inherits from at least one base interface.
+These are used to categorize, organize, and standardize the many estimators that ``creme``
+contains.
+
+"""
 import abc
 import collections
 import inspect
@@ -17,7 +23,8 @@ __all__ = [
     'MultiOutputClassifier',
     'MultiOutputRegressor',
     'Regressor',
-    'Transformer'
+    'Transformer',
+    'OutlierDetector'
 ]
 
 
@@ -359,3 +366,20 @@ class Wrapper(abc.ABC):
 class Ensemble(Estimator, collections.UserList):
     """An ensemble model."""
     pass
+
+
+class OutlierDetector(Estimator):
+
+    @abc.abstractmethod
+    def fit_one(self, x: dict) -> 'OutlierDetector':
+        """Updates the model."""
+
+    @abc.abstractmethod
+    def score_one(self, x: dict) -> float:
+        """Returns an outlier score.
+
+        The range of the score depends on each model. Some models will output anomaly scores
+        between 0 and 1, others will not. In any case, the lower the score, the more likely it is
+        that ``x`` is an anomaly.
+
+        """

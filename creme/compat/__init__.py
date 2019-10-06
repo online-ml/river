@@ -1,4 +1,9 @@
-"""Compatibility with other libraries."""
+"""Compatibility with other libraries.
+
+This module contains wrappers for making ``creme`` estimators compatible with other libraries, and
+vice-versa whenever possible.
+
+"""
 from .sklearn import convert_creme_to_sklearn
 from .sklearn import convert_sklearn_to_creme
 from .sklearn import CremeClassifierWrapper

@@ -1,9 +1,8 @@
 import collections
 import random
 
+from .. import base
 from .. import preprocessing
-
-from . import base
 
 
 Limits = collections.namedtuple('Limits', 'lower upper')
@@ -156,12 +155,12 @@ class HalfSpaceTrees(base.OutlierDetector):
             ...     features = {'x': x}
             ...     hst = hst.fit_one(features)
             ...     print(f'Anomaly score for {x:.3f}: {hst.score_one(features)}')
-            Anomaly score for 0.500: -120
-            Anomaly score for 0.450: -120
-            Anomaly score for 0.430: -120
-            Anomaly score for 0.440: -120
-            Anomaly score for 0.445: -120
-            Anomaly score for 0.450: -120
+            Anomaly score for 0.500: 120
+            Anomaly score for 0.450: 120
+            Anomaly score for 0.430: 120
+            Anomaly score for 0.440: 120
+            Anomaly score for 0.445: 120
+            Anomaly score for 0.450: 120
             Anomaly score for 0.000: 0
 
     References:
@@ -215,4 +214,4 @@ class HalfSpaceTrees(base.OutlierDetector):
     def score_one(self, x):
         if not self.trees:
             return 0
-        return -sum(tree.score(x) for tree in self.trees)
+        return sum(tree.score(x) for tree in self.trees)

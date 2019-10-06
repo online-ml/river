@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Renamer` to `compose`
 - `IQR` and `RollingIQR` to `stats`
 - The `initializers` submodule has been added to the `optim` module, it can be used for initializing weights in weight-based models such as linear regression
-- `shuffle` to `stream`
+- `shuffle` to `stream` for shuffling a data stream by maintaining a buffer of fixed width
 - `Detrender` now has a `window_size` parameter for detrending with a rolling mean
 
 ### Modified

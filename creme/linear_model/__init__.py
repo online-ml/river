@@ -1,4 +1,4 @@
-"""Generalized linear models."""
+"""Linear models."""
 from .fm import FMRegressor
 from .glm import LinearRegression
 from .glm import LogisticRegression

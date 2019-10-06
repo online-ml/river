@@ -282,7 +282,6 @@ extensions.append('m2r')
 
 extensions.append('sphinx.ext.autosummary')
 
-autosummary_generate = True
 autoclass_content = 'class'
 autodoc_default_options = {
     'show-inheritance': True

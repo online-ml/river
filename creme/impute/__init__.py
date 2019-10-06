@@ -1,4 +1,4 @@
-"""Imputation of missing values."""
+"""Missing data imputation."""
 from .stat import StatImputer
 
 
