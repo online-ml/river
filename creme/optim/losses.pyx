@@ -29,12 +29,12 @@ cdef class ClassificationLoss(Loss):
 
 
 cdef class BinaryLoss(ClassificationLoss):
-    """A loss appropriate binary classification tasks."""
+    """A loss appropriate for binary classification tasks."""
 
-    cpdef double eval(self, double y_true, double y_pred):
+    cpdef double eval(self, bint y_true, double y_pred):
         """Returns the loss."""
 
-    cpdef double gradient(self, double y_true, double y_pred):
+    cpdef double gradient(self, bint y_true, double y_pred):
         """Returns the gradient with respect to ``y_pred``."""
 
 
@@ -59,7 +59,7 @@ cdef class RegressionLoss(Loss):
 
 
 cdef class Absolute(RegressionLoss):
-    """Computes the absolute loss, also known as the mean absolute error or L1 loss.
+    """Absolute loss, also known as the mean absolute error or L1 loss.
 
     Mathematically, it is defined as
 
@@ -115,7 +115,9 @@ cdef class Cauchy(RegressionLoss):
 
 
 cdef class CrossEntropy(MultiClassLoss):
-    """Cross entropy is a generalization of logistic loss to multiple classes.
+    """Cross entropy loss.
+
+    This is a generalization of logistic loss to multiple classes.
 
     Example:
 
@@ -210,13 +212,13 @@ cdef class Hinge(BinaryLoss):
 
     """
 
-    cpdef double eval(self, double y_true, double y_pred):
+    cpdef double eval(self, bint y_true, double y_pred):
         # Our convention is to use 0s instead of -1s for negatives, but the Hinge loss uses -1s as
         # a convention
         y_true = y_true or -1
         return math.fmax(0, 1 - y_true * y_pred)
 
-    cpdef double gradient(self, double y_true, double y_pred):
+    cpdef double gradient(self, bint y_true, double y_pred):
         """Returns the gradient with respect to ``y_pred``.
 
         References:
@@ -260,8 +262,8 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
 cdef class Log(BinaryLoss):
     """Logarithmic loss."""
 
-    cpdef double eval(self, double y_true, double y_pred):
-        y_true = float(y_true or -1)
+    cpdef double eval(self, bint y_true, double y_pred):
+        y_true = y_true or -1
         z = y_pred * y_true
         if z > 18.:
             return math.exp(-z)
@@ -269,8 +271,8 @@ cdef class Log(BinaryLoss):
             return -z
         return math.log(1.0 + math.exp(-z))
 
-    cpdef double gradient(self, double y_true, double y_pred):
-        y_true = float(y_true or -1)
+    cpdef double gradient(self, bint y_true, double y_pred):
+        y_true = y_true or -1
         z = y_pred * y_true
         if z > 18.:
             return math.exp(-z) * -y_true

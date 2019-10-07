@@ -47,7 +47,7 @@ class LogLoss(stats.Mean, BaseLogLoss):
     """
 
     def update(self, y_true, y_pred):
-        p_true = y_pred[True] if isinstance(y_pred, dict) else y_pred
+        p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         p_true = self.clamp_proba(p_true)
         if y_true:
             ll = -math.log(p_true)
@@ -87,7 +87,7 @@ class RollingLogLoss(stats.RollingMean, BaseLogLoss):
     """
 
     def update(self, y_true, y_pred):
-        p_true = y_pred[True] if isinstance(y_pred, dict) else y_pred
+        p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         p_true = self.clamp_proba(p_true)
         if y_true:
             ll = -math.log(p_true)

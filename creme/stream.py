@@ -33,10 +33,10 @@ def iter_array(X, y=None, feature_names=None, target_names=None, shuffle=False, 
         feature_names (list of length n_features)
         target_names (list of length n_outputs)
         shuffle (bool): Whether to shuffle the inputs or not.
-        random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
-            the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by ``np.random``.
+        random_state (int, np.random.RandomState instance or None, default=None): If int,
+            ``random_state`` is the seed used by the random number generator; if ``RandomState``
+            instance, ``random_state`` is the random number generator; if ``None``, the random
+            number generator is the ``RandomState`` instance used by ``np.random``.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.

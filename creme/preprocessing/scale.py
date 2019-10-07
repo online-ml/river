@@ -86,7 +86,7 @@ class StandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(xi - self.variances[i].mean.get(), self.variances[i].get() ** 0.5)
+            i: safe_div(xi - self.variances[i].mean.get(), self.variances[i].get() ** .5)
             for i, xi in x.items()
         }
 

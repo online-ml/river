@@ -40,7 +40,12 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     ``scipy.stats.poisson(1).pmf(k)`` to obtain more detailed values.
 
     Parameters:
-        classifier (BinaryClassifier or MultiClassifier): The classifier to bag.
+        model (BinaryClassifier or MultiClassifier): The classifier to bag.
+        n_models (int): The number of models in the ensemble.
+        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
+            is the seed used by the random number generator; if ``RandomState`` instance,
+            ``random_state`` is the random number generator; if ``None``, the random number
+            generator is the ``RandomState`` instance used by `numpy.random`.
 
     Example:
 
@@ -88,18 +93,13 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     def predict_proba_one(self, x):
         """Averages the predictions of each classifier."""
 
-        y_pred = collections.defaultdict(float)
-
         # Sum the predictions
+        y_pred = collections.Counter()
         for classifier in self:
-            for label, proba in classifier.predict_proba_one(x).items():
-                y_pred[label] += proba
+            y_pred.update(classifier.predict_proba_one(x))
 
         # Divide by the number of predictions
-        for label in y_pred:
-            y_pred[label] /= len(self)
-
-        return dict(y_pred)
+        return {label: proba / len(self) for label, proba in y_pred.items()}
 
 
 class BaggingRegressor(BaseBagging, base.Regressor):
@@ -112,7 +112,12 @@ class BaggingRegressor(BaseBagging, base.Regressor):
     ``scipy.stats.poisson(1).pmf(k)`` for more detailed values.
 
     Parameters:
-        base_regressor (Regressor): The regressor to bag.
+        model (Regressor): The regressor to bag.
+        n_models (int): The number of models in the ensemble.
+        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
+            is the seed used by the random number generator; if ``RandomState`` instance,
+            ``random_state`` is the random number generator; if ``None``, the random number
+            generator is the ``RandomState`` instance used by `numpy.random`.
 
     Example:
 
