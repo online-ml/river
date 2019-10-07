@@ -19,8 +19,8 @@ class FeatureHasher(base.Transformer):
         n_features (int): The number by which each hash will be moduloed by.
         alternate_sign (bool): Whether or not half of the hashes will be negated.
         encoding (str): The string encoding used by `sklearn.utils.murmurhash3_32`.
-        random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
-            the seed used by the random number generator; if ``RandomState`` instance,
+        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
+            is the seed used by the random number generator; if ``RandomState`` instance,
             ``random_state`` is the random number generator; if ``None``, the random number
             generator is the ``RandomState`` instance used by `numpy.random`.
 

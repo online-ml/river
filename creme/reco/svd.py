@@ -29,10 +29,10 @@ class SVD(base.Recommender):
         loss (optim.Loss): Loss function to optimize for.
         l2 (float, default=0): regularization amount used to push weights towards 0.
         global_mean (stats.Mean)
-        random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
-            the seed used by the random number generator; if ``RandomState`` instance,
+        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
+            is the seed used by the random number generator; if ``RandomState`` instance,
             ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by ``np.random``.
+            generator is the ``RandomState`` instance used by `numpy.random`.
 
     Attributes:
         row_biases (collections.defaultdict): The biases of the rows elements (users)

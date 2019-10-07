@@ -31,10 +31,10 @@ class KMeans(base.Clusterer):
             positions.
         p (int): Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
             Manhattan distance, while ``p=2`` corresponds to the Euclidean distance.
-        random_state (int, RandomState instance or None, default=None): If int, ``random_state`` is
-            the seed used by the random number generator; if ``RandomState`` instance,
+        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
+            is the seed used by the random number generator; if ``RandomState`` instance,
             ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by ``np.random``.
+            generator is the ``RandomState`` instance used by `numpy.random`.
 
     Attributes:
         centers (dict): Central positions of each cluster.

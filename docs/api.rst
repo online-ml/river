@@ -4,6 +4,8 @@ API reference
 **anomaly**: Anomaly detection
 -------------------------------
 
+The estimators in ``anomaly`` are slightly different than the rest of the estimators. Instead of a ``predict_one`` method, each anomaly detector has a ``score_one`` method which returns an anomaly score for a given set of features. Anomalies will have high scores whereas normal observations will have low scores. The range of the scores depends on the estimator. 
+
 .. rubric:: Classes
 
 .. currentmodule:: creme.anomaly
@@ -18,7 +20,7 @@ API reference
 **base**: Base interfaces
 --------------------------
 
-Every estimator in ``creme`` is a class, and as such inherits from at least one base interface. These are used to categorize, organize, and standardize the many estimators that ``creme`` contains.
+Every estimator in ``creme`` is a class, and as such inherits from at least one base interface. These are used to categorize, organize, and standardize the many estimators that ``creme`` contains. 
 
 .. rubric:: Classes
 
@@ -35,6 +37,7 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     MultiClassifier
     MultiOutputClassifier
     MultiOutputRegressor
+    OutlierDetector
     Regressor
     Transformer
     Wrapper
@@ -56,6 +59,8 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
 
 **compat**: Compatibility with other libraries
 -----------------------------------------------
+
+This module contains wrappers for making ``creme`` estimators compatible with other libraries, and vice-versa whenever possible. 
 
 .. rubric:: Classes
 
@@ -207,8 +212,8 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     VarianceThreshold
 
 
-**impute**: Imputation of missing values
------------------------------------------
+**impute**: Missing data imputation
+------------------------------------
 
 .. rubric:: Classes
 
@@ -221,8 +226,8 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     StatImputer
 
 
-**linear_model**: Generalized linear models
---------------------------------------------
+**linear_model**: Linear models
+--------------------------------
 
 .. rubric:: Classes
 
@@ -586,6 +591,7 @@ Learning rate schedulers
     :template: class.rst
         
     DecisionTreeClassifier
+    RandomForestClassifier
 
 
 **utils**: Utility classes and functions
