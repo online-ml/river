@@ -1,5 +1,6 @@
 import copy
 import textwrap
+import itertools
 from abc import ABCMeta
 from operator import attrgetter, itemgetter
 
@@ -1104,7 +1105,13 @@ class HoeffdingTree(BaseSKMObject, ClassifierMixin):
                 for key, value in votes.items():
                     y_proba[int(key)] = value
                 predictions.append(y_proba)
-        return np.array(predictions)
+        # Set result as np.array
+        if self.classes is not None:
+            predictions = np.asarray(predictions)
+        else:
+            # Fill missing values related to unobserved classes to ensure we get a 2D array
+            predictions = np.asarray(list(itertools.zip_longest(*predictions, fillvalue=0.0))).T
+        return predictions
 
     @property
     def get_model_measurements(self):
