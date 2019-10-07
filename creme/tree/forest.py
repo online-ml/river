@@ -32,6 +32,7 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
 
             >>> model = tree.RandomForestClassifier(
             ...     n_trees=5,
+            ...     random_state=42,
             ...     # Tree parameters
             ...     patience=2000,
             ...     confidence=1e-5,
@@ -41,7 +42,7 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.online_score(X_y, model, metric)
-            LogLoss: 0.533575
+            LogLoss: 0.529167
 
     """
 

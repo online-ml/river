@@ -162,7 +162,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.online_score(X_y, model, metric)
-            LogLoss: .293782
+            LogLoss: 0.293782
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer

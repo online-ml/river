@@ -284,6 +284,7 @@ extensions.append('sphinx.ext.autosummary')
 
 autoclass_content = 'class'
 autosummary_generate = True
+autosummary_generate_overwrite = False
 autodoc_default_options = {
     'show-inheritance': True
 }
