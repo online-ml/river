@@ -260,7 +260,11 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
 
 
 cdef class Log(BinaryLoss):
-    """Logarithmic loss."""
+    """Logarithmic loss.
+
+    This loss function expects each provided ``y_pred`` to be a log odds ratio, not a probability.
+
+    """
 
     cpdef double eval(self, bint y_true, double y_pred):
         y_true = y_true or -1

@@ -180,5 +180,5 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         )
 
     def predict_proba_one(self, x):
-        p = utils.sigmoid(self._raw_dot(x))
+        p = utils.sigmoid(self._raw_dot(x))  # Convert log-odds ratio to probability
         return {True: p, False: 1. - p}
