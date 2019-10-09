@@ -50,5 +50,4 @@ class Rolling(base.WrapperMetric, utils.Window):
         return self
 
     def __str__(self):
-        """Returns the class name along with the current value of the metric."""
         return f'Rolling {self.__class__.__name__} of size {self.window_size}: {self.get():.6f}'.rstrip('0')

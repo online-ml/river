@@ -28,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Cythonized `stats.Mean` and `stats.Var`
 - Cythonized all the loss functions in `optim`
 - `CountVectorizer` and `TFIDFVectorizer` won't raise an error when being pickled anymore
-- Tests are now much more extensive, thanks mostly to estimator tags
+- Tests are now much more extensive, thanks mostly to the newly added estimator tags
 - `stream.iter_csv` now has `fraction` and `seed` parameters to sample rows, deterministically or not
 - Renamed `stream.iter_numpy` to `stream.iter_array`
 - The module `optim` has been reorganized into submodules; namely `schedulers`, `initializers`, and `losses`. The top-level now only contains optimizers. Some classes have renamed accordingly. See the documentation for details.
