@@ -1,6 +1,7 @@
 from creme import base
 from sklearn import exceptions
 import torch
+from vowpalwabbit import pyvw
 
 
 class ScikitLearnClassifier(base.MultiClassifier):
