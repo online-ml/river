@@ -4,7 +4,7 @@ from . import base
 from . import confusion
 
 
-__all__ = ['MCC', 'RollingMCC']
+__all__ = ['MCC']
 
 
 class MCC(base.BinaryMetric):
@@ -26,8 +26,12 @@ class MCC(base.BinaryMetric):
     def requires_labels(self):
         return True
 
-    def update(self, y_true, y_pred):
-        self.cm.update(y_true=y_true, y_pred=y_pred)
+    def update(self, y_true, y_pred, sample_weight=1.):
+        self.cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        self.cm.revert(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
         return self
 
     def get(self):
@@ -44,22 +48,3 @@ class MCC(base.BinaryMetric):
             return (tp / n - s * p) / math.sqrt(p * s * (1 - s) * (1 - p))
         except ZeroDivisionError:
             return 0.
-
-
-class RollingMCC(MCC):
-    """Matthews correlation coefficient.
-
-    Parameters:
-        window_size (int): Size of the window of recent values to consider.
-
-    References:
-        1. `Wikipedia article <https://www.wikiwand.com/en/Matthews_correlation_coefficient>`_
-
-    """
-
-    def __init__(self, window_size):
-        self.cm = confusion.RollingConfusionMatrix(window_size=window_size)
-
-    @property
-    def window_size(self):
-        return self.cm.window_size

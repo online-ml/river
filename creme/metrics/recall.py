@@ -1,21 +1,16 @@
 import collections
-import itertools
 import statistics
 
 from .. import stats
 
 from . import base
-from . import confusion
 from . import precision
 
 
 __all__ = [
     'MacroRecall',
     'MicroRecall',
-    'Recall',
-    'RollingMacroRecall',
-    'RollingMicroRecall',
-    'RollingRecall'
+    'Recall'
 ]
 
 
@@ -54,9 +49,14 @@ class Recall(stats.Mean, BaseRecall, base.BinaryMetric):
 
     """
 
-    def update(self, y_true, y_pred):
+    def update(self, y_true, y_pred, sample_weight=1.):
         if y_true:
-            return super().update(y_true == y_pred)
+            return super().update(x=y_true == y_pred, w=sample_weight)
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        if y_true:
+            return super().revert(x=y_true == y_pred, w=sample_weight)
         return self
 
 
@@ -86,17 +86,25 @@ class MacroRecall(BaseRecall, base.MultiClassMetric):
 
     def __init__(self):
         self.recalls = collections.defaultdict(Recall)
-        self.classes = set()
+        self._class_counts = collections.Counter()
 
-    def update(self, y_true, y_pred):
-        self.recalls[y_true].update(True, y_true == y_pred)
-        self.classes.update({y_true, y_pred})
+    def update(self, y_true, y_pred, sample_weight=1.):
+        self.recalls[y_true].update(True, y_true == y_pred, sample_weight)
+        self._class_counts.update([y_true, y_pred])
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        self.recalls[y_true].revert(True, y_true == y_pred, sample_weight)
+        self._class_counts.subtract([y_true, y_pred])
         return self
 
     def get(self):
+        if not self._class_counts:
+            return 0.
         return statistics.mean((
             0. if c not in self.recalls else self.recalls[c].get()
-            for c in self.classes
+            for c, count in self._class_counts.items()
+            if count > 0
         ))
 
 
@@ -124,143 +132,6 @@ class MicroRecall(precision.MicroPrecision):
             MicroRecall: 0.666667
             MicroRecall: 0.75
             MicroRecall: 0.6
-
-    References:
-        1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
-
-    """
-
-
-class RollingRecall(BaseRecall, base.BinaryMetric):
-    """Rolling binary recall score.
-
-    Parameters:
-        window_size (int): Size of the window of recent values to consider.
-
-    Example:
-
-        ::
-
-            >>> from creme import metrics
-
-            >>> y_true = [True, False, True, True, True]
-            >>> y_pred = [True, True, False, True, True]
-
-            >>> metric = metrics.RollingRecall(window_size=3)
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            RollingRecall: 1.
-            RollingRecall: 1.
-            RollingRecall: 0.5
-            RollingRecall: 0.5
-            RollingRecall: 0.666667
-
-    """
-
-    def __init__(self, window_size):
-        self.window_size = window_size
-        self.tp_ratio = stats.RollingMean(window_size=window_size)
-        self.fn_ratio = stats.RollingMean(window_size=window_size)
-
-    def update(self, y_true, y_pred):
-        self.tp_ratio.update(y_true and y_pred)
-        self.fn_ratio.update(y_true and not y_pred)
-        return self
-
-    def get(self):
-        tp = self.tp_ratio.get()
-        fn = self.fn_ratio.get()
-        try:
-            return tp / (tp + fn)
-        except ZeroDivisionError:
-            return 0.
-
-
-class RollingMacroRecall(MacroRecall):
-    """Rolling macro-average recall score.
-
-    Parameters:
-        window_size (int): Size of the window of recent values to consider.
-
-    Example:
-
-        ::
-
-            >>> from creme import metrics
-
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
-
-            >>> metric = metrics.RollingMacroRecall(window_size=3)
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            RollingMacroRecall: 1.
-            RollingMacroRecall: 0.5
-            RollingMacroRecall: 0.666667
-            RollingMacroRecall: 0.333333
-            RollingMacroRecall: 0.333333
-
-    """
-
-    def __init__(self, window_size):
-        self.window_size = window_size
-        self.rcm = confusion.RollingConfusionMatrix(window_size=window_size)
-
-    def update(self, y_true, y_pred):
-        self.rcm.update(y_true, y_pred)
-        return self
-
-    def get(self):
-
-        # Use the rolling confusion matric to count the true positives and false negatives
-        classes = self.rcm.classes
-        tps = collections.defaultdict(int)
-        fns = collections.defaultdict(int)
-
-        for yt, yp in itertools.product(classes, repeat=2):
-            if yt == yp:
-                tps[yp] = self.rcm.counts.get(yt, {}).get(yp, 0)
-            else:
-                fns[yp] += self.rcm.counts.get(yp, {}).get(yt, 0)
-
-        def div_or_0(a, b):
-            try:
-                return a / b
-            except ZeroDivisionError:
-                return 0.
-
-        return statistics.mean((div_or_0(tps[c], tps[c] + fns[c]) for c in classes))
-
-
-class RollingMicroRecall(precision.RollingMicroPrecision):
-    """Rolling micro-average recall score.
-
-    The micro-average recall is exactly equivalent to the micro-average precision as well as the
-    micro-average F1 score.
-
-    Parameters:
-        window_size (int): Size of the window of recent values to consider.
-
-    Example:
-
-        ::
-
-            >>> from creme import metrics
-
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
-
-            >>> metric = metrics.RollingMicroRecall(window_size=3)
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            RollingMicroRecall: 1.
-            RollingMicroRecall: 0.5
-            RollingMicroRecall: 0.666667
-            RollingMicroRecall: 0.666667
-            RollingMicroRecall: 0.666667
 
     References:
         1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_

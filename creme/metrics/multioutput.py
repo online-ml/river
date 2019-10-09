@@ -15,15 +15,20 @@ class RegressionMultiOutput(base.MultiOutputRegressionMetric):
 
     """
 
-    def __init__(self, metric: 'RegressionMetric'):
+    def __init__(self, metric: 'base.RegressionMetric'):
         self.metric = metric
 
     def bigger_is_better(self):
         return self.metric.bigger_is_better
 
-    def update(self, y_true, y_pred):
+    def update(self, y_true, y_pred, sample_weight=1.):
         for i in y_true:
-            self.metric.update(y_true[i], y_pred[i])
+            self.metric.update(y_true[i], y_pred[i], sample_weight)
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        for i in y_true:
+            self.metric.revert(y_true[i], y_pred[i], sample_weight)
         return self
 
     def get(self):
