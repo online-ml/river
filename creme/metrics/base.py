@@ -8,8 +8,14 @@ from .. import utils
 
 __all__ = [
     'BinaryMetric',
+    'ClassificationMetric',
+    'Metric',
+    'Metrics',
     'MultiClassMetric',
-    'RegressionMetric'
+    'MultiOutputClassificationMetric',
+    'MultiOutputRegressionMetric',
+    'RegressionMetric',
+    'WrapperMetric'
 ]
 
 
@@ -19,8 +25,7 @@ class Metric(abc.ABC):
     def get(self) -> float:
         """Returns the current value of the metric."""
 
-    @property
-    @abc.abstractmethod
+    @abc.abstractproperty
     def bigger_is_better(self) -> bool:
         """Indicates if a high value is better than a low one or not."""
 
@@ -57,8 +62,22 @@ class ClassificationMetric(Metric):
 class BinaryMetric(ClassificationMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: bool, y_pred: typing.Union[bool, base.Probas]) -> 'BinaryMetric':
-        """Updates the metric."""
+    def update(
+        self,
+        y_true: bool,
+        y_pred: typing.Union[bool, base.Probas],
+        sample_weight: float
+    ) -> 'BinaryMetric':
+        """Update the metric."""
+
+    @abc.abstractmethod
+    def revert(
+        self,
+        y_true: bool,
+        y_pred: typing.Union[bool, base.Probas],
+        sample_weight: float
+    ) -> 'BinaryMetric':
+        """Revert the metric."""
 
     def works_with(self, model) -> bool:
         return isinstance(model, base.BinaryClassifier)
@@ -67,9 +86,22 @@ class BinaryMetric(ClassificationMetric):
 class MultiClassMetric(BinaryMetric):
 
     @abc.abstractmethod
-    def update(self, y_true: base.Label,
-               y_pred: typing.Union[base.Label, base.Probas]) -> 'MultiClassMetric':
-        """Updates the metric."""
+    def update(
+        self,
+        y_true: base.Label,
+        y_pred: typing.Union[base.Label, base.Probas],
+        sample_weight: float
+    ) -> 'MultiClassMetric':
+        """Update the metric."""
+
+    @abc.abstractmethod
+    def revert(
+        self,
+        y_true: bool,
+        y_pred: typing.Union[base.Label, base.Probas],
+        sample_weight: float
+    ) -> 'MultiClassMetric':
+        """Revert the metric."""
 
     def works_with(self, model) -> bool:
         return isinstance(model, base.Classifier)
@@ -78,8 +110,22 @@ class MultiClassMetric(BinaryMetric):
 class RegressionMetric(Metric):
 
     @abc.abstractmethod
-    def update(self, y_true: float, y_pred: float) -> 'RegressionMetric':
-        """Updates the metric."""
+    def update(
+        self,
+        y_true: float,
+        y_pred: float,
+        sample_weight: float
+    ) -> 'RegressionMetric':
+        """Update the metric."""
+
+    @abc.abstractmethod
+    def revert(
+        self,
+        y_true: float,
+        y_pred: float,
+        sample_weight: float
+    ) -> 'RegressionMetric':
+        """Revert the metric."""
 
     @property
     def bigger_is_better(self):
@@ -97,9 +143,21 @@ class RegressionMetric(Metric):
 
 class MultiOutputClassificationMetric(ClassificationMetric):
 
-    def update(self, y_true: typing.Dict[str, base.Label],
-               y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]]):
-        """Updates the metric."""
+    def update(
+        self,
+        y_true: typing.Dict[str, base.Label],
+        y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]],
+        sample_weight: float
+    ) -> 'MultiOutputClassificationMetric':
+        """Update the metric."""
+
+    def revert(
+        self,
+        y_true: typing.Dict[str, base.Label],
+        y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]],
+        sample_weight: float
+    ) -> 'MultiOutputClassificationMetric':
+        """Revert the metric."""
 
     def works_with(self, model) -> bool:
         return isinstance(model, base.MultiOutputClassifier)
@@ -107,8 +165,21 @@ class MultiOutputClassificationMetric(ClassificationMetric):
 
 class MultiOutputRegressionMetric(RegressionMetric):
 
-    def update(self, y_true: typing.Dict[str, float], y_pred: typing.Dict[str, float]):
-        """Updates the metric."""
+    def update(
+        self,
+        y_true: typing.Dict[str, float],
+        y_pred: typing.Dict[str, float],
+        sample_weight: float
+    ) -> 'MultiOutputRegressionMetric':
+        """Update the metric."""
+
+    def revert(
+        self,
+        y_true: typing.Dict[str, float],
+        y_pred: typing.Dict[str, float],
+        sample_weight: float
+    ) -> 'MultiOutputRegressionMetric':
+        """Revert the metric."""
 
     def works_with(self, model) -> bool:
         return isinstance(model, base.MultiOutputRegressor)
@@ -121,7 +192,7 @@ class Metrics(Metric, collections.UserList):
         super().__init__(metrics)
         self.str_sep = str_sep
 
-    def update(self, y_true, y_pred):
+    def update(self, y_true, y_pred, sample_weight=1.):
 
         # If the metrics are classification metrics, then we have to handle the case where some
         # of the metrics require labels, whilst others need to be fed probabilities
@@ -135,6 +206,22 @@ class Metrics(Metric, collections.UserList):
 
         for m in self:
             m.update(y_true, y_pred)
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+
+        # If the metrics are classification metrics, then we have to handle the case where some
+        # of the metrics require labels, whilst others need to be fed probabilities
+        if hasattr(self, 'requires_labels') and not self.requires_labels:
+            for m in self:
+                if m.requires_labels:
+                    m.revert(y_true, max(y_pred, key=y_pred.get), sample_weight)
+                else:
+                    m.revert(y_true, y_pred, sample_weight)
+            return self
+
+        for m in self:
+            m.revert(y_true, y_pred, sample_weight)
         return self
 
     def get(self):
@@ -161,3 +248,24 @@ class Metrics(Metric, collections.UserList):
             pass
         self.append(other)
         return self
+
+
+class WrapperMetric(Metric):
+
+    @abc.abstractproperty
+    def metric(self):
+        """Gives access to the wrapped metric."""
+
+    def get(self):
+        return self.metric.get()
+
+    @property
+    def bigger_is_better(self):
+        return self.metric.bigger_is_better
+
+    def works_with(self, model):
+        return self.metric.works_with(model)
+
+    @property
+    def __metaclass__(self):
+        return self.metric.__class__

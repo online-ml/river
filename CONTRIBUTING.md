@@ -41,7 +41,7 @@ If you've added a new functionality, then you will have to write a docstring and
 ## Building Cython extensions
 
 ```sh
-python setup.py build_ext --inplace
+make cython
 ```
 
 

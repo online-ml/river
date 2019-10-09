@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `initializers` submodule has been added to the `optim` module, it can be used for initializing weights in weight-based models such as linear regression
 - `shuffle` to `stream` for shuffling a data stream by maintaining a buffer of fixed width
 - `Detrender` now has a `window_size` parameter for detrending with a rolling mean
+- `Rolling` to `metrics`, which eliminates the need for one specific rolling implementation per metric
+- Each metric can now be passed a `sample_weight` argument
 
 ### Modified
 
