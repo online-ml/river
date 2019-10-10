@@ -1,5 +1,4 @@
 import collections
-import statistics
 
 from .. import stats
 
@@ -10,7 +9,8 @@ from . import precision
 __all__ = [
     'MacroRecall',
     'MicroRecall',
-    'Recall'
+    'Recall',
+    'WeightedRecall'
 ]
 
 
@@ -99,13 +99,11 @@ class MacroRecall(BaseRecall, base.MultiClassMetric):
         return self
 
     def get(self):
-        if not self._class_counts:
+        relevant = [c for c, count in self._class_counts.items() if count > 0]
+        try:
+            return sum(self.recalls[c].get() for c in relevant) / len(relevant)
+        except ZeroDivisionError:
             return 0.
-        return statistics.mean((
-            0. if c not in self.recalls else self.recalls[c].get()
-            for c, count in self._class_counts.items()
-            if count > 0
-        ))
 
 
 class MicroRecall(precision.MicroPrecision):
@@ -137,3 +135,58 @@ class MicroRecall(precision.MicroPrecision):
         1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
 
     """
+
+
+class WeightedRecall(BaseRecall, base.MultiClassMetric):
+    """Weighted-average recall score.
+
+    This uses the support of each label to compute an average score, whereas `MacroRecall` ignores
+    the support.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
+
+            >>> metric = metrics.WeightedRecall()
+
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp))
+            WeightedRecall: 1.
+            WeightedRecall: 0.5
+            WeightedRecall: 0.666667
+            WeightedRecall: 0.75
+            WeightedRecall: 0.6
+
+    """
+
+    def __init__(self):
+        self.recalls = collections.defaultdict(Recall)
+        self.support = collections.Counter()
+        self._class_counts = collections.Counter()
+
+    def update(self, y_true, y_pred, sample_weight=1.):
+        self.recalls[y_true].update(True, y_true == y_pred, sample_weight)
+        self.support.update({y_true: sample_weight})
+        self._class_counts.update([y_true, y_pred])
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        self.recalls[y_true].revert(True, y_true == y_pred, sample_weight)
+        self.support.subtract({y_true: sample_weight})
+        self._class_counts.subtract([y_true, y_pred])
+        return self
+
+    def get(self):
+        relevant = [c for c, count in self._class_counts.items() if count > 0]
+        try:
+            return (
+                sum(self.recalls[c].get() * self.support[c] for c in relevant) /
+                sum(self.support[c] for c in relevant)
+            )
+        except ZeroDivisionError:
+            return 0.

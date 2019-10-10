@@ -78,19 +78,26 @@ def generate_test_cases(metric, n):
 
 
 TEST_CASES = [
+    (metrics.Accuracy(), sk_metrics.accuracy_score),
     (metrics.Precision(), sk_metrics.precision_score),
     (metrics.MacroPrecision(), functools.partial(sk_metrics.precision_score, average='macro')),
     (metrics.MicroPrecision(), functools.partial(sk_metrics.precision_score, average='micro')),
+    (metrics.WeightedPrecision(), functools.partial(sk_metrics.precision_score, average='weighted')),
     (metrics.Recall(), sk_metrics.recall_score),
     (metrics.MacroRecall(), functools.partial(sk_metrics.recall_score, average='macro')),
     (metrics.MicroRecall(), functools.partial(sk_metrics.recall_score, average='micro')),
+    (metrics.WeightedRecall(), functools.partial(sk_metrics.recall_score, average='weighted')),
     (metrics.FBeta(beta=.5), functools.partial(sk_metrics.fbeta_score, beta=.5)),
     (metrics.MacroFBeta(beta=.5), functools.partial(sk_metrics.fbeta_score, beta=.5, average='macro')),
     (metrics.MicroFBeta(beta=.5), functools.partial(sk_metrics.fbeta_score, beta=.5, average='micro')),
+    (metrics.WeightedFBeta(beta=.5), functools.partial(sk_metrics.fbeta_score, beta=.5, average='weighted')),
     (metrics.F1(), sk_metrics.f1_score),
     (metrics.MacroF1(), functools.partial(sk_metrics.f1_score, average='macro')),
     (metrics.MicroF1(), functools.partial(sk_metrics.f1_score, average='micro')),
+    (metrics.WeightedF1(), functools.partial(sk_metrics.f1_score, average='weighted')),
     (metrics.MCC(), sk_metrics.matthews_corrcoef),
+    (metrics.MAE(), sk_metrics.mean_absolute_error),
+    (metrics.MSE(), sk_metrics.mean_squared_error),
 ]
 
 
