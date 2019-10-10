@@ -3,7 +3,7 @@ from .. import stats
 from . import base
 
 
-__all__ = ['Accuracy', 'RollingAccuracy']
+__all__ = ['Accuracy']
 
 
 class BaseAccuracy(base.MultiClassMetric):
@@ -41,35 +41,8 @@ class Accuracy(stats.Mean, BaseAccuracy):
 
     """
 
-    def update(self, y_true, y_pred):
-        return super().update(y_true == y_pred)
+    def update(self, y_true, y_pred, sample_weight=1.):
+        return super().update(x=y_true == y_pred, w=sample_weight)
 
-
-class RollingAccuracy(stats.RollingMean, BaseAccuracy):
-    """Rolling accuracy score, which is the percentage of exact matches over a window.
-
-    Parameters:
-        window_size (int): Size of the window of recent values to consider.
-
-    Example:
-
-        ::
-
-            >>> from creme import metrics
-
-            >>> y_true = [True, False, True, True, True]
-            >>> y_pred = [True, True, False, True, True]
-
-            >>> metric = metrics.RollingAccuracy(window_size=3)
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(metric.update(y_t, y_p))
-            RollingAccuracy: 1.
-            RollingAccuracy: 0.5
-            RollingAccuracy: 0.333333
-            RollingAccuracy: 0.333333
-            RollingAccuracy: 0.666667
-
-    """
-
-    def update(self, y_true, y_pred):
-        return super().update(y_true == y_pred)
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        return super().revert(x=y_true == y_pred, w=sample_weight)

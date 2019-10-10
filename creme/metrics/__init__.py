@@ -1,10 +1,7 @@
 """Streaming metrics."""
 from .accuracy import Accuracy
-from .accuracy import RollingAccuracy
 from .confusion import ConfusionMatrix
-from .confusion import RollingConfusionMatrix
 from .cross_entropy import CrossEntropy
-from .cross_entropy import RollingCrossEntropy
 from .fbeta import F1
 from .fbeta import FBeta
 from .fbeta import MacroF1
@@ -12,41 +9,27 @@ from .fbeta import MacroFBeta
 from .fbeta import MicroF1
 from .fbeta import MicroFBeta
 from .fbeta import MultiFBeta
-from .fbeta import RollingF1
-from .fbeta import RollingFBeta
-from .fbeta import RollingMacroF1
-from .fbeta import RollingMacroFBeta
-from .fbeta import RollingMicroF1
-from .fbeta import RollingMicroFBeta
-from .fbeta import RollingMultiFBeta
+from .fbeta import WeightedF1
+from .fbeta import WeightedFBeta
 from .jaccard import Jaccard
 from .log_loss import LogLoss
-from .log_loss import RollingLogLoss
 from .mae import MAE
-from .mae import RollingMAE
 from .mcc import MCC
-from .mcc import RollingMCC
 from .mse import MSE
-from .mse import RollingMSE
 from .multioutput import RegressionMultiOutput
+from .per_class import PerClass
 from .precision import MacroPrecision
 from .precision import MicroPrecision
 from .precision import Precision
-from .precision import RollingMacroPrecision
-from .precision import RollingMicroPrecision
-from .precision import RollingPrecision
+from .precision import WeightedPrecision
 from .recall import MacroRecall
 from .recall import MicroRecall
 from .recall import Recall
-from .recall import RollingMacroRecall
-from .recall import RollingMicroRecall
-from .recall import RollingRecall
+from .recall import WeightedRecall
 from .rmse import RMSE
-from .rmse import RollingRMSE
 from .rmsle import RMSLE
-from .rmsle import RollingRMSLE
 from .roc_auc import ROCAUC
-from .smape import RollingSMAPE
+from .rolling import Rolling
 from .smape import SMAPE
 
 
@@ -70,34 +53,17 @@ __all__ = [
     'MicroRecall',
     'MSE',
     'MultiFBeta',
+    'PerClass',
     'Precision',
     'Recall',
     'RegressionMultiOutput',
     'RMSE',
     'RMSLE',
     'ROCAUC',
-    'RollingAccuracy',
-    'RollingConfusionMatrix',
-    'RollingCrossEntropy',
-    'RollingF1',
-    'RollingFBeta',
-    'RollingLogLoss',
-    'RollingMAE',
-    'RollingMacroF1',
-    'RollingMacroFBeta',
-    'RollingMacroPrecision',
-    'RollingMacroRecall',
-    'RollingMCC',
-    'RollingMicroF1',
-    'RollingMicroFBeta',
-    'RollingMicroPrecision',
-    'RollingMicroRecall',
-    'RollingMSE',
-    'RollingMultiFBeta',
-    'RollingPrecision',
-    'RollingRecall',
-    'RollingRMSE',
-    'RollingRMSLE',
-    'RollingSMAPE',
-    'SMAPE'
+    'Rolling',
+    'SMAPE',
+    'WeightedF1',
+    'WeightedFBeta',
+    'WeightedPrecision',
+    'WeightedRecall'
 ]

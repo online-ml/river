@@ -32,9 +32,14 @@ class ROCAUC(base.BinaryMetric):
         self.thresholds = [i / (num_thresholds - 1) for i in range(num_thresholds)]
         self.cms = [confusion.ConfusionMatrix() for _ in range(num_thresholds)]
 
-    def update(self, y_true, y_pred):
+    def update(self, y_true, y_pred, sample_weight=1.):
         for t, cm in zip(self.thresholds, self.cms):
-            cm.update(y_true=y_true, y_pred=y_pred.get(True, 0.) > t)
+            cm.update(y_true=y_true, y_pred=y_pred.get(True, 0.) > t, sample_weight=1.)
+        return self
+
+    def revert(self, y_true, y_pred):
+        for t, cm in zip(self.thresholds, self.cms):
+            cm.update(y_true=y_true, y_pred=y_pred.get(True, 0.) > t, sample_weight=1.)
         return self
 
     @property
