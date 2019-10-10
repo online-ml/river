@@ -164,10 +164,10 @@ class WeightedPrecision(BasePrecision, base.MultiClassMetric):
             >>> for yt, yp in zip(y_true, y_pred):
             ...     print(metric.update(yt, yp))
             WeightedPrecision: 1.
+            WeightedPrecision: 0.25
             WeightedPrecision: 0.5
-            WeightedPrecision: 0.666667
-            WeightedPrecision: 0.75
-            WeightedPrecision: 0.6
+            WeightedPrecision: 0.625
+            WeightedPrecision: 0.7
 
     """
 
