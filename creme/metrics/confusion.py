@@ -1,9 +1,7 @@
 import collections
-import functools
-import operator
 
 
-__all__ = ['ConfusionMatrix', 'RollingConfusionMatrix']
+__all__ = ['ConfusionMatrix']
 
 
 class ConfusionMatrix:
@@ -32,31 +30,36 @@ class ConfusionMatrix:
 
             >>> cm
                      ant  bird   cat
-               ant     2     0     0
-              bird     0     0     1
-               cat     1     0     2
+               ant   2.0     0     0
+              bird     0     0   1.0
+               cat   1.0     0   2.0
 
             >>> cm['bird']['cat']
-            1
+            1.0
 
     """
 
     def __init__(self):
         self.counts = collections.defaultdict(collections.Counter)
-        self.classes_ = set()
+        self.class_counts = collections.Counter()
 
     def __getitem__(self, idx):
         """Syntactic sugar for accessing the counts directly."""
         return self.counts[idx]
 
-    def update(self, y_true, y_pred):
-        self.counts[y_true].update([y_pred])
-        self.classes_.update({y_true, y_pred})
+    def update(self, y_true, y_pred, sample_weight=1.):
+        self.counts[y_true].update({y_pred: sample_weight})
+        self.class_counts.update([y_true, y_pred])
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        self.counts[y_true].subtract({y_pred: sample_weight})
+        self.class_counts.subtract([y_true, y_pred])
         return self
 
     @property
     def classes(self):
-        return self.classes_
+        return list(self.class_counts)
 
     def __str__(self):
 
@@ -88,89 +91,3 @@ class ConfusionMatrix:
 
     def __repr__(self):
         return str(self)
-
-
-class RollingConfusionMatrix(ConfusionMatrix):
-    """Rolling confusion matrix.
-
-    This class is different from the rest of the classes from the `metrics` module in that it
-    doesn't have a ``get`` method.
-
-    Parameters:
-        window_size (int): The size of the window of most recent values to consider.
-
-    Attributes:
-        classes (set): The entire set of seen classes, whether they are part of the predictions or
-            the true values.
-
-    Example:
-
-        ::
-
-            >>> from creme import metrics
-
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
-
-
-            >>> cm = metrics.RollingConfusionMatrix(window_size=3)
-
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     cm = cm.update(y_t, y_p)
-            ...     print(cm)
-            ...     print('-' * 13)
-                 0
-              0  1
-            -------------
-                 0  1
-              0  1  0
-              1  1  0
-            -------------
-                 0  1  2
-              0  1  0  0
-              1  1  0  0
-              2  0  0  1
-            -------------
-                 0  1  2
-              1  1  0  0
-              2  0  0  2
-            -------------
-                 1  2
-              2  1  2
-            -------------
-
-    """
-
-    def __init__(self, window_size):
-        super().__init__()
-        self.events = collections.deque(maxlen=window_size)
-
-    @property
-    def window_size(self):
-        return self.events.maxlen
-
-    def update(self, y_true, y_pred):
-
-        # Update the appropriate counter
-        self.counts[y_true].update([y_pred])
-
-        # If the events window is full then decrement the appropriate counter
-        if len(self.events) == self.events.maxlen:
-            yt, yp = self.events[0][0], self.events[0][1]
-            self.counts[yt].subtract([yp])
-
-            # Remove empty counters
-            if not self.counts[yt][yp]:
-                del self.counts[yt][yp]
-            if not self.counts[yt]:
-                del self.counts[yt]
-
-        self.events.append((y_true, y_pred))
-        return self
-
-    @property
-    def classes(self):
-        return functools.reduce(
-            operator.or_,
-            [set(self.counts[yt].keys()) for yt in self.counts] + [set(self.counts.keys())]
-        )

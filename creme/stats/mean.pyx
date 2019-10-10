@@ -7,9 +7,14 @@ from . import summing
 cdef class Mean(base.Univariate):
     """Running mean.
 
+    Parameters:
+        mean (float): Initial mean.
+        n (float): Initial sum of weights.
+
     Attributes:
-        mean (float): The running mean.
-        n (int): The current number of observations.
+        mean (float): The current value of the mean.
+        n (float): The current sum of weights. If each passed weight was 1, then this is equal to
+            the number of seen observations.
 
     Example:
 
@@ -28,15 +33,28 @@ cdef class Mean(base.Univariate):
             -1.0
             0.0
 
+    References:
+        1. `Incremental calculation of weighted mean and variance <https://fanf2.user.srcf.net/hermes/doc/antiforgery/stats.pdf>`_
+
     """
 
-    def __init__(self, n=0, mean=0.):
-        self.n = n
+    def __init__(self, mean=0., n=0.):
         self.mean = mean
+        self.n = n
 
-    cpdef Mean update(self, double x):
-        self.n += 1
-        self.mean += (x - self.mean) / self.n
+    cpdef Mean update(self, double x, double w=1.):
+        self.n += w
+        self.mean += w * (x - self.mean) / self.n
+        return self
+
+    cpdef Mean revert(self, double x, double w=1.):
+        self.n -= w
+        if self.n < 0:
+            raise ValueError('Cannot go below 0')
+        elif self.n == 0:
+            self.mean = 0.
+        else:
+            self.mean -= w * (x - self.mean) / self.n
         return self
 
     cpdef double get(self):

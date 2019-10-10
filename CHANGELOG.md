@@ -18,6 +18,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `initializers` submodule has been added to the `optim` module, it can be used for initializing weights in weight-based models such as linear regression
 - `shuffle` to `stream` for shuffling a data stream by maintaining a buffer of fixed width
 - `Detrender` now has a `window_size` parameter for detrending with a rolling mean
+- `Rolling` to `metrics`, which eliminates the need for one specific rolling implementation per metric
+- Each metric can now be passed a `sample_weight` argument
+- More metrics:
+    - `WeightedF1`
+    - `WeightedFBeta`
+    - `WeightedPrecision`
+    - `WeightedRecall`
 
 ### Modified
 
@@ -26,7 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Cythonized `stats.Mean` and `stats.Var`
 - Cythonized all the loss functions in `optim`
 - `CountVectorizer` and `TFIDFVectorizer` won't raise an error when being pickled anymore
-- Tests are now much more extensive, thanks mostly to estimator tags
+- Tests are now much more extensive, thanks mostly to the newly added estimator tags
 - `stream.iter_csv` now has `fraction` and `seed` parameters to sample rows, deterministically or not
 - Renamed `stream.iter_numpy` to `stream.iter_array`
 - The module `optim` has been reorganized into submodules; namely `schedulers`, `initializers`, and `losses`. The top-level now only contains optimizers. Some classes have renamed accordingly. See the documentation for details.

@@ -281,29 +281,7 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     ROCAUC
     Recall
     RegressionMultiOutput
-    RollingAccuracy
-    RollingConfusionMatrix
-    RollingCrossEntropy
-    RollingF1
-    RollingFBeta
-    RollingLogLoss
-    RollingMAE
-    RollingMCC
-    RollingMSE
-    RollingMacroF1
-    RollingMacroFBeta
-    RollingMacroPrecision
-    RollingMacroRecall
-    RollingMicroF1
-    RollingMicroFBeta
-    RollingMicroPrecision
-    RollingMicroRecall
-    RollingMultiFBeta
-    RollingPrecision
-    RollingRMSE
-    RollingRMSLE
-    RollingRecall
-    RollingSMAPE
+    Rolling
     SMAPE
 
 
