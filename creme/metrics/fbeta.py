@@ -466,8 +466,8 @@ class WeightedF1(WeightedFBeta):
             WeightedF1: 1.
             WeightedF1: 0.333333
             WeightedF1: 0.555556
-            WeightedF1: 0.555556
-            WeightedF1: 0.488889
+            WeightedF1: 0.666667
+            WeightedF1: 0.613333
 
     """
 
