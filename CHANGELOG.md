@@ -20,6 +20,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Detrender` now has a `window_size` parameter for detrending with a rolling mean
 - `Rolling` to `metrics`, which eliminates the need for one specific rolling implementation per metric
 - Each metric can now be passed a `sample_weight` argument
+- More metrics:
+    - `WeightedF1`
+    - `WeightedFBeta`
+    - `WeightedPrecision`
+    - `WeightedRecall`
 
 ### Modified
 

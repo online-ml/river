@@ -4,7 +4,7 @@ from . import base
 __all__ = ['RegressionMultiOutput']
 
 
-class RegressionMultiOutput(base.WrapperMetric, base.MultiOutputRegressionMetric):
+class RegressionMultiOutput(base.MultiOutputRegressionMetric, base.WrapperMetric):
     """Wrapper for multi-output regression.
 
     This wraps a regression metric to make it compatible with multi-output regression tasks. The

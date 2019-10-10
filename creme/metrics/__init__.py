@@ -9,6 +9,8 @@ from .fbeta import MacroFBeta
 from .fbeta import MicroF1
 from .fbeta import MicroFBeta
 from .fbeta import MultiFBeta
+from .fbeta import WeightedF1
+from .fbeta import WeightedFBeta
 from .jaccard import Jaccard
 from .log_loss import LogLoss
 from .mae import MAE
@@ -19,9 +21,11 @@ from .per_class import PerClass
 from .precision import MacroPrecision
 from .precision import MicroPrecision
 from .precision import Precision
+from .precision import WeightedPrecision
 from .recall import MacroRecall
 from .recall import MicroRecall
 from .recall import Recall
+from .recall import WeightedRecall
 from .rmse import RMSE
 from .rmsle import RMSLE
 from .roc_auc import ROCAUC
@@ -57,5 +61,9 @@ __all__ = [
     'RMSLE',
     'ROCAUC',
     'Rolling',
-    'SMAPE'
+    'SMAPE',
+    'WeightedF1',
+    'WeightedFBeta',
+    'WeightedPrecision',
+    'WeightedRecall'
 ]

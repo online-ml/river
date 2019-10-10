@@ -13,7 +13,9 @@ __all__ = [
     'MacroFBeta',
     'MicroF1',
     'MicroFBeta',
-    'MultiFBeta'
+    'MultiFBeta',
+    'WeightedF1',
+    'WeightedFBeta'
 ]
 
 
@@ -97,7 +99,6 @@ class MacroFBeta(BaseFBeta, base.MultiClassMetric):
 
     Parameters:
         beta (float): Weight of precision in harmonic mean.
-        window_size (int): Size of the rolling window.
 
     Attributes:
         fbetas (collections.defaultdict): F-Beta scores per class.
@@ -145,9 +146,8 @@ class MacroFBeta(BaseFBeta, base.MultiClassMetric):
 
     def get(self):
         relevant = [c for c, count in self._class_counts.items() if count > 0]
-        total = sum(self.fbetas[c].get() for c in relevant)
         try:
-            return total / len(relevant)
+            return sum(self.fbetas[c].get() for c in relevant) / len(relevant)
         except ZeroDivisionError:
             return 0.
 
@@ -190,6 +190,73 @@ class MicroFBeta(FBeta, base.MultiClassMetric):
         super().__init__(beta=beta)
         self.precision = precision.MicroPrecision()
         self.recall = recall.MicroRecall()
+
+
+class WeightedFBeta(BaseFBeta, base.MultiClassMetric):
+    """Weighted-average F-Beta score.
+
+    This works by computing the F-Beta score per class, and then performs a global weighted average
+    according to the support of each class.
+
+    Parameters:
+        beta (float): Weight of precision in harmonic mean.
+
+    Attributes:
+        fbetas (collections.defaultdict): F-Beta scores per class.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
+
+            >>> metric = metrics.WeightedFBeta(beta=0.8)
+
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp))
+            WeightedFBeta: 1.
+            WeightedFBeta: 0.310606
+            WeightedFBeta: 0.540404
+            WeightedFBeta: 0.655303
+            WeightedFBeta: 0.626283
+
+    """
+
+    def __init__(self, beta):
+        self.fbetas = collections.defaultdict(functools.partial(FBeta, beta=beta))
+        self.support = collections.Counter()
+        self._class_counts = collections.Counter()
+
+    def update(self, y_true, y_pred, sample_weight=1.):
+        self._class_counts.update([y_true, y_pred])
+        self.support.update({y_true: sample_weight})
+
+        for c in self._class_counts:
+            self.fbetas[c].update(y_true == c, y_pred == c, sample_weight)
+
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        self._class_counts.subtract([y_true, y_pred])
+        self.support.subtract({y_true: sample_weight})
+
+        for c in self._class_counts:
+            self.fbetas[c].revert(y_true == c, y_pred == c, sample_weight)
+
+        return self
+
+    def get(self):
+        relevant = [c for c, count in self._class_counts.items() if count > 0]
+        try:
+            return (
+                sum(self.fbetas[c].get() * self.support[c] for c in relevant) /
+                sum(self.support[c] for c in relevant)
+            )
+        except ZeroDivisionError:
+            return 0.
 
 
 class MultiFBeta(BaseFBeta, base.MultiClassMetric):
@@ -311,9 +378,6 @@ class MacroF1(MacroFBeta):
 
     This works by computing the F1 score per class, and then performs a global average.
 
-    Parameters:
-        window_size (int): Size of the rolling window.
-
     Attributes:
         fbetas (collections.defaultdict): F-Beta scores per class.
 
@@ -370,6 +434,40 @@ class MicroF1(MicroFBeta):
 
     References:
         1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
+
+    """
+
+    def __init__(self):
+        super().__init__(beta=1.)
+
+
+class WeightedF1(WeightedFBeta):
+    """Weighted-average F1 score.
+
+    This works by computing the F1 score per class, and then performs a global weighted average by
+    using the support of each class.
+
+    Attributes:
+        fbetas (collections.defaultdict): F-Beta scores per class.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+
+            >>> y_true = [0, 1, 2, 2, 2]
+            >>> y_pred = [0, 0, 2, 2, 1]
+
+            >>> metric = metrics.WeightedF1()
+
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     print(metric.update(yt, yp))
+            WeightedF1: 1.
+            WeightedF1: 0.333333
+            WeightedF1: 0.555556
+            WeightedF1: 0.555556
+            WeightedF1: 0.488889
 
     """
 
