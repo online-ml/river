@@ -256,9 +256,6 @@ class WrapperMetric(Metric):
     def metric(self):
         """Gives access to the wrapped metric."""
 
-    def get(self):
-        return self.metric.get()
-
     @property
     def bigger_is_better(self):
         return self.metric.bigger_is_better
