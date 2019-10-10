@@ -1,6 +1,7 @@
 from .. import utils
 
 from . import base
+from . import per_class
 
 
 __all__ = ['Rolling']
@@ -8,6 +9,9 @@ __all__ = ['Rolling']
 
 class Rolling(base.WrapperMetric, utils.Window):
     """Wrapper for computing metrics over a window.
+
+    Parameters:
+        metric (metrics.Metric)
 
     Example:
 
@@ -21,11 +25,11 @@ class Rolling(base.WrapperMetric, utils.Window):
             >>> metric = metrics.Rolling(metrics.MSE(), window_size=2)
 
             >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(metric.update(y_t, y_p).get())
-            0.25
-            0.25
-            0.125...
-            0.5...
+            ...     print(metric.update(y_t, y_p))
+            Rolling of size 2 MSE: 0.25
+            Rolling of size 2 MSE: 0.25
+            Rolling of size 2 MSE: 0.125...
+            Rolling of size 2 MSE: 0.5...
 
     """
 
@@ -53,4 +57,9 @@ class Rolling(base.WrapperMetric, utils.Window):
         return self.metric.get()
 
     def __str__(self):
-        return f'Rolling {self.__class__.__name__} of size {self.window_size}: {self.get():.6f}'.rstrip('0')
+        if isinstance(self._metric, per_class.PerClass):
+            return f'Rolling of size {self.window_size}\n' + '\n'.join((
+                f'    {s}'
+                for s in str(self.metric).split('\n'))
+            )
+        return f'Rolling of size {self.window_size} {str(self.metric)}'

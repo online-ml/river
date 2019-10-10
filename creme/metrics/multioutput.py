@@ -4,8 +4,8 @@ from . import base
 __all__ = ['RegressionMultiOutput']
 
 
-class RegressionMultiOutput(base.MultiOutputRegressionMetric):
-    """Multi-output regression metric wrapper.
+class RegressionMultiOutput(base.WrapperMetric, base.MultiOutputRegressionMetric):
+    """Wrapper for multi-output regression.
 
     This wraps a regression metric to make it compatible with multi-output regression tasks. The
     value of each output will be fed sequentially to the ``get`` method of the provided metric.
@@ -16,10 +16,11 @@ class RegressionMultiOutput(base.MultiOutputRegressionMetric):
     """
 
     def __init__(self, metric: 'base.RegressionMetric'):
-        self.metric = metric
+        self._metric = metric
 
-    def bigger_is_better(self):
-        return self.metric.bigger_is_better
+    @property
+    def metric(self):
+        return self._metric
 
     def update(self, y_true, y_pred, sample_weight=1.):
         for i in y_true:
