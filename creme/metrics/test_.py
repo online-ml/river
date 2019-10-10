@@ -19,11 +19,15 @@ def load_metrics():
 
     for name, obj in inspect.getmembers(importlib.import_module('creme.metrics'), inspect.isclass):
 
-        if issubclass(obj, metrics.Rolling):
+        if issubclass(obj, metrics.PerClass):
+            yield obj(metric=metrics.Precision())
+            continue
+
+        elif issubclass(obj, metrics.Rolling):
             yield obj(metric=metrics.MSE(), window_size=42)
             continue
 
-        if name == 'RegressionMultiOutput':
+        elif name == 'RegressionMultiOutput':
             yield obj(metric=metrics.MSE())
             continue
 
@@ -86,7 +90,7 @@ TEST_CASES = [
     (metrics.F1(), sk_metrics.f1_score),
     (metrics.MacroF1(), functools.partial(sk_metrics.f1_score, average='macro')),
     (metrics.MicroF1(), functools.partial(sk_metrics.f1_score, average='micro')),
-    (metrics.MCC(), sk_metrics.matthews_corrcoef)
+    (metrics.MCC(), sk_metrics.matthews_corrcoef),
 ]
 
 

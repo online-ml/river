@@ -49,5 +49,8 @@ class Rolling(base.WrapperMetric, utils.Window):
         self.metric.revert(y_true, y_pred, sample_weight)
         return self
 
+    def get(self):
+        return self.metric.get()
+
     def __str__(self):
         return f'Rolling {self.__class__.__name__} of size {self.window_size}: {self.get():.6f}'.rstrip('0')

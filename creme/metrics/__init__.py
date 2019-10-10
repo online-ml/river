@@ -15,6 +15,7 @@ from .mae import MAE
 from .mcc import MCC
 from .mse import MSE
 from .multioutput import RegressionMultiOutput
+from .per_class import PerClass
 from .precision import MacroPrecision
 from .precision import MicroPrecision
 from .precision import Precision
@@ -48,6 +49,7 @@ __all__ = [
     'MicroRecall',
     'MSE',
     'MultiFBeta',
+    'PerClass',
     'Precision',
     'Recall',
     'RegressionMultiOutput',
