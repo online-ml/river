@@ -18,12 +18,17 @@ __all__ = [
 
 def softmax(y_pred):
     """Normalizes a dictionary of predicted probabilities, in-place."""
+
+    maximum = max(y_pred.values())
     total = 0.
+
     for c, p in y_pred.items():
-        y_pred[c] = math.exp(p)
+        y_pred[c] = math.exp(p - maximum)
         total += y_pred[c]
+
     for c in y_pred:
         y_pred[c] /= total
+
     return y_pred
 
 

@@ -2,9 +2,10 @@ import collections
 import operator
 
 from .. import base
+from .. import utils
 
 
-__all__ = ['KNeighborsRegressor']
+__all__ = ['KNeighborsRegressor', 'KNeighborsClassifier']
 
 
 def minkowski_distance(a, b, p):
@@ -32,7 +33,7 @@ class NearestNeighbours(collections.deque):
 
 
 class KNeighborsRegressor(NearestNeighbours, base.Regressor):
-    """K-Nearest Neighbors for regression.
+    """K-Nearest Neighbors (KNN) for regression.
 
     Parameters:
         n_neighbors (int): Number of neighbors to use.
@@ -46,7 +47,6 @@ class KNeighborsRegressor(NearestNeighbours, base.Regressor):
 
         ::
 
-            >>> from creme import compose
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import neighbors
@@ -87,6 +87,10 @@ class KNeighborsRegressor(NearestNeighbours, base.Regressor):
         if not nearest:
             return 0.
 
+        # If the closest neighbor has a distance of 0, then return it's output
+        if nearest[0][2] == 0:
+            return nearest[0][1]
+
         # Weighted average
         if self.weighted:
             return (
@@ -96,3 +100,76 @@ class KNeighborsRegressor(NearestNeighbours, base.Regressor):
 
         # Uniform average
         return sum(y for _, y, _ in nearest) / self.n_neighbors
+
+
+class KNeighborsClassifier(NearestNeighbours, base.MultiClassifier):
+    """K-Nearest Neighbors (KNN) for classification.
+
+    Parameters:
+        n_neighbors (int): Number of neighbors to use.
+        window_size (int): Size of the sliding window use to search neighbors with.
+        p (int): Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
+            Manhattan distance, while ``p=2`` corresponds to the Euclidean distance.
+        weighted (bool): Whether to weight the contribution of each neighbor by it's inverse
+            distance or not.
+
+    Example:
+
+        ::
+
+            >>> from creme import datasets
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import neighbors
+            >>> from creme import preprocessing
+
+            >>> X_y = datasets.fetch_electricity()
+
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     neighbors.KNeighborsClassifier()
+            ... )
+
+            >>> metric = metrics.Accuracy()
+
+            >>> model_selection.online_score(X_y, model, metric)
+            Accuracy: 0.88526
+
+    """
+
+    def __init__(self, n_neighbors=5, window_size=50, p=2, weighted=True):
+        super().__init__(window_size=window_size, p=p)
+        self.n_neighbors = n_neighbors
+        self.weighted = weighted
+        self.classes = set()
+
+    def fit_one(self, x, y):
+        self.classes.add(y)
+        return super().update(x, y)
+
+    def predict_proba_one(self, x):
+
+        nearest = self.find_nearest(x=x, k=self.n_neighbors)
+
+        y_pred = {c: 0. for c in self.classes}
+
+        if not nearest:
+            return y_pred
+
+        # If the closest neighbor has a distance of 0, then return it's output
+        if nearest[0][2] == 0:
+            y_pred[nearest[0][1]] = 1.
+            return y_pred
+
+        # Weighted votes
+        if self.weighted:
+            for _, y, d in nearest:
+                y_pred[y] += 1. / d
+
+        # Uniform votes
+        else:
+            for _, y, _ in nearest:
+                y_pred[y] += 1.
+
+        # Normalize votes into real [0, 1] probabilities
+        return utils.softmax(y_pred)

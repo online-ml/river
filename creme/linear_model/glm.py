@@ -159,10 +159,10 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             ...     preprocessing.StandardScaler() |
             ...     linear_model.LogisticRegression(optimizer=optim.SGD(.1))
             ... )
-            >>> metric = metrics.LogLoss()
+            >>> metric = metrics.Accuracy()
 
             >>> model_selection.online_score(X_y, model, metric)
-            LogLoss: 0.293782
+            Accuracy: 0.894664
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
