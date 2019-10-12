@@ -9,6 +9,7 @@ __all__ = [
     'chain_dot',
     'clamp',
     'dot',
+    'minkowski_distance',
     'norm',
     'prod',
     'sigmoid',
@@ -16,8 +17,25 @@ __all__ = [
 ]
 
 
+def minkowski_distance(a, b, p):
+    """Minkowski distance.
+
+    Parameters:
+        a (dict)
+        b (dict)
+        p (int): Parameter for the Minkowski distance. When ``p=1``, this is equivalent to using
+            the Manhattan distance. When ``p=2``, this is equivalent to using the Euclidean
+            distance.
+
+    """
+    return sum((abs(a.get(k, 0.) - b.get(k, 0.))) ** p for k in set([*a.keys(), *b.keys()]))
+
+
 def softmax(y_pred):
     """Normalizes a dictionary of predicted probabilities, in-place."""
+
+    if not y_pred:
+        return y_pred
 
     maximum = max(y_pred.values())
     total = 0.

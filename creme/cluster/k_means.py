@@ -1,9 +1,8 @@
 import collections
-
-from sklearn import utils
+import random
 
 from .. import base
-from .. import neighbors
+from .. import utils
 
 
 __all__ = ['KMeans']
@@ -31,10 +30,7 @@ class KMeans(base.Clusterer):
             positions.
         p (int): Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
             Manhattan distance, while ``p=2`` corresponds to the Euclidean distance.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Random seed used for generating initial centroid positions.
 
     Attributes:
         centers (dict): Central positions of each cluster.
@@ -59,7 +55,7 @@ class KMeans(base.Clusterer):
             ...     [4, 0]
             ... ]
 
-            >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, random_state=42)
+            >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=42)
 
             >>> for i, (x, _) in enumerate(stream.iter_array(X)):
             ...     k_means = k_means.fit_one(x)
@@ -83,13 +79,13 @@ class KMeans(base.Clusterer):
 
     """
 
-    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, random_state=None):
+    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed=None):
         self.n_clusters = n_clusters
         self.halflife = halflife
         self.mu = mu
         self.sigma = sigma
         self.p = p
-        self.random_state = utils.check_random_state(random_state)
+        self.rng = random.Random(seed)
         self.centers = {
             i: collections.defaultdict(self.random_normal)
             for i in range(n_clusters)
@@ -97,7 +93,7 @@ class KMeans(base.Clusterer):
 
     def random_normal(self):
         """Returns a random value sampled from a normal distribution."""
-        return self.random_state.normal(self.mu, self.sigma)
+        return self.rng.gauss(self.mu, self.sigma)
 
     def fit_predict_one(self, x, y=None):
         """Equivalent to ``k_means.fit_one(x).predict_one(x)``, but faster."""
@@ -118,6 +114,6 @@ class KMeans(base.Clusterer):
     def predict_one(self, x):
 
         def get_distance(c):
-            return neighbors.minkowski_distance(a=self.centers[c], b=x, p=self.p)
+            return utils.minkowski_distance(a=self.centers[c], b=x, p=self.p)
 
         return min(self.centers, key=get_distance)

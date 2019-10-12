@@ -8,10 +8,6 @@ from .. import utils
 __all__ = ['KNeighborsRegressor', 'KNeighborsClassifier']
 
 
-def minkowski_distance(a, b, p):
-    return sum((abs(a.get(k, 0.) - b.get(k, 0.))) ** p for k in set([*a.keys(), *b.keys()]))
-
-
 class NearestNeighbours(collections.deque):
 
     def __init__(self, window_size, p):
@@ -26,7 +22,7 @@ class NearestNeighbours(collections.deque):
         """Returns the ``k`` closest points, along with their distances."""
 
         # Compute the distances to each point in the window
-        points = ((*p, minkowski_distance(a=x, b=p[0], p=self.p)) for p in self)
+        points = ((*p, utils.minkowski_distance(a=x, b=p[0], p=self.p)) for p in self)
 
         # Return the k closest points
         return sorted(points, key=operator.itemgetter(2))[:k]
