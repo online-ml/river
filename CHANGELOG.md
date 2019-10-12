@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Metrics can now be composed using the `+` operator, which is useful for evaluating multiple metrics
 - `LogisticRegression` and `LinearRegression` now have a `intercept_lr` parameter
-- `KNeighborsRegressor` to `neighbors`
+- `KNeighborsRegressor` and `KNeighborsClassifier` to `neighbors`
 - `fetch_kdd99_http`, `fetch_sms` and `fetch_trec07p` to `datasets`
 - `AdaMax` to `optim`
 - `Renamer` to `compose`
