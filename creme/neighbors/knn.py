@@ -1,15 +1,14 @@
-"""Neighbors-based learning."""
 import collections
 import operator
 
-from . import base
+from .. import base
 
 
 __all__ = ['KNeighborsRegressor']
 
 
 def minkowski_distance(a, b, p):
-    return sum((a.get(k, 0.) - b.get(k, 0.)) ** p for k in set([*a.keys(), *b.keys()]))
+    return sum((abs(a.get(k, 0.) - b.get(k, 0.))) ** p for k in set([*a.keys(), *b.keys()]))
 
 
 class NearestNeighbours(collections.deque):
@@ -90,7 +89,10 @@ class KNeighborsRegressor(NearestNeighbours, base.Regressor):
 
         # Weighted average
         if self.weighted:
-            return sum(p[1] / p[2] for p in nearest) / sum(1 / p[2] for p in nearest)
+            return (
+                sum(y / d for _, y, d in nearest) /
+                sum(1 / d for _, _, d in nearest)
+            )
 
         # Uniform average
-        return sum(p[1] for p in nearest) / self.n_neighbors
+        return sum(y for _, y, _ in nearest) / self.n_neighbors
