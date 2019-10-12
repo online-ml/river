@@ -4,6 +4,7 @@ from .histogram import Histogram
 from .math import chain_dot
 from .math import clamp
 from .math import dot
+from .math import minkowski_distance
 from .math import norm
 from .math import prod
 from .math import sigmoid
@@ -21,6 +22,7 @@ __all__ = [
     'clamp',
     'dot',
     'Histogram',
+    'minkowski_distance',
     'norm',
     'pretty_format_class',
     'prod',
