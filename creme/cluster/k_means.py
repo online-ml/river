@@ -55,23 +55,23 @@ class KMeans(base.Clusterer):
             ...     [4, 0]
             ... ]
 
-            >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=42)
+            >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
 
             >>> for i, (x, _) in enumerate(stream.iter_array(X)):
             ...     k_means = k_means.fit_one(x)
             ...     print(f'{X[i]} is assigned to cluster {k_means.predict_one(x)}')
-            [1, 2] is assigned to cluster 0
-            [1, 4] is assigned to cluster 0
+            [1, 2] is assigned to cluster 1
+            [1, 4] is assigned to cluster 1
             [1, 0] is assigned to cluster 0
-            [4, 2] is assigned to cluster 1
-            [4, 4] is assigned to cluster 1
-            [4, 0] is assigned to cluster 1
+            [4, 2] is assigned to cluster 0
+            [4, 4] is assigned to cluster 0
+            [4, 0] is assigned to cluster 0
 
             >>> k_means.predict_one({0: 0, 1: 0})
-            0
+            1
 
             >>> k_means.predict_one({0: 4, 1: 4})
-            1
+            0
 
     References:
         1. `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
