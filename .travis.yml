@@ -8,7 +8,7 @@ cache:
   apt: true
   directories:
     - $HOME/.cache/pip
-    - $HOME/downloads
+    - downloads/
 
 install: skip
 script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}

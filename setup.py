@@ -10,15 +10,10 @@ import os
 import sys
 from shutil import rmtree
 
-from setuptools import Extension, find_packages, setup, Command
+from setuptools import dist, Extension, find_packages, setup, Command
 
-try:
-    from Cython.Build import cythonize
-except ImportError:
-    # Create closure for deferred import
-    def cythonize(*args, **kwargs):
-        from Cython.Build import cythonize
-        return cythonize(*args, ** kwargs)
+dist.Distribution().fetch_build_eggs(['cython'])
+from Cython.Build import cythonize
 
 
 # Package meta-data.
@@ -129,9 +124,6 @@ setup(
     # entry_points={
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
-    setup_requires=[
-        'cython',
-    ],
     install_requires=base_packages,
     extras_require={'dev': dev_packages, 'docs': docs_packages},
     include_package_data=True,
@@ -152,6 +144,6 @@ setup(
         'upload': UploadCommand,
     },
     ext_modules=cythonize([
-        Extension('*', sources=glob.glob('creme/**/*.pyx'), libraries=['m'])
+        Extension('*', sources=glob.glob('**/*.pyx'), libraries=['m'])
     ])
 )
