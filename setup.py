@@ -34,6 +34,7 @@ VERSION = None
 base_packages = ['numpy>=1.16.4', 'scipy>=1.3.0', 'scikit-learn>=0.21.2']
 
 dev_packages = [
+    'Cython>=0.29.6',
     'graphviz>=0.10.1',
     'matplotlib>=3.0.2',
     'nbval>=0.9.1',
