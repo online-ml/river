@@ -147,8 +147,5 @@ setup(
     cmdclass={
         'upload': UploadCommand,
     },
-    ext_modules=cythonize(
-        [Extension('*', sources=['**/*.pyx'], libraries=['m'])],
-        compiler_directives={'language_level': '3'}
-    )
+    ext_modules=cythonize([Extension('*', sources=['**/*.pyx'], libraries=['m'])])
 )
