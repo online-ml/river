@@ -23,13 +23,16 @@ matrix:
       language: generic
       env: PIP=pip2
 
+env:
+  global:
+    - CIBW_BUILD: cp36-* cp37-*
+
 jobs:
   include:
 
   - stage: docs
     install:
       - sudo apt-get install graphviz pandoc
-      - pip install cython
       - python setup.py install
       - pip install -e ".[docs]"
       - pytest --nbval-lax --current-env docs/notebooks/*.ipynb
@@ -49,11 +52,9 @@ jobs:
     if: tag IS present
 
   - stage: pypi
-    install: pip install cython
     script:
       - pip install cibuildwheel==0.12.0
-      - cibuildwheel --output-dir dist
-
+      - cibuildwheel --output-dir wheelhouse
 
 env:
   global:
