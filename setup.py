@@ -5,15 +5,19 @@
 #   $ pip install twine
 
 import io
-import glob
 import os
 import sys
 from shutil import rmtree
 
-from setuptools import dist, Extension, find_packages, setup, Command
+from setuptools import Extension, find_packages, setup, Command
 
-dist.Distribution().fetch_build_eggs(['cython'])
-from Cython.Build import cythonize
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    # Create closure for deferred import
+    def cythonize(*args, **kwargs):
+        from Cython.Build import cythonize
+        return cythonize(*args, ** kwargs)
 
 
 # Package meta-data.
@@ -30,7 +34,6 @@ VERSION = None
 base_packages = ['numpy>=1.16.4', 'scipy>=1.3.0', 'scikit-learn>=0.21.2']
 
 dev_packages = [
-    'Cython>=0.29.6',
     'graphviz>=0.10.1',
     'matplotlib>=3.0.2',
     'nbval>=0.9.1',
@@ -143,7 +146,8 @@ setup(
     cmdclass={
         'upload': UploadCommand,
     },
-    ext_modules=cythonize([
-        Extension('*', sources=glob.glob('**/*.pyx'), libraries=['m'])
-    ])
+    ext_modules=cythonize(
+        [Extension('*', sources=['**/*.pyx'], libraries=['m'])],
+        compiler_directives={'language_level': '3'}
+    )
 )

@@ -5,7 +5,8 @@ doc:
 	cd docs && $(MAKE) clean && rm -rf generated && python create_api_page.py && $(MAKE) html -j 4
 
 clean:
-	rm -rf **/*.c **/*.so **/*.pyc **/*/__pycache__/ build/ **/*/.ipynb_checkpoints/
+	rm -f **/*.c **/*.so **/*.pyc
+	rm -rf **/*/__pycache__ build .ipynb_checkpoints .pytest_cache .empty .eggs creme.egg-info
 
 cython:
 	python setup.py build_ext --inplace

@@ -26,12 +26,14 @@ matrix:
 env:
   global:
     - CIBW_BUILD: cp36-* cp37-*
+    - CIBW_BEFORE_BUILD: pip install cython
 
 jobs:
   include:
 
   - stage: docs
     install:
+      - pip install cython
       - sudo apt-get install graphviz pandoc
       - python setup.py install
       - pip install -e ".[docs]"
@@ -55,6 +57,7 @@ jobs:
     script:
       - pip install cibuildwheel==0.12.0
       - cibuildwheel --output-dir wheelhouse
+
 
 env:
   global:
