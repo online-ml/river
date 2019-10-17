@@ -39,7 +39,7 @@ jobs:
     if: tag IS present
 
   - stage: pypi
-    install: echo "skipping install"
+    install: pip install cython
     script: echo "skipping tests"
     deploy:
       provider: pypi
