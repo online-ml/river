@@ -10,6 +10,11 @@ cache:
     - $HOME/.cache/pip
     - $HOME/downloads
 
+env:
+  global:
+    - CIBW_BUILD="cp36-* cp37-*"
+    - CIBW_BEFORE_BUILD="pip install cython"
+
 matrix:
   include:
     - sudo: required
@@ -22,11 +27,6 @@ matrix:
 
 install: skip
 script: skip
-
-env:
-  global:
-    - CIBW_BUILD="cp36-* cp37-*"
-    - CIBW_BEFORE_BUILD="pip install cython"
 
 jobs:
   include:
