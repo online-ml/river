@@ -51,8 +51,9 @@ jobs:
   - stage: pypi
     install: pip install cython
     script:
-      - $PIP install cibuildwheel==0.12.0
+      - pip install cibuildwheel==0.12.0
       - cibuildwheel --output-dir dist
+
 
 env:
   global:
