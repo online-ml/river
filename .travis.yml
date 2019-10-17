@@ -25,18 +25,15 @@ script: skip
 
 env:
   global:
-    - CIBW_BUILD=cp36-* cp37-*
-    - CIBW_BEFORE_BUILD=pip install cython
+    - CIBW_BUILD="cp36-* cp37-*"
+    - CIBW_BEFORE_BUILD="pip install cython"
 
 jobs:
   include:
 
   - stage: pypi
     install: pip install cibuildwheel==0.12.0
-    script:
-      - CIBW_BUILD="cp36-* cp37-*""
-      - CIBW_BEFORE_BUILD="pip install cython"
-      - cibuildwheel --output-dir dist
+    script: cibuildwheel --output-dir dist
 
 
   - stage: docs
