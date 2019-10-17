@@ -11,14 +11,6 @@ from shutil import rmtree
 
 from setuptools import Extension, find_packages, setup, Command
 
-try:
-    from Cython.Build import cythonize
-except ImportError:
-    # Create closure for deferred import
-    def cythonize(*args, **kwargs):
-        from Cython.Build import cythonize
-        return cythonize(*args, ** kwargs)
-
 
 # Package meta-data.
 NAME = 'creme'
@@ -128,6 +120,10 @@ setup(
     # entry_points={
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
+    setup_requires=[
+        'setuptools>=18.0',
+        'cython'
+    ],
     install_requires=base_packages,
     extras_require={'dev': dev_packages, 'docs': docs_packages},
     include_package_data=True,
@@ -147,7 +143,7 @@ setup(
     cmdclass={
         'upload': UploadCommand,
     },
-    ext_modules=cythonize([
+    ext_modules=[
         Extension('*', sources=['**/*.pyx'], libraries=['m'])
-    ])
+    ]
 )
