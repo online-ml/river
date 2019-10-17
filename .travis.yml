@@ -10,16 +10,6 @@ cache:
     - $HOME/.cache/pip
     - $HOME/downloads
 
-matrix:
-  include:
-    - sudo: required
-      services:
-        - docker
-      env: PIP=pip
-    - os: osx
-      language: generic
-      env: PIP=pip2
-
 env:
   global:
     - CIBW_BUILD: cp36-* cp37-*
@@ -30,6 +20,19 @@ script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
 
 jobs:
   include:
+
+  - stage: pypi
+    install: pip install cibuildwheel==0.12.0
+    script: cibuildwheel --output-dir wheelhouse
+    deploy:
+      provider: pypi
+      user: MaxHalford
+      password:
+        secure: IKlAIBIeaM6muU5ITEM5a6BwYwDzRI5Bn30ssnS9oRRTLEqsU70Ih+2eWX5UbascgBTdtMJLdE9vEsp4F6TLNgdjmZPyYXZLb6hTDu0lz5PeFiJ4EHVNyC7PqjDpPWiU9kE1lXMAfbDADIWnK/bNvgfn5xlbUfTPnnMd1bsazJtYSOumoYpjhvEPRkC/A/+iVHfBXFvt4UqXVZw/HgcZfBze8heLGh3klAyO6QuIIbfXvf9Oiym8BnfnaPKvJi+npmitL7wMtTP/Oq/zFg0RQdBPZhcqvnwJ5c1XQDWbLJArs56IqPEk/eN3HpvDbo+bZD1Lc3ACA71bCkKDTnkhZ+0uVga9rQaue/dCQ8l+PIIHwfesv8Wb5sTA3YGaHhTFcN645AAttlvN/GHluJNuufdnp2HrTicCnsXM+9HvgvQgdNB4xVOGuinAebMyEoX6pi99dUNZXl7knFr8VTfu4YKstH59pz7PDAq5FYLpPOxpgc1+nKa0DSCj7VMKZy4G+PDbok+LKtNJj1BCKwdZFb0QQUNLLQYJfvFLJfEcArYHLb+fNgtOT87IB4TnQD2O3vNkTx7Z3/oSMaLqfIP9Jwc1q8YlLvNp7u3L04ar0V09p9xnW3qoMzWTImPZimNOjabPE6Ieoyu6N7FJsPEwAsW3S4GeSZertcy1HJLhTkU=
+      on:
+        all_branches: true
+      skip_existing: true
+    if: tag IS present
 
   - stage: docs
     install:
@@ -52,10 +55,6 @@ jobs:
       - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
       - git push --set-upstream origin master
     if: tag IS present
-
-  - stage: pypi
-    install: pip install cibuildwheel==0.12.0
-    script: cibuildwheel --output-dir wheelhouse
 
 env:
   global:
