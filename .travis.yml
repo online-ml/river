@@ -49,7 +49,6 @@ jobs:
       on:
         all_branches: true
       skip_existing: true
-    if: tag IS present
 
 env:
   global:
