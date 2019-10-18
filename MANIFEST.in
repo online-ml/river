@@ -1,1 +1,1 @@
-include creme/data/*.csv
+include creme/datasets/*.csv
