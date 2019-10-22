@@ -12,8 +12,8 @@ cache:
 
 env:
   global:
-    - CIBW_BUILD="cp36-* cp37-*"
-    - CIBW_BEFORE_BUILD="pip install cython"
+    - CIBW_BUILD='cp36-* cp37-*'
+    - CIBW_BEFORE_BUILD='pip install cython'
 
 matrix:
   include:
@@ -21,6 +21,8 @@ matrix:
       services:
         - docker
       env: PIP=pip
+           CIBW_BUILD='cp36-* cp37-*'
+           CIBW_BEFORE_BUILD='pip install cython'
     - os: osx
       language: generic
       env: PIP=pip2
