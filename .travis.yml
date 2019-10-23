@@ -31,8 +31,7 @@ jobs:
       - CIBW_BUILD="cp36-* cp37-*"
       - CIBW_BEFORE_BUILD="pip install cython"
     install:
-      - pip install cython
-      - pip install cibuildwheel==0.12.0
+      - pip install cibuildwheel==0.12.0 cython twine
     script:
       - cibuildwheel --output-dir dist
       - python setup.py sdist
