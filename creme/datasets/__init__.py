@@ -6,11 +6,12 @@ import tarfile
 import urllib
 import zipfile
 
-from . import stream
+from .. import stream
 
 
 __all__ = [
     'fetch_bikes',
+    'fetch_credit_card',
     'fetch_electricity',
     'fetch_kdd99_http',
     'fetch_restaurants',
@@ -51,7 +52,7 @@ def download_dataset(name, url, data_home, archive_type=None, silent=True):
     # Download dataset if does not exist
     if not os.path.exists(data_dir_path):
         if not silent:
-            print('Downloading data...')
+            print(f'Downloading {name}...')
 
         if archive_type:
             data_dir_path = f'{data_dir_path}.{archive_type}'
@@ -64,11 +65,12 @@ def download_dataset(name, url, data_home, archive_type=None, silent=True):
             archive_path, data_dir_path = data_dir_path, data_dir_path[:-len(archive_type) - 1]
 
             if not silent:
-                print('Uncompressing data...')
+                print(f'Uncompressing {name}...')
 
             if archive_type == 'zip':
                 with zipfile.ZipFile(archive_path, 'r') as zf:
                     zf.extractall(data_dir_path)
+
             elif archive_type in ['gz', 'tar', 'tar.gz', 'tgz']:
                 mode = 'r:' if archive_type == 'tar' else 'r:gz'
                 tar = tarfile.open(archive_path, mode)
@@ -284,7 +286,7 @@ def fetch_trec07p(data_home=None, silent=True):
     to a particular server in 2007. Spam messages represent 66.6% of the dataset.
     The goal is to predict whether an email is a spam or not.
 
-    Parsed features are: sender, recipients, date, subject, body.
+    The available raw features are: sender, recipients, date, subject, body.
 
     Parameters:
         data_home (str): The directory where you wish to store the data.
@@ -300,12 +302,56 @@ def fetch_trec07p(data_home=None, silent=True):
     """
 
     name = 'trec07p'
-    url = 'https://maxhalford.github.io/files/datasets/trec07p.zip'
+    url = 'https://archive.org/download/trec07p/trec07p.tgz'
 
-    # Download dataset if does not exist andCode ran to build trec07p CSV available in `creme` library get its path
+    # Download dataset if does not exist and get its path
     data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
-    return stream.iter_csv(f'{data_dir_path}/{name}.csv', target_name='y',)
+    return stream.iter_csv(f'{data_dir_path}/{name}.csv', target_name='y')
+
+
+def fetch_credit_card(data_home=None, silent=True):
+    """Credit card fraud dataset.
+
+    The datasets contains transactions made by credit cards in September 2013 by european
+    cardholders. This dataset presents transactions that occurred in two days, where we have 492
+    frauds out of 284,807 transactions. The dataset is highly unbalanced, the positive class
+    (frauds) account for 0.172% of all transactions.
+
+    It contains only numerical input variables which are the result of a PCA transformation.
+    Unfortunately, due to confidentiality issues, we cannot provide the original features and more
+    background information about the data. Features V1, V2, ... V28 are the principal components
+    obtained with PCA, the only features which have not been transformed with PCA are 'Time' and
+    'Amount'. Feature 'Time' contains the seconds elapsed between each transaction and the first
+    transaction in the dataset. The feature 'Amount' is the transaction Amount, this feature can be
+    used for example-dependant cost-senstive learning. Feature 'Class' is the response variable and
+    it takes value 1 in case of fraud and 0 otherwise.
+
+    Parameters:
+        data_home (str): The directory where you wish to store the data.
+        silent (bool): Whether to indicate download progress or not.
+
+    Yields:
+        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+
+    References:
+        1. Andrea Dal Pozzolo, Olivier Caelen, Reid A. Johnson and Gianluca Bontempi. Calibrating Probability with Undersampling for Unbalanced Classification. In Symposium on Computational Intelligence and Data Mining (CIDM), IEEE, 2015
+        2. Dal Pozzolo, Andrea; Caelen, Olivier; Le Borgne, Yann-Ael; Waterschoot, Serge; Bontempi, Gianluca. Learned lessons in credit card fraud detection from a practitioner perspective, Expert systems with applications,41,10,4915-4928,2014, Pergamon
+        3. Dal Pozzolo, Andrea; Boracchi, Giacomo; Caelen, Olivier; Alippi, Cesare; Bontempi, Gianluca. Credit card fraud detection: a realistic modeling and a novel learning strategy, IEEE transactions on neural networks and learning systems,29,8,3784-3797,2018,IEEE
+        4. Dal Pozzolo, Andrea Adaptive Machine learning for credit card fraud detection ULB MLG PhD thesis (supervised by G. Bontempi)
+        5. Carcillo, Fabrizio; Dal Pozzolo, Andrea; Le Borgne, Yann-Ael; Caelen, Olivier; Mazzer, Yannis; Bontempi, Gianluca. Scarff: a scalable framework for streaming credit card fraud detection with Spark, Information fusion,41, 182-194,2018,Elsevier
+        6. Carcillo, Fabrizio; Le Borgne, Yann-Ael; Caelen, Olivier; Bontempi, Gianluca. Streaming active learning strategies for real-life credit card fraud detection: assessment and visualization, International Journal of Data Science and Analytics, 5,4,285-300,2018,Springer International Publishing
+        7. Bertrand Lebichot, Yann-Ael Le Borgne, Liyun He, Frederic Oble, Gianluca Bontempi Deep-Learning Domain Adaptation Techniques for Credit Cards Fraud Detection, INNSBDDL 2019: Recent Advances in Big Data and Deep Learning, pp 78-88, 2019
+        8. Fabrizio Carcillo, Yann-Ael Le Borgne, Olivier Caelen, Frederic Oble, Gianluca Bontempi Combining Unsupervised and Supervised Learning in Credit Card Fraud Detection Information Sciences, 2019
+
+    """
+
+    name = 'creditcard'
+    url = 'https://maxhalford.github.io/files/datasets/creditcardfraud.zip'
+
+    data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
+
+    return stream.iter_csv(f'{data_dir_path}/{name}.csv', target_name='Class')
 
 
 def load_airline():
@@ -323,7 +369,7 @@ def load_airline():
 
     """
     return stream.iter_csv(
-        os.path.join(os.path.dirname(__file__), 'data', 'airline-passengers.csv'),
+        os.path.join(os.path.dirname(__file__), 'airline-passengers.csv'),
         target_name='passengers',
         converters={'passengers': int},
         parse_dates={'month': '%Y-%m'}
@@ -345,7 +391,7 @@ def load_chick_weights():
 
     """
     return stream.iter_csv(
-        os.path.join(os.path.dirname(__file__), 'data', 'chick-weights.csv'),
+        os.path.join(os.path.dirname(__file__), 'chick-weights.csv'),
         target_name='weight',
         converters={'time': int, 'weight': int, 'chick': int, 'diet': int}
     )
