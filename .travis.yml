@@ -21,7 +21,7 @@ matrix:
       env: PIP=pip2
 
 install: skip
-script: skip
+script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
 
 jobs:
   include:
@@ -45,6 +45,29 @@ jobs:
       on:
         all_branches: true
       skip_existing: true
+    if: tag IS present
+
+  - stage: docs
+    install:
+      - sudo apt-get install graphviz pandoc
+      - pip install cython
+      - python setup.py install
+      - pip install -e ".[docs]"
+      - pytest --nbval-lax --current-env docs/notebooks/*.ipynb
+    script: make doc
+    after_success:
+      - git config --global user.email "maxhalford25@gmail.com"
+      - git config --global user.name "MaxHalford"
+      - git config --global push.default matching
+      - git clone https://${GH_TOKEN}@github.com/creme-ml/creme-ml.github.io.git creme-ml.github.io
+      - cd creme-ml.github.io
+      - rm -r *
+      - cp -r ../docs/_build/html/* .
+      - cp -r ../docs/_build/html/.* .
+      - git add -A
+      - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
+      - git push --set-upstream origin master
+    if: tag IS present
 
 env:
   global:
