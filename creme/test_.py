@@ -2,10 +2,10 @@
 General tests for all estimators.
 """
 import copy
-import pytest
-
 import importlib
 import inspect
+
+import pytest
 
 from creme import base
 from creme import dummy

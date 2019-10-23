@@ -1,1 +1,3 @@
-include creme/data/*.csv
+global-include *.pyx
+global-include *.pxd
+include creme/datasets/*.csv

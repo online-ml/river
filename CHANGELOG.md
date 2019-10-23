@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0](https://pypi.org/project/creme/0.4.0/) - 2019-10-17
+## Unreleased
+
+### Added
+
+- `fetch_credit_card` to `datasets`, which streams a highly imbalanced dataset of fraudulent credit card transactions
+
+## [0.4.1](https://pypi.org/project/creme/0.4.1/) - 2019-10-23
 
 ### Added
 

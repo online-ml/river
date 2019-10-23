@@ -103,9 +103,9 @@ class UploadCommand(Command):
         self.status('Uploading the package to PyPi via Twine…')
         os.system('twine upload dist/*')
 
-        self.status('Pushing git tags…')
-        os.system('git tag v{0}'.format(about['__version__']))
-        os.system('git push --tags')
+        #self.status('Pushing git tags…')
+        #os.system('git tag v{0}'.format(about['__version__']))
+        #os.system('git push --tags')
 
         sys.exit()
 
