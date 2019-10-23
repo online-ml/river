@@ -10,11 +10,6 @@ cache:
     - $HOME/.cache/pip
     - $HOME/downloads
 
-env:
-  global:
-    - CIBW_BUILD="cp36-* cp37-*"
-    - CIBW_BEFORE_BUILD="pip install cython"
-
 matrix:
   include:
     - sudo: required
@@ -32,10 +27,11 @@ jobs:
   include:
 
   - stage: pypi
-    install: pip install cibuildwheel==0.12.0
-    script:
+    env:
       - CIBW_BUILD="cp36-* cp37-*"
       - CIBW_BEFORE_BUILD="pip install cython"
+    install: pip install cibuildwheel==0.12.0
+    script:
       - env
       - cibuildwheel --output-dir dist
 
