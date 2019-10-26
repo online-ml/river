@@ -41,10 +41,7 @@ def get_all_estimators():
         linear_model.SoftmaxRegression,
         multioutput.ClassifierChain,
         multioutput.RegressorChain,
-        naive_bayes.BernoulliNB,
-        naive_bayes.ComplementNB,
-        preprocessing.OneHotEncoder,
-        tree.DecisionTreeClassifier
+        preprocessing.OneHotEncoder
     )
 
     def is_estimator(obj):
