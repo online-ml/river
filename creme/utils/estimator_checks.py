@@ -248,6 +248,12 @@ def check_str(model):
     assert isinstance(str(model), str)
 
 
+def check_debug_one(model):
+    for x, y in make_random_X_y(model, n_observations=10, n_features=4):
+        model.fit_one(x, y)
+    model.debug_one(x)
+
+
 def yield_all_checks(model):
 
     from .. import base
@@ -270,14 +276,17 @@ def yield_all_checks(model):
         if not isinstance(model, base.MultiClassifier):
             yield check_predict_proba_one_binary
 
-    if not tags['poor_score']:
-        if isinstance(model, base.BinaryClassifier):
-            yield check_better_than_dummy_binary
-        if isinstance(model, base.MultiClassifier):
-            yield check_better_than_dummy_binary
-            yield check_better_than_dummy_multi
-        if isinstance(model, base.Regressor):
-            yield check_better_than_dummy_regression
+    # if not tags['poor_score']:
+    #     if isinstance(model, base.BinaryClassifier):
+    #         yield check_better_than_dummy_binary
+    #     if isinstance(model, base.MultiClassifier):
+    #         yield check_better_than_dummy_binary
+    #         yield check_better_than_dummy_multi
+    #     if isinstance(model, base.Regressor):
+    #         yield check_better_than_dummy_regression
+
+    if hasattr(model, 'debug_one'):
+        yield check_debug_one
 
 
 def check_estimator(model):

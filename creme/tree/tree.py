@@ -82,7 +82,7 @@ class BaseDecisionTree(abc.ABC):
                 print(node.split)
                 node = node.right
 
-        print(node.class_counts)
+        print(node.target_dist)
 
 
 class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):

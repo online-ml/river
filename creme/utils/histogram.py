@@ -92,7 +92,17 @@ class Histogram(collections.UserList):
             self.append(b)
             return self
 
-        i = bisect.bisect_left(self, b)
+        # Use bisection to find where to insert
+        lo = 0
+        hi = len(self)
+        i = (lo + hi) // 2
+        while lo < hi:
+            if self[i] < b:
+                lo = i + 1
+            else:
+                hi = i
+            i = (lo + hi) // 2
+
         if i == len(self):
             # x is past the right-most bin
             self.append(b)
