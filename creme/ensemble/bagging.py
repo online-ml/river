@@ -93,13 +93,12 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     def predict_proba_one(self, x):
         """Averages the predictions of each classifier."""
 
-        # Sum the predictions
         y_pred = collections.Counter()
         for classifier in self:
             y_pred.update(classifier.predict_proba_one(x))
 
-        # Divide by the number of predictions
-        return {label: proba / len(self) for label, proba in y_pred.items()}
+        total = sum(y_pred.values())
+        return {label: proba / total for label, proba in y_pred.items()}
 
 
 class BaggingRegressor(BaseBagging, base.Regressor):

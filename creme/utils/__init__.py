@@ -1,5 +1,6 @@
 """Utility classes and functions."""
 from .estimator_checks import check_estimator
+from .estimator_checks import guess_model
 from .histogram import Histogram
 from .math import chain_dot
 from .math import clamp
