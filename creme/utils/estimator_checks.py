@@ -8,7 +8,7 @@ import random
 from sklearn import datasets
 
 
-__all__ = ['check_estimator']
+__all__ = ['check_estimator', 'guess_model']
 
 
 def guess_model(model):
@@ -122,9 +122,9 @@ def check_predict_proba_one(model):
 
         # Check the probabilities are coherent
         assert isinstance(y_pred, dict)
-        assert math.isclose(sum(y_pred.values()), 1.0)
+        assert math.isclose(sum(y_pred.values()), 1.)
         for proba in y_pred.values():
-            assert 0.0 <= proba <= 1.0
+            assert 0. <= proba <= 1.
 
         # Check predict_proba_one is pure (i.e. x and y haven't changed)
         assert x == xx
@@ -266,6 +266,8 @@ def yield_all_checks(model):
     yield check_pickling
     yield check_repr
     yield check_str
+    if hasattr(model, 'debug_one'):
+        yield check_debug_one
 
     model = guess_model(model)
     tags = model._get_tags()
@@ -284,9 +286,6 @@ def yield_all_checks(model):
     #         yield check_better_than_dummy_multi
     #     if isinstance(model, base.Regressor):
     #         yield check_better_than_dummy_regression
-
-    if hasattr(model, 'debug_one'):
-        yield check_debug_one
 
 
 def check_estimator(model):

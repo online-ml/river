@@ -20,6 +20,7 @@ from creme import multioutput
 from creme import naive_bayes
 from creme import preprocessing
 from creme import stats
+from creme import time_series
 from creme import tree
 from creme import utils
 from creme.compat.sklearn import CremeBaseWrapper
@@ -31,8 +32,8 @@ def get_all_estimators():
     ignored = (
         CremeBaseWrapper,
         SKLBaseWrapper,
-        base.Wrapper,
         compose.FuncTransformer,
+        compose.TargetModifierRegressor,
         ensemble.StackingBinaryClassifier,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
@@ -41,7 +42,9 @@ def get_all_estimators():
         linear_model.SoftmaxRegression,
         multioutput.ClassifierChain,
         multioutput.RegressorChain,
-        preprocessing.OneHotEncoder
+        preprocessing.OneHotEncoder,
+        time_series.Detrender,
+        time_series.GroupDetrender
     )
 
     def is_estimator(obj):
@@ -57,8 +60,14 @@ def get_all_estimators():
             if issubclass(obj, ignored):
                 continue
 
-            if issubclass(obj, dummy.StatisticRegressor):
+            elif issubclass(obj, dummy.StatisticRegressor):
                 inst = obj(statistic=stats.Mean())
+
+            elif issubclass(obj, compose.BoxCoxTransformRegressor):
+                inst = obj(regressor=linear_model.LinearRegression())
+
+            elif issubclass(obj, tree.RandomForestClassifier):
+                inst = obj()
 
             elif issubclass(obj, ensemble.BaggingClassifier):
                 inst = obj(linear_model.LogisticRegression())

@@ -355,17 +355,12 @@ class Wrapper(abc.ABC):
     def _model(self):
         """Provides access to the wrapped model."""
 
-    @property
-    def __class__(self):
-        return self._model.__class__
-
     def __str__(self):
         return f'{type(self).__name__}({self._model})'
 
 
 class Ensemble(Estimator, collections.UserList):
     """An ensemble model."""
-    pass
 
 
 class OutlierDetector(Estimator):
