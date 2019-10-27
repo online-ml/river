@@ -20,6 +20,9 @@ def online_score(X_y, model, metric, print_every=math.inf):
     Returns:
         metric
 
+    References:
+        1. `Beating the Hold-Out: Bounds for K-fold and Progressive Cross-Validation <http://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf>`_
+
     """
 
     # Check that the model and the metric are in accordance
