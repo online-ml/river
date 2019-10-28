@@ -70,11 +70,12 @@ class TargetModifierRegressor(base.Regressor, base.Wrapper):
 class BoxCoxTransformRegressor(TargetModifierRegressor):
     """Applies the Box-Cox transform to the target before training.
 
-    Box-Cox transform is usefull when the target variable is heteroscedastic (i.e. there are
+    Box-Cox transform is useful when the target variable is heteroscedastic (i.e. there are
     sub-populations that have different variabilities from others) allowing to transform it towards
     normality.
-    The ``power`` parameter is denoted λ in the litterature. If ``power`` is equal to 0 then the
-    Box-Cox is nothing more than a log transform.
+
+    The ``power`` parameter is denoted λ in the litterature. If ``power`` is equal to 0 than the
+    Box-Cox transform will be equivalent to a log transform.
 
     Parameter:
         regressor (creme.base.Regressor): regressor model applied for training.
@@ -115,6 +116,6 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
     def __init__(self, regressor, power=1.):
         super().__init__(
             regressor=regressor,
-            func=lambda y: (y ** power - 1) / power if power > 0 else math.log,
-            inverse_func=lambda y: (power * y + 1) ** (1 / power) if power > 0 else math.exp
+            func=(lambda y: (y ** power - 1) / power) if power > 0 else math.log,
+            inverse_func=(lambda y: (power * y + 1) ** (1 / power)) if power > 0 else math.exp
         )

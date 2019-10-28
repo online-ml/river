@@ -65,3 +65,9 @@ The documentation is built with [Sphinx](http://www.sphinx-doc.org/en/master/).
 pip install -e ".[docs]"
 make doc
 ```
+
+
+## Release checklist
+
+- Bump the version in `__version__.py`
+- Update `CHANGELOG.md`
