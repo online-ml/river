@@ -1,5 +1,8 @@
-import numpy as np
+import sys
 from copy import copy
+
+import numpy as np
+
 from skmultiflow.utils.utils import get_dimensions
 from skmultiflow.utils.utils import get_max_value_key
 from skmultiflow.utils.utils import normalize_values_in_dict
@@ -69,6 +72,13 @@ def test_calculate_object_size():
         elems.append(np.ones((array_length), np.int8))
         elems.append('testing_string')
 
-    assert calculate_object_size(elems, 'byte') == 37335
-    assert calculate_object_size(elems, 'kB') == 36.4599609375
-    assert calculate_object_size(elems, 'MB') == 0.035605430603027344
+    if sys.platform == 'linux':
+        # assert sizes based on a linux system
+        assert calculate_object_size(elems, 'byte') == 37335
+        assert calculate_object_size(elems, 'kB') == 36.4599609375
+        assert calculate_object_size(elems, 'MB') == 0.035605430603027344
+    else:
+        # run for coverage
+        calculate_object_size(elems, 'byte')
+        calculate_object_size(elems, 'kB')
+        calculate_object_size(elems, 'MB')
