@@ -32,7 +32,7 @@ install:
     then pip3 install --only-binary=numpy,scipy numpy scipy
     fi
   # Install numpy & scipy in Python 3.8
-  - if [[ $TRAVIS_PYTHON_VERSION != '3.8' ]];
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]];
     then pip3 install numpy scipy
     fi
   - pip3 install codecov pytest-cov
