@@ -33,5 +33,5 @@ pip install -e ".[dev]"
 pip install codecov
 
 # Run tests and coverage
-pytest --cov-report=xml --cov=creme
+pytest --cov=creme
 codecov
