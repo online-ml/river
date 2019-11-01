@@ -7,10 +7,11 @@ from skmultiflow.core import BaseSKMObject
 from skmultiflow.data.base_stream import Stream
 from .evaluation_data_buffer import EvaluationDataBuffer
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
-from skmultiflow.metrics import WindowClassificationMeasurements, ClassificationMeasurements, \
-    MultiTargetClassificationMeasurements, WindowMultiTargetClassificationMeasurements, RegressionMeasurements, \
-    WindowRegressionMeasurements, MultiTargetRegressionMeasurements, \
-    WindowMultiTargetRegressionMeasurements, RunningTimeMeasurements
+from skmultiflow.metrics import ClassificationPerformanceEvaluator, WindowClassificationPerformanceEvaluator, \
+    MultiLabelClassificationPerformanceEvaluator, WindowMultiLabelClassificationPerformanceEvaluator,\
+    RegressionMeasurements, WindowRegressionMeasurements,\
+    MultiTargetRegressionMeasurements, WindowMultiTargetRegressionMeasurements,\
+    RunningTimeMeasurements
 import skmultiflow.utils.constants as constants
 from skmultiflow.utils.utils import calculate_object_size
 
@@ -247,14 +248,15 @@ class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
 
         if self._task_type == constants.CLASSIFICATION:
             for i in range(self.n_models):
-                self.mean_eval_measurements.append(ClassificationMeasurements())
-                self.current_eval_measurements.append(WindowClassificationMeasurements(window_size=self.n_sliding))
+                self.mean_eval_measurements.append(ClassificationPerformanceEvaluator())
+                self.current_eval_measurements.append(WindowClassificationPerformanceEvaluator
+                                                      (window_size=self.n_sliding))
 
         elif self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
             for i in range(self.n_models):
-                self.mean_eval_measurements.append(MultiTargetClassificationMeasurements())
-                self.current_eval_measurements.append(WindowMultiTargetClassificationMeasurements(
-                    window_size=self.n_sliding))
+                self.mean_eval_measurements.append(MultiLabelClassificationPerformanceEvaluator())
+                self.current_eval_measurements.append(WindowMultiLabelClassificationPerformanceEvaluator
+                                                      (window_size=self.n_sliding))
 
         elif self._task_type == constants.REGRESSION:
             for i in range(self.n_models):
@@ -307,43 +309,43 @@ class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
             values = [[], []]
             if metric == constants.ACCURACY:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_accuracy())
-                    values[1].append(self.current_eval_measurements[i].get_accuracy())
+                    values[0].append(self.mean_eval_measurements[i].accuracy_score())
+                    values[1].append(self.current_eval_measurements[i].accuracy_score())
 
             elif metric == constants.KAPPA:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_kappa())
-                    values[1].append(self.current_eval_measurements[i].get_kappa())
+                    values[0].append(self.mean_eval_measurements[i].kappa_score())
+                    values[1].append(self.current_eval_measurements[i].kappa_score())
 
             elif metric == constants.KAPPA_T:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_kappa_t())
-                    values[1].append(self.current_eval_measurements[i].get_kappa_t())
+                    values[0].append(self.mean_eval_measurements[i].kappa_t_score())
+                    values[1].append(self.current_eval_measurements[i].kappa_t_score())
 
             elif metric == constants.KAPPA_M:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_kappa_m())
-                    values[1].append(self.current_eval_measurements[i].get_kappa_m())
+                    values[0].append(self.mean_eval_measurements[i].kappa_m_score())
+                    values[1].append(self.current_eval_measurements[i].kappa_m_score())
 
             elif metric == constants.HAMMING_SCORE:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_hamming_score())
-                    values[1].append(self.current_eval_measurements[i].get_hamming_score())
+                    values[0].append(self.mean_eval_measurements[i].hamming_score())
+                    values[1].append(self.current_eval_measurements[i].hamming_score())
 
             elif metric == constants.HAMMING_LOSS:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_hamming_loss())
-                    values[1].append(self.current_eval_measurements[i].get_hamming_loss())
+                    values[0].append(self.mean_eval_measurements[i].hamming_loss_score())
+                    values[1].append(self.current_eval_measurements[i].hamming_loss_score())
 
             elif metric == constants.EXACT_MATCH:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_exact_match())
-                    values[1].append(self.current_eval_measurements[i].get_exact_match())
+                    values[0].append(self.mean_eval_measurements[i].exact_match_score())
+                    values[1].append(self.current_eval_measurements[i].exact_match_score())
 
             elif metric == constants.J_INDEX:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_j_index())
-                    values[1].append(self.current_eval_measurements[i].get_j_index())
+                    values[0].append(self.mean_eval_measurements[i].jaccard_score())
+                    values[1].append(self.current_eval_measurements[i].jaccard_score())
 
             elif metric == constants.MSE:
                 for i in range(self.n_models):
@@ -372,23 +374,23 @@ class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
 
             elif metric == constants.F1_SCORE:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_f1_score())
-                    values[1].append(self.current_eval_measurements[i].get_f1_score())
+                    values[0].append(self.mean_eval_measurements[i].f1_score())
+                    values[1].append(self.current_eval_measurements[i].f1_score())
 
             elif metric == constants.PRECISION:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_precision())
-                    values[1].append(self.current_eval_measurements[i].get_precision())
+                    values[0].append(self.mean_eval_measurements[i].precision_score())
+                    values[1].append(self.current_eval_measurements[i].precision_score())
 
             elif metric == constants.RECALL:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_recall())
-                    values[1].append(self.current_eval_measurements[i].get_recall())
+                    values[0].append(self.mean_eval_measurements[i].recall_score())
+                    values[1].append(self.current_eval_measurements[i].recall_score())
 
             elif metric == constants.GMEAN:
                 for i in range(self.n_models):
-                    values[0].append(self.mean_eval_measurements[i].get_g_mean())
-                    values[1].append(self.current_eval_measurements[i].get_g_mean())
+                    values[0].append(self.mean_eval_measurements[i].geometric_mean_score())
+                    values[1].append(self.current_eval_measurements[i].geometric_mean_score())
 
             elif metric == constants.TRUE_VS_PREDICTED:
                 y_true = -1

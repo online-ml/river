@@ -43,22 +43,22 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
     mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
 
     expected_mean_accuracy = 0.344000
-    assert np.isclose(mean_performance.get_accuracy(), expected_mean_accuracy)
+    assert np.isclose(mean_performance.accuracy_score(), expected_mean_accuracy)
 
     expected_mean_kappa = 0.135021
-    assert np.isclose(mean_performance.get_kappa(), expected_mean_kappa)
+    assert np.isclose(mean_performance.kappa_score(), expected_mean_kappa)
 
     expected_mean_kappa_t = 0.180000
-    assert np.isclose(mean_performance.get_kappa_t(), expected_mean_kappa_t)
+    assert np.isclose(mean_performance.kappa_t_score(), expected_mean_kappa_t)
 
     expected_current_accuracy = 0.360000
-    assert np.isclose(current_performance.get_accuracy(), expected_current_accuracy)
+    assert np.isclose(current_performance.accuracy_score(), expected_current_accuracy)
 
     expected_current_kappa = 0.152542
-    assert np.isclose(current_performance.get_kappa(), expected_current_kappa)
+    assert np.isclose(current_performance.kappa_score(), expected_current_kappa)
 
     expected_current_kappa_t = 0.200000
-    assert np.isclose(current_performance.get_kappa_t(), expected_current_kappa_t)
+    assert np.isclose(current_performance.kappa_t_score(), expected_current_kappa_t)
 
     expected_info = "EvaluateHoldout(batch_size=1, dynamic_test_set=False, max_samples=1000,\n" \
                     "                max_time=inf, metrics=['accuracy', 'kappa', 'kappa_t'],\n" \

@@ -9,7 +9,7 @@ from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree import ARFHoeffdingTree
-from skmultiflow.metrics.measure_collection import ClassificationMeasurements
+from skmultiflow.metrics import ClassificationPerformanceEvaluator
 from skmultiflow.utils import get_dimensions, normalize_values_in_dict, check_random_state, check_weights
 
 
@@ -322,9 +322,9 @@ class AdaptiveRandomForest(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
             if vote != {} and sum(vote.values()) > 0:
                 vote = normalize_values_in_dict(vote, inplace=False)
                 if not self.disable_weighted_vote:
-                    performance = self.ensemble[i].evaluator.get_accuracy()\
+                    performance = self.ensemble[i].evaluator.accuracy_score()\
                         if self.performance_metric == 'acc'\
-                        else self.ensemble[i].evaluator.get_kappa()
+                        else self.ensemble[i].evaluator.kappa_score()
                     if performance != 0.0:  # CHECK How to handle negative (kappa) values?
                         for k in vote:
                             vote[k] = vote[k] * performance
@@ -428,7 +428,7 @@ class ARFBaseLearner(BaseSKMObject):
         self.classifier = classifier
         self.created_on = instances_seen
         self.is_background_learner = is_background_learner
-        self.evaluator_method = ClassificationMeasurements
+        self.evaluator_method = ClassificationPerformanceEvaluator
 
         # Drift and warning
         self.drift_detection_method = drift_detection_method

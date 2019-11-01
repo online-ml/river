@@ -5,6 +5,8 @@ from skmultiflow.utils import check_weights
 
 from timeit import default_timer as timer
 
+import warnings
+
 
 class ClassificationMeasurements(object):
     """ Classification measurements.
@@ -37,6 +39,8 @@ class ClassificationMeasurements(object):
     """
 
     def __init__(self, targets=None, dtype=np.int64):
+        warnings.warn("'{}' will be removed in v0.7. Use 'ClassificationPerformanceEvaluator' instead.".
+                      format(type(self).__name__), category=FutureWarning)
         super().__init__()
         if targets is not None:
             self.n_targets = len(targets)
@@ -369,6 +373,8 @@ class WindowClassificationMeasurements(object):
     """
 
     def __init__(self, targets=None, dtype=np.int64, window_size=200):
+        warnings.warn("'{}' will be removed in v0.7. Use 'WindowClassificationPerformanceEvaluator' instead.".
+                      format(type(self).__name__), category=FutureWarning)
         super().__init__()
         if targets is not None:
             self.n_targets = len(targets)
@@ -733,6 +739,8 @@ class MultiTargetClassificationMeasurements(object):
     """
 
     def __init__(self, targets=None, dtype=np.int64):
+        warnings.warn("'{}' will be removed in v0.7. Use 'MultiLabelClassificationPerformanceEvaluator' instead.".
+                      format(type(self).__name__), category=FutureWarning)
         super().__init__()
         if targets is not None:
             self.n_targets = len(targets)
@@ -914,6 +922,8 @@ class WindowMultiTargetClassificationMeasurements(object):
     """
 
     def __init__(self, targets=None, dtype=np.int64, window_size=200):
+        warnings.warn("'{}' will be removed in v0.7. Use 'WindowMultiLabelClassificationPerformanceEvaluator' instead.".
+                      format(type(self).__name__), category=FutureWarning)
         super().__init__()
         if targets is not None:
             self.n_targets = len(targets)
