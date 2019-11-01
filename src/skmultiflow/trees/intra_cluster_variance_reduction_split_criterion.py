@@ -17,8 +17,8 @@ class IntraClusterVarianceReductionSplitCriterion(
 
         count = 0
 
-        for i in post_split_dist:
-            Ni = i[0]
+        for dist in post_split_dist:
+            Ni = dist[0]
             if Ni >= 5.0:
                 count += 1
 
@@ -37,4 +37,4 @@ class IntraClusterVarianceReductionSplitCriterion(
         sum = dist[1]
         sum_sq = dist[2]
 
-        return np.sum((sum_sq - (sum * sum) / N) / (N - 1))
+        return np.mean((sum_sq - ((sum * sum) / N)) / (N - 1))
