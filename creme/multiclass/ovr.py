@@ -81,4 +81,4 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
             label: model.predict_proba_one(x)[True]
             for label, model in self.items()
         }
-        return utils.softmax(y_pred)
+        return utils.math.softmax(y_pred)

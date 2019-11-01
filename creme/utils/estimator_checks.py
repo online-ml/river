@@ -1,3 +1,4 @@
+"""Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
 import itertools

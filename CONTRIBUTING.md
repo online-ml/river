@@ -71,3 +71,9 @@ make doc
 
 - Bump the version in `__version__.py`
 - Update `CHANGELOG.md`
+
+
+## Adding contributors
+
+- Install the [allcontributors CLI](https://allcontributors.org/docs/en/cli/installation)
+- Run `yarn all-contributors add <GitHub username> code`

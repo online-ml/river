@@ -6,7 +6,6 @@
 
 import io
 import os
-import sys
 from shutil import rmtree
 
 from setuptools import Extension, find_packages, setup, Command

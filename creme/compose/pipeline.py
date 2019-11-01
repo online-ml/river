@@ -272,7 +272,7 @@ class Pipeline(collections.OrderedDict):
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(self.values(), len(self) - 1):
             x_pre = x
-            x = t.transform_one(x)
+            x = t.transform_one(x=x)
 
             # If a transformer is supervised then it has to be updated
             if t.is_supervised:
@@ -280,13 +280,35 @@ class Pipeline(collections.OrderedDict):
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.values():
                         if sub_t.is_supervised:
-                            sub_t.fit_one(x_pre, y)
+                            sub_t.fit_one(x=x_pre, y=y)
 
                 else:
-                    t.fit_one(x_pre, y)
+                    t.fit_one(x=x_pre, y=y)
 
-        self.final_estimator.fit_one(x, y)
+        self.final_estimator.fit_one(x=x, y=y)
         return self
+
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
+    def fit_predict_one(self, x, y):
+        """Updates the pipeline and returns a the out-of-fold prediction.
+
+        Only works if each estimator has a ``transform_one`` method and the final estimator has a
+        ``fit_predict_one`` method.
+
+        """
+        x = self.transform_one(x=x)
+        return self.final_estimator.fit_predict_one(x=x, y=y)
+
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
+    def fit_predict_proba_one(self, x, y):
+        """Updates the pipeline and returns a the out-of-fold prediction.
+
+        Only works if each estimator has a ``transform_one`` method and the final estimator has a
+        ``fit_predict_one`` method.
+
+        """
+        x = self.transform_one(x=x)
+        return self.final_estimator.fit_predict_proba_one(x=x, y=y)
 
     def transform_one(self, x):
         """Transform an input.
@@ -301,36 +323,48 @@ class Pipeline(collections.OrderedDict):
                 # Fit the unsupervised part of the union
                 for sub_transformer in transformer.values():
                     if not sub_transformer.is_supervised:
-                        sub_transformer.fit_one(x)
+                        sub_transformer.fit_one(x=x)
 
             elif not transformer.is_supervised:
-                transformer.fit_one(x)
+                transformer.fit_one(x=x)
 
-            x = transformer.transform_one(x)
+            x = transformer.transform_one(x=x)
 
         return x
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def predict_one(self, x):
-        """Predict output.
+        """Returns a prediction.
 
         Only works if each estimator has a ``transform_one`` method and the final estimator has a
         ``predict_one`` method.
 
         """
-        x = self.transform_one(x)
-        return self.final_estimator.predict_one(x)
+        x = self.transform_one(x=x)
+        return self.final_estimator.predict_one(x=x)
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def predict_proba_one(self, x):
-        """Predicts probabilities.
+        """Returns prediction probabilities.
 
         Only works if each estimator has a ``transform_one`` method and the final estimator has a
         ``predict_proba_one`` method.
 
         """
-        x = self.transform_one(x)
-        return self.final_estimator.predict_proba_one(x)
+        x = self.transform_one(x=x)
+        return self.final_estimator.predict_proba_one(x=x)
+
+    @metaestimators.if_delegate_has_method(delegate='final_estimator')
+    def forecast(self, horizon, xs=None):
+        """Returns a forecast.
+
+        Only works if each estimator has a ``transform_one`` method and the final estimator has a
+        ``forecast`` method.
+
+        """
+        if xs is not None:
+            xs = [self.transform_one(x) for x in xs]
+        return self.final_estimator.forecast(horizon=horizon, xs=xs)
 
     def debug_one(self, x, show_types=True, n_decimals=5):
         """Displays the state of a set of features as it goes through the pipeline.
@@ -349,7 +383,7 @@ class Pipeline(collections.OrderedDict):
                 return '{:.{prec}f}'.format(x, prec=n_decimals)
             return x
 
-        def print_features(x, show_types, indent=False, space_after=True):
+        def print_dict(x, show_types, indent=False, space_after=True):
 
             # Some transformers accept strings as input instead of dicts
             if isinstance(x, str):
@@ -367,7 +401,7 @@ class Pipeline(collections.OrderedDict):
 
         # Print the initial state of the features
         print_title('0. Input')
-        print_features(x, show_types=show_types)
+        print_dict(x, show_types=show_types)
 
         # Print the state of x at each step
         for i, t in enumerate(self.transformers):
@@ -376,14 +410,14 @@ class Pipeline(collections.OrderedDict):
                 print_title(f'{i+1}. Transformer union')
                 for j, (name, sub_t) in enumerate(t.items()):
                     print_title(f'{i+1}.{j} {name}', indent=True)
-                    print_features(sub_t.transform_one(x), show_types=show_types, indent=True)
+                    print_dict(sub_t.transform_one(x), show_types=show_types, indent=True)
                 x = t.transform_one(x)
-                print_features(x, show_types=show_types)
+                print_dict(x, show_types=show_types)
 
             else:
                 print_title(f'{i+1}. {t}')
                 x = t.transform_one(x)
-                print_features(x, show_types=show_types)
+                print_dict(x, show_types=show_types)
 
         # Print the predicted output from the final estimator
         final = self.final_estimator
@@ -395,7 +429,7 @@ class Pipeline(collections.OrderedDict):
                 print()
 
             if isinstance(final, base.Classifier):
-                print_features(final.predict_proba_one(x), show_types=False, space_after=False)
+                print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
                 print(final.predict_one(x))
 
@@ -419,7 +453,7 @@ class Pipeline(collections.OrderedDict):
                     directed=True
                 )
 
-            # Wrapper models are unrolled
+            # Wrapper models are handled recursively
             if isinstance(step, base.Wrapper):
                 return Network(
                     nodes=[networkify(step._model)],

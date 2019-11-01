@@ -204,5 +204,5 @@ class Normalizer(base.Transformer):
         self.order = order
 
     def transform_one(self, x):
-        norm = utils.norm(x, order=self.order)
+        norm = utils.math.norm(x, order=self.order)
         return {i: xi / norm for i, xi in x.items()}

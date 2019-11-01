@@ -91,7 +91,7 @@ class SoftmaxRegression(base.MultiClassifier):
         return self
 
     def predict_proba_one(self, x):
-        return utils.softmax({
-            label: utils.dot(weights, x)
+        return utils.math.softmax({
+            label: utils.math.dot(weights, x)
             for label, weights in self.weights.items()
         })

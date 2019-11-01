@@ -50,7 +50,7 @@ class ClassificationMetric(Metric):
 
     @staticmethod
     def clamp_proba(p):
-        return utils.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
+        return utils.math.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
 
     def __add__(self, other) -> 'Metrics':
         if not isinstance(other, ClassificationMetric):
@@ -80,7 +80,7 @@ class BinaryMetric(ClassificationMetric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.guess_model(model), base.BinaryClassifier)
+        return isinstance(utils.estimator_checks.guess_model(model), base.BinaryClassifier)
 
 
 class MultiClassMetric(BinaryMetric):
@@ -104,7 +104,7 @@ class MultiClassMetric(BinaryMetric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.guess_model(model), base.Classifier)
+        return isinstance(utils.estimator_checks.guess_model(model), base.Classifier)
 
 
 class RegressionMetric(Metric):
@@ -132,7 +132,7 @@ class RegressionMetric(Metric):
         return False
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.guess_model(model), base.Regressor)
+        return isinstance(utils.estimator_checks.guess_model(model), base.Regressor)
 
     def __add__(self, other) -> 'Metrics':
         if not isinstance(other, RegressionMetric):
@@ -160,7 +160,7 @@ class MultiOutputClassificationMetric(ClassificationMetric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.guess_model(model), base.MultiOutputClassifier)
+        return isinstance(utils.estimator_checks.guess_model(model), base.MultiOutputClassifier)
 
 
 class MultiOutputRegressionMetric(RegressionMetric):
@@ -182,7 +182,7 @@ class MultiOutputRegressionMetric(RegressionMetric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.guess_model(model), base.MultiOutputRegressor)
+        return isinstance(utils.estimator_checks.guess_model(model), base.MultiOutputRegressor)
 
 
 class Metrics(Metric, collections.UserList):
@@ -228,7 +228,7 @@ class Metrics(Metric, collections.UserList):
         return [m.get() for m in self]
 
     def works_with(self, model) -> bool:
-        return all(m.works_with(utils.guess_model(model)) for m in self)
+        return all(m.works_with(utils.estimator_checks.guess_model(model)) for m in self)
 
     @property
     def bigger_is_better(self):

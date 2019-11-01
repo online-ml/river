@@ -22,7 +22,7 @@ class NearestNeighbours(collections.deque):
         """Returns the ``k`` closest points, along with their distances."""
 
         # Compute the distances to each point in the window
-        points = ((*p, utils.minkowski_distance(a=x, b=p[0], p=self.p)) for p in self)
+        points = ((*p, utils.math.minkowski_distance(a=x, b=p[0], p=self.p)) for p in self)
 
         # Return the k closest points
         return sorted(points, key=operator.itemgetter(2))[:k]
@@ -168,4 +168,4 @@ class KNeighborsClassifier(NearestNeighbours, base.MultiClassifier):
                 y_pred[y] += 1.
 
         # Normalize votes into real [0, 1] probabilities
-        return utils.softmax(y_pred)
+        return utils.math.softmax(y_pred)
