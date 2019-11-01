@@ -33,5 +33,5 @@ pip install -e ".[dev]"
 pip install coveralls
 
 # Run tests and coverage
-pytest --cov=creme
+pytest
 coveralls
