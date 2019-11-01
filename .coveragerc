@@ -1,0 +1,4 @@
+[run]
+plugins = Cython.Coverage
+omit =
+    *__init__.py

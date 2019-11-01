@@ -6,7 +6,7 @@ doc:
 
 clean:
 	rm -f **/*.c **/*.so **/*.pyc
-	rm -rf **/*/__pycache__ build .ipynb_checkpoints .pytest_cache .empty .eggs creme.egg-info
+	rm -rf **/*/__pycache__ build .ipynb_checkpoints .pytest_cache .empty .eggs creme.egg-info dist
 
 cython:
 	python setup.py build_ext --inplace
