@@ -30,8 +30,8 @@ source activate testenv
 # Install dependencies required for testing
 pip install cython
 pip install -e ".[dev]"
-pip install codecov
+pip install coveralls
 
 # Run tests and coverage
 pytest --cov=creme
-codecov
+coveralls

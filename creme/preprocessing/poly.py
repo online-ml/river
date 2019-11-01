@@ -79,7 +79,7 @@ class PolynomialExtender(base.Transformer):
 
     def transform_one(self, x):
         features = {
-            '*'.join(map(str, combo)): utils.prod(x[c] for c in combo)
+            '*'.join(map(str, combo)): utils.math.prod(x[c] for c in combo)
             for combo in self.enumerate(x.keys())
         }
         if self.include_bias:

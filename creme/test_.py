@@ -44,7 +44,8 @@ def get_all_estimators():
         multioutput.RegressorChain,
         preprocessing.OneHotEncoder,
         time_series.Detrender,
-        time_series.GroupDetrender
+        time_series.GroupDetrender,
+        time_series.SNARIMAX
     )
 
     def is_estimator(obj):
@@ -125,4 +126,4 @@ def get_all_estimators():
     ]
 )
 def test_check_estimator(estimator):
-    utils.check_estimator(estimator)
+    utils.estimator_checks.check_estimator(estimator)

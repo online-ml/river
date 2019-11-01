@@ -30,7 +30,7 @@ class GLM:
         self.weights = collections.defaultdict(float)
 
     def _raw_dot(self, x):
-        return utils.dot(self.weights, x) + self.intercept
+        return utils.math.dot(self.weights, x) + self.intercept
 
     def fit_one(self, x, y):
 
@@ -41,7 +41,7 @@ class GLM:
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
         # Clip the gradient of the loss to avoid numerical instabilities
-        g_loss = utils.clamp(g_loss, -1e12, 1e12)
+        g_loss = utils.math.clamp(g_loss, -1e12, 1e12)
 
         # Calculate the gradient
         gradient = {
@@ -78,11 +78,9 @@ class LinearRegression(GLM, base.Regressor):
 
         ::
 
-            >>> from creme import compose
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
-            >>> from creme import optim
             >>> from creme import preprocessing
             >>> from creme import stream
             >>> from sklearn import datasets
@@ -180,5 +178,5 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         )
 
     def predict_proba_one(self, x):
-        p = utils.sigmoid(self._raw_dot(x))  # Convert log-odds ratio to probability
+        p = utils.math.sigmoid(self._raw_dot(x))  # Convert log-odds ratio to probability
         return {True: p, False: 1. - p}

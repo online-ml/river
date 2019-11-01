@@ -1,15 +1,7 @@
 """Utility classes and functions."""
-from .estimator_checks import check_estimator
-from .estimator_checks import guess_model
+from . import estimator_checks
+from . import math
 from .histogram import Histogram
-from .math import chain_dot
-from .math import clamp
-from .math import dot
-from .math import minkowski_distance
-from .math import norm
-from .math import prod
-from .math import sigmoid
-from .math import softmax
 from .pretty import pretty_format_class
 from .sdft import SDFT
 from .skyline import Skyline
@@ -18,19 +10,12 @@ from .window import SortedWindow
 
 
 __all__ = [
-    'chain_dot',
-    'check_estimator',
-    'clamp',
-    'dot',
+    'estimator_checks',
     'Histogram',
-    'minkowski_distance',
-    'norm',
+    'math',
     'pretty_format_class',
-    'prod',
     'SDFT',
-    'sigmoid',
     'Skyline',
-    'softmax',
     'SortedWindow',
     'Window'
 ]

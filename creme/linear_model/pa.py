@@ -21,19 +21,19 @@ class BasePA:
 
     @classmethod
     def _calc_tau_0(cls, x, loss):
-        norm = utils.norm(x, order=2) ** 2
+        norm = utils.math.norm(x, order=2) ** 2
         if norm > 0:
-            return loss / utils.norm(x, order=2) ** 2
+            return loss / utils.math.norm(x, order=2) ** 2
         return 0
 
     def _calc_tau_1(self, x, loss):
-        norm = utils.norm(x, order=2) ** 2
+        norm = utils.math.norm(x, order=2) ** 2
         if norm > 0:
             return min(self.C, loss / norm)
         return 0
 
     def _calc_tau_2(self, x, loss):
-        return loss / (utils.norm(x, order=2) ** 2 + 0.5 / self.C)
+        return loss / (utils.math.norm(x, order=2) ** 2 + 0.5 / self.C)
 
 
 class PARegressor(BasePA, base.Regressor):
@@ -93,7 +93,7 @@ class PARegressor(BasePA, base.Regressor):
         return self
 
     def predict_one(self, x):
-        return utils.dot(x, self.weights) + self.intercept
+        return utils.math.dot(x, self.weights) + self.intercept
 
 
 class PAClassifier(BasePA, base.BinaryClassifier):
@@ -157,7 +157,7 @@ class PAClassifier(BasePA, base.BinaryClassifier):
 
     def fit_one(self, x, y):
 
-        y_pred = utils.dot(x, self.weights) + self.intercept
+        y_pred = utils.math.dot(x, self.weights) + self.intercept
         tau = self.calc_tau(x, self.loss.eval(y, y_pred))
         step = tau * (y or -1)  # y == False becomes -1
 
@@ -169,5 +169,5 @@ class PAClassifier(BasePA, base.BinaryClassifier):
         return self
 
     def predict_proba_one(self, x):
-        y_pred = utils.sigmoid(utils.dot(x, self.weights) + self.intercept)
+        y_pred = utils.math.sigmoid(utils.math.dot(x, self.weights) + self.intercept)
         return {False: 1. - y_pred, True: y_pred}

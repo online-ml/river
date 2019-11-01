@@ -114,7 +114,7 @@ class FMRegressor(base.Regressor):
         y_pred = w0
 
         # Add the unary interactions
-        y_pred = utils.dot(x, w)
+        y_pred = utils.math.dot(x, w)
 
         # Add the pairwise interactions
         for f in range(self.n_components):
