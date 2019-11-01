@@ -56,14 +56,18 @@ class AdaboostClassifier(BaseBoosting):
 
             >>> model = ensemble.AdaboostClassifier(
             ...     model=(
-            ...         tree.DecisionTreeClassifier()
+            ...         tree.DecisionTreeClassifier(
+            ...             criterion='gini', 
+            ...             confidence=1e-5, 
+            ...             patience=2000
+            ...         )
             ...     ),
             ...     n_models=5,
             ...     random_state=42
             ... )
 
             >>> model_selection.online_score(X_y, model, metric)
-            LogLoss: 0.5531
+            LogLoss: 0.5531 
 
             >>> print(model)
             AdaboostClassifier(DecisionTreeClassifier)
