@@ -1,11 +1,14 @@
-import numpy as np
-import libNearestNeighbor
 import logging
 import copy as cp
-from sklearn.cluster import KMeans
 from collections import deque
+
+import numpy as np
+
+from sklearn.cluster import KMeans
+
 from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.utils import get_dimensions
+from . import libNearestNeighbor
 
 
 class SAMKNN(BaseSKMObject, ClassifierMixin):

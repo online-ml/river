@@ -38,10 +38,10 @@ def test_pipeline(test_path):
     metrics = evaluator.get_mean_measurements()
 
     expected_accuracy = 0.5555555555555556
-    assert np.isclose(expected_accuracy, metrics[0].get_accuracy())
+    assert np.isclose(expected_accuracy, metrics[0].accuracy_score())
 
     expected_kappa = 0.11111111111111116
-    assert np.isclose(expected_kappa, metrics[0].get_kappa())
+    assert np.isclose(expected_kappa, metrics[0].kappa_score())
     print(pipe.get_info())
     expected_info = "Pipeline:\n" \
                     "[OneHotToCategorical(categorical_list=[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9],\n" \

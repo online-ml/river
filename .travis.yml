@@ -32,7 +32,7 @@ install:
     then pip3 install --only-binary=numpy,scipy numpy scipy;
     else pip3 install numpy scipy;
     fi
-  - pip3 install codecov pytest-cov
+  - pip3 install codecov pytest-cov cython
   - pip3 install -U .
 # command to run tests
 script:

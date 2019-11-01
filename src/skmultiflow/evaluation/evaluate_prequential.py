@@ -52,11 +52,10 @@ class EvaluatePrequential(StreamEvaluator):
         | 'kappa_t'
         | 'kappa_m'
         | 'true_vs_predicted'
-        | 'precision'*
-        | 'recall'*
-        | 'f1'*
-        | 'gmean'*
-        | * binary-classification *only*
+        | 'precision'
+        | 'recall'
+        | 'f1'
+        | 'gmean'
         | **Multi-target Classification**
         | 'hamming_score'
         | 'hamming_loss'

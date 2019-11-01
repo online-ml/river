@@ -41,22 +41,22 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
 
     # Simple test. Tests for metrics are placed in the corresponding test module.
     expected_mean_accuracy = 0.436250
-    assert np.isclose(mean_performance.get_accuracy(), expected_mean_accuracy)
+    assert np.isclose(mean_performance.accuracy_score(), expected_mean_accuracy)
 
     expected_mean_kappa = 0.231791
-    assert np.isclose(mean_performance.get_kappa(), expected_mean_kappa)
+    assert np.isclose(mean_performance.kappa_score(), expected_mean_kappa)
 
     expected_mean_kappa_t = 0.236887
-    assert np.isclose(mean_performance.get_kappa_t(), expected_mean_kappa_t)
+    assert np.isclose(mean_performance.kappa_t_score(), expected_mean_kappa_t)
 
     expected_current_accuracy = 0.430000
-    assert np.isclose(current_performance.get_accuracy(), expected_current_accuracy)
+    assert np.isclose(current_performance.accuracy_score(), expected_current_accuracy)
 
     expected_current_kappa = 0.223909
-    assert np.isclose(current_performance.get_kappa(), expected_current_kappa)
+    assert np.isclose(current_performance.kappa_score(), expected_current_kappa)
 
     expected_current_kappa_t = 0.240000
-    assert np.isclose(current_performance.get_kappa_t(), expected_current_kappa_t)
+    assert np.isclose(current_performance.kappa_t_score(), expected_current_kappa_t)
 
     expected_info = "EvaluatePrequential(batch_size=1, data_points_for_classification=False,\n" \
                     "                    max_samples=1000, max_time=inf,\n" \
@@ -89,7 +89,7 @@ def test_evaluate_classification_coverage(tmpdir):
     mean_performance, current_performance = evaluator.get_measurements(model_idx=0)
 
     expected_current_accuracy = 0.685
-    assert np.isclose(current_performance.get_accuracy(), expected_current_accuracy)
+    assert np.isclose(current_performance.accuracy_score(), expected_current_accuracy)
 
 
 def test_evaluate_regression_coverage(tmpdir):
