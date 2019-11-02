@@ -1,7 +1,6 @@
 import collections
 import copy
-
-import numpy as np
+import math
 
 from sklearn import utils
 
@@ -38,12 +37,20 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             ``random_state`` is the random number generator; if ``None``, the random number
             generator is the ``RandomState`` instance used by `numpy.random`.
 
+    Attributes:
+        wrong_weight (collections.defaultdict): Number of times a model has made a mistake
+            when making predictions.
+        correct_weight (collections.defaultdict): Number of times a model has predicted the right
+            label when making predictions.
+
+
     Example:
 
         In the following example three tree classifiers are boosted together. The performance is
         slightly better than when using a single tree.
 
         ::
+
             >>> from creme import datasets
             >>> from creme import ensemble
             >>> from creme import metrics
@@ -74,7 +81,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
 
     References:
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
-        2. `https://github.com/crm416/online_boosting/blob/master/ensemblers/adaboost.py`_
+        2. `Github repository for online boosting <https://github.com/crm416/online_boosting/blob/master/ensemblers/adaboost.py>`_
 
     '''
 
@@ -115,7 +122,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
         for i, model in enumerate(self):
             epsilon = self.correct_weight[i] + 1e-16
             epsilon /= (self.wrong_weight[i]  + 1e-16)
-            weight = np.log(epsilon)
+            weight = math.log(epsilon)
             model_weights[i] += weight 
             predictions[i] = model.predict_proba_one(x)
 
