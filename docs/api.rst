@@ -172,7 +172,7 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :nosignatures:
     :template: class.rst
 
-    AdaboostClassifier    
+    AdaBoostClassifier   
     BaggingClassifier
     BaggingRegressor
     HedgeRegressor

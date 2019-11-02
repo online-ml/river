@@ -8,7 +8,7 @@ from sklearn import utils
 from .. import base
 
 
-__all__ = ['AdaboostClassifier']
+__all__ = ['AdaBoostClassifier']
 
 
 class BaseBoosting(base.Wrapper, base.Ensemble):
@@ -23,7 +23,7 @@ class BaseBoosting(base.Wrapper, base.Ensemble):
         return self.model
 
 
-class AdaboostClassifier(BaseBoosting):
+class AdaBoostClassifier(base.Classifier, BaseBoosting):
     '''Boosting for classification
 
     For each incoming observation, each model's ``fit_one`` method is called ``k`` times where
@@ -80,7 +80,7 @@ class AdaboostClassifier(BaseBoosting):
 
     def __init__(self, model, n_models=10, random_state=None):
         super().__init__(model, n_models, random_state)
-        self.wrong_weight   = collections.defaultdict(int)
+        self.wrong_weight = collections.defaultdict(int)
         self.correct_weight = collections.defaultdict(int)
 
     def fit_one(self, x, y):  
@@ -113,21 +113,12 @@ class AdaboostClassifier(BaseBoosting):
         predictions   = {}
 
         for i, model in enumerate(self):
-            epsilon  = self.correct_weight[i] + 1e-16
+            epsilon = self.correct_weight[i] + 1e-16
             epsilon /= (self.wrong_weight[i]  + 1e-16)
-            weight   = np.log(epsilon)
+            weight = np.log(epsilon)
             model_weights[i] += weight 
             predictions[i] = model.predict_proba_one(x)
 
         y_pred = predictions[max(model_weights, key=model_weights.get)]
         total = sum(y_pred.values())
         return {label: proba / total for label, proba in y_pred.items()}
-
-
-    def predict_one(self, x):
-        """
-        Store the predictions with the corresponding weights for each weak learner and return the 
-        prediction associated with the maximum weight.
-        """
-        return self.predict_proba_one(x)
-
