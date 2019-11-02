@@ -54,7 +54,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
 
             >>> metric = metrics.LogLoss()
 
-            >>> model = ensemble.AdaboostClassifier(
+            >>> model = ensemble.AdaBoostClassifier(
             ...     model=(
             ...         tree.DecisionTreeClassifier(
             ...             criterion='gini', 
@@ -70,7 +70,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             LogLoss: 0.5531 
 
             >>> print(model)
-            AdaboostClassifier(DecisionTreeClassifier)
+            AdaBoostClassifier(DecisionTreeClassifier)
 
     References:
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
