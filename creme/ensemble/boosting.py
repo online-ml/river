@@ -40,7 +40,7 @@ class AdaboostClassifier(BaseBoosting):
 
     Example:
 
-        In the following example three tree classifiers are bagged together. The performance is
+        In the following example three tree classifiers are boosted together. The performance is
         slightly better than when using a single tree.
 
         ::
@@ -74,7 +74,7 @@ class AdaboostClassifier(BaseBoosting):
 
     References:
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
-        2. https://github.com/crm416/online_boosting/blob/master/ensemblers/adaboost.py
+        2. `https://github.com/crm416/online_boosting/blob/master/ensemblers/adaboost.py`_
 
     '''
 
