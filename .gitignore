@@ -5,6 +5,11 @@ __pycache__/
 
 # C extensions
 *.so
+*.c
+*.cxx
+
+# Required C libraries
+!**/libNearestNeighbors/nearestNeighbor.cpp
 
 # Sphinx documentation
 docs/_build/
@@ -46,9 +51,11 @@ pip-delete-this-directory.txt
 .idea/
 
 # Text files
-# *.csv
-!data/*.csv
-!data/*.txt
+*.csv
+!**/data/*.csv
+!**/data/*.txt
+!tests/evaluation/*.csv
+!tests/utils*.csv
 
 # Coverage
 .coverage
