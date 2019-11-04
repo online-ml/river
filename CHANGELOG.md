@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - `SNARIMAX` to `time_series`. This is a generic model which encompasses time series models such as ARIMA and NARX.
+- Introduced a `clip_gradient` parameter to `LinearRegression` and `LogisticRegression`. Gradient was already implemented, but the maximum absolute value can now be set by the user.
 
 ### Changed
 
