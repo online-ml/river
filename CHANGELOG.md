@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - `optim.schedulers.Optimal` produces results that are identical to scikit-learn's `SGDRegressor` and ``SGDClassifier`` when setting the `learning_rate` parameter to `'optimal'`
+- The `intercept_lr` parameter of `LinearRegression` and `LogisticRegression` can now be passed an instance of `optim.schedulers.Scheduler` as well as a `float`.
 
 ## [0.4.3](https://pypi.org/project/creme/0.4.3/) - 2019-10-27
 
