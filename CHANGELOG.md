@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - `SNARIMAX` to `time_series`. This is a generic model which encompasses time series models such as ARIMA and NARX.
 
+### Changed
+
+- `optim.schedulers.Optimal` produces results that are identical to scikit-learn's `SGDRegressor` and ``SGDClassifier`` when setting the `learning_rate` parameter to `'optimal'`
+
 ## [0.4.3](https://pypi.org/project/creme/0.4.3/) - 2019-10-27
 
 ### Added
