@@ -59,11 +59,13 @@ class Optimal(Scheduler):
 
     """
 
-    def __init__(self, loss, alpha=1):
+    def __init__(self, loss, alpha=1e-4):
         self.loss = loss
         self.alpha = alpha
+
         typw = math.sqrt(1. / math.sqrt(self.alpha))
-        self.t0 = 1. / (typw / max(1., self.loss.gradient(-typw, 1.)) * self.alpha)
+        initial_eta0 = typw / max(1.0, self.loss.gradient(-typw, 1.0))
+        self.t0 = 1. / (initial_eta0 * self.alpha)
 
     def get(self, t):
         return 1. / (self.alpha * (self.t0 + t))

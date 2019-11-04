@@ -1,4 +1,5 @@
 import collections
+import numbers
 
 from .. import base
 from .. import optim
@@ -9,11 +10,16 @@ class GLM:
     """Generalized Linear Model.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately.
         loss (optim.Loss): The loss function to optimize for.
         intercept (float): Initial intercept value.
-        intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
-            means that no intercept will be used, which sometimes helps.
+        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
+            updating the intercept. If a `float` is passed, then an instance of
+            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
+            will be not be updated.
+        Setting this to 0
+            means that no intercept will be used.
         l2 (float): Amount of L2 regularization used to push weights towards .
 
     Attributes:
@@ -26,7 +32,11 @@ class GLM:
         self.loss = loss
         self.l2 = l2
         self.intercept = intercept
-        self.intercept_lr = intercept_lr
+        self.intercept_lr = (
+            optim.schedulers.Constant(intercept_lr)
+            if isinstance(intercept_lr, numbers.Number) else
+            intercept_lr
+        )
         self.weights = collections.defaultdict(float)
 
     def _raw_dot(self, x):
@@ -49,11 +59,11 @@ class GLM:
             for i, xi in x.items()
         }
 
+        # Update the intercept
+        self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * g_loss
+
         # Update the weights
         self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient)
-
-        # Update the intercept
-        self.intercept -= g_loss * self.intercept_lr
 
         return self
 
@@ -62,13 +72,15 @@ class LinearRegression(GLM, base.Regressor):
     """Linear regression.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to ``optim.SGD(.01)``.
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately. Defaults to ``optim.SGD(.01)``.
         loss (optim.RegressionLoss): The loss function to optimize for. Defaults to
             ``optim.SquaredLoss``.
         intercept (float): Initial intercept value.
-        intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
-            means that no intercept will be used, which sometimes helps.
+        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
+            updating the intercept. If a `float` is passed, then an instance of
+            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
+            will be not be updated.
         l2 (float): Amount of L2 regularization used to push weights towards .
 
     Attributes:
@@ -129,12 +141,14 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     """Logistic regression.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to ``optim.SGD(.05)``.
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately. Defaults to ``optim.SGD(.05)``.
         loss (optim.BinaryLoss): The loss function to optimize for. Defaults to ``optim.LogLoss``.
         intercept (float): Initial intercept value.
-        intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
-            means that no intercept will be used, which sometimes helps.
+        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
+            updating the intercept. If a `float` is passed, then an instance of
+            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
+            will be not be updated.
         l2 (float): Amount of L2 regularization used to push weights towards .
 
     Attributes:
