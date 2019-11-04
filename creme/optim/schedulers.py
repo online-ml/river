@@ -1,5 +1,6 @@
 """Learning rate schedulers."""
 import abc
+import math
 
 
 __all__ = [
@@ -48,14 +49,21 @@ class InverseScaling(Scheduler):
 class Optimal(Scheduler):
     """Optimal learning schedule as proposed by Léon Bottou.
 
+    Parameters:
+        loss (optim.losses.Loss)
+        alpha (float)
+
     References:
         1. `Stochastic Gradient Descent <https://leon.bottou.org/projects/sgd>`_
+        2. `Stochastic Gradient Descent Tricks <https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf>`_
 
     """
 
-    def __init__(self, t0=4e3, alpha=1e-4):
-        self.t0 = t0
+    def __init__(self, loss, alpha=1):
+        self.loss = loss
         self.alpha = alpha
+        typw = math.sqrt(1. / math.sqrt(self.alpha))
+        self.t0 = 1. / (typw / max(1., self.loss.gradient(-typw, 1.)) * self.alpha)
 
     def get(self, t):
         return 1. / (self.alpha * (self.t0 + t))
