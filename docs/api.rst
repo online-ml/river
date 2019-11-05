@@ -171,7 +171,8 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
+    AdaBoostClassifier   
     BaggingClassifier
     BaggingRegressor
     HedgeRegressor
