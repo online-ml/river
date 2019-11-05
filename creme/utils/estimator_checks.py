@@ -306,7 +306,7 @@ def check_gradient_finite_difference(model, x, y, delta = 0.001):
 
     Parameters:
         model (GLM): Generalized Linear Model.
-        x (dict): Feature.
+        x (dict): Features.
         y (float): Target.
         delta (float): Slight perturbation applied to weights.
     
@@ -315,8 +315,8 @@ def check_gradient_finite_difference(model, x, y, delta = 0.001):
 
     """
     y_pred = model.predict_one(x)
-    loss   = model.loss.eval(y_true = y, y_pred = y_pred)
-    g_loss = model.loss.gradient(y_true=y, y_pred = y_pred)
+    loss   = model.loss.eval(y_true=y, y_pred=y_pred)
+    g_loss = model.loss.gradient(y_true=y, y_pred=y_pred)
 
     for i, _ in x.items():
         model_perturbed = copy.deepcopy(model)
