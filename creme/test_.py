@@ -76,6 +76,9 @@ def get_all_estimators():
             elif issubclass(obj, ensemble.BaggingRegressor):
                 inst = obj(linear_model.LinearRegression())
 
+            elif issubclass(obj, ensemble.AdaBoostClassifier):
+                inst = obj(linear_model.LogisticRegression())
+
             elif issubclass(obj, ensemble.HedgeRegressor):
                 inst = obj([
                     preprocessing.StandardScaler() | linear_model.LinearRegression(intercept_lr=0.1),
