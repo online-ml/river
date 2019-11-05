@@ -7,10 +7,12 @@ import inspect
 
 import pytest
 
+import creme
 from creme import base
 from creme import dummy
 from creme import cluster
 from creme import compose
+from creme import datasets
 from creme import ensemble
 from creme import feature_extraction
 from creme import feature_selection
@@ -18,14 +20,17 @@ from creme import linear_model
 from creme import multiclass
 from creme import multioutput
 from creme import naive_bayes
+from creme import optim
 from creme import preprocessing
 from creme import stats
+from creme import stream
 from creme import time_series
 from creme import tree
 from creme import utils
 from creme.compat.sklearn import CremeBaseWrapper
 from creme.compat.sklearn import SKLBaseWrapper
 
+from sklearn import datasets
 
 def get_all_estimators():
 
@@ -130,3 +135,44 @@ def get_all_estimators():
 )
 def test_check_estimator(estimator):
     utils.estimator_checks.check_estimator(estimator)
+
+
+@pytest.mark.parametrize(
+    'optimizer',
+    [
+        pytest.param(copy.deepcopy(optimizer), id=str(optimizer))
+        for optimizer in [
+            optim.AdaBound(),
+            optim.AdaDelta(),
+            optim.AdaGrad(),
+            optim.AdaMax(),
+            optim.Adam(),
+            optim.Momentum(),
+            optim.NesterovMomentum(),
+            optim.RMSProp(),
+            optim.SGD(),
+        ]
+    ]
+)
+def test_check_gradient(optimizer):
+    # Test gradient finite difference with linear regression
+    X_y = stream.iter_sklearn_dataset(
+        dataset=datasets.load_boston(),
+        shuffle=True,
+        random_state=42
+    )
+    scaler = preprocessing.StandardScaler()
+    model = linear_model.LinearRegression()
+    for x, y in X_y:
+        x = scaler.fit_one(x).transform_one(x)
+        utils.estimator_checks.check_gradient_finite_difference(model, x, y, delta = 0.001)
+        model.fit_one(x, y)
+        
+    # Test gradient finite difference with logistic regression
+    X_y = creme.datasets.fetch_electricity()
+    scaler = preprocessing.StandardScaler()
+    model = linear_model.LogisticRegression()
+    for x, y in X_y:
+        x = scaler.fit_one(x).transform_one(x)
+        utils.estimator_checks.check_gradient_finite_difference(model, x, y, delta = 0.001)
+        model.fit_one(x, y)
