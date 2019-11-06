@@ -158,6 +158,7 @@ Pipeline (
         l2=0.0001
         intercept=0.0
         intercept_lr=0.01
+        clip_gradient=1000000000000.0
     )
 )
 
