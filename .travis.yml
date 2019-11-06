@@ -17,19 +17,6 @@ jobs:
   include:
 
   - stage: pypi
-    env:
-      - CIBW_BUILD="cp36-* cp37-*"
-      - CIBW_BEFORE_BUILD="pip install cython"
-    install:
-      - pip install cibuildwheel==0.12.0 cython twine
-    script:
-      - cibuildwheel --output-dir dist
-      - python setup.py sdist
-      - ls dist
-      - twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD}
-    if: tag IS present
-
-  - stage: pypi
     sudo: required
     services:
       - docker
