@@ -35,10 +35,6 @@ jobs:
   - stage: pypi
     os: osx
     language: generic
-    env: *pypi-env
-      - PATH=/c/Python36:/c/Python36/Scripts:$PATH
-    before_install:
-      - choco install python3 --version 3.6.8 --no-progress -y
     install: *pypi-install
     script: *pypi-script
     if: tag IS present
@@ -47,6 +43,9 @@ jobs:
     os: windows
     language: shell
     env: *pypi-env
+      - PATH=/c/Python36:/c/Python36/Scripts:$PATH
+    before_install:
+      - choco install python3 --version 3.6.8 --no-progress -y
     install: *pypi-install
     script: *pypi-script
 
