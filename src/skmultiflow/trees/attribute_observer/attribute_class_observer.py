@@ -18,7 +18,8 @@ class AttributeClassObserver(metaclass=ABCMeta):
 
     @abstractmethod
     def observe_attribute_class(self, att_val, class_val, weight):
-        """Update statistics of this observer given an attribute value, a class and the weight of the instance observed.
+        """Update statistics of this observer given an attribute value, a class
+        and the weight of the instance observed.
 
         Parameters
         ----------

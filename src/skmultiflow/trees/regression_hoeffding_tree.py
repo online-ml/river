@@ -1,12 +1,19 @@
+import numpy as np
 from operator import attrgetter
 
 from skmultiflow.core import RegressorMixin
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.trees.numeric_attribute_regression_observer import NumericAttributeRegressionObserver
-from skmultiflow.trees.nominal_attribute_regression_observer import NominalAttributeRegressionObserver
-from skmultiflow.utils.utils import *
+from skmultiflow.utils import *
 from skmultiflow.utils import check_random_state
-from skmultiflow.trees.variance_reduction_split_criterion import VarianceReductionSplitCriterion
+from skmultiflow.trees.split_criterion import VarianceReductionSplitCriterion
+
+from skmultiflow.trees.nodes import SplitNode
+from skmultiflow.trees.nodes import LearningNode
+from skmultiflow.trees.nodes import ActiveLearningNode
+from skmultiflow.trees.nodes import ActiveLearningNodeForRegression
+from skmultiflow.trees.nodes import InactiveLearningNodeForRegression
+from skmultiflow.trees.nodes import ActiveLearningNodePerceptron
+from skmultiflow.trees.nodes import InactiveLearningNodePerceptron
 
 _TARGET_MEAN = 'mean'
 _PERCEPTRON = 'perceptron'
@@ -63,229 +70,6 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
     .. [1] Elena Ikonomovska, João Gama, and Sašo Džeroski. 2011. Learning model trees from
            evolving data streams. Data Min. Knowl. Discov. 23, 1 (July 2011), 128-168.
     """
-    class InactiveLearningNodeForRegression(HoeffdingTree.InactiveLearningNode):
-
-        def __init__(self, initial_class_observations=None):
-            """ InactiveLearningNode class constructor. """
-            super().__init__(initial_class_observations)
-
-        def learn_from_instance(self, X, y, weight, ht):
-
-            try:
-                self._observed_class_distribution[0] += weight
-                self._observed_class_distribution[1] += y * weight
-                self._observed_class_distribution[2] += y * y * weight
-            except KeyError:
-                self._observed_class_distribution[0] = weight
-                self._observed_class_distribution[1] = y * weight
-                self._observed_class_distribution[2] = y * y * weight
-
-    class ActiveLearningNodeForRegression(HoeffdingTree.ActiveLearningNode):
-
-        def __init__(self, initial_class_observations):
-            """ ActiveLearningNode class constructor. """
-            super().__init__(initial_class_observations)
-
-        def learn_from_instance(self, X, y, weight, ht):
-            """Update the node with the provided instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes for updating the node.
-            y: int
-                Instance class.
-            weight: float
-                Instance weight.
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
-
-            """
-            try:
-                self._observed_class_distribution[0] += weight
-                self._observed_class_distribution[1] += y * weight
-                self._observed_class_distribution[2] += y * y * weight
-            except KeyError:
-                self._observed_class_distribution[0] = weight
-                self._observed_class_distribution[1] = y * weight
-                self._observed_class_distribution[2] = y * y * weight
-
-            for i in range(len(X)):
-                try:
-                    obs = self._attribute_observers[i]
-                except KeyError:
-                    if ht.nominal_attributes is not None and i in ht.nominal_attributes:
-                        obs = NominalAttributeRegressionObserver()
-                    else:
-                        obs = NumericAttributeRegressionObserver()
-                    self._attribute_observers[i] = obs
-                obs.observe_attribute_class(X[i], y, weight)
-
-        def get_weight_seen(self):
-            """Calculate the total weight seen by the node.
-
-            Returns
-            -------
-            float
-                Total weight seen.
-
-            """
-            if self._observed_class_distribution == {}:
-                return 0
-            else:
-                return self._observed_class_distribution[0]
-
-    class LearningNodePerceptron(HoeffdingTree.ActiveLearningNode):
-
-        def __init__(self, initial_class_observations, perceptron_weight=None, random_state=None):
-            """
-            LearningNodePerceptron class constructor
-            Parameters
-            ----------
-            initial_class_observations
-            perceptron_weight
-            """
-            super().__init__(initial_class_observations)
-            if perceptron_weight is None:
-                self.perceptron_weight = None
-            else:
-                self.perceptron_weight = perceptron_weight
-            self.random_state = check_random_state(random_state)
-
-        def learn_from_instance(self, X, y, weight, rht):
-            """Update the node with the provided instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes for updating the node.
-            y: int
-                Instance class.
-            weight: float
-                Instance weight.
-            rht: RegressionHoeffdingTree
-                Regression Hoeffding Tree to update.
-
-            """
-
-            if self.perceptron_weight is None:
-                self.perceptron_weight = self.random_state.uniform(-1, 1, len(X)+1)
-
-            try:
-                self._observed_class_distribution[0] += weight
-            except KeyError:
-                self._observed_class_distribution[0] = weight
-
-            if rht.learning_ratio_const:
-                learning_ratio = rht.learning_ratio_perceptron
-            else:
-                learning_ratio = rht.learning_ratio_perceptron / \
-                                 (1 + self._observed_class_distribution[0] * rht.learning_ratio_decay)
-
-            try:
-                self._observed_class_distribution[1] += y * weight
-                self._observed_class_distribution[2] += y * y * weight
-            except KeyError:
-                self._observed_class_distribution[1] = y * weight
-                self._observed_class_distribution[2] = y * y * weight
-
-            for i in range(int(weight)):
-                self.update_weights(X, y, learning_ratio, rht)
-
-            for i in range(len(X)):
-                try:
-                    obs = self._attribute_observers[i]
-                except KeyError:
-                    if rht.nominal_attributes is not None and i in rht.nominal_attributes:
-                        obs = NominalAttributeRegressionObserver()
-                    else:
-                        obs = NumericAttributeRegressionObserver()
-                    self._attribute_observers[i] = obs
-                obs.observe_attribute_class(X[i], y, weight)
-
-        def update_weights(self, X, y, learning_ratio, rht):
-            """
-            Update the perceptron weights
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes for updating the node.
-            y: int
-                Instance class.
-            learning_ratio: float
-                perceptron learning ratio
-            rht: RegressionHoeffdingTree
-                Regression Hoeffding Tree to update.
-            """
-            normalized_sample = rht.normalize_sample(X)
-            normalized_pred = self.predict(normalized_sample)
-            normalized_target_value = rht.normalized_target_value(y)
-            self.perceptron_weight = self.perceptron_weight + learning_ratio * \
-                                           np.multiply((normalized_target_value - normalized_pred),
-                                                       normalized_sample)
-
-        def predict(self, X):
-            return np.dot(self.perceptron_weight, X)
-
-        def get_weight_seen(self):
-            """Calculate the total weight seen by the node.
-
-            Returns
-            -------
-            float
-                Total weight seen.
-
-            """
-            if self._observed_class_distribution == {}:
-                return 0
-            else:
-                return self._observed_class_distribution[0]
-
-    class InactiveLearningNodePerceptron(HoeffdingTree.InactiveLearningNode):
-
-        def __init__(self, initial_class_observations, perceptron_weight=None):
-            super().__init__(initial_class_observations)
-            if perceptron_weight is None:
-                self.perceptron_weight = []
-            else:
-                self.perceptron_weight = perceptron_weight
-
-        def learn_from_instance(self, X, y, weight, rht):
-
-            if self.perceptron_weight is None:
-                self.perceptron_weight = np.random.uniform(-1, 1, len(X)+1)
-
-            try:
-                self._observed_class_distribution[0] += weight
-            except KeyError:
-                self._observed_class_distribution[0] = weight
-
-            if rht.learning_ratio_const:
-                learning_ratio = rht.learning_ratio_perceptron
-            else:
-                learning_ratio = rht.learning_ratio_perceptron / 1 + \
-                                 self._observed_class_distribution[0] * rht.learning_ratio_decay
-
-            try:
-                self._observed_class_distribution[1] += y * weight
-                self._observed_class_distribution[2] += y * y * weight
-            except KeyError:
-                self._observed_class_distribution[1] = y * weight
-                self._observed_class_distribution[2] = y * y * weight
-
-            for i in range(int(weight)):
-                self.update_weights(X, y, learning_ratio, rht)
-
-        def update_weights(self, X, y, learning_ratio, ht):
-            normalized_sample = ht.normalize_sample(X)
-            normalized_pred = self.predict(normalized_sample)
-            normalized_target_value = ht.normalized_target_value(y)
-            self.perceptron_weight += learning_ratio * \
-                                           np.multiply((normalized_pred - normalized_target_value),
-                                                       normalized_sample)
-
-        def predict(self, X):
-            return np.dot(self.perceptron_weight, X[0])
 
     # ===========================================
     # == Hoeffding Regression Tree implementation ===
@@ -425,10 +209,10 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
         if initial_class_observations is None:
             initial_class_observations = {}
         if self.leaf_prediction == _TARGET_MEAN:
-            return self.ActiveLearningNodeForRegression(initial_class_observations)
+            return ActiveLearningNodeForRegression(initial_class_observations)
         elif self.leaf_prediction == _PERCEPTRON:
-            return self.LearningNodePerceptron(initial_class_observations, perceptron_weight,
-                                               random_state=self.random_state)
+            return ActiveLearningNodePerceptron(initial_class_observations, perceptron_weight,
+                                                random_state=self.random_state)
 
     def get_weights_for_instance(self, X):
         """ Get class votes for a single instance.
@@ -514,8 +298,9 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
 
         try:
             self.sum_of_attribute_values = np.add(self.sum_of_attribute_values, np.multiply(sample_weight, X))
-            self.sum_of_attribute_squares = np.add(self.sum_of_attribute_squares, np.multiply(sample_weight,
-                                                                                              np.power(X, 2)))
+            self.sum_of_attribute_squares = np.add(
+                self.sum_of_attribute_squares, np.multiply(sample_weight, np.power(X, 2))
+            )
         except ValueError:
             self.sum_of_attribute_values = np.multiply(sample_weight, X)
             self.sum_of_attribute_squares = np.multiply(sample_weight, np.power(X, 2))
@@ -530,10 +315,10 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
             leaf_node = self._new_learning_node()
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._active_leaf_node_cnt += 1
-        if isinstance(leaf_node, self.LearningNode):
+        if isinstance(leaf_node, LearningNode):
             learning_node = leaf_node
             learning_node.learn_from_instance(X, y, sample_weight, self)
-            if self._growth_allowed and isinstance(learning_node, HoeffdingTree.ActiveLearningNode):
+            if self._growth_allowed and isinstance(learning_node, ActiveLearningNode):
                 active_learning_node = learning_node
                 weight_seen = active_learning_node.get_weight_seen()
                 weight_diff = weight_seen - active_learning_node.get_weight_seen_at_last_split_evaluation()
@@ -660,11 +445,15 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
                                                 node.get_observed_class_distribution())
                 for i in range(split_decision.num_splits()):
                     if self.leaf_prediction == _PERCEPTRON:
-                        new_child = self._new_learning_node(split_decision.resulting_class_distribution_from_split(i),
-                                                            node.perceptron_weight)
+                        new_child = self._new_learning_node(
+                            split_decision.resulting_class_distribution_from_split(i),
+                            node.perceptron_weight
+                        )
                     else:
-                        new_child = self._new_learning_node(split_decision.resulting_class_distribution_from_split(i),
-                                                            None)
+                        new_child = self._new_learning_node(
+                            split_decision.resulting_class_distribution_from_split(i),
+                            None
+                        )
                     new_split.set_child(i, new_child)
                 self._active_leaf_node_cnt -= 1
                 self._decision_node_cnt += 1
@@ -676,8 +465,8 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
             # Manage memory
             self.enforce_tracker_limit()
 
-    def _deactivate_learning_node(self, to_deactivate: HoeffdingTree.ActiveLearningNode,
-                                  parent: HoeffdingTree.SplitNode, parent_branch: int):
+    def _deactivate_learning_node(self, to_deactivate: ActiveLearningNode,
+                                  parent: SplitNode, parent_branch: int):
         """Deactivate a learning node.
 
         Parameters
@@ -691,10 +480,14 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
 
         """
         if self.leaf_prediction == _TARGET_MEAN:
-            new_leaf = self.InactiveLearningNodeForRegression(to_deactivate.get_observed_class_distribution())
+            new_leaf = InactiveLearningNodeForRegression(
+                to_deactivate.get_observed_class_distribution()
+            )
         else:
-            new_leaf = self.InactiveLearningNodePerceptron(to_deactivate.get_observed_class_distribution(),
-                                                           to_deactivate.perceptron_weight)
+            new_leaf = InactiveLearningNodePerceptron(
+                to_deactivate.get_observed_class_distribution(),
+                to_deactivate.perceptron_weight
+            )
         if parent is None:
             self._tree_root = new_leaf
         else:

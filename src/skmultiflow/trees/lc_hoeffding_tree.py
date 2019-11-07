@@ -1,12 +1,15 @@
+import numpy as np
 from skmultiflow.core import MultiOutputMixin
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
-from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
-from skmultiflow.utils.utils import *
+from skmultiflow.utils import *
 from skmultiflow.bayes import do_naive_bayes_prediction
 
-GINI_SPLIT = 'gini'
-INFO_GAIN_SPLIT = 'info_gain'
+from skmultiflow.trees.nodes import SplitNode
+from skmultiflow.trees.nodes import LCActiveLearningNode
+from skmultiflow.trees.nodes import LCInactiveLearningNode
+from skmultiflow.trees.nodes import LCLearningNodeNB
+from skmultiflow.trees.nodes import LCLearningNodeNBA
+
 MAJORITY_CLASS = 'mc'
 NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
@@ -123,146 +126,6 @@ class LCHT(HoeffdingTree, MultiOutputMixin):
             """
         super().partial_fit(X, y, sample_weight=sample_weight)    # Override HT, infer the classes
 
-    class LCActiveLearningNode(HoeffdingTree.ActiveLearningNode):
-
-        def __init__(self, initial_class_observations):
-            super().__init__(initial_class_observations)
-
-        def learn_from_instance(self, X, y, weight, ht):
-
-            if not(ht.leaf_prediction == NAIVE_BAYES_ADAPTIVE):
-                y = ''.join(str(e) for e in y)
-                y = int(y, 2)
-
-            try:
-                self._observed_class_distribution[y] += weight
-            except KeyError:
-                self._observed_class_distribution[y] = weight
-
-            for i in range(len(X)):
-                try:
-                    obs = self._attribute_observers[i]
-                except KeyError:
-                    if ht.nominal_attributes is not None and i in ht.nominal_attributes:
-                        obs = NominalAttributeClassObserver()
-                    else:
-                        obs = NumericAttributeClassObserverGaussian()
-                    self._attribute_observers[i] = obs
-                obs.observe_attribute_class(X[i], int(y), weight)
-
-    class LCInactiveLearningNode(HoeffdingTree.InactiveLearningNode):
-
-        def __init__(self, initial_class_observations=None):
-            """ LCInactiveLearningNode class constructor. """
-            super().__init__(initial_class_observations)
-
-        def learn_from_instance(self, X, y, weight, ht):
-
-            i = ''.join(str(e) for e in y)
-            i = int(i, 2)
-            try:
-                self._observed_class_distribution[i] += weight
-            except KeyError:
-                self._observed_class_distribution[i] = weight
-
-    class LCLearningNodeNB(LCActiveLearningNode):
-
-        def __init__(self, initial_class_observations):
-            """ LCLearningNodeNB class constructor. """
-            super().__init__(initial_class_observations)
-
-        def get_class_votes(self, X, ht):
-            """Get the votes per class for a given instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes.
-            ht: HoeffdingTree
-                Hoeffding Tree.
-
-            Returns
-            -------
-            dict (class_value, weight)
-                Class votes for the given instance.
-
-            """
-            if self.get_weight_seen() >= ht.nb_threshold:
-                return do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
-            else:
-                return super().get_class_votes(X, ht)
-
-        def disable_attribute(self, att_index):
-            """Disable an attribute observer.
-
-            Disabled in Nodes using Naive Bayes, since poor attributes are used in Naive Bayes calculation.
-
-            Parameters
-            ----------
-            att_index: int
-                Attribute index.
-
-            """
-            pass
-
-    class LCLearningNodeNBA(LCLearningNodeNB):
-
-        def __init__(self, initial_class_observations):
-            """LCLearningNodeNBA class constructor. """
-            super().__init__(initial_class_observations)
-            self._mc_correct_weight = 0.0
-            self._nb_correct_weight = 0.0
-
-        def learn_from_instance(self, X, y, weight, ht):
-            """Update the node with the provided instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes for updating the node.
-            y: int
-                Instance class.
-            weight: float
-                The instance's weight.
-            ht: HoeffdingTree
-                The Hoeffding Tree to update.
-
-            """
-
-            y = ''.join(str(e) for e in y)
-            y = int(y, 2)
-
-            if self._observed_class_distribution == {}:
-                # All target_values equal, default to class 0
-                if 0 == y:
-                    self._mc_correct_weight += weight
-            elif max(self._observed_class_distribution, key=self._observed_class_distribution.get) == y:
-                self._mc_correct_weight += weight
-            nb_prediction = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
-            if max(nb_prediction, key=nb_prediction.get) == y:
-                self._nb_correct_weight += weight
-            super().learn_from_instance(X, y, weight, ht)
-
-        def get_class_votes(self, X, ht):
-            """Get the votes per class for a given instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes.
-            ht: HoeffdingTree
-                Hoeffding Tree.
-
-            Returns
-            -------
-            dict (class_value, weight)
-                Class votes for the given instance.
-
-            """
-            if self._mc_correct_weight > self._nb_correct_weight:
-                return self._observed_class_distribution
-            return do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
-
     def predict(self, X):
         """Predicts the label of the X instance(s)
 
@@ -293,18 +156,18 @@ class LCHT(HoeffdingTree, MultiOutputMixin):
         if initial_class_observations is None:
             initial_class_observations = {}
         if self._leaf_prediction == MAJORITY_CLASS:
-            return self.LCActiveLearningNode(initial_class_observations)
+            return LCActiveLearningNode(initial_class_observations)
         elif self._leaf_prediction == NAIVE_BAYES:
-            return self.LCLearningNodeNB(initial_class_observations)
-        else:
-            return self.LCLearningNodeNBA(initial_class_observations)
+            return LCLearningNodeNB(initial_class_observations)
+        else:  # NAIVE BAYES ADAPTIVE (default)
+            return LCLearningNodeNBA(initial_class_observations)
 
-    def _deactivate_learning_node(self, to_deactivate: LCActiveLearningNode, parent: HoeffdingTree.SplitNode, parent_branch: int):
+    def _deactivate_learning_node(self, to_deactivate: LCActiveLearningNode, parent: SplitNode, parent_branch: int):
         """Deactivate a learning node.
 
         Parameters
         ----------
-        to_deactivate: ActiveLearningNode
+        to_deactivate: LCActiveLearningNode
             The node to deactivate.
         parent: SplitNode
             The node's parent.
@@ -312,7 +175,7 @@ class LCHT(HoeffdingTree, MultiOutputMixin):
             Parent node's branch index.
 
         """
-        new_leaf = self.LCInactiveLearningNode(to_deactivate.get_observed_class_distribution())
+        new_leaf = LCInactiveLearningNode(to_deactivate.get_observed_class_distribution())
         if parent is None:
             self._tree_root = new_leaf
         else:

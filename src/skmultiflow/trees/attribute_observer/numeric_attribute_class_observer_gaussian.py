@@ -1,9 +1,9 @@
-from skmultiflow.trees.attribute_class_observer import AttributeClassObserver
+import numpy as np
+from skmultiflow.trees.attribute_observer import AttributeClassObserver
 from skmultiflow.trees.gaussian_estimator import GaussianEstimator
-from skmultiflow.trees.numeric_attribute_binary_test import NumericAttributeBinaryTest
+from skmultiflow.trees.attribute_test import NumericAttributeBinaryTest
 from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
 from sortedcontainers.sortedlist import SortedList
-import numpy as np
 
 
 class NumericAttributeClassObserverGaussian(AttributeClassObserver):

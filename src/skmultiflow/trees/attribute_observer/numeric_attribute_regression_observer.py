@@ -1,5 +1,5 @@
-from skmultiflow.trees.numeric_attribute_class_observer_binary_tree import NumericAttributeClassObserverBinaryTree
-from skmultiflow.trees.numeric_attribute_binary_test import NumericAttributeBinaryTest
+from skmultiflow.trees.attribute_observer import NumericAttributeClassObserverBinaryTree
+from skmultiflow.trees.attribute_test import NumericAttributeBinaryTest
 from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
 
 
