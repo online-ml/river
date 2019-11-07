@@ -121,7 +121,7 @@ class LinearRegression(GLM, base.Regressor):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=.0001, intercept=0., intercept_lr=.01,
+    def __init__(self, optimizer=None, loss=None, l2=0., intercept=0., intercept_lr=.01,
                  clip_gradient=1e12):
         super().__init__(
             optimizer=(
@@ -152,7 +152,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
             will be not be updated.
-        l2 (float): Amount of L2 regularization used to push weights towards .
+        l2 (float): Amount of L2 regularization used to push weights towards.
 
     Attributes:
         weights (collections.defaultdict)
@@ -185,7 +185,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=.0001, intercept=0., intercept_lr=.01,
+    def __init__(self, optimizer=None, loss=None, l2=0., intercept=0., intercept_lr=.01,
                  clip_gradient=1e12):
         super().__init__(
             optimizer=optim.SGD(.01) if optimizer is None else optimizer,
