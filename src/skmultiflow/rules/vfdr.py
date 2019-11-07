@@ -1,5 +1,6 @@
 import copy
 from operator import attrgetter, itemgetter
+import numpy as np
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.rules.base_predicate import Predicate
@@ -9,9 +10,11 @@ from skmultiflow.rules.hellinger_distance_criterion import HellingerDistanceCrit
 from skmultiflow.rules.info_gain_rule_criterion import InfoGainExpandCriterion
 from skmultiflow.rules.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.rules.numeric_attribute_class_observer import GaussianNumericAttributeClassObserver
-from skmultiflow.trees.attribute_class_observer_null import AttributeClassObserverNull
+from skmultiflow.trees.attribute_observer import AttributeClassObserverNull
 from skmultiflow.bayes import do_naive_bayes_prediction
-from skmultiflow.utils.utils import *
+from skmultiflow.utils import get_dimensions, normalize_values_in_dict, \
+    calculate_object_size
+
 
 _FIRSTHIT = 'first_hit'
 _WEIGHTEDMAX = 'weighted_max'

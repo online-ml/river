@@ -1,25 +1,22 @@
 from operator import attrgetter
 import numpy as np
-from skmultiflow.trees.attribute_split_suggestion import AttributeSplitSuggestion
-from skmultiflow.trees.gini_split_criterion import GiniSplitCriterion
+from skmultiflow.trees.split_criterion import GiniSplitCriterion
 from skmultiflow.trees.hoeffding_tree import HoeffdingTree
-from skmultiflow.trees.info_gain_split_criterion import InfoGainSplitCriterion
-from skmultiflow.trees.nominal_attribute_class_observer import NominalAttributeClassObserver
-from skmultiflow.trees.numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
-from skmultiflow.bayes import do_naive_bayes_prediction
-from skmultiflow.utils.utils import get_dimensions, calculate_object_size
+from skmultiflow.trees.split_criterion import InfoGainSplitCriterion
+from skmultiflow.trees.nodes import LearningNode
+from skmultiflow.trees.nodes import AnyTimeSplitNode
+from skmultiflow.trees.nodes import AnyTimeActiveLearningNode
+from skmultiflow.trees.nodes import AnyTimeInactiveLearningNode
+from skmultiflow.trees.nodes import AnyTimeLearningNodeNB
+from skmultiflow.trees.nodes import AnyTimeLearningNodeNBAdaptive
+from skmultiflow.utils import get_dimensions, calculate_object_size
 
-Node = HoeffdingTree.Node
-SplitNode = HoeffdingTree.SplitNode
-ActiveLearningNode = HoeffdingTree.ActiveLearningNode
-InactiveLearningNode = HoeffdingTree.InactiveLearningNode
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
 MAJORITY_CLASS = 'mc'
 NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
-error_width_threshold = 300
 
 
 class HATT(HoeffdingTree):
@@ -71,449 +68,22 @@ class HATT(HoeffdingTree):
        preprint arXiv:1802.08780, 2018.
 
     """
-
-    class AnyTimeActiveLearningNode(ActiveLearningNode):
-        """ Learning node that supports growth.
-
-        Parameters
-        ----------
-        initial_class_observations: dict (class_value, weight) or None
-            Initial class observations
-
-        """
-
-        def __init__(self, initial_class_observations):
-            """ AnyTimeActiveLearningNode class constructor. """
-            super().__init__(initial_class_observations)
-
-        # Override
-        def get_best_split_suggestions(self, criterion, ht):
-            """ Find possible split candidates without taking into account the the null split.
-
-            Parameters
-            ----------
-            criterion: SplitCriterion
-                The splitting criterion to be used.
-            ht: HoeffdingTree
-                Hoeffding Tree.
-
-            Returns
-            -------
-            list
-                Split candidates.
-
-            """
-            best_suggestions = []
-            pre_split_dist = self._observed_class_distribution
-
-            for i, obs in self._attribute_observers.items():
-                best_suggestion = obs.get_best_evaluated_split_suggestion(criterion, pre_split_dist,
-                                                                          i, ht.binary_split)
-                if best_suggestion is not None:
-                    best_suggestions.append(best_suggestion)
-
-            return best_suggestions
-
-        def get_null_split(self, criterion):
-            """ Compute the null split (don't split).
-
-            Parameters
-            ----------
-            criterion: SplitCriterion
-                The splitting criterion to be used.
-
-
-            Returns
-            -------
-            list
-                Split candidates.
-
-            """
-
-            pre_split_dist = self._observed_class_distribution
-
-            null_split = AttributeSplitSuggestion(None, [{}],
-                                                  criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
-            return null_split
-
-        @staticmethod
-        def count_nodes():
-            """ Calculate the number of split node and leaf starting from this node as a root.
-
-            Returns
-            -------
-            list[int int]
-                [number of split node, number of leaf node].
-
-            """
-            return np.array([0, 1])
-
-    class AnyTimeInactiveLearningNode(InactiveLearningNode):
-        """ Inactive learning node that does not grow.
-
-        Parameters
-        ----------
-        initial_class_observations: dict (class_value, weight) or None
-            Initial class observations
-
-        """
-
-        def __init__(self, initial_class_observations=None):
-            """ InactiveLearningNode class constructor. """
-            super().__init__(initial_class_observations)
-
-        # Override
-        def get_best_split_suggestions(self, criterion, ht):
-            """ Find possible split candidates without taking into account the the null split.
-
-            Parameters
-            ----------
-            criterion: SplitCriterion
-                The splitting criterion to be used.
-            ht: HoeffdingTree
-                Hoeffding Tree.
-
-            Returns
-            -------
-            list
-                Split candidates.
-
-            """
-            best_suggestions = []
-            pre_split_dist = self._observed_class_distribution
-
-            for i, obs in self._attribute_observers.items():
-                best_suggestion = obs.get_best_evaluated_split_suggestion(criterion, pre_split_dist,
-                                                                          i, ht.binary_split)
-                if best_suggestion is not None:
-                    best_suggestions.append(best_suggestion)
-
-            return best_suggestions
-
-        def get_null_split(self, criterion):
-            """ Compute the null split (don't split).
-
-            Parameters
-            ----------
-            criterion: SplitCriterion
-                The splitting criterion to be used.
-
-
-            Returns
-            -------
-            list
-                Split candidates.
-
-            """
-
-            pre_split_dist = self._observed_class_distribution
-
-            null_split = AttributeSplitSuggestion(None, [{}],
-                                                  criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
-            return null_split
-
-        @staticmethod
-        def count_nodes():
-            """ Calculate the number of split node and leaf starting from this node as a root.
-
-            Returns
-            -------
-            list[int int]
-                [number of split node, number of leaf node].
-
-            """
-            return np.array([0, 1])
-
-    class AnyTimeLearningNodeNB(AnyTimeActiveLearningNode):
-
-        def __init__(self, initial_class_observations):
-            """ AnyTimeLearningNodeNB class constructor. """
-            super().__init__(initial_class_observations)
-
-        def get_class_votes(self, X, ht):
-            """ Get the votes per class for a given instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes.
-            ht: HoeffdingTree
-                Hoeffding Tree.
-
-            Returns
-            -------
-            dict (class_value, weight)
-                Class votes for the given instance.
-
-            """
-            if self.get_weight_seen() >= ht.nb_threshold:
-                return do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
-            else:
-                return super().get_class_votes(X, ht)
-
-        def disable_attribute(self, att_index):
-            """ Disable an attribute observer.
-
-            Disabled in Nodes using Naive Bayes, since poor attributes are used in Naive Bayes calculation.
-
-            Parameters
-            ----------
-            att_index: int
-                Attribute index.
-
-            """
-            pass
-
-    class AnyTimeLearningNodeNBAdaptive(AnyTimeLearningNodeNB):
-
-        def __init__(self, initial_class_observations):
-            """ AnyTimeLearningNodeNBAdaptive class constructor. """
-            super().__init__(initial_class_observations)
-            self._mc_correct_weight = 0.0
-            self._nb_correct_weight = 0.0
-
-        def learn_from_instance(self, X, y, weight, ht):
-            """ Update the node with the provided instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes for updating the node.
-            y: int
-                Instance class.
-            weight: float
-                The instance's weight.
-            ht: HoeffdingTree
-                The Hoeffding Tree to update.
-
-            """
-            if self._observed_class_distribution == {}:
-                # All classes equal, default to class 0
-                if 0 == y:
-                    self._mc_correct_weight += weight
-            elif max(self._observed_class_distribution, key=self._observed_class_distribution.get) == y:
-                self._mc_correct_weight += weight
-            nb_prediction = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
-            if max(nb_prediction, key=nb_prediction.get) == y:
-                self._nb_correct_weight += weight
-            super().learn_from_instance(X, y, weight, ht)
-
-        def get_class_votes(self, X, ht):
-            """ Get the votes per class for a given instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes.
-            ht: HoeffdingTree
-                Hoeffding Tree.
-
-            Returns
-            -------
-            dict (class_value, weight)
-                Class votes for the given instance.
-
-            """
-            if self._mc_correct_weight > self._nb_correct_weight:
-                return self._observed_class_distribution
-            return do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
-
-    class AnyTimeSplitNode(SplitNode):
-        """ Node that splits the data in a Hoeffding Anytime Tree.
-
-        Parameters
-        ----------
-        split_test: InstanceConditionalTest
-            Split test.
-        class_observations: dict (class_value, weight) or None
-            Class observations
-        attribute_observers : dict (attribute id, AttributeClassObserver)
-            Attribute Observers
-        """
-
-        def __init__(self, split_test, class_observations, attribute_observers):
-            """ AnyTimeSplitNode class constructor."""
-            super().__init__(split_test, class_observations)
-            self._attribute_observers = attribute_observers
-            self._weight_seen_at_last_split_reevaluation = 0
-
-        def get_null_split(self, criterion):
-            """ Compute the null split (don't split).
-
-            Parameters
-            ----------
-            criterion: SplitCriterion
-                The splitting criterion to be used.
-
-            Returns
-            -------
-            list
-                Split candidates.
-
-            """
-
-            pre_split_dist = self._observed_class_distribution
-            null_split = AttributeSplitSuggestion(None, [{}],
-                                                  criterion.get_merit_of_split(pre_split_dist, [pre_split_dist]))
-            return null_split
-
-        def get_best_split_suggestions(self, criterion, ht):
-            """ Find possible split candidates without taking into account the the null split.
-
-            Parameters
-            ----------
-            criterion: SplitCriterion
-                The splitting criterion to be used.
-            ht: HoeffdingTree
-                Hoeffding Tree.
-
-            Returns
-            -------
-            list
-                Split candidates.
-
-            """
-
-            best_suggestions = []
-            pre_split_dist = self._observed_class_distribution
-
-            for i, obs in self._attribute_observers.items():
-                best_suggestion = obs.get_best_evaluated_split_suggestion(criterion, pre_split_dist,
-                                                                          i, ht.binary_split)
-                if best_suggestion is not None:
-                    best_suggestions.append(best_suggestion)
-
-            return best_suggestions
-
-        @staticmethod
-        def find_attribute(id_att, split_suggestions):
-            """ Find the attribute given the id.
-
-            Parameters
-            ----------
-            id_att: int.
-                Id of attribute to find.
-            split_suggestions: list
-                Possible split candidates.
-            Returns
-            -------
-            AttributeSplitSuggestion
-                Found attribute.
-            """
-
-            # return current attribute as AttributeSplitSuggestion
-            x_current = None
-            for attSplit in split_suggestions:
-                selected_id = attSplit.split_test.get_atts_test_depends_on()[0]
-                if selected_id == id_att:
-                    x_current = attSplit
-
-            return x_current
-
-        def learn_from_instance(self, X, y, weight, ht):
-            """ Update the node with the provided instance.
-
-            Parameters
-            ----------
-            X: numpy.ndarray of length equal to the number of features.
-                Instance attributes for updating the node.
-            y: int
-                Instance class.
-            weight: float
-                Instance weight.
-            ht: HoeffdingTree
-                Hoeffding Tree to update.
-
-            """
-            # Update attribute_observers
-            try:
-                self._observed_class_distribution[y] += weight
-            except KeyError:
-                self._observed_class_distribution[y] = weight
-
-            for i in range(len(X)):
-                try:
-                    obs = self._attribute_observers[i]
-                except KeyError:
-                    if i in ht.nominal_attributes:
-                        obs = NominalAttributeClassObserver()
-                    else:
-                        obs = NumericAttributeClassObserverGaussian()
-                    self._attribute_observers[i] = obs
-                obs.observe_attribute_class(X[i], int(y), weight)
-
-        def get_weight_seen(self):
-            """ Calculate the total weight seen by the node.
-
-            Returns
-            -------
-            float
-                Total weight seen.
-
-            """
-            return sum(self._observed_class_distribution.values())
-
-        def get_attribute_observers(self):
-            """ Get attribute observers at this node.
-
-            Returns
-            -------
-            dict (attribute id, AttributeClassObserver)
-                Attribute observers of this node.
-
-            """
-            return self._attribute_observers
-
-        def get_weight_seen_at_last_split_reevaluation(self):
-            """ Get the weight seen at the last split reevaluation.
-
-            Returns
-            -------
-            float
-                Total weight seen at last split reevaluation.
-
-            """
-            return self._weight_seen_at_last_split_reevaluation
-
-        def update_weight_seen_at_last_split_reevaluation(self):
-            """ Update weight seen at the last split in the reevaluation. """
-            self._weight_seen_at_last_split_reevaluation = sum(self._observed_class_distribution.values())
-
-        def count_nodes(self):
-            """ Calculate the number of split node and leaf starting from this node as a root.
-
-            Returns
-            -------
-            list[int int]
-                [number of split node, number of leaf node].
-
-            """
-
-            count = np.array([1, 0])
-            # get children
-            for branch_idx in range(self.num_children()):
-                child = self.get_child(branch_idx)
-                if child is not None:
-                    count += child.count_nodes()
-
-            return count
-
     # Override _new_learning_node
     def _new_learning_node(self, initial_class_observations=None):
         """ Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
         if self._leaf_prediction == MAJORITY_CLASS:
-            return self.AnyTimeActiveLearningNode(initial_class_observations)
+            return AnyTimeActiveLearningNode(initial_class_observations)
         elif self._leaf_prediction == NAIVE_BAYES:
-            return self.AnyTimeLearningNodeNB(initial_class_observations)
-        else:
-            return self.AnyTimeLearningNodeNBAdaptive(initial_class_observations)
+            return AnyTimeLearningNodeNB(initial_class_observations)
+        else:  # NAIVE BAYES ADAPTIVE (default)
+            return AnyTimeLearningNodeNBAdaptive(initial_class_observations)
 
     # Override new_split_node
     def new_split_node(self, split_test, class_observations, attribute_observers):
         """ Create a new split node."""
-        return self.AnyTimeSplitNode(split_test, class_observations, attribute_observers)
+        return AnyTimeSplitNode(split_test, class_observations, attribute_observers)
 
     # =============================================
     # == Hoeffding Anytime Tree implementation ====
@@ -657,7 +227,7 @@ class HATT(HoeffdingTree):
         """
 
         # skip learning node and update SplitNode because the learning node already learnt from instance.
-        if isinstance(node, self.AnyTimeSplitNode):
+        if isinstance(node, AnyTimeSplitNode):
 
             # update AnyTimeSplitNode statics & attribute_observers
             node.learn_from_instance(X, y, weight, self)
@@ -686,7 +256,7 @@ class HATT(HoeffdingTree):
                         # This possible if there is a problem with child_index, it returns float in case of
                         # nominal attribute
                         pass
-        elif self._growth_allowed and isinstance(node, self.AnyTimeActiveLearningNode):
+        elif self._growth_allowed and isinstance(node, AnyTimeActiveLearningNode):
             weight_seen = node.get_weight_seen()
             weight_diff = weight_seen - node.get_weight_seen_at_last_split_evaluation()
             if weight_diff >= self.grace_period:
@@ -721,7 +291,7 @@ class HATT(HoeffdingTree):
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._active_leaf_node_cnt += 1
 
-        if isinstance(leaf_node, self.LearningNode):
+        if isinstance(leaf_node, LearningNode):
             learning_node = leaf_node
             learning_node.learn_from_instance(X, y, weight, self)
 
@@ -980,12 +550,12 @@ class HATT(HoeffdingTree):
                 break
         cutoff = len(learning_nodes) - max_active
         for i in range(cutoff):
-            if isinstance(learning_nodes[i].node, self.AnyTimeActiveLearningNode):
+            if isinstance(learning_nodes[i].node, AnyTimeActiveLearningNode):
                 self._deactivate_learning_node(learning_nodes[i].node,
                                                learning_nodes[i].parent,
                                                learning_nodes[i].parent_branch)
         for i in range(cutoff, len(learning_nodes)):
-            if isinstance(learning_nodes[i].node, self.AnyTimeInactiveLearningNode):
+            if isinstance(learning_nodes[i].node, AnyTimeInactiveLearningNode):
                 self._activate_learning_node(learning_nodes[i].node,
                                              learning_nodes[i].parent,
                                              learning_nodes[i].parent_branch)
@@ -998,7 +568,7 @@ class HATT(HoeffdingTree):
         total_active_size = 0
         total_inactive_size = 0
         for found_node in learning_nodes:
-            if isinstance(found_node.node, self.AnyTimeActiveLearningNode):
+            if isinstance(found_node.node, AnyTimeActiveLearningNode):
                 total_active_size += calculate_object_size(found_node.node)
             else:
                 total_inactive_size += calculate_object_size(found_node.node)
@@ -1018,7 +588,7 @@ class HATT(HoeffdingTree):
         """ Deactivate all leaves. """
         learning_nodes = self._find_learning_nodes()
         for i in range(len(learning_nodes)):
-            if isinstance(learning_nodes[i], self.AnyTimeActiveLearningNode):
+            if isinstance(learning_nodes[i], AnyTimeActiveLearningNode):
                 self._deactivate_learning_node(learning_nodes[i].node,
                                                learning_nodes[i].parent,
                                                learning_nodes[i].parent_branch)
@@ -1038,7 +608,7 @@ class HATT(HoeffdingTree):
             Parent node's branch index.
 
         """
-        new_leaf = self.AnyTimeInactiveLearningNode(to_deactivate.get_observed_class_distribution())
+        new_leaf = AnyTimeInactiveLearningNode(to_deactivate.get_observed_class_distribution())
         if parent is None:
             self._tree_root = new_leaf
         else:

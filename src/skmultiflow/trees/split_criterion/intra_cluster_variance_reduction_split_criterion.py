@@ -1,5 +1,4 @@
-from skmultiflow.trees.variance_reduction_split_criterion \
-    import VarianceReductionSplitCriterion
+from skmultiflow.trees.split_criterion import VarianceReductionSplitCriterion
 import numpy as np
 
 

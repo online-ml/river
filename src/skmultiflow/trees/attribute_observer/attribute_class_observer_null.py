@@ -1,4 +1,4 @@
-from skmultiflow.trees.attribute_class_observer import AttributeClassObserver
+from skmultiflow.trees.attribute_observer import AttributeClassObserver
 
 
 class AttributeClassObserverNull(AttributeClassObserver):

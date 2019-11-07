@@ -13,7 +13,7 @@ from skmultiflow.metrics import ClassificationPerformanceEvaluator, WindowClassi
     MultiTargetRegressionMeasurements, WindowMultiTargetRegressionMeasurements,\
     RunningTimeMeasurements
 import skmultiflow.utils.constants as constants
-from skmultiflow.utils.utils import calculate_object_size
+from skmultiflow.utils import calculate_object_size
 
 
 class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
