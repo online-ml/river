@@ -49,7 +49,10 @@ jobs:
     before_install:
       - choco install python3 --version 3.6.8 --no-progress -y
     install: *pypi-install
-    script: *pypi-script
+    script:
+      - cibuildwheel --output-dir dist --platform windows
+      - ls dist
+      - twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD}
 
   - stage: docs
     install:
