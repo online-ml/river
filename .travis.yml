@@ -42,12 +42,12 @@ jobs:
   - stage: pypi
     os: windows
     language: shell
+    before_install:
+      - choco install python3 --version 3.6.8 --no-progress -y
     env:
       - CIBW_BUILD="cp36-* cp37-*"
       - CIBW_BEFORE_BUILD="pip install cython"
       - PATH=/c/Python36:/c/Python36/Scripts:$PATH
-    before_install:
-      - choco install python3 --version 3.6.8 --no-progress -y
     install: *pypi-install
     script:
       - cibuildwheel --output-dir dist --platform windows
