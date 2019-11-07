@@ -5,10 +5,12 @@
 #   $ pip install twine
 
 import io
+import platform
 import os
-from shutil import rmtree
 
-from setuptools import Extension, find_packages, setup, Command
+from setuptools import Extension
+from setuptools import find_packages
+from setuptools import setup
 
 try:
     from Cython.Build import cythonize
@@ -105,5 +107,9 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
-    ext_modules=cythonize([Extension('*', sources=['**/*.pyx'], libraries=['m'])])
+    ext_modules=cythonize([Extension(
+        '*',
+        sources=['**/*.pyx'],
+        libraries=[] if platform.system() == 'Windows' else ['m']
+    )])
 )
