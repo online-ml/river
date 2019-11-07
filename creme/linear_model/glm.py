@@ -49,14 +49,11 @@ class GLM:
 
         # Obtain the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
         # Calculate the gradient
         gradient = {
-            i: utils.math.clamp(
-                x=xi * g_loss + 2. * self.l2 * self.weights.get(i, 0),
-                minimum=-self.clip_gradient,
-                maximum=self.clip_gradient
-            )
+            i: xi * g_loss + 2. * self.l2 * self.weights.get(i, 0)
             for i, xi in x.items()
         }
 
