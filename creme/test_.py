@@ -4,6 +4,7 @@ General tests for all estimators.
 import copy
 import importlib
 import inspect
+import itertools
 
 import pytest
 
@@ -138,31 +139,43 @@ def test_check_estimator(estimator):
 
 
 @pytest.mark.parametrize(
-    'optimizer',
-    [
+    'optimizer, initializer',
+    itertools.product([
         pytest.param(copy.deepcopy(optimizer), id=str(optimizer))
-        for optimizer in [
-            optim.AdaBound(),
-            optim.AdaDelta(),
-            optim.AdaGrad(),
-            optim.AdaMax(),
-            optim.Adam(),
-            optim.Momentum(),
-            optim.NesterovMomentum(),
-            optim.RMSProp(),
-            optim.SGD(),
+            for optimizer in [
+                optim.AdaBound(),
+                optim.AdaDelta(),
+                optim.AdaGrad(),
+                optim.AdaMax(),
+                optim.Adam(),
+                optim.Momentum(),
+                optim.NesterovMomentum(),
+                optim.RMSProp(),
+                optim.SGD()
+            ]
+        ],
+        [
+            pytest.param(copy.deepcopy(initializer), id=str(initializer))
+            for initializer in [
+                optim.initializers.Zeros(),
+                optim.initializers.Constant(value=3.14),
+                optim.initializers.Normal(mu=0, sigma=1, random_state=42)
+            ]
         ]
-    ]
+    )
 )
-def test_check_gradient(optimizer):
+def test_check_gradient(optimizer, initializer):
     # Test gradient finite difference with linear regression
     X_y = stream.iter_sklearn_dataset(
         dataset=datasets.load_boston(),
         shuffle=True,
         random_state=42
     )
+
     scaler = preprocessing.StandardScaler()
     model = linear_model.LinearRegression()
+    model.weights = initializer(shape = len(model.weights))
+
     for x, y in X_y:
         x = scaler.fit_one(x).transform_one(x)
         utils.estimator_checks.check_gradient_finite_difference(model, x, y, delta = 0.001)
@@ -172,6 +185,8 @@ def test_check_gradient(optimizer):
     X_y = creme.datasets.fetch_electricity()
     scaler = preprocessing.StandardScaler()
     model = linear_model.LogisticRegression()
+    model.weights = initializer(shape = len(model.weights)))
+
     for x, y in X_y:
         x = scaler.fit_one(x).transform_one(x)
         utils.estimator_checks.check_gradient_finite_difference(model, x, y, delta = 0.001)
