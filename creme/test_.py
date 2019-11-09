@@ -185,7 +185,7 @@ def test_check_gradient(optimizer, initializer):
     X_y = creme.datasets.fetch_electricity()
     scaler = preprocessing.StandardScaler()
     model = linear_model.LogisticRegression()
-    model.weights = initializer(shape = len(model.weights)))
+    model.weights = initializer(shape = len(model.weights))
 
     for x, y in X_y:
         x = scaler.fit_one(x).transform_one(x)
