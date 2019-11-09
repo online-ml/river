@@ -14,8 +14,8 @@ class GLM:
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
             means that no intercept will be used, which sometimes helps.
-        l2 (float): Amount of L2 regularization used to push weights towards.
-        initializer (optim.Initializers): Weight initialization schemes.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        initializer (optim.Initializer): Weights initialization schemes.
 
     Attributes:
         weights (collections.defaultdict)
@@ -70,8 +70,8 @@ class LinearRegression(GLM, base.Regressor):
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
             means that no intercept will be used, which sometimes helps.
-        l2 (float): Amount of L2 regularization used to push weights towards.
-        initializer (optim.Initializers): Weight initialization schemes.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        initializer (optim.Initializer): Weights initialization schemes.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -129,7 +129,7 @@ class LinearRegression(GLM, base.Regressor):
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
-            initializer=initializer
+            initializer=initializer if initializer else optim.initializers.Zeros()
         )
 
     def predict_one(self, x):
@@ -146,8 +146,8 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
             means that no intercept will be used, which sometimes helps.
-        l2 (float): Amount of L2 regularization used to push weights towards.
-        initializer (optim.Initializers): Weight initialization schemes.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        initializer (optim.Initializer): Weights initialization schemes.
 
     Attributes:
         weights (collections.defaultdict)
@@ -187,7 +187,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         l2=.0001,
         intercept=0.,
         intercept_lr=.01,
-        initializer=optim.initializers.Zeros()
+        initializer=None
     ):
         super().__init__(
             optimizer=optim.SGD(.01) if optimizer is None else optimizer,
@@ -195,7 +195,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
-            initializer=initializer
+            initializer=initializer if initializer else optim.initializers.Zeros()
         )
 
     def predict_proba_one(self, x):
