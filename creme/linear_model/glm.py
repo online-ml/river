@@ -14,20 +14,21 @@ class GLM:
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
             means that no intercept will be used, which sometimes helps.
-        l2 (float): Amount of L2 regularization used to push weights towards .
+        l2 (float): Amount of L2 regularization used to push weights towards.
+        initializer (optim.Initializers): Weight initialization schemes.
 
     Attributes:
         weights (collections.defaultdict)
 
     """
 
-    def __init__(self, optimizer, loss, l2, intercept, intercept_lr):
+    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, initializer):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
         self.intercept = intercept
         self.intercept_lr = intercept_lr
-        self.weights = collections.defaultdict(float)
+        self.weights = collections.defaultdict(initializer)
 
     def _raw_dot(self, x):
         return utils.math.dot(self.weights, x) + self.intercept
@@ -69,7 +70,8 @@ class LinearRegression(GLM, base.Regressor):
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
             means that no intercept will be used, which sometimes helps.
-        l2 (float): Amount of L2 regularization used to push weights towards .
+        l2 (float): Amount of L2 regularization used to push weights towards.
+        initializer (optim.Initializers): Weight initialization schemes.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -108,7 +110,15 @@ class LinearRegression(GLM, base.Regressor):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=.0001, intercept=0., intercept_lr=.01):
+    def __init__(
+        self,
+        optimizer=None,
+        loss=None,
+        l2=.0001,
+        intercept=0.,
+        intercept_lr=.01,
+        initializer=optim.initializers.Zeros()
+    ):
         super().__init__(
             optimizer=(
                 optim.SGD(optim.schedulers.InverseScaling(.01, .25))
@@ -118,7 +128,8 @@ class LinearRegression(GLM, base.Regressor):
             loss=optim.losses.Squared() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
-            l2=l2
+            l2=l2,
+            initializer=initializer
         )
 
     def predict_one(self, x):
@@ -135,7 +146,8 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         intercept (float): Initial intercept value.
         intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
             means that no intercept will be used, which sometimes helps.
-        l2 (float): Amount of L2 regularization used to push weights towards .
+        l2 (float): Amount of L2 regularization used to push weights towards.
+        initializer (optim.Initializers): Weight initialization schemes.
 
     Attributes:
         weights (collections.defaultdict)
@@ -168,13 +180,22 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=.0001, intercept=0., intercept_lr=.01):
+    def __init__(
+        self,
+        optimizer=None,
+        loss=None,
+        l2=.0001,
+        intercept=0.,
+        intercept_lr=.01,
+        initializer=optim.initializers.Zeros()
+    ):
         super().__init__(
             optimizer=optim.SGD(.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
-            l2=l2
+            l2=l2,
+            initializer=initializer
         )
 
     def predict_proba_one(self, x):
