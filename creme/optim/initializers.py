@@ -35,7 +35,7 @@ class Constant:
     def __init__(self, value):
         self.value = value
 
-    def __call__(self, shape):
+    def __call__(self, shape=1):
         return np.full(shape, self.value) if shape != 1 else self.value
 
 
@@ -90,7 +90,7 @@ class Normal:
         self.sigma = sigma
         self.random_state = utils.check_random_state(random_state)
 
-    def __call__(self, shape):
+    def __call__(self, shape=1):
         weights = self.random_state.normal(loc=self.mu, scale=self.sigma, size=shape)
         if shape == 1:
             return weights[0]
