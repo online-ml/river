@@ -47,7 +47,23 @@ make cython
 
 ## Testing
 
-Simply run `pytest` execute tests. Additionally, you can test the notebooks by running `pytest --nbval-lax --current-env docs/notebooks/*.ipynb`.
+**Unit tests**
+
+```sh
+pytest
+```
+
+**Web dependent tests**
+
+```sh
+pytest -m web
+```
+
+**Notebook tests**
+
+```sh
+pytest --nbval-lax --current-env docs/notebooks/*.ipynb`
+```
 
 
 ## Making a pull request

@@ -51,8 +51,9 @@ class FTRLProximal(base.Optimizer):
         self.l2 = l2
         self.z = collections.defaultdict(float)
         self.n = collections.defaultdict(float)
+        self.n_iterations = 0
 
-    def update_after_pred(self, w, g):
+    def _update_after_pred(self, w, g):
 
         alpha = self.alpha
         beta = self.beta

@@ -19,6 +19,12 @@ matrix:
     - os: osx
       language: generic
       env: PIP=pip2
+    - os: windows
+      language: shell
+      before_install:
+       - choco install python3 --version 3.6.8 --no-progress -y
+      env:
+       - PATH=/c/Python36:/c/Python36/Scripts:$PATH
 
 install: skip
 script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
