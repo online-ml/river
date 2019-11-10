@@ -177,9 +177,9 @@ def test_check_gradient(optimizer, initializer):
 
     for x, y in X_y:
         x = scaler.fit_one(x).transform_one(x)
-        utils.estimator_checks.check_gradient_finite_difference(model, x, y, delta = 0.001)
+        utils.estimator_checks.check_gradient_finite_difference(model, x, y, delta = 1e-15)
         model.fit_one(x, y)
-        
+
     # Test gradient finite difference with logistic regression
     X_y = creme.datasets.fetch_electricity()
     scaler = preprocessing.StandardScaler()
@@ -187,5 +187,5 @@ def test_check_gradient(optimizer, initializer):
 
     for x, y in X_y:
         x = scaler.fit_one(x).transform_one(x)
-        utils.estimator_checks.check_gradient_finite_difference(model, x, y, delta = 0.001)
+        utils.estimator_checks.check_gradient_finite_difference(model, x, y, delta = 1e-15)
         model.fit_one(x, y)
