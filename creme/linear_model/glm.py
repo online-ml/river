@@ -1,4 +1,5 @@
 import collections
+import numbers
 
 from .. import base
 from .. import optim
@@ -9,12 +10,16 @@ class GLM:
     """Generalized Linear Model.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately.
         loss (optim.Loss): The loss function to optimize for.
         intercept (float): Initial intercept value.
-        intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
-            means that no intercept will be used, which sometimes helps.
+        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
+            updating the intercept. If a `float` is passed, then an instance of
+            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
+            will be not be updated. Setting this to 0 means that no intercept will be used.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
+        clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.Initializer): Weights initialization schemes.
 
     Attributes:
@@ -22,12 +27,17 @@ class GLM:
 
     """
 
-    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, initializer):
+    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, clip_gradient, initializer):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
         self.intercept = intercept
-        self.intercept_lr = intercept_lr
+        self.intercept_lr = (
+            optim.schedulers.Constant(intercept_lr)
+            if isinstance(intercept_lr, numbers.Number) else
+            intercept_lr
+        )
+        self.clip_gradient = clip_gradient
         self.weights = collections.defaultdict(initializer)
 
     def _raw_dot(self, x):
@@ -41,20 +51,21 @@ class GLM:
         # Obtain the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
-        # Clip the gradient of the loss to avoid numerical instabilities
-        g_loss = utils.math.clamp(g_loss, -1e12, 1e12)
-
         # Calculate the gradient
         gradient = {
-            i: xi * g_loss + 2. * self.l2 * self.weights.get(i, 0)
+            i: utils.math.clamp(
+                x=xi * g_loss + 2. * self.l2 * self.weights.get(i, 0),
+                minimum=-self.clip_gradient,
+                maximum=self.clip_gradient
+            )
             for i, xi in x.items()
         }
 
+        # Update the intercept
+        self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * g_loss
+
         # Update the weights
         self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient)
-
-        # Update the intercept
-        self.intercept -= g_loss * self.intercept_lr
 
         return self
 
@@ -63,14 +74,17 @@ class LinearRegression(GLM, base.Regressor):
     """Linear regression.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to ``optim.SGD(.01)``.
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately. Defaults to ``optim.SGD(.01)``.
         loss (optim.RegressionLoss): The loss function to optimize for. Defaults to
             ``optim.SquaredLoss``.
         intercept (float): Initial intercept value.
-        intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
-            means that no intercept will be used, which sometimes helps.
+        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
+            updating the intercept. If a `float` is passed, then an instance of
+            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
+            will be not be updated. Setting this to 0 means that no intercept will be used.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
+        clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.Initializer): Weights initialization schemes.
 
     Attributes:
@@ -110,15 +124,8 @@ class LinearRegression(GLM, base.Regressor):
 
     """
 
-    def __init__(
-        self,
-        optimizer=None,
-        loss=None,
-        l2=.0001,
-        intercept=0.,
-        intercept_lr=.01,
-        initializer=optim.initializers.Zeros()
-    ):
+    def __init__(self, optimizer=None, loss=None, l2=.0001, intercept=0., intercept_lr=.01,
+                 clip_gradient=1e12, initializer=None):
         super().__init__(
             optimizer=(
                 optim.SGD(optim.schedulers.InverseScaling(.01, .25))
@@ -129,6 +136,7 @@ class LinearRegression(GLM, base.Regressor):
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
+            clip_gradient=clip_gradient,
             initializer=initializer if initializer else optim.initializers.Zeros()
         )
 
@@ -140,13 +148,16 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     """Logistic regression.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used to find the best weights.
-            Defaults to ``optim.SGD(.05)``.
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately. Defaults to ``optim.SGD(.05)``.
         loss (optim.BinaryLoss): The loss function to optimize for. Defaults to ``optim.LogLoss``.
         intercept (float): Initial intercept value.
-        intercept_lr (float): Learning rate used for updating the intercept. Setting this to 0
-            means that no intercept will be used, which sometimes helps.
+        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
+            updating the intercept. If a `float` is passed, then an instance of
+            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
+            will be not be updated. Setting this to 0 means that no intercept will be used.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
+        clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.Initializer): Weights initialization schemes.
 
     Attributes:
@@ -180,21 +191,15 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     """
 
-    def __init__(
-        self,
-        optimizer=None,
-        loss=None,
-        l2=.0001,
-        intercept=0.,
-        intercept_lr=.01,
-        initializer=None
-    ):
+    def __init__(self, optimizer=None, loss=None, l2=.0001, intercept=0., intercept_lr=.01,
+                 clip_gradient=1e12, initializer=None):
         super().__init__(
             optimizer=optim.SGD(.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
+            clip_gradient=clip_gradient,
             initializer=initializer if initializer else optim.initializers.Zeros()
         )
 

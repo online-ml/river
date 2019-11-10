@@ -2,15 +2,17 @@ import abc
 import numbers
 import typing
 
-from .. import utils
-
 from . import schedulers
 
 
 class Optimizer(abc.ABC):
 
     def __init__(self, lr: typing.Union[schedulers.Scheduler, float]):
-        self.lr = schedulers.Constant(lr) if isinstance(lr, numbers.Number) else lr
+        self.lr = (
+            schedulers.Constant(lr)
+            if isinstance(lr, numbers.Number) else
+            lr
+        )
         self.n_iterations = 0
 
     @property
