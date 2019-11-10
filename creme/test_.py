@@ -173,7 +173,7 @@ def test_check_gradient(optimizer, initializer):
     )
 
     scaler = preprocessing.StandardScaler()
-    model = linear_model.LinearRegression(initiallizer=initializer)
+    model = linear_model.LinearRegression(initializer=initializer)
 
     for x, y in X_y:
         x = scaler.fit_one(x).transform_one(x)
