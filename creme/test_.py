@@ -173,7 +173,7 @@ def test_check_gradient(optimizer, initializer):
     )
 
     scaler = preprocessing.StandardScaler()
-    model = linear_model.LinearRegression(initializer=initializer)
+    model = linear_model.LinearRegression(initializer=lambda: initializer)
 
     for x, y in X_y:
         x = scaler.fit_one(x).transform_one(x)
@@ -183,7 +183,7 @@ def test_check_gradient(optimizer, initializer):
     # Test gradient finite difference with logistic regression
     X_y = creme.datasets.fetch_electricity()
     scaler = preprocessing.StandardScaler()
-    model = linear_model.LogisticRegression(initializer=initializer)
+    model = linear_model.LogisticRegression(initializer=lambda: initializer)
 
     for x, y in X_y:
         x = scaler.fit_one(x).transform_one(x)
