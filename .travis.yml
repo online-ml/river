@@ -24,7 +24,7 @@ jobs:
       - CIBW_BUILD="cp36-* cp37-*"
       - CIBW_BEFORE_BUILD="pip install cython"
     install: &pypi-install
-      - pip install cibuildwheel==0.12.0 cython twine
+      - pip install cibuildwheel==1.0.0 cython twine
     script: &pypi-script
       - cibuildwheel --output-dir dist
       - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python setup.py sdist ; fi
@@ -45,14 +45,11 @@ jobs:
     env:
       - CIBW_BUILD="cp36-* cp37-*"
       - CIBW_BEFORE_BUILD="pip install cython"
+      - PATH=/c/Python36:/c/Python36/Scripts:$PATH
     before_install:
       - choco install python3 --version 3.6.8 --no-progress -y
     install: *pypi-install
-    script:
-      - PATH=/c/Python36:/c/Python36/Scripts:$PATH
-      - cibuildwheel --output-dir dist --platform windows
-      - ls dist
-      - twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD}
+    script: *pypi-script
 
   - stage: docs
     install:
