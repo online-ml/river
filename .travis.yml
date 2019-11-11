@@ -11,7 +11,7 @@ cache:
     - $HOME/downloads
 
 install: skip
-script: skip
+script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
 
 jobs:
   include:
@@ -50,6 +50,7 @@ jobs:
       - choco install python3 --version 3.6.8 --no-progress -y
     install: *pypi-install
     script: *pypi-script
+    if: tag IS present
 
   - stage: docs
     install:
