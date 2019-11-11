@@ -34,7 +34,7 @@ class AdaMax(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.97479
+            F1: 0.973352
 
     References:
         1. `Adam: A method for stochastic optimization <https://arxiv.org/pdf/1412.6980.pdf>`_

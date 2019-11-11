@@ -251,8 +251,8 @@ def fetch_restaurants(data_home=None, silent=True):
 def fetch_sms(data_home=None, silent=True):
     """SMS Spam Collection dataset.
 
-    The data contains 5,574 items and 1 feature (i.e. sms body). Spam messages represent
-    13.4% of the dataset. The goal is to predict whether a sms is a spam or not.
+    The data contains 5,574 items and 1 feature (i.e. SMS body). Spam messages represent
+    13.4% of the dataset. The goal is to predict whether an SMS is a spam or not.
 
     Parameters:
         data_home (str): The directory where you wish to store the data.
@@ -272,11 +272,11 @@ def fetch_sms(data_home=None, silent=True):
     # Download dataset if does not exist and get its path
     data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
-    # Stream sms
+    # Stream SMS
     with open(f'{data_dir_path}/{name}') as f:
         for ix, row in enumerate(f):
             label, body = row.split('\t')
-            yield ({'body': body}, label)
+            yield ({'body': body}, label == 'spam')
 
 
 def fetch_trec07p(data_home=None, silent=True):
@@ -351,7 +351,16 @@ def fetch_credit_card(data_home=None, silent=True):
 
     data_dir_path = download_dataset(name, url, data_home, archive_type='zip', silent=silent)
 
-    return stream.iter_csv(f'{data_dir_path}/{name}.csv', target_name='Class')
+    converters = {f'V{i}': float for i in range(1, 29)}
+    converters['Class'] = int
+    converters['Time'] = int
+    converters['Amount'] = float
+
+    return stream.iter_csv(
+        f'{data_dir_path}/{name}.csv',
+        target_name='Class',
+        converters=converters
+    )
 
 
 def load_airline():

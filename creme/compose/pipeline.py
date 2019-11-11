@@ -266,7 +266,7 @@ class Pipeline(collections.OrderedDict):
         """The final estimator."""
         return self[next(reversed(self))]
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x, y=None, **fit_params):
         """Fits each step with ``x``."""
 
         # Loop over the first n - 1 steps, which should all be transformers
@@ -285,11 +285,11 @@ class Pipeline(collections.OrderedDict):
                 else:
                     t.fit_one(x=x_pre, y=y)
 
-        self.final_estimator.fit_one(x=x, y=y)
+        self.final_estimator.fit_one(x=x, y=y, **fit_params)
         return self
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
-    def fit_predict_one(self, x, y):
+    def fit_predict_one(self, x, y, **fit_params):
         """Updates the pipeline and returns a the out-of-fold prediction.
 
         Only works if each estimator has a ``transform_one`` method and the final estimator has a
@@ -297,10 +297,10 @@ class Pipeline(collections.OrderedDict):
 
         """
         x = self.transform_one(x=x)
-        return self.final_estimator.fit_predict_one(x=x, y=y)
+        return self.final_estimator.fit_predict_one(x=x, y=y, **fit_params)
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
-    def fit_predict_proba_one(self, x, y):
+    def fit_predict_proba_one(self, x, y, **fit_params):
         """Updates the pipeline and returns a the out-of-fold prediction.
 
         Only works if each estimator has a ``transform_one`` method and the final estimator has a
@@ -308,7 +308,7 @@ class Pipeline(collections.OrderedDict):
 
         """
         x = self.transform_one(x=x)
-        return self.final_estimator.fit_predict_proba_one(x=x, y=y)
+        return self.final_estimator.fit_predict_proba_one(x=x, y=y, **fit_params)
 
     def transform_one(self, x):
         """Transform an input.
