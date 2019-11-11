@@ -1,4 +1,4 @@
-"""Streaming data utilities."""
+"""Helper functions for streaming data."""
 import csv
 import datetime as dt
 import functools
