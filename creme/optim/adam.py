@@ -34,7 +34,7 @@ class Adam(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.961003
+            F1: 0.959554
 
     References:
         1. `Adam: A method for stochastic optimization <https://arxiv.org/pdf/1412.6980.pdf>`_

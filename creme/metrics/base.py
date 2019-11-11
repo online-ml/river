@@ -21,6 +21,8 @@ __all__ = [
 
 class Metric(abc.ABC):
 
+    fmt = ',.6f'
+
     @abc.abstractmethod
     def get(self) -> float:
         """Returns the current value of the metric."""
@@ -35,7 +37,7 @@ class Metric(abc.ABC):
 
     def __str__(self):
         """Returns the class name along with the current value of the metric."""
-        return f'{self.__class__.__name__}: {self.get():.6f}'.rstrip('0')
+        return f'{self.__class__.__name__}: {self.get():{self.fmt}}'.rstrip('0')
 
     def __repr__(self):
         return str(self)
