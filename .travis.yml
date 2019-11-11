@@ -35,6 +35,7 @@ jobs:
   - stage: pypi
     os: osx
     language: generic
+    env: *pypi-env
     install: *pypi-install
     script: *pypi-script
     if: tag IS present
