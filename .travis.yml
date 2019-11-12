@@ -10,22 +10,6 @@ cache:
     - $HOME/.cache/pip
     - $HOME/downloads
 
-matrix:
-  include:
-    - sudo: required
-      services:
-        - docker
-      env: PIP=pip
-    - os: osx
-      language: generic
-      env: PIP=pip2
-    - os: windows
-      language: shell
-      before_install:
-       - choco install python3 --version 3.6.8 --no-progress -y
-      env:
-       - PATH=/c/Python36:/c/Python36/Scripts:$PATH
-
 install: skip
 script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
 
@@ -33,16 +17,40 @@ jobs:
   include:
 
   - stage: pypi
+    sudo: required
+    services:
+      - docker
+    env: &pypi-env
+      - CIBW_BUILD="cp36-* cp37-*"
+      - CIBW_BEFORE_BUILD="pip install cython"
+    install: &pypi-install
+      - pip install cibuildwheel==1.0.0 cython twine
+    script: &pypi-script
+      - cibuildwheel --output-dir dist
+      - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python setup.py sdist ; fi
+      - ls dist
+      - twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD}
+    if: tag IS present
+
+  - stage: pypi
+    os: osx
+    language: generic
+    env: *pypi-env
+    install: *pypi-install
+    script: *pypi-script
+    if: tag IS present
+
+  - stage: pypi
+    os: windows
+    language: shell
     env:
       - CIBW_BUILD="cp36-* cp37-*"
       - CIBW_BEFORE_BUILD="pip install cython"
-    install:
-      - pip install cibuildwheel==0.12.0 cython twine
-    script:
-      - cibuildwheel --output-dir dist
-      - python setup.py sdist
-      - ls dist
-      - twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD}
+      - PATH=/c/Python36:/c/Python36/Scripts:$PATH
+    before_install:
+      - choco install python3 --version 3.6.8 --no-progress -y
+    install: *pypi-install
+    script: *pypi-script
     if: tag IS present
 
   - stage: docs

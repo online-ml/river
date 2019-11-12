@@ -43,7 +43,7 @@ class GLM:
     def _raw_dot(self, x):
         return utils.math.dot(self.weights, x) + self.intercept
 
-    def fit_one(self, x, y):
+    def fit_one(self, x, y, sample_weight=1.):
 
         # Some optimizers need to do something before a prediction is made
         self.weights = self.optimizer.update_before_pred(w=self.weights)
@@ -51,13 +51,15 @@ class GLM:
         # Obtain the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
+        # Clamp the gradient to avoid numerical instability
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
+
+        # Apply the sample weight
+        g_loss *= sample_weight
+
         # Calculate the gradient
         gradient = {
-            i: utils.math.clamp(
-                x=xi * g_loss + 2. * self.l2 * self.weights.get(i, 0),
-                minimum=-self.clip_gradient,
-                maximum=self.clip_gradient
-            )
+            i: xi * g_loss + 2. * self.l2 * self.weights.get(i, 0)
             for i, xi in x.items()
         }
 
@@ -183,7 +185,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.online_score(X_y, model, metric)
-            Accuracy: 0.894664
+            Accuracy: 0.894642
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -205,4 +207,4 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     def predict_proba_one(self, x):
         p = utils.math.sigmoid(self._raw_dot(x))  # Convert log-odds ratio to probability
-        return {True: p, False: 1. - p}
+        return {False: 1. - p, True: p}
