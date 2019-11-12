@@ -10,7 +10,14 @@ __all__ = [
 ]
 
 
-class Constant:
+class Initializer:
+    """An initializer is used to set initial weights in a model."""
+
+    def __str__(self):
+        return self.__class__.__name__
+
+
+class Constant(Initializer):
     """Constant initializer which always return the same value.
 
     Parameters:
@@ -62,7 +69,7 @@ class Zeros(Constant):
         super().__init__(value=0.)
 
 
-class Normal:
+class Normal(Initializer):
     """Random normal initializer which simulate a normal distribution with specified parameters.
 
     Parameters:

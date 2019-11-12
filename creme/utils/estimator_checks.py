@@ -299,27 +299,3 @@ def check_estimator(model):
 
     for check in yield_all_checks(model):
         check(copy.deepcopy(model))
-
-
-def check_gradient_finite_difference(model, x, y, delta = 1e-15):
-    """Check the gradients using finite differences.
-
-    Parameters:
-        model (GLM): Generalized Linear Model.
-        x (dict): Features.
-        y (float): Target.
-        delta (float): Slight perturbation applied to weights.
-
-    References:
-        1. `<https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf>`
-
-    """
-    y_pred = model.predict_one(x)
-    loss   = model.loss.eval(y_true=y, y_pred=y_pred)
-    g_loss = model.loss.gradient(y_true=y, y_pred=y_pred)
-
-    for i, _ in x.items():
-        model_perturbed = copy.deepcopy(model)
-        model_perturbed.weights[i] += delta
-        loss_perturbed  = model.loss.eval(y_true=y, y_pred=model_perturbed.predict_one(x))
-        assert abs(loss_perturbed - (loss + delta * g_loss)) < (delta * 1e4)
