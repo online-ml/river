@@ -25,6 +25,13 @@
 
 `creme` is a library for online machine learning, also known as in**creme**ntal learning. Online learning is a machine learning regime where a **model learns one observation at a time**. This is in contrast to batch learning where all the data is processed in one go. Incremental learning is desirable when the data is too big to fit in memory, or simply when you want to **handle streaming data**. In addition to many online machine learning algorithms, `creme` provides utilities for **extracting features from a stream of data**.
 
+Here are some benefits of using `creme` (and online machine learning in general):
+
+- Incremental: models can update themselves in real-time.
+- Adaptive: models can adapt to [concept drift](https://www.wikiwand.com/en/Concept_drift).
+- Production-ready: models that work in development can naturally be brought into production.
+- Efficient: models don't have to be retrained and require little compute power, which [lowers their carbon footprint](https://arxiv.org/abs/1907.10597)
+
 ## Useful links
 
 - [Documentation](https://creme-ml.github.io/)
