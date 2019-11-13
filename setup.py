@@ -73,6 +73,9 @@ if not VERSION:
 else:
     about['__version__'] = VERSION
 
+# Cython information
+cython_libraries = [] if platform.system() == 'Windows' else ['m']
+compiler_directives = {'language_level': 3}
 
 # Where the magic happens:
 setup(
@@ -107,9 +110,10 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
-    ext_modules=cythonize([Extension(
-        '*',
-        sources=['**/*.pyx'],
-        libraries=[] if platform.system() == 'Windows' else ['m']
-    )])
+    ext_modules=cythonize(
+        module_list=[
+            Extension('*', sources=['**/*.pyx'], libraries=cython_libraries)
+        ],
+        compiler_directives=compiler_directives
+    )
 )

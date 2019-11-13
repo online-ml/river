@@ -5,15 +5,15 @@ from .. import utils
 
 cdef class Statistic:
 
+    # Define the format specification used for string representation.
+    fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+
     cpdef double get(self):
         """Returns the current value of the statistic."""
         raise NotImplementedError
 
-    def __str__(self):
-        return f'{self.__class__.__name__}: {self.get():.6f}'.rstrip('0')
-
     def __repr__(self):
-        return str(self)
+        return f'{self.__class__.__name__}: {self.get():{self.fmt}}'.rstrip('0')
 
 
 cdef class Univariate(Statistic):

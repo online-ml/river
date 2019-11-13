@@ -179,7 +179,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.online_score(X_y, model, metric)
-            Accuracy: 0.894642
+            Accuracy: 89.46%
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -199,5 +199,5 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         )
 
     def predict_proba_one(self, x):
-        p = utils.math.sigmoid(self._raw_dot(x))  # Convert log-odds ratio to probability
+        p = utils.math.sigmoid(self._raw_dot(x))  # Convert logit to probability
         return {False: 1. - p, True: p}

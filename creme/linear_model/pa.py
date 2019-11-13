@@ -144,7 +144,7 @@ class PAClassifier(BasePA, base.BinaryClassifier):
             ...     metric = metric.update(yi, model.predict_proba_one(xi))
 
             >>> print(metric)
-            Accuracy: 0.884571, LogLoss: 0.325727
+            Accuracy: 88.46%, LogLoss: 0.325727
 
     References:
         1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
