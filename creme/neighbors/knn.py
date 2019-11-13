@@ -129,7 +129,7 @@ class KNeighborsClassifier(NearestNeighbours, base.MultiClassifier):
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.online_score(X_y, model, metric)
-            Accuracy: 0.88526
+            Accuracy: 88.53%
 
     """
 

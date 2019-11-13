@@ -30,14 +30,16 @@ class ConfusionMatrix:
 
             >>> cm
                      ant  bird   cat
-               ant   2.0     0     0
-              bird     0     0   1.0
-               cat   1.0     0   2.0
+               ant     2     0     0
+              bird     0     0     1
+               cat     1     0     2
 
             >>> cm['bird']['cat']
             1.0
 
     """
+
+    fmt = '0.0f'
 
     def __init__(self):
         self.counts = collections.defaultdict(collections.Counter)
@@ -61,7 +63,7 @@ class ConfusionMatrix:
     def classes(self):
         return list(self.class_counts)
 
-    def __str__(self):
+    def __repr__(self):
 
         # The classes are sorted alphabetically for reproducibility reasons
         classes = sorted(self.classes)
@@ -81,13 +83,10 @@ class ConfusionMatrix:
         table += '\n'.join((
             row_format.format(
                 str(y_true),
-                *[self.counts[y_true][y_pred] for y_pred in classes],
+                *[f'{self.counts[y_true][y_pred]:{self.fmt}}' for y_pred in classes],
                 width=width
             )
             for y_true in sorted(self.counts)
         ))
 
         return table
-
-    def __repr__(self):
-        return str(self)

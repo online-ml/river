@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Added
+
+- `metrics.ClassificationReport` to get a global performance overview on a classification task.
+
+### Removed
+
+- `metrics.PerClass`, it is recommended that you use `metrics.ClassificationReport` instead as it gives a better overview.
+
+
 ## [0.4.4](https://pypi.org/project/creme/0.4.4/) - 2019-11-11
 
 This release was mainly made to provide access to wheels for Windows and MacOS.
