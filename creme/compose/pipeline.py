@@ -1,4 +1,5 @@
 import collections
+import functools
 import itertools
 import types
 
@@ -366,17 +367,19 @@ class Pipeline(collections.OrderedDict):
             xs = [self.transform_one(x) for x in xs]
         return self.final_estimator.forecast(horizon=horizon, xs=xs)
 
-    def debug_one(self, x, show_types=True, n_decimals=5):
+    def debug_one(self, x, show_types=True, n_decimals=5, **print_params):
         """Displays the state of a set of features as it goes through the pipeline.
 
         Parameters:
             x (dict) A set of features.
             show_types (bool): Whether or not to display the type of feature along with it's value.
             n_decimals (int): Number of decimals to display for each floating point value.
+            **print_params (dict): Parameters passed to the `print` function.
 
         """
 
-        TAB = ' ' * 4
+        tab = ' ' * 4
+        _print = functools.partial(print, **print_params)
 
         def format_value(x):
             if isinstance(x, float):
@@ -387,17 +390,17 @@ class Pipeline(collections.OrderedDict):
 
             # Some transformers accept strings as input instead of dicts
             if isinstance(x, str):
-                print(x)
+                _print(x, file=file)
             else:
                 for k, v in sorted(x.items()):
                     type_str = f' ({type(v).__name__})' if show_types else ''
-                    print((TAB if indent else '') + f'{k}: {format_value(v)}' + type_str)
+                    _print((tab if indent else '') + f'{k}: {format_value(v)}' + type_str)
             if space_after:
-                print()
+                _print()
 
         def print_title(title, indent=False):
-            print((TAB if indent else '') + title)
-            print((TAB if indent else '') + '-' * len(title))
+            _print((tab if indent else '') + title)
+            _print((tab if indent else '') + '-' * len(title))
 
         # Print the initial state of the features
         print_title('0. Input')
@@ -426,12 +429,12 @@ class Pipeline(collections.OrderedDict):
 
             if hasattr(final, 'debug_one'):
                 final.debug_one(x)
-                print()
+                _print()
 
             if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
-                print(final.predict_one(x))
+                _print(final.predict_one(x))
 
     def draw(self):
         """Draws the pipeline using the ``graphviz`` library."""
