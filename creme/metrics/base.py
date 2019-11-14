@@ -21,6 +21,9 @@ __all__ = [
 
 class Metric(abc.ABC):
 
+    # Define the format specification used for string representation.
+    fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+
     @abc.abstractmethod
     def get(self) -> float:
         """Returns the current value of the metric."""
@@ -33,12 +36,9 @@ class Metric(abc.ABC):
     def works_with(self, model) -> bool:
         """Indicates whether or not a metric can work with a given model."""
 
-    def __str__(self):
-        """Returns the class name along with the current value of the metric."""
-        return f'{self.__class__.__name__}: {self.get():.6f}'.rstrip('0')
-
     def __repr__(self):
-        return str(self)
+        """Returns the class name along with the current value of the metric."""
+        return f'{self.__class__.__name__}: {self.get():{self.fmt}}'.rstrip('0')
 
 
 class ClassificationMetric(Metric):
@@ -252,6 +252,10 @@ class Metrics(Metric, collections.UserList):
 
 class WrapperMetric(Metric):
 
+    @property
+    def fmt(self):
+        return self.metric.fmt
+
     @abc.abstractproperty
     def metric(self):
         """Gives access to the wrapped metric."""
@@ -266,3 +270,6 @@ class WrapperMetric(Metric):
     @property
     def __metaclass__(self):
         return self.metric.__class__
+
+    def __repr__(self):
+        return str(self.metric)

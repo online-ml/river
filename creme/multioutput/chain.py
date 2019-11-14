@@ -64,7 +64,10 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             ...     model = model.fit_one(x, y)
 
             >>> metric
-            Jaccard: 0.450325
+            Jaccard: 0.449923
+
+    References:
+        1. `Multi-Output Chain Models and their Application in Data Streams <https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf>`_
 
     """
 

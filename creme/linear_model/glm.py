@@ -1,5 +1,6 @@
 import collections
 import numbers
+import numpy as np
 
 from .. import base
 from .. import optim
@@ -42,7 +43,7 @@ class GLM:
     def _raw_dot(self, x):
         return utils.math.dot(self.weights, x) + self.intercept
 
-    def fit_one(self, x, y):
+    def fit_one(self, x, y, sample_weight=1.):
 
         # Some optimizers need to do something before a prediction is made
         self.weights = self.optimizer.update_before_pred(w=self.weights)
@@ -50,13 +51,15 @@ class GLM:
         # Obtain the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
+        # Clamp the gradient to avoid numerical instability
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
+
+        # Apply the sample weight
+        g_loss *= sample_weight
+
         # Calculate the gradient
         gradient = {
-            i: utils.math.clamp(
-                x=xi * g_loss + 2. * self.l2 * self.weights.get(i, 0),
-                minimum=-self.clip_gradient,
-                maximum=self.clip_gradient
-            )
+            i: xi * g_loss + 2. * self.l2 * self.weights.get(i, 0)
             for i, xi in x.items()
         }
 
@@ -139,6 +142,126 @@ class LinearRegression(GLM, base.Regressor):
     def predict_one(self, x):
         return self._raw_dot(x)
 
+    def debug_one(self, x, n_decimals=5, **print_params):
+        """
+
+        Example:
+
+            ::
+
+                >>> from creme import linear_model
+                >>> from creme import metrics
+                >>> from creme import model_selection
+                >>> from creme import preprocessing
+                >>> from creme import stream
+                >>> from sklearn import datasets
+
+                >>> X_y = stream.iter_sklearn_dataset(
+                ...     dataset=datasets.load_boston(),
+                ...     shuffle=True,
+                ...     random_state=42
+                ... )
+
+                >>> model = (
+                ...     preprocessing.StandardScaler() |
+                ...     linear_model.LinearRegression(intercept_lr=.1)
+                ... )
+
+                >>> for x, y in X_y:
+                ...     y_pred = model.predict_one(x)
+                ...     model = model.fit_one(x, y)
+
+                >>> model.debug_one(x)
+                0. Input
+                --------
+                AGE: 85.40000 (float64)
+                B: 70.80000 (float64)
+                CHAS: 0.00000 (float64)
+                CRIM: 0.22876 (float64)
+                DIS: 2.71470 (float64)
+                INDUS: 8.56000 (float64)
+                LSTAT: 10.63000 (float64)
+                NOX: 0.52000 (float64)
+                PTRATIO: 20.90000 (float64)
+                RAD: 5.00000 (float64)
+                RM: 6.40500 (float64)
+                TAX: 384.00000 (float64)
+                ZN: 0.00000 (float64)
+                <BLANKLINE>
+                1. StandardScaler
+                -----------------
+                AGE: 0.59772 (float64)
+                B: -3.13133 (float64)
+                CHAS: -0.27233 (float64)
+                CRIM: -0.39351 (float64)
+                DIS: -0.51305 (float64)
+                INDUS: -0.37560 (float64)
+                LSTAT: -0.28330 (float64)
+                NOX: -0.29941 (float64)
+                PTRATIO: 1.12911 (float64)
+                RAD: -0.52248 (float64)
+                RM: 0.17131 (float64)
+                TAX: -0.14381 (float64)
+                ZN: -0.48724 (float64)
+                <BLANKLINE>
+                2. LinearRegression
+                -------------------
+                Name        Value      Weight      Contribution
+                Intercept          1    22.18974       22.18974
+                DIS         -0.51305    -1.82199        0.93478
+                LSTAT       -0.28330    -3.01991        0.85554
+                RM           0.17131     3.45826        0.59244
+                CRIM        -0.39351    -0.68585        0.26989
+                NOX         -0.29941    -0.57048        0.17081
+                TAX         -0.14381    -0.30284        0.04355
+                INDUS       -0.37560     0.08929       -0.03354
+                AGE          0.59772    -0.08945       -0.05346
+                ZN          -0.48724     0.47388       -0.23089
+                CHAS        -0.27233     1.14375       -0.31148
+                RAD         -0.52248     0.70101       -0.36627
+                PTRATIO      1.12911    -1.61350       -1.82182
+                B           -3.13133     1.13608       -3.55744
+                <BLANKLINE>
+                Prediction: 18.68184
+
+        """
+
+        def fmt_float(x):
+            return '{: ,.{prec}f}'.format(x, prec=n_decimals)
+
+        headers = ['Name', 'Value', 'Weight', 'Contribution']
+        features = list(map(str, x.keys())) + ['Intercept']
+        values = list(map(fmt_float, x.values())) + ['1']
+        weights = list(map(fmt_float, self.weights.values())) + [fmt_float(self.intercept)]
+        contributions = (
+            [fmt_float(xi * self.weights[i]) for i, xi in x.items()] +
+            [fmt_float(self.intercept)]
+        )
+
+        # Make a template to print out rows one by one
+        col_widths = (
+            max(*map(len, features), len(headers[0])),
+            max(*map(len, values), len(headers[1])),
+            max(*map(len, weights), len(headers[2])),
+            max(*map(len, contributions), len(headers[3]))
+        )
+        row_format = ' '.join(['{:' + str(width + 2) + 's}' for width in col_widths])
+
+        table = (
+            row_format.format(*headers) + '\n' +
+            '\n'.join((
+                row_format.format(
+                    features[i],
+                    values[i].rjust(col_widths[1]),
+                    weights[i].rjust(col_widths[2]),
+                    contributions[i].rjust(col_widths[3])
+                )
+                for i in reversed(np.argsort(list(map(float, contributions))))
+            ))
+        )
+
+        print(table, **print_params)
+
 
 class LogisticRegression(GLM, base.BinaryClassifier):
     """Logistic regression.
@@ -177,7 +300,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.online_score(X_y, model, metric)
-            Accuracy: 0.894664
+            Accuracy: 89.46%
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -197,5 +320,5 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         )
 
     def predict_proba_one(self, x):
-        p = utils.math.sigmoid(self._raw_dot(x))  # Convert log-odds ratio to probability
-        return {True: p, False: 1. - p}
+        p = utils.math.sigmoid(self._raw_dot(x))  # Convert logit to probability
+        return {False: 1. - p, True: p}

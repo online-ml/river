@@ -32,7 +32,7 @@ class SGD(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.966197
+            F1: 0.964739
 
     References:
         1. `A Stochastic Approximation Method <https://pdfs.semanticscholar.org/34dd/d8865569c2c32dec9bf7ffc817ff42faaa01.pdf>`_

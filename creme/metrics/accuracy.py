@@ -6,18 +6,7 @@ from . import base
 __all__ = ['Accuracy']
 
 
-class BaseAccuracy(base.MultiClassMetric):
-
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
-
-class Accuracy(stats.Mean, BaseAccuracy):
+class Accuracy(stats.Mean, base.MultiClassMetric):
     """Accuracy score, which is the percentage of exact matches.
 
     Example:
@@ -37,9 +26,19 @@ class Accuracy(stats.Mean, BaseAccuracy):
             ...     assert math.isclose(metric.get(), accuracy_score(y_true[:i+1], y_pred[:i+1]))
 
             >>> metric
-            Accuracy: 0.6
+            Accuracy: 60.00%
 
     """
+
+    fmt = '.2%'  # Will output a percentage, e.g. 0.87 will become "87%"
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    @property
+    def requires_labels(self):
+        return True
 
     def update(self, y_true, y_pred, sample_weight=1.):
         return super().update(x=y_true == y_pred, w=sample_weight)
