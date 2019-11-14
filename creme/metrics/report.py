@@ -126,12 +126,13 @@ class ClassificationReport(base.MultiClassMetric):
     def __repr__(self):
 
         # The classes are sorted alphabetically for reproducibility reasons
-        classes = sorted(self.support.keys())
         headers = ['Precision', 'Recall', 'F1', 'Support']
+        classes = sorted(self.support.keys())
 
         # Determine the required width of each column in the table
-        largest_header_len = max(len(str(h)) for h in classes)
-        width = max(largest_header_len, self.digits + 2) + 3
+        longest_header = max(map(len, headers))
+        longest_class = max(map(len, map(str, classes)))
+        width = max(longest_header, longest_class, self.digits + 2) + 3
 
         # Make a template to print out rows one by one
         row_format = '{:>{width}}' * (len(headers) + 1)

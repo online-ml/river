@@ -383,14 +383,14 @@ class Pipeline(collections.OrderedDict):
 
         def format_value(x):
             if isinstance(x, float):
-                return '{:.{prec}f}'.format(x, prec=n_decimals)
+                return '{:,.{prec}f}'.format(x, prec=n_decimals)
             return x
 
         def print_dict(x, show_types, indent=False, space_after=True):
 
             # Some transformers accept strings as input instead of dicts
             if isinstance(x, str):
-                _print(x, file=file)
+                _print(x)
             else:
                 for k, v in sorted(x.items()):
                     type_str = f' ({type(v).__name__})' if show_types else ''
@@ -427,14 +427,16 @@ class Pipeline(collections.OrderedDict):
         if not isinstance(final, base.Transformer):
             print_title(f'{len(self)}. {final}')
 
+            # If the last estimator has a debug_one method then call it
             if hasattr(final, 'debug_one'):
-                final.debug_one(x)
-                _print()
+                final.debug_one(x, **print_params)
 
+            # Display the prediction
+                _print()
             if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
-                _print(final.predict_one(x))
+                _print(f'Prediction: {format_value(final.predict_one(x))}')
 
     def draw(self):
         """Draws the pipeline using the ``graphviz`` library."""
