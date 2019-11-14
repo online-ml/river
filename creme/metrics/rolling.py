@@ -1,7 +1,7 @@
 from .. import utils
 
 from . import base
-from . import per_class
+from . import report
 
 
 __all__ = ['Rolling']
@@ -56,10 +56,7 @@ class Rolling(base.WrapperMetric, utils.Window):
     def get(self):
         return self.metric.get()
 
-    def __str__(self):
-        if isinstance(self._metric, per_class.PerClass):
-            return f'Rolling of size {self.window_size}\n' + '\n'.join((
-                f'    {s}'
-                for s in str(self.metric).split('\n'))
-            )
+    def __repr__(self):
+        if isinstance(self.metric, report.ClassificationReport):
+            return self.metric.__repr__()
         return f'Rolling of size {self.window_size} {str(self.metric)}'

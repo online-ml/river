@@ -1,4 +1,5 @@
 import collections
+import functools
 import itertools
 import types
 
@@ -266,7 +267,7 @@ class Pipeline(collections.OrderedDict):
         """The final estimator."""
         return self[next(reversed(self))]
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x, y=None, **fit_params):
         """Fits each step with ``x``."""
 
         # Loop over the first n - 1 steps, which should all be transformers
@@ -285,11 +286,11 @@ class Pipeline(collections.OrderedDict):
                 else:
                     t.fit_one(x=x_pre, y=y)
 
-        self.final_estimator.fit_one(x=x, y=y)
+        self.final_estimator.fit_one(x=x, y=y, **fit_params)
         return self
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
-    def fit_predict_one(self, x, y):
+    def fit_predict_one(self, x, y, **fit_params):
         """Updates the pipeline and returns a the out-of-fold prediction.
 
         Only works if each estimator has a ``transform_one`` method and the final estimator has a
@@ -297,10 +298,10 @@ class Pipeline(collections.OrderedDict):
 
         """
         x = self.transform_one(x=x)
-        return self.final_estimator.fit_predict_one(x=x, y=y)
+        return self.final_estimator.fit_predict_one(x=x, y=y, **fit_params)
 
     @metaestimators.if_delegate_has_method(delegate='final_estimator')
-    def fit_predict_proba_one(self, x, y):
+    def fit_predict_proba_one(self, x, y, **fit_params):
         """Updates the pipeline and returns a the out-of-fold prediction.
 
         Only works if each estimator has a ``transform_one`` method and the final estimator has a
@@ -308,7 +309,7 @@ class Pipeline(collections.OrderedDict):
 
         """
         x = self.transform_one(x=x)
-        return self.final_estimator.fit_predict_proba_one(x=x, y=y)
+        return self.final_estimator.fit_predict_proba_one(x=x, y=y, **fit_params)
 
     def transform_one(self, x):
         """Transform an input.
@@ -366,38 +367,40 @@ class Pipeline(collections.OrderedDict):
             xs = [self.transform_one(x) for x in xs]
         return self.final_estimator.forecast(horizon=horizon, xs=xs)
 
-    def debug_one(self, x, show_types=True, n_decimals=5):
+    def debug_one(self, x, show_types=True, n_decimals=5, **print_params):
         """Displays the state of a set of features as it goes through the pipeline.
 
         Parameters:
             x (dict) A set of features.
             show_types (bool): Whether or not to display the type of feature along with it's value.
             n_decimals (int): Number of decimals to display for each floating point value.
+            **print_params (dict): Parameters passed to the `print` function.
 
         """
 
-        TAB = ' ' * 4
+        tab = ' ' * 4
+        _print = functools.partial(print, **print_params)
 
         def format_value(x):
             if isinstance(x, float):
-                return '{:.{prec}f}'.format(x, prec=n_decimals)
+                return '{:,.{prec}f}'.format(x, prec=n_decimals)
             return x
 
         def print_dict(x, show_types, indent=False, space_after=True):
 
             # Some transformers accept strings as input instead of dicts
             if isinstance(x, str):
-                print(x)
+                _print(x)
             else:
                 for k, v in sorted(x.items()):
                     type_str = f' ({type(v).__name__})' if show_types else ''
-                    print((TAB if indent else '') + f'{k}: {format_value(v)}' + type_str)
+                    _print((tab if indent else '') + f'{k}: {format_value(v)}' + type_str)
             if space_after:
-                print()
+                _print()
 
         def print_title(title, indent=False):
-            print((TAB if indent else '') + title)
-            print((TAB if indent else '') + '-' * len(title))
+            _print((tab if indent else '') + title)
+            _print((tab if indent else '') + '-' * len(title))
 
         # Print the initial state of the features
         print_title('0. Input')
@@ -424,14 +427,16 @@ class Pipeline(collections.OrderedDict):
         if not isinstance(final, base.Transformer):
             print_title(f'{len(self)}. {final}')
 
+            # If the last estimator has a debug_one method then call it
             if hasattr(final, 'debug_one'):
-                final.debug_one(x)
-                print()
+                final.debug_one(x, **print_params)
 
+            # Display the prediction
+                _print()
             if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
-                print(final.predict_one(x))
+                _print(f'Prediction: {format_value(final.predict_one(x))}')
 
     def draw(self):
         """Draws the pipeline using the ``graphviz`` library."""

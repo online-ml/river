@@ -135,7 +135,7 @@ class Classifier(Estimator):
         """
         y_pred = self.predict_proba_one(x)
         if y_pred:
-            return max(self.predict_proba_one(x), key=y_pred.get)
+            return max(y_pred, key=y_pred.get)
         return None
 
 

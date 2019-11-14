@@ -31,7 +31,7 @@ class BaseBagging(base.Wrapper, base.Ensemble):
 
 
 class BaggingClassifier(BaseBagging, base.Classifier):
-    """Bagging for classification.
+    """Online bootstrap aggregation for classification.
 
     For each incoming observation, each model's ``fit_one`` method is called ``k`` times where
     ``k`` is sampled from a Poisson distribution of parameter 1. ``k`` thus has a 36% chance of
@@ -80,7 +80,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.966667
+            F1: 0.963889
 
             >>> print(model)
             BaggingClassifier(StandardScaler | LogisticRegression)
@@ -102,7 +102,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
 
 class BaggingRegressor(BaseBagging, base.Regressor):
-    """Bagging for regression.
+    """Online bootstrap aggregation for regression.
 
     For each incoming observation, each model's ``fit_one`` method is called ``k`` times where
     ``k`` is sampled from a Poisson distribution of parameter 1. ``k`` thus has a 36% chance of

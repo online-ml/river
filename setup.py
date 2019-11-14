@@ -5,10 +5,12 @@
 #   $ pip install twine
 
 import io
+import platform
 import os
-from shutil import rmtree
 
-from setuptools import Extension, find_packages, setup, Command
+from setuptools import Extension
+from setuptools import find_packages
+from setuptools import setup
 
 try:
     from Cython.Build import cythonize
@@ -71,7 +73,6 @@ if not VERSION:
 else:
     about['__version__'] = VERSION
 
-
 # Where the magic happens:
 setup(
     name=NAME,
@@ -84,12 +85,6 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=find_packages(exclude=('tests',)),
-    # If your package is a single module, use this instead of 'packages':
-    # py_modules=['mypackage'],
-
-    # entry_points={
-    #     'console_scripts': ['mycli=mymodule:cli'],
-    # },
     install_requires=base_packages,
     extras_require={'dev': dev_packages, 'docs': docs_packages},
     include_package_data=True,
@@ -105,5 +100,14 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
-    ext_modules=cythonize([Extension('*', sources=['**/*.pyx'], libraries=['m'])])
+    ext_modules=cythonize(
+        module_list=[
+            Extension(
+                '*',
+                sources=['**/*.pyx'],
+                libraries=[] if platform.system() == 'Windows' else ['m']
+            )
+        ],
+        compiler_directives={'language_level': 2}
+    )
 )

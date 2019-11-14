@@ -262,7 +262,11 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
 cdef class Log(BinaryLoss):
     """Logarithmic loss.
 
-    This loss function expects each provided ``y_pred`` to be a log odds ratio, not a probability.
+    This loss function expects each provided ``y_pred`` to be a logit. In other words if must be
+    the raw output of a linear model or a neural network.
+
+    References:
+        1. `Logit Wikipedia page <https://www.wikiwand.com/en/Logit>`_
 
     """
 

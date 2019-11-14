@@ -8,6 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- `metrics.ClassificationReport` to get a global performance overview on a classification task.
+
+### Removed
+
+- `metrics.PerClass`, it is recommended that you use `metrics.ClassificationReport` instead as it gives a better overview.
+
+
+## [0.4.4](https://pypi.org/project/creme/0.4.4/) - 2019-11-11
+
+This release was mainly made to provide access to wheels for Windows and MacOS.
+
+### Added
+
 - `SNARIMAX` to `time_series`. This is a generic model which encompasses time series models such as ARIMA and NARX.
 - Introduced a `clip_gradient` parameter to `LinearRegression` and `LogisticRegression`. Gradient was already implemented, but the maximum absolute value can now be set by the user.
 - `AdaBoostClassifier` to `ensemble`. This is the first implementation of boosting in `creme`.

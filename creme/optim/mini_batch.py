@@ -45,7 +45,7 @@ class MiniBatcher(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.969014
+            F1: 0.96756
 
     """
 
