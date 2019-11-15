@@ -1,4 +1,3 @@
-import abc
 import math
 
 from .. import base
@@ -8,36 +7,7 @@ from .. import optim
 __all__ = ['HedgeRegressor']
 
 
-class Hedge(base.Ensemble):
-
-    def __init__(self, models, weights, learning_rate):
-        super().__init__(models)
-        self.weights = [1] * len(models)
-        self.learning_rate = learning_rate
-
-    @abc.abstractmethod
-    def _get_loss(self, model, x, y):
-        """Returns a prediction."""
-
-    def fit_one(self, x, y):
-
-        # Make a prediction and update the weights accordingly for each model
-        total = 0
-        for i, model in enumerate(self):
-            loss = self._get_loss(model=model, x=x, y=y)
-            self.weights[i] *= math.exp(-self.learning_rate * loss)
-            total += self.weights[i]
-            model.fit_one(x, y)
-
-        # Normalize the weights so that they sum up to 1
-        if total:
-            for i, _ in enumerate(self.weights):
-                self.weights[i] /= total
-
-        return self
-
-
-class HedgeRegressor(Hedge, base.Regressor):
+class HedgeRegressor(base.Ensemble, base.Regressor):
     """Hedge Algorithm for regression.
 
     The Hedge Algorithm is a special case of the Weighted Majority Algorithm for arbitrary losses.
@@ -116,16 +86,36 @@ class HedgeRegressor(Hedge, base.Regressor):
 
     """
 
-    def __init__(self, regressors, weights=None, loss=None, learning_rate=0.5):
-        super().__init__(
-            models=regressors,
-            weights=weights,
-            learning_rate=learning_rate
-        )
+    def __init__(self, regressors, loss=None, learning_rate=.5):
+        super().__init__(regressors)
         self.loss = optim.losses.Squared() if loss is None else loss
+        self.learning_rate = learning_rate
+        self.weights = [1.] * len(regressors)
 
-    def _get_loss(self, model, x, y):
-        return self.loss.eval(y_true=y, y_pred=model.predict_one(x))
+    def fit_predict_one(self, x, y):
+
+        y_pred_mean = 0.
+
+        # Make a prediction and update the weights accordingly for each model
+        total = 0
+        for i, regressor in enumerate(self):
+            y_pred = regressor.predict_one(x=x)
+            y_pred_mean += self.weights[i] * (y_pred - y_pred_mean) / len(self)
+            loss = self.loss.eval(y_true=y, y_pred=y_pred)
+            self.weights[i] *= math.exp(-self.learning_rate * loss)
+            total += self.weights[i]
+            regressor.fit_one(x, y)
+
+        # Normalize the weights so that they sum up to 1
+        if total:
+            for i, _ in enumerate(self.weights):
+                self.weights[i] /= total
+
+        return y_pred_mean
+
+    def fit_one(self, x, y):
+        self.fit_predict_one(x, y)
+        return self
 
     def predict_one(self, x):
         return sum(model.predict_one(x) * weight for model, weight in zip(self, self.weights))
