@@ -1,5 +1,7 @@
 import collections
 
+from .. import utils
+
 from . import base
 from . import accuracy
 from . import fbeta
@@ -40,7 +42,7 @@ class ClassificationReport(base.MultiClassMetric):
             >>> y_true = ['pear', 'apple', 'banana', 'banana', 'banana']
             >>> y_pred = ['apple', 'pear', 'banana', 'banana', 'apple']
 
-            >>> report = ClassificationReport()
+            >>> report = metrics.ClassificationReport()
 
             >>> for yt, yp in zip(y_true, y_pred):
             ...     report = report.update(yt, yp)
@@ -64,8 +66,8 @@ class ClassificationReport(base.MultiClassMetric):
 
     """
 
-    def __init__(self, digits=3):
-        self.digits = digits
+    def __init__(self, decimals=3):
+        self.decimals = decimals
         self.f1s = collections.defaultdict(fbeta.F1)
         self.macro_precision = precision.MacroPrecision()
         self.macro_recall = recall.MacroRecall()
@@ -125,71 +127,46 @@ class ClassificationReport(base.MultiClassMetric):
 
     def __repr__(self):
 
-        # The classes are sorted alphabetically for reproducibility reasons
-        headers = ['Precision', 'Recall', 'F1', 'Support']
+        def fmt_float(x):
+            return f'{x:.{self.decimals}f}'
+
+        headers = ['', 'Precision', 'Recall', 'F1', 'Support']
         classes = sorted(self.support.keys())
+        columns = [
+            ['', *classes, '', 'Macro', 'Micro', 'Weighted'],
+            [
+                '', *[fmt_float(self.f1s[c].precision.get()) for c in classes], '',
+                *map(fmt_float, [
+                    self.macro_precision.get(),
+                    self.micro_precision.get(),
+                    self.weighted_precision.get()
+                ])
+            ],
+            [
+                '', *[fmt_float(self.f1s[c].recall.get()) for c in classes], '',
+                *map(fmt_float, [
+                    self.macro_recall.get(),
+                    self.micro_recall.get(),
+                    self.weighted_recall.get()
+                ])
+            ],
+            [
+                '', *[fmt_float(self.f1s[c].get()) for c in classes], '',
+                *map(fmt_float, [
+                    self.macro_f1.get(),
+                    self.micro_f1.get(),
+                    self.weighted_f1.get()
+                ])
+            ],
+            ['', *[str(self.support[c]) for c in classes], *[''] * 4]
+        ]
 
-        # Determine the required width of each column in the table
-        longest_header = max(map(len, headers))
-        longest_class = max(map(len, map(str, classes)))
-        width = max(longest_header, longest_class, self.digits + 2) + 3
-
-        # Make a template to print out rows one by one
-        row_format = '{:>{width}}' * (len(headers) + 1)
-
-        # Write down the header
-        table = row_format.format('', *map(str, headers), width=width) + '\n\n'
-
-        # Write down the precision, recall, F1 scores along with the support for each class
-        table += '\n'.join((
-            row_format.format(
-                str(c),
-                *[
-                    f'{self.f1s[c].precision.get():.{self.digits}f}',
-                    f'{self.f1s[c].recall.get():.{self.digits}f}',
-                    f'{self.f1s[c].get():.{self.digits}f}',
-                    f'{self.support[c]}'
-                ],
-                width=width
-            )
-            for c in classes
-        ))
-
-        # Write down the macro, micro, and weighted metrics
-        table += '\n\n' + '\n'.join([
-            row_format.format(
-                'Macro',
-                *[
-                    f'{self.macro_precision.get():.{self.digits}f}',
-                    f'{self.macro_recall.get():.{self.digits}f}',
-                    f'{self.macro_f1.get():.{self.digits}f}',
-                    ''
-                ],
-                width=width
-            ),
-            row_format.format(
-                'Micro',
-                *[
-                    f'{self.micro_precision.get():.{self.digits}f}',
-                    f'{self.micro_recall.get():.{self.digits}f}',
-                    f'{self.micro_f1.get():.{self.digits}f}',
-                    ''
-                ],
-                width=width
-            ),
-            row_format.format(
-                'Weighted',
-                *[
-                    f'{self.weighted_precision.get():.{self.digits}f}',
-                    f'{self.weighted_recall.get():.{self.digits}f}',
-                    f'{self.weighted_f1.get():.{self.digits}f}',
-                    ''
-                ],
-                width=width
-            )
-        ])
+        # Build the table
+        table = utils.pretty.print_table(headers, columns)
 
         # Write down the accuracy
-        table += '\n\n' + ' ' * (width * 2) + f'{self.accuracy.get():.{self.digits - 2}%} accuracy'
+        width = len(table.splitlines()[0])
+        accuracy = f'{self.accuracy.get():.{self.decimals - 2}%}' + ' accuracy'
+        table += '\n\n' + f'{accuracy:^{width}}'
 
         return table

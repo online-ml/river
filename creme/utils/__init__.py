@@ -2,7 +2,7 @@
 from . import estimator_checks
 from . import math
 from .histogram import Histogram
-from .pretty import pretty_format_class
+from .pretty import format_class
 from .sdft import SDFT
 from .skyline import Skyline
 from .window import Window
@@ -13,7 +13,7 @@ __all__ = [
     'estimator_checks',
     'Histogram',
     'math',
-    'pretty_format_class',
+    'format_class',
     'SDFT',
     'Skyline',
     'SortedWindow',
