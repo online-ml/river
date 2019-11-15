@@ -1,6 +1,3 @@
-"""
-Utilities for compatibility with other libraries such as scikit-learn.
-"""
 import copy
 import functools
 
@@ -24,15 +21,15 @@ from .. import stream
 __all__ = [
     'convert_creme_to_sklearn',
     'convert_sklearn_to_creme',
-    'CremeClassifierWrapper',
-    'CremeRegressorWrapper',
-    'SKLRegressorWrapper',
-    'SKLClassifierWrapper',
-    'SKLClustererWrapper',
-    'SKLTransformerWrapper'
+    'SKL2CremeClassifier',
+    'SKL2CremeRegressor',
+    'Creme2SKLRegressor',
+    'Creme2SKLClassifier',
+    'Creme2SKLClusterer',
+    'Creme2SKLTransformer'
 ]
 
-
+# Define a streaming method for each kind of batch input
 STREAM_METHODS = {
     np.ndarray: stream.iter_array
 }
@@ -71,11 +68,11 @@ def convert_creme_to_sklearn(estimator):
         ])
 
     wrappers = [
-        (base.BinaryClassifier, SKLClassifierWrapper),
-        (base.Clusterer, SKLClustererWrapper),
-        (base.MultiClassifier, SKLClassifierWrapper),
-        (base.Regressor, SKLRegressorWrapper),
-        (base.Transformer, SKLTransformerWrapper)
+        (base.BinaryClassifier, Creme2SKLClassifier),
+        (base.Clusterer, Creme2SKLClusterer),
+        (base.MultiClassifier, Creme2SKLClassifier),
+        (base.Regressor, Creme2SKLRegressor),
+        (base.Transformer, Creme2SKLTransformer)
     ]
 
     for base_type, wrapper in wrappers:
@@ -95,9 +92,9 @@ def convert_sklearn_to_creme(estimator, classes=None):
     """
 
     wrappers = [
-        (sklearn_base.RegressorMixin, CremeRegressorWrapper),
+        (sklearn_base.RegressorMixin, SKL2CremeRegressor),
         (sklearn_base.ClassifierMixin, functools.partial(
-            CremeClassifierWrapper,
+            SKL2CremeClassifier,
             classes=classes
         ))
     ]
@@ -115,7 +112,7 @@ class CremeBaseWrapper:
         self.sklearn_estimator = sklearn_estimator
 
 
-class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
+class SKL2CremeRegressor(CremeBaseWrapper, base.Regressor):
     """Wraps an ``sklearn`` regressor to make it compatible with ``creme``.
 
     Example:
@@ -158,7 +155,7 @@ class CremeRegressorWrapper(CremeBaseWrapper, base.Regressor):
             return 0
 
 
-class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
+class SKL2CremeClassifier(CremeBaseWrapper, base.MultiClassifier):
     """Wraps an ``sklearn`` classifier to make it compatible with ``creme``.
 
     Example:
@@ -223,8 +220,12 @@ class CremeClassifierWrapper(CremeBaseWrapper, base.MultiClassifier):
             return None
 
 
-class SKLBaseWrapper(sklearn_base.BaseEstimator):
-    """The purpose of this class is to adapt the Sphinx documentation rendering."""
+class Creme2SKLBase(sklearn_base.BaseEstimator):
+    """Wraps a ``creme`` estimator to make it compatible with ``sklearn``.
+
+    The purpose of this class is to adapt the Sphinx documentation rendering.
+
+    """
 
     def __init__(self, creme_estimator):
         self.creme_estimator = creme_estimator
@@ -256,7 +257,7 @@ class SKLBaseWrapper(sklearn_base.BaseEstimator):
         return super().set_params(**params)
 
 
-class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
+class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
 
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
@@ -341,7 +342,7 @@ class SKLRegressorWrapper(SKLBaseWrapper, sklearn_base.RegressorMixin):
         return self.fit(X, y).predict(X)
 
 
-class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
+class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
 
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
@@ -469,7 +470,7 @@ class SKLClassifierWrapper(SKLBaseWrapper, sklearn_base.ClassifierMixin):
         return self.fit(X, y).predict(X)
 
 
-class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
+class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
 
     def fit(self, X, y=None):
         """Fits to an entire dataset contained in memory.
@@ -541,7 +542,7 @@ class SKLTransformerWrapper(SKLBaseWrapper, sklearn_base.TransformerMixin):
         return self.fit(X, y).transform(X)
 
 
-class SKLClustererWrapper(SKLBaseWrapper, sklearn_base.ClusterMixin):
+class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
 
     def fit(self, X, y=None):
         """Fits to an entire dataset contained in memory.
