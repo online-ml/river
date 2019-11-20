@@ -58,11 +58,32 @@ class Estimator:
         return self.__class__.__name__
 
     def __repr__(self):
-        return utils.pretty_format_class(self)
+        return utils.pretty.format_object(self)
 
-    def _more_tags(self) -> dict:
-        """Specific tags for this estimator."""
-        return {}
+    def _reset(self, **new_params):
+        """Calls ``__init__`` with the current parameters as well as extra ones."""
+
+        from . import compose
+
+        if isinstance(self, (compose.Pipeline, compose.TransformerUnion)):
+            return self.__init__(
+                step._reset(**new_params.get(name, {}))
+                for name, step in self.items()
+            )
+
+        # Get the input parameters
+        sig = inspect.signature(self.__class__)
+        params = dict(sig.parameters)
+
+        # Get the current input parameters, assuming that they are stored
+        for name in params:
+            params[name] = getattr(self, name)
+
+        # Add the new parameters
+        params.update(new_params)
+
+        # Return a new instance
+        return self.__class__(**params)
 
     def _get_tags(self) -> dict:
         """Returns the estimator's tags."""
@@ -77,6 +98,10 @@ class Estimator:
             tags = _update_if_consistent(tags, self._more_tags())
 
         return {**DEFAULT_TAGS, **tags}
+
+    def _more_tags(self) -> dict:
+        """Specific tags for this estimator."""
+        return {}
 
 
 class Regressor(Estimator):

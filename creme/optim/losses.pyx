@@ -1,6 +1,8 @@
 """Loss functions."""
 from libc cimport math
 
+from .. import utils
+
 
 __all__ = [
     'Absolute',
@@ -21,7 +23,7 @@ cdef double clamp_proba(double x):
 cdef class Loss:
 
     def __str__(self):
-        return self.__class__.__name__
+        return utils.pretty.format_object(self)
 
 
 cdef class ClassificationLoss(Loss):

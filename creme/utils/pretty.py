@@ -4,40 +4,50 @@ import types
 import numpy as np
 
 
-__all__ = ['format_class', 'print_table']
+__all__ = ['format_object', 'print_table']
 
 
-def format_class(cls):
-    """Returns a pretty representation of a class."""
+def format_object(obj, show_modules=False, tab_size=2, depth=0):
+    """Returns a pretty representation of an instanted object."""
 
-    rep = f'{cls.__class__.__name__} ('
-    init = inspect.signature(cls.__init__)
+    rep = f'{obj.__class__.__name__} ('
+    if show_modules:
+        rep = f'{obj.__class__.__module__}.{rep}'
+
+    init = inspect.signature(obj.__init__)
+    tab = ' ' * tab_size
+    n_params = 0
 
     for name, param in init.parameters.items():
 
+        # We can't guess args and kwargs and so we don't handle them
+        if (
+            param.name == 'args' and param.kind == param.VAR_POSITIONAL or
+            param.name == 'kwargs' and param.kind == param.VAR_KEYWORD
+        ):
+            continue
+
         # Retrieve the attribute associated with the parameter
-        if param.default is None or param.default == param.empty:
-            try:
-                attr = getattr(cls, name)
-            except AttributeError:
-                continue
-        else:
-            attr = param.default
+        attr = getattr(obj, name)
+        n_params += 1
 
         # Prettify the attribute when applicable
-        if isinstance(attr, str):
-            attr = f"'{attr}'"
-        elif isinstance(attr, types.FunctionType):
+        if isinstance(attr, types.FunctionType):
             attr = attr.__name__
+        if isinstance(attr, str):
+            attr = f'"{attr}"'
+        elif isinstance(attr, float):
+            attr = f'{attr:.0e}' if (attr > 10_000 or (attr < .0001 and attr > 0)) else attr
         elif isinstance(attr, set):
             attr = sorted(attr)
+        elif hasattr(attr, '__class__') and 'creme.' in str(type(attr)):
+            attr = format_object(obj=attr, show_modules=show_modules, depth=depth + 1)
 
-        rep += f'\n    {name}={attr}'
+        rep += f'\n{tab * (depth + 1)}{name}={attr}'
 
-    if init.parameters:
-        rep += '\n)'
-    else:
-        rep += ')'
+    if n_params:
+        rep += f'\n{tab * depth}'
+    rep += ')'
 
     return rep
 

@@ -52,6 +52,11 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
             n_models=n_trees,
             random_state=random_state
         )
+        self.tree_params = tree_params
+
+    @property
+    def n_trees(self):
+        return len(self)
 
     def __str__(self):
         return 'RandomForestClassifier'

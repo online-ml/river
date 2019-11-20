@@ -13,9 +13,11 @@ __all__ = ['AdaBoostClassifier']
 class BaseBoosting(base.Wrapper, base.Ensemble):
 
     def __init__(self, model, n_models=10, random_state=None):
-        super().__init__(copy.deepcopy(model) for i in range(n_models))
+        super().__init__(copy.deepcopy(model) for _ in range(n_models))
+        self.n_models = n_models
         self.model = model
-        self.rng = utils.check_random_state(random_state)
+        self.random_state = random_state
+        self._rng = utils.check_random_state(random_state)
 
     @property
     def _model(self):
@@ -26,8 +28,8 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
     '''Boosting for classification
 
     For each incoming observation, each model's ``fit_one`` method is called ``k`` times where
-    ``k`` is sampled from a Poisson distribution of parameter lambda. The lambda parameter is 
-    updated when the weaks learners fit successively the same observation. 
+    ``k`` is sampled from a Poisson distribution of parameter lambda. The lambda parameter is
+    updated when the weaks learners fit successively the same observation.
 
     Parameters:
         model (BinaryClassifier or MultiClassifier): The classifier to boost.
@@ -64,8 +66,8 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             >>> model = ensemble.AdaBoostClassifier(
             ...     model=(
             ...         tree.DecisionTreeClassifier(
-            ...             criterion='gini', 
-            ...             confidence=1e-5, 
+            ...             criterion='gini',
+            ...             confidence=1e-5,
             ...             patience=2000
             ...         )
             ...     ),
@@ -90,19 +92,19 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
         self.wrong_weight = collections.defaultdict(int)
         self.correct_weight = collections.defaultdict(int)
 
-    def fit_one(self, x, y):  
+    def fit_one(self, x, y):
         lambda_poisson = 1
-        
+
         for i, model in enumerate(self):
-            for _ in range(self.rng.poisson(lambda_poisson)):
+            for _ in range(self._rng.poisson(lambda_poisson)):
                 model.fit_one(x, y)
-            
+
             if model.predict_one(x) == y:
                 self.correct_weight[i] += lambda_poisson
                 lambda_poisson *= (
-                    (self.correct_weight[i] + self.wrong_weight[i]) / (2 * self.correct_weight[i]) 
+                    (self.correct_weight[i] + self.wrong_weight[i]) / (2 * self.correct_weight[i])
                 )
-            
+
             else:
                 self.wrong_weight[i] += lambda_poisson
                 lambda_poisson *= (
@@ -110,20 +112,19 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
                 )
         return self
 
-
     def predict_proba_one(self, x):
         """
-        Store the predicted probabilities with the corresponding weights for each weak learner and 
+        Store the predicted probabilities with the corresponding weights for each weak learner and
         return the probabilities associated to the model which has maximum weight.
         """
         model_weights = collections.defaultdict(int)
-        predictions   = {}
+        predictions = {}
 
         for i, model in enumerate(self):
             epsilon = self.correct_weight[i] + 1e-16
-            epsilon /= (self.wrong_weight[i]  + 1e-16)
+            epsilon /= (self.wrong_weight[i] + 1e-16)
             weight = math.log(epsilon)
-            model_weights[i] += weight 
+            model_weights[i] += weight
             predictions[i] = model.predict_proba_one(x)
 
         y_pred = predictions[max(model_weights, key=model_weights.get)]
