@@ -94,7 +94,7 @@ class Network(collections.UserList):
         return dot
 
 
-class Pipeline(collections.OrderedDict):
+class Pipeline(base.Estimator, collections.OrderedDict):
     """Chains a sequence of estimators.
 
     Sequentially apply a list of estimators. Pipelines helps to define machine learning systems in a
@@ -207,8 +207,7 @@ class Pipeline(collections.OrderedDict):
         return union.TransformerUnion([self, other])
 
     def __str__(self):
-        """Return a human friendly representation of the pipeline."""
-        return ' | '.join(self.keys())
+        return ' | '.join(map(str, self.values()))
 
     def __repr__(self):
         return (

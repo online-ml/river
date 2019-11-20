@@ -106,13 +106,13 @@ def convert_sklearn_to_creme(estimator, classes=None):
     raise ValueError("Couldn't find an appropriate wrapper")
 
 
-class CremeBaseWrapper:
+class SKL2CremeBase:
 
     def __init__(self, sklearn_estimator):
         self.sklearn_estimator = sklearn_estimator
 
 
-class SKL2CremeRegressor(CremeBaseWrapper, base.Regressor):
+class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
     """Wraps an ``sklearn`` regressor to make it compatible with ``creme``.
 
     Example:
@@ -155,7 +155,7 @@ class SKL2CremeRegressor(CremeBaseWrapper, base.Regressor):
             return 0
 
 
-class SKL2CremeClassifier(CremeBaseWrapper, base.MultiClassifier):
+class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
     """Wraps an ``sklearn`` classifier to make it compatible with ``creme``.
 
     Example:

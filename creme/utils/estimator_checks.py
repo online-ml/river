@@ -255,6 +255,21 @@ def check_debug_one(model):
     model.debug_one(x)
 
 
+def check_reinit(model):
+    """Checks that the ``_reinit`` method works."""
+    pass
+
+
+def check_get_tags(model):
+    """Checks that the ``_get_tags`` method works."""
+    assert isinstance(model._get_tags(), dict)
+
+
+def check_format_object(model):
+    """Checks that the model can be pretty-printed."""
+    pass
+
+
 def yield_all_checks(model):
 
     from .. import base
@@ -267,11 +282,11 @@ def yield_all_checks(model):
     yield check_pickling
     yield check_repr
     yield check_str
+    yield check_get_tags
     if hasattr(model, 'debug_one'):
         yield check_debug_one
 
     model = guess_model(model)
-    tags = model._get_tags()
 
     if isinstance(model, base.Classifier):
         yield check_predict_proba_one

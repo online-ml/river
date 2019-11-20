@@ -23,15 +23,16 @@ from creme import stats
 from creme import time_series
 from creme import tree
 from creme import utils
-from creme.compat.sklearn import CremeBaseWrapper
-from creme.compat.sklearn import SKLBaseWrapper
+from creme.compat.sklearn import Creme2SKLBase
+from creme.compat.sklearn import SKL2CremeBase
 
 
 def get_all_estimators():
 
     ignored = (
-        CremeBaseWrapper,
-        SKLBaseWrapper,
+        Creme2SKLBase,
+        SKL2CremeBase,
+        compose.Pipeline,
         compose.FuncTransformer,
         compose.TargetModifierRegressor,
         ensemble.StackingBinaryClassifier,

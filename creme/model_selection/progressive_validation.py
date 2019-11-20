@@ -1,8 +1,8 @@
 """Model evaluation and selection."""
 import math
 
-from . import base
-from . import stream
+from .. import base
+from .. import stream
 
 
 __all__ = ['online_score', 'online_qa_score']

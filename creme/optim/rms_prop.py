@@ -34,7 +34,7 @@ class RMSProp(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.967832
+            F1: 0.970629
 
     References:
         1. `Divide the gradient by a running average of itsrecent magnitude <https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf>`_

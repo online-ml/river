@@ -57,9 +57,9 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
             ...     )
             ...
             ...     print(optimizer, model_selection.online_score(X_y, model, metric))
-            SGD MAE: 7.203527
-            RMSProp MAE: 3.312368
-            AdaGrad MAE: 3.984558
+            SGD MAE: 7.204077
+            RMSProp MAE: 3.312495
+            AdaGrad MAE: 3.98455
 
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_boston(),
@@ -77,7 +77,7 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
             ... )
 
             >>> model_selection.online_score(X_y, hedge, metric)
-            MAE: 3.245318
+            MAE: 3.245396
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
@@ -91,6 +91,10 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
         self.loss = optim.losses.Squared() if loss is None else loss
         self.learning_rate = learning_rate
         self.weights = [1.] * len(regressors)
+
+    @property
+    def regressors(self):
+        return list(self)
 
     def fit_predict_one(self, x, y):
 

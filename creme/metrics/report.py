@@ -48,17 +48,17 @@ class ClassificationReport(base.MultiClassMetric):
             ...     report = report.update(yt, yp)
 
             >>> print(report)
-                     Precision   Recall       F1  Support
+                       Precision   Recall   F1      Support
             <BLANKLINE>
-                apple    0.000    0.000    0.000        1
-               banana    1.000    0.667    0.800        3
-                 pear    0.000    0.000    0.000        1
+               apple       0.000    0.000   0.000         1
+              banana       1.000    0.667   0.800         3
+                pear       0.000    0.000   0.000         1
             <BLANKLINE>
-                Macro    0.333    0.222    0.267
-                Micro    0.400    0.400    0.400
-             Weighted    0.600    0.400    0.480
+               Macro       0.333    0.222   0.267
+               Micro       0.400    0.400   0.400
+            Weighted       0.600    0.400   0.480
             <BLANKLINE>
-                              40.0% accuracy
+                             40.0% accuracy
 
     Note:
         You can wrap a `metrics.ClassificationReport` with `metrics.Rolling` in order to obtain
@@ -97,9 +97,11 @@ class ClassificationReport(base.MultiClassMetric):
 
         self.support[y_true] += 1
 
+        # Update per class metrics
         for c in self.support:
             self.f1s[c].update(y_true == c, y_pred == c, sample_weight)
 
+        # Update global metrics
         for m in [self.macro_precision, self.macro_recall, self.macro_f1,
                   self.micro_precision, self.micro_recall, self.micro_f1,
                   self.weighted_precision, self.weighted_recall, self.weighted_f1]:
@@ -113,14 +115,15 @@ class ClassificationReport(base.MultiClassMetric):
 
         self.support[y_true] -= 1
 
+        # Revert per class metrics
         for c in self.support:
             self.f1s[c].revert(y_true == c, y_pred == c, sample_weight)
 
+        # Revert global metrics
         for m in [self.macro_precision, self.macro_recall, self.macro_f1,
                   self.micro_precision, self.micro_recall, self.micro_f1,
                   self.weighted_precision, self.weighted_recall, self.weighted_f1]:
             m.revert(y_true, y_pred, sample_weight)
-
         self.accuracy.revert(y_true, y_pred)
 
         return self
@@ -133,7 +136,9 @@ class ClassificationReport(base.MultiClassMetric):
         headers = ['', 'Precision', 'Recall', 'F1', 'Support']
         classes = sorted(self.support.keys())
         columns = [
+            # Row names
             ['', *classes, '', 'Macro', 'Micro', 'Weighted'],
+            # Precision values
             [
                 '', *[fmt_float(self.f1s[c].precision.get()) for c in classes], '',
                 *map(fmt_float, [
@@ -142,6 +147,7 @@ class ClassificationReport(base.MultiClassMetric):
                     self.weighted_precision.get()
                 ])
             ],
+            # Recall values
             [
                 '', *[fmt_float(self.f1s[c].recall.get()) for c in classes], '',
                 *map(fmt_float, [
@@ -150,6 +156,7 @@ class ClassificationReport(base.MultiClassMetric):
                     self.weighted_recall.get()
                 ])
             ],
+            # F1 values
             [
                 '', *[fmt_float(self.f1s[c].get()) for c in classes], '',
                 *map(fmt_float, [
@@ -158,6 +165,7 @@ class ClassificationReport(base.MultiClassMetric):
                     self.weighted_f1.get()
                 ])
             ],
+            # Support
             ['', *[str(self.support[c]) for c in classes], *[''] * 4]
         ]
 
