@@ -37,7 +37,7 @@ class ComplementNB(base.BaseNB):
             ...     ('food food meat job', 'health')
             ... ]
 
-            >>> model = feature_extraction.CountVectorizer() | ('nb', naive_bayes.ComplementNB)
+            >>> model = feature_extraction.BoW() | ('nb', naive_bayes.ComplementNB)
 
             >>> for sentence, label in sentences:
             ...     model = model.fit_one(sentence, label)
