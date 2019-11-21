@@ -2,14 +2,14 @@
 from .agg import Agg
 from .agg import TargetAgg
 from .differ import Differ
-from .vectorize import CountVectorizer
-from .vectorize import TFIDFVectorizer
+from .vectorize import BoW
+from .vectorize import TFIDF
 
 
 __all__ = [
     'Agg',
-    'CountVectorizer',
+    'BoW',
     'Differ',
     'TargetAgg',
-    'TFIDFVectorizer'
+    'TFIDF'
 ]

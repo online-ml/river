@@ -85,10 +85,10 @@ class TransformerUnion(collections.UserDict, base.Transformer):
 
     def __repr__(self):
         return (
-            'TransformerUnion (\n    ' +
-            '    '.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
+            'TransformerUnion (\n\t' +
+            '\t'.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
             '\n)'
-        )
+        ).expandtabs(2)
 
     def add_step(self, other):
         """Adds a transformer while taking care of the input type."""
