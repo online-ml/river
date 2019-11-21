@@ -37,7 +37,7 @@ class BernoulliNB(base.BaseNB):
             ...     ('Tokyo Japan Chinese', 'no')
             ... ]
             >>> model = compose.Pipeline([
-            ...     ('tokenize', feature_extraction.CountVectorizer(lowercase=False)),
+            ...     ('tokenize', feature_extraction.BoW(lowercase=False)),
             ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
             ... ])
             >>> for sentence, label in docs:

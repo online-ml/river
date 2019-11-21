@@ -1,6 +1,5 @@
 import collections
 import numbers
-import numpy as np
 
 from .. import base
 from .. import optim
@@ -14,20 +13,21 @@ class GLM:
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately.
         loss (optim.Loss): The loss function to optimize for.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (float): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
             will be not be updated. Setting this to 0 means that no intercept will be used.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
+        initializer (optim.initializers.Initializer): Weights initialization scheme.
 
     Attributes:
-        weights (collections.defaultdict)
+        weights (collections.defaultdict): The current weights.
 
     """
 
-    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, clip_gradient):
+    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, clip_gradient, initializer):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
@@ -38,33 +38,38 @@ class GLM:
             intercept_lr
         )
         self.clip_gradient = clip_gradient
-        self.weights = collections.defaultdict(float)
+        self.weights = collections.defaultdict(initializer)
+        self.initializer = initializer
 
     def _raw_dot(self, x):
         return utils.math.dot(self.weights, x) + self.intercept
+
+    def _eval_gradient(self, x, y, sample_weight=1.):
+        """Returns the gradient for a given observation.
+
+        This logic is put into a separate function for testing purposes.
+
+        """
+        loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
+        loss_gradient *= sample_weight
+        return (
+            {
+                i: xi * loss_gradient + 2. * self.l2 * self.weights.get(i, 0)
+                for i, xi in x.items()
+            },
+            loss_gradient
+        )
 
     def fit_one(self, x, y, sample_weight=1.):
 
         # Some optimizers need to do something before a prediction is made
         self.weights = self.optimizer.update_before_pred(w=self.weights)
 
-        # Obtain the gradient of the loss with respect to the raw output
-        g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
-
-        # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
-
-        # Apply the sample weight
-        g_loss *= sample_weight
-
         # Calculate the gradient
-        gradient = {
-            i: xi * g_loss + 2. * self.l2 * self.weights.get(i, 0)
-            for i, xi in x.items()
-        }
+        gradient, loss_gradient = self._eval_gradient(x=x, y=y, sample_weight=sample_weight)
 
         # Update the intercept
-        self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * g_loss
+        self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
 
         # Update the weights
         self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient)
@@ -80,15 +85,18 @@ class LinearRegression(GLM, base.Regressor):
             that the intercept is handled separately. Defaults to ``optim.SGD(.01)``.
         loss (optim.RegressionLoss): The loss function to optimize for. Defaults to
             ``optim.SquaredLoss``.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (float): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
+            will be not be updated. Setting this to 0 means that no intercept will be used.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
+        clip_gradient (float): Clips the absolute value of each gradient value.
+        initializer (optim.initializers.Initializer): Weights initialization scheme.
 
     Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
+        weights (collections.defaultdict): The current weights.
 
     Example:
 
@@ -112,11 +120,11 @@ class LinearRegression(GLM, base.Regressor):
             ... )
             >>> metric = metrics.MAE()
 
-            >>> model_selection.online_score(X_y, model, metric)
-            MAE: 4.038404
+            >>> model_selection.progressive_val_score(X_y, model, metric)
+            MAE: 4.038378
 
             >>> model['LinearRegression'].intercept
-            22.189736...
+            22.211824...
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -124,8 +132,8 @@ class LinearRegression(GLM, base.Regressor):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=0., intercept=0., intercept_lr=.01,
-                 clip_gradient=1e12):
+    def __init__(self, optimizer=None, loss=None, l2=.0, intercept=0., intercept_lr=.01,
+                 clip_gradient=1e12, initializer=None):
         super().__init__(
             optimizer=(
                 optim.SGD(optim.schedulers.InverseScaling(.01, .25))
@@ -136,13 +144,14 @@ class LinearRegression(GLM, base.Regressor):
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
-            clip_gradient=clip_gradient
+            clip_gradient=clip_gradient,
+            initializer=initializer if initializer else optim.initializers.Zeros()
         )
 
     def predict_one(self, x):
         return self._raw_dot(x)
 
-    def debug_one(self, x, n_decimals=5, **print_params):
+    def debug_one(self, x, decimals=5, **print_params):
         """
 
         Example:
@@ -172,6 +181,7 @@ class LinearRegression(GLM, base.Regressor):
                 ...     model = model.fit_one(x, y)
 
                 >>> model.debug_one(x)
+                ... # doctest: +NORMALIZE_WHITESPACE
                 0. Input
                 --------
                 AGE: 85.40000 (float64)
@@ -207,57 +217,40 @@ class LinearRegression(GLM, base.Regressor):
                 2. LinearRegression
                 -------------------
                 Name        Value      Weight      Contribution
-                Intercept          1    22.18974       22.18974
-                DIS         -0.51305    -1.82199        0.93478
-                LSTAT       -0.28330    -3.01991        0.85554
-                RM           0.17131     3.45826        0.59244
-                CRIM        -0.39351    -0.68585        0.26989
-                NOX         -0.29941    -0.57048        0.17081
-                TAX         -0.14381    -0.30284        0.04355
-                INDUS       -0.37560     0.08929       -0.03354
-                AGE          0.59772    -0.08945       -0.05346
-                ZN          -0.48724     0.47388       -0.23089
-                CHAS        -0.27233     1.14375       -0.31148
-                RAD         -0.52248     0.70101       -0.36627
-                PTRATIO      1.12911    -1.61350       -1.82182
-                B           -3.13133     1.13608       -3.55744
+                Intercept    1.00000    22.18990       22.18990
+                      DIS   -0.51305    -1.82221        0.93489
+                    LSTAT   -0.28330    -3.02012        0.85560
+                       RM    0.17131     3.45849        0.59247
+                     CRIM   -0.39351    -0.68592        0.26991
+                      NOX   -0.29941    -0.57055        0.17083
+                      TAX   -0.14381    -0.30286        0.04355
+                    INDUS   -0.37560     0.08940       -0.03358
+                      AGE    0.59772    -0.08943       -0.05346
+                       ZN   -0.48724     0.47393       -0.23092
+                     CHAS   -0.27233     1.14376       -0.31148
+                      RAD   -0.52248     0.70114       -0.36633
+                  PTRATIO    1.12911    -1.61355       -1.82188
+                        B   -3.13133     1.13617       -3.55773
                 <BLANKLINE>
-                Prediction: 18.68184
+                Prediction: 18.68179
 
         """
 
         def fmt_float(x):
-            return '{: ,.{prec}f}'.format(x, prec=n_decimals)
+            return '{: ,.{prec}f}'.format(x, prec=decimals)
 
-        headers = ['Name', 'Value', 'Weight', 'Contribution']
-        features = list(map(str, x.keys())) + ['Intercept']
-        values = list(map(fmt_float, x.values())) + ['1']
+        names = list(map(str, x.keys())) + ['Intercept']
+        values = list(map(fmt_float, x.values())) + [fmt_float(1)]
         weights = list(map(fmt_float, self.weights.values())) + [fmt_float(self.intercept)]
         contributions = (
             [fmt_float(xi * self.weights[i]) for i, xi in x.items()] +
             [fmt_float(self.intercept)]
         )
 
-        # Make a template to print out rows one by one
-        col_widths = (
-            max(*map(len, features), len(headers[0])),
-            max(*map(len, values), len(headers[1])),
-            max(*map(len, weights), len(headers[2])),
-            max(*map(len, contributions), len(headers[3]))
-        )
-        row_format = ' '.join(['{:' + str(width + 2) + 's}' for width in col_widths])
-
-        table = (
-            row_format.format(*headers) + '\n' +
-            '\n'.join((
-                row_format.format(
-                    features[i],
-                    values[i].rjust(col_widths[1]),
-                    weights[i].rjust(col_widths[2]),
-                    contributions[i].rjust(col_widths[3])
-                )
-                for i in reversed(np.argsort(list(map(float, contributions))))
-            ))
+        table = utils.pretty.print_table(
+            headers=['Name', 'Value', 'Weight', 'Contribution'],
+            columns=[names, values, weights, contributions],
+            sort_by='Contribution'
         )
 
         print(table, **print_params)
@@ -270,15 +263,19 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately. Defaults to ``optim.SGD(.05)``.
         loss (optim.BinaryLoss): The loss function to optimize for. Defaults to ``optim.LogLoss``.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (float): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        l2 (float): Amount of L2 regularization used to push weights towards.
+            will be not be updated. Setting this to 0 means that no intercept will be used.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        clip_gradient (float): Clips the absolute value of each gradient value.
+        initializer (optim.initializers.Initializer): Weights initialization scheme.
+        clip_gradient (float): Clips the absolute value of each gradient value.
 
     Attributes:
-        weights (collections.defaultdict)
+        weights (collections.defaultdict): The current weights.
 
     Example:
 
@@ -299,8 +296,8 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             ... )
             >>> metric = metrics.Accuracy()
 
-            >>> model_selection.online_score(X_y, model, metric)
-            Accuracy: 89.46%
+            >>> model_selection.progressive_val_score(X_y, model, metric)
+            Accuracy: 89.49%
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -308,15 +305,16 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=0., intercept=0., intercept_lr=.01,
-                 clip_gradient=1e12):
+    def __init__(self, optimizer=None, loss=None, l2=.0, intercept=0., intercept_lr=.01,
+                 clip_gradient=1e12, initializer=None):
         super().__init__(
             optimizer=optim.SGD(.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
-            clip_gradient=clip_gradient
+            clip_gradient=clip_gradient,
+            initializer=initializer if initializer else optim.initializers.Zeros()
         )
 
     def predict_proba_one(self, x):

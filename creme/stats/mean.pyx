@@ -38,10 +38,6 @@ cdef class Mean(base.Univariate):
 
     """
 
-    def __init__(self, mean=0., n=0.):
-        self.mean = mean
-        self.n = n
-
     cpdef Mean update(self, double x, double w=1.):
         self.n += w
         self.mean += w * (x - self.mean) / self.n

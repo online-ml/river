@@ -33,8 +33,8 @@ class Momentum(base.Optimizer):
             ... )
             >>> metric = metrics.F1()
 
-            >>> model_selection.online_score(X_y, model, metric)
-            F1: 0.945758
+            >>> model_selection.progressive_val_score(X_y, model, metric)
+            F1: 0.94854
 
     """
 

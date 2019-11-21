@@ -115,7 +115,7 @@ We will include all the available numeric features in our model. We will also us
 >>> model |= preprocessing.StandardScaler()
 >>> model |= linear_model.LinearRegression()
 
->>> model_selection.online_qa_score(
+>>> model_selection.progressive_val_score(
 ...     X_y=X_y,
 ...     model=model,
 ...     metric=metrics.MAE(),
@@ -123,13 +123,13 @@ We will include all the available numeric features in our model. We will also us
 ...     lag=dt.timedelta(minutes=30),
 ...     print_every=30_000
 ... )
-[30,000] MAE: 2.193069
-[60,000] MAE: 2.249345
-[90,000] MAE: 2.288321
-[120,000] MAE: 2.265257
-[150,000] MAE: 2.2674
-[180,000] MAE: 2.282485
-MAE: 2.285921
+[30,000] MAE: 2.193186
+[60,000] MAE: 2.249483
+[90,000] MAE: 2.288477
+[120,000] MAE: 2.26541
+[150,000] MAE: 2.267553
+[180,000] MAE: 2.282643
+MAE: 2.286077
 
 ```
 
@@ -138,35 +138,45 @@ You can visualize the pipeline as so:
 ```python
 >>> model
 Pipeline (
-    TransformerUnion (
-        Whitelister (
-            whitelist=['clouds', 'humidity', 'pressure', 'temperature', 'wind']
-        ),
-        Pipeline (
-            FuncTransformer (
-                func=add_hour
-            ),
-            TargetAgg (
-                by=['station', 'hour']
-                how=Mean: 0.
-                target_name='target'
-            )
-        ),
-        TargetAgg (
-            by=['station']
-            how=EWMean: 0.
-            target_name='target'
-        )
+  TransformerUnion (
+    Whitelister (
+      whitelist=['clouds', 'humidity', 'pressure', 'temperature', 'wind']
     ),
-    StandardScaler (),
-    LinearRegression (
-        optimizer=SGD
-        loss=Squared
-        l2=0.0001
-        intercept=0.0
-        intercept_lr=0.01
-        clip_gradient=1000000000000.0
+    Pipeline (
+      FuncTransformer (
+        func="add_hour"
+      ),
+      TargetAgg (
+        by=['station', 'hour']
+        how=Mean ()
+        target_name="target"
+      )
+    ),
+    TargetAgg (
+      by=['station']
+      how=EWMean (
+        alpha=0.5
+      )
+      target_name="target"
     )
+  ),
+  StandardScaler (),
+  LinearRegression (
+    optimizer=SGD (
+      lr=InverseScaling (
+        learning_rate=0.01
+        power=0.25
+      )
+    )
+    loss=Squared ()
+    l2=0.
+    intercept=9.740013
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  )
 )
 
 ```

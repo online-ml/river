@@ -85,7 +85,8 @@ class KMeans(base.Clusterer):
         self.mu = mu
         self.sigma = sigma
         self.p = p
-        self.rng = random.Random(seed)
+        self.seed = seed
+        self._rng = random.Random(seed)
         self.centers = {
             i: collections.defaultdict(self.random_normal)
             for i in range(n_clusters)
@@ -93,7 +94,7 @@ class KMeans(base.Clusterer):
 
     def random_normal(self):
         """Returns a random value sampled from a normal distribution."""
-        return self.rng.gauss(self.mu, self.sigma)
+        return self._rng.gauss(self.mu, self.sigma)
 
     def fit_predict_one(self, x, y=None):
         """Equivalent to ``k_means.fit_one(x).predict_one(x)``, but faster."""
