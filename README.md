@@ -115,7 +115,7 @@ We will include all the available numeric features in our model. We will also us
 >>> model |= preprocessing.StandardScaler()
 >>> model |= linear_model.LinearRegression()
 
->>> model_selection.online_qa_score(
+>>> model_selection.progressive_val_score(
 ...     X_y=X_y,
 ...     model=model,
 ...     metric=metrics.MAE(),
@@ -137,6 +137,46 @@ You can visualize the pipeline as so:
 
 ```python
 >>> model
+Pipeline (
+  TransformerUnion (
+    Whitelister (
+      whitelist=['clouds', 'humidity', 'pressure', 'temperature', 'wind']
+    ),
+    Pipeline (
+      FuncTransformer (
+        func="add_hour"
+      ),
+      TargetAgg (
+        by=['station', 'hour']
+        how=Mean ()
+        target_name="target"
+      )
+    ),
+    TargetAgg (
+      by=['station']
+      how=EWMean (
+        alpha=0.5
+      )
+      target_name="target"
+    )
+  ),
+  StandardScaler (),
+  LinearRegression (
+    optimizer=SGD (
+      lr=InverseScaling (
+        learning_rate=0.01
+        power=0.25
+      )
+    )
+    loss=Squared ()
+    l2=0.
+    intercept=9.740013
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+  )
+)
 
 ```
 

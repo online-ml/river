@@ -75,7 +75,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             ...     random_state=42
             ... )
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             LogLoss: 0.5531
 
             >>> print(model)

@@ -250,6 +250,18 @@ class SNARIMAX(base.Forecaster):
             >>> forecast = model.forecast(horizon=horizon, xs=future)
             >>> for x, y_pred in zip(future, forecast):
             ...     print(x['month'], f'{y_pred:.3f}')
+            1961-01-01 441.663
+            1961-02-01 426.288
+            1961-03-01 470.272
+            1961-04-01 481.677
+            1961-05-01 487.235
+            1961-06-01 538.953
+            1961-07-01 625.014
+            1961-08-01 622.069
+            1961-09-01 521.439
+            1961-10-01 449.184
+            1961-11-01 398.737
+            1961-12-01 431.324
 
     Note:
         This model is tailored for time series that are homoskedastic. In other words, it might not

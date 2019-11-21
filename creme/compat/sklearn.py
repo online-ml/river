@@ -139,7 +139,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
 
             >>> metric = metrics.MAE()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             MAE: 10.832054
 
     """
@@ -188,7 +188,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
 
             >>> metric = metrics.LogLoss()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             LogLoss: 0.203717
 
     """

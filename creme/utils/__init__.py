@@ -13,6 +13,7 @@ __all__ = [
     'estimator_checks',
     'Histogram',
     'math',
+    'pretty',
     'SDFT',
     'Skyline',
     'SortedWindow',

@@ -107,27 +107,24 @@ def get_all_estimators():
             yield inst
 
 
-@pytest.mark.parametrize(
-    'estimator',
-    [
-        pytest.param(copy.deepcopy(estimator), id=str(estimator))
-        for estimator in list(get_all_estimators()) + [
-            feature_extraction.TFIDFVectorizer(),
-            linear_model.LogisticRegression(),
-            preprocessing.StandardScaler() | linear_model.LinearRegression(),
-            preprocessing.StandardScaler() | linear_model.PAClassifier(),
-            preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.LogisticRegression()),
-            preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.PAClassifier()),
-            naive_bayes.GaussianNB(),
-            preprocessing.StandardScaler(),
-            cluster.KMeans(n_clusters=5, seed=42),
-            preprocessing.MinMaxScaler(),
-            preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
-            preprocessing.PolynomialExtender(),
-            feature_selection.VarianceThreshold(),
-            feature_selection.SelectKBest(similarity=stats.PearsonCorrelation())
-        ]
+@pytest.mark.parametrize('estimator', [
+    pytest.param(copy.deepcopy(estimator), id=str(estimator))
+    for estimator in list(get_all_estimators()) + [
+        feature_extraction.TFIDF(),
+        linear_model.LogisticRegression(),
+        preprocessing.StandardScaler() | linear_model.LinearRegression(),
+        preprocessing.StandardScaler() | linear_model.PAClassifier(),
+        preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.LogisticRegression()),
+        preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(linear_model.PAClassifier()),
+        naive_bayes.GaussianNB(),
+        preprocessing.StandardScaler(),
+        cluster.KMeans(n_clusters=5, seed=42),
+        preprocessing.MinMaxScaler(),
+        preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
+        preprocessing.PolynomialExtender(),
+        feature_selection.VarianceThreshold(),
+        feature_selection.SelectKBest(similarity=stats.PearsonCorrelation())
     ]
-)
+])
 def test_check_estimator(estimator):
     utils.estimator_checks.check_estimator(estimator)
