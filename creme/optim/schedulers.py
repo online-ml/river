@@ -16,6 +16,12 @@ class Scheduler(abc.ABC):
     def get(self, t: int) -> float:
         """Returns the learning rate at a given iteration."""
 
+    def __str__(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.__dict__})'
+
 
 class Constant(Scheduler):
     """Always uses the same learning rate."""

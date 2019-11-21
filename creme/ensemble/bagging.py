@@ -13,9 +13,11 @@ __all__ = ['BaggingClassifier', 'BaggingRegressor']
 class BaseBagging(base.Wrapper, base.Ensemble):
 
     def __init__(self, model, n_models=10, random_state=None):
-        super().__init__(copy.deepcopy(model) for i in range(n_models))
+        super().__init__(copy.deepcopy(model) for _ in range(n_models))
+        self.n_models = n_models
         self.model = model
-        self.rng = utils.check_random_state(random_state)
+        self.random_state = random_state
+        self._rng = utils.check_random_state(random_state)
 
     @property
     def _model(self):
@@ -24,7 +26,7 @@ class BaseBagging(base.Wrapper, base.Ensemble):
     def fit_one(self, x, y):
 
         for model in self:
-            for _ in range(self.rng.poisson(1)):
+            for _ in range(self._rng.poisson(1)):
                 model.fit_one(x, y)
 
         return self
@@ -79,7 +81,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
             ... )
             >>> metric = metrics.F1()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             F1: 0.963889
 
             >>> print(model)
@@ -148,8 +150,8 @@ class BaggingRegressor(BaseBagging, base.Regressor):
             ... )
             >>> metric = metrics.MAE()
 
-            >>> model_selection.online_score(X_y, model, metric)
-            MAE: 4.26101
+            >>> model_selection.progressive_val_score(X_y, model, metric)
+            MAE: 4.260989
 
     References:
         1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
