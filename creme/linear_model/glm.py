@@ -20,13 +20,14 @@ class GLM:
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
             will be not be updated. Setting this to 0 means that no intercept will be used.
         clip_gradient (float): Clips the absolute value of each gradient value.
+        initializer (optim.Initializer): Weights initialization scheme.
 
     Attributes:
-        weights (collections.defaultdict)
+        weights (collections.defaultdict): The current weights.
 
     """
 
-    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, clip_gradient):
+    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, clip_gradient, initializer):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
@@ -37,33 +38,37 @@ class GLM:
             intercept_lr
         )
         self.clip_gradient = clip_gradient
-        self.weights = collections.defaultdict(float)
+        self.weights = collections.defaultdict(initializer)
 
     def _raw_dot(self, x):
         return utils.math.dot(self.weights, x) + self.intercept
+
+    def _eval_gradient(self, x, y, sample_weight=1.):
+        """Returns the gradient for a given observation.
+
+        This logic is put into a separate function for testing purposes.
+
+        """
+        loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
+        loss_gradient *= sample_weight
+        return (
+            {
+                i: xi * loss_gradient + 2. * self.l2 * self.weights.get(i, 0)
+                for i, xi in x.items()
+            },
+            loss_gradient
+        )
 
     def fit_one(self, x, y, sample_weight=1.):
 
         # Some optimizers need to do something before a prediction is made
         self.weights = self.optimizer.update_before_pred(w=self.weights)
 
-        # Obtain the gradient of the loss with respect to the raw output
-        g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
-
-        # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
-
-        # Apply the sample weight
-        g_loss *= sample_weight
-
         # Calculate the gradient
-        gradient = {
-            i: xi * g_loss + 2. * self.l2 * self.weights.get(i, 0.)
-            for i, xi in x.items()
-        }
+        gradient, loss_gradient = self._eval_gradient(x=x, y=y, sample_weight=sample_weight)
 
         # Update the intercept
-        self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * g_loss
+        self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
 
         # Update the weights
         self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient)
@@ -84,11 +89,13 @@ class LinearRegression(GLM, base.Regressor):
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
+            will be not be updated. Setting this to 0 means that no intercept will be used.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
+        initializer (optim.Initializer): Weights initialization scheme.
 
     Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
+        weights (collections.defaultdict): The current weights.
 
     Example:
 
@@ -124,8 +131,8 @@ class LinearRegression(GLM, base.Regressor):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=0., intercept=0., intercept_lr=.01,
-                 clip_gradient=1e12):
+    def __init__(self, optimizer=None, loss=None, l2=.0, intercept=0., intercept_lr=.01,
+                 clip_gradient=1e12, initializer=None):
         super().__init__(
             optimizer=(
                 optim.SGD(optim.schedulers.InverseScaling(.01, .25))
@@ -136,7 +143,8 @@ class LinearRegression(GLM, base.Regressor):
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
-            clip_gradient=clip_gradient
+            clip_gradient=clip_gradient,
+            initializer=initializer if initializer else optim.initializers.Zeros()
         )
 
     def predict_one(self, x):
@@ -259,11 +267,14 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
+            will be not be updated. Setting this to 0 means that no intercept will be used.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        clip_gradient (float): Clips the absolute value of each gradient value.
+        initializer (optim.Initializer): Weights initialization scheme.
         clip_gradient (float): Clips the absolute value of each gradient value.
 
     Attributes:
-        weights (collections.defaultdict)
+        weights (collections.defaultdict): The current weights.
 
     Example:
 
@@ -292,16 +303,17 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         to converge.
 
     """
-
-    def __init__(self, optimizer=None, loss=None, l2=0., intercept=0., intercept_lr=.01,
-                 clip_gradient=1e12):
+    
+    def __init__(self, optimizer=None, loss=None, l2=.0, intercept=0., intercept_lr=.01,
+                 clip_gradient=1e12, initializer=None):
         super().__init__(
             optimizer=optim.SGD(.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
-            clip_gradient=clip_gradient
+            clip_gradient=clip_gradient,
+            initializer=initializer if initializer else optim.initializers.Zeros()
         )
 
     def predict_proba_one(self, x):

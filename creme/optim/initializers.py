@@ -10,7 +10,14 @@ __all__ = [
 ]
 
 
-class Constant:
+class Initializer:
+    """An initializer is used to set initial weights in a model."""
+
+    def __str__(self):
+        return self.__class__.__name__
+
+
+class Constant(Initializer):
     """Constant initializer which always return the same value.
 
     Parameters:
@@ -35,7 +42,7 @@ class Constant:
     def __init__(self, value):
         self.value = value
 
-    def __call__(self, shape):
+    def __call__(self, shape=1):
         return np.full(shape, self.value) if shape != 1 else self.value
 
 
@@ -62,7 +69,7 @@ class Zeros(Constant):
         super().__init__(value=0.)
 
 
-class Normal:
+class Normal(Initializer):
     """Random normal initializer which simulate a normal distribution with specified parameters.
 
     Parameters:
@@ -90,7 +97,7 @@ class Normal:
         self.sigma = sigma
         self.random_state = utils.check_random_state(random_state)
 
-    def __call__(self, shape):
+    def __call__(self, shape=1):
         weights = self.random_state.normal(loc=self.mu, scale=self.sigma, size=shape)
         if shape == 1:
             return weights[0]
