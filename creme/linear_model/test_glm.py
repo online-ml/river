@@ -78,6 +78,7 @@ def iter_perturbations(keys, n=10):
         )
     ]
 )
+@pytest.mark.long
 def test_finite_differences(lm, X_y):
     """Checks the gradient of a linear model via finite differences.
 

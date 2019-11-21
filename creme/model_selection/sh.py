@@ -113,6 +113,7 @@ def successive_halving(model, param_grid, X_y, metric, budget, eta=2, verbose=Tr
                   learning_rate=0.01
                 )
                 clip_gradient=1e+12
+                initializer=Zeros ()
               )
             )
 

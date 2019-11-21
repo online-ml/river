@@ -33,5 +33,5 @@ pip install -e ".[dev]"
 pip install codecov
 
 # Run tests and coverage
-pytest --cov=creme
+pytest --cov=creme -m "not web"
 codecov

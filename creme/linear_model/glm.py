@@ -20,7 +20,7 @@ class GLM:
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
             will be not be updated. Setting this to 0 means that no intercept will be used.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        initializer (optim.Initializer): Weights initialization scheme.
+        initializer (optim.initializers.Initializer): Weights initialization scheme.
 
     Attributes:
         weights (collections.defaultdict): The current weights.
@@ -39,6 +39,7 @@ class GLM:
         )
         self.clip_gradient = clip_gradient
         self.weights = collections.defaultdict(initializer)
+        self.initializer = initializer
 
     def _raw_dot(self, x):
         return utils.math.dot(self.weights, x) + self.intercept
@@ -92,7 +93,7 @@ class LinearRegression(GLM, base.Regressor):
             will be not be updated. Setting this to 0 means that no intercept will be used.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        initializer (optim.Initializer): Weights initialization scheme.
+        initializer (optim.initializers.Initializer): Weights initialization scheme.
 
     Attributes:
         weights (collections.defaultdict): The current weights.
@@ -270,7 +271,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             will be not be updated. Setting this to 0 means that no intercept will be used.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        initializer (optim.Initializer): Weights initialization scheme.
+        initializer (optim.initializers.Initializer): Weights initialization scheme.
         clip_gradient (float): Clips the absolute value of each gradient value.
 
     Attributes:
@@ -303,7 +304,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         to converge.
 
     """
-    
+
     def __init__(self, optimizer=None, loss=None, l2=.0, intercept=0., intercept_lr=.01,
                  clip_gradient=1e12, initializer=None):
         super().__init__(
