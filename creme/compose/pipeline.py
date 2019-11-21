@@ -1,4 +1,5 @@
 import collections
+import functools
 import itertools
 import types
 
@@ -93,7 +94,7 @@ class Network(collections.UserList):
         return dot
 
 
-class Pipeline(collections.OrderedDict):
+class Pipeline(base.Estimator, collections.OrderedDict):
     """Chains a sequence of estimators.
 
     Sequentially apply a list of estimators. Pipelines helps to define machine learning systems in a
@@ -114,8 +115,8 @@ class Pipeline(collections.OrderedDict):
             >>> from creme import linear_model
             >>> from creme import preprocessing
 
-            >>> tfidf = feature_extraction.TFIDFVectorizer('text')
-            >>> counts = feature_extraction.CountVectorizer('text')
+            >>> tfidf = feature_extraction.TFIDF('text')
+            >>> counts = feature_extraction.BoW('text')
             >>> text_part = compose.Whitelister('text') | (tfidf + counts)
 
             >>> num_part = compose.Whitelister('a', 'b') | preprocessing.PolynomialExtender()
@@ -147,8 +148,8 @@ class Pipeline(collections.OrderedDict):
             ...     ('A harsh comment', False)
             ... ]
 
-            >>> tfidf = feature_extraction.TFIDFVectorizer() | compose.Renamer(prefix='tfidf_')
-            >>> counts = feature_extraction.CountVectorizer() | compose.Renamer(prefix='count_')
+            >>> tfidf = feature_extraction.TFIDF() | compose.Renamer(prefix='tfidf_')
+            >>> counts = feature_extraction.BoW() | compose.Renamer(prefix='count_')
             >>> mnb = naive_bayes.MultinomialNB()
             >>> model = (tfidf + counts) | mnb
 
@@ -162,13 +163,13 @@ class Pipeline(collections.OrderedDict):
             <BLANKLINE>
             1. Transformer union
             --------------------
-                1.0 TFIDFVectorizer | Renamer
-                -----------------------------
+                1.0 TFIDF | Renamer
+                -------------------
                 tfidf_comment: 0.47606 (float)
                 tfidf_positive: 0.87942 (float)
             <BLANKLINE>
-                1.1 CountVectorizer | Renamer
-                -----------------------------
+                1.1 BoW | Renamer
+                -----------------
                 count_comment: 1 (int)
                 count_positive: 1 (int)
             <BLANKLINE>
@@ -206,19 +207,14 @@ class Pipeline(collections.OrderedDict):
         return union.TransformerUnion([self, other])
 
     def __str__(self):
-        """Return a human friendly representation of the pipeline."""
-        return ' | '.join(self.keys())
+        return ' | '.join(map(str, self.values()))
 
     def __repr__(self):
         return (
-            'Pipeline (\n    ' +
-            '    '.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
+            'Pipeline (\n\t' +
+            '\t'.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
             '\n)'
-        )
-
-    @property
-    def __class__(self):
-        return self.final_estimator.__class__
+        ).expandtabs(2)
 
     @property
     def transformers(self):
@@ -366,38 +362,40 @@ class Pipeline(collections.OrderedDict):
             xs = [self.transform_one(x) for x in xs]
         return self.final_estimator.forecast(horizon=horizon, xs=xs)
 
-    def debug_one(self, x, show_types=True, n_decimals=5):
+    def debug_one(self, x, show_types=True, n_decimals=5, **print_params):
         """Displays the state of a set of features as it goes through the pipeline.
 
         Parameters:
             x (dict) A set of features.
             show_types (bool): Whether or not to display the type of feature along with it's value.
             n_decimals (int): Number of decimals to display for each floating point value.
+            **print_params (dict): Parameters passed to the `print` function.
 
         """
 
-        TAB = ' ' * 4
+        tab = ' ' * 4
+        _print = functools.partial(print, **print_params)
 
         def format_value(x):
             if isinstance(x, float):
-                return '{:.{prec}f}'.format(x, prec=n_decimals)
+                return '{:,.{prec}f}'.format(x, prec=n_decimals)
             return x
 
         def print_dict(x, show_types, indent=False, space_after=True):
 
             # Some transformers accept strings as input instead of dicts
             if isinstance(x, str):
-                print(x)
+                _print(x)
             else:
                 for k, v in sorted(x.items()):
                     type_str = f' ({type(v).__name__})' if show_types else ''
-                    print((TAB if indent else '') + f'{k}: {format_value(v)}' + type_str)
+                    _print((tab if indent else '') + f'{k}: {format_value(v)}' + type_str)
             if space_after:
-                print()
+                _print()
 
         def print_title(title, indent=False):
-            print((TAB if indent else '') + title)
-            print((TAB if indent else '') + '-' * len(title))
+            _print((tab if indent else '') + title)
+            _print((tab if indent else '') + '-' * len(title))
 
         # Print the initial state of the features
         print_title('0. Input')
@@ -424,14 +422,16 @@ class Pipeline(collections.OrderedDict):
         if not isinstance(final, base.Transformer):
             print_title(f'{len(self)}. {final}')
 
+            # If the last estimator has a debug_one method then call it
             if hasattr(final, 'debug_one'):
-                final.debug_one(x)
-                print()
+                final.debug_one(x, **print_params)
 
+            # Display the prediction
+                _print()
             if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
-                print(final.predict_one(x))
+                _print(f'Prediction: {format_value(final.predict_one(x))}')
 
     def draw(self):
         """Draws the pipeline using the ``graphviz`` library."""

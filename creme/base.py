@@ -7,6 +7,7 @@ contains.
 """
 import abc
 import collections
+import copy
 import inspect
 import typing
 
@@ -58,11 +59,76 @@ class Estimator:
         return self.__class__.__name__
 
     def __repr__(self):
-        return utils.pretty_format_class(self)
+        return utils.pretty.format_object(self)
 
-    def _more_tags(self) -> dict:
-        """Specific tags for this estimator."""
-        return {}
+    def _set_params(self, **new_params):
+        """Returns a new instance with the current parameters as well as new ones.
+
+        The algorithm will be recursively called down ``Pipeline``s and ``TransformerUnion``s.
+
+        Example:
+
+            ::
+
+                >>> from creme import linear_model
+                >>> from creme import optim
+                >>> from creme import preprocessing
+
+                >>> model = (
+                ...     preprocessing.StandardScaler() |
+                ...     linear_model.LinearRegression(
+                ...         optimizer=optim.SGD(lr=0.042),
+                ...     )
+                ... )
+
+                >>> new_params = {
+                ...     'LinearRegression': {
+                ...         'l2': .001
+                ...     }
+                ... }
+
+                >>> model._set_params(**new_params)
+                Pipeline (
+                  StandardScaler (),
+                  LinearRegression (
+                    optimizer=SGD (
+                      lr=Constant (
+                        learning_rate=0.042
+                      )
+                    )
+                    loss=Squared ()
+                    l2=0.001
+                    intercept=0.
+                    intercept_lr=Constant (
+                      learning_rate=0.01
+                    )
+                    clip_gradient=1e+12
+                  )
+                )
+
+        """
+
+        from . import compose
+
+        if isinstance(self, (compose.Pipeline, compose.TransformerUnion)):
+            return self.__class__(
+                step._set_params(**new_params.get(name, {}))
+                for name, step in self.items()
+            )
+
+        # Get the input parameters
+        sig = inspect.signature(self.__class__)
+        params = dict(sig.parameters)
+
+        # Get the current input parameters, assuming that they are stored
+        for name in params:
+            params[name] = getattr(self, name)
+
+        # Add the new parameters
+        params.update(new_params)
+
+        # Return a new instance
+        return self.__class__(**copy.deepcopy(params))
 
     def _get_tags(self) -> dict:
         """Returns the estimator's tags."""
@@ -77,6 +143,10 @@ class Estimator:
             tags = _update_if_consistent(tags, self._more_tags())
 
         return {**DEFAULT_TAGS, **tags}
+
+    def _more_tags(self) -> dict:
+        """Specific tags for this estimator."""
+        return {}
 
 
 class Regressor(Estimator):

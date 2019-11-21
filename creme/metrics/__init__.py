@@ -17,7 +17,6 @@ from .mae import MAE
 from .mcc import MCC
 from .mse import MSE
 from .multioutput import RegressionMultiOutput
-from .per_class import PerClass
 from .precision import MacroPrecision
 from .precision import MicroPrecision
 from .precision import Precision
@@ -26,6 +25,7 @@ from .recall import MacroRecall
 from .recall import MicroRecall
 from .recall import Recall
 from .recall import WeightedRecall
+from .report import ClassificationReport
 from .rmse import RMSE
 from .rmsle import RMSLE
 from .roc_auc import ROCAUC
@@ -35,6 +35,7 @@ from .smape import SMAPE
 
 __all__ = [
     'Accuracy',
+    'ClassificationReport',
     'ConfusionMatrix',
     'CrossEntropy',
     'F1',
@@ -53,7 +54,6 @@ __all__ = [
     'MicroRecall',
     'MSE',
     'MultiFBeta',
-    'PerClass',
     'Precision',
     'Recall',
     'RegressionMultiOutput',

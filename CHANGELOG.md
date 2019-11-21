@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Added
+
+- `metrics.ClassificationReport` to get a global performance overview on a classification task.
+- There is now a `expand_param_grid` method in `model_selection` to generate a list of models from a grid of parameters.
+- Each estimator now has a `_set_params(**new_params)` method for creating a new instance with the current parameters as well as new ones. This is practical for generating multiple instances of the same model with different hyperparameters. For the while this is a private method but it might become public.
+- The `successive_halving` method can now be used to select hyperparameters.
+
+### Changed
+
+- Renamed `CountVectorizer` to `BoW`
+- Renamed `TFIDFVectorizer` to `TFIDF`
+- The `online_score` and `online_qa_score` methods from the `model_selection` module have now been merged into a single method named `progressive_val_score`.
+
+### Removed
+
+- `metrics.PerClass`, it is recommended that you use `metrics.ClassificationReport` instead as it gives a better overview.
+
+
 ## [0.4.4](https://pypi.org/project/creme/0.4.4/) - 2019-11-11
 
 This release was mainly made to provide access to wheels for Windows and MacOS.

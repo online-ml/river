@@ -1,4 +1,5 @@
 import abc
+import functools
 import numbers
 try:
     import graphviz
@@ -70,19 +71,26 @@ class BaseDecisionTree(abc.ABC):
 
         return dot
 
-    def debug_one(self, x):
-        """Prints an explanation of how ``x`` is predicted."""
+    def debug_one(self, x, **print_params):
+        """Prints an explanation of how ``x`` is predicted.
+
+        Parameters:
+            x (dict)
+            **print_params (dict): Parameters passed to the `print` function.
+
+        """
         node = self.root
+        _print = functools.partial(print, **print_params)
 
         while isinstance(node, leaf.Branch):
             if node.split.test(x):
-                print('not', node.split)
+                _print('not', node.split)
                 node = node.left
             else:
-                print(node.split)
+                _print(node.split)
                 node = node.right
 
-        print(node.target_dist)
+        _print(node.target_dist)
 
 
 class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
@@ -123,7 +131,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
 
             >>> metric = metrics.LogLoss()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             LogLoss: 0.55375
 
     References:

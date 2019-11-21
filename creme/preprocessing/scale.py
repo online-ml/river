@@ -5,7 +5,11 @@ from .. import stats
 from .. import utils
 
 
-__all__ = ['MinMaxScaler', 'Normalizer', 'StandardScaler']
+__all__ = [
+    'MinMaxScaler',
+    'Normalizer',
+    'StandardScaler'
+]
 
 
 def safe_div(a, b):
@@ -174,7 +178,7 @@ class MinMaxScaler(base.Transformer):
 class Normalizer(base.Transformer):
     """Scales a set of features so that it has unit norm.
 
-    This is particularly useful when used after a `feature_extraction.TFIDFVectorizer`.
+    This is particularly useful when used after a `feature_extraction.TFIDF`.
 
     Parameters:
         order (int): Order of the norm (e.g. 2 corresponds to the $L^2$ norm).

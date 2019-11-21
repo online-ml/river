@@ -7,7 +7,7 @@ from sklearn import feature_extraction
 from .. import base
 
 
-__all__ = ['CountVectorizer', 'TFIDFVectorizer']
+__all__ = ['BoW', 'TFIDF']
 
 
 class VectorizerMixin:
@@ -49,10 +49,10 @@ class VectorizerMixin:
         return text
 
 
-class CountVectorizer(base.Transformer, VectorizerMixin):
-    """Counts the number of occurrences of each token.
+class BoW(base.Transformer, VectorizerMixin):
+    """Bag of words which counts token occurrences.
 
-    This returns exactly the same results as `sklearn.feature_extraction.text.CountVectorizer`.
+    This returns exactly the same results as `sklearn.feature_extraction.text.BoW`.
 
     Parameters:
         on (str): The name of the feature that contains the text to vectorize. If ``None``, then
@@ -73,7 +73,7 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
             ...     'And this is the third one.',
             ...     'Is this the first document?',
             ... ]
-            >>> vectorizer = creme.feature_extraction.CountVectorizer()
+            >>> vectorizer = creme.feature_extraction.BoW()
             >>> for sentence in corpus:
             ...     print(vectorizer.transform_one(sentence))
             Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
@@ -87,7 +87,7 @@ class CountVectorizer(base.Transformer, VectorizerMixin):
         return collections.Counter(self.tokenizer(self.preprocess(self._get_text(x))))
 
 
-class TFIDFVectorizer(base.Transformer, VectorizerMixin):
+class TFIDF(base.Transformer, VectorizerMixin):
     """Computes values TF-IDF values.
 
     We use the same definition as scikit-learn. The only difference in the results comes the fact
@@ -103,7 +103,7 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
         normalize (bool): Whether or not the TF-IDF values by their L2 norm.
 
     Attributes:
-        tfs (feature_extraction.CountVectorizer): The term counts.
+        tfs (feature_extraction.BoW): The term counts.
         dfs (collections.defaultdict): The document counts.
         n (int): The number of scanned documents.
 
@@ -118,7 +118,7 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
             ...     'And this is the third one.',
             ...     'Is this the first document?',
             ... ]
-            >>> vectorizer = creme.feature_extraction.TFIDFVectorizer()
+            >>> vectorizer = creme.feature_extraction.TFIDF()
             >>> for sentence in corpus:
             ...     print(vectorizer.fit_one(sentence).transform_one(sentence))
             {'this': 0.447..., 'is': 0.447..., 'the': 0.447..., 'first': 0.447..., 'document': 0.447...}
@@ -132,7 +132,7 @@ class TFIDFVectorizer(base.Transformer, VectorizerMixin):
                  normalize=True):
         super().__init__(on, strip_accents, lowercase, tokenizer)
         self.normalize = normalize
-        self.tfs = CountVectorizer(on, strip_accents, lowercase, tokenizer)
+        self.tfs = BoW(on, strip_accents, lowercase, tokenizer)
         self.dfs = collections.defaultdict(int)
         self.n = 0
 
