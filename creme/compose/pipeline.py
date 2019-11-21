@@ -115,8 +115,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             >>> from creme import linear_model
             >>> from creme import preprocessing
 
-            >>> tfidf = feature_extraction.TFIDFVectorizer('text')
-            >>> counts = feature_extraction.CountVectorizer('text')
+            >>> tfidf = feature_extraction.TFIDF('text')
+            >>> counts = feature_extraction.BoW('text')
             >>> text_part = compose.Whitelister('text') | (tfidf + counts)
 
             >>> num_part = compose.Whitelister('a', 'b') | preprocessing.PolynomialExtender()
@@ -148,8 +148,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             ...     ('A harsh comment', False)
             ... ]
 
-            >>> tfidf = feature_extraction.TFIDFVectorizer() | compose.Renamer(prefix='tfidf_')
-            >>> counts = feature_extraction.CountVectorizer() | compose.Renamer(prefix='count_')
+            >>> tfidf = feature_extraction.TFIDF() | compose.Renamer(prefix='tfidf_')
+            >>> counts = feature_extraction.BoW() | compose.Renamer(prefix='count_')
             >>> mnb = naive_bayes.MultinomialNB()
             >>> model = (tfidf + counts) | mnb
 
@@ -163,13 +163,13 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             <BLANKLINE>
             1. Transformer union
             --------------------
-                1.0 TFIDFVectorizer | Renamer
-                -----------------------------
+                1.0 TFIDF | Renamer
+                -------------------
                 tfidf_comment: 0.47606 (float)
                 tfidf_positive: 0.87942 (float)
             <BLANKLINE>
-                1.1 CountVectorizer | Renamer
-                -----------------------------
+                1.1 BoW | Renamer
+                -----------------
                 count_comment: 1 (int)
                 count_positive: 1 (int)
             <BLANKLINE>
@@ -211,14 +211,10 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
     def __repr__(self):
         return (
-            'Pipeline (\n    ' +
-            '    '.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
+            'Pipeline (\n\t' +
+            '\t'.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
             '\n)'
-        )
-
-    @property
-    def __class__(self):
-        return self.final_estimator.__class__
+        ).expandtabs(2)
 
     @property
     def transformers(self):

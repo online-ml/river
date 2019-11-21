@@ -81,7 +81,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
             ... )
             >>> metric = metrics.F1()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             F1: 0.963889
 
             >>> print(model)
@@ -150,7 +150,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
             ... )
             >>> metric = metrics.MAE()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             MAE: 4.260989
 
     References:

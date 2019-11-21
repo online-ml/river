@@ -33,7 +33,7 @@ class Adam(base.Optimizer):
             ... )
             >>> metric = metrics.F1()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             F1: 0.960894
 
     References:

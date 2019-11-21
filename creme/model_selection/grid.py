@@ -1,6 +1,8 @@
 import itertools
 import types
 
+import numpy as np
+
 
 __all__ = ['expand_param_grid']
 
@@ -9,7 +11,7 @@ def expand_param_grid(grid):
     """Expands a grid of possible parameters into a list of single parametrizations.
 
     Parameter:
-        grid (dict)
+        grid (dict or list of dicts)
 
     Example:
 
@@ -17,67 +19,78 @@ def expand_param_grid(grid):
         >>> from creme import optim
 
         >>> param_grid = {
-        ...     'CountVectorizer': {
-        ...         'strip_accents': (False, True)
+        ...     'BoW': {
+        ...         'strip_accents': [False, True]
         ...     },
         ...     'LinearRegression': {
         ...         'intercept_lr': [0.001],
-        ...         'optimizer': {
-        ...             optim.SGD: {
-        ...                 'lr': [0.001, 0.01, 0.1],
-        ...             },
-        ...         }
+        ...         'optimizer': (optim.SGD, {'lr': [0.001, 0.01, 0.1]}),
         ...     }
         ... }
 
         >>> for params in expand_param_grid(param_grid):
         ...     pprint.pprint(params)
         ...     print()
-        {'CountVectorizer': {'strip_accents': False},
+        {'BoW': {'strip_accents': False},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'CountVectorizer': {'strip_accents': False},
+        {'BoW': {'strip_accents': False},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'CountVectorizer': {'strip_accents': False},
+        {'BoW': {'strip_accents': False},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'CountVectorizer': {'strip_accents': True},
+        {'BoW': {'strip_accents': True},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'CountVectorizer': {'strip_accents': True},
+        {'BoW': {'strip_accents': True},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'CountVectorizer': {'strip_accents': True},
+        {'BoW': {'strip_accents': True},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}}
 
     """
 
+    def expand_tuple(t):
+
+        klass, params = t
+
+        if not isinstance(klass, types.ClassType):
+            raise ValueError(f'Expected first element to be a class, got {klass}')
+
+        if not isinstance(params, dict):
+            raise ValueError(f'Expected second element to be a dict, got {params}')
+
+        return (klass(**combo) for combo in expand_param_grid(params))
+
     def expand(k, v):
+
+        if isinstance(v, tuple):
+            return ((k, el) for el in expand_tuple(v))
 
         # Example:
         # k = 'lr'
         # v = [0.001, 0.01, 0.1]
-        if isinstance(v, (list, tuple, set)):
-            return ((k, el) for el in v)
+        if isinstance(v, (list, set, np.ndarray)):
+
+            combos = []
+
+            for el in v:
+                if isinstance(el, tuple):
+                    for combo in expand_tuple(el):
+                        combos.append((k, combo))
+                else:
+                    combos.append((k, el))
+
+            return combos
 
         if isinstance(v, dict):
-
-            # Example:
-            # k = optim.Adam
-            # v = {
-            #     'beta_1': [0.8],
-            #     'lr': [0.001, 0.01, 0.1],
-            #     'beta_2': [0.9, 0.99, 0.42]
-            # }
-            if isinstance(k, types.ClassType):
-                return (k(**el) for el in expand_param_grid(v))
 
             # Example:
             # k = 'LinearRegression'
@@ -86,9 +99,8 @@ def expand_param_grid(grid):
             #     'l2': [1],
             #     'optimizer': {
             #         optim.Adam: {
-            #             'beta_1': [0.8],
-            #             'lr': [0.001, 0.01, 0.1],
-            #             'beta_2': [0.9, 0.99, 0.42]
+            #             'beta_1': [0.1, 0.01, 0.001],
+            #             'lr': [0.1, 0.01, 0.001]
             #         },
             #      }
             # }
@@ -96,6 +108,15 @@ def expand_param_grid(grid):
 
         raise ValueError(f'unsupported type: {type(v)}')
 
+    for key in grid:
+        if not isinstance(key, str):
+            raise ValueError(f'Expected a key of type str; got {key}')
+
+    # Example:
+    # grid = {
+    #     'beta_1': [0.1, 0.01, 0.001],
+    #     'lr': [0.1, 0.01, 0.001]
+    # }
     return (
         dict(el) if isinstance(el[0], tuple) else el[0]
         for el in itertools.product(*(expand(k, v) for k, v in grid.items()))

@@ -7,15 +7,15 @@ import numpy as np
 __all__ = ['format_object', 'print_table']
 
 
-def format_object(obj, show_modules=False, tab_size=2, depth=0):
+def format_object(obj, show_modules=False, depth=0):
     """Returns a pretty representation of an instanted object."""
 
     rep = f'{obj.__class__.__name__} ('
     if show_modules:
         rep = f'{obj.__class__.__module__}.{rep}'
+    tab = '\t'
 
     init = inspect.signature(obj.__init__)
-    tab = ' ' * tab_size
     n_params = 0
 
     for name, param in init.parameters.items():
@@ -37,7 +37,11 @@ def format_object(obj, show_modules=False, tab_size=2, depth=0):
         if isinstance(attr, str):
             attr = f'"{attr}"'
         elif isinstance(attr, float):
-            attr = f'{attr:.0e}' if (attr > 10_000 or (attr < .0001 and attr > 0)) else attr
+            attr = (
+                f'{attr:.0e}'
+                if (attr > 1e5 or (attr < 1e-4 and attr > 0)) else
+                f'{attr:.6f}'.rstrip('0')
+            )
         elif isinstance(attr, set):
             attr = sorted(attr)
         elif hasattr(attr, '__class__') and 'creme.' in str(type(attr)):
@@ -49,7 +53,7 @@ def format_object(obj, show_modules=False, tab_size=2, depth=0):
         rep += f'\n{tab * depth}'
     rep += ')'
 
-    return rep
+    return rep.expandtabs(2)
 
 
 def print_table(headers, columns, sort_by=None):

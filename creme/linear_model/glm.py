@@ -112,11 +112,11 @@ class LinearRegression(GLM, base.Regressor):
             ... )
             >>> metric = metrics.MAE()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             MAE: 4.038378
 
             >>> model['LinearRegression'].intercept
-            22.189898...
+            22.211824...
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -283,7 +283,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             ... )
             >>> metric = metrics.Accuracy()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             Accuracy: 89.49%
 
     Note:

@@ -9,7 +9,10 @@ import random
 from sklearn import datasets
 
 
-__all__ = ['check_estimator', 'guess_model']
+__all__ = [
+    'check_estimator',
+    'guess_model'
+]
 
 
 def guess_model(model):
@@ -137,12 +140,12 @@ def check_a_better_than_b(model_a, model_b, X_y_func, metric):
 
     from .. import model_selection
 
-    metric_a = model_selection.online_score(
+    metric_a = model_selection.progressive_val_score(
         X_y=X_y_func(),
         model=model_a,
         metric=copy.deepcopy(metric)
     )
-    metric_b = model_selection.online_score(
+    metric_b = model_selection.progressive_val_score(
         X_y=X_y_func(),
         model=model_b,
         metric=copy.deepcopy(metric)

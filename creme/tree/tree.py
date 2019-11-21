@@ -131,7 +131,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
 
             >>> metric = metrics.LogLoss()
 
-            >>> model_selection.online_score(X_y, model, metric)
+            >>> model_selection.progressive_val_score(X_y, model, metric)
             LogLoss: 0.55375
 
     References:

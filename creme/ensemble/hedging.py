@@ -56,7 +56,7 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
             ...         )
             ...     )
             ...
-            ...     print(optimizer, model_selection.online_score(X_y, model, metric))
+            ...     print(optimizer, model_selection.progressive_val_score(X_y, model, metric))
             SGD MAE: 7.204077
             RMSProp MAE: 3.312495
             AdaGrad MAE: 3.98455
@@ -76,8 +76,8 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
             ...     )
             ... )
 
-            >>> model_selection.online_score(X_y, hedge, metric)
-            MAE: 3.245396
+            >>> model_selection.progressive_val_score(X_y, hedge, metric)
+            MAE: 3.249167
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_

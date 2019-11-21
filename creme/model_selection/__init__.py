@@ -1,10 +1,10 @@
-from .param_grid import expand_param_grid
-from .progressive_validation import online_qa_score
-from .progressive_validation import online_score
+from .grid import expand_param_grid
+from .score import progressive_val_score
+from .sh import successive_halving
 
 
 __all__ = [
     'expand_param_grid',
-    'online_qa_score',
-    'online_score'
+    'progressive_val_score',
+    'successive_halving'
 ]
