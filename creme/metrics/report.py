@@ -48,6 +48,7 @@ class ClassificationReport(base.MultiClassMetric):
             ...     report = report.update(yt, yp)
 
             >>> print(report)
+            ... # doctest: +NORMALIZE_WHITESPACE
                        Precision   Recall   F1      Support
             <BLANKLINE>
                apple       0.000    0.000   0.000         1

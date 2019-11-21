@@ -172,6 +172,7 @@ class LinearRegression(GLM, base.Regressor):
                 ...     model = model.fit_one(x, y)
 
                 >>> model.debug_one(x)
+                ... # doctest: +NORMALIZE_WHITESPACE
                 0. Input
                 --------
                 AGE: 85.40000 (float64)

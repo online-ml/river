@@ -54,6 +54,7 @@ def expand_param_grid(grid):
         {'BoW': {'strip_accents': True},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}}
+        <BLANKLINE>
 
     """
 
