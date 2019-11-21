@@ -103,6 +103,7 @@ class Estimator:
                       learning_rate=0.01
                     )
                     clip_gradient=1e+12
+                    initializer=Zeros ()
                   )
                 )
 
