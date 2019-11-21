@@ -42,6 +42,10 @@ class PearsonCorrelation(base.Bivariate):
         self.var_y = var.Var(ddof=ddof)
         self.cov_xy = covariance.Covariance(ddof=ddof)
 
+    @property
+    def ddof(self):
+        return self.cov_xy.ddof
+
     def update(self, x, y):
         self.var_x.update(x)
         self.var_y.update(y)

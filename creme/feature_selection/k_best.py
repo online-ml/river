@@ -60,6 +60,7 @@ class SelectKBest(base.Transformer):
 
     def __init__(self, similarity, k=10):
         self.k = k
+        self.similarity = similarity
         self.similarities = collections.defaultdict(functools.partial(copy.deepcopy, similarity))
         self.leaderboard = collections.Counter()
 

@@ -6,21 +6,21 @@ vice-versa whenever possible.
 """
 from .sklearn import convert_creme_to_sklearn
 from .sklearn import convert_sklearn_to_creme
-from .sklearn import CremeClassifierWrapper
-from .sklearn import CremeRegressorWrapper
-from .sklearn import SKLRegressorWrapper
-from .sklearn import SKLClassifierWrapper
-from .sklearn import SKLClustererWrapper
-from .sklearn import SKLTransformerWrapper
+from .sklearn import SKL2CremeClassifier
+from .sklearn import SKL2CremeRegressor
+from .sklearn import Creme2SKLRegressor
+from .sklearn import Creme2SKLClassifier
+from .sklearn import Creme2SKLClusterer
+from .sklearn import Creme2SKLTransformer
 
 
 __all__ = [
     'convert_creme_to_sklearn',
     'convert_sklearn_to_creme',
-    'CremeClassifierWrapper',
-    'CremeRegressorWrapper',
-    'SKLRegressorWrapper',
-    'SKLClassifierWrapper',
-    'SKLClustererWrapper',
-    'SKLTransformerWrapper'
+    'SKL2CremeClassifier',
+    'SKL2CremeRegressor',
+    'Creme2SKLRegressor',
+    'Creme2SKLClassifier',
+    'Creme2SKLClusterer',
+    'Creme2SKLTransformer'
 ]

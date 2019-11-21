@@ -14,6 +14,7 @@ class BasePA:
 
     def __init__(self, C, mode, fit_intercept):
         self.C = C
+        self.mode = mode
         self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[mode]
         self.fit_intercept = fit_intercept
         self.weights = collections.defaultdict(float)
@@ -77,6 +78,7 @@ class PARegressor(BasePA, base.Regressor):
 
     def __init__(self, C=1.0, mode=1, eps=0.1, fit_intercept=True):
         super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
+        self.eps = eps
         self.loss = optim.losses.EpsilonInsensitiveHinge(eps=eps)
 
     def fit_one(self, x, y):
@@ -144,7 +146,7 @@ class PAClassifier(BasePA, base.BinaryClassifier):
             ...     metric = metric.update(yi, model.predict_proba_one(xi))
 
             >>> print(metric)
-            Accuracy: 0.884571, LogLoss: 0.325727
+            Accuracy: 88.46%, LogLoss: 0.325727
 
     References:
         1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_

@@ -34,6 +34,3 @@ class RegressionMultiOutput(base.MultiOutputRegressionMetric, base.WrapperMetric
 
     def get(self):
         return self.metric.get()
-
-    def __str__(self):
-        return str(self.metric)
