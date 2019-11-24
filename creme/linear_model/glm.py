@@ -54,7 +54,10 @@ class GLM:
         loss_gradient *= sample_weight
         return (
             {
-                i: xi * loss_gradient + 2. * self.l2 * self.weights.get(i, 0)
+                i: (
+                    xi * loss_gradient +
+                    2. * self.l2 * self.weights.get(i, 0)
+                )
                 for i, xi in x.items()
             },
             loss_gradient
