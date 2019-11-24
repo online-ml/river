@@ -1,5 +1,4 @@
 import collections
-import copy
 import itertools
 import numbers
 
@@ -207,21 +206,21 @@ class FMRegressor(FM, base.Regressor):
                  optimizer=None, l2=0., l1=0., intercept_lr=.01, clip_gradient=1e12,
                  random_state=None):
         super().__init__(
-            degree = degree,
-            n_components = n_components,
-            init_stdev = init_stdev,
-            intercept = intercept,
-            loss = optim.losses.Squared() if loss is None else loss,
-            optimizer = optim.SGD(0.01) if optimizer is None else optimizer,
-            l2 = l2,
-            l1 = l1,
-            intercept_lr = (
+            degree=degree,
+            n_components=n_components,
+            init_stdev=init_stdev,
+            intercept=intercept,
+            loss=optim.losses.Squared() if loss is None else loss,
+            optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
+            l2=l2,
+            l1=l1,
+            intercept_lr=(
                 optim.schedulers.Constant(intercept_lr)
                 if isinstance(intercept_lr, numbers.Number) else
                 intercept_lr
             ),
-            clip_gradient = clip_gradient,
-            random_state = sk_utils.check_random_state(random_state)
+            clip_gradient=clip_gradient,
+            random_state=sk_utils.check_random_state(random_state)
         )
 
     def predict_one(self, x):
@@ -261,21 +260,21 @@ class FMClassifier(FM, base.BinaryClassifier):
                  optimizer=None, l2=0., l1=0., intercept_lr=.01, clip_gradient=1e12,
                  random_state=None):
         super().__init__(
-            degree = degree,
-            n_components = n_components,
-            init_stdev = init_stdev,
-            intercept = intercept,
-            loss = optim.losses.Log() if loss is None else loss,
-            optimizer = optim.SGD(0.01) if optimizer is None else optimizer,
-            l2 = l2,
-            l1 = l1,
-            intercept_lr = (
+            degree=degree,
+            n_components=n_components,
+            init_stdev=init_stdev,
+            intercept=intercept,
+            loss=optim.losses.Log() if loss is None else loss,
+            optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
+            l2=l2,
+            l1=l1,
+            intercept_lr=(
                 optim.schedulers.Constant(intercept_lr)
                 if isinstance(intercept_lr, numbers.Number) else
                 intercept_lr
             ),
-            clip_gradient = clip_gradient,
-            random_state = sk_utils.check_random_state(random_state)
+            clip_gradient=clip_gradient,
+            random_state=sk_utils.check_random_state(random_state)
         )
 
     def predict_proba_one(self, x):
