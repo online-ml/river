@@ -109,7 +109,7 @@ class FM:
     def fit_one(self, x, y, sample_weight=1.):
 
         # Obtain the gradient of the loss with respect to the raw output
-        g_loss = self.loss.gradient(y_true=y, y_pred=self.predict_one(x))
+        g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
@@ -265,7 +265,7 @@ class FMClassifier(FM, base.BinaryClassifier):
             n_components = n_components,
             init_stdev = init_stdev,
             intercept = intercept,
-            loss = optim.losses.Squared() if loss is None else loss,
+            loss = optim.losses.Log() if loss is None else loss,
             optimizer = optim.SGD(0.01) if optimizer is None else optimizer,
             l2 = l2,
             l1 = l1,
