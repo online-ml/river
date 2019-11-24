@@ -15,6 +15,7 @@ from creme import ensemble
 from creme import feature_extraction
 from creme import feature_selection
 from creme import linear_model
+from creme import meta
 from creme import multiclass
 from creme import multioutput
 from creme import naive_bayes
@@ -32,15 +33,15 @@ def get_all_estimators():
     ignored = (
         Creme2SKLBase,
         SKL2CremeBase,
-        compose.Pipeline,
         compose.FuncTransformer,
-        compose.TargetModifierRegressor,
+        compose.Pipeline,
         ensemble.StackingBinaryClassifier,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_extraction.Differ,
         linear_model.FMRegressor,
         linear_model.SoftmaxRegression,
+        meta.TransformedTargetRegressor,
         multioutput.ClassifierChain,
         multioutput.RegressorChain,
         preprocessing.OneHotEncoder,
@@ -65,7 +66,7 @@ def get_all_estimators():
             elif issubclass(obj, dummy.StatisticRegressor):
                 inst = obj(statistic=stats.Mean())
 
-            elif issubclass(obj, compose.BoxCoxTransformRegressor):
+            elif issubclass(obj, meta.BoxCoxRegressor):
                 inst = obj(regressor=linear_model.LinearRegression())
 
             elif issubclass(obj, tree.RandomForestClassifier):

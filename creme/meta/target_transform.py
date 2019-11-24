@@ -3,11 +3,11 @@ import math
 from .. import base
 
 
-__all__ = ['TargetModifierRegressor', 'BoxCoxTransformRegressor']
+__all__ = ['TransformedTargetRegressor', 'BoxCoxRegressor']
 
 
-class TargetModifierRegressor(base.Regressor, base.Wrapper):
-    """Model wrapper that modifies the target before training.
+class TransformedTargetRegressor(base.Regressor, base.Wrapper):
+    """Modifies the target before training.
 
     The user is expected to check that ``func`` and ``inverse_func`` are coherent with each other.
 
@@ -21,8 +21,8 @@ class TargetModifierRegressor(base.Regressor, base.Wrapper):
         ::
 
             >>> import math
-            >>> from creme import compose
             >>> from creme import linear_model
+            >>> from creme import meta
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import preprocessing
@@ -34,14 +34,14 @@ class TargetModifierRegressor(base.Regressor, base.Wrapper):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', compose.TargetModifierRegressor(
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     meta.TransformedTargetRegressor(
             ...         regressor=linear_model.LinearRegression(intercept_lr=0.15),
             ...         func=math.log,
             ...         inverse_func=math.exp
-            ...     ))
-            ... ])
+            ...     )
+            ... )
             >>> metric = metrics.MSE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
@@ -67,7 +67,7 @@ class TargetModifierRegressor(base.Regressor, base.Wrapper):
         return self.inverse_func(y_pred)
 
 
-class BoxCoxTransformRegressor(TargetModifierRegressor):
+class BoxCoxRegressor(TransformedTargetRegressor):
     """Applies the Box-Cox transform to the target before training.
 
     Box-Cox transform is useful when the target variable is heteroscedastic (i.e. there are
@@ -86,8 +86,8 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
         ::
 
             >>> import math
-            >>> from creme import compose
             >>> from creme import linear_model
+            >>> from creme import meta
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import preprocessing
@@ -99,13 +99,13 @@ class BoxCoxTransformRegressor(TargetModifierRegressor):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', compose.BoxCoxTransformRegressor(
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     meta.BoxCoxRegressor(
             ...         regressor=linear_model.LinearRegression(intercept_lr=0.2),
             ...         power=0.05
-            ...     ))
-            ... ])
+            ...     )
+            ... )
             >>> metric = metrics.MSE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
