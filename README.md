@@ -120,7 +120,7 @@ We will include all the available numeric features in our model. We will also us
 ...     model=model,
 ...     metric=metrics.MAE(),
 ...     on='moment',
-...     lag=dt.timedelta(minutes=30),
+...     delay=dt.timedelta(minutes=30),
 ...     print_every=30_000
 ... )
 [30,000] MAE: 2.193186
