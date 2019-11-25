@@ -12,12 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - There is now a `expand_param_grid` method in `model_selection` to generate a list of models from a grid of parameters.
 - Each estimator now has a `_set_params(**new_params)` method for creating a new instance with the current parameters as well as new ones. This is practical for generating multiple instances of the same model with different hyperparameters. For the while this is a private method but it might become public.
 - The `successive_halving` method can now be used to select hyperparameters.
+- Moved `TargetModifierRegressor` and `BoxCoxTransformRegressor` to the newly created `meta` module.
 
 ### Changed
 
 - Renamed `CountVectorizer` to `BoW`
 - Renamed `TFIDFVectorizer` to `TFIDF`
 - The `online_score` and `online_qa_score` methods from the `model_selection` module have now been merged into a single method named `progressive_val_score`.
+- Fixed a bug in `NesterovMomentum`.
 
 ### Removed
 

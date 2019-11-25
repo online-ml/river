@@ -23,6 +23,7 @@ __all__ = [
     'feature_selection',
     'impute',
     'linear_model',
+    'meta',
     'metrics',
     'model_selection',
     'multiclass',

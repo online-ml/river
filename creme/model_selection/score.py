@@ -8,12 +8,12 @@ from .. import utils
 __all__ = ['progressive_val_score']
 
 
-def progressive_val_score(X_y, model, metric, on=None, lag=1, print_every=math.inf):
-    """A variant of online scoring where the targets are revealed with a lag.
+def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math.inf):
+    """A variant of online scoring where the targets are revealed with a delay.
 
     ``X_y`` is converted into a question and answer where the model is asked to predict an
-    observation. The target is only revealed to the model after a certain amount of ``lag``. See
-    `stream.simulate_qa` for more information.
+    observation. The target is only revealed to the model after a certain amount given by
+    ``delay``.
 
     Parameters:
         X_y (generator): A stream of (features, target) tuples.
@@ -21,9 +21,9 @@ def progressive_val_score(X_y, model, metric, on=None, lag=1, print_every=math.i
         metric (metrics.Metric)
         on (str): The attribute used for measuring time. If ``None``, then the observations are
             implicitely labeled in the order in which they arrive.
-        lag (datetime.timedelta or int or float): Amount to wait before revealing the target
+        delay (datetime.timedelta or int or float): Amount to wait before revealing the target
             associated with each observation to the model. This value is expected to be able to
-            sum with the ``on`` attribute. For instance if ``x[on]`` is a `datetime.date`, then lag
+            sum with the ``on`` attribute. For instance if ``x[on]`` is a `datetime.date`, then delay
             is expected to be a `datetime.timedelta`. When this is equal to 1, then this is
             equivalent to performing standard progressive validation with no delay.
         print_every (int): Iteration number at which to print the current metric. This only takes
@@ -62,7 +62,7 @@ def progressive_val_score(X_y, model, metric, on=None, lag=1, print_every=math.i
             x_old, y_old, y_pred_old, t_old = answers[0]
 
             # If the oldest answer isn't old enough then stop
-            if t_old + lag > t:
+            if t_old + delay > t:
                 break
 
             # Else update the metric and the model and remove the oldest answer

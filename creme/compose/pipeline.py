@@ -238,7 +238,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         name, estimator = step
 
         # If a function is given then wrap it in a FuncTransformer
-        if isinstance(estimator, types.FunctionType):
+        if isinstance(estimator, (types.FunctionType, types.LambdaType)):
             name = estimator.__name__
             estimator = func.FuncTransformer(estimator)
 
