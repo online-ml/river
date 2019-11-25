@@ -34,7 +34,7 @@ class NesterovMomentum(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.946927
+            F1: 0.949861
 
     """
 
@@ -53,6 +53,7 @@ class NesterovMomentum(base.Optimizer):
     def _update_after_pred(self, w, g):
 
         for i, gi in g.items():
+            w[i] += self.rho * self.s[i]  # Move w back to it's initial position
             self.s[i] = self.rho * self.s[i] + self.learning_rate * gi
             w[i] -= self.s[i]
 

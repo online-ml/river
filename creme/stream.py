@@ -11,13 +11,13 @@ import os
 import numpy as np
 from sklearn import utils
 
+
 __all__ = [
     'iter_csv',
     'iter_array',
     'iter_pandas',
     'iter_sklearn_dataset',
     'iter_vaex',
-    'simulate_qa',
     'shuffle'
 ]
 
