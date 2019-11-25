@@ -21,21 +21,51 @@ class RandomNormal(base.Recommender):
             generator is the ``RandomState`` instance used by `numpy.random`.
 
     Attributes:
-        variance (stats.Variance)
+        mean (stats.Mean)
+        variance (stats.Var)
+
+    Example:
+
+        ::
+
+            >>> from creme import reco
+
+            >>> ratings = [
+            ...     ('Alice', 'Superman', 8),
+            ...     ('Alice', 'Terminator', 9),
+            ...     ('Alice', 'Star Wars', 8),
+            ...     ('Alice', 'Notting Hill', 2),
+            ...     ('Alice', 'Harry Potter ', 5),
+            ...     ('Bob', 'Superman', 8),
+            ...     ('Bob', 'Terminator', 9),
+            ...     ('Bob', 'Star Wars', 8),
+            ...     ('Bob', 'Notting Hill', 2)
+            ... ]
+
+            >>> model = reco.RandomNormal(random_state=42)
+
+            >>> for user, movie, rating in ratings:
+            ...     _ = model.fit_one(user, movie, rating)
+
+            >>> model.predict_one('Bob', 'Harry Potter')
+            8.092809...
+
 
     """
 
     def __init__(self, random_state=None):
         super().__init__()
-        self.variance = stats.Variance()
+        self.variance = stats.Var()
+        self.mean = stats.Mean()
         self.random_state = utils.check_random_state(random_state)
 
     def fit_one(self, r_id, c_id, y):
         y_pred = self.predict_one(r_id, c_id)
+        self.mean.update(y)
         self.variance.update(y)
         return y_pred
 
     def predict_one(self, r_id, c_id):
-        μ = self.variance.mean.get() or 0
-        σ = self.variance.get() ** 0.5
+        μ = self.mean.get() or 0
+        σ = (self.variance.get() or 1) ** 0.5
         return self.random_state.normal(μ, σ)
