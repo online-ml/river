@@ -1,4 +1,5 @@
 import collections
+import functools
 import itertools
 import numbers
 
@@ -70,12 +71,18 @@ class FM:
             for f in range(self.n_components)
         }
 
+    def _calculate_interaction(self, x, combination):
+        interaction = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+        return interaction * sum(
+            functools.reduce(lambda x, y: x * y, (self.latents[j][f] for j in combination))
+            for f in range(self.n_components)
+        )
+
     def _raw_dot(self, x):
 
         # For notational convenience
         d, k = self.degree, self.n_components
-        w0 = self.intercept if isinstance(self.intercept, numbers.Number) else self.intercept.get()
-        w, v = self.weights, self.latents
+        w0, w, v = self.intercept, self.weights, self.latents
 
         # Start with the intercept
         y_pred = w0
@@ -84,24 +91,13 @@ class FM:
         y_pred += utils.math.dot(x, w)
 
         # Add greater than unary interactions
-        for l in range(2, d + 1):
+        interactions = (
+            self._calculate_interaction(x, combination)
+            for l in range(2, d + 1)
+            for combination in itertools.combinations(x.keys(), l)
+        )
 
-            for comb in itertools.combinations(x.keys(), l):
-
-                interaction = 1
-                for j in comb:
-                    interaction *= x[j]
-
-                latent_sum = 0
-                for f in range(k):
-
-                    product = 1
-                    for j in comb:
-                        product *= v[j][f]
-
-                    latent_sum += product
-
-                y_pred += interaction * latent_sum
+        y_pred += sum(interactions)
 
         return y_pred
 
@@ -110,32 +106,28 @@ class FM:
         # Obtain the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
-        # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
-
-        # Apply the sample weight
-        g_loss *= sample_weight
-
-        # Update the intercept
-        if isinstance(self.intercept, numbers.Number):
-            self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * g_loss
-        else:
-            self.intercept.update(y)
-
         # For notational convenience
         d, k = self.degree, self.n_components
-        w, v = self.weights, self.latents
         l1, l2 = self.l1, self.l2
+        w0, w, v = self.intercept, self.weights, self.latents
+        w0_lr = self.intercept_lr.get(self.optimizer.n_iterations)
 
-        # Update the weights
+        # Update the intercept
         sign = lambda x: -1 if x < 0 else (1 if x > 0 else 0)
 
+        self.intercept -= utils.math.clamp(
+            x=w0_lr * (g_loss + l1 * sign(w0) + 2. * l2 * w0),
+            minimum=-self.clip_gradient,
+            maximum=self.clip_gradient
+        ) * sample_weight
+
+        # Update the weights
         gradient = {
             j: utils.math.clamp(
                 x=g_loss * xj + 2. * l2 * w[j] + l1 * sign(w[j]),
                 minimum=-self.clip_gradient,
                 maximum=self.clip_gradient
-            )
+            ) * sample_weight
             for j, xj in x.items()
         }
 
@@ -148,24 +140,26 @@ class FM:
 
             for comb in itertools.combinations(x.keys(), l):
 
-                for j, xj in x.items():
+                for j in comb:
 
-                    if j in comb:
+                    for f in range(k):
 
-                        for f in range(k):
+                        product = 1
+                        for j2 in comb:
+                            product *= x[j2]
+                            product *= v[j2][f] if j != j2 else 1
 
-                            product = 1
-                            for j2 in comb:
-                                product *= x[j2]
-                                product *= v[j2][f] if j != j2 else 1
+                        latent_gradient[j][f] += product
 
-                            latent_gradient[j][f] += product
-
-        for j, xj in x.items():
+        for j in x.keys():
             self.latents[j] = self.optimizer.update_after_pred(
                 w=v[j],
                 g={
-                    f: g_loss * latent_gradient[j][f] + 2. * l2 * v[j][f] + l1 * sign(v[j][f])
+                    f: utils.math.clamp(
+                        x=g_loss * latent_gradient[j][f] + 2. * l2 * v[j][f] + l1 * sign(v[j][f]),
+                        minimum=-self.clip_gradient,
+                        maximum=self.clip_gradient
+                    ) * sample_weight
                     for f in range(k)
                 }
             )
