@@ -21,13 +21,13 @@ class RandomNormal(base.Recommender):
             generator is the ``RandomState`` instance used by `numpy.random`.
 
     Attributes:
-        variance (stats.Variance)
+        variance (stats.Var)
 
     """
 
     def __init__(self, random_state=None):
         super().__init__()
-        self.variance = stats.Variance()
+        self.variance = stats.Var()
         self.random_state = utils.check_random_state(random_state)
 
     def fit_one(self, r_id, c_id, y):
