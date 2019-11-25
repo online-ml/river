@@ -21,18 +21,13 @@ class SVD(base.Recommender):
 
     Parameters:
         n_factors (default=0): The number of latent factors to compute for each vector
-        mu (default=0): The mean of the normal distribution for the random weights initialisation
-        sigma (default=0.1): The standard deviation of the normal distribution for the random
-            weights initialisation
         row_optimizer (optim.Optimizer): Optimizer used to tune the rows weights.
         col_optimizer (optim.Optimizer): Optimizer used to tune the column weights.
         loss (optim.Loss): Loss function to optimize for.
         l2 (float, default=0): regularization amount used to push weights towards 0.
+        initializer (optim.initializer.Initializer): An initializer for the initial values of the 
+            latent factors
         global_mean (stats.Mean)
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
 
     Attributes:
         row_biases (collections.defaultdict): The biases of the rows elements (users)
@@ -47,6 +42,7 @@ class SVD(base.Recommender):
         ::
 
             >>> from creme import reco
+            >>> from creme import optim
 
             >>> ratings = [
             ...     ('Alice', 'Superman', 8),
@@ -64,7 +60,7 @@ class SVD(base.Recommender):
             ...     n_factors=10,
             ...     row_optimizer=optim.SGD(0.005),
             ...     col_optimizer=optim.SGD(0.005),
-            ...     random_state=42
+            ...     initializer=optim.initializers.Normal(mu=0., sigma=0.1, random_state=42),
             ... )
 
             >>> for user, movie, rating in ratings:
@@ -75,23 +71,21 @@ class SVD(base.Recommender):
 
     """
 
-    def __init__(self, n_factors=20, mu=0, sigma=0.1, row_optimizer=None, col_optimizer=None,
-                 loss=None, l2=0., random_state=None):
+    def __init__(self, n_factors=20, row_optimizer=None, col_optimizer=None,
+                 loss=None, l2=0., initializer=None, random_state=None):
 
         self.n_factors = n_factors
         self.row_optimizer = optim.SGD() if row_optimizer is None else row_optimizer
         self.col_optimizer = optim.SGD() if col_optimizer is None else row_optimizer
         self.loss = optim.losses.Squared() if loss is None else row_optimizer
         self.l2 = l2
+        self.initializer = optim.initializers.Zeros() if initializer is None else initializer
         self.global_mean = stats.Mean()
-        self.random_state = utils.check_random_state(random_state)
         self.row_biases = collections.defaultdict(float)
         self.col_biases = collections.defaultdict(float)
         random_weights = functools.partial(
-            self.random_state.normal,
-            loc=mu,
-            scale=sigma,
-            size=n_factors
+            initializer,
+            shape=self.n_factors
         )
         self.row_vec = collections.defaultdict(random_weights)
         self.col_vec = collections.defaultdict(random_weights)
