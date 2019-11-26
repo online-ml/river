@@ -26,10 +26,10 @@ class FM:
         init_stdev (float): Standard deviation used to initialize latent factors.
         intercept (float): Initial intercept value.
         loss (optim.Loss): The loss function to optimize for.
-        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
-            that the intercept is handled separately.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights.
+            Note that the intercept is handled separately.
         l1 (float): Amount of L1 regularization used to push weights towards 0.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
@@ -45,16 +45,16 @@ class FM:
         latents (collections.defaultdict): The current latent weights assigned to the features.
     """
 
-    def __init__(self, degree, n_components, init_stdev, intercept, loss, optimizer, l2, l1,
+    def __init__(self, degree, n_components, init_stdev, intercept, loss, optimizer, l1, l2,
                  intercept_lr, clip_gradient, random_state):
         self.degree = degree
         self.n_components = n_components
         self.init_stdev = init_stdev
         self.intercept = intercept
-        self.loss = optim.losses.Squared() if loss is None else loss
+        self.loss = loss
         self.optimizer = optim.SGD(0.01) if optimizer is None else optimizer
-        self.l2 = l2
         self.l1 = l1
+        self.l2 = l2
         self.intercept_lr = (
             optim.schedulers.Constant(intercept_lr)
             if isinstance(intercept_lr, numbers.Number) else
@@ -91,75 +91,86 @@ class FM:
         y_pred += utils.math.dot(x, w)
 
         # Add greater than unary interactions
-        interactions = (
+        y_pred += sum(
             self._calculate_interaction(x, combination)
             for l in range(2, d + 1)
             for combination in itertools.combinations(x.keys(), l)
         )
 
-        y_pred += sum(interactions)
-
         return y_pred
 
+    def _latent_gradient(self, j, f, x):
+
+            # Get all interaction combinations with j
+            combinations = (
+                comb
+                for l in range(2, self.degree + 1)
+                for comb in itertools.combinations(x.keys(), l)
+                if j in comb
+            )
+
+            # Get derivative terms (j interactions multiplied by f latent weights except j one)
+            derivative_terms = (
+                functools.reduce(
+                    lambda x, y: x * y, itertools.chain(
+                        (x[j2] for j2 in comb),
+                        (self.latents[j2][f] for j2 in comb if j2 != j)
+                    )
+                )
+                for comb in combinations
+            )
+
+            return sum(derivative_terms)
+
     def fit_one(self, x, y, sample_weight=1.):
+
+        # For notational convenience
+        k, l1, l2 = self.n_components, self.l1, self.l2
+        w0, w, v = self.intercept, self.weights, self.latents
+        w0_lr = self.intercept_lr.get(self.optimizer.n_iterations)
+
+        # Some optimizers need to do something before a prediction is made
+        self.weights = self.optimizer.update_before_pred(w=w)
+
+        for j in x.keys():
+            self.latents[j] = self.optimizer.update_before_pred(w=v[j])
 
         # Obtain the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
-        # For notational convenience
-        d, k = self.degree, self.n_components
-        l1, l2 = self.l1, self.l2
-        w0, w, v = self.intercept, self.weights, self.latents
-        w0_lr = self.intercept_lr.get(self.optimizer.n_iterations)
+        # Clamp the gradient to avoid numerical instability
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
+
+        # Apply the sample weight
+        g_loss *= sample_weight
 
         # Update the intercept
         sign = lambda x: -1 if x < 0 else (1 if x > 0 else 0)
 
-        self.intercept -= utils.math.clamp(
-            x=w0_lr * (g_loss + l1 * sign(w0) + 2. * l2 * w0),
-            minimum=-self.clip_gradient,
-            maximum=self.clip_gradient
-        ) * sample_weight
+        self.intercept -= w0_lr * (g_loss + l1 * sign(w0) + 2. * l2 * w0)
 
         # Update the weights
         gradient = {
-            j: utils.math.clamp(
-                x=g_loss * xj + 2. * l2 * w[j] + l1 * sign(w[j]),
-                minimum=-self.clip_gradient,
-                maximum=self.clip_gradient
-            ) * sample_weight
+            j: g_loss * xj + l1 * sign(w[j]) + 2. * l2 * w[j]
             for j, xj in x.items()
         }
 
         self.weights = self.optimizer.update_after_pred(w=w, g=gradient)
 
-        # Update latent weights
-        latent_gradient = collections.defaultdict(lambda: collections.defaultdict(float))
-
-        for l in range(2, d + 1):
-
-            for comb in itertools.combinations(x.keys(), l):
-
-                for j in comb:
-
-                    for f in range(k):
-
-                        product = 1
-                        for j2 in comb:
-                            product *= x[j2]
-                            product *= v[j2][f] if j != j2 else 1
-
-                        latent_gradient[j][f] += product
+        # Update the latent weights
+        latent_gradient = {
+            j: {
+                f: self._latent_gradient(j, f, x)
+                for f in range(k)
+            }
+            for j in x.keys()
+        }
 
         for j in x.keys():
             self.latents[j] = self.optimizer.update_after_pred(
                 w=v[j],
                 g={
-                    f: utils.math.clamp(
-                        x=g_loss * latent_gradient[j][f] + 2. * l2 * v[j][f] + l1 * sign(v[j][f]),
-                        minimum=-self.clip_gradient,
-                        maximum=self.clip_gradient
-                    ) * sample_weight
+                    f: g_loss * latent_gradient[j][f] + l1 * sign(v[j][f]) + 2. * l2 * v[j][f]
                     for f in range(k)
                 }
             )
@@ -178,8 +189,8 @@ class FMRegressor(FM, base.Regressor):
         loss (optim.Loss): The loss function to optimize for.
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
         l1 (float): Amount of L1 regularization used to push weights towards 0.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
@@ -197,7 +208,7 @@ class FMRegressor(FM, base.Regressor):
     """
 
     def __init__(self, degree=2, n_components=10, init_stdev=.1, intercept=None, loss=None,
-                 optimizer=None, l2=0., l1=0., intercept_lr=.01, clip_gradient=1e12,
+                 optimizer=None, l1=0., l2=0., intercept_lr=.01, clip_gradient=1e12,
                  random_state=None):
         super().__init__(
             degree=degree,
@@ -205,16 +216,12 @@ class FMRegressor(FM, base.Regressor):
             init_stdev=init_stdev,
             intercept=intercept,
             loss=optim.losses.Squared() if loss is None else loss,
-            optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
-            l2=l2,
+            optimizer=optimizer,
             l1=l1,
-            intercept_lr=(
-                optim.schedulers.Constant(intercept_lr)
-                if isinstance(intercept_lr, numbers.Number) else
-                intercept_lr
-            ),
+            l2=l2,
+            intercept_lr=intercept_lr,
             clip_gradient=clip_gradient,
-            random_state=sk_utils.check_random_state(random_state)
+            random_state=random_state
         )
 
     def predict_one(self, x):
@@ -232,8 +239,8 @@ class FMClassifier(FM, base.BinaryClassifier):
         loss (optim.Loss): The loss function to optimize for.
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
         l1 (float): Amount of L1 regularization used to push weights towards 0.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
@@ -251,7 +258,7 @@ class FMClassifier(FM, base.BinaryClassifier):
     """
 
     def __init__(self, degree=2, n_components=10, init_stdev=.1, intercept=None, loss=None,
-                 optimizer=None, l2=0., l1=0., intercept_lr=.01, clip_gradient=1e12,
+                 optimizer=None, l1=0., l2=0., intercept_lr=.01, clip_gradient=1e12,
                  random_state=None):
         super().__init__(
             degree=degree,
@@ -259,16 +266,12 @@ class FMClassifier(FM, base.BinaryClassifier):
             init_stdev=init_stdev,
             intercept=intercept,
             loss=optim.losses.Log() if loss is None else loss,
-            optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
-            l2=l2,
+            optimizer=optimizer,
             l1=l1,
-            intercept_lr=(
-                optim.schedulers.Constant(intercept_lr)
-                if isinstance(intercept_lr, numbers.Number) else
-                intercept_lr
-            ),
+            l2=l2,
+            intercept_lr=intercept_lr,
             clip_gradient=clip_gradient,
-            random_state=sk_utils.check_random_state(random_state)
+            random_state=random_state
         )
 
     def predict_proba_one(self, x):
