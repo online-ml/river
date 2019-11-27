@@ -69,8 +69,8 @@ In the following example we'll use a linear regression to forecast the number of
 >>> import pprint
 >>> from creme import datasets
 
->>> X_y = datasets.fetch_bikes()
->>> x, y = next(X_y)
+>>> X_y = datasets.ToulouseBikes()
+>>> x, y = next(iter(X_y))
 
 >>> pprint.pprint(x)
 {'clouds': 75,
@@ -100,7 +100,7 @@ We will include all the available numeric features in our model. We will also us
 >>> from creme import preprocessing
 >>> from creme import stats
 
->>> X_y = datasets.fetch_bikes()
+>>> X_y = datasets.ToulouseBikes()
 
 >>> def add_hour(x):
 ...     x['hour'] = x['moment'].hour
