@@ -70,12 +70,12 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :nosignatures:
     :template: class.rst
         
-    CremeClassifierWrapper
-    CremeRegressorWrapper
-    SKLClassifierWrapper
-    SKLClustererWrapper
-    SKLRegressorWrapper
-    SKLTransformerWrapper
+    Creme2SKLClassifier
+    Creme2SKLClusterer
+    Creme2SKLRegressor
+    Creme2SKLTransformer
+    SKL2CremeClassifier
+    SKL2CremeRegressor
 
 .. rubric:: Functions
 
@@ -101,34 +101,34 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :template: class.rst
         
     Blacklister
-    BoxCoxTransformRegressor
     FuncTransformer
     Pipeline
     Renamer
-    TargetModifierRegressor
     TransformerUnion
     Whitelister
 
 
-**datasets**: Toy datasets
----------------------------
+**datasets**: Datasets
+-----------------------
 
-.. rubric:: Functions
+.. rubric:: Classes
 
 .. currentmodule:: creme.datasets
 .. autosummary::
     :toctree: generated/
     :nosignatures:
-    :template: function.rst
+    :template: class.rst
         
-    fetch_bikes
-    fetch_electricity
-    fetch_kdd99_http
-    fetch_restaurants
-    fetch_sms
-    fetch_trec07p
-    load_airline
-    load_chick_weights
+    Airline
+    ChickWeights
+    CreditCard
+    Elec2
+    KDD99HTTP
+    Restaurants
+    SMS
+    TREC07
+    ToulouseBikes
+    TrumpApproval
 
 
 **decomposition**: Online matrix decomposition
@@ -171,8 +171,8 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
-    AdaBoostClassifier   
+        
+    AdaBoostClassifier
     BaggingClassifier
     BaggingRegressor
     HedgeRegressor
@@ -191,9 +191,9 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :template: class.rst
         
     Agg
-    CountVectorizer
+    BoW
     Differ
-    TFIDFVectorizer
+    TFIDF
     TargetAgg
 
 
@@ -224,6 +224,7 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :nosignatures:
     :template: class.rst
         
+    PreviousImputer
     StatImputer
 
 
@@ -246,6 +247,21 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     SoftmaxRegression
 
 
+**meta**: Meta-models that work by wrapping other models
+---------------------------------------------------------
+
+.. rubric:: Classes
+
+.. currentmodule:: creme.meta
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
+    BoxCoxRegressor
+    TransformedTargetRegressor
+
+
 **metrics**: Streaming metrics
 -------------------------------
 
@@ -258,6 +274,7 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :template: class.rst
         
     Accuracy
+    ClassificationReport
     ConfusionMatrix
     CrossEntropy
     F1
@@ -284,9 +301,13 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     RegressionMultiOutput
     Rolling
     SMAPE
+    WeightedF1
+    WeightedFBeta
+    WeightedPrecision
+    WeightedRecall
 
 
-**model_selection**: Model evaluation and selection
+**model_selection**: Model selection and evaluation
 ----------------------------------------------------
 
 .. rubric:: Functions
@@ -297,8 +318,9 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :nosignatures:
     :template: function.rst
         
-    online_qa_score
-    online_score
+    expand_param_grid
+    progressive_val_score
+    successive_halving
 
 
 **multiclass**: Multi-class classification
@@ -358,6 +380,7 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :nosignatures:
     :template: class.rst
         
+    KNeighborsClassifier
     KNeighborsRegressor
 
 
@@ -523,8 +546,8 @@ Learning rate schedulers
     Var
 
 
-**stream**: Streaming data utilities
--------------------------------------
+**stream**: Helper functions for streaming data
+------------------------------------------------
 
 .. rubric:: Functions
 
@@ -540,7 +563,6 @@ Learning rate schedulers
     iter_sklearn_dataset
     iter_vaex
     shuffle
-    simulate_qa
 
 
 **time_series**: Time series forecasting
@@ -556,6 +578,7 @@ Learning rate schedulers
         
     Detrender
     GroupDetrender
+    SNARIMAX
 
 
 **tree**: Decision trees
@@ -590,22 +613,31 @@ Learning rate schedulers
     SortedWindow
     Window
 
-.. rubric:: Functions
+Utilities for unit testing and sanity checking estimators
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. currentmodule:: creme.utils
 .. autosummary::
     :toctree: generated/
     :nosignatures:
-    :template: function.rst
+    :template: class.rst
         
-    chain_dot
-    check_estimator
-    clamp
-    dot
-    norm
-    pretty_format_class
-    prod
-    sigmoid
-    softmax
+
+Mathematical utility functions mostly intended for internal purposes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
+
+Helper functions for making things readable by humans
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
 
 

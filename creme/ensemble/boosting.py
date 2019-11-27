@@ -59,7 +59,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             >>> from creme import model_selection
             >>> from creme import tree
 
-            >>> X_y = datasets.fetch_electricity()
+            >>> X_y = datasets.Elec2()
 
             >>> metric = metrics.LogLoss()
 

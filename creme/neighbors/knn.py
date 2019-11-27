@@ -119,7 +119,7 @@ class KNeighborsClassifier(NearestNeighbours, base.MultiClassifier):
             >>> from creme import neighbors
             >>> from creme import preprocessing
 
-            >>> X_y = datasets.fetch_electricity()
+            >>> X_y = datasets.Elec2()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
