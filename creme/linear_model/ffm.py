@@ -227,14 +227,15 @@ class FFMRegressor(FFM, base.Regressor):
             5.240864...
 
     Note:
-        Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps
-            the optimizer to converge.
-        Fields will be infered from feature names by taking everything before first underscore:
-            ``feature_name.split('_')[0]``.
+        - Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps the optimizer to converge.
+        - Fields will be infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
+
+    References:
+            1. `Field-aware Factorization Machines for CTR Prediction <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
 
     """
 
-    def __init__(self, n_components=10, init_stdev=.1, intercept=None, loss=None, optimizer=None,
+    def __init__(self, n_components=10, init_stdev=.1, intercept=0., loss=None, optimizer=None,
                  l1=0., l2=0., intercept_lr=.01, clip_gradient=1e12, random_state=None):
         super().__init__(
             n_components=n_components,
@@ -311,17 +312,15 @@ class FFMClassifier(FFM, base.BinaryClassifier):
             True
 
     Note:
-        Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps
-            the optimizer to converge.
-        Fields will be infered from feature names by taking everything before first underscore:
-            ``feature_name.split('_')[0]``.
+        - Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps the optimizer to converge.
+        - Fields will be infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
 
     References:
             1. `Field-aware Factorization Machines for CTR Prediction <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
 
     """
 
-    def __init__(self, n_components=10, init_stdev=.1, intercept=None, loss=None, optimizer=None,
+    def __init__(self, n_components=10, init_stdev=.1, intercept=0., loss=None, optimizer=None,
                  l1=0., l2=0., intercept_lr=.01, clip_gradient=1e12, random_state=None):
         super().__init__(
             n_components=n_components,
