@@ -19,7 +19,7 @@ class SMS(base.Dataset):
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home=None, verbose=False):
         super().__init__(
             n_samples=5_574,
             n_features=1,
