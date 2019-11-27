@@ -7,7 +7,6 @@ from sklearn import utils as sk_utils
 
 from .. import base
 from .. import optim
-from .. import stats
 from .. import utils
 
 
@@ -43,6 +42,7 @@ class FM:
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
         latents (collections.defaultdict): The current latent weights assigned to the features.
+
     """
 
     def __init__(self, degree, n_components, init_stdev, intercept, loss, optimizer, l1, l2,
@@ -80,20 +80,16 @@ class FM:
 
     def _raw_dot(self, x):
 
-        # For notational convenience
-        d, k = self.degree, self.n_components
-        w0, w, v = self.intercept, self.weights, self.latents
-
         # Start with the intercept
-        y_pred = w0
+        y_pred = self.intercept
 
         # Add the unary interactions
-        y_pred += utils.math.dot(x, w)
+        y_pred += utils.math.dot(x, self.weights)
 
         # Add greater than unary interactions
         y_pred += sum(
             self._calculate_interaction(x, combination)
-            for l in range(2, d + 1)
+            for l in range(2, self.degree + 1)
             for combination in itertools.combinations(x.keys(), l)
         )
 
@@ -109,7 +105,7 @@ class FM:
                 if j in comb
             )
 
-            # Get derivative terms (j interactions multiplied by f latent weights except j one)
+            # Get derivative terms
             derivative_terms = (
                 functools.reduce(
                     lambda x, y: x * y, itertools.chain(
@@ -186,7 +182,8 @@ class FMRegressor(FM, base.Regressor):
         n_components (int): Dimensionality of the factorization or number of latent factors.
         init_stdev (float): Standard deviation used to initialize latent factors.
         intercept (float): Initial intercept value.
-        loss (optim.Loss): The loss function to optimize for.
+        loss (optim.Loss): The loss function to optimize for. Defaults to
+            ``optim.losses.SquaredLoss``.
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately.
         l1 (float): Amount of L1 regularization used to push weights towards 0.
@@ -205,9 +202,49 @@ class FMRegressor(FM, base.Regressor):
         weights (collections.defaultdict): The current weights assigned to the features.
         latents (collections.defaultdict): The current latent weights assigned to the features.
 
+    Example:
+
+        ::
+
+            >>> from creme import linear_model
+
+            >>> X_y = (
+            ...     ({'Alice': 1, 'Superman': 1}, 8),
+            ...     ({'Alice': 1, 'Terminator': 1}, 9),
+            ...     ({'Alice': 1, 'Star Wars': 1}, 8),
+            ...     ({'Alice': 1, 'Notting Hill': 1}, 2),
+            ...     ({'Alice': 1, 'Harry Potter ': 1}, 5),
+            ...     ({'Bob': 1, 'Superman': 1}, 8),
+            ...     ({'Bob': 1, 'Terminator': 1}, 9),
+            ...     ({'Bob': 1, 'Star Wars': 1}, 8),
+            ...     ({'Bob': 1, 'Notting Hill': 1}, 2)
+            ... )
+
+            >>> model = linear_model.FMRegressor(
+            ...     degree=2,
+            ...     n_components=10,
+            ...     intercept=5,
+            ...     random_state=42,
+            ... )
+
+            >>> for x, y in X_y:
+            ...     _ = model.fit_one(x, y)
+
+            >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
+            5.320369...
+
+    Note:
+        Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps
+            the optimizer to converge.
+
+    References:
+            1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
+            2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`
+
+
     """
 
-    def __init__(self, degree=2, n_components=10, init_stdev=.1, intercept=None, loss=None,
+    def __init__(self, degree=2, n_components=10, init_stdev=.1, intercept=0., loss=None,
                  optimizer=None, l1=0., l2=0., intercept_lr=.01, clip_gradient=1e12,
                  random_state=None):
         super().__init__(
@@ -236,7 +273,7 @@ class FMClassifier(FM, base.BinaryClassifier):
         n_components (int): Dimensionality of the factorization or number of latent factors.
         init_stdev (float): Standard deviation used to initialize latent factors.
         intercept (float): Initial intercept value.
-        loss (optim.Loss): The loss function to optimize for.
+        loss (optim.Loss): The loss function to optimize for. Defaults to ``optim.losses.Log``.
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately.
         l1 (float): Amount of L1 regularization used to push weights towards 0.
@@ -255,9 +292,48 @@ class FMClassifier(FM, base.BinaryClassifier):
         weights (collections.defaultdict): The current weights assigned to the features.
         latents (collections.defaultdict): The current latent weights assigned to the features.
 
+    Example:
+
+        ::
+
+            >>> from creme import linear_model
+
+            >>> X_y = (
+            ...     ({'Alice': 1, 'Superman': 1}, True),
+            ...     ({'Alice': 1, 'Terminator': 1}, True),
+            ...     ({'Alice': 1, 'Star Wars': 1}, True),
+            ...     ({'Alice': 1, 'Notting Hill': 1}, False),
+            ...     ({'Alice': 1, 'Harry Potter ': 1}, True),
+            ...     ({'Bob': 1, 'Superman': 1}, True),
+            ...     ({'Bob': 1, 'Terminator': 1}, True),
+            ...     ({'Bob': 1, 'Star Wars': 1}, True),
+            ...     ({'Bob': 1, 'Notting Hill': 1}, False)
+            ... )
+
+            >>> model = linear_model.FMClassifier(
+            ...     degree=2,
+            ...     n_components=10,
+            ...     intercept=0,
+            ...     random_state=42,
+            ... )
+
+            >>> for x, y in X_y:
+            ...     _ = model.fit_one(x, y)
+
+            >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
+            True
+
+    Note:
+        Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps
+            the optimizer to converge.
+
+    References:
+            1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
+            2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`
+
     """
 
-    def __init__(self, degree=2, n_components=10, init_stdev=.1, intercept=None, loss=None,
+    def __init__(self, degree=2, n_components=10, init_stdev=.1, intercept=0., loss=None,
                  optimizer=None, l1=0., l2=0., intercept_lr=.01, clip_gradient=1e12,
                  random_state=None):
         super().__init__(
