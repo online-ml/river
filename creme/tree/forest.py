@@ -28,7 +28,7 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
             >>> from creme import model_selection
             >>> from creme import tree
 
-            >>> X_y = datasets.fetch_electricity()
+            >>> X_y = datasets.Elec2()
 
             >>> model = tree.RandomForestClassifier(
             ...     n_trees=5,
