@@ -182,16 +182,14 @@ class DictReader(csv.DictReader):
         return d
 
 
-def iter_csv(filepath_or_buffer, target_name, names=None, converters=None, parse_dates=None, fraction=1.,
-             compression='infer', seed=None):
+def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None, fraction=1.,
+             compression='infer', seed=None, field_size_limit=None, **kwargs):
     """Yields rows from a CSV file.
 
     Parameters:
         filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer
             object that has a ``read`` method.
         target_name (str): The name of the target.
-        names (list of str): A list of names to associate with each element in a row. If ``None``,
-            then the first row will be assumed to contain the names.
         converters (dict): A `dict` mapping feature names to callables used to parse their
             associated values.
         parse_dates (dict): A `dict` mapping feature names to a format passed to the
@@ -201,6 +199,10 @@ def iter_csv(filepath_or_buffer, target_name, names=None, converters=None, parse
             ``filepath_or_buffer`` is path-like, then the decompression method is inferred for the
             following extensions: '.gz'.
         seed (int): If specified, the sampling will be deterministic.
+        field_size_limit (int): If not `None`, this will passed to the `csv.field_size_limit`
+            function.
+
+    All other arguments are passed to the underlying `csv.DictReader`.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
@@ -232,6 +234,11 @@ def iter_csv(filepath_or_buffer, target_name, names=None, converters=None, parse
 
     """
 
+    # Set the field size limit
+    limit = csv.field_size_limit()
+    if field_size_limit is not None:
+        csv.field_size_limit(field_size_limit)
+
     # If a file is not opened, then we open it
     if not hasattr(filepath_or_buffer, 'read'):
 
@@ -256,7 +263,7 @@ def iter_csv(filepath_or_buffer, target_name, names=None, converters=None, parse
         fraction=fraction,
         rng=random.Random(seed),
         f=filepath_or_buffer,
-        fieldnames=names
+        **kwargs
     ):
 
         # Cast the values to the given types
@@ -276,6 +283,9 @@ def iter_csv(filepath_or_buffer, target_name, names=None, converters=None, parse
 
     # Close the file
     filepath_or_buffer.close()
+
+    # Reset the file size limit to it's original value
+    csv.field_size_limit(limit)
 
 
 def shuffle(stream, buffer_size, seed=None):

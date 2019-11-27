@@ -2,6 +2,7 @@ import collections
 import copy
 import functools
 
+from .. import base
 from .. import stats
 
 
@@ -30,7 +31,7 @@ class Constant(stats.Univariate):
         return self.value
 
 
-class StatImputer:
+class StatImputer(base.Transformer):
     """Imputer that allows to replace missing values with a univariate statistic, or a constant.
 
     Parameters:
@@ -147,7 +148,7 @@ class StatImputer:
         self.stat = stat if isinstance(stat, stats.Univariate) else Constant(stat)
         self.imputers = collections.defaultdict(functools.partial(copy.deepcopy, self.stat))
 
-    def fit_one(self, x):
+    def fit_one(self, x, y=None):
         if self.on in x:
             key = x[self.by] if self.by else None
             self.imputers[key].update(x[self.on])

@@ -121,7 +121,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
             >>> from creme import model_selection
             >>> from creme import tree
 
-            >>> X_y = datasets.fetch_electricity()
+            >>> X_y = datasets.Elec2()
 
             >>> model = tree.DecisionTreeClassifier(
             ...     patience=2000,
