@@ -1,3 +1,4 @@
+"""Helper functions for making things readable by humans."""
 import inspect
 import types
 
