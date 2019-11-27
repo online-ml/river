@@ -87,7 +87,7 @@ class LinearRegression(GLM, base.Regressor):
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately. Defaults to ``optim.SGD(.01)``.
         loss (optim.RegressionLoss): The loss function to optimize for. Defaults to
-            ``optim.SquaredLoss``.
+            ``optim.losses.SquaredLoss``.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (float): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
@@ -265,7 +265,8 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately. Defaults to ``optim.SGD(.05)``.
-        loss (optim.BinaryLoss): The loss function to optimize for. Defaults to ``optim.LogLoss``.
+        loss (optim.BinaryLoss): The loss function to optimize for. Defaults to
+            ``optim.losses.Log``.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (float): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
