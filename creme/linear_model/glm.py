@@ -6,6 +6,12 @@ from .. import optim
 from .. import utils
 
 
+__all__ = [
+    'LinearRegression',
+    'LogisticRegression'
+]
+
+
 class GLM:
     """Generalized Linear Model.
 
