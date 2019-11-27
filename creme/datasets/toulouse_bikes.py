@@ -21,7 +21,7 @@ class ToulouseBikes(base.Dataset):
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home=None, verbose=False):
         super().__init__(
             n_samples=182_470,
             n_features=8,

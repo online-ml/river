@@ -24,7 +24,7 @@ class Elec2(base.Dataset):
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home=None, verbose=False):
         super().__init__(
             n_samples=45_312,
             n_features=8,
