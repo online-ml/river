@@ -136,3 +136,39 @@ def test_hoeffding_tree_coverage():
     X, y = stream.next_sample(1000)
     learner = HoeffdingTree(leaf_prediction='mc', nominal_attributes=[i for i in range(10)])
     learner.partial_fit(X, y, classes=stream.target_values)
+
+
+def test_hoeffding_tree_model_information():
+    stream = SEAGenerator(random_state=1, noise_percentage=0.05)
+    stream.prepare_for_use()
+    X, y = stream.next_sample(5000)
+
+    nominal_attr_idx = [x for x in range(5, stream.n_features)]
+    learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
+
+    learner.partial_fit(X, y, classes=stream.target_values)
+
+    expected_info = {
+        'Tree size (nodes)': 5,
+        'Tree size (leaves)': 3,
+        'Active learning nodes': 3,
+        'Tree depth': 2,
+        'Active leaf byte size estimate': 0.0,
+        'Inactive leaf byte size estimate': 0.0,
+        'Byte size estimate overhead': 1.0
+    }
+
+    observed_info = learner.get_model_measurements
+    for k in expected_info:
+        assert k in observed_info
+        assert expected_info[k] == observed_info[k]
+
+    expected_description = "if Attribute 0 <= 4.549969620513424:\n" \
+                            "  if Attribute 1 <= 5.440182925299016:\n" \
+                            "    Leaf = Class 0 | {0: 345.54817975126275, 1: 44.43855503614928}\n" \
+                            "  if Attribute 1 > 5.440182925299016:\n" \
+                            "    Leaf = Class 1 | {0: 54.451820248737235, 1: 268.5614449638507}\n" \
+                            "if Attribute 0 > 4.549969620513424:\n" \
+                            "  Leaf = Class 1 | {0: 390.5845685762964, 1: 2372.3747376855454}\n" \
+
+    assert expected_description == learner.get_model_description()

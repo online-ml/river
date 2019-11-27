@@ -133,7 +133,7 @@ class SplitNode(Node):
             Subtree depth, 0 if node is a leaf.
         """
         max_child_depth = 0
-        for child in self._children:
+        for child in self._children.values():
             if child is not None:
                 depth = child.subtree_depth()
                 if depth > max_child_depth:
