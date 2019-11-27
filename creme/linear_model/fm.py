@@ -235,11 +235,11 @@ class FMRegressor(FM, base.Regressor):
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps
-            the optimizer to converge.
+        the optimizer to converge.
 
     References:
             1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
-            2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`
+            2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`_
 
 
     """
@@ -325,11 +325,11 @@ class FMClassifier(FM, base.BinaryClassifier):
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps
-            the optimizer to converge.
+        the optimizer to converge.
 
     References:
             1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
-            2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`
+            2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`_
 
     """
 
