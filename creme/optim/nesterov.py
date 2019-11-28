@@ -52,8 +52,11 @@ class NesterovMomentum(base.Optimizer):
 
     def _update_after_pred(self, w, g):
 
+        # Move w back to it's initial position
+        for i in w:
+            w[i] += self.rho * self.s[i]
+
         for i, gi in g.items():
-            w[i] += self.rho * self.s[i]  # Move w back to it's initial position
             self.s[i] = self.rho * self.s[i] + self.learning_rate * gi
             w[i] -= self.s[i]
 

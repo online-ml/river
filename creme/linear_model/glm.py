@@ -50,8 +50,19 @@ class GLM:
         This logic is put into a separate function for testing purposes.
 
         """
+
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
+
+        # Clip the gradient to avoid numerical instability
+        loss_gradient = utils.math.clamp(
+            loss_gradient,
+            minimum=-self.clip_gradient,
+            maximum=self.clip_gradient
+        )
+
+        # Apply the sample weight
         loss_gradient *= sample_weight
+
         return (
             {
                 i: (
@@ -105,18 +116,14 @@ class LinearRegression(GLM, base.Regressor):
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_boston(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.TrumpApproval()
+
             >>> model = (
             ...     preprocessing.StandardScaler() |
             ...     linear_model.LinearRegression(intercept_lr=.1)
@@ -124,10 +131,10 @@ class LinearRegression(GLM, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 4.038378
+            MAE: 0.616405
 
             >>> model['LinearRegression'].intercept
-            22.211824...
+            37.966291...
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -275,7 +282,6 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.initializers.Initializer): Weights initialization scheme.
-        clip_gradient (float): Clips the absolute value of each gradient value.
 
     Attributes:
         weights (collections.defaultdict): The current weights.
@@ -291,7 +297,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> from creme import optim
             >>> from creme import preprocessing
 
-            >>> X_y = datasets.fetch_electricity()
+            >>> X_y = datasets.Elec2()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
