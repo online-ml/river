@@ -34,7 +34,7 @@ class AMSGrad(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.957983
+            F1: 0.960894
 
     References:
         1. `ON THE CONVERGENCE OF ADAM AND BEYOND <https://arxiv.org/pdf/1904.09237.pdf>`_
