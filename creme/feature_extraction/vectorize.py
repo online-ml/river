@@ -52,7 +52,7 @@ class VectorizerMixin:
 class BoW(base.Transformer, VectorizerMixin):
     """Bag of words which counts token occurrences.
 
-    This returns exactly the same results as `sklearn.feature_extraction.text.BoW`.
+    This returns exactly the same results as `sklearn.feature_extraction.text.CountVectorizer`.
 
     Parameters:
         on (str): The name of the feature that contains the text to vectorize. If ``None``, then
