@@ -130,11 +130,11 @@ def test_hat_nba(test_path):
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('i', [1, 0, 1, 0, 1, 1, 0, 1, 1, 1,
-                                       0, 1, 0, 1, 0, 1, 1, 1, 1, 1,
-                                       1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-                                       1, 0, 1, 1, 0, 0, 0, 0, 1, 1,
-                                       1, 0, 0, 1, 0, 1, 0, 1, 0])
+    expected_predictions = array('i', [1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0,
+                                       1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+                                       0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1,
+                                       1, 1, 0, 0, 1, 0, 1, 1, 1, 0])
+
     assert np.alltrue(y_pred == expected_predictions)
 
     test_file = os.path.join(test_path, 'test_hoeffding_adaptive_tree_nba.npy')

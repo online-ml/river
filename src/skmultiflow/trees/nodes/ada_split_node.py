@@ -122,7 +122,7 @@ class AdaSplitNode(SplitNode, AdaNode):
         child_branch = self.instance_child_index(X)
         child = self.get_child(child_branch)
         if child is not None:
-            child.learn_from_instance(X, y, weight, hat, parent, parent_branch)
+            child.learn_from_instance(X, y, weight, hat, self, child_branch)
 
     # Override AdaNode
     def kill_tree_children(self, hat):
