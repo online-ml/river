@@ -24,7 +24,7 @@ class GLM:
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated. Setting this to 0 means that no intercept will be used.
+            will be not be updated.
         clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.initializers.Initializer): Weights initialization scheme.
 
@@ -110,7 +110,7 @@ class LinearRegression(GLM, base.Regressor):
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated. Setting this to 0 means that no intercept will be used.
+            will be not be updated.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.initializers.Initializer): Weights initialization scheme.
@@ -285,7 +285,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated. Setting this to 0 means that no intercept will be used.
+            will be not be updated.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.initializers.Initializer): Weights initialization scheme.
