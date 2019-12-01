@@ -51,11 +51,13 @@ class AdaMax(base.Optimizer):
         self.u = collections.defaultdict(float)
 
     def _update_after_pred(self, w, g):
+        
+        # Correct bias for `m`
+        learning_rate = self.learning_rate / (1 - self.beta_1 ** (self.n_iterations + 1))
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
             self.u[i] = max(self.beta_2 * self.u[i], abs(gi))
-            m = self.m[i] / (1 - self.beta_1 ** (self.n_iterations + 1))
-            w[i] -= self.learning_rate * m / (self.u[i] + self.eps)
+            w[i] -= learning_rate * self.m[i] / (self.u[i] + self.eps)
 
         return w
