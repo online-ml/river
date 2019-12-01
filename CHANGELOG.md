@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved `TargetModifierRegressor` and `BoxCoxTransformRegressor` to the newly created `meta` module.
 - Added `PreviousImputer` to the `impute` module for replacing missing values with their previous value.
 - Added the `TrumpApproval` dataset, which is a toy regression dataset.
+- Added the `AMSGrad` optimizer to the `optim` module
 
 ### Changed
 

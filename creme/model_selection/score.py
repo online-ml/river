@@ -34,6 +34,7 @@ def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math
 
     References:
         1. `Beating the Hold-Out: Bounds for K-fold and Progressive Cross-Validation <http://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf>`_
+        2. `Delayed labelling evaluation for data streams <https://link.springer.com/content/pdf/10.1007%2Fs10618-019-00654-y.pdf>`_
 
     """
 

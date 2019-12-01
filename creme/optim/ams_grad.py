@@ -37,7 +37,7 @@ class AMSGrad(base.Optimizer):
             F1: 0.960894
 
     References:
-        1. `ON THE CONVERGENCE OF ADAM AND BEYOND <https://arxiv.org/pdf/1904.09237.pdf>`_
+        1. `On the convergence of Adam and beyond <https://arxiv.org/pdf/1904.09237.pdf>`_
 
     """
 
@@ -53,19 +53,19 @@ class AMSGrad(base.Optimizer):
 
     def _update_after_pred(self, w, g):
 
+        lr = self.learning_rate
+
         if self.correct_bias:
             # Correct bias for `v`
-            learning_rate = self.learning_rate * (1 - self.beta_2 ** (self.n_iterations + 1))**0.5
+            lr *= (1 - self.beta_2 ** (self.n_iterations + 1)) ** .5
             # Correct bias for `m`
-            learning_rate /= 1 - self.beta_1 ** (self.n_iterations + 1)
-        else:
-            learning_rate = self.learning_rate
+            lr /= 1 - self.beta_1 ** (self.n_iterations + 1)
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
             self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
             self.v_hat[i] = max(self.v_hat[i], self.v[i])
 
-            w[i] -= learning_rate * self.m[i] / (self.v_hat[i] ** 0.5 + self.eps)
+            w[i] -= lr * self.m[i] / (self.v_hat[i] ** 0.5 + self.eps)
 
         return w

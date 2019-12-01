@@ -59,7 +59,7 @@ class AdaBound(base.Optimizer):
 
         bias_1 = 1 - self.beta_1 ** (self.n_iterations + 1)
         bias_2 = 1 - self.beta_2 ** (self.n_iterations + 1)
-        
+
         step_size = self.learning_rate * math.sqrt(bias_2) / bias_1
         self.final_lr *= self.learning_rate / self.base_lr
 
