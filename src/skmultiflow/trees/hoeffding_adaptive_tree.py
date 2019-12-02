@@ -65,10 +65,16 @@ class HAT(HoeffdingTree):
     nominal_attributes: list, optional
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
 
+    bootstrap_sampling: bool, optional (default=True)
+        If True, perform bootstrap sampling in the leaf nodes.
+
     Notes
     -----
     The Hoeffding Adaptive Tree [1]_ uses ADWIN [2]_ to monitor performance of branches on the tree and to replace them
     with new branches when their accuracy decreases if the new branches are more accurate.
+
+    The bootstrap sampling strategy is an improvement over the original Hoeffding Adaptive Tree algorithm.
+    It is enabled by default since, in general, it results in better performance.
 
     References
     ----------
@@ -111,7 +117,8 @@ class HAT(HoeffdingTree):
                  no_preprune=False,
                  leaf_prediction='nba',
                  nb_threshold=0,
-                 nominal_attributes=None):
+                 nominal_attributes=None,
+                 bootstrap_sampling=True):
 
         super(HAT, self).__init__(max_byte_size=max_byte_size,
                                   memory_estimate_period=memory_estimate_period,
@@ -129,6 +136,7 @@ class HAT(HoeffdingTree):
         self.alternate_trees_cnt = 0
         self.pruned_alternate_trees_cnt = 0
         self.switch_alternate_trees_cnt = 0
+        self.bootstrap_sampling = bootstrap_sampling
         self._tree_root = None
 
     def reset(self):

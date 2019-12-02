@@ -53,9 +53,11 @@ class AdaLearningNode(LearningNodeNBAdaptive, AdaNode):
     def learn_from_instance(self, X, y, weight, hat, parent, parent_branch):
         true_class = y
 
-        k = self._classifier_random.poisson(1.0)
-        if k > 0:
-            weight = weight * k
+        if hat.bootstrap_sampling:
+            # Perform bootstrap-sampling
+            k = self._classifier_random.poisson(1.0)
+            if k > 0:
+                weight = weight * k
 
         class_prediction = get_max_value_key(self.get_class_votes(X, hat))
 

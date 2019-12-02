@@ -40,12 +40,11 @@ def test_hat_mc(test_path):
     data = np.load(test_file)
     assert np.allclose(y_proba, data)
 
-    expected_info = "HAT(binary_split=False, grace_period=200, leaf_prediction='mc',\n" \
-                    "    max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0,\n" \
-                    "    no_preprune=False, nominal_attributes=None, remove_poor_atts=False,\n" \
-                    "    split_confidence=1e-07, split_criterion='info_gain',\n" \
-                    "    stop_mem_management=False, tie_threshold=0.05)"
-
+    expected_info = "HAT(binary_split=False, bootstrap_sampling=True, grace_period=200,\n" \
+                    "    leaf_prediction='mc', max_byte_size=33554432,\n" \
+                    "    memory_estimate_period=1000000, nb_threshold=0, no_preprune=False,\n" \
+                    "    nominal_attributes=None, remove_poor_atts=False, split_confidence=1e-07,\n" \
+                    "    split_criterion='info_gain', stop_mem_management=False, tie_threshold=0.05)"
     assert learner.get_info() == expected_info
 
     expected_model_1 = 'Leaf = Class 1.0 | {0.0: 398.0, 1.0: 1000.0}\n'
@@ -97,11 +96,11 @@ def test_hat_nb(test_path):
     data = np.load(test_file)
     assert np.allclose(y_proba, data)
 
-    expected_info = "HAT(binary_split=False, grace_period=200, leaf_prediction='nb',\n" \
-                    "    max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0,\n" \
-                    "    no_preprune=False, nominal_attributes=None, remove_poor_atts=False,\n" \
-                    "    split_confidence=1e-07, split_criterion='info_gain',\n" \
-                    "    stop_mem_management=False, tie_threshold=0.05)"
+    expected_info = "HAT(binary_split=False, bootstrap_sampling=True, grace_period=200,\n" \
+                    "    leaf_prediction='nb', max_byte_size=33554432,\n" \
+                    "    memory_estimate_period=1000000, nb_threshold=0, no_preprune=False,\n" \
+                    "    nominal_attributes=None, remove_poor_atts=False, split_confidence=1e-07,\n" \
+                    "    split_criterion='info_gain', stop_mem_management=False, tie_threshold=0.05)"
 
     assert learner.get_info() == expected_info
     assert type(learner.predict(X)) == np.ndarray
@@ -141,11 +140,11 @@ def test_hat_nba(test_path):
     data = np.load(test_file)
     assert np.allclose(y_proba, data)
 
-    expected_info = "HAT(binary_split=False, grace_period=200, leaf_prediction='nba',\n" \
-                    "    max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0,\n" \
-                    "    no_preprune=False, nominal_attributes=None, remove_poor_atts=False,\n" \
-                    "    split_confidence=1e-07, split_criterion='info_gain',\n" \
-                    "    stop_mem_management=False, tie_threshold=0.05)"
+    expected_info = "HAT(binary_split=False, bootstrap_sampling=True, grace_period=200,\n" \
+                    "    leaf_prediction='nba', max_byte_size=33554432,\n" \
+                    "    memory_estimate_period=1000000, nb_threshold=0, no_preprune=False,\n" \
+                    "    nominal_attributes=None, remove_poor_atts=False, split_confidence=1e-07,\n" \
+                    "    split_criterion='info_gain', stop_mem_management=False, tie_threshold=0.05)"
 
     assert learner.get_info() == expected_info
     assert type(learner.predict(X)) == np.ndarray
