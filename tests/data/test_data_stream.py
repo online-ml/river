@@ -1,6 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
+
+import pytest
+
 from skmultiflow.data.data_stream import DataStream
 
 
@@ -123,3 +126,26 @@ def test_data_stream_X_y(test_path, package_path):
     assert stream.n_targets == np.array(y).ndim
 
     assert stream.n_features == X.shape[1]
+
+
+def test_check_data():
+    # Test if data contains non-numeric values
+    data = pd.DataFrame(np.array([[1, 2, 3, 4, 5],
+                                  [6, 7, 8, 9, 10],
+                                  [11, 'invalid', 13, 14, 15]]))
+
+    with pytest.raises(ValueError):
+        DataStream(data=data, allow_nan=False).prepare_for_use()
+
+    # Test if data contains NaN values
+    data = pd.DataFrame(np.array([[1, 2, 3, 4, 5],
+                                  [6, 7, 8, 9, 10],
+                                  [11, np.nan, 13, 14, 15]]))
+
+    with pytest.raises(ValueError):
+        DataStream(data=data, allow_nan=False).prepare_for_use()
+
+    # Test warning for NaN values
+
+    with pytest.warns(UserWarning):
+        DataStream(data=data, allow_nan=True).prepare_for_use()
