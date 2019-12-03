@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `TrumpApproval` dataset, which is a toy regression dataset.
 - Added the `AMSGrad` optimizer to the `optim` module
 
+### Fixed
+
+- The implementation of `ROCAUC` was incorrect. Using the trapezoidal rule instead of Simpson's rule seems to be more robust.
+
 ### Changed
 
 - Renamed `CountVectorizer` to `BoW`
