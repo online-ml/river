@@ -1,7 +1,9 @@
 import os
 import pandas as pd
 import numpy as np
+
 from skmultiflow.data.base_stream import Stream
+from skmultiflow.data.data_stream import check_data_consistency
 
 
 class FileStream(Stream):
@@ -23,6 +25,9 @@ class FileStream(Stream):
 
     cat_features: list, optional (default=None)
         A list of indices corresponding to the location of categorical features.
+
+    allow_nan: bool, optional (default=False)
+        If True, allows NaN values in the data. Otherwise, an error is raised.
 
     Notes
     -----
@@ -61,7 +66,7 @@ class FileStream(Stream):
     _CLASSIFICATION = 'classification'
     _REGRESSION = 'regression'
 
-    def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features=None):
+    def __init__(self, filepath, target_idx=-1, n_targets=1, cat_features=None, allow_nan=False):
         super().__init__()
 
         self.filepath = filepath
@@ -69,6 +74,7 @@ class FileStream(Stream):
         self.target_idx = target_idx
         self.cat_features = cat_features
         self.cat_features_idx = [] if self.cat_features is None else self.cat_features
+        self.allow_nan = allow_nan
 
         self.X = None
         self.y = None
@@ -187,8 +193,8 @@ class FileStream(Stream):
         try:
             raw_data = self.read_function(self.filepath)
 
-            if any(raw_data.dtypes == 'object'):
-                raise ValueError('File contains text data.')
+            check_data_consistency(raw_data, self.allow_nan)
+
             rows, cols = raw_data.shape
             self.n_samples = rows
             labels = raw_data.columns.values.tolist()
