@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics import mean_absolute_error
 from skmultiflow.data import RegressionGenerator
 from skmultiflow.trees import MultiTargetRegressionHoeffdingTree
+from difflib import SequenceMatcher
 
 
 def test_multi_target_regression_hoeffding_tree_mean(test_path):
@@ -173,3 +174,28 @@ def test_hoeffding_tree_coverage(test_path):
                 nominal_attributes=[i for i in range(3)]
               )
     learner.partial_fit(X, Y)
+
+
+def test_multi_target_regression_hoeffding_tree_model_description():
+    stream = RegressionGenerator(
+        n_samples=700, n_features=20, n_informative=15, random_state=1,
+        n_targets=3
+    )
+    stream.prepare_for_use()
+
+    learner = MultiTargetRegressionHoeffdingTree(leaf_prediction='mean')
+
+    max_samples = 700
+    X, y = stream.next_sample(max_samples)
+    learner.partial_fit(X, y)
+
+    expected_description = "if Attribute 11 <= 0.36737233297880056:\n" \
+                            "  Leaf = Statistics {0: 450.0000, 1: [-23322.8079, -30257.1616, -18740.9462], " \
+                            "2: [22242706.1751, 29895648.2424, 18855571.7943]}\n" \
+                            "if Attribute 11 > 0.36737233297880056:\n" \
+                            "  Leaf = Statistics {0: 250.0000, 1: [33354.8675, 32390.6094, 22886.4176], " \
+                            "2: [15429435.6709, 17908472.4289, 10709746.1079]}\n" \
+
+    assert SequenceMatcher(
+        None, expected_description, learner.get_model_description()
+    ).ratio() > 0.9

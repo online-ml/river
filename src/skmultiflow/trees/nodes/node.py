@@ -150,7 +150,7 @@ class Node(metaclass=ABCMeta):
         """
         buffer[0] += textwrap.indent('Leaf = ', ' ' * indent)
 
-        try:
+        if ht._estimator_type == 'classifier':
             class_val = max(
                 self._observed_class_distribution,
                 key=self._observed_class_distribution.get
@@ -158,10 +158,19 @@ class Node(metaclass=ABCMeta):
             buffer[0] += 'Class {} | {}\n'.format(
                 class_val, self._observed_class_distribution
             )
-        except ValueError:  # Regression problems
-            buffer[0] += 'Statistics {}\n'.format(
-                self._observed_class_distribution
-            )
+        else:
+            text = '{'
+            for i, (k, v) in enumerate(self._observed_class_distribution.items()):
+                # Multi-target regression case
+                if hasattr(v, 'shape') and len(v.shape) > 0:
+                    text += '{}: ['.format(k)
+                    text += ', '.join(['{:.4f}'.format(e) for e in v.tolist()])
+                    text += ']'
+                else:  # Single-target regression
+                    text += '{}: {:.4f}'.format(k, v)
+                text += ', ' if i < len(self._observed_class_distribution) - 1 else ''
+            text += '}'
+            buffer[0] += 'Statistics {}\n'.format(text)  # Regression problems
 
     # TODO
     def get_description(self):
