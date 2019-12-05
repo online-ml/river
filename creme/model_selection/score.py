@@ -1,5 +1,7 @@
 """Model evaluation and selection."""
+import datetime as dt
 import math
+import time
 
 from .. import base
 from .. import utils
@@ -8,7 +10,8 @@ from .. import utils
 __all__ = ['progressive_val_score']
 
 
-def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math.inf):
+def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math.inf,
+                          elapsed_time=False, memory_usage=False):
     """A variant of online scoring where the targets are revealed with a delay.
 
     ``X_y`` is converted into a question and answer where the model is asked to predict an
@@ -28,6 +31,8 @@ def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math
             equivalent to performing standard progressive validation with no delay.
         print_every (int): Iteration number at which to print the current metric. This only takes
             into account the predictions, and not the training steps.
+        elapsed_time (bool): Whether or not to display the elapsed time.
+        memory_usage (bool): Whether or not to display the memory usage of the model.
 
     Returns:
         metrics.Metric
@@ -52,6 +57,9 @@ def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math
     answers = []
     n_total_answers = 0
 
+    if elapsed_time:
+        start = time.perf_counter()
+
     for i, (x, y) in enumerate(X_y):
 
         # Assign a timestamp to the current observation
@@ -75,7 +83,13 @@ def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math
             # Update the answer counter
             n_total_answers += 1
             if not n_total_answers % print_every:
-                print(f'[{n_total_answers:,d}] {metric}')
+                msg = f'[{n_total_answers:,d}] {metric}'
+                if elapsed_time:
+                    now = time.perf_counter()
+                    msg += f' – {dt.timedelta(seconds=int(now - start))}'
+                if memory_usage:
+                    msg += f' – {model._memory_usage}'
+                print(msg)
 
         # Make a prediction
         y_pred = pred_func(x=x)
