@@ -4,6 +4,7 @@ from array import array
 from sklearn.metrics import mean_absolute_error
 from skmultiflow.data import RegressionGenerator
 from skmultiflow.trees import RegressionHoeffdingTree
+from difflib import SequenceMatcher
 
 
 def test_hoeffding_tree():
@@ -127,3 +128,25 @@ def test_hoeffding_tree_coverage(test_path):
     learner.partial_fit(X, y)
 
     assert learner._estimator_type == 'regressor'
+
+
+def test_regression_hoeffding_tree_model_description():
+    stream = RegressionGenerator(
+        n_samples=500, n_features=20, n_informative=15, random_state=1
+    )
+    stream.prepare_for_use()
+
+    learner = RegressionHoeffdingTree(leaf_prediction='mean')
+
+    max_samples = 500
+    X, y = stream.next_sample(max_samples)
+    learner.partial_fit(X, y)
+
+    expected_description = "if Attribute 6 <= 0.1394515530995348:\n" \
+                           "  Leaf = Statistics {0: 276.0000, 1: -21537.4157, 2: 11399392.2187}\n" \
+                           "if Attribute 6 > 0.1394515530995348:\n" \
+                           "  Leaf = Statistics {0: 224.0000, 1: 22964.8868, 2: 10433581.2534}\n"
+
+    assert SequenceMatcher(
+        None, expected_description, learner.get_model_description()
+    ).ratio() > 0.9
