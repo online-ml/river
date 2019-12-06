@@ -60,15 +60,13 @@ class FM:
             intercept_lr
         )
 
-        if weight_initializer:
-            self.weight_initializer = weight_initializer
-        else:
-            self.weight_initializer = optim.initializers.Zeros()
+        if weight_initializer is None:
+            weight_initializer = optim.initializers.Zeros()
+        self.weight_initializer = weight_initializer
 
-        if latent_initializer:
-            self.latent_initializer = latent_initializer
-        else:
-            self.latent_initializer = optim.initializers.Normal(sigma=.1, random_state=random_state)
+        if latent_initializer is None:
+            latent_initializer = optim.initializers.Normal(sigma=.1, random_state=random_state)
+        self.latent_initializer = latent_initializer
 
         self.l1 = l1
         self.l2 = l2
@@ -81,6 +79,9 @@ class FM:
 
         self.weights = collections.defaultdict(self.weight_initializer)
         self.latents = collections.defaultdict(random_latents)
+
+    def _transform(self, x):
+        return dict((f'{j}_{xj}', 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
 
     def _calculate_interaction(self, x, combination):
         interaction = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
@@ -130,6 +131,9 @@ class FM:
             return sum(derivative_terms)
 
     def fit_one(self, x, y, sample_weight=1.):
+
+        # One hot encode string modalities
+        x = self._transform(x)
 
         # For notational convenience
         k, l1, l2 = self.n_factors, self.l1, self.l2
@@ -276,6 +280,7 @@ class FMRegressor(FM, base.Regressor):
         )
 
     def predict_one(self, x):
+        x = self._transform(x)  # One hot encode string modalities
         return self._raw_dot(x)
 
 
@@ -369,5 +374,6 @@ class FMClassifier(FM, base.BinaryClassifier):
         )
 
     def predict_proba_one(self, x):
+        x = self._transform(x)  # One hot encode string modalities
         p = utils.math.sigmoid(self._raw_dot(x))  # Convert logit to probability
         return {False: 1. - p, True: p}
