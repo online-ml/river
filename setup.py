@@ -108,6 +108,6 @@ setup(
                 libraries=[] if platform.system() == 'Windows' else ['m']
             )
         ],
-        compiler_directives={'language_level': 2}
+        compiler_directives={'language_level': 3}
     )
 )
