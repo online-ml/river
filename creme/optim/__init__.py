@@ -7,6 +7,7 @@ from .ada_delta import AdaDelta
 from .ada_grad import AdaGrad
 from .ada_max import AdaMax
 from .adam import Adam
+from .ams_grad import AMSGrad
 from .base import Optimizer
 from .ftrl import FTRLProximal
 from .mini_batch import MiniBatcher
@@ -21,6 +22,7 @@ __all__ = [
     'AdaDelta',
     'AdaGrad',
     'Adam',
+    'AMSGrad',
     'AdaMax',
     'FTRLProximal',
     'initializers',

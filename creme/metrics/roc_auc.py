@@ -30,16 +30,20 @@ class ROCAUC(base.BinaryMetric):
     def __init__(self, num_thresholds=10):
         self.num_thresholds = num_thresholds
         self.thresholds = [i / (num_thresholds - 1) for i in range(num_thresholds)]
+        self.thresholds[0] -= 1e-7
+        self.thresholds[-1] += 1e-7
         self.cms = [confusion.ConfusionMatrix() for _ in range(num_thresholds)]
 
     def update(self, y_true, y_pred, sample_weight=1.):
+        p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
-            cm.update(y_true=y_true, y_pred=y_pred.get(True, 0.) > t, sample_weight=1.)
+            cm.update(y_true=bool(y_true), y_pred=p_true > t, sample_weight=sample_weight)
         return self
 
-    def revert(self, y_true, y_pred):
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
-            cm.update(y_true=y_true, y_pred=y_pred.get(True, 0.) > t, sample_weight=1.)
+            cm.revert(y_true=bool(y_true), y_pred=p_true > t, sample_weight=sample_weight)
         return self
 
     @property
@@ -61,20 +65,13 @@ class ROCAUC(base.BinaryMetric):
             except ZeroDivisionError:
                 return 0.
 
-        for i, cm in enumerate(reversed(self.cms)):
+        for i, cm in enumerate(self.cms):
             tp = cm.counts.get(True, {}).get(True, 0)
             tn = cm.counts.get(False, {}).get(False, 0)
             fp = cm.counts.get(False, {}).get(True, 0)
             fn = cm.counts.get(True, {}).get(False, 0)
 
-            tprs[i] = safe_div(tp, tp + fn)
-            fprs[i] = safe_div(fp, fp + tn)
+            tprs[i] = safe_div(a=tp, b=tp + fn)
+            fprs[i] = safe_div(a=fp, b=fp + tn)
 
-        # Remove duplicate values
-        tprs, fprs = zip(*[(tprs[0], fprs[0])] + [
-            (tprs[i + 1], b)
-            for i, (a, b) in enumerate(zip(fprs[:-1], fprs[1:]))
-            if a != b
-        ])
-
-        return integrate.simps(x=fprs, y=tprs)
+        return -integrate.trapz(x=fprs, y=tprs)
