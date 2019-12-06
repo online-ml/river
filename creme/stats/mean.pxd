@@ -1,4 +1,4 @@
-cimport base
+cimport stats.base
 
 cdef class Mean(base.Univariate):
     cdef readonly double mean
