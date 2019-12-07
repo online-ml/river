@@ -29,8 +29,8 @@ class MovieLens100k(base.Dataset):
             n_samples=100_000,
             n_features=10,
             category=base.REG,
-            name='ml-100k',
-            url='https://maxhalford.github.io/files/datasets/ml-100k.zip',
+            name='ml_100k',
+            url='https://maxhalford.github.io/files/datasets/ml_100k.zip',
             data_home=data_home,
             archive_type='zip',
             verbose=verbose
