@@ -48,9 +48,10 @@ class MovieLens100k(base.Dataset):
                 'release_date': int,
                 'genres': str,
                 'age': float,
-                'gender': float,
+                'gender': str,
                 'occupation': str,
                 'zip_code': str,
                 'rating': float
-            }
+            },
+            delimiter='\t'
         )
