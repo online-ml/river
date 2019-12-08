@@ -11,7 +11,7 @@ class Bin:
 
     __slots__ = ['left', 'right', 'count']
 
-    def __init__(self, left, right, count=1):
+    def __init__(self, left, right, count):
         self.left = left
         self.right = right
         self.count = count
@@ -40,25 +40,25 @@ def coverage_ratio(x, y):
 
     Examples:
 
-        >>> coverage_ratio(Bin(1, 2), Bin(1, 2))
+        >>> coverage_ratio(Bin(1, 2, 0), Bin(1, 2, 0))
         1.0
 
-        >>> coverage_ratio(Bin(1, 3), Bin(2, 4))
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(2, 4, 0))
         0.5
 
-        >>> coverage_ratio(Bin(1, 3), Bin(3, 5))
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(3, 5, 0))
         0.0
 
-        >>> coverage_ratio(Bin(1, 3), Bin(0, 4))
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 4, 0))
         0.5
 
-        >>> coverage_ratio(Bin(0, 4), Bin(1, 3))
+        >>> coverage_ratio(Bin(0, 4, 0), Bin(1, 3, 0))
         1.0
 
-        >>> coverage_ratio(Bin(1, 3), Bin(0, 1))
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 1, 0))
         0.0
 
-        >>> coverage_ratio(Bin(1, 1), Bin(1, 1))
+        >>> coverage_ratio(Bin(1, 1, 0), Bin(1, 1, 0))
         1.0
 
     """
@@ -119,7 +119,7 @@ class Histogram(collections.UserList):
     def update(self, x):
 
         self.n += 1
-        b = Bin(x, x)
+        b = Bin(x, x, 1)
 
         # Insert the bin if the histogram is empty
         if not self:
