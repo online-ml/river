@@ -1,6 +1,6 @@
-cimport stats.base
+cimport creme.stats.base
 
-cdef class Mean(base.Univariate):
+cdef class Mean(creme.stats.base.Univariate):
     cdef readonly double mean
     cdef readonly double n
 

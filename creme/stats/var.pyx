@@ -1,11 +1,11 @@
-cimport base
-cimport mean
+cimport creme.stats.base
+cimport creme.stats.mean
 
 from . import base
 from . import mean
 
 
-cdef class Var(base.Univariate):
+cdef class Var(creme.stats.base.Univariate):
     """Running variance using Welford's algorithm.
 
     Parameters:
@@ -41,7 +41,7 @@ cdef class Var(base.Univariate):
     """
 
     cdef readonly long ddof
-    cdef readonly mean.Mean mean
+    cdef readonly creme.stats.mean.Mean mean
     cdef readonly double sos
 
     def __init__(self, ddof=1):

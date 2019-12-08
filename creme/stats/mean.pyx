@@ -1,10 +1,10 @@
-cimport base
+cimport creme.stats.base
 
 from . import base
 from . import summing
 
 
-cdef class Mean(base.Univariate):
+cdef class Mean(creme.stats.base.Univariate):
     """Running mean.
 
     Parameters:
