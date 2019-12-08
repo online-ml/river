@@ -10,7 +10,7 @@ from .. import utils
 __all__ = ['progressive_val_score']
 
 
-def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math.inf,
+def progressive_val_score(X_y, model, metric, on=None, delay=0, print_every=math.inf,
                           elapsed_time=False, memory_usage=False):
     """A variant of online scoring where the targets are revealed with a delay.
 
@@ -65,6 +65,12 @@ def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math
         # Assign a timestamp to the current observation
         t = i if on is None else x[on]
 
+        # Make a prediction
+        y_pred = pred_func(x=x)
+
+        # Store the answer for the future
+        answers.append((x, y, y_pred, t))
+
         while answers:
 
             # Get the oldest answer
@@ -90,12 +96,6 @@ def progressive_val_score(X_y, model, metric, on=None, delay=1, print_every=math
                 if memory_usage:
                     msg += f' – {model._memory_usage}'
                 print(msg)
-
-        # Make a prediction
-        y_pred = pred_func(x=x)
-
-        # Store the answer for the future
-        answers.append((x, y, y_pred, t))
 
     # Update the metric with the remaining answers
     for _, y_old, y_pred_old, __ in answers:
