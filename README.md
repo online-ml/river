@@ -123,13 +123,13 @@ We will include all the available numeric features in our model. We will also us
 ...     delay=dt.timedelta(minutes=30),
 ...     print_every=30_000
 ... )
-[30,000] MAE: 2.193186
-[60,000] MAE: 2.249483
-[90,000] MAE: 2.288477
-[120,000] MAE: 2.26541
-[150,000] MAE: 2.267553
-[180,000] MAE: 2.282643
-MAE: 2.286077
+[30,000] MAE: 2.230049
+[60,000] MAE: 2.290409
+[90,000] MAE: 2.334638
+[120,000] MAE: 2.315149
+[150,000] MAE: 2.319982
+[180,000] MAE: 2.335385
+MAE: 2.338837
 
 ```
 
@@ -170,7 +170,7 @@ Pipeline (
     )
     loss=Squared ()
     l2=0.
-    intercept=9.740013
+    intercept=9.742884
     intercept_lr=Constant (
       learning_rate=0.01
     )
