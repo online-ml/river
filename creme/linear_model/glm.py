@@ -134,7 +134,7 @@ class LinearRegression(GLM, base.Regressor):
             MAE: 0.616405
 
             >>> model['LinearRegression'].intercept
-            37.966291...
+            38.000439...
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
