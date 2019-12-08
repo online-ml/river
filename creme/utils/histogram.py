@@ -1,5 +1,6 @@
 import collections
-import math
+import heapq
+import itertools
 
 
 __all__ = ['Histogram']
@@ -10,17 +11,19 @@ class Bin:
 
     __slots__ = ['left', 'right', 'count']
 
-    def __init__(self, left, right=None, count=1):
+    def __init__(self, left, right, count):
         self.left = left
-        self.right = left if right is None else right
+        self.right = right
         self.count = count
 
-    def __add__(self, other):
-        return Bin(
-            left=min(self.left, other.left),
-            right=max(self.right, other.right),
-            count=self.count + other.count
-        )
+    def __iadd__(self, other):
+        """Merge with another bin."""
+        if other.left < self.left:
+            self.left = other.left
+        if other.right > self.right:
+            self.right = other.right
+        self.count += other.count
+        return self
 
     def __lt__(self, other):
         return self.right < other.left
@@ -30,6 +33,38 @@ class Bin:
 
     def __repr__(self):
         return f'[{self.left:.5f}, {self.right:.5f}]: {self.count}'
+
+
+def coverage_ratio(x, y):
+    """Returns the amount of y covered by x.
+
+    Examples:
+
+        >>> coverage_ratio(Bin(1, 2, 0), Bin(1, 2, 0))
+        1.0
+
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(2, 4, 0))
+        0.5
+
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(3, 5, 0))
+        0.0
+
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 4, 0))
+        0.5
+
+        >>> coverage_ratio(Bin(0, 4, 0), Bin(1, 3, 0))
+        1.0
+
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 1, 0))
+        0.0
+
+        >>> coverage_ratio(Bin(1, 1, 0), Bin(1, 1, 0))
+        1.0
+
+    """
+    if y.left == y.right:
+        return float(x.left <= y.left <= x.right)
+    return max(0, min(x.right, y.right) - max(x.left, y.left)) / (y.right - y.left)
 
 
 class Histogram(collections.UserList):
@@ -84,7 +119,7 @@ class Histogram(collections.UserList):
     def update(self, x):
 
         self.n += 1
-        b = Bin(x)
+        b = Bin(x, x, 1)
 
         # Insert the bin if the histogram is empty
         if not self:
@@ -115,20 +150,25 @@ class Histogram(collections.UserList):
 
         # Bins have to be merged if there are more than max_bins
         if len(self) > self.max_bins:
-
-            # Find the closest pair of bins
-            min_diff = math.inf
-            min_idx = None
-            for idx, (b1, b2) in enumerate(zip(self.data[:-1], self.data[1:])):
-                diff = b2.right - b1.right
-                if diff < min_diff:
-                    min_diff = diff
-                    min_idx = idx
-
-            # Merge the bins
-            self[min_idx] += self.pop(min_idx + 1)
+            self._shrink(1)
 
         return self
+
+    def _shrink(self, k):
+        """Shrinks the histogram by merging the two closest bins."""
+
+        indexes = range(len(self) - 1)
+
+        def bin_distance(i):
+            return self[i + 1].right - self[i].right
+
+        if k == 1:
+            i = min(indexes, key=bin_distance)
+            self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
+            return
+
+        for i in sorted(heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True):
+            self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
 
     def cdf(self, x):
         """Cumulative distribution function.
@@ -185,6 +225,64 @@ class Histogram(collections.UserList):
             c += b2.count
 
         return c / self.n
+
+    def __add__(self, other):
+        """
+
+        Example:
+
+            >>> h1 = Histogram()
+            >>> for b in [Bin(0, 2, 4), Bin(4, 5, 9)]:
+            ...     h1.append(b)
+
+            >>> h2 = Histogram()
+            >>> for b in [Bin(1, 3, 8), Bin(3, 4, 5)]:
+            ...     h2.append(b)
+
+            >>> h1 + h2
+            [0.00000, 1.00000]: 2.0
+            [1.00000, 2.00000]: 6.0
+            [2.00000, 3.00000]: 4.0
+            [3.00000, 4.00000]: 5.0
+            [4.00000, 5.00000]: 9.0
+
+        """
+
+        xs = iter(self)
+        ys = iter(other)
+        rights = heapq.merge(
+            itertools.chain.from_iterable((b.left, b.right) for b in self),
+            itertools.chain.from_iterable((b.left, b.right) for b in other)
+        )
+
+        b = Bin(next(rights), next(rights), 0)
+
+        x = next(xs)
+        y = next(ys)
+
+        hist = Histogram(max_bins=max(self.max_bins, other.max_bins))
+
+        while True:
+
+            b.count += coverage_ratio(b, x) * x.count
+            b.count += coverage_ratio(b, y) * y.count
+
+            if b.count:
+                hist.append(b)
+
+            try:
+                b = Bin(b.right, next(rights), 0)
+            except StopIteration:
+                break
+
+            if b.left >= x.right:
+                x = next(xs, x)
+            if b.left >= y.right:
+                y = next(ys, y)
+
+        hist._shrink(k=len(hist) - hist.max_bins)
+
+        return hist
 
     def __repr__(self):
         return '\n'.join(str(b) for b in self)
