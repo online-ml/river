@@ -9,18 +9,20 @@ class Covariance(base.Bivariate):
 
     Example:
 
-        >>> from creme import stats
+        ::
 
-        >>> x = [-2.1,  -1,  4.3]
-        >>> y = [   3, 1.1, 0.12]
+            >>> from creme import stats
 
-        >>> cov = stats.Covariance()
+            >>> x = [-2.1,  -1,  4.3]
+            >>> y = [   3, 1.1, 0.12]
 
-        >>> for xi, yi in zip(x, y):
-        ...     print(cov.update(xi, yi).get())
-        0.0
-        -1.044999...
-        -4.286
+            >>> cov = stats.Covariance()
+
+            >>> for xi, yi in zip(x, y):
+            ...     print(cov.update(xi, yi).get())
+            0.0
+            -1.044999...
+            -4.286
 
     References:
 
