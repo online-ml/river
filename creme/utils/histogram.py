@@ -1,7 +1,6 @@
 import collections
 import heapq
 import itertools
-import math
 
 
 __all__ = ['Histogram']
@@ -53,12 +52,18 @@ def coverage_ratio(x, y):
         >>> coverage_ratio(Bin(1, 3), Bin(0, 4))
         0.5
 
+        >>> coverage_ratio(Bin(0, 4), Bin(1, 3))
+        1.0
+
         >>> coverage_ratio(Bin(1, 3), Bin(0, 1))
         0.0
 
+        >>> coverage_ratio(Bin(1, 1), Bin(1, 1))
+        1.0
+
     """
     if y.left == y.right:
-        return float(x.left < y.left < x.right)
+        return float(x.left <= y.left <= x.right)
     return max(0, min(x.right, y.right) - max(x.left, y.left)) / (y.right - y.left)
 
 
@@ -145,24 +150,25 @@ class Histogram(collections.UserList):
 
         # Bins have to be merged if there are more than max_bins
         if len(self) > self.max_bins:
-            self._shrink()
+            self._shrink(1)
 
         return self
 
-    def _shrink(self):
+    def _shrink(self, k):
         """Shrinks the histogram by merging the two closest bins."""
 
-        # Find the closest pair of bins
-        min_diff = math.inf
-        min_idx = None
-        for idx, (b1, b2) in enumerate(zip(self.data[:-1], self.data[1:])):
-            diff = b2.right - b1.right
-            if diff < min_diff:
-                min_diff = diff
-                min_idx = idx
+        indexes = range(len(self) - 1)
 
-        # Merge the bins
-        self[min_idx] += self.pop(min_idx + 1)  # Calls Bin.__iadd__
+        def bin_distance(i):
+            return self[i + 1].right - self[i].right
+
+        if k == 1:
+            i = min(indexes, key=bin_distance)
+            self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
+            return
+
+        for i in sorted(heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True):
+            self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
 
     def cdf(self, x):
         """Cumulative distribution function.
@@ -274,8 +280,7 @@ class Histogram(collections.UserList):
             if b.left >= y.right:
                 y = next(ys, y)
 
-        while len(hist) > hist.max_bins:
-            hist._shrink()
+        hist._shrink(k=len(hist) - hist.max_bins)
 
         return hist
 
