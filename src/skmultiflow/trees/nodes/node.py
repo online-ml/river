@@ -102,7 +102,7 @@ class Node(metaclass=ABCMeta):
         """
         count = 0
         for _, weight in self._observed_class_distribution.items():
-            if weight is not 0:
+            if weight != 0:
                 count += 1
                 if count == 2:  # No need to count beyond this point
                     break
