@@ -168,10 +168,11 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
         """
         normalized_sample = []
         for i in range(len(X)):
-            mean = self.sum_of_attribute_values[i] / self.samples_seen
-            sd = np.sqrt((self.sum_of_attribute_squares[i] - self.sum_of_attribute_values[i] ** 2
-                          / self.samples_seen) / self.samples_seen)
-            if self.samples_seen > 1 and sd > 0:
+            sd_squared = (self.sum_of_attribute_squares[i] - self.sum_of_attribute_values[i] ** 2
+                          / self.samples_seen) / self.samples_seen
+            if self.samples_seen > 1 and sd_squared >= 0:
+                mean = self.sum_of_attribute_values[i] / self.samples_seen
+                sd = np.sqrt(sd_squared)
                 normalized_sample.append((X[i] - mean) / (3 * sd))
             else:
                 normalized_sample.append(0.0)
@@ -196,10 +197,11 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
             normalized target value
         """
         if self.samples_seen > 1:
-            mean = self.sum_of_values / self.samples_seen
-            sd = np.sqrt((self.sum_of_squares - self.sum_of_values ** 2
-                          / self.samples_seen) / self.samples_seen)
-            if sd > 0:
+            sd_squared = (self.sum_of_squares - self.sum_of_values ** 2
+                          / self.samples_seen) / self.samples_seen
+            if sd_squared >= 0:
+                mean = self.sum_of_values / self.samples_seen
+                sd = np.sqrt(sd_squared)
                 return (y - mean) / (3 * sd)
             else:
                 return 0.0
