@@ -1337,9 +1337,10 @@ class MultiTargetRegressionMeasurements(object):
         if self.sample_count == 0:
             return 0.0
         else:
-            return np.sum(np.sqrt(self.total_square_error /
-                                  self.sample_count)) \
-                / self.n_targets
+            mse = self.total_square_error / self.sample_count
+            return np.sum(
+                np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0)
+            ) / self.n_targets
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
@@ -1465,9 +1466,10 @@ class WindowMultiTargetRegressionMeasurements(object):
         if self._sample_count == 0:
             return 0.0
         else:
-            return np.sum(np.sqrt(self.total_square_error /
-                                  self._sample_count)) \
-                / self.n_targets
+            mse = self.total_square_error / self._sample_count
+            return np.sum(
+                np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0)
+            ) / self.n_targets
 
     def get_last(self):
         return self.last_true_label, self.last_prediction

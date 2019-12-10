@@ -1,4 +1,7 @@
 import math
+
+from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
+
 from skmultiflow.trees.nodes import FoundNode
 from skmultiflow.trees.nodes import SplitNode
 from skmultiflow.trees.nodes import ActiveLearningNode
@@ -88,7 +91,6 @@ class AdaSplitNodeForRegression(SplitNode, AdaNode):
 
         # Condition to replace alternate tree
         elif self._alternate_tree is not None and self._alternate_tree.is_null_error() is False:
-            print("we'll be replacing the actual tree")
             if self.get_error_width() > ERROR_WIDTH_THRESHOLD \
                     and self._alternate_tree.get_error_width() > ERROR_WIDTH_THRESHOLD:
                 old_error_rate = self.get_error_estimation()
@@ -123,7 +125,20 @@ class AdaSplitNodeForRegression(SplitNode, AdaNode):
         child_branch = self.instance_child_index(X)
         child = self.get_child(child_branch)
         if child is not None:
-            child.learn_from_instance(X, y, weight, rhat, parent, parent_branch)
+            child.learn_from_instance(X, y, weight, rhat, self, child_branch)
+        # Instance contains a categorical value previously unseen by the split
+        # node
+        elif isinstance(self.get_split_test(), NominalAttributeMultiwayTest) and \
+                self.get_split_test().branch_for_instance(X) < 0:
+            # Creates a new learning node to encompass the new observed feature
+            # value
+            leaf_node = rhat._new_learning_node()
+            branch_id = self.get_split_test().add_new_branch(
+                X[self.get_split_test().get_atts_test_depends_on()[0]]
+            )
+            self.set_child(branch_id, leaf_node)
+            rhat._active_leaf_node_cnt += 1
+            leaf_node.learn_from_instance(X, y, weight, rhat, parent, parent_branch)
 
     # Override AdaNode
     def kill_tree_children(self, rhat):

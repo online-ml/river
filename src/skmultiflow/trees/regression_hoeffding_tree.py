@@ -7,6 +7,7 @@ from skmultiflow.utils import *
 from skmultiflow.utils import check_random_state
 from skmultiflow.trees.split_criterion import VarianceReductionSplitCriterion
 
+from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
 from skmultiflow.trees.nodes import SplitNode
 from skmultiflow.trees.nodes import LearningNode
 from skmultiflow.trees.nodes import ActiveLearningNode
@@ -215,7 +216,7 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
                                                 random_state=self.random_state)
 
     def get_weights_for_instance(self, X):
-        """ Get class votes for a single instance.
+        """ Get the perceptron weights for a single instance.
 
         Parameters
         ----------
@@ -224,15 +225,18 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
 
         Returns
         -------
-        dict (class_value, weight)
-
+        np.array(n_features)
+            Array with the perceptron weights for a specific instance
         """
         if self._tree_root is not None:
             found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
             leaf_node = found_node.node
             if leaf_node is None:
                 leaf_node = found_node.parent
-            return leaf_node.perceptron_weight
+            if isinstance(leaf_node, LearningNode):
+                return leaf_node.perceptron_weight
+            else:
+                return None
         else:
             return []
 
@@ -308,13 +312,13 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._active_leaf_node_cnt = 1
-
         found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
         leaf_node = found_node.node
         if leaf_node is None:
             leaf_node = self._new_learning_node()
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._active_leaf_node_cnt += 1
+
         if isinstance(leaf_node, LearningNode):
             learning_node = leaf_node
             learning_node.learn_from_instance(X, y, sample_weight, self)
@@ -325,6 +329,18 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
                 if weight_diff >= self.grace_period:
                     self._attempt_to_split(active_learning_node, found_node.parent, found_node.parent_branch)
                     active_learning_node.set_weight_seen_at_last_split_evaluation(weight_seen)
+        # Split node encountered a previously unseen categorical value
+        # (in a multiway test)
+        elif isinstance(leaf_node, SplitNode) and \
+                isinstance(leaf_node.get_split_test(), NominalAttributeMultiwayTest):
+            current = found_node.node
+            leaf_node = self._new_learning_node()
+            branch_id = current.get_split_test().add_new_branch(
+                X[current.get_split_test().get_atts_test_depends_on()[0]]
+            )
+            current.set_child(branch_id, leaf_node)
+            self._active_leaf_node_cnt += 1
+            leaf_node.learn_from_instance(X, y, sample_weight, self)
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self.estimate_model_byte_size()
 
@@ -356,12 +372,20 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
                         sum_of_values = votes[1]
                         predictions.append(sum_of_values / number_of_samples_seen)
                 elif self.leaf_prediction == _PERCEPTRON:
-                    normalized_sample = self.normalize_sample(X[i])
-                    normalized_prediction = np.dot(self.get_weights_for_instance(X[i]), normalized_sample)
-                    mean = self.sum_of_values / self.samples_seen
-                    sd = np.sqrt((self.sum_of_squares - self.sum_of_values ** 2 / self.samples_seen)
-                                 / self.samples_seen)
                     if self.samples_seen > 1:
+                        perceptron_weights = self.get_weights_for_instance(X[i])
+                        if perceptron_weights is None:
+                            predictions.append(0.0)
+                            continue
+                        normalized_sample = self.normalize_sample(X[i])
+                        normalized_prediction = np.dot(
+                            perceptron_weights, normalized_sample
+                        )
+                        mean = self.sum_of_values / self.samples_seen
+                        sd = np.sqrt(
+                            (self.sum_of_squares - self.sum_of_values ** 2 /
+                             self.samples_seen) / self.samples_seen
+                        )
                         predictions.append(normalized_prediction * sd * 3 + mean)
                     else:
                         predictions.append(0.0)

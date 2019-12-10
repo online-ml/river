@@ -36,10 +36,10 @@ class VarianceReductionSplitCriterion(SplitCriterion):
     def compute_SD(dist):
 
         N = int(dist[0])
-        sum = dist[1]
+        sum_ = dist[1]
         sum_sq = dist[2]
 
-        var = (sum_sq - (sum * sum)/N)/N
+        var = (sum_sq - (sum_ * sum_)/N)/N
         return np.sqrt(var) if var > 0.0 else 0.0
 
     @staticmethod
