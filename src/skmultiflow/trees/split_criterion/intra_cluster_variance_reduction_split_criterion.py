@@ -33,7 +33,7 @@ class IntraClusterVarianceReductionSplitCriterion(
         # TODO Also consider passing different weights for the targets
 
         N = dist[0]
-        sum = dist[1]
+        sum_ = dist[1]
         sum_sq = dist[2]
 
-        return np.mean((sum_sq - ((sum * sum) / N)) / (N - 1))
+        return np.mean((sum_sq - ((sum_ * sum_) / N)) / (N - 1))

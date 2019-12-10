@@ -11,6 +11,8 @@ from skmultiflow.trees.split_criterion import GiniSplitCriterion
 from skmultiflow.trees.split_criterion import InfoGainSplitCriterion
 from skmultiflow.trees.split_criterion import HellingerDistanceCriterion
 
+from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
+
 from skmultiflow.trees.nodes import Node
 from skmultiflow.trees.nodes import ActiveLearningNode
 from skmultiflow.trees.nodes import InactiveLearningNode
@@ -372,6 +374,20 @@ class HoeffdingTree(BaseSKMObject, ClassifierMixin):
                 if weight_diff >= self.grace_period:
                     self._attempt_to_split(active_learning_node, found_node.parent, found_node.parent_branch)
                     active_learning_node.set_weight_seen_at_last_split_evaluation(weight_seen)
+        # Split node encountered a previously unseen categorical value
+        # (in a multiway test)
+        elif isinstance(leaf_node, SplitNode) and \
+                isinstance(leaf_node.get_split_test(), NominalAttributeMultiwayTest):
+            # Creates a new branch to the new categorical value
+            current = found_node.node
+            leaf_node = self._new_learning_node()
+            branch_id = current.get_split_test().add_new_branch(
+                X[current.get_split_test().get_atts_test_depends_on()[0]]
+            )
+            current.set_child(branch_id, leaf_node)
+            self._active_leaf_node_cnt += 1
+            leaf_node.learn_from_instance(X, y, sample_weight, self)
+
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self.estimate_model_byte_size()
 

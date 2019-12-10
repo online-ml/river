@@ -6,6 +6,7 @@ from skmultiflow.core import MultiOutputMixin
 from skmultiflow.trees import RegressionHoeffdingTree
 from skmultiflow.utils import get_dimensions
 from skmultiflow.trees.split_criterion import IntraClusterVarianceReductionSplitCriterion
+from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
 
 from skmultiflow.trees.nodes import SplitNode
 from skmultiflow.trees.nodes import LearningNode
@@ -269,8 +270,14 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
             leaf_node = found_node.node
             if leaf_node is None:
                 leaf_node = found_node.parent
-            fmaes['mean'] = leaf_node.fMAE_M
-            fmaes['perceptron'] = leaf_node.fMAE_P
+            if isinstance(leaf_node, LearningNode):
+                fmaes['mean'] = leaf_node.fMAE_M
+                fmaes['perceptron'] = leaf_node.fMAE_P
+            else:
+                # If the found node is not a learning node, give preference to
+                # the mean predictor
+                fmaes['mean'] = np.zeros(self._n_targets)
+                fmaes['perceptron'] = np.full(self._n_targets, np.Inf)
 
         return fmaes
 
@@ -291,7 +298,10 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
             leaf_node = found_node.node
             if leaf_node is None:
                 leaf_node = found_node.parent
-            return leaf_node.perceptron_weight
+            if isinstance(leaf_node, LearningNode):
+                return leaf_node.perceptron_weight
+            else:
+                return None
         else:  # TODO Verify
             return []
 
@@ -404,6 +414,19 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
                                            found_node.parent_branch)
                     active_learning_node.\
                         set_weight_seen_at_last_split_evaluation(weight_seen)
+        # Split node encountered a previously unseen categorical value
+        # (in a multiway test)
+        elif isinstance(leaf_node, SplitNode) and \
+                isinstance(leaf_node.get_split_test(), NominalAttributeMultiwayTest):
+            current = found_node.node
+            leaf_node = self._new_learning_node()
+            branch_id = current.get_split_test().add_new_branch(
+                X[current.get_split_test().get_atts_test_depends_on()[0]]
+            )
+            current.set_child(branch_id, leaf_node)
+            self._active_leaf_node_cnt += 1
+            leaf_node.learn_from_instance(X, y, sample_weight, self)
+
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self.estimate_model_byte_size()
 
@@ -420,9 +443,12 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
         list
             Predicted target values.
         """
-        r, _ = get_dimensions(X)
 
-        predictions = np.zeros((r, self._n_targets), dtype=np.float64)
+        r, _ = get_dimensions(X)
+        try:
+            predictions = np.zeros((r, self._n_targets), dtype=np.float64)
+        except AttributeError:
+            return [0.0]
         for i in range(r):
             if self.leaf_prediction == _TARGET_MEAN:
                 votes = self.get_votes_for_instance(X[i]).copy()
@@ -434,9 +460,19 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
                     predictions[i] = sum_of_values / number_of_examples_seen
             elif self.leaf_prediction == _PERCEPTRON:
                 if self.examples_seen > 1:
+                    perceptron_weights = self.get_weights_for_instance(X[i])
+                    if perceptron_weights is None:
+                        # Instance was sorted to a non-learning node: use
+                        # mean prediction
+                        votes = self.get_votes_for_instance(X[i]).copy()
+                        number_of_examples_seen = votes[0]
+                        sum_of_values = votes[1]
+                        predictions[i] = sum_of_values / number_of_examples_seen
+                        continue
+
                     normalized_sample = self.normalize_sample(X[i])
                     normalized_prediction = \
-                        np.matmul(self.get_weights_for_instance(X[i]),
+                        np.matmul(perceptron_weights,
                                   normalized_sample)
                     mean = self.sum_of_values / self.examples_seen
                     variance = (self.sum_of_squares -
@@ -456,18 +492,25 @@ class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMix
                     pred_M = sum_of_values / number_of_examples_seen
 
                     # Perceptron
-                    normalized_sample = self.normalize_sample(X[i])
-                    normalized_prediction = \
-                        np.matmul(self.get_weights_for_instance(X[i]),
-                                  normalized_sample)
-                    mean = self.sum_of_values / self.examples_seen
-                    variance = (self.sum_of_squares -
-                                (self.sum_of_values ** 2) /
-                                self.examples_seen) / (self.examples_seen - 1)
-                    sd = np.sqrt(variance, out=np.zeros_like(variance),
-                                 where=variance >= 0.0)
+                    perceptron_weights = self.get_weights_for_instance(X[i])
+                    if perceptron_weights is None:
+                        # Instance was sorted to a non-learning node: use
+                        # mean prediction
+                        predictions[i] = pred_M
+                        continue
+                    else:
+                        normalized_sample = self.normalize_sample(X[i])
+                        normalized_prediction = \
+                            np.matmul(perceptron_weights,
+                                      normalized_sample)
+                        mean = self.sum_of_values / self.examples_seen
+                        variance = (self.sum_of_squares -
+                                    (self.sum_of_values ** 2) /
+                                    self.examples_seen) / (self.examples_seen - 1)
+                        sd = np.sqrt(variance, out=np.zeros_like(variance),
+                                     where=variance >= 0.0)
 
-                    pred_P = normalized_prediction * sd + mean
+                        pred_P = normalized_prediction * sd + mean
                     fmae = self._get_predictors_faded_error(X[i])
 
                     for j in range(self._n_targets):

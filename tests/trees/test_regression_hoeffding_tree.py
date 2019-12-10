@@ -124,7 +124,13 @@ def test_hoeffding_tree_coverage(test_path):
     X = data['X']
     y = data['y']
 
-    learner = RegressionHoeffdingTree(leaf_prediction='mean', nominal_attributes=[i for i in range(3)])
+    # Typo in leaf prediction
+    learner = RegressionHoeffdingTree(
+        leaf_prediction='percptron', nominal_attributes=[i for i in range(3)]
+    )
+    print(learner.split_criterion)
+    # Invalid split_criterion
+    learner.split_criterion = 'VR'
     learner.partial_fit(X, y)
 
     assert learner._estimator_type == 'regressor'
@@ -146,6 +152,39 @@ def test_regression_hoeffding_tree_model_description():
                            "  Leaf = Statistics {0: 276.0000, 1: -21537.4157, 2: 11399392.2187}\n" \
                            "if Attribute 6 > 0.1394515530995348:\n" \
                            "  Leaf = Statistics {0: 224.0000, 1: 22964.8868, 2: 10433581.2534}\n"
+
+    assert SequenceMatcher(
+        None, expected_description, learner.get_model_description()
+    ).ratio() > 0.9
+
+
+def test_regression_hoeffding_tree_categorical_features(test_path):
+    data_path = os.path.join(test_path, 'ht_categorical_features_testcase.npy')
+    stream = np.load(data_path)
+
+    # Remove class value
+    stream = stream[:, np.delete(np.arange(8), 7)]
+    # Removes the last column (used only in the multi-target regression case)
+    stream = stream[:, :-1]
+    X, y = stream[:, :-1], stream[:, -1]
+
+    nominal_attr_idx = np.arange(7).tolist()
+    learner = RegressionHoeffdingTree(nominal_attributes=nominal_attr_idx)
+
+    learner.partial_fit(X, y)
+
+    expected_description = "if Attribute 4 = 0.0:\n" \
+                           "  Leaf = Statistics {0: 606.0000, 1: 1212.0000, 2: 3626.0000}\n" \
+                           "if Attribute 4 = 1.0:\n" \
+                           "  Leaf = Statistics {0: 551.0000, 1: 1128.0000, 2: 3400.0000}\n" \
+                           "if Attribute 4 = 2.0:\n" \
+                           "  Leaf = Statistics {0: 566.0000, 1: 1139.0000, 2: 3423.0000}\n" \
+                           "if Attribute 4 = 3.0:\n" \
+                           "  Leaf = Statistics {0: 577.0000, 1: 1138.0000, 2: 3374.0000}\n" \
+                           "if Attribute 4 = 4.0:\n" \
+                           "  Leaf = Statistics {0: 620.0000, 1: 1233.0000, 2: 3725.0000}\n" \
+                           "if Attribute 4 = -3.0:\n" \
+                           "  Leaf = Statistics {0: 80.0000, 1: 163.0000, 2: 483.0000}\n"
 
     assert SequenceMatcher(
         None, expected_description, learner.get_model_description()

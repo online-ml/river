@@ -93,8 +93,8 @@ def test_hoeffding_anytime_tree_nba(test_path):
                     "     tie_threshold=0.05)"
     assert learner.get_info() == expected_info
 
-    expected_model = 'ifAttribute1=0:ifAttribute3=0:Leaf=Class1|{0:260.0,1:287.0}' \
-                     'ifAttribute3=1:Leaf=Class0|{0:163.0,1:117.0}ifAttribute1=1:Leaf=Class0|{0:718.0,1:495.0}'
+    expected_model = 'ifAttribute1=0.0:ifAttribute3=0.0:Leaf=Class1|{0:260.0,1:287.0}' \
+                     'ifAttribute3=1.0:Leaf=Class0|{0:163.0,1:117.0}ifAttribute1=1.0:Leaf=Class0|{0:718.0,1:495.0}'
 
     assert (learner.get_model_description().replace("\n", " ").replace(" ", "") == expected_model.replace(" ", ""))
     assert type(learner.predict(X)) == np.ndarray

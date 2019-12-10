@@ -149,3 +149,31 @@ def test_hat_nba(test_path):
     assert learner.get_info() == expected_info
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
+
+
+def test_hoeffding_adaptive_tree_categorical_features(test_path):
+    data_path = os.path.join(test_path, 'ht_categorical_features_testcase.npy')
+    stream = np.load(data_path)
+    # Removes the last two columns (regression targets)
+    stream = stream[:, :-2]
+    X, y = stream[:, :-1], stream[:, -1]
+
+    nominal_attr_idx = np.arange(7).tolist()
+    learner = HAT(nominal_attributes=nominal_attr_idx)
+
+    learner.partial_fit(X, y, classes=np.unique(y))
+
+    expected_description = "if Attribute 0 = -15.0:\n" \
+                           "  Leaf = Class 2 | {2: 475.0}\n" \
+                           "if Attribute 0 = 0.0:\n" \
+                           "  Leaf = Class 0 | {0: 560.0, 1: 345.0}\n" \
+                           "if Attribute 0 = 1.0:\n" \
+                           "  Leaf = Class 1 | {0: 416.0, 1: 464.0}\n" \
+                           "if Attribute 0 = 2.0:\n" \
+                           "  Leaf = Class 1 | {0: 335.0, 1: 504.0}\n" \
+                           "if Attribute 0 = 3.0:\n" \
+                           "  Leaf = Class 1 | {0: 244.0, 1: 644.0}\n" \
+                           "if Attribute 0 = -30.0:\n" \
+                           "  Leaf = Class 3.0 | {3.0: 65.0, 4.0: 55.0}\n"
+
+    assert learner.get_model_description() == expected_description
