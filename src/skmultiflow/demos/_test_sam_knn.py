@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from skmultiflow.data import FileStream
-from skmultiflow.lazy import SAMKNN
+from skmultiflow.lazy import SAMKNNClassifier
 from sklearn.metrics import accuracy_score
 from skmultiflow.utils.utils import get_dimensions
 
@@ -9,7 +9,7 @@ from skmultiflow.utils.utils import get_dimensions
 def run(X, y, hyperParams):
     """ run
     
-    Test function for SAMKNN, not integrated with evaluation modules.
+    Test function for SAMKNNClassifier, not integrated with evaluation modules.
     
     Parameters
     ----------
@@ -20,15 +20,15 @@ def run(X, y, hyperParams):
         The labels for all the samples in X coded as 8 bits.
     
     hyperParams: dict
-        A dictionary containing the __init__ params for the SAMKNN.
+        A dictionary containing the __init__ params for the SAMKNNClassifier.
     
     """
     r, c = get_dimensions(X)
-    classifier = SAMKNN(n_neighbors=hyperParams['nNeighbours'],
-                        max_window_size=hyperParams['maxSize'],
-                        weighting=hyperParams['knnWeights'],
-                        stm_size_option=hyperParams['STMSizeAdaption'],
-                        use_ltm=hyperParams['use_ltm'])
+    classifier = SAMKNNClassifier(n_neighbors=hyperParams['nNeighbours'],
+                                  max_window_size=hyperParams['maxSize'],
+                                  weighting=hyperParams['knnWeights'],
+                                  stm_size_option=hyperParams['STMSizeAdaption'],
+                                  use_ltm=hyperParams['use_ltm'])
     logging.info('applying model on dataset')
     predicted_labels = []
     true_labels = []

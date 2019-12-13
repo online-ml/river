@@ -3,17 +3,17 @@ import numpy as np
 from sklearn.naive_bayes import GaussianNB
 
 from skmultiflow.data import SEAGenerator
-from skmultiflow.meta import LearnNSE
-from skmultiflow.trees import HoeffdingTree
+from skmultiflow.meta import LearnPPNSEClassifier
+from skmultiflow.trees import HoeffdingTreeClassifier
 
 
 def run_classifier(estimator, stream, pruning=None, ensemble_size=15, m=200):
-    classifier = LearnNSE(base_estimator=estimator,
-                          window_size=250,
-                          pruning=pruning,
-                          slope=0.5,
-                          crossing_point=10,
-                          n_estimators=ensemble_size)
+    classifier = LearnPPNSEClassifier(base_estimator=estimator,
+                                      window_size=250,
+                                      pruning=pruning,
+                                      slope=0.5,
+                                      crossing_point=10,
+                                      n_estimators=ensemble_size)
 
     # Keeping track of sample count and correct prediction count
     sample_count = 0
@@ -61,9 +61,9 @@ def test_learn_nse():
     assert len(classifier.X_batch) == 0
     assert len(classifier.y_batch) == 0
 
-    expected_info = 'LearnNSE(base_estimator=GaussianNB(priors=None, var_smoothing=1e-09),\n' \
-                    '         crossing_point=10, n_estimators=15, pruning=None, slope=0.5,\n' \
-                    '         window_size=250)'
+    expected_info = 'LearnPPNSEClassifier(base_estimator=GaussianNB(priors=None, var_smoothing=1e-09),\n' \
+                    '                     crossing_point=10, n_estimators=15, pruning=None,\n' \
+                    '                     slope=0.5, window_size=250)'
     assert classifier.get_info() == expected_info
     # test pruning error
     corrects, acc, classifier = run_classifier(estimator, stream, pruning="error", ensemble_size=5)
@@ -86,9 +86,9 @@ def test_learn_nse():
     stream = SEAGenerator(random_state=2212)
     stream.prepare_for_use()
 
-    estimator = HoeffdingTree()
+    estimator = HoeffdingTreeClassifier()
 
-    classifier = LearnNSE(base_estimator=estimator)
+    classifier = LearnPPNSEClassifier(base_estimator=estimator)
 
     # Keeping track of sample count and correct prediction count
     sample_count = 0

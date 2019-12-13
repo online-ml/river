@@ -72,3 +72,23 @@ If you are modifying existing code:
     * The documentation page is hosted in the **gh-pages** branch.
 
 * When adding/modifying documentation, it is recommended to generate the html page locally to ensure that it is correctly generated and the content is rendered as expected.
+
+## Naming convention for new methods
+
+Naming methods properly is important for multiple reasons:
+- The name of the method is the first thing that the user sees, so it is vital to provide key information at this point.
+- Reduces the mental load for the user.
+- Reduces the chances of making mistakes.
+- It keeps the structure of the project clean.
+
+### Recommendations when naming a new method
+- Choose a name that is clear and concise.
+- Identify the task type (depends on context): classifier, regressor, etc.
+- Avoid acronyms as much as possible: e.g. `HoeffdingAdaptiveTree` instead of `HAT`
+  There are cases where an acronym is acceptable, e.g. if a method's name is too long
+
+### Convention
+
+`method's name` + `type
+
+where `type` is optional since in some cases it could be inferred from the method/class name itself. E.g. `RegressorChain`

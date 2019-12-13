@@ -10,8 +10,23 @@ from skmultiflow.core import BaseSKMObject, ClassifierMixin
 from skmultiflow.utils import get_dimensions
 from . import libNearestNeighbor
 
+import warnings
 
-class SAMKNN(BaseSKMObject, ClassifierMixin):
+
+def SAMKNN(n_neighbors=5, weighting='distance', max_window_size=5000, ltm_size=0.4, min_stm_size=50,
+           stm_size_option='maxACCApprox', use_ltm=True):     # pragma: no cover
+    warnings.warn("'SAMKNN' has been renamed to 'SAMKNNClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return SAMKNNClassifier(n_neighbors=n_neighbors,
+                            weighting=weighting,
+                            max_window_size=max_window_size,
+                            ltm_size=ltm_size,
+                            min_stm_size=min_stm_size,
+                            stm_size_option=stm_size_option,
+                            use_ltm=use_ltm)
+
+
+class SAMKNNClassifier(BaseSKMObject, ClassifierMixin):
     """ Self Adjusting Memory coupled with the kNN classifier.
 
     Parameters
@@ -48,15 +63,15 @@ class SAMKNN(BaseSKMObject, ClassifierMixin):
     
     Examples
     --------
-    >>> from skmultiflow.lazy.sam_knn import SAMKNN
-    >>> from skmultiflow.data.file_stream import FileStream
-    >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
+    >>> from skmultiflow.lazy import SAMKNNClassifier
+    >>> from skmultiflow.data import FileStream
+    >>> from skmultiflow.evaluation import EvaluatePrequential
     >>> # Setup the File Stream
     >>> stream = FileStream("moving_squares.csv")
     >>> stream.prepare_for_use()
     >>> # Setup the classifier
-    >>> classifier = SAMKNN(n_neighbors=5, weighting='distance', max_window_size=1000, stm_size_option='maxACCApprox',
-    >>>                     use_ltm=False)
+    >>> classifier = SAMKNNClassifier(n_neighbors=5, weighting='distance', max_window_size=1000,
+    >>>                               stm_size_option='maxACCApprox', use_ltm=False)
     >>> # Setup the evaluator
     >>> evaluator = EvaluatePrequential(pretrain_size=0, max_samples=200000, batch_size=1, n_wait=100, max_time=1000,
     >>>                                 output_file=None, show_plot=True, metrics=['accuracy', 'kappa_t'])
@@ -113,9 +128,9 @@ class SAMKNN(BaseSKMObject, ClassifierMixin):
         if self.stm_size_option is not None:
             self.STMDistances = np.zeros(shape=(max_window_size + 1, max_window_size + 1))
         if self.weighting == 'distance':
-            self.getLabelsFct = SAMKNN.get_distance_weighted_label
+            self.getLabelsFct = SAMKNNClassifier.get_distance_weighted_label
         elif self.weighting == 'uniform':
-            self.getLabelsFct = SAMKNN.get_maj_label
+            self.getLabelsFct = SAMKNNClassifier.get_maj_label
         self.STMSizeAdaption = self.stm_size_option
         if self.use_ltm:
             self.predictFct = self._predict_by_all_memories
@@ -224,9 +239,9 @@ class SAMKNN(BaseSKMObject, ClassifierMixin):
                     break
                 samplesShortened = np.delete(self._STMSamples, i, 0)
                 labelsShortened = np.delete(self._STMLabels, i, 0)
-                distancesSTM = SAMKNN.get_distances(self._STMSamples[i, :], samplesShortened)
+                distancesSTM = SAMKNNClassifier.get_distances(self._STMSamples[i, :], samplesShortened)
                 nnIndicesSTM = libNearestNeighbor.nArgMin(self.n_neighbors, distancesSTM)[0]
-                distancesLTM = SAMKNN.get_distances(self._STMSamples[i, :], samplesCl)
+                distancesLTM = SAMKNNClassifier.get_distances(self._STMSamples[i, :], samplesCl)
                 nnIndicesLTM = libNearestNeighbor.nArgMin(min(len(distancesLTM), self.n_neighbors), distancesLTM)[0]
                 correctIndicesSTM = nnIndicesSTM[labelsShortened[nnIndicesSTM] == self._STMLabels[i]]
                 if len(correctIndicesSTM) > 0:
@@ -239,7 +254,7 @@ class SAMKNN(BaseSKMObject, ClassifierMixin):
 
     def _partial_fit(self, x, y):
         """Processes a new sample."""
-        distancesSTM = SAMKNN.get_distances(x, self._STMSamples)
+        distancesSTM = SAMKNNClassifier.get_distances(x, self._STMSamples)
         if not self.use_ltm:
             self._partial_fit_by_stm(x, y, distancesSTM)
         else:
@@ -254,7 +269,7 @@ class SAMKNN(BaseSKMObject, ClassifierMixin):
 
         if self.STMSizeAdaption is not None:
             if STMShortened:
-                distancesSTM = SAMKNN.get_distances(x, self._STMSamples[:-1, :])
+                distancesSTM = SAMKNNClassifier.get_distances(x, self._STMSamples[:-1, :])
 
             self.STMDistances[len(self._STMLabels)-1,:len(self._STMLabels)-1] = distancesSTM
             oldWindowSize = len(self._STMLabels)
@@ -294,7 +309,7 @@ class SAMKNN(BaseSKMObject, ClassifierMixin):
                 predictedLabelSTM = self.getLabelsFct(distancesSTM, self._STMLabels, len(self._STMLabels))[0]
                 predictedLabel = predictedLabelSTM
             else:
-                distancesLTM = SAMKNN.get_distances(sample, self._LTMSamples)
+                distancesLTM = SAMKNNClassifier.get_distances(sample, self._LTMSamples)
                 predictedLabelSTM = self.getLabelsFct(distancesSTM, self._STMLabels, self.n_neighbors)[0]
                 predictedLabelBoth = \
                 self.getLabelsFct(np.append(distancesSTM, distancesLTM), np.append(self._STMLabels, self._LTMLabels),
@@ -335,7 +350,7 @@ class SAMKNN(BaseSKMObject, ClassifierMixin):
                 predictedLabelSTM = self.getLabelsFct(distancesSTM, self._STMLabels, len(self._STMLabels))[0]
                 predictedLabel = predictedLabelSTM
             else:
-                distancesLTM = SAMKNN.get_distances(sample, self._LTMSamples)
+                distancesLTM = SAMKNNClassifier.get_distances(sample, self._LTMSamples)
                 predictedLabelSTM = self.getLabelsFct(distancesSTM, self._STMLabels, self.n_neighbors)[0]
                 distances_new = cp.deepcopy(distancesSTM)
                 stm_labels_new = cp.deepcopy(self._STMLabels)
@@ -406,7 +421,7 @@ class SAMKNN(BaseSKMObject, ClassifierMixin):
             self._LTMSamples = np.empty(shape=(0, c))
 
         for i in range(r):
-            distancesSTM = SAMKNN.get_distances(X[i], self._STMSamples)
+            distancesSTM = SAMKNNClassifier.get_distances(X[i], self._STMSamples)
             predictedLabel.append(self.predictFct(X[i], None, distancesSTM))
         return np.asarray(predictedLabel)
 

@@ -26,7 +26,7 @@ class LearningNode(Node):
             Instance class.
         weight: float
             Instance weight.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             Hoeffding Tree to update.
 
         """

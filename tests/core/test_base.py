@@ -4,9 +4,9 @@ from skmultiflow.core import clone
 from skmultiflow.core.base import _pprint
 from skmultiflow.data import SEAGenerator
 from skmultiflow.bayes import NaiveBayes
-from skmultiflow.trees import HoeffdingTree
-from skmultiflow.trees import RegressionHoeffdingTree
-from skmultiflow.trees import MultiTargetRegressionHoeffdingTree
+from skmultiflow.trees import HoeffdingTreeClassifier
+from skmultiflow.trees import HoeffdingTreeRegressor
+from skmultiflow.trees import iSOUPTreeRegressor
 from skmultiflow.core import is_classifier
 from skmultiflow.core import is_regressor
 
@@ -42,7 +42,7 @@ def test_clone():
 
 
 def test_pprint():
-    learner = HoeffdingTree()
+    learner = HoeffdingTreeClassifier()
 
     expected_string = "binary_split=False, grace_period=200, leaf_prediction='nba',\n" \
                       " max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0,\n" \
@@ -53,7 +53,7 @@ def test_pprint():
 
 
 def test_set_params():
-    learner = HoeffdingTree()
+    learner = HoeffdingTreeClassifier()
     original_info = learner.get_info()
 
     params = learner.get_params()
@@ -65,19 +65,18 @@ def test_set_params():
 
     assert original_info != updated_info
 
-    expected_info = "HoeffdingTree(binary_split=False, grace_period=200, leaf_prediction='nb',\n" \
-                    "              max_byte_size=33554432, memory_estimate_period=1000000,\n" \
-                    "              nb_threshold=0, no_preprune=False, nominal_attributes=None,\n" \
-                    "              remove_poor_atts=True, split_confidence=1e-07,\n" \
-                    "              split_criterion='gini', stop_mem_management=False,\n" \
-                    "              tie_threshold=0.05)"
-    assert updated_info == expected_info
+    expected_info = "HoeffdingTreeClassifier(binary_split=False, grace_period=200, leaf_prediction='nb', " \
+                    "max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0, no_preprune=False, " \
+                    "nominal_attributes=None, remove_poor_atts=True, split_confidence=1e-07, split_criterion='gini', " \
+                    "stop_mem_management=False, tie_threshold=0.05)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
 
 def test_get_tags():
-    classifier = HoeffdingTree()
-    regressor = RegressionHoeffdingTree()
-    multi_output_regressor = MultiTargetRegressionHoeffdingTree()
+    classifier = HoeffdingTreeClassifier()
+    regressor = HoeffdingTreeRegressor()
+    multi_output_regressor = iSOUPTreeRegressor()
 
     classifier_tags = classifier._get_tags()
 
@@ -129,5 +128,5 @@ def test_is_classifier():
 
 
 def test_is_regressor():
-    learner = RegressionHoeffdingTree()
+    learner = HoeffdingTreeRegressor()
     assert is_regressor(learner) is True

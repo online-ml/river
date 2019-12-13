@@ -7,7 +7,7 @@ Train and test a stream classification model in ``scikit-multiflow``
 
 .. py:currentmodule:: skmultiflow.trees.hoeffding_tree
 
-In this example, we will use a data stream to train a :class:`HoeffdingTree` classifier and will measure its performance using prequential evaluation:
+In this example, we will use a data stream to train a :class:`HoeffdingTreeClassifier` and will measure its performance using prequential evaluation:
 
 .. py:currentmodule:: skmultiflow.data.waveform_generator
 
@@ -33,7 +33,7 @@ In this example, we will use a data stream to train a :class:`HoeffdingTree` cla
 
    .. code-block:: python
 
-      ht = HoeffdingTree()
+      ht = HoeffdingTreeClassifier()
 
 .. py:currentmodule:: skmultiflow.evaluation.evaluate_prequential
 
@@ -71,15 +71,15 @@ In this example, we will use a data stream to train a :class:`HoeffdingTree` cla
    :linenos:
 
    from skmultiflow.data import WaveformGenerator
-   from skmultiflow.trees import HoeffdingTree
+   from skmultiflow.trees import HoeffdingTreeClassifier
    from skmultiflow.evaluation import EvaluatePrequential
 
    # 1. Create a stream
    stream = WaveformGenerator()
    stream.prepare_for_use()
 
-   # 2. Instantiate the HoeffdingTree classifier
-   ht = HoeffdingTree()
+   # 2. Instantiate the HoeffdingTreeClassifier
+   ht = HoeffdingTreeClassifier()
 
    # 3. Setup the evaluator
    evaluator = EvaluatePrequential(show_plot=True,
@@ -102,7 +102,7 @@ Load data from a file as a stream and save test results into a file.
 
 .. py:currentmodule:: skmultiflow.trees.hoeffding_tree
 
-There are cases where we want to use data stored in files. In this example we will train a :class:`HoeffdingTree` classifier, but this time we will read the data from a (csv) file and will write the results of the evaluation into a (csv) file.
+There are cases where we want to use data stored in files. In this example we will train a :class:`HoeffdingTreeClassifier`, but this time we will read the data from a (csv) file and will write the results of the evaluation into a (csv) file.
 
 .. py:currentmodule:: skmultiflow.data.file_stream
 
@@ -129,7 +129,7 @@ There are cases where we want to use data stored in files. In this example we wi
 
    .. code-block:: python
 
-      ht = HoeffdingTree()
+      ht = HoeffdingTreeClassifier()
 
 
 .. py:currentmodule:: skmultiflow.evaluation.evaluate_prequential
@@ -163,7 +163,7 @@ The file contains information related to the test that generated the file. For t
 
    # TEST CONFIGURATION BEGIN
    # File Stream: filename: elec.csv  -  n_targets: 1
-   # [0] HoeffdingTree: max_byte_size: 33554432 - memory_estimate_period: 1000000 - grace_period: 200 - split_criterion: info_gain - split_confidence: 1e-07 - tie_threshold: 0.05 - binary_split: False - stop_mem_management: False - remove_poor_atts: False - no_pre_prune: False - leaf_prediction: nba - nb_threshold: 0 - nominal_attributes: [] -
+   # [0] HoeffdingTreeClassifier: max_byte_size: 33554432 - memory_estimate_period: 1000000 - grace_period: 200 - split_criterion: info_gain - split_confidence: 1e-07 - tie_threshold: 0.05 - binary_split: False - stop_mem_management: False - remove_poor_atts: False - no_pre_prune: False - leaf_prediction: nba - nb_threshold: 0 - nominal_attributes: [] -
    # Prequential Evaluator: n_wait: 200 - max_samples: 10000 - max_time: inf - output_file: results.csv - batch_size: 1 - pretrain_size: 1000 - task_type: classification - show_plot: False - metrics: ['performance', 'kappa']
    # TEST CONFIGURATION END
 
@@ -182,15 +182,15 @@ And data related to performance during the evaluation:
    :linenos:
 
    from skmultiflow.data import FileStream
-   from skmultiflow.trees import HoeffdingTree
+   from skmultiflow.trees import HoeffdingTreeClassifier
    from skmultiflow.evaluation import EvaluatePrequential
 
    # 1. Create a stream
    stream = FileStream("../datasets/elec.csv")
    stream.prepare_for_use()
 
-   # 2. Instantiate the HoeffdingTree classifier
-   ht = HoeffdingTree()
+   # 2. Instantiate the HoeffdingTreeClassifier
+   ht = HoeffdingTreeClassifier()
 
    # 3. Setup the evaluator
    evaluator = EvaluatePrequential(pretrain_size=1000,

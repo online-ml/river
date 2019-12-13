@@ -1,16 +1,16 @@
 import warnings, logging
-from skmultiflow.meta import OzaBaggingAdwin
-from skmultiflow.lazy import KNNAdwin
+from skmultiflow.meta import OzaBaggingADWINClassifier
+from skmultiflow.lazy import KNNADWINClassifier
 from skmultiflow.data import SEAGenerator
 
 
 def demo():
     """ _test_oza_bagging_adwin
 
-    This demo tests the OzaBaggingAdwin classifier using KNNAdwin classifiers, 
+    This demo tests the OzaBaggingADWINClassifier using KNNADWINClassifier as base estimator
     on samples given by a SEAGenerator. 
 
-    The test computes the performance of the OzaBaggingAdwin classifier as well 
+    The test computes the performance of the OzaBaggingADWINClassifier as well
     as the time to create the structure and classify max_samples (20000 by 
     default) instances.
 
@@ -19,7 +19,8 @@ def demo():
     warnings.filterwarnings("ignore", ".*Passing 1d.*")
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=1)
     stream.prepare_for_use()
-    clf = OzaBaggingAdwin(base_estimator=KNNAdwin(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=2, random_state=1)
+    clf = OzaBaggingADWINClassifier(base_estimator=KNNADWINClassifier(n_neighbors=8, max_window_size=2000, leaf_size=30),
+                                    n_estimators=2, random_state=1)
     sample_count = 0
     correctly_classified = 0
     max_samples = 20000

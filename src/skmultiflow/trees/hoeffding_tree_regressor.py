@@ -2,9 +2,8 @@ import numpy as np
 from operator import attrgetter
 
 from skmultiflow.core import RegressorMixin
-from skmultiflow.trees.hoeffding_tree import HoeffdingTree
+from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
 from skmultiflow.utils import *
-from skmultiflow.utils import check_random_state
 from skmultiflow.trees.split_criterion import VarianceReductionSplitCriterion
 
 from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
@@ -16,15 +15,40 @@ from skmultiflow.trees.nodes import InactiveLearningNodeForRegression
 from skmultiflow.trees.nodes import ActiveLearningNodePerceptron
 from skmultiflow.trees.nodes import InactiveLearningNodePerceptron
 
+import warnings
+
 _TARGET_MEAN = 'mean'
 _PERCEPTRON = 'perceptron'
 
 
-class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
-    """ Regression Hoeffding Tree or Fast Incremental Model Tree with Drift Detection.
+def RegressionHoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
+                            split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
+                            stop_mem_management=False, remove_poor_atts=False, leaf_prediction="perceptron",
+                            no_preprune=False, nb_threshold=0, nominal_attributes=None, learning_ratio_perceptron=0.02,
+                            learning_ratio_decay=0.001, learning_ratio_const=True,
+                            random_state=None):     # pragma: no cover
+    warnings.warn("'.RegressionHoeffdingTree' has been renamed to 'HoeffdingTreeRegressor' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return HoeffdingTreeRegressor(max_byte_size=max_byte_size,
+                                  memory_estimate_period=memory_estimate_period,
+                                  grace_period=grace_period,
+                                  split_confidence=split_confidence,
+                                  tie_threshold=tie_threshold,
+                                  binary_split=binary_split,
+                                  stop_mem_management=stop_mem_management,
+                                  remove_poor_atts=remove_poor_atts,
+                                  leaf_prediction=leaf_prediction,
+                                  no_preprune=no_preprune,
+                                  nb_threshold=nb_threshold,
+                                  nominal_attributes=nominal_attributes,
+                                  learning_ratio_perceptron=learning_ratio_perceptron,
+                                  learning_ratio_decay=learning_ratio_decay,
+                                  learning_ratio_const=learning_ratio_const,
+                                  random_state=random_state)
 
-    This is an implementation of the Fast Incremental Model Tree with Drift Detection (FIMT-DD)
-    introduced by E. Ikonomovska, J. Gama, and S. Džeroski [1]_.
+
+class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
+    """ Hoeffding Tree regressor.
 
     Parameters
     ----------
@@ -66,15 +90,20 @@ class RegressionHoeffdingTree(RegressorMixin, HoeffdingTree):
        If None, the random number generator is the RandomState instance used
        by `np.random`. Used when leaf_prediction is 'perceptron'.
 
-    References
-    ----------
-    .. [1] Elena Ikonomovska, João Gama, and Sašo Džeroski. 2011. Learning model trees from
-           evolving data streams. Data Min. Knowl. Discov. 23, 1 (July 2011), 128-168.
+    Notes
+    -----
+    The Hoeffding Tree Regressor (HTR) is an adaptation of the incremental tree algorithm of the same name for
+    classification. Similarly to its classification counterpart, HTR uses the Hoeffding bound to control
+    its split decisions. Differently from the classification algorithm, HTR relies on calculating
+    the reduction of variance in the target space to decide among the split candidates. The smallest the variance
+    at its leaf nodes, the more homogeneous the partitions are. At its leaf nodes, HTR fits either linear
+    perceptron models or uses the sample average as the predictor.
+
     """
 
-    # ===========================================
-    # == Hoeffding Regression Tree implementation ===
-    # ===========================================
+    # =============================================
+    # == Hoeffding Tree Regressor implementation ==
+    # =============================================
     def __init__(self,
                  max_byte_size=33554432,
                  memory_estimate_period=1000000,

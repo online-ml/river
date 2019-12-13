@@ -3,8 +3,19 @@ from skmultiflow.utils.data_structures import InstanceWindow
 import sklearn.neighbors as sk
 from skmultiflow.utils.utils import *
 
+import warnings
 
-class KNN(BaseSKMObject, ClassifierMixin):
+
+def KNN(n_neighbors=5, max_window_size=1000, leaf_size=30, nominal_attributes=None):     # pragma: no cover
+    warnings.warn("'KNN' has been renamed to 'KNNClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return KNNClassifier(n_neighbors=n_neighbors,
+                         max_window_size=max_window_size,
+                         leaf_size=leaf_size,
+                         nominal_attributes=nominal_attributes)
+
+
+class KNNClassifier(BaseSKMObject, ClassifierMixin):
     """ K-Nearest Neighbors classifier.
     
     This is a non-parametric classification method. The output of this
@@ -63,14 +74,14 @@ class KNN(BaseSKMObject, ClassifierMixin):
     Examples
     --------
     >>> # Imports
-    >>> from skmultiflow.lazy import KNN
+    >>> from skmultiflow.lazy import KNNClassifier
     >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(random_state=1, noise_percentage=.1)
     >>> stream.prepare_for_use()
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
-    >>> knn = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
+    >>> knn = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)
     >>> knn.partial_fit(X, y)
     >>> # Preparing the processing of 5000 samples and correct prediction count
     >>> n_samples = 0
@@ -84,10 +95,10 @@ class KNN(BaseSKMObject, ClassifierMixin):
     ...     n_samples += 1
     >>>
     >>> # Displaying results
-    >>> print('KNN usage example')
+    >>> print('KNNClassifier usage example')
     >>> print('{} samples analyzed.'.format(n_samples))
     5000 samples analyzed.
-    >>> print("KNN's performance: {}".format(corrects/n_samples))
+    >>> print("KNNClassifier's performance: {}".format(corrects/n_samples))
     KNN's performance: 0.8788
     
     """
@@ -124,7 +135,7 @@ class KNN(BaseSKMObject, ClassifierMixin):
         
         Returns
         -------
-        KNN
+        KNNClassifier
             self
 
         Notes
@@ -199,7 +210,7 @@ class KNN(BaseSKMObject, ClassifierMixin):
          
         """
         if self.window is None or self.window.n_samples < self.n_neighbors:
-            raise ValueError("KNN must be (partially) fitted on n_neighbors samples before doing any prediction.")
+            raise ValueError("KNNClassifier must be (partially) fitted on n_neighbors samples before doing any prediction.")
         proba = []
         r, c = get_dimensions(X)
 

@@ -43,7 +43,7 @@ class RandomLearningNodeClassification(ActiveLearningNode):
             Instance class.
         weight: float
             Instance weight.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             Hoeffding Tree to update.
         """
         try:

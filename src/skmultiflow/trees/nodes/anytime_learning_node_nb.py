@@ -23,7 +23,7 @@ class AnyTimeLearningNodeNB(AnyTimeActiveLearningNode):
         ----------
         X: numpy.ndarray of length equal to the number of features.
             Instance attributes.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             Hoeffding Tree.
 
         Returns

@@ -1,5 +1,5 @@
 from array import array
-from skmultiflow.lazy.knn import KNN
+from skmultiflow.lazy import KNNClassifier
 from skmultiflow.data import SEAGenerator
 import numpy as np
 
@@ -8,7 +8,7 @@ def test_knn():
     stream = SEAGenerator(random_state=1)
     stream.prepare_for_use()
 
-    learner = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
+    learner = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)
     cnt = 0
     max_samples = 5000
     predictions = array('i')
@@ -39,11 +39,13 @@ def test_knn():
     expected_correct_predictions = 49
     assert correct_predictions == expected_correct_predictions
 
-    expected_info = 'KNN(leaf_size=40, max_window_size=2000, n_neighbors=8, nominal_attributes=None)'
-    assert learner.get_info() == expected_info
+    expected_info = 'KNNClassifier(leaf_size=40, max_window_size=2000, n_neighbors=8, nominal_attributes=None)'
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
     learner.reset()
-    assert learner.get_info() == expected_info
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
     X_batch = np.array(X_batch)
     y_batch = np.array(y_batch)

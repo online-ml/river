@@ -3,7 +3,7 @@ import filecmp
 import difflib
 import numpy as np
 from skmultiflow.data import RandomTreeGenerator
-from skmultiflow.trees import HoeffdingTree
+from skmultiflow.trees import HoeffdingTreeClassifier
 from skmultiflow.evaluation import EvaluateHoldout
 
 
@@ -16,7 +16,7 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
 
     # Setup learner
     nominal_attr_idx = [x for x in range(15, len(stream.feature_names))]
-    learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
+    learner = HoeffdingTreeClassifier(nominal_attributes=nominal_attr_idx)
 
     # Setup evaluator
     n_wait = 200
@@ -33,7 +33,7 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
     result = evaluator.evaluate(stream=stream, model=learner)
     result_learner = result[0]
 
-    assert isinstance(result_learner, HoeffdingTree)
+    assert isinstance(result_learner, HoeffdingTreeClassifier)
 
     assert learner.get_model_measurements == result_learner.get_model_measurements
 

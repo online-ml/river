@@ -1,5 +1,5 @@
-from skmultiflow.trees import HoeffdingTree
-from skmultiflow.meta import LeverageBagging
+from skmultiflow.trees import HoeffdingTreeClassifier
+from skmultiflow.meta import LeverageBaggingClassifier
 from skmultiflow.data import WaveformGenerator
 from skmultiflow.evaluation import EvaluatePrequential
 
@@ -7,8 +7,8 @@ from skmultiflow.evaluation import EvaluatePrequential
 def demo(output_file=None, instances=40000):
     """ _test_prequential_bagging
     
-    This demo shows the evaluation process of a LeverageBagging classifier, 
-    initialized with KNN classifiers.
+    This demo shows the evaluation process of a LeverageBaggingClassifier,
+    initialized with different base estimators.
     
     Parameters
     ----------
@@ -27,9 +27,12 @@ def demo(output_file=None, instances=40000):
     stream.prepare_for_use()
 
     # Setup the classifier
-    #classifier = OzaBaggingAdwin(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30, categorical_list=None))
-    #classifier = LeverageBagging(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=1)
-    pipe = LeverageBagging(base_estimator=HoeffdingTree(), n_estimators=2)
+    #classifier = OzaBaggingADWINClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000,
+    #                                                                    leaf_size=30))
+    #classifier = LeverageBaggingClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000,
+    #                                                                    leaf_size=30),
+    #                                       n_estimators=1)
+    pipe = LeverageBaggingClassifier(base_estimator=HoeffdingTreeClassifier(), n_estimators=2)
 
     # Setup the pipeline
     #pipe = Pipeline([('Classifier', classifier)])

@@ -3,7 +3,7 @@ from operator import attrgetter
 import numpy as np
 
 from skmultiflow.core import MultiOutputMixin
-from skmultiflow.trees import MultiTargetRegressionHoeffdingTree
+from skmultiflow.trees import iSOUPTreeRegressor
 from skmultiflow.utils import get_dimensions
 from skmultiflow.trees.split_criterion import IntraClusterVarianceReductionSplitCriterion
 
@@ -20,8 +20,8 @@ _PERCEPTRON = 'perceptron'
 _ADAPTIVE = 'adaptive'
 
 
-class StackedSingleTargetHoeffdingTreeRegressor(MultiTargetRegressionHoeffdingTree, MultiOutputMixin):
-    """Stacked Single-target Hoeffding Tree Regressor.
+class StackedSingleTargetHoeffdingTreeRegressor(iSOUPTreeRegressor, MultiOutputMixin):
+    """Stacked Single-target Hoeffding Tree regressor.
 
     Implementation of the Stacked Single-target Hoeffding Tree (SST-HT) method
     for multi-target regression as proposed by S. M. Mastelini, S. Barbon Jr.,

@@ -3,8 +3,21 @@ import numpy as np
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.bayes import NaiveBayes
 
+import warnings
 
-class AdditiveExpertEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+
+def AdditiveExpertEnsemble(n_estimators=5, base_estimator=NaiveBayes(), beta=0.8, gamma=0.1,
+                           pruning='weakest'):     # pragma: no cover
+    warnings.warn("’AdditiveExpertEnsemble’ has been renamed to ‘AdditiveExpertEnsembleClassifier’ in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return AdditiveExpertEnsembleClassifier(n_estimators=n_estimators,
+                                            base_estimator=base_estimator,
+                                            beta=beta,
+                                            gamma=gamma,
+                                            pruning=pruning)
+
+
+class AdditiveExpertEnsembleClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Additive Expert ensemble classifier.
 
     Parameters
@@ -59,7 +72,7 @@ class AdditiveExpertEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin)
     def __init__(self, n_estimators=5, base_estimator=NaiveBayes(), beta=0.8,
                  gamma=0.1, pruning='weakest'):
         """
-        Creates a new instance of AdditiveExpertEnsemble.
+        Creates a new instance of AdditiveExpertEnsembleClassifier.
         """
         super().__init__()
 
@@ -101,7 +114,7 @@ class AdditiveExpertEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin)
 
         Returns
         -------
-        AdditiveExpertEnsemble
+        AdditiveExpertEnsembleClassifier
             self
         """
         for i in range(len(X)):

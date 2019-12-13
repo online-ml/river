@@ -1,7 +1,7 @@
 from operator import attrgetter
 import numpy as np
 from skmultiflow.trees.split_criterion import GiniSplitCriterion
-from skmultiflow.trees.hoeffding_tree import HoeffdingTree
+from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
 from skmultiflow.trees.split_criterion import InfoGainSplitCriterion
 from skmultiflow.trees.nodes import LearningNode
 from skmultiflow.trees.nodes import AnyTimeSplitNode
@@ -11,6 +11,26 @@ from skmultiflow.trees.nodes import AnyTimeLearningNodeNB
 from skmultiflow.trees.nodes import AnyTimeLearningNodeNBAdaptive
 from skmultiflow.utils import get_dimensions, calculate_object_size
 
+import warnings
+
+
+def HATT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, min_samples_reevaluate=20,
+         split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
+         stop_mem_management=False, leaf_prediction='nba', nb_threshold=0, nominal_attributes=None):  # pragma: no cover
+    warnings.warn("'HATT' has been renamed to 'ExtremelyFastDecisionTreeClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return ExtremelyFastDecisionTreeClassifier(max_byte_size=max_byte_size,
+                                               memory_estimate_period=memory_estimate_period,
+                                               grace_period=grace_period,
+                                               min_samples_reevaluate=min_samples_reevaluate,
+                                               split_criterion=split_criterion,
+                                               split_confidence=split_confidence,
+                                               tie_threshold=tie_threshold,
+                                               binary_split=binary_split,
+                                               stop_mem_management=stop_mem_management,
+                                               leaf_prediction=leaf_prediction,
+                                               nb_threshold=nb_threshold,
+                                               nominal_attributes=nominal_attributes)
 
 GINI_SPLIT = 'gini'
 INFO_GAIN_SPLIT = 'info_gain'
@@ -19,8 +39,8 @@ NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
-class HATT(HoeffdingTree):
-    """ Hoeffding Anytime Tree or Extremely Fast Decision Tree.
+class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
+    """ Extremely Fast Decision Tree classifier.
 
     Parameters
     ----------
@@ -56,18 +76,20 @@ class HATT(HoeffdingTree):
 
     Notes
     -----
-    Hoeffding Anytime Tree or Extremely Fast Decision Tree (EFDT) [1]_ constructs a tree incrementally. HATT seeks
-    to select and deploy a split as soon as it is confident the split is useful, and then revisits that decision,
-    replacing the split if it subsequently becomes evident that a better split is available. HATT learns rapidly from a
-    stationary distribution and eventually it learns the asymptotic batch tree if the distribution from which the data
-    are drawn is stationary.
+    The Extremely Fast Decision Tree (EFDT) [1]_ constructs a tree incrementally. The EFDT seeks to select and deploy a
+    split as soon as it is confident the split is useful, and then revisits that decision, replacing the split if it
+    subsequently becomes evident that a better split is available. The EFDT learns rapidly from a stationary
+    distribution and eventually it learns the asymptotic batch tree if the distribution from which the data are drawn
+    is stationary.
 
     References
     ----------
-    .. [1]  C. Manapragada, G. Webb, and M. Salehi. Extremely fast decision tree.
-       preprint arXiv:1802.08780, 2018.
+    .. [1]  C. Manapragada, G. Webb, and M. Salehi. Extremely Fast Decision Tree.
+       In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD '18).
+       ACM, New York, NY, USA, 1953-1962. DOI: https://doi.org/10.1145/3219819.3220005
 
     """
+
     # Override _new_learning_node
     def _new_learning_node(self, initial_class_observations=None):
         """ Create a new learning node. The type of learning node depends on the tree configuration."""
@@ -85,9 +107,9 @@ class HATT(HoeffdingTree):
         """ Create a new split node."""
         return AnyTimeSplitNode(split_test, class_observations, attribute_observers)
 
-    # =============================================
-    # == Hoeffding Anytime Tree implementation ====
-    # =============================================
+    # =================================================
+    # == Extremely Fast Decision Tree implementation ==
+    # =================================================
 
     def __init__(self,
                  max_byte_size=33554432,
@@ -104,20 +126,20 @@ class HATT(HoeffdingTree):
                  nominal_attributes=None
                  ):
 
-        super(HATT, self).__init__(max_byte_size=max_byte_size,
-                                   memory_estimate_period=memory_estimate_period,
-                                   grace_period=grace_period,
-                                   split_criterion=split_criterion,
-                                   split_confidence=split_confidence,
-                                   tie_threshold=tie_threshold,
-                                   binary_split=binary_split,
-                                   stop_mem_management=stop_mem_management,
-                                   remove_poor_atts=False,
-                                   no_preprune=False,
-                                   leaf_prediction=leaf_prediction,
-                                   nb_threshold=nb_threshold,
-                                   nominal_attributes=nominal_attributes,
-                                   )
+        super(ExtremelyFastDecisionTreeClassifier, self).__init__(max_byte_size=max_byte_size,
+                                                                  memory_estimate_period=memory_estimate_period,
+                                                                  grace_period=grace_period,
+                                                                  split_criterion=split_criterion,
+                                                                  split_confidence=split_confidence,
+                                                                  tie_threshold=tie_threshold,
+                                                                  binary_split=binary_split,
+                                                                  stop_mem_management=stop_mem_management,
+                                                                  remove_poor_atts=False,
+                                                                  no_preprune=False,
+                                                                  leaf_prediction=leaf_prediction,
+                                                                  nb_threshold=nb_threshold,
+                                                                  nominal_attributes=nominal_attributes,
+                                                                  )
 
         self.min_samples_reevaluate = min_samples_reevaluate
 
@@ -372,7 +394,7 @@ class HATT(HoeffdingTree):
 
                     best_split = self._kill_subtree(node)
 
-                    # update HATT
+                    # update EFDT
                     if parent is None:
                         # Root case : replace the root node by a new split node
                         self._tree_root = best_split
@@ -399,7 +421,7 @@ class HATT(HoeffdingTree):
                     # Update weights in new_split
                     new_split.update_weight_seen_at_last_split_reevaluation()
 
-                    # Update HATT
+                    # Update EFDT
                     for i in range(x_best.num_splits()):
                         new_child = self._new_learning_node(x_best.resulting_class_distribution_from_split(i))
                         new_split.set_child(i, new_child)

@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 class AdaNode(metaclass=ABCMeta):
     """
-        Abstract Class to create a New Node for the HoeffdingAdaptiveTree (HAT)
+        Abstract Class to create a New Node for the HoeffdingAdaptiveTreeClassifier
     """
 
     @abstractmethod

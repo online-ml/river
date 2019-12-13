@@ -1,5 +1,5 @@
 from skmultiflow.data import RandomTreeGenerator
-from skmultiflow.meta.learn_pp import LearnPP
+from skmultiflow.meta.learn_pp import LearnPPClassifier
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 
@@ -8,7 +8,7 @@ def test_learn_pp():
     stream = RandomTreeGenerator(tree_random_state=2212, sample_random_state=2212)
     stream.prepare_for_use()
     estimator = DecisionTreeClassifier(random_state=2212)
-    classifier = LearnPP(base_estimator=estimator, n_estimators=5, n_ensembles=5, random_state=2212)
+    classifier = LearnPPClassifier(base_estimator=estimator, n_estimators=5, n_ensembles=5, random_state=2212)
 
     m = 200
 
@@ -42,7 +42,7 @@ def test_learn_pp():
     assert corrects == expected_correct_predictions
     assert type(classifier.predict(X)) == np.ndarray
 
-    expected_info = "LearnPP(base_estimator=DecisionTreeClassifier(class_weight=None, " \
+    expected_info = "LearnPPClassifier(base_estimator=DecisionTreeClassifier(class_weight=None, " \
                     "criterion='gini', max_depth=None, max_features=None, max_leaf_nodes=None, " \
                     "min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=1, " \
                     "min_samples_split=2, min_weight_fraction_leaf=0.0, presort=False, " \

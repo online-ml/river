@@ -1,4 +1,4 @@
-from skmultiflow.meta import OnlineSMOTEBagging
+from skmultiflow.meta import OnlineSMOTEBaggingClassifier
 from skmultiflow.bayes import NaiveBayes
 from skmultiflow.data import SEAGenerator
 import numpy as np
@@ -8,7 +8,7 @@ def test_online_smote_bagging():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
     stream.prepare_for_use()
     nb = NaiveBayes()
-    learner = OnlineSMOTEBagging(base_estimator=nb, n_estimators=3, sampling_rate=2, random_state=112)
+    learner = OnlineSMOTEBaggingClassifier(base_estimator=nb, n_estimators=3, sampling_rate=2, random_state=112)
     first = True
 
     cnt = 0
@@ -47,7 +47,7 @@ def test_online_smote_bagging():
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
 
-    expected_info = "OnlineSMOTEBagging(base_estimator=NaiveBayes(nominal_attributes=None),\n" \
-                    "                   drift_detection=True, n_estimators=3, random_state=None,\n" \
-                    "                   sampling_rate=2)"
-    assert learner.get_info() == expected_info
+    expected_info = "OnlineSMOTEBaggingClassifier(base_estimator=NaiveBayes(nominal_attributes=None), " \
+                    "drift_detection=True, n_estimators=3, random_state=None, sampling_rate=2)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info

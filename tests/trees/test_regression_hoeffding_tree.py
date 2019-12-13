@@ -3,15 +3,15 @@ import numpy as np
 from array import array
 from sklearn.metrics import mean_absolute_error
 from skmultiflow.data import RegressionGenerator
-from skmultiflow.trees import RegressionHoeffdingTree
+from skmultiflow.trees import HoeffdingTreeRegressor
 from difflib import SequenceMatcher
 
 
-def test_hoeffding_tree():
+def test_hoeffding_tree_regressor():
     stream = RegressionGenerator(n_samples=500, n_features=20, n_informative=15, random_state=1)
     stream.prepare_for_use()
 
-    learner = RegressionHoeffdingTree(leaf_prediction='mean')
+    learner = HoeffdingTreeRegressor(leaf_prediction='mean')
 
     cnt = 0
     max_samples = 500
@@ -47,26 +47,23 @@ def test_hoeffding_tree():
     expected_error = 143.11351404083086
     assert np.isclose(error, expected_error)
 
-    expected_info = "RegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
-                    "                        leaf_prediction='mean', learning_ratio_const=True,\n" \
-                    "                        learning_ratio_decay=0.001,\n" \
-                    "                        learning_ratio_perceptron=0.02, max_byte_size=33554432,\n" \
-                    "                        memory_estimate_period=1000000, nb_threshold=0,\n" \
-                    "                        no_preprune=False, nominal_attributes=None,\n" \
-                    "                        random_state=None, remove_poor_atts=False,\n" \
-                    "                        split_confidence=1e-07, stop_mem_management=False,\n" \
-                    "                        tie_threshold=0.05)"
-    assert learner.get_info() == expected_info
+    expected_info = "HoeffdingTreeRegressor(binary_split=False, grace_period=200, leaf_prediction='mean', " \
+                    "learning_ratio_const=True, learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
+                    "max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0, no_preprune=False, " \
+                    "nominal_attributes=None, random_state=None, remove_poor_atts=False, split_confidence=1e-07, " \
+                    "stop_mem_management=False, tie_threshold=0.05)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
     assert isinstance(learner.get_model_description(), type(''))
     assert type(learner.predict(X)) == np.ndarray
 
 
-def test_hoeffding_tree_perceptron():
+def test_hoeffding_tree_regressor_perceptron():
     stream = RegressionGenerator(n_samples=500, n_features=20, n_informative=15, random_state=1)
     stream.prepare_for_use()
 
-    learner = RegressionHoeffdingTree(leaf_prediction='perceptron', random_state=1)
+    learner = HoeffdingTreeRegressor(leaf_prediction='perceptron', random_state=1)
 
     cnt = 0
     max_samples = 500
@@ -102,22 +99,19 @@ def test_hoeffding_tree_perceptron():
     expected_error = 362.98595964244623
     assert np.isclose(error, expected_error)
 
-    expected_info = "RegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
-                    "                        leaf_prediction='perceptron', learning_ratio_const=True,\n" \
-                    "                        learning_ratio_decay=0.001,\n" \
-                    "                        learning_ratio_perceptron=0.02, max_byte_size=33554432,\n" \
-                    "                        memory_estimate_period=1000000, nb_threshold=0,\n" \
-                    "                        no_preprune=False, nominal_attributes=None,\n" \
-                    "                        random_state=1, remove_poor_atts=False,\n" \
-                    "                        split_confidence=1e-07, stop_mem_management=False,\n" \
-                    "                        tie_threshold=0.05)"
-    assert learner.get_info() == expected_info
+    expected_info = "HoeffdingTreeRegressor(binary_split=False, grace_period=200, leaf_prediction='perceptron', " \
+                    "learning_ratio_const=True, learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
+                    "max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0, no_preprune=False, " \
+                    "nominal_attributes=None, random_state=1, remove_poor_atts=False, split_confidence=1e-07, " \
+                    "stop_mem_management=False, tie_threshold=0.05)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
     assert isinstance(learner.get_model_description(), type(''))
     assert type(learner.predict(X)) == np.ndarray
 
 
-def test_hoeffding_tree_coverage(test_path):
+def test_hoeffding_tree_regressor_coverage(test_path):
     # Cover nominal attribute observer
     test_file = os.path.join(test_path, 'regression_data.npz')
     data = np.load(test_file)
@@ -125,7 +119,7 @@ def test_hoeffding_tree_coverage(test_path):
     y = data['y']
 
     # Typo in leaf prediction
-    learner = RegressionHoeffdingTree(
+    learner = HoeffdingTreeRegressor(
         leaf_prediction='percptron', nominal_attributes=[i for i in range(3)]
     )
     print(learner.split_criterion)
@@ -136,13 +130,13 @@ def test_hoeffding_tree_coverage(test_path):
     assert learner._estimator_type == 'regressor'
 
 
-def test_regression_hoeffding_tree_model_description():
+def test_hoeffding_tree_regressor_model_description():
     stream = RegressionGenerator(
         n_samples=500, n_features=20, n_informative=15, random_state=1
     )
     stream.prepare_for_use()
 
-    learner = RegressionHoeffdingTree(leaf_prediction='mean')
+    learner = HoeffdingTreeRegressor(leaf_prediction='mean')
 
     max_samples = 500
     X, y = stream.next_sample(max_samples)
@@ -158,7 +152,7 @@ def test_regression_hoeffding_tree_model_description():
     ).ratio() > 0.9
 
 
-def test_regression_hoeffding_tree_categorical_features(test_path):
+def test_hoeffding_tree_regressor_categorical_features(test_path):
     data_path = os.path.join(test_path, 'ht_categorical_features_testcase.npy')
     stream = np.load(data_path)
 
@@ -169,7 +163,7 @@ def test_regression_hoeffding_tree_categorical_features(test_path):
     X, y = stream[:, :-1], stream[:, -1]
 
     nominal_attr_idx = np.arange(7).tolist()
-    learner = RegressionHoeffdingTree(nominal_attributes=nominal_attr_idx)
+    learner = HoeffdingTreeRegressor(nominal_attributes=nominal_attr_idx)
 
     learner.partial_fit(X, y)
 

@@ -100,7 +100,7 @@ class EvaluatePrequential(StreamEvaluator):
     --------
     >>> # The first example demonstrates how to evaluate one model
     >>> from skmultiflow.data import SEAGenerator
-    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.trees import HoeffdingTreeClassifier
     >>> from skmultiflow.evaluation import EvaluatePrequential
     >>>
     >>> # Set the stream
@@ -108,7 +108,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>> stream.prepare_for_use()
     >>>
     >>> # Set the model
-    >>> ht = HoeffdingTree()
+    >>> ht = HoeffdingTreeClassifier()
     >>>
     >>> # Set the evaluator
     >>>
@@ -122,7 +122,7 @@ class EvaluatePrequential(StreamEvaluator):
 
     >>> # The second example demonstrates how to compare two models
     >>> from skmultiflow.data import SEAGenerator
-    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.trees import HoeffdingTreeClassifier
     >>> from skmultiflow.bayes import NaiveBayes
     >>> from skmultiflow.evaluation import EvaluateHoldout
     >>>
@@ -131,7 +131,7 @@ class EvaluatePrequential(StreamEvaluator):
     >>> stream.prepare_for_use()
     >>>
     >>> # Set the models
-    >>> ht = HoeffdingTree()
+    >>> ht = HoeffdingTreeClassifier()
     >>> nb = NaiveBayes()
     >>>
     >>> evaluator = EvaluatePrequential(max_samples=10000,
@@ -146,13 +146,13 @@ class EvaluatePrequential(StreamEvaluator):
     >>> # and visualize the predictions using data points.
     >>> # Note: You can not in this case compare multiple models
     >>> from skmultiflow.data import SEAGenerator
-    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.trees import HoeffdingTreeClassifier
     >>> from skmultiflow.evaluation import EvaluatePrequential
     >>> # Set the stream
     >>> stream = SEAGenerator(random_state=1)
     >>> stream.prepare_for_use()
     >>> # Set the model
-    >>> ht = HoeffdingTree()
+    >>> ht = HoeffdingTreeClassifier()
     >>> # Set the evaluator
     >>> evaluator = EvaluatePrequential(max_samples=200,
     >>>                                 n_wait=1,

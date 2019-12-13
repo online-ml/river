@@ -1,4 +1,4 @@
-from skmultiflow.meta import OnlineRUSBoost
+from skmultiflow.meta import OnlineRUSBoostClassifier
 from skmultiflow.bayes import NaiveBayes
 from skmultiflow.data import SEAGenerator
 import numpy as np
@@ -8,7 +8,8 @@ def test_online_rus_1():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
     stream.prepare_for_use()
     nb = NaiveBayes()
-    learner = OnlineRUSBoost(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=1, random_state=112)
+    learner = OnlineRUSBoostClassifier(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=1,
+                                       random_state=112)
     first = True
 
     cnt = 0
@@ -47,17 +48,18 @@ def test_online_rus_1():
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
 
-    expected_info = "OnlineRUSBoost(algorithm=1, base_estimator=NaiveBayes(nominal_attributes=None),\n" \
-                    "               drift_detection=True, n_estimators=3, random_state=112,\n" \
-                    "               sampling_rate=5)"
-    assert learner.get_info() == expected_info
+    expected_info = "OnlineRUSBoostClassifier(algorithm=1, base_estimator=NaiveBayes(nominal_attributes=None), " \
+                    "drift_detection=True, n_estimators=3, random_state=112, sampling_rate=5)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
 
 def test_online_rus_2():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
     stream.prepare_for_use()
     nb = NaiveBayes()
-    learner = OnlineRUSBoost(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=2, random_state=112)
+    learner = OnlineRUSBoostClassifier(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=2,
+                                       random_state=112)
     first = True
 
     cnt = 0
@@ -101,7 +103,8 @@ def test_online_rus_3():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
     stream.prepare_for_use()
     nb = NaiveBayes()
-    learner = OnlineRUSBoost(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=3, random_state=112)
+    learner = OnlineRUSBoostClassifier(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=3,
+                                       random_state=112)
     first = True
 
     cnt = 0

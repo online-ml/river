@@ -44,7 +44,7 @@ class ActiveLearningNodeAdaptiveMultiTarget(ActiveLearningNodePerceptronMultiTar
             Targets values.
         learning_ratio: float
             perceptron learning ratio
-        rht: RegressionHoeffdingTree
+        rht: HoeffdingTreeRegressor
             Regression Hoeffding Tree to update.
         """
         normalized_sample = rht.normalize_sample(X)
