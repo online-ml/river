@@ -6,8 +6,16 @@ import numpy as np
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from sklearn.tree import DecisionTreeClassifier
 
+import warnings
 
-class BatchIncremental(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+
+def BatchIncremental(nominal_attributes=None):     # pragma: no cover
+    warnings.warn("'BatchIncremental' has been renamed to 'BatchIncrementalClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return BatchIncrementalClassifier(nominal_attributes=nominal_attributes)
+
+
+class BatchIncrementalClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Batch Incremental ensemble classifier.
 
     This is a wrapper that allows the application of any batch model to a 

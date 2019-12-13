@@ -115,9 +115,9 @@ Lazy learning methods
    :nosignatures:
    :toctree: _autosummary
 
-   lazy.KNN
-   lazy.KNNAdwin
-   lazy.SAMKNN
+   lazy.KNNClassifier
+   lazy.KNNADWINClassifier
+   lazy.SAMKNNClassifier
 
 Ensemble methods
 ----------------
@@ -132,26 +132,26 @@ Ensemble methods
    :nosignatures:
    :toctree: _autosummary
 
-   meta.AccuracyWeightedEnsemble
-   meta.AdaptiveRandomForest
-   meta.AdditiveExpertEnsemble
-   meta.BatchIncremental
+   meta.AccuracyWeightedEnsembleClassifier
+   meta.AdaptiveRandomForestClassifier
+   meta.AdditiveExpertEnsembleClassifier
+   meta.BatchIncrementalClassifier
    meta.ClassifierChain
    meta.ProbabilisticClassifierChain
    meta.MonteCarloClassifierChain
-   meta.DynamicWeightedMajority
-   meta.LearnNSE
-   meta.LearnPP
-   meta.LeverageBagging
+   meta.DynamicWeightedMajorityClassifier
+   meta.LearnPPNSEClassifier
+   meta.LearnPPClassifier
+   meta.LeverageBaggingClassifier
    meta.MultiOutputLearner
-   meta.OnlineAdaC2
-   meta.OnlineBoosting
-   meta.OnlineCSB2
-   meta.OnlineRUSBoost
-   meta.OnlineSMOTEBagging
-   meta.OnlineUnderOverBagging
-   meta.OzaBagging
-   meta.OzaBaggingAdwin
+   meta.OnlineAdaC2Classifier
+   meta.OnlineBoostingClassifier
+   meta.OnlineCSB2Classifier
+   meta.OnlineRUSBoostClassifier
+   meta.OnlineSMOTEBaggingClassifier
+   meta.OnlineUnderOverBaggingClassifier
+   meta.OzaBaggingClassifier
+   meta.OzaBaggingADWINClassifier
    meta.RegressorChain
 
 Neural Networks
@@ -197,7 +197,7 @@ Rules based methods
    :nosignatures:
    :toctree: _autosummary
 
-   rules.VFDR
+   rules.VeryFastDecisionRulesClassifier
 
 Trees based methods
 -------------------
@@ -212,13 +212,13 @@ Trees based methods
    :nosignatures:
    :toctree: _autosummary
 
-   trees.HoeffdingTree
-   trees.HAT
-   trees.HATT
-   trees.LCHT
-   trees.RegressionHoeffdingTree
-   trees.RegressionHAT
-   trees.MultiTargetRegressionHoeffdingTree
+   trees.HoeffdingTreeClassifier
+   trees.HoeffdingAdaptiveTreeClassifier
+   trees.ExtremelyFastDecisionTreeClassifier
+   trees.LabelCombinationHoeffdingTreeClassifier
+   trees.HoeffdingTreeRegressor
+   trees.HoeffdingAdaptiveTreeRegressor
+   trees.iSOUPTreeRegressor
    trees.StackedSingleTargetHoeffdingTreeRegressor
 
 

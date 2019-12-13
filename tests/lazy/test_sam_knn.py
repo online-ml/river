@@ -4,7 +4,7 @@ import numpy as np
 
 import pytest
 
-from skmultiflow.lazy import SAMKNN
+from skmultiflow.lazy import SAMKNNClassifier
 from skmultiflow.data import SEAGenerator
 
 
@@ -16,9 +16,9 @@ def test_sam_knn():
     hyperParams = {'maxSize': 1000, 'nNeighbours': 5, 'knnWeights': 'distance', 'STMSizeAdaption': 'maxACCApprox',
                    'use_ltm': False}
 
-    learner = SAMKNN(n_neighbors=hyperParams['nNeighbours'], max_window_size=hyperParams['maxSize'],
-                     weighting=hyperParams['knnWeights'],
-                     stm_size_option=hyperParams['STMSizeAdaption'], use_ltm=hyperParams['use_ltm'])
+    learner = SAMKNNClassifier(n_neighbors=hyperParams['nNeighbours'], max_window_size=hyperParams['maxSize'],
+                               weighting=hyperParams['knnWeights'],
+                               stm_size_option=hyperParams['STMSizeAdaption'], use_ltm=hyperParams['use_ltm'])
 
     cnt = 0
     max_samples = 5000
@@ -60,12 +60,12 @@ def test_sam_knn_coverage():
                    'min_stm_size': 10,
                    'use_ltm': True}
 
-    learner = SAMKNN(n_neighbors=hyperParams['n_neighbors'],
-                     max_window_size=hyperParams['maxSize'],
-                     weighting=hyperParams['weighting'],
-                     stm_size_option=hyperParams['stm_size_option'],
-                     min_stm_size=hyperParams['min_stm_size'],
-                     use_ltm=hyperParams['use_ltm'])
+    learner = SAMKNNClassifier(n_neighbors=hyperParams['n_neighbors'],
+                               max_window_size=hyperParams['maxSize'],
+                               weighting=hyperParams['weighting'],
+                               stm_size_option=hyperParams['stm_size_option'],
+                               min_stm_size=hyperParams['min_stm_size'],
+                               use_ltm=hyperParams['use_ltm'])
 
     cnt = 0
     max_samples = 1000
@@ -88,6 +88,7 @@ def test_sam_knn_coverage():
                                        0, 0, 0, 0, 0, 1, 1, 1, 0])
     assert np.alltrue(predictions == expected_predictions)
 
-    expected_info = "SAMKNN(ltm_size=0.4, max_window_size=None, min_stm_size=10, n_neighbors=3,\n" \
-                    "       stm_size_option='maxACC', use_ltm=True, weighting='uniform')"
-    assert learner.get_info() == expected_info
+    expected_info = "SAMKNNClassifier(ltm_size=0.4, max_window_size=None, min_stm_size=10, n_neighbors=3, " \
+                    "stm_size_option='maxACC', use_ltm=True, weighting='uniform')"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info

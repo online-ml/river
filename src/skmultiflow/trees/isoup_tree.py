@@ -3,7 +3,7 @@ from operator import attrgetter
 import numpy as np
 
 from skmultiflow.core import MultiOutputMixin
-from skmultiflow.trees import RegressionHoeffdingTree
+from skmultiflow.trees import HoeffdingTreeRegressor
 from skmultiflow.utils import get_dimensions
 from skmultiflow.trees.split_criterion import IntraClusterVarianceReductionSplitCriterion
 from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
@@ -19,16 +19,44 @@ from skmultiflow.trees.nodes import InactiveLearningNodeForRegression
 from skmultiflow.trees.nodes import InactiveLearningNodePerceptronMultiTarget
 from skmultiflow.trees.nodes import InactiveLearningNodeAdaptiveMultiTarget
 
+import warnings
+
 
 _TARGET_MEAN = 'mean'
 _PERCEPTRON = 'perceptron'
 _ADAPTIVE = 'adaptive'
 
 
-class MultiTargetRegressionHoeffdingTree(RegressionHoeffdingTree, MultiOutputMixin):
-    """Multi-target Regression Hoeffding Tree.
+def MultiTargetRegressionHoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
+                                       split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
+                                       stop_mem_management=False, remove_poor_atts=False, leaf_prediction='perceptron',
+                                       no_preprune=False, nb_threshold=0, nominal_attributes=None,
+                                       learning_ratio_perceptron=0.02, learning_ratio_decay=0.001,
+                                       learning_ratio_const=True, random_state=None):     # pragma: no cover
+    warnings.warn("'MultiTargetRegressionHoeffdingTree' has been renamed to 'iSOUPTreeRegressor' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return iSOUPTreeRegressor(max_byte_size=max_byte_size,
+                              memory_estimate_period=memory_estimate_period,
+                              grace_period=grace_period,
+                              split_confidence=split_confidence,
+                              tie_threshold=tie_threshold,
+                              binary_split=binary_split,
+                              stop_mem_management=stop_mem_management,
+                              remove_poor_atts=remove_poor_atts,
+                              leaf_prediction=leaf_prediction,
+                              no_preprune=no_preprune,
+                              nb_threshold=nb_threshold,
+                              nominal_attributes=nominal_attributes,
+                              learning_ratio_perceptron=learning_ratio_perceptron,
+                              learning_ratio_decay=learning_ratio_decay,
+                              learning_ratio_const=learning_ratio_const,
+                              random_state=random_state)
 
-    This is an implementation of the iSoup-Tree proposed by A. Osojnik, P. Panov, and S. Džeroski [1]_.
+
+class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
+    """ Incremental Structured Output Prediction Tree (iSOUP-Tree) for multi-target regression.
+
+    This is an implementation of the iSOUP-Tree proposed by A. Osojnik, P. Panov, and S. Džeroski [1]_.
 
     Parameters
     ----------

@@ -45,7 +45,7 @@ class ActiveLearningNodePerceptronMultiTarget(ActiveLearningNodePerceptron):
             Instance targets.
         weight: float
             Instance weight.
-        rht: RegressionHoeffdingTree
+        rht: HoeffdingTreeRegressor
             Regression Hoeffding Tree to update.
         """
         if self.perceptron_weight is None:
@@ -104,7 +104,7 @@ class ActiveLearningNodePerceptronMultiTarget(ActiveLearningNodePerceptron):
             Targets values.
         learning_ratio: float
             perceptron learning ratio
-        rht: RegressionHoeffdingTree
+        rht: HoeffdingTreeRegressor
             Regression Hoeffding Tree to update.
         """
         normalized_sample = rht.normalize_sample(X)

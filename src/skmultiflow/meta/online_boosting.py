@@ -1,13 +1,25 @@
 import copy as cp
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
-from skmultiflow.lazy import KNNAdwin
+from skmultiflow.lazy import KNNADWINClassifier
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
 from skmultiflow.drift_detection import ADWIN
 
+import warnings
 
-class OnlineBoosting(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+
+def OnlineBoosting(base_estimator=KNNADWINClassifier(), n_estimators=10, drift_detection=True,
+                   random_state=None):     # pragma: no cover
+    warnings.warn("'OnlineBoosting' has been renamed to 'OnlineBoostingClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return OnlineBoostingClassifier(base_estimator=base_estimator,
+                                    n_estimators=n_estimators,
+                                    drift_detection=drift_detection,
+                                    random_state=random_state)
+
+
+class OnlineBoostingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     r""" Online Boosting ensemble classifier.
 
     Online Boosting [1]_ is the online version of the boosting ensemble method (AdaBoost).
@@ -35,7 +47,7 @@ class OnlineBoosting(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
 
     Parameters
     ----------
-    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNNAdwin)
+    base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator (default=KNNADWINClassifier)
         Each member of the ensemble is an instance of the base estimator.
 
     n_estimators: int, optional (default=10)
@@ -66,7 +78,7 @@ class OnlineBoosting(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
 
     """
 
-    def __init__(self, base_estimator=KNNAdwin(), n_estimators=10, drift_detection=True, random_state=None):
+    def __init__(self, base_estimator=KNNADWINClassifier(), n_estimators=10, drift_detection=True, random_state=None):
 
         super().__init__()
         self.base_estimator = base_estimator

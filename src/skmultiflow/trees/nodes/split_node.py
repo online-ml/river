@@ -145,7 +145,7 @@ class SplitNode(Node):
 
         Parameters
         ----------
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             The tree to describe.
         buffer: string
             The buffer where the tree's structure will be stored.

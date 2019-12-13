@@ -100,7 +100,7 @@ class EvaluateHoldout(StreamEvaluator):
     --------
     >>> # The first example demonstrates how to evaluate one model
     >>> from skmultiflow.data import SEAGenerator
-    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.trees import HoeffdingTreeClassifier
     >>> from skmultiflow.evaluation import EvaluateHoldout
     >>>
     >>> # Set the stream
@@ -108,7 +108,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>> stream.prepare_for_use()
     >>>
     >>> # Set the model
-    >>> ht = HoeffdingTree()
+    >>> ht = HoeffdingTreeClassifier()
     >>>
     >>> # Set the evaluator
     >>> evaluator = EvaluateHoldout(max_samples=100000,
@@ -122,7 +122,7 @@ class EvaluateHoldout(StreamEvaluator):
 
     >>> # The second example demonstrates how to compare two models
     >>> from skmultiflow.data import SEAGenerator
-    >>> from skmultiflow.trees import HoeffdingTree
+    >>> from skmultiflow.trees import HoeffdingTreeClassifier
     >>> from skmultiflow.bayes import NaiveBayes
     >>> from skmultiflow.evaluation import EvaluateHoldout
     >>>
@@ -131,7 +131,7 @@ class EvaluateHoldout(StreamEvaluator):
     >>> stream.prepare_for_use()
     >>>
     >>> # Set the model
-    >>> ht = HoeffdingTree()
+    >>> ht = HoeffdingTreeClassifier()
     >>> nb = NaiveBayes()
     >>>
     >>> # Set the evaluator

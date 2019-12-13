@@ -1,7 +1,7 @@
 from skmultiflow.core import Pipeline
 from skmultiflow.evaluation import EvaluatePrequential
 from skmultiflow.data import WaveformGenerator
-from skmultiflow.trees import HoeffdingTree
+from skmultiflow.trees import HoeffdingTreeClassifier
 
 
 def demo():
@@ -29,7 +29,7 @@ def demo():
     #classifier = PerceptronMask()
     #classifier = NaiveBayes()
     #classifier = PassiveAggressiveClassifier()
-    classifier = HoeffdingTree()
+    classifier = HoeffdingTreeClassifier()
 
     # Setup the pipeline
     pipe = Pipeline([('Hoeffding Tree', classifier)])

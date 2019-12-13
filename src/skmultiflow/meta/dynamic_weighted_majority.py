@@ -4,8 +4,21 @@ import numpy as np
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.bayes import NaiveBayes
 
+import warnings
 
-class DynamicWeightedMajority(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+
+def DynamicWeightedMajority(n_estimators=5, base_estimator=NaiveBayes(), period=50, beta=0.5,
+                            theta=0.01):     # pragma: no cover
+    warnings.warn("'DynamicWeightedMajority' has been renamed to 'DynamicWeightedMajorityClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return DynamicWeightedMajorityClassifier(n_estimators=n_estimators,
+                                             base_estimator=base_estimator,
+                                             period=period,
+                                             beta=beta,
+                                             theta=theta)
+
+
+class DynamicWeightedMajorityClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Dynamic Weighted Majority ensemble classifier.
 
     Parameters
@@ -54,7 +67,7 @@ class DynamicWeightedMajority(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
     def __init__(self, n_estimators=5, base_estimator=NaiveBayes(),
                  period=50, beta=0.5, theta=0.01):
         """
-        Creates a new instance of DynamicWeightedMajority.
+        Creates a new instance of DynamicWeightedMajorityClassifier.
         """
         super().__init__()
 
@@ -96,7 +109,7 @@ class DynamicWeightedMajority(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 
         Returns
         -------
-        DynamicWeightedMajority
+        DynamicWeightedMajorityClassifier
             self
         """
         for i in range(len(X)):

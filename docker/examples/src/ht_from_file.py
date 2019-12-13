@@ -1,13 +1,13 @@
 from skmultiflow.data.file_stream import FileStream
-from skmultiflow.trees.hoeffding_tree import HoeffdingTree
+from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
 from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
 
 # 1. Create a stream
 stream = FileStream("elec.csv")
 stream.prepare_for_use()
 
-# 2. Instantiate the HoeffdingTree classifier
-ht = HoeffdingTree()
+# 2. Instantiate the HoeffdingTreeClassifier
+ht = HoeffdingTreeClassifier()
 
 # 3. Setup the evaluator
 evaluator = EvaluatePrequential(pretrain_size=1000,

@@ -26,7 +26,7 @@ class AnyTimeInactiveLearningNode(InactiveLearningNode):
         ----------
         criterion: SplitCriterion
             The splitting criterion to be used.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             Hoeffding Tree.
 
         Returns

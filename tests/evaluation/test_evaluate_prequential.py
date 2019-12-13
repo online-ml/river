@@ -3,7 +3,7 @@ import filecmp
 import difflib
 import numpy as np
 from skmultiflow.data import RandomTreeGenerator
-from skmultiflow.trees import HoeffdingTree
+from skmultiflow.trees import HoeffdingTreeClassifier
 from skmultiflow.evaluation import EvaluatePrequential
 
 
@@ -16,7 +16,7 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
 
     # Setup learner
     nominal_attr_idx = [x for x in range(15, len(stream.feature_names))]
-    learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
+    learner = HoeffdingTreeClassifier(nominal_attributes=nominal_attr_idx)
 
     # Setup evaluator
     max_samples = 1000
@@ -30,7 +30,7 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
     result = evaluator.evaluate(stream=stream, model=[learner])
     result_learner = result[0]
 
-    assert isinstance(result_learner, HoeffdingTree)
+    assert isinstance(result_learner, HoeffdingTreeClassifier)
 
     assert learner.get_model_measurements == result_learner.get_model_measurements
 
@@ -75,7 +75,7 @@ def test_evaluate_classification_coverage(tmpdir):
 
     # Learner
     nominal_attr_idx = [x for x in range(15, len(stream.feature_names))]
-    learner = HoeffdingTree(nominal_attributes=nominal_attr_idx)
+    learner = HoeffdingTreeClassifier(nominal_attributes=nominal_attr_idx)
 
     max_samples = 1000
     output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
@@ -95,7 +95,7 @@ def test_evaluate_classification_coverage(tmpdir):
 def test_evaluate_regression_coverage(tmpdir):
     # A simple coverage test. Tests for metrics are placed in the corresponding test module.
     from skmultiflow.data import RegressionGenerator
-    from skmultiflow.trees import RegressionHoeffdingTree
+    from skmultiflow.trees import HoeffdingTreeRegressor
 
     max_samples = 1000
 
@@ -104,7 +104,7 @@ def test_evaluate_regression_coverage(tmpdir):
     stream.prepare_for_use()
 
     # Learner
-    htr = RegressionHoeffdingTree()
+    htr = HoeffdingTreeRegressor()
 
     output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
     metrics = ['mean_square_error', 'mean_absolute_error']
@@ -140,7 +140,7 @@ def test_evaluate_multi_target_classification_coverage(tmpdir):
 
 def test_evaluate_multi_target_regression_coverage(tmpdir):
     from skmultiflow.data import RegressionGenerator
-    from skmultiflow.trees import MultiTargetRegressionHoeffdingTree
+    from skmultiflow.trees import iSOUPTreeRegressor
 
     max_samples = 1000
 
@@ -151,7 +151,7 @@ def test_evaluate_multi_target_regression_coverage(tmpdir):
     stream.prepare_for_use()
 
     # Learner
-    mtrht = MultiTargetRegressionHoeffdingTree(leaf_prediction='adaptive')
+    mtrht = iSOUPTreeRegressor(leaf_prediction='adaptive')
 
     output_file = os.path.join(str(tmpdir), "prequential_summary.csv")
     metrics = ['average_mean_square_error', 'average_mean_absolute_error', 'average_root_mean_square_error']

@@ -1,12 +1,12 @@
 from skmultiflow.utils import check_random_state
-from skmultiflow.trees.hoeffding_tree import HoeffdingTree, MAJORITY_CLASS, \
+from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier, MAJORITY_CLASS, \
     NAIVE_BAYES
 from skmultiflow.trees.nodes import RandomLearningNodeClassification
 from skmultiflow.trees.nodes import RandomLearningNodeNB
 from skmultiflow.trees.nodes import RandomLearningNodeNBAdaptive
 
 
-class ARFHoeffdingTree(HoeffdingTree):
+class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
     """ Adaptive Random Forest Hoeffding Tree.
 
     Parameters
@@ -67,11 +67,10 @@ class ARFHoeffdingTree(HoeffdingTree):
 
     Notes
     -----
-    This is the base model for the Adaptive Random Forest ensemble learner
-    (See skmultiflow.classification.meta.adaptive_random_forests).
+    This is the base-estimator of the Adaptive Random Forest ensemble learner
+    (see skmultiflow.classification.meta.adaptive_random_forests).
     This Hoeffding Tree includes a max_features parameter, which defines the
-    number of randomly selected features to
-    be considered at each split.
+    number of randomly selected features to be considered at each split.
     """
     def __init__(self,
                  max_byte_size=33554432,
@@ -89,7 +88,7 @@ class ARFHoeffdingTree(HoeffdingTree):
                  nominal_attributes=None,
                  max_features=2,
                  random_state=None):
-        """ARFHoeffdingTree class constructor."""
+        """ARFHoeffdingTreeClassifier class constructor."""
         super().__init__(max_byte_size=max_byte_size,
                          memory_estimate_period=memory_estimate_period,
                          grace_period=grace_period,
@@ -141,18 +140,18 @@ class ARFHoeffdingTree(HoeffdingTree):
         self._random_state = check_random_state(self.random_state)
 
     def new_instance(self):
-        return ARFHoeffdingTree(max_byte_size=self.max_byte_size,
-                                memory_estimate_period=self.memory_estimate_period,
-                                grace_period=self.grace_period,
-                                split_criterion=self.split_criterion,
-                                split_confidence=self.split_confidence,
-                                tie_threshold=self.tie_threshold,
-                                binary_split=self.binary_split,
-                                stop_mem_management=self.stop_mem_management,
-                                remove_poor_atts=self.remove_poor_atts,
-                                no_preprune=self.no_preprune,
-                                leaf_prediction=self.leaf_prediction,
-                                nb_threshold=self.nb_threshold,
-                                nominal_attributes=self.nominal_attributes,
-                                max_features=self.max_features,
-                                random_state=self._random_state)
+        return ARFHoeffdingTreeClassifier(max_byte_size=self.max_byte_size,
+                                          memory_estimate_period=self.memory_estimate_period,
+                                          grace_period=self.grace_period,
+                                          split_criterion=self.split_criterion,
+                                          split_confidence=self.split_confidence,
+                                          tie_threshold=self.tie_threshold,
+                                          binary_split=self.binary_split,
+                                          stop_mem_management=self.stop_mem_management,
+                                          remove_poor_atts=self.remove_poor_atts,
+                                          no_preprune=self.no_preprune,
+                                          leaf_prediction=self.leaf_prediction,
+                                          nb_threshold=self.nb_threshold,
+                                          nominal_attributes=self.nominal_attributes,
+                                          max_features=self.max_features,
+                                          random_state=self._random_state)

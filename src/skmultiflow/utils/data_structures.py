@@ -29,11 +29,11 @@ class FastBuffer(object):
     >>> # In the following example we keep track of the last 1000 predictions
     >>> # and true labels
     >>> from skmultiflow.utils.data_structures import FastBuffer
-    >>> from skmultiflow.lazy.knn import KNN
-    >>> from skmultiflow.data.file_stream import FileStream
+    >>> from skmultiflow.lazy import KNNClassifier
+    >>> from skmultiflow.data import FileStream
     >>> file_stream = FileStream("skmultiflow/data/datasets/covtype.csv")
     >>> file_stream.prepare_for_use()
-    >>> clf = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
+    >>> clf = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)
     >>> # Initially we need to partial_fit at least n_neighbors=8 samples
     >>> X, y = file_stream.next_sample(8)
     >>> clf = clf.partial_fit(X, y, classes=file_stream.target_values)

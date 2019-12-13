@@ -6,7 +6,21 @@ import copy as cp
 import operator as op
 
 
-class AccuracyWeightedEnsemble(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+import warnings
+
+
+def AccuracyWeightedEnsemble(n_estimators=10, n_kept_estimators=30, base_estimator=NaiveBayes(), window_size=200,
+                             n_splits=5):     # pragma: no cover
+    warnings.warn("’AccuracyWeightedEnsemble’ has been renamed to ‘AccuracyWeightedEnsembleClassifier’ in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return AccuracyWeightedEnsembleClassifier(n_estimators=n_estimators,
+                                              n_kept_estimators=n_kept_estimators,
+                                              base_estimator=base_estimator,
+                                              window_size=window_size,
+                                              n_splits=n_splits)
+
+
+class AccuracyWeightedEnsembleClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Accuracy Weighted Ensemble classifier
 
     Parameters

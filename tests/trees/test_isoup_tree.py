@@ -2,17 +2,17 @@ import os
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from skmultiflow.data import RegressionGenerator
-from skmultiflow.trees import MultiTargetRegressionHoeffdingTree
+from skmultiflow.trees import iSOUPTreeRegressor
 from difflib import SequenceMatcher
 
 
-def test_multi_target_regression_hoeffding_tree_mean(test_path):
+def test_isoup_tree_mean(test_path):
     stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
     stream.prepare_for_use()
 
-    learner = MultiTargetRegressionHoeffdingTree(leaf_prediction='mean')
+    learner = iSOUPTreeRegressor(leaf_prediction='mean')
 
     cnt = 0
     max_samples = 2000
@@ -39,32 +39,25 @@ def test_multi_target_regression_hoeffding_tree_mean(test_path):
     expected_error = 191.2823924547882
     assert np.isclose(error, expected_error)
 
-    expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
-                    "                                   leaf_prediction='mean',\n" \
-                    "                                   learning_ratio_const=True,\n" \
-                    "                                   learning_ratio_decay=0.001,\n" \
-                    "                                   learning_ratio_perceptron=0.02,\n" \
-                    "                                   max_byte_size=33554432,\n" \
-                    "                                   memory_estimate_period=1000000,\n" \
-                    "                                   nb_threshold=0, no_preprune=False,\n" \
-                    "                                   nominal_attributes=None, random_state=None,\n" \
-                    "                                   remove_poor_atts=False,\n" \
-                    "                                   split_confidence=1e-07,\n" \
-                    "                                   stop_mem_management=False,\n" \
-                    "                                   tie_threshold=0.05)"
-    assert learner.get_info() == expected_info
-    assert isinstance(learner.get_model_description(), type(''))
+    expected_info = "iSOUPTreeRegressor(binary_split=False, grace_period=200, leaf_prediction='mean', " \
+                    "learning_ratio_const=True, learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
+                    "max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0, no_preprune=False, " \
+                    "nominal_attributes=None, random_state=None, remove_poor_atts=False, split_confidence=1e-07, " \
+                    "stop_mem_management=False, tie_threshold=0.05)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
+
     assert type(learner.predict(X)) == np.ndarray
 
 
-def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
+def test_isoup_tree_perceptron(test_path):
     stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
     stream.prepare_for_use()
 
-    learner = MultiTargetRegressionHoeffdingTree(leaf_prediction='perceptron',
-                                                 random_state=1)
+    learner = iSOUPTreeRegressor(leaf_prediction='perceptron',
+                                 random_state=1)
 
     cnt = 0
     max_samples = 2000
@@ -92,31 +85,23 @@ def test_multi_target_regression_hoeffding_tree_perceptron(test_path):
     expected_error = 144.44877909957646
     assert np.isclose(error, expected_error)
 
-    expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
-                    "                                   leaf_prediction='perceptron',\n" \
-                    "                                   learning_ratio_const=True,\n" \
-                    "                                   learning_ratio_decay=0.001,\n" \
-                    "                                   learning_ratio_perceptron=0.02,\n" \
-                    "                                   max_byte_size=33554432,\n" \
-                    "                                   memory_estimate_period=1000000,\n" \
-                    "                                   nb_threshold=0, no_preprune=False,\n" \
-                    "                                   nominal_attributes=None, random_state=1,\n" \
-                    "                                   remove_poor_atts=False,\n" \
-                    "                                   split_confidence=1e-07,\n" \
-                    "                                   stop_mem_management=False,\n" \
-                    "                                   tie_threshold=0.05)"
-    assert learner.get_info() == expected_info
-    assert isinstance(learner.get_model_description(), type(''))
+    expected_info = "iSOUPTreeRegressor(binary_split=False, grace_period=200, leaf_prediction='perceptron', " \
+                    "learning_ratio_const=True, learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
+                    "max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0, no_preprune=False, " \
+                    "nominal_attributes=None, random_state=1, remove_poor_atts=False, split_confidence=1e-07, " \
+                    "stop_mem_management=False, tie_threshold=0.05)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
 
-def test_multi_target_regression_hoeffding_tree_adaptive(test_path):
+def test_isoup_tree_adaptive(test_path):
     stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
     stream.prepare_for_use()
 
-    learner = MultiTargetRegressionHoeffdingTree(leaf_prediction='adaptive',
-                                                 random_state=1)
+    learner = iSOUPTreeRegressor(leaf_prediction='adaptive',
+                                 random_state=1)
 
     cnt = 0
     max_samples = 2000
@@ -144,25 +129,16 @@ def test_multi_target_regression_hoeffding_tree_adaptive(test_path):
     expected_error = 150.63043466390528
     assert np.isclose(error, expected_error)
 
-    expected_info = "MultiTargetRegressionHoeffdingTree(binary_split=False, grace_period=200,\n" \
-                    "                                   leaf_prediction='adaptive',\n" \
-                    "                                   learning_ratio_const=True,\n" \
-                    "                                   learning_ratio_decay=0.001,\n" \
-                    "                                   learning_ratio_perceptron=0.02,\n" \
-                    "                                   max_byte_size=33554432,\n" \
-                    "                                   memory_estimate_period=1000000,\n" \
-                    "                                   nb_threshold=0, no_preprune=False,\n" \
-                    "                                   nominal_attributes=None, random_state=1,\n" \
-                    "                                   remove_poor_atts=False,\n" \
-                    "                                   split_confidence=1e-07,\n" \
-                    "                                   stop_mem_management=False,\n" \
-                    "                                   tie_threshold=0.05)"
-
-    assert learner.get_info() == expected_info
-    assert isinstance(learner.get_model_description(), type(''))
+    expected_info = "iSOUPTreeRegressor(binary_split=False, grace_period=200, leaf_prediction='adaptive', " \
+                    "learning_ratio_const=True, learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
+                    "max_byte_size=33554432, memory_estimate_period=1000000, nb_threshold=0, no_preprune=False, " \
+                    "nominal_attributes=None, random_state=1, remove_poor_atts=False, split_confidence=1e-07, " \
+                    "stop_mem_management=False, tie_threshold=0.05)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
 
-def test_hoeffding_tree_coverage(test_path):
+def test_isoup_tree_coverage(test_path):
     # Cover nominal attribute observer
     test_file = os.path.join(test_path, 'multi_target_regression_data.npz')
     data = np.load(test_file)
@@ -170,7 +146,7 @@ def test_hoeffding_tree_coverage(test_path):
     Y = data['Y']
 
     # Invalid leaf prediction option
-    learner = MultiTargetRegressionHoeffdingTree(
+    learner = iSOUPTreeRegressor(
                 leaf_prediction='MEAN',
                 nominal_attributes=[i for i in range(3)]
               )
@@ -180,14 +156,14 @@ def test_hoeffding_tree_coverage(test_path):
     learner.partial_fit(X, Y)
 
 
-def test_multi_target_regression_hoeffding_tree_model_description():
+def test_isoup_tree_model_description():
     stream = RegressionGenerator(
         n_samples=700, n_features=20, n_informative=15, random_state=1,
         n_targets=3
     )
     stream.prepare_for_use()
 
-    learner = MultiTargetRegressionHoeffdingTree(leaf_prediction='mean')
+    learner = iSOUPTreeRegressor(leaf_prediction='mean')
 
     max_samples = 700
     X, y = stream.next_sample(max_samples)
@@ -208,13 +184,13 @@ def test_multi_target_regression_hoeffding_tree_model_description():
     ).ratio() > 0.9
 
 
-def test_multi_target_regression_hoeffding_tree_categorical_features(test_path):
+def test_isoup_tree_categorical_features(test_path):
     data_path = os.path.join(test_path, 'ht_categorical_features_testcase.npy')
     stream = np.load(data_path)
     X, y = stream[:, :-2], stream[:, -2:]
 
     nominal_attr_idx = np.arange(8)
-    learner = MultiTargetRegressionHoeffdingTree(
+    learner = iSOUPTreeRegressor(
         nominal_attributes=nominal_attr_idx,
         leaf_prediction='perceptron'
     )
@@ -251,7 +227,7 @@ def test_multi_target_regression_hoeffding_tree_categorical_features(test_path):
     learner.predict([new_sample])
 
     # Let's do the same considering other prediction strategy
-    learner = MultiTargetRegressionHoeffdingTree(
+    learner = iSOUPTreeRegressor(
         nominal_attributes=nominal_attr_idx,
         leaf_prediction='adaptive'
     )

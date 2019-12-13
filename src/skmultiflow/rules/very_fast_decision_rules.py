@@ -26,19 +26,45 @@ _EDDM = 'eddm'
 _ADWIN = 'adwin'
 _DDM = 'ddm'
 
+import warnings
 
-class VFDR(BaseSKMObject, ClassifierMixin):
-    """ Adaptive Very Fast Decision Rules.
 
-    The Adaptive Very Fast Decision Rules (AVFDR) [1]_ is an incremental rule learning classifier
-    capable to adapt to evolving data streams. The learning process of AVFDR is similar to that
-    of Hoeffding Tree, but instead of a tree it uses a collection of rules. The core of VFDR is
-    its rules that aim to create a highly interpretable classifier thanks to their nature.
-    Each rule is a conjunction of conditions based on attribute values and the structure for keeping
-    sufficient statistics. The sufficient statistics will determine the class predicted by the rule.
-    IF :math:`att_1 < 1` and :math:`att_2 = 0` then class 0.
-    To adapt with the concept every rule is equipped with drift detector to monitor it's
-    performance. When a change is detected then rule is removed and new one with be learned.
+def VFDR(expand_confidence=0.0000001, ordered_rules=True, grace_period=200, tie_threshold=0.05,
+         rule_prediction='first_hit', nominal_attributes=None, max_rules=1000, nb_threshold=0, nb_prediction=True,
+         drift_detector=None, expand_criterion='info_gain', remove_poor_atts=False, min_weight=100):  # pragma: no cover
+    warnings.warn("'VFDR' has been renamed to 'VeryFastDecisionRulesClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return VeryFastDecisionRulesClassifier(expand_confidence=expand_confidence,
+                                           ordered_rules=ordered_rules,
+                                           grace_period=grace_period,
+                                           tie_threshold=tie_threshold,
+                                           rule_prediction=rule_prediction,
+                                           nominal_attributes=nominal_attributes,
+                                           max_rules=max_rules,
+                                           nb_threshold=nb_threshold,
+                                           nb_prediction=nb_prediction,
+                                           drift_detector=drift_detector,
+                                           expand_criterion=expand_criterion,
+                                           remove_poor_atts=remove_poor_atts,
+                                           min_weight=min_weight)
+
+
+class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
+    """ Very Fast Decision Rules classifier.
+
+    The Very Fast Decision Rules (VFDR) [1]_ is an incremental rule learning classifier.
+    The learning process of VFDR is similar to that of Hoeffding Tree, but instead of a tree
+    it uses a collection of rules. The core of VFDR is its rules that aim to create a highly
+    interpretable classifier thanks to their nature. Each rule is a conjunction of conditions
+    based on attribute values and the structure for keeping sufficient statistics. The sufficient
+    statistics will determine the class predicted by the rule
+
+    IF :math:`att_1 < 1` and :math:`att_2 = 0` THEN class 0.
+
+    The Adaptive Very Fast Decision Rules (AVFDR) is an extension of VFDR capable to adapt to
+    evolving data streams. To adapt with the concept every rule is equipped with a drift detector
+    to monitor it's performance. If a change is detected then the rule is removed and a new one
+    will be learned.
 
     Parameters
     ----------
@@ -52,7 +78,7 @@ class VFDR(BaseSKMObject, ClassifierMixin):
     tie_threshold: float (default=0.05)
         | Threshold below which a split will be forced to break ties.
     rule_prediction: string (default='first_hit')
-        | How the class votes are retrieved for prediction. As more than one rule can fire
+        | How the class votes are retrieved for prediction. Since more than one rule can fire
           statistics can be gathered in three ways:
 
         - 'first_hit' - Uses the votes of the first rule that fires.
@@ -68,7 +94,8 @@ class VFDR(BaseSKMObject, ClassifierMixin):
     nb_prediction: Bool (default=True)
         | Use Naive Bayes as prediction strategy in the leafs, else majority class is uses.
     drift_detector: BaseDriftDetector (Default=None)
-        | The drift detector to uses in rules. If None detection will be ignored.
+        | The drift detector to use in rules. If None detection will be ignored.
+        | If set, the estimator is effectively the Adaptive Very Fast Decision Rules classifier.
         | Supported detectors: ADWIN, DDM and EDDM.
     expand_criterion: SplitCriterion (Default='info_gain')
         | Expand criterion to use:
@@ -82,14 +109,14 @@ class VFDR(BaseSKMObject, ClassifierMixin):
 
     Examples
     --------
-    >>> from skmultiflow.rules import VFDR
+    >>> from skmultiflow.rules import VeryFastDecisionRulesClassifier
     >>> from skmultiflow.data import AGRAWALGenerator
     >>> # Setup the stream
     >>> stream = AGRAWALGenerator()
     >>> stream.prepare_for_use()
     >>> X, y = stream.next_sample(20000)
     >>> # Setup the learner
-    >>> learner = VFDR()
+    >>> learner = VeryFastDecisionRulesClassifier()
     >>> # Train
     >>> learner.partial_fit(X, y)
     >>> # Print rules

@@ -1,18 +1,43 @@
 import numpy as np
 
-from skmultiflow.trees import RegressionHoeffdingTree
-
+from skmultiflow.trees import HoeffdingTreeRegressor
 from skmultiflow.trees.nodes import AdaSplitNodeForRegression
 from skmultiflow.trees.nodes import AdaLearningNodeForRegression
 
+import warnings
 
 _TARGET_MEAN = 'mean'
 _PERCEPTRON = 'perceptron'
 ERROR_WIDTH_THRESHOLD = 300
 
 
-class RegressionHAT(RegressionHoeffdingTree):
-    """ An adaptation of the Hoeffding Adaptive Tree for regression.
+def RegressionHAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, split_confidence=0.0000001,
+                  tie_threshold=0.05, binary_split=False, stop_mem_management=False, remove_poor_atts=False,
+                  leaf_prediction="perceptron", no_preprune=False, nb_threshold=0, nominal_attributes=None,
+                  learning_ratio_perceptron=0.02, learning_ratio_decay=0.001, learning_ratio_const=True,
+                  random_state=None):     # pragma: no cover
+    warnings.warn("'RegressionHAT' has been renamed to 'HoeffdingAdaptiveTreeRegressor' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return HoeffdingAdaptiveTreeRegressor(max_byte_size=max_byte_size,
+                                          memory_estimate_period=memory_estimate_period,
+                                          grace_period=grace_period,
+                                          split_confidence=split_confidence,
+                                          tie_threshold=tie_threshold,
+                                          binary_split=binary_split,
+                                          stop_mem_management=stop_mem_management,
+                                          remove_poor_atts=remove_poor_atts,
+                                          leaf_prediction=leaf_prediction,
+                                          no_preprune=no_preprune,
+                                          nb_threshold=nb_threshold,
+                                          nominal_attributes=nominal_attributes,
+                                          learning_ratio_perceptron=learning_ratio_perceptron,
+                                          learning_ratio_decay=learning_ratio_decay,
+                                          learning_ratio_const=learning_ratio_const,
+                                          random_state=random_state)
+
+
+class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
+    """ Hoeffding Adaptive Tree regressor.
 
     The tree uses ADWIN to detect drift and PERCEPTRON to make predictions.
 
@@ -44,7 +69,7 @@ class RegressionHAT(RegressionHoeffdingTree):
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes: list, optional
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
-    learning_ratio_perceptron: flaot
+    learning_ratio_perceptron: float
         The learning rate of the perceptron.
     learning_ratio_decay: float
         Decay multiplier for the learning rate of the perceptron
@@ -58,9 +83,9 @@ class RegressionHAT(RegressionHoeffdingTree):
 
     """
 
-    # ========================================================
-    # == Regression Hoeffding Adaptive Tree implementation ===
-    # ========================================================
+    # ======================================================
+    # == Hoeffding Adaptive Tree Regressor implementation ==
+    # ======================================================
 
     def __init__(self,
                  max_byte_size=33554432,
@@ -80,22 +105,22 @@ class RegressionHAT(RegressionHoeffdingTree):
                  learning_ratio_const=True,
                  random_state=None):
 
-        super(RegressionHAT, self).__init__(max_byte_size=max_byte_size,
-                                            memory_estimate_period=memory_estimate_period,
-                                            grace_period=grace_period,
-                                            split_confidence=split_confidence,
-                                            tie_threshold=tie_threshold,
-                                            binary_split=binary_split,
-                                            stop_mem_management=stop_mem_management,
-                                            remove_poor_atts=remove_poor_atts,
-                                            no_preprune=no_preprune,
-                                            nb_threshold=nb_threshold,
-                                            nominal_attributes=nominal_attributes,
-                                            learning_ratio_perceptron=learning_ratio_perceptron,
-                                            learning_ratio_decay=learning_ratio_decay,
-                                            learning_ratio_const=learning_ratio_const,
-                                            leaf_prediction=leaf_prediction,
-                                            random_state=random_state)
+        super(HoeffdingAdaptiveTreeRegressor, self).__init__(max_byte_size=max_byte_size,
+                                                             memory_estimate_period=memory_estimate_period,
+                                                             grace_period=grace_period,
+                                                             split_confidence=split_confidence,
+                                                             tie_threshold=tie_threshold,
+                                                             binary_split=binary_split,
+                                                             stop_mem_management=stop_mem_management,
+                                                             remove_poor_atts=remove_poor_atts,
+                                                             no_preprune=no_preprune,
+                                                             nb_threshold=nb_threshold,
+                                                             nominal_attributes=nominal_attributes,
+                                                             learning_ratio_perceptron=learning_ratio_perceptron,
+                                                             learning_ratio_decay=learning_ratio_decay,
+                                                             learning_ratio_const=learning_ratio_const,
+                                                             leaf_prediction=leaf_prediction,
+                                                             random_state=random_state)
         self.alternate_trees_cnt = 0
         self.switch_alternate_trees_cnt = 0
         self.pruned_alternate_trees_cnt = 0

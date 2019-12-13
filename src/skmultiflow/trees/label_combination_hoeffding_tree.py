@@ -1,8 +1,7 @@
 import numpy as np
 from skmultiflow.core import MultiOutputMixin
-from skmultiflow.trees.hoeffding_tree import HoeffdingTree
+from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
 from skmultiflow.utils import *
-from skmultiflow.bayes import do_naive_bayes_prediction
 
 from skmultiflow.trees.nodes import SplitNode
 from skmultiflow.trees.nodes import LCActiveLearningNode
@@ -10,13 +9,38 @@ from skmultiflow.trees.nodes import LCInactiveLearningNode
 from skmultiflow.trees.nodes import LCLearningNodeNB
 from skmultiflow.trees.nodes import LCLearningNodeNBA
 
+import warnings
+
+
+def LCHT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, split_criterion='info_gain',
+         split_confidence=0.0000001, tie_threshold=0.05, binary_split=False, stop_mem_management=False,
+         remove_poor_atts=False, no_preprune=False, leaf_prediction='nba', nb_threshold=0, nominal_attributes=None,
+         n_labels=None):     # pragma: no cover
+    warnings.warn("'LCHT' has been renamed to 'LabelCombinationHoeffdingTreeClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return LabelCombinationHoeffdingTreeClassifier(max_byte_size=max_byte_size,
+                                                   memory_estimate_period=memory_estimate_period,
+                                                   grace_period=grace_period,
+                                                   split_criterion=split_criterion,
+                                                   split_confidence=split_confidence,
+                                                   tie_threshold=tie_threshold,
+                                                   binary_split=binary_split,
+                                                   stop_mem_management=stop_mem_management,
+                                                   remove_poor_atts=remove_poor_atts,
+                                                   no_preprune=no_preprune,
+                                                   leaf_prediction=leaf_prediction,
+                                                   nb_threshold=nb_threshold,
+                                                   nominal_attributes=nominal_attributes,
+                                                   n_labels=n_labels)
+
+
 MAJORITY_CLASS = 'mc'
 NAIVE_BAYES = 'nb'
 NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
-class LCHT(HoeffdingTree, MultiOutputMixin):
-    """ Label Combination Hoeffding Tree for multi-label learning.
+class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutputMixin):
+    """ Label Combination Hoeffding Tree for multi-label classification.
 
     Label combination transforms the problem from multi-label to multi-class.
     For each unique combination of labels it assigns a class and proceeds

@@ -1,13 +1,28 @@
 import copy as cp
 
 from skmultiflow.core.base import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
-from skmultiflow.lazy import KNN
+from skmultiflow.lazy import KNNClassifier
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
 
+import warnings
 
-class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+
+def LeverageBagging(base_estimator=KNNClassifier(), n_estimators=10, w=6, delta=0.002, enable_code_matrix=False,
+                    leverage_algorithm='leveraging_bag', random_state=None):     # pragma: no cover
+    warnings.warn("'LeverageBagging' has been renamed to 'LeverageBaggingClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return LeverageBaggingClassifier(base_estimator=base_estimator,
+                                     n_estimators=n_estimators,
+                                     w=w,
+                                     delta=delta,
+                                     enable_code_matrix=enable_code_matrix,
+                                     leverage_algorithm=leverage_algorithm,
+                                     random_state=random_state)
+
+
+class LeverageBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Leverage Bagging ensemble classifier.
 
     Parameters
@@ -74,14 +89,15 @@ class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     Examples
     --------
     >>> # Imports
-    >>> from skmultiflow.meta import LeverageBagging
-    >>> from skmultiflow.lazy import KNN
+    >>> from skmultiflow.meta import LeverageBaggingClassifier
+    >>> from skmultiflow.lazy import KNNClassifier
     >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
     >>> stream.prepare_for_use()
     >>> # Setting up the LeverageBagging classifier to work with KNN classifiers
-    >>> clf = LeverageBagging(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=2)
+    >>> clf = LeverageBaggingClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=30),
+    >>>                                 n_estimators=2)
     >>> # Keeping track of sample count and correct prediction count
     >>> sample_count = 0
     >>> corrects = 0
@@ -100,7 +116,7 @@ class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     >>> # Displaying the results
     >>> print(str(sample_count) + ' samples analyzed.')
     2000 samples analyzed.
-    >>> print('LeverageBagging classifier performance: ' + str(corrects / sample_count))
+    >>> print('LeverageBaggingClassifier performance: ' + str(corrects / sample_count))
     LeverageBagging classifier performance: 0.945
     
     """
@@ -109,7 +125,7 @@ class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
                            'leveraging_subag']
 
     def __init__(self,
-                 base_estimator=KNN(),
+                 base_estimator=KNNClassifier(),
                  n_estimators=10,
                  w=6,
                  delta=0.002,
@@ -174,7 +190,7 @@ class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         
         Returns
         -------
-        LeverageBagging
+        LeverageBaggingClassifier
             self
         
         """
@@ -439,7 +455,7 @@ class LeverageBagging(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         
         Returns
         -------
-        LeverageBagging
+        LeverageBaggingClassifier
             self
         """
         self.__configure()

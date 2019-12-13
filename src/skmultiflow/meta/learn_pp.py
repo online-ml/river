@@ -6,8 +6,22 @@ from sklearn.tree import DecisionTreeClassifier
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.utils import check_random_state
 
+import warnings
 
-class LearnPP(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+
+def LearnPP(base_estimator=DecisionTreeClassifier(), error_threshold=0.5, n_estimators=30, n_ensembles=10,
+            window_size=100, random_state=None):     # pragma: no cover
+    warnings.warn("'LearnPP' has been renamed to 'LearnPPClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return LearnPPClassifier(base_estimator=base_estimator,
+                             error_threshold=error_threshold,
+                             n_estimators=n_estimators,
+                             n_ensembles=n_ensembles,
+                             window_size=window_size,
+                             random_state=random_state)
+
+
+class LearnPPClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Learn++ ensemble classifier.
 
     Learn++ [1]_  does not require access to previously used data during
@@ -51,14 +65,14 @@ class LearnPP(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.meta.learn_pp import LearnPP
-    >>> from skmultiflow.lazy.knn import KNN
+    >>> from skmultiflow.meta.learn_pp import LearnPPClassifier
+    >>> from skmultiflow.lazy import KNNClassifier
     >>> from skmultiflow.data.sea_generator import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1)
     >>> stream.prepare_for_use()
     >>> # Setting up the Learn++ classifier to work with KNN classifiers
-    >>> clf = LearnPP(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=30)
+    >>> clf = LearnPPClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=30)
     >>> # Keeping track of sample count and correct prediction count
     >>> sample_count = 0
     >>> corrects = 0
@@ -135,7 +149,7 @@ class LearnPP(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
 
         Returns
         -------
-        LearnPP
+        LearnPPClassifier
             self
         """
 

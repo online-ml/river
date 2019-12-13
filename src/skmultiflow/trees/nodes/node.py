@@ -79,7 +79,7 @@ class Node(metaclass=ABCMeta):
         ----------
         X: numpy.ndarray of length equal to the number of features.
            Data instances.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             The Hoeffding Tree.
 
         Returns
@@ -140,7 +140,7 @@ class Node(metaclass=ABCMeta):
 
         Parameters
         ----------
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             The tree to describe.
         buffer: string
             The string buffer where the tree's structure will be stored

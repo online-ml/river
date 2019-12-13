@@ -1,6 +1,6 @@
 from skmultiflow.evaluation import EvaluatePrequential
 from skmultiflow.data import FileStream
-from skmultiflow.lazy import KNNAdwin
+from skmultiflow.lazy import KNNADWINClassifier
 from sklearn.linear_model import SGDClassifier
 from skmultiflow.core import Pipeline
 from skmultiflow.transform import OneHotToCategorical
@@ -24,21 +24,24 @@ def demo(instances=2000):
     stream.prepare_for_use()
     # Setup the classifier
     clf = SGDClassifier()
-    # classifier = KNNAdwin(n_neighbors=8, max_window_size=2000,leaf_size=40, nominal_attributes=None)
-    # classifier = OzaBaggingAdwin(base_estimator=KNN(n_neighbors=8, max_window_size=2000, leaf_size=30, categorical_list=None))
-    clf_one = KNNAdwin(n_neighbors=8, max_window_size=1000, leaf_size=30)
-    # clf_two = KNN(n_neighbors=8, max_window_size=1000, leaf_size=30)
-    # clf_two = LeverageBagging(base_estimator=KNN(), n_estimators=2)
+    # classifier = KNNADWINClassifier(n_neighbors=8, max_window_size=2000,leaf_size=40, nominal_attributes=None)
+    # classifier = OzaBaggingADWINClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000,
+    #                                                                     leaf_size=30))
+    clf_one = KNNADWINClassifier(n_neighbors=8, max_window_size=1000, leaf_size=30)
+    # clf_two = KNNClassifier(n_neighbors=8, max_window_size=1000, leaf_size=30)
+    # clf_two = LeverageBaggingClassifier(base_estimator=KNNClassifier(), n_estimators=2)
 
     t_one = OneHotToCategorical([[10, 11, 12, 13],
-                            [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-                            36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
+                                 [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+                                  27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+                                  40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
     # t_two = OneHotToCategorical([[10, 11, 12, 13],
-    #                        [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-    #                        36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
+    #                             [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+    #                              27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+    #                              40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
 
-    pipe_one = Pipeline([('one_hot_to_categorical', t_one), ('KNN', clf_one)])
-    # pipe_two = Pipeline([('one_hot_to_categorical', t_two), ('KNN', clf_two)])
+    pipe_one = Pipeline([('one_hot_to_categorical', t_one), ('KNNClassifier', clf_one)])
+    # pipe_two = Pipeline([('one_hot_to_categorical', t_two), ('KNNClassifier', clf_two)])
 
     classifier = [clf, pipe_one]
     # classifier = SGDRegressor()

@@ -1,5 +1,5 @@
-from skmultiflow.meta import OzaBagging
-from skmultiflow.lazy import KNN
+from skmultiflow.meta import OzaBaggingClassifier
+from skmultiflow.lazy import KNNClassifier
 from skmultiflow.data import SEAGenerator
 
 import numpy as np
@@ -8,8 +8,8 @@ import numpy as np
 def test_oza_bagging():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
     stream.prepare_for_use()
-    knn = KNN(n_neighbors=8, leaf_size=40, max_window_size=2000)
-    learner = OzaBagging(base_estimator=knn, n_estimators=3, random_state=112)
+    knn = KNNClassifier(n_neighbors=8, leaf_size=40, max_window_size=2000)
+    learner = OzaBaggingClassifier(base_estimator=knn, n_estimators=3, random_state=112)
     first = True
 
     cnt = 0
@@ -46,7 +46,7 @@ def test_oza_bagging():
     assert type(learner.predict(X)) == np.ndarray
     assert type(learner.predict_proba(X)) == np.ndarray
 
-    expected_info = "OzaBagging(base_estimator=KNN(leaf_size=40, max_window_size=2000, n_neighbors=8,\n" \
-                    "                              nominal_attributes=None),\n" \
-                    "           n_estimators=3, random_state=112)"
-    assert learner.get_info() == expected_info
+    expected_info = "OzaBaggingClassifier(base_estimator=KNNClassifier(leaf_size=40, max_window_size=2000, " \
+                    "n_neighbors=8, nominal_attributes=None), n_estimators=3, random_state=112)"
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info

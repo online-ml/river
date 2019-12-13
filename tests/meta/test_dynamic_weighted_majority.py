@@ -1,4 +1,4 @@
-from skmultiflow.meta import DynamicWeightedMajority
+from skmultiflow.meta import DynamicWeightedMajorityClassifier
 from skmultiflow.data import SEAGenerator
 from skmultiflow.bayes import NaiveBayes
 import numpy as np
@@ -8,7 +8,7 @@ def test_dynamic_weighted_majority():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
     stream.prepare_for_use()
 
-    learner = DynamicWeightedMajority(3, NaiveBayes(), beta=0.5, theta=0.01)
+    learner = DynamicWeightedMajorityClassifier(3, NaiveBayes(), beta=0.5, theta=0.01)
 
     cnt = 0
     max_samples = 5000
@@ -43,6 +43,7 @@ def test_dynamic_weighted_majority():
 
     assert type(learner.predict(X)) == np.ndarray
 
-    expected_info = 'DynamicWeightedMajority(base_estimator=NaiveBayes(nominal_attributes=None),\n' \
-                    '                        beta=0.5, n_estimators=3, period=50, theta=0.01)'
+    expected_info = 'DynamicWeightedMajorityClassifier(base_estimator=NaiveBayes(nominal_attributes=None),\n' \
+                    '                                  beta=0.5, n_estimators=3, period=50,\n' \
+                    '                                  theta=0.01)'
     assert learner.get_info() == expected_info

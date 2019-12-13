@@ -1,6 +1,6 @@
 import os
 
-from skmultiflow.lazy import KNNAdwin
+from skmultiflow.lazy import KNNADWINClassifier
 from skmultiflow.core import Pipeline
 from skmultiflow.data import DataStream
 from skmultiflow.evaluation import EvaluatePrequential
@@ -27,9 +27,9 @@ def test_pipeline(test_path):
     transformer = OneHotToCategorical(categorical_list=cat_att_idx)
 
     # Set up the classifier
-    classifier = KNNAdwin(n_neighbors=2, max_window_size=50, leaf_size=40)
+    classifier = KNNADWINClassifier(n_neighbors=2, max_window_size=50, leaf_size=40)
     # Setup the pipeline
-    pipe = Pipeline([('one-hot', transformer), ('KNNAdwin', classifier)])
+    pipe = Pipeline([('one-hot', transformer), ('KNNADWINClassifier', classifier)])
     # Setup the evaluator
     evaluator = EvaluatePrequential(show_plot=False, pretrain_size=10, max_samples=100)
     # Evaluate
@@ -48,6 +48,6 @@ def test_pipeline(test_path):
                     "                                      [10, 11, 12, 13, 14],\n" \
                     "                                      [15, 16, 17, 18, 19],\n" \
                     "                                      [20, 21, 22, 23, 24]])\n" \
-                    "KNNAdwin(leaf_size=40, max_window_size=50, n_neighbors=2,\n" \
-                    "         nominal_attributes=None)]"
+                    "KNNADWINClassifier(leaf_size=40, max_window_size=50, n_neighbors=2,\n" \
+                    "                   nominal_attributes=None)]"
     assert pipe.get_info() == expected_info

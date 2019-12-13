@@ -1,17 +1,20 @@
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import SGDClassifier, SGDRegressor
+from sklearn.metrics.regression import mean_absolute_error
 from sklearn import __version__ as sklearn_version
 
 from skmultiflow.meta.multi_output_learner import MultiOutputLearner
-from skmultiflow.data import MultilabelGenerator
+from skmultiflow.data import MultilabelGenerator, RegressionGenerator
 from skmultiflow.metrics.measure_collection import hamming_score
 
 import numpy as np
 
 import pytest
 
+from distutils.version import StrictVersion
+
 
 @pytest.mark.filterwarnings('ignore::UserWarning')
-def test_multi_output_learner():
+def test_multi_output_learner_classifier():
 
     stream = MultilabelGenerator(n_samples=5150, n_features=15, n_targets=3, n_labels=4, random_state=112)
     stream.prepare_for_use()
@@ -41,7 +44,7 @@ def test_multi_output_learner():
         classifier.partial_fit(X, y)
         cnt += 1
 
-    if not sklearn_version.startswith("0.21"):
+    if StrictVersion(sklearn_version) < StrictVersion("0.21"):
         expected_predictions = [[1.0, 1.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0],
                                 [0.0, 1.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 1.0],
                                 [0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 1.0], [0.0, 1.0, 1.0], [1.0, 1.0, 1.0],
@@ -104,7 +107,43 @@ def test_multi_output_learner():
     assert type(classifier.predict_proba(X)) == np.ndarray
 
 
+@pytest.mark.filterwarnings('ignore::UserWarning')
+def test_multi_output_learner_regressor():
 
+    stream = RegressionGenerator(n_samples=5500, n_features=10, n_informative=20, n_targets=2, random_state=1)
+    stream.prepare_for_use()
 
+    estimator = SGDRegressor(random_state=112, tol=1e-3, max_iter=10, loss='squared_loss')
+    learner = MultiOutputLearner(base_estimator=estimator)
 
+    X, y = stream.next_sample(150)
+    learner.partial_fit(X, y)
 
+    cnt = 0
+    max_samples = 5000
+    predictions = []
+    true_targets = []
+    wait_samples = 100
+    correct_predictions = 0
+
+    while cnt < max_samples:
+        X, y = stream.next_sample()
+        # Test every n samples
+        if (cnt % wait_samples == 0) and (cnt != 0):
+            predictions.append(learner.predict(X)[0])
+            true_targets.append(y[0])
+            if np.array_equal(y[0], predictions[-1]):
+                correct_predictions += 1
+
+        learner.partial_fit(X, y)
+        cnt += 1
+
+    expected_performance = 2.444365309339395
+    performance = mean_absolute_error(true_targets, predictions)
+    assert np.isclose(performance, expected_performance)
+
+    assert learner._estimator_type == "regressor"
+    assert type(learner.predict(X)) == np.ndarray
+
+    with pytest.raises(AttributeError):
+        learner.predict_proba(X)

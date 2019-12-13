@@ -32,7 +32,7 @@ class ActiveLearningNode(LearningNode):
             Instance class.
         weight: float
             Instance weight.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             Hoeffding Tree to update.
 
         """
@@ -93,7 +93,7 @@ class ActiveLearningNode(LearningNode):
         ----------
         criterion: SplitCriterion
             The splitting criterion to be used.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             Hoeffding Tree.
 
         Returns

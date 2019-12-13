@@ -37,7 +37,7 @@ class InactiveLearningNodePerceptron(InactiveLearningNode):
             Instance target value.
         weight: float
             Instance weight.
-        rht: RegressionHoeffdingTree
+        rht: HoeffdingTreeRegressor
             Regression Hoeffding Tree to update.
 
         """
@@ -76,7 +76,7 @@ class InactiveLearningNodePerceptron(InactiveLearningNode):
             Instance target value.
         learning_ratio: float
             perceptron learning ratio
-        rht: RegressionHoeffdingTree
+        rht: HoeffdingTreeRegressor
             Regression Hoeffding Tree to update.
         """
         normalized_sample = ht.normalize_sample(X)

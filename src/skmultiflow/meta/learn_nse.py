@@ -4,8 +4,22 @@ from sklearn.tree import DecisionTreeClassifier
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 
+import warnings
 
-class LearnNSE(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
+
+def LearnNSE(base_estimator=DecisionTreeClassifier(), window_size=250, slope=0.5, crossing_point=10, n_estimators=15,
+             pruning=None):     # pragma: no cover
+    warnings.warn("'LearnNSE' has been renamed to 'LearnPPNSEClassifier' in v0.5.0.\n"
+                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    return LearnPPNSEClassifier(base_estimator=base_estimator,
+                                window_size=window_size,
+                                slope=slope,
+                                crossing_point=crossing_point,
+                                n_estimators=n_estimators,
+                                pruning=pruning)
+
+
+class LearnPPNSEClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Learn++.NSE ensemble classifier.
 
     Learn++.NSE [1]_ is an ensemble of classifiers for incremental learning
@@ -102,7 +116,7 @@ class LearnNSE(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
 
         Returns
         -------
-        LearnNSE
+        LearnPPNSEClassifier
             self
         """
 

@@ -1,4 +1,4 @@
-from skmultiflow.lazy import KNN
+from skmultiflow.lazy import KNNClassifier
 from skmultiflow.data import FileStream
 from timeit import default_timer as timer
 
@@ -6,10 +6,10 @@ from timeit import default_timer as timer
 def demo():
     """ _test_knn
     
-    This demo tests the KNN classifier on a file stream, which gives 
+    This demo tests the KNNClassifier on a file stream, which gives
     instances coming from a SEA generator. 
     
-    The test computes the performance of the KNN classifier as well as 
+    The test computes the performance of the KNNClassifier as well as
     the time to create the structure and classify max_samples (5000 by 
     default) instances.
     
@@ -25,12 +25,12 @@ def demo():
     #                         [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
     #                          36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
     start = timer()
-    knn = KNN(n_neighbors=8, max_window_size=2000, leaf_size=40)
-    # pipe = Pipeline([('one_hot_to_categorical', t), ('KNN', knn)])
+    knn = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)
+    # pipe = Pipeline([('one_hot_to_categorical', t), ('KNNClassifier', knn)])
 
     # compare = KNeighborsClassifier(n_neighbors=8, algorithm='kd_tree', leaf_size=40, metric='euclidean')
 
-    # pipe2 = Pipeline([('one_hot_to_categorical', t2), ('KNN', compare)])
+    # pipe2 = Pipeline([('one_hot_to_categorical', t2), ('KNNClassifier', compare)])
 
     # pipe.fit(X, y)
     # pipe2.fit(X, y)

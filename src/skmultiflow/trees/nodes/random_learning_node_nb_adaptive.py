@@ -36,7 +36,7 @@ class RandomLearningNodeNBAdaptive(RandomLearningNodeNB):
             Instance class.
         weight: float
             The instance's weight.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             The Hoeffding Tree to update.
 
         """
@@ -60,7 +60,7 @@ class RandomLearningNodeNBAdaptive(RandomLearningNodeNB):
         ----------
         X: numpy.ndarray of length equal to the number of features.
             Instance attributes.
-        ht: HoeffdingTree
+        ht: HoeffdingTreeClassifier
             Hoeffding Tree.
 
         Returns

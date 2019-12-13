@@ -1,5 +1,5 @@
 from array import array
-from skmultiflow.lazy import KNNAdwin
+from skmultiflow.lazy import KNNADWINClassifier
 from skmultiflow.data import ConceptDriftStream, SEAGenerator
 import numpy as np
 
@@ -9,7 +9,7 @@ def test_knn_adwin():
                                 drift_stream=SEAGenerator(random_state=2, classification_function=2),
                                 random_state=1, position=250, width=10)
     stream.prepare_for_use()
-    learner = KNNAdwin(n_neighbors=8, leaf_size=40, max_window_size=200)
+    learner = KNNADWINClassifier(n_neighbors=8, leaf_size=40, max_window_size=200)
 
     cnt = 0
     max_samples = 1000
@@ -40,9 +40,9 @@ def test_knn_adwin():
     learner.reset()
     assert learner.window.n_samples == 0
 
-    expected_info = 'KNNAdwin(leaf_size=40, max_window_size=200, n_neighbors=8,\n' \
-                    '         nominal_attributes=None)'
-    assert learner.get_info() == expected_info
+    expected_info = 'KNNADWINClassifier(leaf_size=40, max_window_size=200, n_neighbors=8, nominal_attributes=None)'
+    info = " ".join([line.strip() for line in learner.get_info().split()])
+    assert info == expected_info
 
     stream.restart()
 
