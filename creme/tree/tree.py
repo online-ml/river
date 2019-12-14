@@ -132,7 +132,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.55375
+            LogLoss: 0.562813
 
     References:
         1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
@@ -142,7 +142,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
 
     def _get_split_enum(self, name, value):
         if isinstance(value, numbers.Number):
-            return splitting.NumericSplitEnum(
+            return splitting.HistSplitEnum(
                 feature_name=name,
                 n_bins=self.max_bins,
                 n_splits=self.n_split_points

@@ -24,7 +24,7 @@ def decimal_range(start, stop, num):
     """
     step = (stop - start) / (num - 1)
 
-    while start <= stop:
+    for _ in range(num):
         yield start
         start += step
 
@@ -69,35 +69,38 @@ class SplitEnum(abc.ABC):
         """Yields candidate split points and associated operators."""
 
 
-class NumericSplitEnum(SplitEnum):
+class HistSplitEnum(SplitEnum):
     """Split enumerator for classification and numerical attributes."""
 
     def __init__(self, feature_name, n_bins, n_splits):
         super().__init__(feature_name)
-        self.P_xy = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
+        self.hists = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
         self.n_splits = n_splits
 
     def update(self, x: float, y: 'base.Label'):
-        self.P_xy[y].update(x)
+        self.hists[y].update(x)
         return self
 
     def enumerate_splits(self, target_dist: 'proba.Multinomial'):
 
-        low = min(h[0].right for h in self.P_xy.values())
-        high = min(h[-1].right for h in self.P_xy.values())
+        low = min(h[0].right for h in self.hists.values())
+        high = min(h[-1].right for h in self.hists.values())
 
         # If only one single value has been observed, then no split can be proposed
         if low >= high:
             return
             yield
 
-        for t in decimal_range(start=low, stop=high, num=self.n_splits):
+        thresholds = list(decimal_range(start=low, stop=high, num=self.n_splits))
+        cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.hists.items()}
+
+        for t in thresholds:
 
             l_dist = {}
             r_dist = {}
 
             for y in target_dist:
-                p_xy = self.P_xy[y].cdf(x=t) if y in self.P_xy else 0.  # P(x < t | y)
+                p_xy = next(cdfs[y]) if y in cdfs else 0.  # P(x < t | y)
                 p_y = target_dist.pmf(y)  # P(y)
                 l_dist[y] = target_dist.n_samples * p_y * p_xy  # P(y | x < t)
                 r_dist[y] = target_dist.n_samples * p_y * (1 - p_xy)  # P(y | x >= t)
