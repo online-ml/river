@@ -76,7 +76,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             ... )
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.5531
+            LogLoss: 0.562168
 
             >>> print(model)
             AdaBoostClassifier(DecisionTreeClassifier)
