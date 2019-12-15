@@ -4,7 +4,7 @@ from .chick_weights import ChickWeights
 from .credit_card import CreditCard
 from .elec2 import Elec2
 from .kdd99_http import KDD99HTTP
-from .movielens100k import MovieLens100k
+from .movielens100k import MovieLens100K
 from .restaurants import Restaurants
 from .sms import SMS
 from .toulouse_bikes import ToulouseBikes
@@ -18,7 +18,7 @@ __all__ = [
     'CreditCard',
     'Elec2',
     'KDD99HTTP',
-    'MovieLens100k',
+    'MovieLens100K',
     'Restaurants',
     'SMS',
     'ToulouseBikes',
