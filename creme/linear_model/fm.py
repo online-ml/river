@@ -5,6 +5,7 @@ import numbers
 
 from .. import base
 from .. import optim
+from .. import stats
 from .. import utils
 
 
@@ -23,7 +24,7 @@ class FM:
         loss (optim.Loss): The loss function to optimize for.
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights and
             latent factors. Note that the intercept is handled separately.
-        intercept (float): Initial intercept value.
+        intercept (float or `creme.stats.Univariate` instance): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
@@ -93,7 +94,10 @@ class FM:
     def _raw_dot(self, x):
 
         # Start with the intercept
-        y_pred = self.intercept
+        if isinstance(self.intercept, stats.Univariate):
+            y_pred = self.intercept.get()
+        else:
+            y_pred = self.intercept
 
         # Add the unary interactions
         y_pred += utils.math.dot(x, self.weights)
@@ -137,8 +141,7 @@ class FM:
 
         # For notational convenience
         k, l1, l2 = self.n_factors, self.l1, self.l2
-        w0, w, v = self.intercept, self.weights, self.latents
-        w0_lr = self.intercept_lr.get(self.optimizer.n_iterations)
+        w, v = self.weights, self.latents
 
         # Some optimizers need to do something before a prediction is made
         self.weights = self.optimizer.update_before_pred(w=w)
@@ -158,7 +161,11 @@ class FM:
         # Update the intercept
         sign = lambda x: -1 if x < 0 else (1 if x > 0 else 0)
 
-        self.intercept -= w0_lr * (g_loss + l1 * sign(w0) + 2. * l2 * w0)
+        if isinstance(self.intercept, stats.Univariate):
+            self.intercept.update(y)
+        else:
+            w0, w0_lr = self.intercept, self.intercept_lr.get(self.optimizer.n_iterations)
+            self.intercept -= w0_lr * (g_loss + l1 * sign(w0) + 2. * l2 * w0)
 
         # Update the weights
         gradient = {
