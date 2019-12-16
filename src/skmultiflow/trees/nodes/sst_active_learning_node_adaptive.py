@@ -57,7 +57,7 @@ class SSTActiveLearningNodeAdaptive(SSTActiveLearningNode):
         _, n_features = get_dimensions(X)
         _, n_targets = get_dimensions(y)
 
-        normalized_target_value = rht.normalized_target_value(y)
+        normalized_target_value = rht.normalize_target_value(y)
 
         self.perceptron_weight[0] += learning_ratio * \
             (normalized_target_value - normalized_base_pred)[:, None] @ \
@@ -78,7 +78,7 @@ class SSTActiveLearningNodeAdaptive(SSTActiveLearningNode):
         # mean centered and sd scaled values
         self.fMAE_M = 0.95 * self.fMAE_M + np.absolute(
             normalized_target_value - rht.
-            normalized_target_value(self._observed_class_distribution[1] /
+            normalize_target_value(self._observed_class_distribution[1] /
                                     self._observed_class_distribution[0])
         )
 

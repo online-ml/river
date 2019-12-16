@@ -211,7 +211,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
             normalized_sample.append(0.0)
         return normalized_sample
 
-    def normalized_target_value(self, y):
+    def normalize_target_value(self, y):
         """
         Normalize the target in order to have the same influence during the process of
         training.

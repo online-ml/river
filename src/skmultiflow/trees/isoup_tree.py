@@ -226,7 +226,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
 
         return normalized_sample
 
-    def normalized_target_value(self, y):
+    def normalize_target_value(self, y):
         """Normalize the targets in order to have the same influence during the
         process of training.
 
