@@ -81,7 +81,7 @@ class SSTInactiveLearningNode(InactiveLearningNodePerceptronMultiTarget):
         _, n_features = get_dimensions(X)
         _, n_targets = get_dimensions(y)
 
-        normalized_target_value = rht.normalized_target_value(y)
+        normalized_target_value = rht.normalize_target_value(y)
 
         self.perceptron_weight[0] += learning_ratio * \
             (normalized_target_value - normalized_base_pred)[:, None] @ \
