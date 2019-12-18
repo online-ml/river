@@ -16,32 +16,7 @@ class RandomUnderSampler(base.Wrapper, base.Classifier):
         desired_dist (dict): The desired class distribution. The keys are the classes whilst the
             values are the desired class percentages. The values must sum up to 1.
 
-    Example:
-
-        ::
-
-            >>> from creme import datasets
-            >>> from creme import imblearn
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import preprocessing
-
-            >>> X_y = datasets.CreditCard()
-
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     imblearn.RandomUnderSampler(
-            ...         classifier=linear_model.LogisticRegression(),
-            ...         desired_dist={0: .5, 1: .5},
-            ...         seed=42
-            ...     )
-            ... )
-
-            >>> metric = metrics.ROCAUC()
-
-            >>> model_selection.progressive_val_score(X_y.take(10000), model, metric)
-            ROCAUC: 0.945842
+    See :ref:`Working with imbalanced data` for example usage.
 
     References:
         1. `Under-sampling a dataset with desired ratios <https://maxhalford.github.io/blog/under-sampling-a-dataset-with-desired-ratios/>`_
