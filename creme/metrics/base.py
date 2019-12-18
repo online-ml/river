@@ -268,6 +268,10 @@ class WrapperMetric(Metric):
         return self.metric.works_with(model)
 
     @property
+    def requires_labels(self):
+        return self.metric.requires_labels
+
+    @property
     def __metaclass__(self):
         return self.metric.__class__
 
