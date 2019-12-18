@@ -1,3 +1,4 @@
+import itertools
 import os
 import shutil
 import tarfile
@@ -109,3 +110,7 @@ class Dataset:
         else:
             data_dir_path = os.path.dirname(__file__)
         yield from self._stream_X_y(data_dir_path)
+
+    def take(self, k):
+        """Returns the k first (``x``, ``y``) pairs."""
+        return itertools.islice(self, k)

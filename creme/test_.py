@@ -12,6 +12,7 @@ from creme import compose
 from creme import ensemble
 from creme import feature_extraction
 from creme import feature_selection
+from creme import imblearn
 from creme import impute
 from creme import linear_model
 from creme import meta
@@ -38,6 +39,7 @@ def get_all_estimators():
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_extraction.Differ,
+        imblearn.RandomUnderSampler,
         impute.PreviousImputer,
         impute.StatImputer,
         linear_model.FMRegressor,

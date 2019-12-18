@@ -21,6 +21,7 @@ __all__ = [
     'ensemble',
     'feature_extraction',
     'feature_selection',
+    'imblearn',
     'impute',
     'linear_model',
     'meta',

@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `PreviousImputer` to the `impute` module for replacing missing values with their previous value.
 - Added the `TrumpApproval` dataset, which is a toy regression dataset.
 - Added the `AMSGrad` optimizer to the `optim` module
+- Added `RandomUnderSampler` to the newly created `imblearn` module.
 
 ### Fixed
 
@@ -28,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `online_score` and `online_qa_score` methods from the `model_selection` module have now been merged into a single method named `progressive_val_score`.
 - Fixed a bug in `NesterovMomentum`.
 - The `datasets` has been overhauled. Each dataset is now a class (e.g. `fetch_electricity` has become `Elec2`).
+- `LogisticRegression` now accepts a `class_weight` parameter which indicates importance weights for each class.
 
 ### Removed
 
