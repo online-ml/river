@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `PreviousImputer` to the `impute` module for replacing missing values with their previous value.
 - Added the `TrumpApproval` dataset, which is a toy regression dataset.
 - Added the `AMSGrad` optimizer to the `optim` module
-- Added `RandomUnderSampler` to the newly created `imblearn` module.
+- Added `RandomUnderSampler`, `RandomOverSampler`, and `RandomSampler` to the newly created `imblearn` module.
 
 ### Fixed
 
