@@ -9,7 +9,7 @@ class RandomUnderSampler(base.Wrapper, base.Classifier):
 
     This is a wrapper for classifiers. It will train the provided classifier by under-sampling the
     stream of given observations so that the class distribution seen by the classifier ressembles
-    a given desired distribution.
+    a given desired distribution. This is in fact a discrete version of rejection sampling.
 
     Parameters:
         classifier (base.Classifier)
@@ -20,6 +20,7 @@ class RandomUnderSampler(base.Wrapper, base.Classifier):
 
     References:
         1. `Under-sampling a dataset with desired ratios <https://maxhalford.github.io/blog/under-sampling-a-dataset-with-desired-ratios/>`_
+        2. `Wikipedia article on rejection sampling <https://www.wikiwand.com/en/Rejection_sampling>`_
 
     """
 
@@ -38,22 +39,19 @@ class RandomUnderSampler(base.Wrapper, base.Classifier):
     def fit_one(self, x, y):
 
         self._actual_dist[y] += 1
+        f = self.desired_dist
+        g = self._actual_dist
 
         # Check if the pivot needs to be changed
         if y != self._pivot:
-            self._pivot = max(
-                self._actual_dist.keys(),
-                key=lambda x: self.desired_dist[x] / self._actual_dist[x]
-            )
+            self._pivot = max(g.keys(), key=lambda x: f[x] / g[x])
         else:
             self.classifier.fit_one(x, y)
             return self
 
         # Determine the sampling ratio if the class is not the pivot
-        ratio = (
-            (self.desired_dist[y] * self._actual_dist[self._pivot]) /
-            (self.desired_dist[self._pivot] * self._actual_dist[y])
-        )
+        M = f[self._pivot] / g[self._pivot]
+        ratio = f[y] / (M * g[y])
 
         if self._rng.random() < ratio:
             self.classifier.fit_one(x, y)
