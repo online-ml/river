@@ -44,21 +44,6 @@ class GLM:
     def _raw_dot(self, x):
         return utils.math.dot(self.weights, x) + self.intercept
 
-    def _eval_loss_gradient(self, x, y, sample_weight):
-        loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
-
-        # Clip the gradient to avoid numerical instability
-        loss_gradient = utils.math.clamp(
-            loss_gradient,
-            minimum=-self.clip_gradient,
-            maximum=self.clip_gradient
-        )
-
-        # Apply the sample weight
-        loss_gradient *= sample_weight
-
-        return loss_gradient
-
     def _eval_gradient(self, x, y, sample_weight):
         """Returns the gradient for a given observation.
 
@@ -66,7 +51,17 @@ class GLM:
 
         """
 
-        loss_gradient = self._eval_loss_gradient(x=x, y=y, sample_weight=sample_weight)
+        loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
+
+        # Apply the sample weight
+        loss_gradient *= sample_weight
+
+        # Clip the gradient to avoid numerical instability
+        loss_gradient = utils.math.clamp(
+            loss_gradient,
+            minimum=-self.clip_gradient,
+            maximum=self.clip_gradient
+        )
 
         return (
             {
@@ -287,7 +282,6 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.initializers.Initializer): Weights initialization scheme.
-        class_weights (dict): The importance weights assigned to each class.
 
     Attributes:
         weights (collections.defaultdict): The current weights.
@@ -321,7 +315,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     """
 
     def __init__(self, optimizer=None, loss=None, l2=.0, intercept=0., intercept_lr=.01,
-                 clip_gradient=1e12, initializer=None, class_weights=None):
+                 clip_gradient=1e12, initializer=None):
         super().__init__(
             optimizer=optim.SGD(.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
@@ -331,14 +325,6 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             clip_gradient=clip_gradient,
             initializer=initializer if initializer else optim.initializers.Zeros()
         )
-        if class_weights is None:
-            class_weights = {False: 1., True: 1.}
-        self.class_weights = class_weights
-
-    def _eval_loss_gradient(self, x, y, sample_weight):
-        """Override the loss gradient to take into account class importance."""
-        loss_gradient = super()._eval_loss_gradient(x, y, sample_weight)
-        return loss_gradient * self.class_weights.get(y, 1.)
 
     def predict_proba_one(self, x):
         p = utils.math.sigmoid(self._raw_dot(x))  # Convert logit to probability

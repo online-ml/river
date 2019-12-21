@@ -109,7 +109,7 @@ cdef class Cauchy(RegressionLoss):
         self.C = C
 
     cpdef double eval(self, double y_true, double y_pred):
-        return abs(y_pred - y_true)
+        return math.fabs(y_pred - y_true)
 
     cpdef double gradient(self, double y_true, double y_pred):
         diff = y_pred - y_true
@@ -156,19 +156,27 @@ cdef class CrossEntropy(MultiClassLoss):
 
     """
 
+    def __init__(self, class_weight=None):
+        if class_weight is None:
+            class_weight = {}
+        self.class_weight = class_weight
+
     cpdef double eval(self, object y_true, dict y_pred):
         cdef double total = 0
 
         for label, proba in y_pred.items():
             if y_true == label:
-                total += math.log(clamp_proba(proba))
+                total += self.class_weight.get(label, 1.) * math.log(clamp_proba(proba))
 
         return -total
 
     cpdef dict gradient(self, object y_true, dict y_pred):
         return {
-            label: clamp_proba(y_pred.get(label, 0.)) - (y_true == label)
-            for label in {*y_pred.keys(), y_true}
+            label: (
+                self.class_weight.get(label, 1.) *
+                (clamp_proba(y_pred.get(label, 0.)) - (y_true == label))
+            )
+            for label in (y_pred.keys() & y_true.keys())
         }
 
 
@@ -272,23 +280,38 @@ cdef class Log(BinaryLoss):
 
     """
 
+    cdef readonly double weight_pos
+    cdef readonly double weight_neg
+
+    def __init__(self, weight_pos=1., weight_neg=1.):
+        self.weight_pos = weight_pos
+        self.weight_neg = weight_neg
+
     cpdef double eval(self, bint y_true, double y_pred):
-        y_true = y_true or -1
+        weight = self.weight_pos
+        if y_true == 0:
+            y_true = -1
+            weight = self.weight_neg
+
         z = y_pred * y_true
         if z > 18.:
-            return math.exp(-z)
+            return weight * math.exp(-z)
         if z < -18.:
-            return -z
-        return math.log(1.0 + math.exp(-z))
+            return weight * -z
+        return weight * math.log(1. + math.exp(-z))
 
     cpdef double gradient(self, bint y_true, double y_pred):
-        y_true = y_true or -1
+        weight = self.weight_pos
+        if y_true == 0:
+            y_true = -1
+            weight = self.weight_neg
+
         z = y_pred * y_true
         if z > 18.:
-            return math.exp(-z) * -y_true
+            return weight * math.exp(-z) * -y_true
         if z < -18.:
-            return -y_true
-        return -y_true / (math.exp(z) + 1.0)
+            return weight * -y_true
+        return weight * -y_true / (math.exp(z) + 1.)
 
 
 cdef class Quantile(RegressionLoss):
