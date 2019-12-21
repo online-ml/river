@@ -218,8 +218,8 @@ def dot(x: dict, y: dict):
     """
 
     if len(x) < len(y):
-        return sum(xi * y.get(i, 0.) for i, xi in x.items())
-    return sum(x.get(i, 0.) * yi for i, yi in y.items())
+        return sum(xi * y[i] for i, xi in x.items() if i in y)
+    return sum(x[i] * yi for i, yi in y.items() if i in x)
 
 
 def chain_dot(*xs):
