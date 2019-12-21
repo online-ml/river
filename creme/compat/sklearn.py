@@ -77,7 +77,9 @@ def convert_creme_to_sklearn(estimator):
 
     for base_type, wrapper in wrappers:
         if isinstance(estimator, base_type):
-            return wrapper(copy.deepcopy(estimator))
+            obj = wrapper(estimator)
+            obj.instance_ = copy.deepcopy(estimator)
+            return obj
 
     raise ValueError("Couldn't find an appropriate wrapper")
 
@@ -286,9 +288,6 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
         for x, yi in STREAM_METHODS[type(X)](X, y):
             self.instance_.fit_one(x, yi)
 
-        # predict needs some way to know if fit has been called
-        self.is_fitted_ = True
-
         return self
 
     def predict(self, X):
@@ -303,7 +302,7 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, 'is_fitted_')
+        utils.validation.check_is_fitted(self)
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -402,7 +401,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, 'classes_')
+        utils.validation.check_is_fitted(self)
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -433,7 +432,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, 'classes_')
+        utils.validation.check_is_fitted(self)
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -502,9 +501,6 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         for x, yi in STREAM_METHODS[type(X)](X, y):
             self.instance_.fit_one(x, yi)
 
-        # predict needs some way to know if fit has been called
-        self.is_fitted_ = True
-
         # Store the number of features so that future inputs can be checked
         self.n_features_ = X.shape[1]
 
@@ -522,7 +518,7 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, 'is_fitted_')
+        utils.validation.check_is_fitted(self)
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -573,9 +569,6 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
             label = self.instance_.fit_one(x, yi).predict_one(x)
             self.labels_[i] = label
 
-        # predict needs some way to know if fit has been called
-        self.is_fitted_ = True
-
         return self
 
     def predict(self, X):
@@ -590,7 +583,7 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, 'is_fitted_')
+        utils.validation.check_is_fitted(self)
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
