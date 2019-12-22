@@ -110,7 +110,7 @@ class BernoulliNB(base.BaseNB):
         return self
 
     def p_feature_given_class(self, f, c):
-        num = self.feature_counts[f][c] + self.alpha
+        num = self.feature_counts.get(f, collections.Counter())[c] + self.alpha
         den = self.class_counts[c] + self.alpha * 2
         return num / den
 

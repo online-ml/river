@@ -82,7 +82,7 @@ class ComplementNB(base.BaseNB):
             c: sum(
                 (
                     frequency * -math.log(
-                        (self.feature_totals[f] - self.feature_counts[f][c] + 1) /
+                        (self.feature_totals[f] - self.feature_counts.get(f, collections.Counter())[c] + 1) /
                         (self.class_totals[c] + 1 * len(self.feature_counts))
                     )
                     for f, frequency in x.items()
