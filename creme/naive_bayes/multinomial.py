@@ -78,6 +78,25 @@ class MultinomialNB(base.BaseNB):
             >>> model.predict_one(new_text)
             'yes'
 
+            >>> new_unseen_text = 'Taiwanese Taipei'
+            >>> tokens = model['tokenize'].transform_one(new_unseen_text)
+            >>> # P(Taiwanese|yes)
+            >>> #   = (N_Taiwanese_yes + 1) / (N_yes + N_terms)
+            >>> cp('Taiwanese', 'yes') == cp('Taipei', 'yes') == (0 + 1) / (8 + 6)
+            True
+            >>> cp('Taiwanese', 'no') == cp('Taipei', 'no') == (0 + 1) / (3 + 6)
+            True
+
+            >>> # P(yes|Taiwanese Taipei)
+            >>> #   ∝ P(Taiwanese|yes) * P(Taipei|yes) * P(yes)
+            >>> posterior_yes_given_new_text = (0 + 1) / (8 + 6) * (0 + 1) / (8 + 6) * 0.75
+            >>> jlh = model['nb'].joint_log_likelihood(tokens)
+            >>> jlh['yes'] == math.log(posterior_yes_given_new_text)
+            True
+
+            >>> model.predict_one(new_unseen_text)
+            'yes'
+
     References:
 
         1. `Naive Bayes text classification <https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html>`_
