@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## Unreleased
 
 ### Added
-
+- `optim.losses.BinaryFocalLoss` Allows to deal with unbalanced datasets. **(Change the name to FocalLoss when it will handle the multi-classes)** .
 - `metrics.ClassificationReport` to get a global performance overview on a classification task.
 - There is now a `expand_param_grid` method in `model_selection` to generate a list of models from a grid of parameters.
 - Each estimator now has a `_set_params(**new_params)` method for creating a new instance with the current parameters as well as new ones. This is practical for generating multiple instances of the same model with different hyperparameters. For the while this is a private method but it might become public.
