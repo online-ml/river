@@ -1,6 +1,6 @@
 """Loss functions."""
 from libc cimport math
-
+from math import exp # To remove after cythonize
 from .. import utils
 
 
@@ -11,6 +11,7 @@ __all__ = [
     'Hinge',
     'EpsilonInsensitiveHinge',
     'Log',
+    'BinaryFocalLoss',
     'Quantile',
     'Squared'
 ]
@@ -313,6 +314,58 @@ cdef class Log(BinaryLoss):
             return weight * -y_true
         return weight * -y_true / (math.exp(z) + 1.)
 
+class BinaryFocalLoss(BinaryLoss):
+    '''
+    This loss function expects each provided ``y_pred`` to be a logit. In other words if must be
+    the raw output of a linear model or a neural network.
+
+    ..math:: \mathrm{L}\left(p_{\mathrm{t}}\right)=-\alpha_{\mathrm{t}}\left(1-p_{\mathrm{t}}\right)^{\gamma} \log \left(p_{\mathrm{t}}\right)
+    It's gradient w.r.t. to $p_i$ is
+    .. math::
+    
+    
+    Parameters:
+        gamma (float): Setting gamma > 0 reduces the relative loss for well-classified examples
+            (pt > .5), putting more focus on hard, misclassified examples. Defaults to `0.5`.
+        weight_pos (float): Weigth for positive class. Defaults to `1`.
+        weight_neg (float): Weigth for negative class. Defaults to `1`.
+
+
+    Refenrences:
+        1. `Focal Loss for Dense Object Detection <https://arxiv.org/pdf/1708.02002.pdf>`_
+    '''
+    def __init__(self, gamma=0.5, weight_pos=1., weight_neg=1.):
+        
+        self.weight_pos = weight_pos
+        self.weight_neg = weight_neg
+        
+        self.gamma = gamma
+        self.ce = Log(weight_pos=self.weight_pos, weight_neg=self.weight_neg)
+    
+    def eval(self, y_true, y_pred):
+        if y_true == 1:
+            return ((1 - utils.math.sigmoid(y_pred)) ** self.gamma) * self.ce.eval(y_true, y_pred)
+        else: 
+            return (utils.math.sigmoid(y_pred) ** self.gamma) * self.ce.eval(y_true, y_pred)
+
+    def gradient(self, y_true, y_pred):
+        # Derivative of product (u*v)' = u'* v + u * v'
+        v = self.ce.eval(y_true, y_pred)
+        v_prime = self.ce.gradient(y_true, y_pred)
+        
+        g = self.gamma
+        
+        if y_true == 1:
+            pt = utils.math.sigmoid(y_pred)
+            u = (1 - pt) ** g
+            u_prime = (- g *  exp(- y_pred) * ((1 - pt) ** (self.gamma - 1))) / ((1 + exp(- y_pred)) ** 2)
+            return ((u_prime * v ) + (u * v_prime))
+
+        else:
+            # pt = (1 - (1 - sigmoid(y_pred))) = sigmoid(y_pred)
+            u = utils.math.sigmoid(y_pred) ** g
+            u_prime = g * exp(- y_pred) * (utils.math.sigmoid(y_pred) ** (g - 1)) / ((1 + exp(- y_pred)) ** 2)
+            return ((u_prime * v ) + (u * v_prime))
 
 cdef class Quantile(RegressionLoss):
     """Quantile loss.
