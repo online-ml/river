@@ -156,6 +156,8 @@ cdef class CrossEntropy(MultiClassLoss):
 
     """
 
+    cdef readonly dict class_weight
+
     def __init__(self, class_weight=None):
         if class_weight is None:
             class_weight = {}
@@ -176,7 +178,7 @@ cdef class CrossEntropy(MultiClassLoss):
                 self.class_weight.get(label, 1.) *
                 (clamp_proba(y_pred.get(label, 0.)) - (y_true == label))
             )
-            for label in (y_pred.keys() & y_true.keys())
+            for label in {*y_pred.keys(), y_true}
         }
 
 

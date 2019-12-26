@@ -49,7 +49,7 @@ class ClassificationMetric(Metric):
         """Helps to indicate if labels are required instead of probabilities."""
 
     @staticmethod
-    def clamp_proba(p):
+    def _clamp_proba(p):
         return utils.math.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
 
     def __add__(self, other) -> 'Metrics':
