@@ -24,3 +24,16 @@ __all__ = [
     'Creme2SKLClusterer',
     'Creme2SKLTransformer'
 ]
+
+
+try:
+    import torch
+
+    from .pytorch import PyTorch2CremeRegressor
+
+    __all__ += [
+        'PyTorch2CremeRegressor'
+    ]
+
+except ImportError:
+    pass

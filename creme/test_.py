@@ -7,6 +7,7 @@ import pytest
 
 from creme import base
 from creme import dummy
+from creme import compat
 from creme import cluster
 from creme import compose
 from creme import ensemble
@@ -33,6 +34,7 @@ def get_all_estimators():
     ignored = (
         Creme2SKLBase,
         SKL2CremeBase,
+        compat.PyTorch2CremeRegressor,
         compose.FuncTransformer,
         compose.Pipeline,
         ensemble.StackingBinaryClassifier,

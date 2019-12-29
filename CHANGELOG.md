@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `TrumpApproval` dataset, which is a toy regression dataset.
 - Added the `AMSGrad` optimizer to the `optim` module
 - Added `RandomUnderSampler`, `RandomOverSampler`, and `RandomSampler` to the newly created `imblearn` module.
+- Added `PyTorch2CremeRegressor` to the `compat` module
 
 ### Fixed
 
@@ -29,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `online_score` and `online_qa_score` methods from the `model_selection` module have now been merged into a single method named `progressive_val_score`.
 - Fixed a bug in `NesterovMomentum`.
 - The `datasets` module has been overhauled. Each dataset is now a class (e.g. `fetch_electricity` has become `Elec2`).
+- The `SKL2Creme` classes in `compat` now require `n_features` and a `batch_size` parameters for preemptive memory allocation (which allows doing mini-batching).
 
 ### Removed
 
