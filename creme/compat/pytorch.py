@@ -61,8 +61,11 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import preprocessing
+            >>> import torch
             >>> from torch import nn
             >>> from torch import optim
+
+            >>> _ = torch.manual_seed(0)
 
             >>> X_y = datasets.TrumpApproval()
 
@@ -84,7 +87,7 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 2.183502
+            MAE: 2.805633
 
     """
 
