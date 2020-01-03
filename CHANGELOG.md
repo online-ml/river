@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `TrumpApproval` dataset, which is a toy regression dataset.
 - Added the `AMSGrad` optimizer to the `optim` module
 - Added `RandomUnderSampler`, `RandomOverSampler`, and `RandomSampler` to the newly created `imblearn` module.
-- Added `PyTorch2CremeRegressor` to the `compat` module
+- Added `PyTorch2CremeRegressor` and `VW2CremeRegressor` to the `compat` module
 
 ### Fixed
 
