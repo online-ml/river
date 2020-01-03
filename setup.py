@@ -43,7 +43,8 @@ dev_packages = [
     'pytest-cov>=2.6.1',
     'pytest-cython>=0.1.0',
     'pytest-cython>=0.1.0',
-    'torch>=1.3.1'
+    'torch>=1.3.1',
+    'vowpalwabbit>=8.7.0'
 ]
 
 docs_packages = dev_packages + [
