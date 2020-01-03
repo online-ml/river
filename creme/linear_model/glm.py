@@ -303,6 +303,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             ...     preprocessing.StandardScaler() |
             ...     linear_model.LogisticRegression(optimizer=optim.SGD(.1))
             ... )
+
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
