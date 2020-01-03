@@ -32,11 +32,3 @@ try:
     __all__ += ['PyTorch2CremeRegressor']
 except ImportError:
     pass
-
-
-try:
-    import vowpalwabbit
-    from .vw import VW2CremeRegressor
-    __all__ += ['VW2CremeRegressor']
-except ImportError:
-    pass
