@@ -11,6 +11,7 @@ __all__ = [
     'Hinge',
     'EpsilonInsensitiveHinge',
     'Log',
+    'Poisson',
     'Quantile',
     'Squared'
 ]
@@ -358,7 +359,7 @@ cdef class Quantile(RegressionLoss):
 
 
 cdef class Squared(RegressionLoss):
-    """Computes the squared loss, also known as the L2 loss.
+    """Squared loss, also known as the L2 loss.
 
     Mathematically, it is defined as
 
@@ -393,3 +394,25 @@ cdef class Squared(RegressionLoss):
 
     cpdef double gradient(self, double y_true, double y_pred):
         return 2. * (y_pred - y_true)
+
+
+cdef class Poisson(RegressionLoss):
+    """Poisson loss.
+
+    The Poisson loss is usually more suited for regression with count data than the squared loss.
+
+    Mathematically, it is defined as
+
+    .. math:: L = exp(p_i) - y_i \\times p_i
+
+    It's gradient w.r.t. to $p_i$ is
+
+    .. math:: \\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i
+
+    """
+
+    cpdef double eval(self, double y_true, double y_pred):
+        return math.exp(y_pred) - y_true * y_pred
+
+    cpdef double gradient(self, double y_true, double y_pred):
+        return math.exp(y_pred) - y_true
