@@ -34,7 +34,7 @@ class Op(collections.namedtuple('Op', 'symbol operator')):
     def __call__(self, a, b):
         return self.operator(a, b)
 
-    def __str__(self):
+    def __repr__(self):
         return self.symbol
 
 
@@ -45,7 +45,7 @@ EQ = Op('=', operator.eq)
 class Split(collections.namedtuple('Split', 'on how at')):
     """A data class for storing split details."""
 
-    def __str__(self):
+    def __repr__(self):
         at = self.at
         if isinstance(at, float):
             at = f'{at:.3f}'

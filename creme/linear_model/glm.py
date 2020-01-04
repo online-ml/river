@@ -1,4 +1,5 @@
 import collections
+import math
 import numbers
 
 from .. import base
@@ -264,6 +265,94 @@ class LinearRegression(GLM, base.Regressor):
         )
 
         print(table, **print_params)
+
+
+class PoissonRegression(GLM, base.Regressor):
+    """Poisson regression.
+
+    Parameters:
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately. Defaults to ``optim.SGD(.01)``.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        intercept (float): Initial intercept value.
+        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
+            updating the intercept. If a `float` is passed, then an instance of
+            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
+            will be not be updated. Setting this to 0 means that no intercept will be used.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        clip_gradient (float): Clips the absolute value of each gradient value.
+        initializer (optim.initializers.Initializer): Weights initialization scheme.
+
+    Attributes:
+        weights (collections.defaultdict): The current weights.
+
+    Example:
+
+        ::
+
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import optim
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> import numpy as np
+
+            >>> rng = np.random.RandomState(42)
+
+            >>> X = rng.choice(range(0, 10), 100)
+            >>> Y = rng.choice(range(0, 10), 100)
+            >>> Z = rng.poisson(X + Y)
+
+            >>> lin_reg = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.LinearRegression(optim.SGD(0.01))
+            ... )
+
+            >>> metric = metrics.MAE()
+            >>> for x, y in stream.iter_array(np.vstack((X, Y)).T, np.log1p(Z)):
+            ...     y_pred = lin_reg.predict_one(x)
+            ...     lin_reg = lin_reg.fit_one(x, y)
+            ...     metric = metric.update(np.expm1(y), np.expm1(y_pred))
+            >>> metric
+            MAE: 6.25337
+
+            >>> poisson_reg = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.PoissonRegression(optim.SGD(0.01))
+            ... )
+
+            >>> for x, y in stream.iter_array(np.vstack((X, Y)).T, Z):
+            ...     y_pred = poisson_reg.predict_one(x)
+            ...     poisson_reg = poisson_reg.fit_one(x, y)
+            ...     metric = metric.update(y, y_pred)
+            >>> metric
+            MAE: 4.882398
+
+    Note:
+        Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
+        to converge.
+
+    """
+
+    def __init__(self, optimizer=None, l2=.0, intercept=0., intercept_lr=.01, clip_gradient=1e12,
+                 initializer=None):
+        super().__init__(
+            optimizer=(
+                optim.SGD(optim.schedulers.InverseScaling(.01, .25))
+                if optimizer is None else
+                optimizer
+            ),
+            loss=optim.losses.Poisson(),
+            intercept=intercept,
+            intercept_lr=intercept_lr,
+            l2=l2,
+            clip_gradient=clip_gradient,
+            initializer=initializer if initializer else optim.initializers.Zeros()
+        )
+
+    def predict_one(self, x):
+        return math.exp(self._raw_dot(x))
 
 
 class LogisticRegression(GLM, base.BinaryClassifier):
