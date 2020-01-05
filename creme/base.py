@@ -39,8 +39,7 @@ Probas = typing.Dict[Label, Proba]
 DEFAULT_TAGS = {
     'handles_text': False,
     'requires_positive_data': False,
-    'handles_categorical_features': False,
-    'poor_score': False
+    'handles_categorical_features': False
 }
 
 

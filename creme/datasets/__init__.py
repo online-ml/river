@@ -6,10 +6,11 @@ from .elec2 import Elec2
 from .kdd99_http import KDD99HTTP
 from .phishing import Phishing
 from .restaurants import Restaurants
-from .sms import SMS
+from .sms_spam import SMSSpam
 from .toulouse_bikes import ToulouseBikes
 from .trec07 import TREC07
 from .trump_approval import TrumpApproval
+from .malicious_url import MaliciousURL
 
 
 __all__ = [
@@ -20,8 +21,9 @@ __all__ = [
     'KDD99HTTP',
     'Phishing',
     'Restaurants',
-    'SMS',
+    'SMSSpam',
     'ToulouseBikes',
     'TREC07',
-    'TrumpApproval'
+    'TrumpApproval',
+    'MaliciousURL'
 ]
