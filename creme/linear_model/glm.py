@@ -386,7 +386,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> from creme import optim
             >>> from creme import preprocessing
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
