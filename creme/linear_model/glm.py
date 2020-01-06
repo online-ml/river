@@ -2,6 +2,8 @@ import collections
 import math
 import numbers
 
+import numpy as np
+
 from .. import base
 from .. import optim
 from .. import utils
@@ -253,15 +255,14 @@ class LinearRegression(GLM, base.Regressor):
         names = list(map(str, x.keys())) + ['Intercept']
         values = list(map(fmt_float, list(x.values()) + [1]))
         weights = list(map(fmt_float, [self.weights.get(i, 0) for i in x] + [self.intercept]))
-        contributions = (
-            [fmt_float(xi * self.weights.get(i, 0)) for i, xi in x.items()] +
-            [fmt_float(self.intercept)]
-        )
+        contributions = [xi * self.weights.get(i, 0) for i, xi in x.items()] + [self.intercept]
+        order = reversed(np.argsort(contributions))
+        contributions = list(map(fmt_float, contributions))
 
         table = utils.pretty.print_table(
             headers=['Name', 'Value', 'Weight', 'Contribution'],
             columns=[names, values, weights, contributions],
-            sort_by='Contribution'
+            order=order
         )
 
         print(table, **print_params)

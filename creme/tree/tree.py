@@ -121,10 +121,10 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
             >>> from creme import model_selection
             >>> from creme import tree
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> model = tree.DecisionTreeClassifier(
-            ...     patience=2000,
+            ...     patience=100,
             ...     confidence=1e-5,
             ...     criterion='gini'
             ... )
@@ -132,7 +132,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.562813
+            LogLoss: 0.701038
 
     References:
         1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
@@ -148,7 +148,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
                 n_splits=self.n_split_points
             )
 
-        elif isinstance(value, str):
+        elif isinstance(value, (str, bool)):
             return splitting.CategoricalSplitEnum(feature_name=name)
 
         raise ValueError(f'Unsupported feature type: {type(value)} ({name}: {value})')
