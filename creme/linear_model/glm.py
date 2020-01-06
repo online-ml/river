@@ -251,10 +251,10 @@ class LinearRegression(GLM, base.Regressor):
             return '{: ,.{prec}f}'.format(x, prec=decimals)
 
         names = list(map(str, x.keys())) + ['Intercept']
-        values = list(map(fmt_float, x.values())) + [fmt_float(1)]
-        weights = list(map(fmt_float, self.weights.values())) + [fmt_float(self.intercept)]
+        values = list(map(fmt_float, list(x.values()) + [1]))
+        weights = list(map(fmt_float, [self.weights.get(i, 0) for i in x] + [self.intercept]))
         contributions = (
-            [fmt_float(xi * self.weights[i]) for i, xi in x.items()] +
+            [fmt_float(xi * self.weights.get(i, 0)) for i, xi in x.items()] +
             [fmt_float(self.intercept)]
         )
 
@@ -396,7 +396,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            Accuracy: 89.49%
+            Accuracy: 88.96%
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer

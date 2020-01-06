@@ -85,7 +85,7 @@ def print_table(headers, columns, sort_by=None):
 
     # Determine in which order to print the rows
     if sort_by is not None:
-        rows = reversed(np.argsort(list(map(float, columns[headers.index(sort_by)]))))
+        rows = reversed(np.argsort(list(columns[headers.index(sort_by)])))
     else:
         rows = range(len(columns[0]))
 
