@@ -28,13 +28,13 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
             >>> from creme import model_selection
             >>> from creme import tree
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> model = tree.RandomForestClassifier(
-            ...     n_trees=5,
+            ...     n_trees=10,
             ...     random_state=42,
             ...     # Tree parameters
-            ...     patience=2000,
+            ...     patience=100,
             ...     confidence=1e-5,
             ...     criterion='gini'
             ... )
@@ -42,7 +42,7 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.529583
+            LogLoss: 0.695681
 
     """
 
