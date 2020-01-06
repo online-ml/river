@@ -54,7 +54,7 @@ def download_dataset(url, data_home, verbose=True):
     if not (os.path.exists(path) or os.path.exists(archive_path)):
 
         _print(f'Downloading {url}')
-        with urllib.request.urlopen(url) as r, open(path, 'wb') as f:
+        with urllib.request.urlopen(url) as r, open(archive_path, 'wb') as f:
             shutil.copyfileobj(r, f)
 
     # Uncompress if needed
