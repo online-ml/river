@@ -16,6 +16,7 @@ from . import utils
 
 
 __all__ = [
+    'AnomalyDetector',
     'BinaryClassifier',
     'Clusterer',
     'Ensemble',
@@ -26,7 +27,6 @@ __all__ = [
     'MultiOutputRegressor',
     'Regressor',
     'Transformer',
-    'OutlierDetector'
 ]
 
 
@@ -466,10 +466,10 @@ class Ensemble(Estimator, collections.UserList):
     """An ensemble model."""
 
 
-class OutlierDetector(Estimator):
+class AnomalyDetector(Estimator):
 
     @abc.abstractmethod
-    def fit_one(self, x: dict) -> 'OutlierDetector':
+    def fit_one(self, x: dict) -> 'AnomalyDetector':
         """Updates the model."""
 
     @abc.abstractmethod

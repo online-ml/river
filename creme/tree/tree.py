@@ -1,11 +1,7 @@
 import abc
+import collections
 import functools
 import numbers
-try:
-    import graphviz
-    GRAPHVIZ_INSTALLED = True
-except ImportError:
-    GRAPHVIZ_INSTALLED = False
 
 from .. import base
 from .. import proba
@@ -46,8 +42,7 @@ class BaseDecisionTree(abc.ABC):
     def draw(self):
         """Returns a GraphViz representation of the decision tree."""
 
-        if not GRAPHVIZ_INSTALLED:
-            raise RuntimeError('graphviz is not installed')
+        import graphviz
 
         dot = graphviz.Digraph()
 
@@ -82,15 +77,14 @@ class BaseDecisionTree(abc.ABC):
         node = self.root
         _print = functools.partial(print, **print_params)
 
-        while isinstance(node, leaf.Branch):
-            if node.split.test(x):
+        for node in self.root.path(x):
+            if isinstance(node, leaf.Leaf):
+                _print(node.target_dist)
+                break
+            if node.split(x):
                 _print('not', node.split)
-                node = node.left
             else:
                 _print(node.split)
-                node = node.right
-
-        _print(node.target_dist)
 
 
 class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
@@ -154,4 +148,5 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
         raise ValueError(f'Unsupported feature type: {type(value)} ({name}: {value})')
 
     def predict_proba_one(self, x):
-        return self.root.get_leaf(x).predict(x)
+        leaf = collections.deque(self.root.path(x), maxlen=1).pop()
+        return leaf.predict(x)
