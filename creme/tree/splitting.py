@@ -3,9 +3,10 @@ import collections
 import functools
 import operator
 
-from .. import base
 from .. import proba
 from .. import utils
+
+from . import base
 
 
 def decimal_range(start, stop, num):
@@ -42,19 +43,6 @@ LT = Op('<', operator.lt)
 EQ = Op('=', operator.eq)
 
 
-class Split(collections.namedtuple('Split', 'on how at')):
-    """A data class for storing split details."""
-
-    def __repr__(self):
-        at = self.at
-        if isinstance(at, float):
-            at = f'{at:.3f}'
-        return f'{self.on} {self.how} {at}'
-
-    def __call__(self, x):
-        return self.how(x[self.on], self.at)
-
-
 class SplitEnum(abc.ABC):
 
     def __init__(self, feature_name):
@@ -74,17 +62,30 @@ class HistSplitEnum(SplitEnum):
 
     def __init__(self, feature_name, n_bins, n_splits):
         super().__init__(feature_name)
-        self.hists = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
+        self.P_xy = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
         self.n_splits = n_splits
 
-    def update(self, x: float, y: 'base.Label'):
-        self.hists[y].update(x)
+    def update(self, x, y):
+        """
+
+        Parameters:
+            x (float)
+            y (base.Label)
+
+        """
+        self.P_xy[y].update(x)
         return self
 
-    def enumerate_splits(self, target_dist: 'proba.Multinomial'):
+    def enumerate_splits(self, target_dist):
+        """
 
-        low = min(h[0].right for h in self.hists.values())
-        high = min(h[-1].right for h in self.hists.values())
+        Parameters:
+            target_dist (proba.Multinomial)
+
+        """
+
+        low = min(h[0].right for h in self.P_xy.values())
+        high = min(h[-1].right for h in self.P_xy.values())
 
         # If only one single value has been observed, then no split can be proposed
         if low >= high:
@@ -92,7 +93,7 @@ class HistSplitEnum(SplitEnum):
             yield
 
         thresholds = list(decimal_range(start=low, stop=high, num=self.n_splits))
-        cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.hists.items()}
+        cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.P_xy.items()}
 
         for t in thresholds:
 
@@ -108,7 +109,7 @@ class HistSplitEnum(SplitEnum):
             l_dist = proba.Multinomial(l_dist)
             r_dist = proba.Multinomial(r_dist)
 
-            yield Split(on=self.feature_name, how=LT, at=t), l_dist, r_dist
+            yield base.Split(on=self.feature_name, how=LT, at=t), l_dist, r_dist
 
 
 class CategoricalSplitEnum(SplitEnum):
@@ -118,11 +119,24 @@ class CategoricalSplitEnum(SplitEnum):
         super().__init__(feature_name)
         self.P_xy = collections.defaultdict(proba.Multinomial)
 
-    def update(self, x: str, y: 'base.Label'):
+    def update(self, x, y):
+        """
+
+        Parameters:
+            x (str)
+            y (base.Label)
+
+        """
         self.P_xy[y].update(x)
         return self
 
-    def enumerate_splits(self, target_dist: 'proba.Multinomial'):
+    def enumerate_splits(self, target_dist):
+        """
+
+        Parameters:
+            target_dist (proba.Multinomial)
+
+        """
 
         categories = set(*(p_x.keys() for p_x in self.P_xy.values()))
 
@@ -145,4 +159,4 @@ class CategoricalSplitEnum(SplitEnum):
             l_dist = proba.Multinomial(l_dist)
             r_dist = proba.Multinomial(r_dist)
 
-            yield Split(on=self.feature_name, how=EQ, at=cat), l_dist, r_dist
+            yield base.Split(on=self.feature_name, how=EQ, at=cat), l_dist, r_dist
