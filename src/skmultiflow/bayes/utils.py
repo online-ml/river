@@ -22,11 +22,11 @@ def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_ob
     -----
     This method is not intended to be used as a stand-alone method.
     """
-    if observed_class_distribution == {}:
+    observed_class_sum = sum(observed_class_distribution.values())
+    if observed_class_distribution == {} or observed_class_sum == 0.0:
         # No observed class distributions, all classes equal
         return {0: 0.0}
     votes = {}
-    observed_class_sum = sum(observed_class_distribution.values())
     for class_index, observed_class_val in observed_class_distribution.items():
         votes[class_index] = observed_class_val / observed_class_sum
         if attribute_observers:
