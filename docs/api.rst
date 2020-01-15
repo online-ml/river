@@ -60,7 +60,7 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
 **compat**: Compatibility with other libraries
 -----------------------------------------------
 
-This module contains wrappers for making ``creme`` estimators compatible with other libraries, and vice-versa whenever possible. 
+This module contains adapters for making ``creme`` estimators compatible with other libraries, and vice-versa whenever possible. 
 
 .. rubric:: Classes
 
@@ -74,6 +74,7 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     Creme2SKLClusterer
     Creme2SKLRegressor
     Creme2SKLTransformer
+    PyTorch2CremeRegressor
     SKL2CremeClassifier
     SKL2CremeRegressor
 
@@ -124,8 +125,10 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     CreditCard
     Elec2
     KDD99HTTP
+    MaliciousURL
+    Phishing
     Restaurants
-    SMS
+    SMSSpam
     TREC07
     ToulouseBikes
     TrumpApproval
@@ -213,6 +216,22 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     VarianceThreshold
 
 
+**imblearn**: Imbalanced learning
+----------------------------------
+
+.. rubric:: Classes
+
+.. currentmodule:: creme.imblearn
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
+    RandomOverSampler
+    RandomSampler
+    RandomUnderSampler
+
+
 **impute**: Missing data imputation
 ------------------------------------
 
@@ -244,6 +263,7 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     LogisticRegression
     PAClassifier
     PARegressor
+    PoissonRegression
     SoftmaxRegression
 
 
@@ -395,6 +415,7 @@ This module contains wrappers for making ``creme`` estimators compatible with ot
     :nosignatures:
     :template: class.rst
         
+    AMSGrad
     AdaBound
     AdaDelta
     AdaGrad
@@ -434,6 +455,7 @@ Loss functions
     losses.EpsilonInsensitiveHinge
     losses.Hinge
     losses.Log
+    losses.Poisson
     losses.Quantile
     losses.Squared
 
