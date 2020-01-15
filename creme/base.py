@@ -16,6 +16,7 @@ from . import utils
 
 
 __all__ = [
+    'AnomalyDetector',
     'BinaryClassifier',
     'Clusterer',
     'Ensemble',
@@ -26,7 +27,6 @@ __all__ = [
     'MultiOutputRegressor',
     'Regressor',
     'Transformer',
-    'OutlierDetector'
 ]
 
 
@@ -39,8 +39,7 @@ Probas = typing.Dict[Label, Proba]
 DEFAULT_TAGS = {
     'handles_text': False,
     'requires_positive_data': False,
-    'handles_categorical_features': False,
-    'poor_score': False
+    'handles_categorical_features': False
 }
 
 
@@ -467,10 +466,10 @@ class Ensemble(Estimator, collections.UserList):
     """An ensemble model."""
 
 
-class OutlierDetector(Estimator):
+class AnomalyDetector(Estimator):
 
     @abc.abstractmethod
-    def fit_one(self, x: dict) -> 'OutlierDetector':
+    def fit_one(self, x: dict) -> 'AnomalyDetector':
         """Updates the model."""
 
     @abc.abstractmethod

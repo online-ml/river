@@ -2,8 +2,6 @@
 import inspect
 import types
 
-import numpy as np
-
 
 __all__ = ['format_object', 'print_table']
 
@@ -57,13 +55,14 @@ def format_object(obj, show_modules=False, depth=0):
     return rep.expandtabs(2)
 
 
-def print_table(headers, columns, sort_by=None):
+def print_table(headers, columns, order=None):
     """Pretty-prints a table.
 
     Parameters:
         headers (list of str): The column names.
         columns (list of lists of str): The column values.
-        sort_by (str): The name of the column by which to sort by.
+        order (list of ints): Order in which to print the column the values. Defaults to the order
+            in which the values are given.
 
     """
 
@@ -83,11 +82,9 @@ def print_table(headers, columns, sort_by=None):
     # Make a template to print out rows one by one
     row_format = ' '.join(['{:' + str(width + 2) + 's}' for width in col_widths])
 
-    # Determine in which order to print the rows
-    if sort_by is not None:
-        rows = reversed(np.argsort(list(map(float, columns[headers.index(sort_by)]))))
-    else:
-        rows = range(len(columns[0]))
+    # Determine the order in which to print the column values
+    if order is None:
+        order = range(len(columns[0]))
 
     # Build the table
     table = (
@@ -97,7 +94,7 @@ def print_table(headers, columns, sort_by=None):
                 col[i].rjust(width)
                 for col, width in zip(columns, col_widths)
             ])
-            for i in rows
+            for i in order
         ))
     )
 

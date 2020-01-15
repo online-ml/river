@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `PyTorch2CremeRegressor` and to the `compat` module
 - Added `PoissonRegression` to `linear_model`
 - Added `Poisson` to `optim.losses`
+- Added `MaliciousURL` to `datasets`
 
 ### Fixed
 

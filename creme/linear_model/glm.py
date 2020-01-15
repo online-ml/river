@@ -2,6 +2,8 @@ import collections
 import math
 import numbers
 
+import numpy as np
+
 from .. import base
 from .. import optim
 from .. import utils
@@ -251,17 +253,16 @@ class LinearRegression(GLM, base.Regressor):
             return '{: ,.{prec}f}'.format(x, prec=decimals)
 
         names = list(map(str, x.keys())) + ['Intercept']
-        values = list(map(fmt_float, x.values())) + [fmt_float(1)]
-        weights = list(map(fmt_float, self.weights.values())) + [fmt_float(self.intercept)]
-        contributions = (
-            [fmt_float(xi * self.weights[i]) for i, xi in x.items()] +
-            [fmt_float(self.intercept)]
-        )
+        values = list(map(fmt_float, list(x.values()) + [1]))
+        weights = list(map(fmt_float, [self.weights.get(i, 0) for i in x] + [self.intercept]))
+        contributions = [xi * self.weights.get(i, 0) for i, xi in x.items()] + [self.intercept]
+        order = reversed(np.argsort(contributions))
+        contributions = list(map(fmt_float, contributions))
 
         table = utils.pretty.print_table(
             headers=['Name', 'Value', 'Weight', 'Contribution'],
             columns=[names, values, weights, contributions],
-            sort_by='Contribution'
+            order=order
         )
 
         print(table, **print_params)
@@ -386,7 +387,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> from creme import optim
             >>> from creme import preprocessing
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -396,7 +397,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            Accuracy: 89.49%
+            Accuracy: 88.96%
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
