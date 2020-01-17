@@ -1,5 +1,5 @@
 import collections
-import numpy as np
+import math
 
 from . import base
 
@@ -62,7 +62,7 @@ class Nadam(base.Optimizer):
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
             self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
 
-            w[i] -= lr * (self.beta_1*self.m[i] + (1-self.beta_1)*gi*(1-np.power(
+            w[i] -= lr * (self.beta_1*self.m[i] + (1-self.beta_1)*gi*(1-math.pow(
                 self.beta_1, self.n_iterations+1))) / (self.v[i] ** .5 + self.eps)
 
         return w
