@@ -1,7 +1,8 @@
 """Recommender systems."""
+from .baseline import Baseline
+from .biased_mf import BiasedMF
+from .funk_mf import FunkMF
 from .normal import RandomNormal
-from .sgd_baseline import SGDBaseline
-from .svd import SVD
 
 
-__all__ = ['RandomNormal', 'SGDBaseline', 'SVD']
+__all__ = ['Baseline', 'BiasedMF', 'FunkMF', 'RandomNormal']
