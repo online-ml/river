@@ -11,6 +11,35 @@ class Nadam(base.Optimizer):
     """Nadam optimizer.
 
     Example:
+
+        ::
+
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import optim
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> from sklearn import datasets
+
+            >>> X_y = stream.iter_sklearn_dataset(
+            ...     dataset=datasets.load_breast_cancer(),
+            ...     shuffle=True,
+            ...     random_state=42
+            ... )
+            >>> optimizer = optim.Nadam()
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.LogisticRegression(optimizer)
+            ... )
+            >>> metric = metrics.F1()
+
+            >>> model_selection.progressive_val_score(X_y, model, metric)
+            F1: 0.955307
+
+    References:
+        1. `Nadam: A combination of adam and nesterov <https://ruder.io/optimizing-gradient-descent/index.html#nadam>`_
+
     """
 
     def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8):
