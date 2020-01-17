@@ -23,7 +23,7 @@ __all__ = ['Pipeline']
 class Network(collections.UserList):
     """An abstraction to help with drawing pipelines."""
 
-    def __init__(self, nodes, links, directed, name=None):
+    def __init__(self, nodes, links, directed, name=None, labelloc=None):
         super().__init__()
         for node in nodes:
             self.append(node)
@@ -32,6 +32,7 @@ class Network(collections.UserList):
             self.link(*link)
         self.directed = directed
         self.name = name
+        self.labelloc = labelloc
 
     def append(self, a):
         if a not in self:
@@ -73,7 +74,7 @@ class Network(collections.UserList):
                     if b.name is not None:
                         # If the graph has a name, then we treat is as a cluster
                         c = b.draw()
-                        c.attr(label=b.name)
+                        c.attr(label=b.name, labelloc=b.labelloc)
                         c.name = f'cluster_{b.name}'
                         dot.subgraph(c)
                     else:
@@ -459,7 +460,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
                     nodes=[networkify(step._model)],
                     links=[],
                     directed=True,
-                    name=type(step).__name__
+                    name=type(step).__name__,
+                    labelloc=step._labelloc
                 )
 
             # Other steps are treated as strings
