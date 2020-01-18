@@ -1,3 +1,4 @@
+import functools
 import collections
 
 from .. import base
@@ -6,8 +7,10 @@ from .. import utils
 
 
 __all__ = [
+    'MaxAbsScaler',
     'MinMaxScaler',
     'Normalizer',
+    'RobustScaler',
     'StandardScaler'
 ]
 
@@ -24,6 +27,10 @@ class StandardScaler(base.Transformer):
     Under the hood a running mean and a running variance are maintained. The scaling is slightly
     different than when using scikit-learn but this doesn't seem to have any impact on learning
     performance.
+
+    Parameters:
+        with_mean (boolean): Whether to centre the data before scaling. Defaults to ``True``.
+        with_std (boolean): Whether to scale data. Defaults to ``True``.
 
     Attributes:
         variances (dict): Mapping between features and instances of `stats.Var`.
@@ -78,7 +85,9 @@ class StandardScaler(base.Transformer):
 
     """
 
-    def __init__(self):
+    def __init__(self, with_mean=True, with_std=True):
+        self.with_mean = with_mean
+        self.with_std = with_std
         self.variances = collections.defaultdict(stats.Var)
 
     def fit_one(self, x, y=None):
@@ -89,10 +98,16 @@ class StandardScaler(base.Transformer):
         return self
 
     def transform_one(self, x):
-        return {
-            i: safe_div(xi - self.variances[i].mean.get(), self.variances[i].get() ** .5)
-            for i, xi in x.items()
-        }
+        x_tf = {}
+
+        for i, xi in x.items():
+            x_tf[i] = xi
+            if self.with_mean:
+                x_tf[i] -= self.variances[i].mean.get()
+            if self.with_std:
+                x_tf[i] = safe_div(x_tf[i], self.variances[i].get() ** .5)
+
+        return x_tf
 
 
 class MinMaxScaler(base.Transformer):
@@ -170,9 +185,184 @@ class MinMaxScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(xi - self.min[i].get(), self.max[i].get() - self.min[i].get())
+            i: safe_div(xi - self.min[i].get(),
+                        self.max[i].get() - self.min[i].get())
             for i, xi in x.items()
         }
+
+
+class MaxAbsScaler(base.Transformer):
+    """Scales the data to a [-1, 1] range based on absolute maximum.
+
+    Under the hood a running absolute max is maintained. This scaler is meant for
+    data that is already centered at zero or sparse data. It does not shift/center
+    the data, and thus does not destroy any sparsity.
+
+    Attributes:
+        abs_max (dict): Mapping between features and instances of `stats.AbsMax`.
+
+    Example:
+
+        ::
+
+            >>> import creme
+            >>> import numpy as np
+            >>> from sklearn import preprocessing
+
+            >>> rng = np.random.RandomState(42)
+            >>> X = [{'x': v} for v in rng.uniform(low=8, high=12, size=15)]
+
+            >>> scaler = creme.preprocessing.MaxAbsScaler()
+            >>> for x in X:
+            ...     print(scaler.fit_one(x).transform_one(x))
+            {'x': 1.0}
+            {'x': 1.0}
+            {'x': 0.9258754518784218}
+            {'x': 0.8806879332749703}
+            {'x': 0.7306768519605097}
+            {'x': 0.7306686776326253}
+            {'x': 0.6974865739110592}
+            {'x': 0.9713499336579836}
+            {'x': 0.8815204528926222}
+            {'x': 0.9177684779286244}
+            {'x': 0.6847780857355226}
+            {'x': 1.0}
+            {'x': 0.9537133387191868}
+            {'x': 0.7449179338112799}
+            {'x': 0.734643499572489}
+
+            >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
+            >>> preprocessing.MaxAbsScaler().fit_transform(X)
+            array([[0.79953273],
+                [0.99353666],
+                [0.9198912 ],
+                [0.87499575],
+                [0.72595424],
+                [0.72594612],
+                [0.69297848],
+                [0.96507177],
+                [0.87582288],
+                [0.91183663],
+                [0.68035213],
+                [1.        ],
+                [0.95371334],
+                [0.74491793],
+                [0.7346435 ]])
+    """
+
+    def __init__(self):
+        self.abs_max = collections.defaultdict(stats.AbsMax)
+
+    def fit_one(self, x, y=None):
+
+        for i, xi in x.items():
+            self.abs_max[i].update(xi)
+
+        return self
+
+    def transform_one(self, x):
+        return {
+            i: safe_div(xi, self.abs_max[i].get())
+            for i, xi in x.items()
+        }
+
+
+class RobustScaler(base.Transformer):
+    """Scale features using statistics that are robust to outliers.
+
+    This Scaler removes the median and scales the data according to the
+    interquantile range.
+
+    Parameters:
+        with_centering (boolean): Whether to centre the data before scaling. Defaults to ``True``.
+        with_scaling (boolean): Whether to scale data to iqr. Defaults to ``True``.
+        q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to ``0.25``.
+        q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to ``0.75``.
+
+    Attributes:
+        median (dict): Mapping between features and instances of `stats.Quantile(0.5)`.
+        iqr (dict): Mapping between features and instances of `stats.IQR`.
+
+    Example:
+
+        ::
+
+            >>> import creme
+            >>> import numpy as np
+            >>> from sklearn import preprocessing
+
+            >>> rng = np.random.RandomState(42)
+            >>> X = [{'x': v} for v in rng.uniform(low=8, high=12, size=15)]
+
+            >>> scaler = creme.preprocessing.RobustScaler()
+            >>> for x in X:
+            ...     print(scaler.fit_one(x).transform_one(x))
+            {'x': 0.0}
+            {'x': 0.0}
+            {'x': 0.0}
+            {'x': -0.3787338518541633}
+            {'x': -1.2383133577483856}
+            {'x': -2.6296427694340427}
+            {'x': -1.1145387387139178}
+            {'x': 1.3429672438986109}
+            {'x': 0.037059676555904184}
+            {'x': 0.25865683357370733}
+            {'x': -1.165696864901573}
+            {'x': 0.7074284260047643}
+            {'x': 0.25014164136194217}
+            {'x': -0.8213524413984991}
+            {'x': -0.6509250023240815}
+
+            >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
+            >>> preprocessing.RobustScaler().fit_transform(X)
+            array([[-0.36543233],
+                [ 0.57403854],
+                [ 0.21740783],
+                [ 0.        ],
+                [-0.72173876],
+                [-0.72177808],
+                [-0.88142503],
+                [ 0.4361963 ],
+                [ 0.00400545],
+                [ 0.17840326],
+                [-0.94256856],
+                [ 0.60533751],
+                [ 0.38119272],
+                [-0.62990639],
+                [-0.6796607 ]])
+    """
+
+    def __init__(self, with_centering=True, with_scaling=True, q_inf=0.25, q_sup=0.75):
+        self.with_centering = with_centering
+        self.with_scaling = with_scaling
+        self.median = collections.defaultdict(
+            functools.partial(stats.Quantile, 0.5)
+        )
+        self.iqr = collections.defaultdict(
+            functools.partial(stats.IQR, q_inf, q_sup)
+        )
+
+    def fit_one(self, x, y=None):
+
+        for i, xi in x.items():
+            if self.with_centering:
+                self.median[i].update(xi)
+            if self.with_scaling:
+                self.iqr[i].update(xi)
+
+        return self
+
+    def transform_one(self, x):
+        x_tf = {}
+
+        for i, xi in x.items():
+            x_tf[i] = xi
+            if self.with_centering:
+                x_tf[i] -= self.median[i].get()
+            if self.with_scaling:
+                x_tf[i] = safe_div(x_tf[i], self.iqr[i].get())
+
+        return x_tf
 
 
 class Normalizer(base.Transformer):
