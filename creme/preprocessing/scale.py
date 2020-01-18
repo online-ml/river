@@ -6,6 +6,7 @@ from .. import utils
 
 
 __all__ = [
+    'MaxAbsScaler',
     'MinMaxScaler',
     'Normalizer',
     'StandardScaler'
@@ -90,7 +91,8 @@ class StandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(xi - self.variances[i].mean.get(), self.variances[i].get() ** .5)
+            i: safe_div(
+                xi - self.variances[i].mean.get(), self.variances[i].get() ** .5)
             for i, xi in x.items()
         }
 
@@ -170,7 +172,84 @@ class MinMaxScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(xi - self.min[i].get(), self.max[i].get() - self.min[i].get())
+            i: safe_div(xi - self.min[i].get(),
+                        self.max[i].get() - self.min[i].get())
+            for i, xi in x.items()
+        }
+
+
+class MaxAbsScaler(base.Transformer):
+    """Scales the data to a [-1, 1] range based on absolute maximum.
+
+    Under the hood a running absolute max is maintained. This scaler is meant for
+    data that is already centered at zero or sparse data. It does not shift/center
+    the data, and thus does not destroy any sparsity.
+
+    Attributes:
+        abs_max (dict): Mapping between features and instances of `stats.AbsMax`.
+
+    Example:
+
+        ::
+
+            >>> import creme
+            >>> import numpy as np
+            >>> from sklearn import preprocessing
+
+            >>> rng = np.random.RandomState(42)
+            >>> X = [{'x': v} for v in rng.uniform(low=8, high=12, size=15)]
+
+            >>> scaler = creme.preprocessing.MaxAbsScaler()
+            >>> for x in X:
+            ...     print(scaler.fit_one(x).transform_one(x))
+            {'x': 1.0}
+            {'x': 1.0}
+            {'x': 0.9258754518784218}
+            {'x': 0.8806879332749703}
+            {'x': 0.7306768519605097}
+            {'x': 0.7306686776326253}
+            {'x': 0.6974865739110592}
+            {'x': 0.9713499336579836}
+            {'x': 0.8815204528926222}
+            {'x': 0.9177684779286244}
+            {'x': 0.6847780857355226}
+            {'x': 1.0}
+            {'x': 0.9537133387191868}
+            {'x': 0.7449179338112799}
+            {'x': 0.734643499572489}
+
+            >>> X = np.array([x['x'] for x in X]).reshape(-1, 1)
+            >>> preprocessing.MaxAbsScaler().fit_transform(X)
+            array([[0.79953273],
+                [0.99353666],
+                [0.9198912 ],
+                [0.87499575],
+                [0.72595424],
+                [0.72594612],
+                [0.69297848],
+                [0.96507177],
+                [0.87582288],
+                [0.91183663],
+                [0.68035213],
+                [1.        ],
+                [0.95371334],
+                [0.74491793],
+                [0.7346435 ]])
+    """
+
+    def __init__(self):
+        self.abs_max = collections.defaultdict(stats.AbsMax)
+
+    def fit_one(self, x, y=None):
+
+        for i, xi in x.items():
+            self.abs_max[i].update(xi)
+
+        return self
+
+    def transform_one(self, x):
+        return {
+            i: safe_div(xi, self.abs_max[i].get())
             for i, xi in x.items()
         }
 
