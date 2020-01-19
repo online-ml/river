@@ -28,6 +28,10 @@ class StandardScaler(base.Transformer):
     different than when using scikit-learn but this doesn't seem to have any impact on learning
     performance.
 
+    Parameters:
+        with_mean (boolean): Whether to centre the data before scaling. Defaults to ``True``.
+        with_std (boolean): Whether to scale data. Defaults to ``True``.
+
     Attributes:
         variances (dict): Mapping between features and instances of `stats.Var`.
 
@@ -81,7 +85,9 @@ class StandardScaler(base.Transformer):
 
     """
 
-    def __init__(self):
+    def __init__(self, with_mean=True, with_std=True):
+        self.with_mean = with_mean
+        self.with_std = with_std
         self.variances = collections.defaultdict(stats.Var)
 
     def fit_one(self, x, y=None):
@@ -92,11 +98,16 @@ class StandardScaler(base.Transformer):
         return self
 
     def transform_one(self, x):
-        return {
-            i: safe_div(
-                xi - self.variances[i].mean.get(), self.variances[i].get() ** .5)
-            for i, xi in x.items()
-        }
+        x_tf = {}
+
+        for i, xi in x.items():
+            x_tf[i] = xi
+            if self.with_mean:
+                x_tf[i] -= self.variances[i].mean.get()
+            if self.with_std:
+                x_tf[i] = safe_div(x_tf[i], self.variances[i].get() ** .5)
+
+        return x_tf
 
 
 class MinMaxScaler(base.Transformer):
@@ -341,6 +352,7 @@ class RobustScaler(base.Transformer):
 
     def transform_one(self, x):
         x_tf = {}
+
         for i, xi in x.items():
             x_tf[i] = xi
             if self.with_centering:
