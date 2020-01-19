@@ -18,6 +18,7 @@ from .mean import BayesianMean
 from .mean import Mean
 from .mean import RollingMean
 from .median import Median
+from .median import RollingMedian
 from .minimum import Min
 from .minimum import RollingMin
 from .mode import Mode
@@ -60,6 +61,7 @@ __all__ = [
     'Quantile',
     'RollingIQR',
     'RollingMean',
+    'RollingMedian',
     'RollingQuantile',
     'RollingAbsMax',
     'RollingMax',
