@@ -17,6 +17,7 @@ from .maximum import RollingAbsMax
 from .mean import BayesianMean
 from .mean import Mean
 from .mean import RollingMean
+from .median import Median
 from .minimum import Min
 from .minimum import RollingMin
 from .mode import Mode
@@ -51,6 +52,7 @@ __all__ = [
     'Max',
     'Mean',
     'Min',
+    'Median',
     'Mode',
     'NUnique',
     'PeakToPeak',

@@ -5,6 +5,7 @@ from .poly import PolynomialExtender
 from .scale import MaxAbsScaler
 from .scale import MinMaxScaler
 from .scale import Normalizer
+from .scale import RobustScaler
 from .scale import StandardScaler
 
 
@@ -15,5 +16,6 @@ __all__ = [
     'Normalizer',
     'OneHotEncoder',
     'PolynomialExtender',
+    'RobustScaler',
     'StandardScaler'
 ]
