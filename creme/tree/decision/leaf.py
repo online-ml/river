@@ -1,8 +1,8 @@
 import math
 
-from . import base
+from ...proba.base import ContinuousDistribution
 
-from ..proba.base import ContinuousDistribution
+from .. import base
 
 
 class Branch(base.Branch):

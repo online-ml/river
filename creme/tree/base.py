@@ -133,7 +133,9 @@ def iter_blocks(tree, limits, depth=-1):
         yield (tree, limits)
     else:
         on, at = tree.split.on, tree.split.at
+
         l_limits = {**limits, on: (limits[on][0], at)} if on in limits else limits
-        r_limits = {**limits, on: (at, limits[on][1])} if on in limits else limits
         yield from iter_blocks(tree=tree.left, limits=l_limits, depth=depth - 1)
+
+        r_limits = {**limits, on: (at, limits[on][1])} if on in limits else limits
         yield from iter_blocks(tree=tree.right, limits=r_limits, depth=depth - 1)
