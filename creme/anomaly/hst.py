@@ -98,6 +98,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
         self.window_size = window_size
         self.height = height
         self.scale = scale
+        self.seed = seed
         self.rng = random.Random(seed)
         self.trees = []
         self.min_max_scaler = preprocessing.MinMaxScaler()

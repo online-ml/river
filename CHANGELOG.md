@@ -24,6 +24,7 @@ See progress [here](https://github.com/creme-ml/creme/milestone/1).
 - Added `Poisson` to `optim.losses`
 - Added `MaliciousURL` to `datasets`
 - Added `TimeRolling` to `metrics`
+- Added `RBFSampler` to `preprocessing`
 
 ### Fixed
 
