@@ -35,7 +35,7 @@ class Nadam(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.955307
+            F1: 0.958217
 
     References:
         1. `Nadam: A combination of adam and nesterov <https://ruder.io/optimizing-gradient-descent/index.html#nadam>`_
