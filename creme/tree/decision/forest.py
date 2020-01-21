@@ -1,4 +1,4 @@
-from .. import ensemble
+from ... import ensemble
 
 from . import tree
 
