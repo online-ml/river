@@ -1,5 +1,5 @@
-import collections
 import math
+import collections
 
 from . import base
 
@@ -49,20 +49,21 @@ class Nadam(base.Optimizer):
         self.eps = eps
         self.m = collections.defaultdict(float)
         self.v = collections.defaultdict(float)
+        self.m_hat = collections.defaultdict(float)
+        self.v_hat = collections.defaultdict(float)
 
     def _update_after_pred(self, w, g):
 
-        # Correct bias for `v`
-        lr = self.learning_rate * \
-            (1 - self.beta_2 ** (self.n_iterations + 1)) ** .5
-        # Correct bias for `m`
-        lr /= (1 - self.beta_1 ** (self.n_iterations + 1))
-
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
-            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
+            self.m_hat[i] = self.m[i] / \
+                (1 - math.pow(self.beta_1, self.n_iterations+1))
 
-            w[i] -= lr * (self.beta_1*self.m[i] + (1-self.beta_1)*gi*(1-math.pow(
-                self.beta_1, self.n_iterations+1))) / (self.v[i] ** .5 + self.eps)
+            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
+            self.v_hat[i] = self.v[i] / \
+                (1 - math.pow(self.beta_2, self.n_iterations+1))
+
+            w[i] -= self.learning_rate * (self.beta_1*self.m_hat[i] + (1-self.beta_1)*gi/(
+                1-math.pow(self.beta_1, self.n_iterations+1))) / (self.v_hat[i] ** .5 + self.eps)
 
         return w
