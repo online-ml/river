@@ -30,6 +30,7 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     :nosignatures:
     :template: class.rst
         
+    AnomalyDetector
     BinaryClassifier
     Clusterer
     Ensemble
@@ -37,7 +38,6 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     MultiClassifier
     MultiOutputClassifier
     MultiOutputRegressor
-    OutlierDetector
     Regressor
     Transformer
     Wrapper

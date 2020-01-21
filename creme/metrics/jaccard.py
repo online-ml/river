@@ -43,7 +43,7 @@ class Jaccard(stats.Mean, base.MultiOutputClassificationMetric):
     def requires_labels(self):
         return True
 
-    def update(self, y_true, y_pred):
+    def _jaccard(self, y_true, y_pred):
 
         one_and_ones = 0
         zero_or_ones = 0
@@ -54,6 +54,12 @@ class Jaccard(stats.Mean, base.MultiOutputClassificationMetric):
             elif y_true[i] or y_pred[i]:
                 zero_or_ones += 1
 
-        super().update(one_and_ones / (zero_or_ones + one_and_ones))
+        return one_and_ones / (zero_or_ones + one_and_ones)
 
+    def update(self, y_true, y_pred):
+        super().update(self._jaccard(y_true, y_pred))
+        return self
+
+    def revert(self, y_true, y_pred):
+        super().revert(self._jaccard(y_true, y_pred))
         return self
