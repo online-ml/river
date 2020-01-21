@@ -112,7 +112,7 @@ def yield_all_checks(model):
 
     from .. import base
 
-    if isinstance(model, base.OutlierDetector):
+    if isinstance(model, base.AnomalyDetector):
         return
         yield
 

@@ -3,10 +3,10 @@ import collections
 import functools
 import operator
 
-from .. import proba
-from .. import utils
+from ... import proba
+from ... import utils
 
-from . import base
+from .. import base
 
 
 def decimal_range(start, stop, num):
