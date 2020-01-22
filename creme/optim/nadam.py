@@ -1,13 +1,14 @@
+import math
 import collections
 
 from . import base
 
 
-__all__ = ['AdaGrad']
+__all__ = ['Nadam']
 
 
-class AdaGrad(base.Optimizer):
-    """AdaGrad optimizer.
+class Nadam(base.Optimizer):
+    """Nadam optimizer.
 
     Example:
 
@@ -26,7 +27,7 @@ class AdaGrad(base.Optimizer):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> optimizer = optim.AdaGrad()
+            >>> optimizer = optim.Nadam()
             >>> model = (
             ...     preprocessing.StandardScaler() |
             ...     linear_model.LogisticRegression(optimizer)
@@ -34,22 +35,33 @@ class AdaGrad(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.970547
+            F1: 0.958217
 
     References:
-        1. `Adaptive subgradient methods for online learning and stochastic optimization <http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf>`_
+        1. `Nadam: A combination of adam and nesterov <https://ruder.io/optimizing-gradient-descent/index.html#nadam>`_
 
     """
 
-    def __init__(self, lr=0.1, eps=1e-8):
+    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8):
         super().__init__(lr)
+        self.beta_1 = beta_1
+        self.beta_2 = beta_2
         self.eps = eps
-        self.g2 = collections.defaultdict(float)
+        self.m = collections.defaultdict(float)
+        self.v = collections.defaultdict(float)
 
     def _update_after_pred(self, w, g):
 
         for i, gi in g.items():
-            self.g2[i] += gi ** 2
-            w[i] -= self.learning_rate / (self.g2[i] + self.eps) ** 0.5 * gi
+            self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
+            m_hat = self.m[i] / \
+                (1 - math.pow(self.beta_1, self.n_iterations+1))
+
+            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
+            v_hat = self.v[i] / \
+                (1 - math.pow(self.beta_2, self.n_iterations+1))
+
+            w[i] -= self.learning_rate * (self.beta_1 * m_hat + (1-self.beta_1)*gi/(
+                1-math.pow(self.beta_1, self.n_iterations+1))) / (v_hat ** .5 + self.eps)
 
         return w
