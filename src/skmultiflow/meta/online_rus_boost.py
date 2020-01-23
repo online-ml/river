@@ -129,7 +129,7 @@ class OnlineRUSBoostClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixi
     def reset(self):
         self.__configure()
 
-    def partial_fit(self, X, y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ Partially fits the model, based on the X and y matrix.
 
         Since it's an ensemble learner, if X and y matrix of more than one
@@ -220,7 +220,7 @@ class OnlineRUSBoostClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixi
                 k = self._random_state.poisson(lam_rus)
                 if k > 0:
                     for b in range(k):
-                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, weight)
+                        self.ensemble[i].partial_fit([X[j]], [y[j]], classes, sample_weight)
                 if self.ensemble[i].predict([X[j]])[0] == y[j]:
                     self.lam_sc[i] += lam
                     self.epsilon[i] = (self.lam_sw[i]) / (self.lam_sc[i] + self.lam_sw[i])
