@@ -449,7 +449,7 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
 
         return final_votes if fired_rule else self.default_rule.get_class_votes(X, self)
 
-    def partial_fit(self, X, y, classes=None, weight=None):
+    def partial_fit(self, X, y, classes=None, sample_weight=None):
         """Incrementally trains the model.
 
         Train samples (instances) are composed of X attributes and their corresponding targets y.
@@ -476,7 +476,7 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
         classes: list or numpy.array
             Contains the class values in the stream. If defined, will be used to define the length of the arrays
             returned by `predict_proba`
-        weight: float or array-like
+        sample_weight: float or array-like
             Instance weight. If not provided, uniform weights are assumed.
 
         Returns
@@ -488,13 +488,13 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
             self.classes = classes
         if y is not None:
             row_cnt, _ = get_dimensions(X)
-            if weight is None:
-                weight = np.ones(row_cnt)
-            if row_cnt != len(weight):
-                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt, len(weight)))
+            if sample_weight is None:
+                sample_weight = np.ones(row_cnt)
+            if row_cnt != len(sample_weight):
+                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt, len(sample_weight)))
             for i in range(row_cnt):
-                if weight[i] != 0.0:
-                    self._partial_fit(X[i], y[i], weight[i])
+                if sample_weight[i] != 0.0:
+                    self._partial_fit(X[i], y[i], sample_weight[i])
 
         return self
 
