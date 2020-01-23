@@ -106,7 +106,6 @@ class OnlineRUSBoostClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixi
         self.lam_neg = None
         self.lam_sw = None
         self.epsilon = None
-        self.__configure()
 
     def __configure(self):
         if hasattr(self.base_estimator, "reset"):
@@ -167,6 +166,9 @@ class OnlineRUSBoostClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixi
         self
 
         """
+        if self.ensemble is None:
+            self.__configure()
+
         if self.classes is None:
             if classes is None:
                 raise ValueError("The first partial_fit call should pass all the classes.")
@@ -325,26 +327,36 @@ class OnlineRUSBoostClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixi
         """
         proba = []
         r, c = get_dimensions(X)
-        try:
-            for i in range(self.actual_n_estimators):
-                partial_proba = self.ensemble[i].predict_proba(X)
-                if len(partial_proba[0]) > max(self.classes) + 1:
-                    raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
 
-                if len(proba) < 1:
+        if self.ensemble is None:
+            return np.zeros((r, 1))
+
+        with warnings.catch_warnings():   # Context manager to catch errors raised by numpy as RuntimeWarning
+            warnings.filterwarnings('error')
+            try:
+                for i in range(self.actual_n_estimators):
+                    partial_proba = self.ensemble[i].predict_proba(X)
+                    if len(partial_proba[0]) > max(self.classes) + 1:
+                        raise ValueError("The number of classes in the base learner is larger than in the ensemble.")
+
+                    if len(proba) < 1:
+                        for n in range(r):
+                            proba.append([0.0 for _ in partial_proba[n]])
+
                     for n in range(r):
-                        proba.append([0.0 for _ in partial_proba[n]])
+                        for l in range(len(partial_proba[n])):
+                            try:
+                                proba[n][l] += np.log((1 - self.epsilon[i]) / self.epsilon[i]) * partial_proba[n][l]
+                            except IndexError:
+                                proba[n].append(partial_proba[n][l])
+                            except RuntimeWarning:
+                                # Catch division by zero errors raised by numpy as RuntimeWarning
+                                continue
 
-                for n in range(r):
-                    for l in range(len(partial_proba[n])):
-                        try:
-                            proba[n][l] += np.log((1 - self.epsilon[i]) / self.epsilon[i]) * partial_proba[n][l]
-                        except IndexError:
-                            proba[n].append(partial_proba[n][l])
-        except ValueError:
-            return np.zeros((r, 1))
-        except TypeError:
-            return np.zeros((r, 1))
+            except ValueError:
+                return np.zeros((r, 1))
+            except TypeError:
+                return np.zeros((r, 1))
 
         # normalizing probabilities
         sum_proba = []
