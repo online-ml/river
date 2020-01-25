@@ -5,6 +5,7 @@ import math
 
 __all__ = [
     'Constant',
+    'Cyclic',
     'InverseScaling',
     'Optimal'
 ]
@@ -31,6 +32,35 @@ class Constant(Scheduler):
 
     def get(self, t):
         return self.learning_rate
+
+
+class Cyclic(Scheduler):
+    """Cyclic learning schedule, in each cycle we linearly decrease the
+    learning rate from lr1 to lr2.
+
+    Parameters:
+        lr1 (float): Starting learning rate.
+        lr2 (float): Ending learning rate.
+        c (int): Cycle length.
+
+    References:
+        1. `Averaging Weights Leads to Wider Optima and Better Generalization
+            <https://arxiv.org/abs/1803.05407>`_
+
+    """
+
+    def __init__(self, lr1, lr2, c):
+        assert lr1 >= lr2, "lr1 should be greater than or equal to lr2"
+        assert c > 0 and isinstance(
+            c, int), "c should be an integer greater than 0"
+
+        self.lr1 = lr1
+        self.lr2 = lr2
+        self.c = c
+
+    def get(self, t):
+        ti = ((t-1) % self.c + 1) / self.c
+        return (1 - ti) * self.lr1 + ti * self.lr2
 
 
 class InverseScaling(Scheduler):
