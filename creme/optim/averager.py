@@ -7,7 +7,7 @@ __all__ = ['Averager']
 
 
 class Averager(base.Optimizer):
-    """Averaged stochastic gradient descent.
+    """An averaging wrapper around various sgd optimzers.
 
     Example:
 
@@ -46,13 +46,15 @@ class Averager(base.Optimizer):
             F1: 0.960894
 
     References:
+        1. `Large-Scale Machine Learning with Stochastic Gradient Descent
+        <https://leon.bottou.org/publications/pdf/compstat-2010.pdf>`_
 
     """
 
     def __init__(self, base_optim):
+        super().__init__(base_optim.learning_rate)
         self.base_optim = base_optim
         self.w_avg = collections.defaultdict(float)
-        self.n_iterations = 0
 
     def update_before_pred(self, w: dict) -> dict:
         return self.base_optim.update_before_pred(w)
@@ -67,13 +69,4 @@ class Averager(base.Optimizer):
             self.w_avg[i] = (self.w_avg[i] * self.n_iterations +
                              wi) / (self.n_iterations + 1)
 
-        # # Update the iteration counter
-        # self.n_iterations += 1
-
         return self.w_avg
-
-    def __str__(self):
-        return self.__class__.__name__
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}({self.__dict__})'
