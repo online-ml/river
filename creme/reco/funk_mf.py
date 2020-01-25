@@ -108,17 +108,17 @@ class FunkMF(base.Recommender):
 
     def _fit_one(self, user, item, y):
 
-        # Compute the gradient of the loss with respect to the prediction
+        # Calculate the gradient of the loss with respect to the prediction
         g_loss = self.loss.gradient(y, self._predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
-        # Compute weights gradients
+        # Calculate latent gradients
         u_latent_grad = {user: g_loss * self.i_latents[item] + self.l2 * self.u_latents[user]}
         i_latent_grad = {item: g_loss * self.u_latents[user] + self.l2 * self.i_latents[item]}
 
-        # Update weights
+        # Update latent weights
         self.u_latents = self.u_optimizer.update_after_pred(self.u_latents, u_latent_grad)
         self.i_latents = self.i_optimizer.update_after_pred(self.i_latents, i_latent_grad)
 
