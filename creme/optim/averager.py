@@ -16,7 +16,7 @@ class Averager(base.Optimizer):
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
-            >>> from creme.optim import Nadam
+            >>> from creme.optim import Nadam, Averager
             >>> from creme import preprocessing
             >>> from creme import stream
             >>> from sklearn import datasets
@@ -26,22 +26,13 @@ class Averager(base.Optimizer):
             ...     shuffle=True,
             ...     random_state=42
             ... )
-            >>> nadam = Nadam()
+            >>> optimizer = Averager(Nadam())
             >>> model = (
             ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(nadam)
+            ...     linear_model.LogisticRegression(optimizer)
             ... )
             >>> metric = metrics.F1()
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.958217
 
-            >>> from creme.optim import Averager
-            >>> avg_nadam = Averager(Nadam())
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(avg_nadam)
-            ... )
-            >>> metric = metrics.F1()
             >>> model_selection.progressive_val_score(X_y, model, metric)
             F1: 0.960894
 
