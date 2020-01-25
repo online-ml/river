@@ -26,10 +26,10 @@ class Blacklister(base.Transformer):
     """
 
     def __init__(self, *blacklist):
-        self.blacklist = set(blacklist)
+        self.blacklist = blacklist
 
     def transform_one(self, x):
-        return {i: x[i] for i in set(x.keys()) - self.blacklist}
+        return {i: x[i] for i in self.blacklist}
 
     def __str__(self):
-        return '~' + str(sorted(self.blacklist))
+        return '~' + str(self.blacklist)

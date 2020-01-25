@@ -26,10 +26,10 @@ class Whitelister(base.Transformer):
     """
 
     def __init__(self, *whitelist):
-        self.whitelist = set(whitelist)
+        self.whitelist = whitelist
 
     def transform_one(self, x):
-        return {i: x[i] for i in set(x.keys()) & self.whitelist}
+        return {i: x[i] for i in self.whitelist}
 
     def __str__(self):
-        return str(sorted(self.whitelist))
+        return str(self.whitelist)
