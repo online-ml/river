@@ -3,7 +3,7 @@ import abc
 from .. import base
 
 
-class Recommender(base.Estimator):
+class Recommender(base.Regressor):
     """A recommender."""
 
     def fit_one(self, x, y):
