@@ -1,5 +1,4 @@
 import collections
-import functools
 
 from .. import stats
 from .. import optim
@@ -83,13 +82,8 @@ class Baseline(base.Recommender):
 
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
-
-        random_weight = functools.partial(
-            self.initializer,
-            shape=1
-        )
-        self.u_biases = collections.defaultdict(random_weight)
-        self.i_biases = collections.defaultdict(random_weight)
+        self.u_biases = collections.defaultdict(initializer)
+        self.i_biases = collections.defaultdict(initializer)
 
     def _predict_one(self, user, item):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]
@@ -99,13 +93,13 @@ class Baseline(base.Recommender):
         # Update the global mean
         self.global_mean.update(y)
 
-        # Compute the gradient of the loss with respect to the prediction
+        # Calculate the gradient of the loss with respect to the prediction
         g_loss = self.loss.gradient(y, self._predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
-        # Compute bias gradients
+        # Calculate bias gradients
         u_grad_bias = {user: g_loss + self.l2 * self.u_biases[user]}
         i_grad_bias = {item: g_loss + self.l2 * self.i_biases[item]}
 

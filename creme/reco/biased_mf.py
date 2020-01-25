@@ -124,12 +124,8 @@ class BiasedMF(base.Recommender):
         self.random_state = random_state
         self.global_mean = stats.Mean()
 
-        random_weight = functools.partial(
-            self.weight_initializer,
-            shape=1
-        )
-        self.u_biases = collections.defaultdict(random_weight)
-        self.i_biases = collections.defaultdict(random_weight)
+        self.u_biases = collections.defaultdict(weight_initializer)
+        self.i_biases = collections.defaultdict(weight_initializer)
 
         random_latents = functools.partial(
             self.latent_initializer,
@@ -159,13 +155,13 @@ class BiasedMF(base.Recommender):
         # Update the global mean
         self.global_mean.update(y)
 
-        # Compute the gradient of the loss with respect to the prediction
+        # Calculate the gradient of the loss with respect to the prediction
         g_loss = self.loss.gradient(y, self._predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
-        # Compute weights gradients
+        # Calculate weights gradients
         u_grad_bias = {user: g_loss + self.l2_bias * self.u_biases[user]}
         i_grad_bias = {item: g_loss + self.l2_bias * self.i_biases[item]}
         u_latent_grad = {user: g_loss * self.i_latents[item] + self.l2_latent * self.u_latents[user]}
