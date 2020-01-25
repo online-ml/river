@@ -48,7 +48,7 @@ class LogLoss(stats.Mean, BaseLogLoss):
 
     def _get_log_loss(self, y_true, y_pred):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
-        p_true = self.clamp_proba(p_true)
+        p_true = self._clamp_proba(p_true)
         if y_true:
             return -math.log(p_true)
         return -math.log(1 - p_true)

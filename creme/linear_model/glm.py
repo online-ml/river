@@ -1,5 +1,8 @@
 import collections
+import math
 import numbers
+
+import numpy as np
 
 from .. import base
 from .. import optim
@@ -50,7 +53,7 @@ class GLM:
     def _raw_dot(self, x):
         return utils.math.dot(self.weights, x) + self.intercept
 
-    def _eval_gradient(self, x, y, sample_weight=1.):
+    def _eval_gradient(self, x, y, sample_weight):
         """Returns the gradient for a given observation.
 
         This logic is put into a separate function for testing purposes.
@@ -59,15 +62,15 @@ class GLM:
 
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
+        # Apply the sample weight
+        loss_gradient *= sample_weight
+
         # Clip the gradient to avoid numerical instability
         loss_gradient = utils.math.clamp(
             loss_gradient,
             minimum=-self.clip_gradient,
             maximum=self.clip_gradient
         )
-
-        # Apply the sample weight
-        loss_gradient *= sample_weight
 
         return (
             {
@@ -140,7 +143,7 @@ class LinearRegression(GLM, base.Regressor):
             MAE: 0.616405
 
             >>> model['LinearRegression'].intercept
-            37.966291...
+            38.000439...
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -256,20 +259,107 @@ class LinearRegression(GLM, base.Regressor):
             return '{: ,.{prec}f}'.format(x, prec=decimals)
 
         names = list(map(str, x.keys())) + ['Intercept']
-        values = list(map(fmt_float, x.values())) + [fmt_float(1)]
-        weights = list(map(fmt_float, self.weights.values())) + [fmt_float(self.intercept)]
-        contributions = (
-            [fmt_float(xi * self.weights[i]) for i, xi in x.items()] +
-            [fmt_float(self.intercept)]
-        )
+        values = list(map(fmt_float, list(x.values()) + [1]))
+        weights = list(map(fmt_float, [self.weights.get(i, 0) for i in x] + [self.intercept]))
+        contributions = [xi * self.weights.get(i, 0) for i, xi in x.items()] + [self.intercept]
+        order = reversed(np.argsort(contributions))
+        contributions = list(map(fmt_float, contributions))
 
         table = utils.pretty.print_table(
             headers=['Name', 'Value', 'Weight', 'Contribution'],
             columns=[names, values, weights, contributions],
-            sort_by='Contribution'
+            order=order
         )
 
         print(table, **print_params)
+
+
+class PoissonRegression(GLM, base.Regressor):
+    """Poisson regression.
+
+    Parameters:
+        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately. Defaults to ``optim.SGD(.01)``.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        intercept (float): Initial intercept value.
+        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
+            updating the intercept. If a `float` is passed, then an instance of
+            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
+            will be not be updated. Setting this to 0 means that no intercept will be used.
+        l2 (float): Amount of L2 regularization used to push weights towards 0.
+        clip_gradient (float): Clips the absolute value of each gradient value.
+        initializer (optim.initializers.Initializer): Weights initialization scheme.
+
+    Attributes:
+        weights (collections.defaultdict): The current weights.
+
+    Example:
+
+        ::
+
+            >>> from creme import linear_model
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import optim
+            >>> from creme import preprocessing
+            >>> from creme import stream
+            >>> import numpy as np
+
+            >>> rng = np.random.RandomState(42)
+
+            >>> X = rng.choice(range(0, 10), 100)
+            >>> Y = rng.choice(range(0, 10), 100)
+            >>> Z = rng.poisson(X + Y)
+
+            >>> lin_reg = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.LinearRegression(optim.SGD(0.01))
+            ... )
+
+            >>> metric = metrics.MAE()
+            >>> for x, y in stream.iter_array(np.vstack((X, Y)).T, np.log1p(Z)):
+            ...     y_pred = lin_reg.predict_one(x)
+            ...     lin_reg = lin_reg.fit_one(x, y)
+            ...     metric = metric.update(np.expm1(y), np.expm1(y_pred))
+            >>> metric
+            MAE: 6.25337
+
+            >>> poisson_reg = (
+            ...     preprocessing.StandardScaler() |
+            ...     linear_model.PoissonRegression(optim.SGD(0.01))
+            ... )
+
+            >>> for x, y in stream.iter_array(np.vstack((X, Y)).T, Z):
+            ...     y_pred = poisson_reg.predict_one(x)
+            ...     poisson_reg = poisson_reg.fit_one(x, y)
+            ...     metric = metric.update(y, y_pred)
+            >>> metric
+            MAE: 4.882398
+
+    Note:
+        Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
+        to converge.
+
+    """
+
+    def __init__(self, optimizer=None, l2=.0, intercept=0., intercept_lr=.01, clip_gradient=1e12,
+                 initializer=None):
+        super().__init__(
+            optimizer=(
+                optim.SGD(optim.schedulers.InverseScaling(.01, .25))
+                if optimizer is None else
+                optimizer
+            ),
+            loss=optim.losses.Poisson(),
+            intercept=intercept,
+            intercept_lr=intercept_lr,
+            l2=l2,
+            clip_gradient=clip_gradient,
+            initializer=initializer if initializer else optim.initializers.Zeros()
+        )
+
+    def predict_one(self, x):
+        return math.exp(self._raw_dot(x))
 
 
 class LogisticRegression(GLM, base.BinaryClassifier):
@@ -304,16 +394,17 @@ class LogisticRegression(GLM, base.BinaryClassifier):
             >>> from creme import optim
             >>> from creme import preprocessing
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
             ...     linear_model.LogisticRegression(optimizer=optim.SGD(.1))
             ... )
+
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            Accuracy: 89.49%
+            Accuracy: 88.96%
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer

@@ -44,7 +44,12 @@ class Network(collections.UserList):
         self.links.add((self.index(a), self.index(b)))
 
     def draw(self):
-        dot = graphviz.Digraph()
+        dot = graphviz.Digraph(
+            graph_attr={'splines': 'ortho'},
+            node_attr={'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
+                       'fontsize': '11', 'margin': '0.1,0.0'},
+            edge_attr={'penwidth': '0.6'}
+        )
 
         def draw_node(a):
             if isinstance(a, Network):

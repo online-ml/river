@@ -1,11 +1,11 @@
-cimport base
-cimport mean
+cimport creme.stats.base
+cimport creme.stats.mean
 
 from . import base
 from . import mean
 
 
-cdef class Var(base.Univariate):
+cdef class Var(creme.stats.base.Univariate):
     """Running variance using Welford's algorithm.
 
     Parameters:
@@ -35,30 +35,27 @@ cdef class Var(base.Univariate):
             12.56666...
 
     References:
-
         1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
 
     """
 
     cdef readonly long ddof
-    cdef readonly mean.Mean mean
-    cdef readonly double sos
+    cdef readonly creme.stats.mean.Mean mean
+    cdef readonly double sigma
 
     def __init__(self, ddof=1):
         self.ddof = ddof
         self.mean = mean.Mean()
-        self.sos = 0.
 
     cpdef Var update(self, double x):
         mean = self.mean.get()
         self.mean.update(x)
-        self.sos += (x - mean) * (x - self.mean.get())
+        if self.mean.n > self.ddof:
+            self.sigma += ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
         return self
 
     cpdef double get(self):
-        if self.mean.n > self.ddof:
-            return self.sos / (self.mean.n - self.ddof)
-        return 0.
+        return self.sigma
 
 
 class RollingVar(base.RollingUnivariate):

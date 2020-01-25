@@ -7,11 +7,13 @@ import pytest
 
 from creme import base
 from creme import dummy
+from creme import compat
 from creme import cluster
 from creme import compose
 from creme import ensemble
 from creme import feature_extraction
 from creme import feature_selection
+from creme import imblearn
 from creme import impute
 from creme import linear_model
 from creme import meta
@@ -32,12 +34,16 @@ def get_all_estimators():
     ignored = (
         Creme2SKLBase,
         SKL2CremeBase,
+        compat.PyTorch2CremeRegressor,
         compose.FuncTransformer,
         compose.Pipeline,
         ensemble.StackingBinaryClassifier,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_extraction.Differ,
+        imblearn.RandomOverSampler,
+        imblearn.RandomUnderSampler,
+        imblearn.RandomSampler,
         impute.PreviousImputer,
         impute.StatImputer,
         linear_model.FMClassifier,

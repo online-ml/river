@@ -3,7 +3,6 @@ import functools
 import itertools
 import random
 
-import numpy as np
 import pytest
 from sklearn import datasets
 
@@ -65,7 +64,7 @@ def iter_perturbations(keys, n=10):
                 optim.AdaGrad(),
                 optim.AdaMax(),
                 optim.Adam(),
-		optim.AMSGrad(),
+                optim.AMSGrad(),
                 # TODO: check momentum optimizers
                 #optim.Momentum(),
                 #optim.NesterovMomentum(),

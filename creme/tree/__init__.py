@@ -1,6 +1,6 @@
 """Decision trees."""
-from .forest import RandomForestClassifier
-from .tree import DecisionTreeClassifier
+from .decision.forest import RandomForestClassifier
+from .decision.tree import DecisionTreeClassifier
 
 
 __all__ = [

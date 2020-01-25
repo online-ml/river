@@ -1,6 +1,7 @@
 import collections
 import heapq
 import itertools
+import math
 
 
 __all__ = ['Histogram']
@@ -11,7 +12,7 @@ class Bin:
 
     __slots__ = ['left', 'right', 'count']
 
-    def __init__(self, left, right, count=1):
+    def __init__(self, left, right, count):
         self.left = left
         self.right = right
         self.count = count
@@ -40,25 +41,25 @@ def coverage_ratio(x, y):
 
     Examples:
 
-        >>> coverage_ratio(Bin(1, 2), Bin(1, 2))
+        >>> coverage_ratio(Bin(1, 2, 0), Bin(1, 2, 0))
         1.0
 
-        >>> coverage_ratio(Bin(1, 3), Bin(2, 4))
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(2, 4, 0))
         0.5
 
-        >>> coverage_ratio(Bin(1, 3), Bin(3, 5))
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(3, 5, 0))
         0.0
 
-        >>> coverage_ratio(Bin(1, 3), Bin(0, 4))
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 4, 0))
         0.5
 
-        >>> coverage_ratio(Bin(0, 4), Bin(1, 3))
+        >>> coverage_ratio(Bin(0, 4, 0), Bin(1, 3, 0))
         1.0
 
-        >>> coverage_ratio(Bin(1, 3), Bin(0, 1))
+        >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 1, 0))
         0.0
 
-        >>> coverage_ratio(Bin(1, 1), Bin(1, 1))
+        >>> coverage_ratio(Bin(1, 1, 0), Bin(1, 1, 0))
         1.0
 
     """
@@ -119,7 +120,7 @@ class Histogram(collections.UserList):
     def update(self, x):
 
         self.n += 1
-        b = Bin(x, x)
+        b = Bin(x, x, 1)
 
         # Insert the bin if the histogram is empty
         if not self:
@@ -127,6 +128,7 @@ class Histogram(collections.UserList):
             return self
 
         # Use bisection to find where to insert
+        # We don't use the bisect module in order to save some CPU cycles
         lo = 0
         hi = len(self)
         i = (lo + hi) // 2
@@ -157,74 +159,119 @@ class Histogram(collections.UserList):
     def _shrink(self, k):
         """Shrinks the histogram by merging the two closest bins."""
 
+        if k == 1:
+
+            # Find the closest pair of bins
+            min_diff = math.inf
+            min_idx = None
+            for idx, (b1, b2) in enumerate(zip(self.data[:-1], self.data[1:])):
+                diff = b2.right - b1.right
+                if diff < min_diff:
+                    min_diff = diff
+                    min_idx = idx
+
+            # Merge the bins
+            self[min_idx] += self.pop(min_idx + 1)
+            return
+
         indexes = range(len(self) - 1)
 
         def bin_distance(i):
             return self[i + 1].right - self[i].right
 
-        if k == 1:
-            i = min(indexes, key=bin_distance)
-            self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
-            return
-
         for i in sorted(heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True):
             self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
+
+    def iter_cdf(self, X, verbose=False):
+        """Yields CDF values for a sorted iterable of values.
+
+        This is faster than calling `cdf` with many values.
+
+        Example:
+
+            ::
+
+                >>> from creme import utils
+
+                >>> hist = utils.Histogram()
+                >>> for x in range(4):
+                ...     hist = hist.update(x)
+
+                >>> print(hist)
+                [0.00000, 0.00000]: 1
+                [1.00000, 1.00000]: 1
+                [2.00000, 2.00000]: 1
+                [3.00000, 3.00000]: 1
+
+                >>> X = [-1, 0, .5, 1, 2.5, 3.5]
+                >>> for x, cdf in zip(X, hist.iter_cdf(X)):
+                ...     print(x, cdf)
+                -1 0.0
+                0 0.25
+                0.5 0.25
+                1 0.5
+                2.5 0.75
+                3.5 1.0
+
+        """
+
+        bins = iter(self)
+        b = next(bins)
+        INF = Bin(math.inf, math.inf, 0)
+
+        cdf = 0
+
+        for x in X:
+
+            while x >= b.right:
+                cdf += b.count
+                b = next(bins, INF)
+
+            if x > b.left:
+                yield (cdf + b.count * (x - b.left) / (b.right - b.left)) / self.n
+                continue
+
+            yield cdf / self.n
 
     def cdf(self, x):
         """Cumulative distribution function.
 
         Example:
 
-            >>> from creme import utils
+            ::
 
-            >>> hist = Histogram()
-            >>> for x in range(4):
-            ...     hist = hist.update(x)
+                >>> from creme import utils
 
-            >>> print(hist)
-            [0.00000, 0.00000]: 1
-            [1.00000, 1.00000]: 1
-            [2.00000, 2.00000]: 1
-            [3.00000, 3.00000]: 1
+                >>> hist = utils.Histogram()
+                >>> for x in range(4):
+                ...     hist = hist.update(x)
 
-            >>> hist.cdf(0)
-            0.25
+                >>> print(hist)
+                [0.00000, 0.00000]: 1
+                [1.00000, 1.00000]: 1
+                [2.00000, 2.00000]: 1
+                [3.00000, 3.00000]: 1
 
-            >>> hist.cdf(.5)
-            0.375
+                >>> hist.cdf(-1)
+                0.0
 
-            >>> hist.cdf(1)
-            0.5
+                >>> hist.cdf(0)
+                0.25
 
-            >>> hist.cdf(2.5)
-            0.875
+                >>> hist.cdf(.5)
+                0.25
+
+                >>> hist.cdf(1)
+                0.5
+
+                >>> hist.cdf(2.5)
+                0.75
+
+                >>> hist.cdf(3.5)
+                1.0
 
         """
-
-        # Handle edge cases
-        if not self or x < self[0].left:
-            return 0.
-        elif x >= self[-1].right:
-            return 1.
-
-        c = 0
-
-        # Handle the first bin
-        b = self[0]
-        if x < b.right:
-            c += b.count * (x - b.left) / (b.right - b.left)
-            return c / self.n
-        c += b.count
-
-        # Handle the rest of the bins
-        for b1, b2 in zip(self.data[:-1], self.data[1:]):
-            if x < b2.right:
-                # Interpolate
-                c += b2.count * (x - b1.right) / (b2.right - b1.right)
-                break
-            c += b2.count
-
-        return c / self.n
+        return next(self.iter_cdf([x]))
 
     def __add__(self, other):
         """

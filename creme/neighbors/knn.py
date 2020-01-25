@@ -43,18 +43,13 @@ class KNeighborsRegressor(NearestNeighbours, base.Regressor):
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import neighbors
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_boston(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.TrumpApproval()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -64,7 +59,7 @@ class KNeighborsRegressor(NearestNeighbours, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 3.817195
+            MAE: 0.335012
 
     """
 
@@ -119,7 +114,7 @@ class KNeighborsClassifier(NearestNeighbours, base.MultiClassifier):
             >>> from creme import neighbors
             >>> from creme import preprocessing
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -129,7 +124,7 @@ class KNeighborsClassifier(NearestNeighbours, base.MultiClassifier):
             >>> metric = metrics.Accuracy()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            Accuracy: 88.53%
+            Accuracy: 84.39%
 
     """
 

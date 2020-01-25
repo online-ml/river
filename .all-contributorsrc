@@ -1,6 +1,6 @@
 {
   "projectName": "creme",
-  "projectOwner": "Max Halford",
+  "projectOwner": "creme-ml",
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
@@ -97,6 +97,24 @@
       "name": "Jovan Veljanoski",
       "avatar_url": "https://avatars1.githubusercontent.com/u/18574951?v=4",
       "profile": "https://github.com/JovanVeljanoski",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "d-me-tree",
+      "name": "Dimitri",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4955958?v=4",
+      "profile": "https://github.com/d-me-tree",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "greatsharma",
+      "name": "Gaurav Sharma",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/32649388?v=4",
+      "profile": "https://github.com/greatsharma",
       "contributions": [
         "code"
       ]

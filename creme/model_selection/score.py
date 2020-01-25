@@ -11,7 +11,7 @@ __all__ = ['progressive_val_score']
 
 
 def progressive_val_score(X_y, model, metric, on=None, delay=0, print_every=math.inf,
-                          elapsed_time=False, memory_usage=False):
+                          show_time=False, show_memory=False):
     """A variant of online scoring where the targets are revealed with a delay.
 
     ``X_y`` is converted into a question and answer where the model is asked to predict an
@@ -31,8 +31,8 @@ def progressive_val_score(X_y, model, metric, on=None, delay=0, print_every=math
             equivalent to performing standard progressive validation with no delay.
         print_every (int): Iteration number at which to print the current metric. This only takes
             into account the predictions, and not the training steps.
-        elapsed_time (bool): Whether or not to display the elapsed time.
-        memory_usage (bool): Whether or not to display the memory usage of the model.
+        show_time (bool): Whether or not to display the elapsed time.
+        show_memory (bool): Whether or not to display the memory usage of the model.
 
     Returns:
         metrics.Metric
@@ -57,7 +57,7 @@ def progressive_val_score(X_y, model, metric, on=None, delay=0, print_every=math
     answers = []
     n_total_answers = 0
 
-    if elapsed_time:
+    if show_time:
         start = time.perf_counter()
 
     for i, (x, y) in enumerate(X_y):
@@ -90,10 +90,10 @@ def progressive_val_score(X_y, model, metric, on=None, delay=0, print_every=math
             n_total_answers += 1
             if not n_total_answers % print_every:
                 msg = f'[{n_total_answers:,d}] {metric}'
-                if elapsed_time:
+                if show_time:
                     now = time.perf_counter()
                     msg += f' – {dt.timedelta(seconds=int(now - start))}'
-                if memory_usage:
+                if show_memory:
                     msg += f' – {model._memory_usage}'
                 print(msg)
 

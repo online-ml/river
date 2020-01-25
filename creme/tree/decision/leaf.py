@@ -1,24 +1,11 @@
 import math
 
-from ..proba.base import ContinuousDistribution
+from ...proba.base import ContinuousDistribution
+
+from .. import base
 
 
-class Branch:
-
-    def __init__(self, split, left, right, tree):
-        self.split = split
-        self.left = left
-        self.right = right
-        self.tree = tree
-
-    @property
-    def size(self):
-        return self.left.size + self.right.size
-
-    def get_leaf(self, x):
-        if self.split(x):
-            return self.left.get_leaf(x)
-        return self.right.get_leaf(x)
+class Branch(base.Branch):
 
     def update(self, x, y):
         if self.split(x):
@@ -28,7 +15,7 @@ class Branch:
         return self
 
 
-class Leaf:
+class Leaf(base.Leaf):
 
     def __init__(self, depth, tree, target_dist):
         self.depth = depth
@@ -38,32 +25,22 @@ class Leaf:
         self.split_enums = {}
 
     @property
-    def size(self):
-        return 1
-
-    @property
     def n_classes(self):
         """The number of observed classes."""
         if isinstance(self.target_dist, ContinuousDistribution):
-            raise ValueError('The target is continuous, hence there are not classes')
+            raise AttributeError('The target is continuous, hence there are not classes')
         return len(self.target_dist)
 
     @property
     def is_pure(self):
         try:
             return self.n_classes < 2
-        except ValueError:
-            return False
-
-    def get_leaf(self, x):
-        return self
+        except AttributeError:
+            return self.n_samples > 1
 
     @property
     def hoeffding_bound(self):
-        """Returns the current Hoeffding bound.
-
-        TODO: handle continuous target
-        """
+        """Returns the current Hoeffding bound."""
         R = math.log(self.n_classes)
         n = self.n_samples
         δ = self.tree.confidence

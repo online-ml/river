@@ -50,10 +50,6 @@ class Gaussian(base.ContinuousDistribution):
     def mode(self):
         return self.mu
 
-    @property
-    def mode(self):
-        return self.mu
-
     def __str__(self):
         return f'𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})'
 
