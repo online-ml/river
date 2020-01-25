@@ -123,13 +123,13 @@ We will include all the available numeric features in our model. We will also us
 ...     delay=dt.timedelta(minutes=30),
 ...     print_every=30_000
 ... )
-[30,000] MAE: 2.193186
-[60,000] MAE: 2.249483
-[90,000] MAE: 2.288477
-[120,000] MAE: 2.26541
-[150,000] MAE: 2.267553
-[180,000] MAE: 2.282643
-MAE: 2.286077
+[30,000] MAE: 2.230049
+[60,000] MAE: 2.290409
+[90,000] MAE: 2.334638
+[120,000] MAE: 2.315149
+[150,000] MAE: 2.319982
+[180,000] MAE: 2.335385
+MAE: 2.338837
 
 ```
 
@@ -170,7 +170,7 @@ Pipeline (
     )
     loss=Squared ()
     l2=0.
-    intercept=9.740013
+    intercept=9.742884
     intercept_lr=Constant (
       learning_rate=0.01
     )
@@ -207,18 +207,20 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://maxhalford.github.io"><img src="https://avatars1.githubusercontent.com/u/8095957?v=4" width="100px;" alt="Max Halford"/><br /><sub><b>Max Halford</b></sub></a><br /><a href="#projectManagement-MaxHalford" title="Project Management">📆</a> <a href="https://github.com/Max Halford/creme/commits?author=MaxHalford" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/AdilZouitine"><img src="https://avatars0.githubusercontent.com/u/24889239?v=4" width="100px;" alt="AdilZouitine"/><br /><sub><b>AdilZouitine</b></sub></a><br /><a href="https://github.com/Max Halford/creme/commits?author=AdilZouitine" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/raphaelsty"><img src="https://avatars3.githubusercontent.com/u/24591024?v=4" width="100px;" alt="Raphael Sourty"/><br /><sub><b>Raphael Sourty</b></sub></a><br /><a href="https://github.com/Max Halford/creme/commits?author=raphaelsty" title="Code">💻</a></td>
-    <td align="center"><a href="http://www.linkedin.com/in/gbolmier"><img src="https://avatars0.githubusercontent.com/u/25319692?v=4" width="100px;" alt="Geoffrey Bolmier"/><br /><sub><b>Geoffrey Bolmier</b></sub></a><br /><a href="https://github.com/Max Halford/creme/commits?author=gbolmier" title="Code">💻</a></td>
-    <td align="center"><a href="http://koaning.io"><img src="https://avatars1.githubusercontent.com/u/1019791?v=4" width="100px;" alt="vincent d warmerdam "/><br /><sub><b>vincent d warmerdam </b></sub></a><br /><a href="https://github.com/Max Halford/creme/commits?author=koaning" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/VaysseRobin"><img src="https://avatars2.githubusercontent.com/u/32324822?v=4" width="100px;" alt="VaysseRobin"/><br /><sub><b>VaysseRobin</b></sub></a><br /><a href="https://github.com/Max Halford/creme/commits?author=VaysseRobin" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/tweakyllama"><img src="https://avatars0.githubusercontent.com/u/7049400?v=4" width="100px;" alt="Lygon Bowen-West"/><br /><sub><b>Lygon Bowen-West</b></sub></a><br /><a href="https://github.com/Max Halford/creme/commits?author=tweakyllama" title="Code">💻</a></td>
+    <td align="center"><a href="https://maxhalford.github.io"><img src="https://avatars1.githubusercontent.com/u/8095957?v=4" width="100px;" alt="Max Halford"/><br /><sub><b>Max Halford</b></sub></a><br /><a href="#projectManagement-MaxHalford" title="Project Management">📆</a> <a href="https://github.com/creme-ml/creme/commits?author=MaxHalford" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/AdilZouitine"><img src="https://avatars0.githubusercontent.com/u/24889239?v=4" width="100px;" alt="AdilZouitine"/><br /><sub><b>AdilZouitine</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=AdilZouitine" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/raphaelsty"><img src="https://avatars3.githubusercontent.com/u/24591024?v=4" width="100px;" alt="Raphael Sourty"/><br /><sub><b>Raphael Sourty</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=raphaelsty" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.linkedin.com/in/gbolmier"><img src="https://avatars0.githubusercontent.com/u/25319692?v=4" width="100px;" alt="Geoffrey Bolmier"/><br /><sub><b>Geoffrey Bolmier</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=gbolmier" title="Code">💻</a></td>
+    <td align="center"><a href="http://koaning.io"><img src="https://avatars1.githubusercontent.com/u/1019791?v=4" width="100px;" alt="vincent d warmerdam "/><br /><sub><b>vincent d warmerdam </b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=koaning" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/VaysseRobin"><img src="https://avatars2.githubusercontent.com/u/32324822?v=4" width="100px;" alt="VaysseRobin"/><br /><sub><b>VaysseRobin</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=VaysseRobin" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/tweakyllama"><img src="https://avatars0.githubusercontent.com/u/7049400?v=4" width="100px;" alt="Lygon Bowen-West"/><br /><sub><b>Lygon Bowen-West</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=tweakyllama" title="Code">💻</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/flegac"><img src="https://avatars2.githubusercontent.com/u/4342302?v=4" width="100px;" alt="Florent Le Gac"/><br /><sub><b>Florent Le Gac</b></sub></a><br /><a href="https://github.com/Max Halford/creme/commits?author=flegac" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/flegac"><img src="https://avatars2.githubusercontent.com/u/4342302?v=4" width="100px;" alt="Florent Le Gac"/><br /><sub><b>Florent Le Gac</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=flegac" title="Code">💻</a></td>
     <td align="center"><a href="http://www.pyimagesearch.com"><img src="https://avatars2.githubusercontent.com/u/759645?v=4" width="100px;" alt="Adrian Rosebrock"/><br /><sub><b>Adrian Rosebrock</b></sub></a><br /><a href="#blog-jrosebr1" title="Blogposts">📝</a></td>
-    <td align="center"><a href="https://github.com/JovanVeljanoski"><img src="https://avatars1.githubusercontent.com/u/18574951?v=4" width="100px;" alt="Jovan Veljanoski"/><br /><sub><b>Jovan Veljanoski</b></sub></a><br /><a href="https://github.com/Max Halford/creme/commits?author=JovanVeljanoski" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/JovanVeljanoski"><img src="https://avatars1.githubusercontent.com/u/18574951?v=4" width="100px;" alt="Jovan Veljanoski"/><br /><sub><b>Jovan Veljanoski</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=JovanVeljanoski" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/d-me-tree"><img src="https://avatars1.githubusercontent.com/u/4955958?v=4" width="100px;" alt="Dimitri"/><br /><sub><b>Dimitri</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=d-me-tree" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/greatsharma"><img src="https://avatars0.githubusercontent.com/u/32649388?v=4" width="100px;" alt="Gaurav Sharma"/><br /><sub><b>Gaurav Sharma</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=greatsharma" title="Code">💻</a></td>
   </tr>
 </table>
 

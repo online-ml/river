@@ -29,10 +29,8 @@ class Elec2(base.Dataset):
             n_samples=45_312,
             n_features=8,
             category=base.BINARY_CLF,
-            name='electricity',
             url='https://maxhalford.github.io/files/datasets/electricity.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

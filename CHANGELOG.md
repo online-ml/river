@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.5.0 - Unreleased
+
+See progress [here](https://github.com/creme-ml/creme/milestone/1).
 
 ### Added
 
@@ -16,6 +18,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `PreviousImputer` to the `impute` module for replacing missing values with their previous value.
 - Added the `TrumpApproval` dataset, which is a toy regression dataset.
 - Added the `AMSGrad` optimizer to the `optim` module
+- Added `RandomUnderSampler`, `RandomOverSampler`, and `RandomSampler` to the newly created `imblearn` module.
+- Added `PyTorch2CremeRegressor` and to the `compat` module
+- Added `PoissonRegression` to `linear_model`
+- Added `Poisson` to `optim.losses`
+- Added `MaliciousURL` to `datasets`
+- Added `TimeRolling` to `metrics`
+- Added `RBFSampler` to `preprocessing`
 
 ### Fixed
 
@@ -27,7 +36,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Renamed `TFIDFVectorizer` to `TFIDF`
 - The `online_score` and `online_qa_score` methods from the `model_selection` module have now been merged into a single method named `progressive_val_score`.
 - Fixed a bug in `NesterovMomentum`.
-- The `datasets` has been overhauled. Each dataset is now a class (e.g. `fetch_electricity` has become `Elec2`).
+- The `datasets` module has been overhauled. Each dataset is now a class (e.g. `fetch_electricity` has become `Elec2`).
+- The `SKL2Creme` classes in `compat` now require `n_features` and a `batch_size` parameters for preemptive memory allocation (which allows doing mini-batching).
 
 ### Removed
 

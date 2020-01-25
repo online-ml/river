@@ -37,17 +37,15 @@ class CreditCard(base.Dataset):
         7. Bertrand Lebichot, Yann-Ael Le Borgne, Liyun He, Frederic Oble, Gianluca Bontempi Deep-Learning Domain Adaptation Techniques for Credit Cards Fraud Detection, INNSBDDL 2019: Recent Advances in Big Data and Deep Learning, pp 78-88, 2019
         8. Fabrizio Carcillo, Yann-Ael Le Borgne, Olivier Caelen, Frederic Oble, Gianluca Bontempi Combining Unsupervised and Supervised Learning in Credit Card Fraud Detection Information Sciences, 2019
 
-        """
+    """
 
     def __init__(self, data_home=None, verbose=True):
         super().__init__(
             n_samples=284_807,
             n_features=30,
             category=base.BINARY_CLF,
-            name='credit_card',
             url='https://maxhalford.github.io/files/datasets/creditcardfraud.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

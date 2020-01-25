@@ -42,6 +42,8 @@ dev_packages = [
     'pytest>=4.5.0',
     'pytest-cov>=2.6.1',
     'pytest-cython>=0.1.0',
+    'pytest-cython>=0.1.0',
+    'torch>=1.3.1'
 ]
 
 docs_packages = dev_packages + [
@@ -108,6 +110,6 @@ setup(
                 libraries=[] if platform.system() == 'Windows' else ['m']
             )
         ],
-        compiler_directives={'language_level': 2}
+        compiler_directives={'language_level': 3}
     )
 )

@@ -25,10 +25,8 @@ class KDD99HTTP(base.Dataset):
             n_samples=567_498,
             n_features=3,
             category=base.BINARY_CLF,
-            name='kdd99_http',
             url='https://maxhalford.github.io/files/datasets/kdd99_http.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

@@ -59,7 +59,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             >>> from creme import model_selection
             >>> from creme import tree
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> metric = metrics.LogLoss()
 
@@ -76,7 +76,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             ... )
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.5531
+            LogLoss: 0.741097
 
             >>> print(model)
             AdaBoostClassifier(DecisionTreeClassifier)

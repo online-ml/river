@@ -32,10 +32,8 @@ class TREC07(base.Dataset):
             n_samples=75_419,
             n_features=5,
             category=base.BINARY_CLF,
-            name='trec07p',
             url='https://maxhalford.github.io/files/datasets/trec07p.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

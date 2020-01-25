@@ -26,10 +26,8 @@ class ToulouseBikes(base.Dataset):
             n_samples=182_470,
             n_features=8,
             category=base.REG,
-            name='toulouse_bikes',
             url='https://maxhalford.github.io/files/datasets/toulouse_bikes.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 
