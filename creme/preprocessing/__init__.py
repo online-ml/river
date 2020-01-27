@@ -1,5 +1,6 @@
 """Feature preprocessing."""
 from .feature_hasher import FeatureHasher
+from .kernel_approx import RBFSampler
 from .one_hot import OneHotEncoder
 from .poly import PolynomialExtender
 from .scale import MaxAbsScaler
@@ -16,6 +17,7 @@ __all__ = [
     'Normalizer',
     'OneHotEncoder',
     'PolynomialExtender',
+    'RBFSampler',
     'RobustScaler',
     'StandardScaler'
 ]
