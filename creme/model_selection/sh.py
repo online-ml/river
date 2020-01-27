@@ -97,9 +97,9 @@ def successive_halving(model, param_grid, X_y, metric, budget, eta=2, verbose=Tr
             >>> best_model
             Pipeline (
               StandardScaler (
-				with_mean=True
+                with_mean=True
                 with_std=True
-			  ),
+              ),
               LinearRegression (
                 optimizer=Adam (
                   lr=Constant (
