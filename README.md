@@ -160,7 +160,10 @@ Pipeline (
       target_name="target"
     )
   ),
-  StandardScaler (),
+  StandardScaler (
+    with_mean=True
+    with_std=True
+  ),
   LinearRegression (
     optimizer=SGD (
       lr=InverseScaling (
