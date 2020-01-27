@@ -25,6 +25,9 @@ See progress [here](https://github.com/creme-ml/creme/milestone/1).
 - Added `MaliciousURL` to `datasets`
 - Added `TimeRolling` to `metrics`
 - Added `RBFSampler` to `preprocessing`
+- Added `MaxAbsScaler` and `RobustScaler` to `preprocessing`
+- Added `AbsMax` and `RollingAbsMax` to `stats`
+- Added `PoissonInclusion` to `feature_selection`
 
 ### Fixed
 
@@ -38,10 +41,12 @@ See progress [here](https://github.com/creme-ml/creme/milestone/1).
 - Fixed a bug in `NesterovMomentum`.
 - The `datasets` module has been overhauled. Each dataset is now a class (e.g. `fetch_electricity` has become `Elec2`).
 - The `SKL2Creme` classes in `compat` now require `n_features` and a `batch_size` parameters for preemptive memory allocation (which allows doing mini-batching).
+- Added `with_mean` and `with_std` parameters to `preprocessing.StandardScaler`
 
 ### Removed
 
 - `metrics.PerClass`, it is recommended that you use `metrics.ClassificationReport` instead as it gives a better overview.
+- `feature_selection.RandomDiscarder` as it didn't make much sense.
 
 
 ## [0.4.4](https://pypi.org/project/creme/0.4.4/) - 2019-11-11
