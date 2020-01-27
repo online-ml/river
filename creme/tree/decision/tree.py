@@ -3,8 +3,8 @@ import collections
 import functools
 import numbers
 
-from .. import base
-from .. import proba
+from ... import base
+from ... import proba
 
 from . import criteria
 from . import leaf

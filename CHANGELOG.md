@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.5.0 - Unreleased
+
+See progress [here](https://github.com/creme-ml/creme/milestone/1).
 
 ### Added
 
@@ -21,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `PoissonRegression` to `linear_model`
 - Added `Poisson` to `optim.losses`
 - Added `MaliciousURL` to `datasets`
+- Added `TimeRolling` to `metrics`
+- Added `RBFSampler` to `preprocessing`
 
 ### Fixed
 
