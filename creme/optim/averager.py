@@ -65,7 +65,7 @@ class Averager(base.Optimizer):
         # Update the weights
         self.w_ = self.base_optim._update_after_pred(self.w_.copy(), g)
 
-        if self.n_iterations % self.c == 0:
+        if not self.n_iterations % self.c:
             # Calculate number of models
             n_models = self.n_iterations/self.c
 

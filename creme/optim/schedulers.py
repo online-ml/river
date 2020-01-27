@@ -50,9 +50,10 @@ class Cyclic(Scheduler):
     """
 
     def __init__(self, lr1, lr2, c):
-        assert lr1 >= lr2, "lr1 should be greater than or equal to lr2"
-        assert c > 0 and isinstance(
-            c, int), "c should be an integer greater than 0"
+        if lr1 < lr2:
+            raise ValueError("lr1 should be greater than or equal to lr2")
+        if c <= 0 or not isinstance(c, int):
+            raise ValueError("c should be an integer greater than 0")
 
         self.lr1 = lr1
         self.lr2 = lr2
