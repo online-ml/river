@@ -29,8 +29,8 @@ class StandardScaler(base.Transformer):
     performance.
 
     Parameters:
-        with_mean (boolean): Whether to centre the data before scaling. Defaults to ``True``.
-        with_std (boolean): Whether to scale data. Defaults to ``True``.
+        with_mean (bool): Whether to centre the data before scaling. Defaults to ``True``.
+        with_std (bool): Whether to scale data. Defaults to ``True``.
 
     Attributes:
         variances (dict): Mapping between features and instances of `stats.Var`.
@@ -274,8 +274,8 @@ class RobustScaler(base.Transformer):
     interquantile range.
 
     Parameters:
-        with_centering (boolean): Whether to centre the data before scaling. Defaults to ``True``.
-        with_scaling (boolean): Whether to scale data to iqr. Defaults to ``True``.
+        with_centering (bool): Whether to centre the data before scaling. Defaults to ``True``.
+        with_scaling (bool): Whether to scale data to iqr. Defaults to ``True``.
         q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to ``0.25``.
         q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to ``0.75``.
 
