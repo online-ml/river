@@ -335,11 +335,13 @@ class RobustScaler(base.Transformer):
     def __init__(self, with_centering=True, with_scaling=True, q_inf=0.25, q_sup=0.75):
         self.with_centering = with_centering
         self.with_scaling = with_scaling
+        self.q_inf = q_inf
+        self.q_sup = q_sup
         self.median = collections.defaultdict(
             functools.partial(stats.Quantile, 0.5)
         )
         self.iqr = collections.defaultdict(
-            functools.partial(stats.IQR, q_inf, q_sup)
+            functools.partial(stats.IQR, self.q_inf, self.q_sup)
         )
 
     def fit_one(self, x, y=None):
