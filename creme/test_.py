@@ -41,6 +41,7 @@ def get_all_estimators():
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_extraction.Differ,
+        feature_selection.PoissonInclusion,
         imblearn.RandomOverSampler,
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,
@@ -93,9 +94,6 @@ def get_all_estimators():
                     preprocessing.StandardScaler() | linear_model.LinearRegression(intercept_lr=0.1),
                     preprocessing.StandardScaler() | linear_model.PARegressor(),
                 ])
-
-            elif issubclass(obj, feature_selection.RandomDiscarder):
-                inst = obj(n_to_keep=5)
 
             elif issubclass(obj, feature_selection.SelectKBest):
                 inst = obj(similarity=stats.PearsonCorrelation())
