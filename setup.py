@@ -49,9 +49,10 @@ docs_packages = dev_packages + [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
     'm2r>=0.2.1',
-    'nbsphinx>=0.4.2',
+    'nbsphinx>=0.5.1',
     'Sphinx>=2.2.0',
-    'sphinx-material>=0.0.12'
+    'sphinx-copybutton>=0.2.8',
+    'sphinx-material>=0.0.22'
 ]
 
 # The rest you shouldn't have to touch too much :)
