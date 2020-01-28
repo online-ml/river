@@ -17,11 +17,8 @@ class Blacklister(base.Transformer):
             >>> from creme import compose
 
             >>> x = {'a': 42, 'b': 12}
-            >>> compose.Blacklister('a', 'zoidberg').transform_one(x)
+            >>> compose.Blacklister('a').transform_one(x)
             {'b': 12}
-
-            >>> compose.Blacklister('b').transform_one(x)
-            {'a': 42}
 
     """
 

@@ -17,11 +17,8 @@ class Whitelister(base.Transformer):
             >>> from creme import compose
 
             >>> x = {'a': 42, 'b': 12}
-            >>> compose.Whitelister('a', 'zoidberg').transform_one(x)
+            >>> compose.Whitelister('a').transform_one(x)
             {'a': 42}
-
-            >>> compose.Whitelister('b').transform_one(x)
-            {'b': 12}
 
     """
 
