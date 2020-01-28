@@ -83,15 +83,15 @@ class FM:
         self.random_state = random_state
 
         random_latents = functools.partial(
-            self.latent_initializer,
-            shape=self.n_factors
+            latent_initializer,
+            shape=n_factors
         )
 
         self.weights = collections.defaultdict(weight_initializer)
         self.latents = collections.defaultdict(random_latents)
 
     def _ohe_cat_features(self, x):
-        """One hot encodes all string features considering them as categorical."""
+        """One hot encodes string features considering them as categorical."""
         return dict((f'{j}_{xj}', 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
 
     def fit_one(self, x, y, sample_weight=1.):
@@ -340,8 +340,8 @@ class FMClassifier(FM, base.BinaryClassifier):
         the optimizer to converge.
 
     References:
-            1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
-            2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`_
+        1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
+        2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`_
 
     """
 
