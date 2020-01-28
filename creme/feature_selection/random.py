@@ -1,39 +1,41 @@
-import numpy as np
+import random
 
 from .. import base
 
 
-class RandomDiscarder(base.Transformer):
-    """Transformer that randomly discards features.
+__all__ = ['PoissonInclusion']
 
-    Example:
 
-        ::
+class PoissonInclusion(base.Transformer):
+    """Randomly selects features with an inclusion trial.
 
-            >>> from creme import feature_selection
-            >>> from creme import stream
-            >>> from sklearn import datasets
+    When a new feature is encoutered, it is selected with probability ``p``. The number of times a
+    feature needs to beseen before it is added to the model follows a geometric distribution with
+    expected value ``1 / p``. This feature selection method is meant to be used when you have a
+    very large amount of sparse features.
 
-            >>> X, _ = datasets.make_regression(n_samples=30, n_features=8)
-            >>> discarder = feature_selection.RandomDiscarder(n_to_keep=5)
+    Parameters:
+        p (float): Probability of including a feature the first time it is encoutered.
 
-            >>> for x, _ in stream.iter_array(X):
-            ...     x_pruned = discarder.transform_one(x)
-            ...     assert len(x_pruned) == 5
-            ...     # creme's transformers are pure, so the input should not change
-            ...     assert len(x) == 8
+    References:
+        1. `Ad Click Prediction: a View from the Trenches <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
 
     """
 
-    def __init__(self, n_to_keep):
-        self.n_to_keep = n_to_keep
+    def __init__(self, p, seed=None):
+        self.p = p
+        self.seed = seed
+        self.rng = random.Random(seed)
+        self.included = set()
 
     def transform_one(self, x):
 
-        if len(x) - self.n_to_keep > 0:
-            return {
-                i: x[i]
-                for i in np.random.choice(list(x.keys()), size=self.n_to_keep, replace=False)
-            }
+        xt = {}
 
-        return x
+        for i, xi in x.items():
+            if i not in self.included and self.rng.random() < self.p:
+                self.included.add(i)
+                xt[i] = xi
+            xt[i] = xi
+
+        return xt

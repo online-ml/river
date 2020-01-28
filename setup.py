@@ -42,7 +42,6 @@ dev_packages = [
     'pytest>=4.5.0',
     'pytest-cov>=2.6.1',
     'pytest-cython>=0.1.0',
-    'pytest-cython>=0.1.0',
     'torch>=1.3.1'
 ]
 
@@ -50,9 +49,10 @@ docs_packages = dev_packages + [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
     'm2r>=0.2.1',
-    'nbsphinx>=0.4.2',
+    'nbsphinx>=0.5.1',
     'Sphinx>=2.2.0',
-    'sphinx-material>=0.0.12'
+    'sphinx-copybutton>=0.2.8',
+    'sphinx-material>=0.0.22'
 ]
 
 # The rest you shouldn't have to touch too much :)

@@ -47,7 +47,8 @@ def _update_if_consistent(dict1, dict2):
     common_keys = set(dict1.keys()).intersection(dict2.keys())
     for key in common_keys:
         if dict1[key] != dict2[key]:
-            raise TypeError(f'Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}')
+            raise TypeError(
+                f'Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}')
     dict1.update(dict2)
     return dict1
 
@@ -89,7 +90,10 @@ class Estimator:
 
                 >>> model._set_params(**new_params)
                 Pipeline (
-                  StandardScaler (),
+                  StandardScaler (
+                    with_mean=True
+                    with_std=True
+                  ),
                   LinearRegression (
                     optimizer=SGD (
                       lr=Constant (
