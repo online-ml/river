@@ -21,6 +21,7 @@ from creme import multiclass
 from creme import multioutput
 from creme import naive_bayes
 from creme import preprocessing
+from creme import reco
 from creme import stats
 from creme import time_series
 from creme import tree
@@ -52,10 +53,15 @@ def get_all_estimators():
         linear_model.FFMClassifier,
         linear_model.FFMRegressor,
         linear_model.SoftmaxRegression,
+        meta.PredClipper,
         meta.TransformedTargetRegressor,
         multioutput.ClassifierChain,
         multioutput.RegressorChain,
         preprocessing.OneHotEncoder,
+        reco.Baseline,
+        reco.BiasedMF,
+        reco.FunkMF,
+        reco.RandomNormal,
         time_series.Detrender,
         time_series.GroupDetrender,
         time_series.SNARIMAX
