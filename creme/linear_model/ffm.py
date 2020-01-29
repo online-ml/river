@@ -243,7 +243,7 @@ class FFMRegressor(FFM, base.Regressor):
             ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
             ... )
 
-            >>> model = linear_model.FMRegressor(
+            >>> model = linear_model.FFMRegressor(
             ...     n_factors=10,
             ...     intercept=5,
             ...     random_state=42,
@@ -253,11 +253,11 @@ class FFMRegressor(FFM, base.Regressor):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-            5.358688...
+            5.319945...
 
     Note:
         - Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps the optimizer to converge.
-        - Fields will be infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
+        - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
 
     References:
         1. `Field-aware Factorization Machines for CTR Prediction <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
@@ -342,9 +342,9 @@ class FFMClassifier(FFM, base.BinaryClassifier):
             ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
             ... )
 
-            >>> model = linear_model.FMClassifier(
+            >>> model = linear_model.FFMClassifier(
             ...     n_factors=10,
-            ...     intercept=0,
+            ...     intercept=.5,
             ...     random_state=42,
             ... )
 
@@ -356,7 +356,7 @@ class FFMClassifier(FFM, base.BinaryClassifier):
 
     Note:
         - Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps the optimizer to converge.
-        - Fields will be infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
+        - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
 
     References:
         1. `Field-aware Factorization Machines for CTR Prediction <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
