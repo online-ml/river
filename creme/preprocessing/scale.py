@@ -1,3 +1,4 @@
+import numbers
 import functools
 import collections
 
@@ -7,6 +8,7 @@ from .. import utils
 
 
 __all__ = [
+    'Binarizer',
     'MaxAbsScaler',
     'MinMaxScaler',
     'Normalizer',
@@ -19,6 +21,96 @@ def safe_div(a, b):
     if b == 0:
         return a
     return a / b
+
+
+class Binarizer(base.Transformer):
+    """Binarizes the data to 0 or 1 according to a threshold.
+
+    Parameters:
+        threshold (float): Values above this are replaced by 1 and remaining by 0. Defaults to ``0.0``.
+        on (list): Features which needs to be binarized. For a single feature ``str`` is accepted, for
+                    more ``list``. Defaults to ``None`` i.e., all numeric features will be binarized.
+
+    Attributes:
+        threshold (float): Threshold value for binarizing.
+        on (list): Features which needs to be binarized.
+
+    Example:
+
+        ::
+
+              >>> import creme
+              >>> import numpy as np
+
+              >>> rng = np.random.RandomState(42)
+              >>> X = [{'x1': v, 'x2': str(v), 'x3': int(v)} for v in rng.uniform(low=-4, high=4, size=6)]
+              >>> binarizer = creme.preprocessing.Binarizer()
+              >>> for x in X:
+              ...     print(binarizer.fit_one(x).transform_one(x))
+              {'x1': 0.0, 'x2': '-1.0036790492211', 'x3': 0}
+              {'x1': 1.0, 'x2': '3.6057144512793293', 'x3': 1}
+              {'x1': 1.0, 'x2': '1.8559515344912407', 'x3': 1}
+              {'x1': 1.0, 'x2': '0.7892678735762928', 'x3': 0}
+              {'x1': 0.0, 'x2': '-2.751850876460508', 'x3': 0}
+              {'x1': 0.0, 'x2': '-2.752043837310379', 'x3': 0}
+
+              >>> binarizer.on
+              ['x1', 'x3']
+
+              >>> binarizer = creme.preprocessing.Binarizer(on=('x1'))
+              >>> for x in X:
+              ...     print(binarizer.fit_one(x).transform_one(x))
+              {'x1': 0.0, 'x2': '-1.0036790492211', 'x3': -1}
+              {'x1': 1.0, 'x2': '3.6057144512793293', 'x3': 3}
+              {'x1': 1.0, 'x2': '1.8559515344912407', 'x3': 1}
+              {'x1': 1.0, 'x2': '0.7892678735762928', 'x3': 0}
+              {'x1': 0.0, 'x2': '-2.751850876460508', 'x3': -2}
+              {'x1': 0.0, 'x2': '-2.752043837310379', 'x3': -2}
+
+              >>> binarizer.on
+              ['x1']
+
+    """
+
+    def __init__(self, threshold=0.0, on=None):
+        self.threshold = threshold
+        self.on = on
+
+    def _validate_on(self, x, on):
+
+        if isinstance(on, str):
+            on = [on]
+        elif hasattr(on, "__iter__"):
+            on = list(on)
+        else:
+            raise ValueError('unexpected type of on')
+
+        for i in on:
+            if not isinstance(x[i], numbers.Number):
+                raise ValueError(
+                    f'Binarizer works for numeric feature only, got {type(x[i])}')
+
+        return on
+
+    def fit_one(self, x, y=None):
+        if self.on is None:
+            self.on = []
+            for i, xi in x.items():
+                if isinstance(xi, numbers.Number):
+                    self.on.append(i)
+        else:
+            self.on = self._validate_on(x, self.on)
+
+        return self
+
+    def transform_one(self, x):
+        x_tf = x.copy()
+
+        for i, xi in x_tf.items():
+            if i in self.on:
+                x_tf[i] = type(xi)(xi > self.threshold)
+
+        return x_tf
 
 
 class StandardScaler(base.Transformer):
