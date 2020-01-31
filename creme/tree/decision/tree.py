@@ -134,18 +134,15 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
 
     """
 
-    def _get_split_enum(self, name, value):
+    def _get_split_enum(self, value):
+        """Returns an appropriate split enumerator given a feature's type."""
         if isinstance(value, numbers.Number):
-            return splitting.HistSplitEnum(
-                feature_name=name,
-                n_bins=self.max_bins,
-                n_splits=self.n_split_points
-            )
+            return splitting.HistSplitEnum(n_bins=self.max_bins, n_splits=self.n_split_points)
 
         elif isinstance(value, (str, bool)):
-            return splitting.CategoricalSplitEnum(feature_name=name)
+            return splitting.CategoricalSplitEnum()
 
-        raise ValueError(f'Unsupported feature type: {type(value)} ({name}: {value})')
+        raise ValueError(f'The type of {value} ({type(value)}) is not supported')
 
     def predict_proba_one(self, x):
         leaf = collections.deque(self.root.path(x), maxlen=1).pop()

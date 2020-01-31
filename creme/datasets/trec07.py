@@ -5,7 +5,7 @@ from .. import stream
 from . import base
 
 
-class TREC07(base.Dataset):
+class TREC07(base.FileDataset):
     """TREC's 2007 Spam Track dataset.
 
     The data contains 75,419 chronologically ordered items, i.e. 3 months of emails delivered

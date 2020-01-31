@@ -1,4 +1,5 @@
 """Datasets."""
+from . import gen
 from .airline import Airline
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
@@ -19,11 +20,12 @@ __all__ = [
     'CreditCard',
     'Elec2',
     'KDD99HTTP',
+    'gen',
+    'MaliciousURL',
     'Phishing',
     'Restaurants',
     'SMSSpam',
     'ToulouseBikes',
     'TREC07',
-    'TrumpApproval',
-    'MaliciousURL'
+    'TrumpApproval'
 ]

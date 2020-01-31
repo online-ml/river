@@ -6,8 +6,6 @@ import operator
 from ... import proba
 from ... import utils
 
-from .. import base
-
 
 def decimal_range(start, stop, num):
     """
@@ -45,9 +43,6 @@ EQ = Op('=', operator.eq)
 
 class SplitEnum(abc.ABC):
 
-    def __init__(self, feature_name):
-        self.feature_name = feature_name
-
     @abc.abstractmethod
     def update(self, x, y):
         """Updates the sufficient statistics used for evaluting splits."""
@@ -60,8 +55,7 @@ class SplitEnum(abc.ABC):
 class HistSplitEnum(SplitEnum):
     """Split enumerator for classification and numerical attributes."""
 
-    def __init__(self, feature_name, n_bins, n_splits):
-        super().__init__(feature_name)
+    def __init__(self, n_bins, n_splits):
         self.P_xy = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
         self.n_splits = n_splits
 
@@ -95,7 +89,7 @@ class HistSplitEnum(SplitEnum):
         thresholds = list(decimal_range(start=low, stop=high, num=self.n_splits))
         cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.P_xy.items()}
 
-        for t in thresholds:
+        for at in thresholds:
 
             l_dist = {}
             r_dist = {}
@@ -109,14 +103,13 @@ class HistSplitEnum(SplitEnum):
             l_dist = proba.Multinomial(l_dist)
             r_dist = proba.Multinomial(r_dist)
 
-            yield base.Split(on=self.feature_name, how=LT, at=t), l_dist, r_dist
+            yield LT, at, l_dist, r_dist
 
 
 class CategoricalSplitEnum(SplitEnum):
     """Split enumerator for classification and categorical attributes."""
 
-    def __init__(self, feature_name):
-        super().__init__(feature_name)
+    def __init__(self):
         self.P_xy = collections.defaultdict(proba.Multinomial)
 
     def update(self, x, y):
@@ -159,4 +152,4 @@ class CategoricalSplitEnum(SplitEnum):
             l_dist = proba.Multinomial(l_dist)
             r_dist = proba.Multinomial(r_dist)
 
-            yield base.Split(on=self.feature_name, how=EQ, at=cat), l_dist, r_dist
+            yield EQ, cat, l_dist, r_dist
