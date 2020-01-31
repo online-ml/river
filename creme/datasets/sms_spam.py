@@ -1,7 +1,7 @@
 from . import base
 
 
-class SMSSpam(base.Dataset):
+class SMSSpam(base.FileDataset):
     """SMS Spam Collection dataset.
 
     The data contains 5,574 items and 1 feature (i.e. SMS body). Spam messages represent

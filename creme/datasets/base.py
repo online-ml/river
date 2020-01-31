@@ -80,10 +80,23 @@ def download_dataset(url, data_home, verbose=True):
 
 class Dataset:
 
-    def __init__(self, n_samples, n_features, category, **dl_params):
-        self.n_samples = n_samples
+    def __init__(self, n_features, category):
         self.n_features = n_features
         self.category = category
+
+    def __iter__(self):
+        raise NotImplementedError
+
+    def take(self, k):
+        """Yields the k first (``x``, ``y``) pairs."""
+        return itertools.islice(self, k)
+
+
+class FileDataset(Dataset):
+
+    def __init__(self, n_samples, n_features, category, **dl_params):
+        super().__init__(n_features=n_features, category=category)
+        self.n_samples = n_samples
         self.dl_params = dl_params
 
     def _stream_X_y(self, dir):
@@ -110,7 +123,3 @@ class Dataset:
         else:
             data_dir_path = os.path.dirname(__file__)
         yield from self._stream_X_y(data_dir_path)
-
-    def take(self, k):
-        """Yields the k first (``x``, ``y``) pairs."""
-        return itertools.islice(self, k)
