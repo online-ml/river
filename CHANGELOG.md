@@ -29,6 +29,7 @@ See progress [here](https://github.com/creme-ml/creme/milestone/1).
 - Added `AbsMax` and `RollingAbsMax` to `stats`
 - Added `PoissonInclusion` to `feature_selection`
 - Added `datasets.gen.SEA`
+- Added `datasets.Higgs`
 
 ### Fixed
 

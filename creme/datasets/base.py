@@ -25,12 +25,13 @@ def get_data_home(data_home=None):
     return data_home
 
 
-def download_dataset(url, data_home, verbose=True):
+def download_dataset(url, data_home, uncompress=True, verbose=True):
     """Downloads/decompresses a dataset locally if does not exist.
 
     Parameters:
         url (str): From where to download the dataset.
         data_home (str): The directory where you wish to store the data.
+        uncompress (bool): Whether to uncompress the file or not.
         verbose (bool): Whether to indicate download progress or not.
 
     Returns:
@@ -50,27 +51,35 @@ def download_dataset(url, data_home, verbose=True):
     if extension:
         path = path[:-(len(extension) + 1)]  # e.g. path/to/file.tar.gz becomes path/to/file
 
-    # Download if needed
+    # Download if necessary
     if not (os.path.exists(path) or os.path.exists(archive_path)):
 
         _print(f'Downloading {url}')
         with urllib.request.urlopen(url) as r, open(archive_path, 'wb') as f:
             shutil.copyfileobj(r, f)
 
-    # Uncompress if needed
+    # If no uncompression is required then we're done
+    if not uncompress:
+        return archive_path
+
+    # Uncompress if necessary
     if not os.path.exists(path):
 
         _print(f'Uncompressing into {path}')
 
-        if extension == 'zip':
+        if extension.endswith('zip'):
             with zipfile.ZipFile(archive_path, 'r') as zf:
                 zf.extractall(path)
 
-        elif extension in ['gz', 'tar', 'tar.gz', 'tgz']:
-            mode = 'r:' if extension == 'tar' else 'r:gz'
+        elif extension.endswith(('gz', 'tar')):
+            mode = 'r:' if extension.endswith('tar') else 'r:gz'
+            print(archive_path, mode)
             tar = tarfile.open(archive_path, mode)
             tar.extractall(path)
             tar.close()
+
+        else:
+            raise RuntimeError(f'Unhandled extension type: {extension}')
 
         # Delete the archive file now that the dataset is available
         os.remove(archive_path)
