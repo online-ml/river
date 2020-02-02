@@ -3,7 +3,7 @@ from .. import stream
 from . import base
 
 
-class MovieLens100K(base.Dataset):
+class MovieLens100K(base.FileDataset):
     """MovieLens 100K dataset.
 
     MovieLens datasets were collected by the GroupLens Research Project at the University of
