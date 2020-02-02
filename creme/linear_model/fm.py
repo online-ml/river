@@ -236,8 +236,8 @@ class FMRegressor(FM, base.Regressor):
             5.236504...
 
     Note:
-        Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps
-        the optimizer to converge.
+        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
+        - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
         1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
@@ -336,8 +336,8 @@ class FMClassifier(FM, base.BinaryClassifier):
             True
 
     Note:
-        Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps
-        the optimizer to converge.
+        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
+        - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
         1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
