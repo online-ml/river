@@ -51,6 +51,11 @@ class RandomNormal(base.Recommender):
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
             8.092809...
 
+    Note:
+        reco.RandomNormal model expect a `dict` input with a 'user' and an 'item' entries without
+        any type constraint on their values (i.e. can be strings or numbers). Other entries are
+        ignored.
+
     """
 
     def __init__(self, random_state=None):

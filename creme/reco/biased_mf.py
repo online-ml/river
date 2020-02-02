@@ -94,6 +94,10 @@ class BiasedMF(base.Recommender):
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
             6.489025...
 
+    Note:
+        reco.BiasedMF model expect a `dict` input with a 'user' and an 'item' entries without any
+        type constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+
     References:
         1. `Improving regularized singular value decomposition for collaborative filtering <https://www.cs.uic.edu/~liub/KDD-cup-2007/proceedings/Regular-Paterek.pdf>`_
         2. `Matrix factorization techniques for recommender systems <https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf>`_
