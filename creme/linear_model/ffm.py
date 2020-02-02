@@ -276,7 +276,7 @@ class FFMRegressor(FFM, base.Regressor):
     """
 
     def __init__(self, n_factors=10, weight_optimizer=None, latent_optimizer=None, loss=None,
-                 instance_normalization=True, l1_weight=0., l2_weight=0., l1_latent=0.,
+                 instance_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
                  l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
                  latent_initializer=None, clip_gradient=1e12, random_state=None):
         super().__init__(
@@ -379,7 +379,7 @@ class FFMClassifier(FFM, base.BinaryClassifier):
     """
 
     def __init__(self, n_factors=10, weight_optimizer=None, latent_optimizer=None, loss=None,
-                 instance_normalization=True, l1_weight=0., l2_weight=0., l1_latent=0.,
+                 instance_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
                  l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
                  latent_initializer=None, clip_gradient=1e12, random_state=None):
         super().__init__(
