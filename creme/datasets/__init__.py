@@ -1,8 +1,10 @@
 """Datasets."""
+from . import gen
 from .airline import Airline
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
 from .elec2 import Elec2
+from .higgs import Higgs
 from .kdd99_http import KDD99HTTP
 from .phishing import Phishing
 from .movielens100k import MovieLens100K
@@ -20,12 +22,14 @@ __all__ = [
     'CreditCard',
     'Elec2',
     'KDD99HTTP',
+    'gen',
+    'Higgs',
+    'MaliciousURL',
     'Phishing',
     'MovieLens100K',
     'Restaurants',
     'SMSSpam',
     'ToulouseBikes',
     'TREC07',
-    'TrumpApproval',
-    'MaliciousURL'
+    'TrumpApproval'
 ]

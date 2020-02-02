@@ -90,7 +90,7 @@ class Leaf(Node):
 
     @property
     def height(self):
-        return 1
+        return 0
 
     def _iter_dfs(self, depth):
         yield self, depth
@@ -131,11 +131,12 @@ def iter_blocks(tree, limits, depth=-1):
 
     if depth == 0 or isinstance(tree, Leaf):
         yield (tree, limits)
-    else:
-        on, at = tree.split.on, tree.split.at
+        return
 
-        l_limits = {**limits, on: (limits[on][0], at)} if on in limits else limits
-        yield from iter_blocks(tree=tree.left, limits=l_limits, depth=depth - 1)
+    on, at = tree.split.on, tree.split.at
 
-        r_limits = {**limits, on: (at, limits[on][1])} if on in limits else limits
-        yield from iter_blocks(tree=tree.right, limits=r_limits, depth=depth - 1)
+    l_limits = {**limits, on: (limits[on][0], at)} if on in limits else limits
+    yield from iter_blocks(tree=tree.left, limits=l_limits, depth=depth - 1)
+
+    r_limits = {**limits, on: (at, limits[on][1])} if on in limits else limits
+    yield from iter_blocks(tree=tree.right, limits=r_limits, depth=depth - 1)

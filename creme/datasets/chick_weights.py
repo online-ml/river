@@ -5,7 +5,7 @@ from .. import stream
 from . import base
 
 
-class ChickWeights(base.Dataset):
+class ChickWeights(base.FileDataset):
     """Chick weights along time.
 
     The stream contains 578 items and 3 features. The goal is to predict the weight of each chick

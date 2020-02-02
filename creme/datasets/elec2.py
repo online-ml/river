@@ -3,7 +3,7 @@ from .. import stream
 from . import base
 
 
-class Elec2(base.Dataset):
+class Elec2(base.FileDataset):
     """Electricity prices in New South Wales.
 
     This data was collected from the Australian New South Wales Electricity Market. In this market,

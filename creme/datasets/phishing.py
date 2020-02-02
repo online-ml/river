@@ -5,7 +5,7 @@ from .. import stream
 from . import base
 
 
-class Phishing(base.Dataset):
+class Phishing(base.FileDataset):
     """Phishing websites.
 
     This dataset contains features from web pages that are classified as phishing or not.
