@@ -64,6 +64,10 @@ class Baseline(base.Recommender):
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
             6.538120...
 
+    Note:
+        reco.Baseline model expect a `dict` input with a 'user' and an 'item' entries without any
+        type constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+
     References:
         1. `Matrix factorization techniques for recommender systems <https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf>`_
 

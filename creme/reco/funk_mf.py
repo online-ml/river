@@ -75,6 +75,10 @@ class FunkMF(base.Recommender):
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
             1.866272...
 
+    Note:
+        reco.FunkMF model expect a `dict` input with a 'user' and an 'item' entries without any type
+        constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+
     References:
         1. `Netflix update: Try this at home <https://sifter.org/simon/journal/20061211.html>`_
         2. `Matrix factorization techniques for recommender systems <https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf>`_
