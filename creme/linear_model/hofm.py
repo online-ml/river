@@ -26,6 +26,8 @@ class HOFM:
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
+        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+            Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
@@ -52,14 +54,15 @@ class HOFM:
 
     """
 
-    def __init__(self, degree, n_factors, weight_optimizer, latent_optimizer, loss, l1_weight,
-                 l2_weight, l1_latent, l2_latent, intercept, intercept_lr, weight_initializer,
-                 latent_initializer, clip_gradient, random_state):
+    def __init__(self, degree, n_factors, weight_optimizer, latent_optimizer, loss,
+                 instance_normalization, l1_weight, l2_weight, l1_latent, l2_latent, intercept,
+                 intercept_lr, weight_initializer, latent_initializer, clip_gradient, random_state):
         self.degree = degree
         self.n_factors = n_factors
         self.weight_optimizer = optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
         self.latent_optimizer = optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
         self.loss = loss
+        self.instance_normalization = instance_normalization
         self.l1_weight = l1_weight
         self.l2_weight = l2_weight
         self.l1_latent = l1_latent
@@ -101,6 +104,11 @@ class HOFM:
 
     def fit_one(self, x, y, sample_weight=1.):
         x = self._ohe_cat_features(x)
+
+        if self.instance_normalization:
+            x_l2_norm = sum((xj ** 2 for xj in x.values())) ** 0.5
+            x = {j: xj / x_l2_norm for j, xj in x.items()}
+
         return self._fit_one(x, y, sample_weight=sample_weight)
 
     def _calculate_interaction(self, x, l, combination):
@@ -207,6 +215,8 @@ class HOFMRegressor(HOFM, base.Regressor):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
+        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+            Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
@@ -272,15 +282,16 @@ class HOFMRegressor(HOFM, base.Regressor):
     """
 
     def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
-                 loss=None, l1_weight=0., l2_weight=0., l1_latent=0., l2_latent=0., intercept=0.,
-                 intercept_lr=.01, weight_initializer=None, latent_initializer=None,
-                 clip_gradient=1e12, random_state=None):
+                 loss=None, instance_normalization=True, l1_weight=0., l2_weight=0., l1_latent=0.,
+                 l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
+                 latent_initializer=None, clip_gradient=1e12, random_state=None):
         super().__init__(
             degree=degree,
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
             latent_optimizer=latent_optimizer,
             loss=optim.losses.Squared() if loss is None else loss,
+            instance_normalization=instance_normalization,
             l1_weight=l1_weight,
             l2_weight=l2_weight,
             l1_latent=l1_latent,
@@ -309,6 +320,8 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
+        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+            Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
@@ -374,15 +387,16 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
     """
 
     def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
-                 loss=None, l1_weight=0., l2_weight=0., l1_latent=0., l2_latent=0., intercept=0.,
-                 intercept_lr=.01, weight_initializer=None, latent_initializer=None,
-                 clip_gradient=1e12, random_state=None):
+                 loss=None, instance_normalization=True, l1_weight=0., l2_weight=0., l1_latent=0.,
+                 l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
+                 latent_initializer=None, clip_gradient=1e12, random_state=None):
         super().__init__(
             degree=degree,
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
             latent_optimizer=latent_optimizer,
             loss=optim.losses.Log() if loss is None else loss,
+            instance_normalization=instance_normalization,
             l1_weight=l1_weight,
             l2_weight=l2_weight,
             l1_latent=l1_latent,
