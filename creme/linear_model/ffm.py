@@ -256,8 +256,9 @@ class FFMRegressor(FFM, base.Regressor):
             5.319945...
 
     Note:
-        - Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps the optimizer to converge.
+        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'} becomes x = {'user_Joe': 1}``).
         - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
+        - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
         1. `Field-aware Factorization Machines for CTR Prediction <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
@@ -355,8 +356,9 @@ class FFMClassifier(FFM, base.BinaryClassifier):
             True
 
     Note:
-        - Using a feature scaler such as `preprocessing.StandardScaler` on non-binary features helps the optimizer to converge.
+        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'} becomes x = {'user_Joe': 1}``).
         - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
+        - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
         1. `Field-aware Factorization Machines for CTR Prediction <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
