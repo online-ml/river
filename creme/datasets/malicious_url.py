@@ -4,7 +4,7 @@ import os
 from . import base
 
 
-class MaliciousURL(base.Dataset):
+class MaliciousURL(base.FileDataset):
     """Malicious URLs dataset.
 
     This dataset contains features about URLs that are classified as malicious or not.

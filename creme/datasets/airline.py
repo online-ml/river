@@ -5,7 +5,7 @@ from .. import stream
 from . import base
 
 
-class Airline(base.Dataset):
+class Airline(base.FileDataset):
     """Monthly number of international airline passengers.
 
     The stream contains 144 items and only one single feature, which is the month. The goal is to

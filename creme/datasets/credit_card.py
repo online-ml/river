@@ -3,7 +3,7 @@ from .. import stream
 from . import base
 
 
-class CreditCard(base.Dataset):
+class CreditCard(base.FileDataset):
     """Credit card frauds.
 
     The datasets contains transactions made by credit cards in September 2013 by european
