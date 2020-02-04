@@ -26,7 +26,7 @@ class FM:
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -189,7 +189,7 @@ class FMRegressor(FM, base.Regressor):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -293,7 +293,7 @@ class FMClassifier(FM, base.BinaryClassifier):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.

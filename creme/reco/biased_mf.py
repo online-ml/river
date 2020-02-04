@@ -28,7 +28,7 @@ class BiasedMF(base.Recommender):
         \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}
 
     Where :math:`k` is the number of latent factors. The model expect dict inputs containing both a
-    `user` and an `item` entries.
+    ``user`` and an ``item`` entries.
 
     Parameters:
         n_factors (int): Dimensionality of the factorization or number of latent factors.
@@ -95,8 +95,9 @@ class BiasedMF(base.Recommender):
             6.489025...
 
     Note:
-        reco.BiasedMF model expect a `dict` input with a 'user' and an 'item' entries without any
-        type constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+        `reco.BiasedMF` model expect a dict input with a ``user`` and an ``item`` entries without
+        any type constraint on their values (i.e. can be strings or numbers). Other entries are
+        ignored.
 
     References:
         1. `Improving regularized singular value decomposition for collaborative filtering <https://www.cs.uic.edu/~liub/KDD-cup-2007/proceedings/Regular-Paterek.pdf>`_
