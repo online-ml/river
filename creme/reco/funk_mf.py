@@ -22,7 +22,7 @@ class FunkMF(base.Recommender):
         \\hat{y}(x) = \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}
 
     Where :math:`k` is the number of latent factors. The model expect dict inputs containing both a
-    `user` and an `item` entries.
+    ``user`` and an ``item`` entries.
 
     Parameters:
         n_factors (int): Dimensionality of the factorization or number of latent factors.
@@ -76,7 +76,7 @@ class FunkMF(base.Recommender):
             1.866272...
 
     Note:
-        reco.FunkMF model expect a `dict` input with a 'user' and an 'item' entries without any type
+        `reco.FunkMF` model expect a dict input with a ``user`` and an `item` entries without any type
         constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
     References:

@@ -13,7 +13,7 @@ class RandomNormal(base.Recommender):
 
     The parameters of the normal distribution are fitted with running statistics. This is
     equivalent to using `surprise.prediction_algorithms.random_pred.NormalPredictor`. The model
-    expect dict inputs containing both a `user` and an `item` entries.
+    expect dict inputs containing both a ``user`` and an ``item`` entries.
 
     Parameters:
         random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
@@ -52,9 +52,9 @@ class RandomNormal(base.Recommender):
             8.092809...
 
     Note:
-        reco.RandomNormal model expect a `dict` input with a 'user' and an 'item' entries without
-        any type constraint on their values (i.e. can be strings or numbers). Other entries are
-        ignored.
+        `reco.RandomNormal` model expect a dict input with a ``user`` and an ``item`` entries
+        without any type constraint on their values (i.e. can be strings or numbers). Other entries
+        are ignored.
 
     """
 
