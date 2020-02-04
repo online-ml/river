@@ -178,7 +178,8 @@ class SNARIMAX(base.Forecaster):
         sq (int): Seasonal order of the moving average part. This is the number of past error terms
             that will be included as features.
         regressor (base.Regressor): The online regression model to use. By default, a
-            `StandardScaler` piped with a `LinearRegression` will be used.
+            ``preprocessing.StandardScaler`` piped with a ``linear_model.LinearRegression`` will
+            be used.
 
     Attributes:
         differencer (Differencer)

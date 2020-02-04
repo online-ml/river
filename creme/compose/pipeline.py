@@ -122,7 +122,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             >>> from creme import preprocessing
 
             >>> tfidf = feature_extraction.TFIDF('text')
-            >>> counts = feature_extraction.BoW('text')
+            >>> counts = feature_extraction.BagOfWords('text')
             >>> text_part = compose.Whitelister('text') | (tfidf + counts)
 
             >>> num_part = compose.Whitelister('a', 'b') | preprocessing.PolynomialExtender()
@@ -155,7 +155,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             ... ]
 
             >>> tfidf = feature_extraction.TFIDF() | compose.Renamer(prefix='tfidf_')
-            >>> counts = feature_extraction.BoW() | compose.Renamer(prefix='count_')
+            >>> counts = feature_extraction.BagOfWords() | compose.Renamer(prefix='count_')
             >>> mnb = naive_bayes.MultinomialNB()
             >>> model = (tfidf + counts) | mnb
 
@@ -174,7 +174,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
                 tfidf_comment: 0.47606 (float)
                 tfidf_positive: 0.87942 (float)
             <BLANKLINE>
-                1.1 BoW | Renamer
+                1.1 BagOfWords | Renamer
                 -----------------
                 count_comment: 1 (int)
                 count_positive: 1 (int)

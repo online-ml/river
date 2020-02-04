@@ -3,7 +3,6 @@ import functools
 
 import numpy as np
 
-from .. import stats
 from .. import optim
 from .. import utils
 
@@ -76,8 +75,9 @@ class FunkMF(base.Recommender):
             1.866272...
 
     Note:
-        `reco.FunkMF` model expect a dict input with a ``user`` and an `item` entries without any type
-        constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+        `reco.FunkMF` model expect a dict input with a ``user`` and an ``item`` entries without any
+        type constraint on their values (i.e. can be strings or numbers). Other entries are
+        ignored.
 
     References:
         1. `Netflix update: Try this at home <https://sifter.org/simon/journal/20061211.html>`_

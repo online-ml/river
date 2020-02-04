@@ -22,8 +22,10 @@ import creme
 # -- Project information -----------------------------------------------------
 
 project = 'creme'
+#html_title = 'creme'
 copyright = '2019, the creme developers'
 author = 'Max Halford'
+html_logo = '_static/creme_square.svg'
 
 # The short X.Y version
 version = creme.__version__
@@ -247,7 +249,7 @@ html_theme_options = {
     'base_url': 'https://creme-ml.github.io',
 
     # Set the color and the accent color
-    'color_primary': 'red',
+    'color_primary': 'white',
     'color_accent': 'red',
 
     # Set the repo location to get a badge with stats

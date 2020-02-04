@@ -2,13 +2,13 @@
 from .agg import Agg
 from .agg import TargetAgg
 from .differ import Differ
-from .vectorize import BoW
+from .vectorize import BagOfWords
 from .vectorize import TFIDF
 
 
 __all__ = [
     'Agg',
-    'BoW',
+    'BagOfWords',
     'Differ',
     'TargetAgg',
     'TFIDF'

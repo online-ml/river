@@ -147,8 +147,8 @@ class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassMetric):
 class WeightedPrecision(BasePrecision, base.MultiClassMetric):
     """Weighted-average precision score.
 
-    This uses the support of each label to compute an average score, whereas `MacroPrecision`
-    ignores the support.
+    This uses the support of each label to compute an average score, whereas
+    `metrics.MacroPrecision` ignores the support.
 
     Example:
 

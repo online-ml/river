@@ -124,14 +124,26 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     ChickWeights
     CreditCard
     Elec2
+    Higgs
     KDD99HTTP
     MaliciousURL
+    MovieLens100K
     Phishing
     Restaurants
     SMSSpam
     TREC07
     ToulouseBikes
     TrumpApproval
+
+Random data generators
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
+    gen.SEA
 
 
 **decomposition**: Online matrix decomposition
@@ -194,7 +206,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :template: class.rst
         
     Agg
-    BoW
+    BagOfWords
     Differ
     TFIDF
     TargetAgg
@@ -211,7 +223,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :nosignatures:
     :template: class.rst
         
-    RandomDiscarder
+    PoissonInclusion
     SelectKBest
     VarianceThreshold
 
@@ -258,7 +270,12 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :nosignatures:
     :template: class.rst
         
+    FFMClassifier
+    FFMRegressor
+    FMClassifier
     FMRegressor
+    HOFMClassifier
+    HOFMRegressor
     LinearRegression
     LogisticRegression
     PAClassifier
@@ -279,6 +296,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :template: class.rst
         
     BoxCoxRegressor
+    PredClipper
     TransformedTargetRegressor
 
 
@@ -321,6 +339,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     RegressionMultiOutput
     Rolling
     SMAPE
+    TimeRolling
     WeightedF1
     WeightedFBeta
     WeightedPrecision
@@ -424,6 +443,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     FTRLProximal
     MiniBatcher
     Momentum
+    Nadam
     NesterovMomentum
     Optimizer
     RMSProp
@@ -450,12 +470,12 @@ Loss functions
     :template: class.rst
         
     losses.Absolute
+    losses.BinaryFocalLoss
     losses.Cauchy
     losses.CrossEntropy
     losses.EpsilonInsensitiveHinge
     losses.Hinge
     losses.Log
-    losses.Poisson
     losses.Quantile
     losses.Squared
 
@@ -484,10 +504,13 @@ Learning rate schedulers
     :template: class.rst
         
     FeatureHasher
+    MaxAbsScaler
     MinMaxScaler
     Normalizer
     OneHotEncoder
     PolynomialExtender
+    RBFSampler
+    RobustScaler
     StandardScaler
 
 
@@ -517,9 +540,10 @@ Learning rate schedulers
     :nosignatures:
     :template: class.rst
         
+    Baseline
+    BiasedMF
+    FunkMF
     RandomNormal
-    SGDBaseline
-    SVD
 
 
 **stats**: Running statistics
@@ -533,6 +557,7 @@ Learning rate schedulers
     :nosignatures:
     :template: class.rst
         
+    AbsMax
     AutoCorrelation
     BayesianMean
     Bivariate
@@ -551,6 +576,7 @@ Learning rate schedulers
     PeakToPeak
     PearsonCorrelation
     Quantile
+    RollingAbsMax
     RollingIQR
     RollingMax
     RollingMean
