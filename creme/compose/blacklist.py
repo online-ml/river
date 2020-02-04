@@ -17,19 +17,16 @@ class Blacklister(base.Transformer):
             >>> from creme import compose
 
             >>> x = {'a': 42, 'b': 12}
-            >>> compose.Blacklister('a', 'zoidberg').transform_one(x)
+            >>> compose.Blacklister('a').transform_one(x)
             {'b': 12}
-
-            >>> compose.Blacklister('b').transform_one(x)
-            {'a': 42}
 
     """
 
     def __init__(self, *blacklist):
-        self.blacklist = set(blacklist)
+        self.blacklist = blacklist
 
     def transform_one(self, x):
-        return {i: x[i] for i in set(x.keys()) - self.blacklist}
+        return {i: xi for i, xi in x.items() if i not in self.blacklist}
 
     def __str__(self):
-        return '~' + str(sorted(self.blacklist))
+        return '~' + str(self.blacklist)

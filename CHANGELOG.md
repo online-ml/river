@@ -30,6 +30,13 @@ See progress [here](https://github.com/creme-ml/creme/milestone/1).
 - Added `PoissonInclusion` to `feature_selection`
 - Added `datasets.gen.SEA`
 - Added `datasets.Higgs`
+- Added `datasets.MovieLens100K`
+- Added `linear_model.FFMClassifier`
+- Added `linear_model.FFMRegressor`
+- Added `linear_model.HOFMClassifier`
+- Added `linear_model.HOFMCRegressor`
+- Added `meta.PredClipper`
+- Added `reco.FunkMF`
 
 ### Fixed
 
@@ -44,6 +51,11 @@ See progress [here](https://github.com/creme-ml/creme/milestone/1).
 - The `datasets` module has been overhauled. Each dataset is now a class (e.g. `fetch_electricity` has become `Elec2`).
 - The `SKL2Creme` classes in `compat` now require `n_features` and a `batch_size` parameters for preemptive memory allocation (which allows doing mini-batching).
 - Added `with_mean` and `with_std` parameters to `preprocessing.StandardScaler`
+- Updated `linear_model.FMClassifier`
+- Updated `linear_model.FMRegressor`
+- Renamed `reco.SVD` to `reco.BiasedMF`
+- Renamed `reco.SGDBaseline` to `reco.Baseline`
+- Models from `reco` module now expect a `dict` input with a `user` and an `item` entries
 
 ### Removed
 

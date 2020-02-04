@@ -5,6 +5,8 @@ import typing
 from .. import base
 from .. import utils
 
+from ..reco.base import Recommender
+
 
 __all__ = [
     'BinaryMetric',
@@ -132,7 +134,7 @@ class RegressionMetric(Metric):
         return False
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), base.Regressor)
+        return isinstance(utils.estimator_checks.guess_model(model), (base.Regressor))
 
     def __add__(self, other) -> 'Metrics':
         if not isinstance(other, RegressionMetric):
