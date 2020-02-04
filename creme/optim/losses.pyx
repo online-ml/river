@@ -1,11 +1,11 @@
 """Loss functions."""
 from libc cimport math
-
 from .. import utils
 
 
 __all__ = [
     'Absolute',
+    'BinaryFocalLoss',
     'Cauchy',
     'CrossEntropy',
     'Hinge',
@@ -395,7 +395,48 @@ cdef class Squared(RegressionLoss):
     cpdef double gradient(self, double y_true, double y_pred):
         return 2. * (y_pred - y_true)
 
+      
+class BinaryFocalLoss(BinaryLoss):
+    """Binary focal loss.
 
+    This implements the "star" algorithm from the appendix of the focal loss paper.
+
+    Parameters:
+        gamma (float)
+        beta (float)
+
+    Refenrences:
+        1. `Focal Loss for Dense Object Detection <https://arxiv.org/pdf/1708.02002.pdf>`_
+
+    """
+
+    def __init__(self, gamma=2, beta=1):
+        self.gamma = gamma
+        self.beta = beta
+
+    def eval(self, y_true, y_pred):
+
+        # Focal loss expects y_true to be in {-1, +1}
+        if y_true == 0:
+            y_true = -1
+
+        xt = y_true * y_pred
+        pt = utils.math.sigmoid(self.gamma * xt + self.beta)
+
+        return -math.log(pt) / self.gamma
+
+    def gradient(self, y_true, y_pred):
+
+        # Focal loss expects y_true to be in {-1, +1}
+        if y_true == 0:
+            y_true = -1
+
+        xt = y_true * y_pred
+        pt = utils.math.sigmoid(self.gamma * xt + self.beta)
+
+        return y_true * (pt - 1)
+
+      
 cdef class Poisson(RegressionLoss):
     """Poisson loss.
 
