@@ -3,9 +3,8 @@ import collections
 import functools
 import operator
 
-from .. import base
-from .. import proba
-from .. import utils
+from ... import proba
+from ... import utils
 
 
 def decimal_range(start, stop, num):
@@ -34,7 +33,7 @@ class Op(collections.namedtuple('Op', 'symbol operator')):
     def __call__(self, a, b):
         return self.operator(a, b)
 
-    def __str__(self):
+    def __repr__(self):
         return self.symbol
 
 
@@ -42,23 +41,7 @@ LT = Op('<', operator.lt)
 EQ = Op('=', operator.eq)
 
 
-class Split(collections.namedtuple('Split', 'on how at')):
-    """A data class for storing split details."""
-
-    def __str__(self):
-        at = self.at
-        if isinstance(at, float):
-            at = f'{at:.3f}'
-        return f'{self.on} {self.how} {at}'
-
-    def __call__(self, x):
-        return self.how(x[self.on], self.at)
-
-
 class SplitEnum(abc.ABC):
-
-    def __init__(self, feature_name):
-        self.feature_name = feature_name
 
     @abc.abstractmethod
     def update(self, x, y):
@@ -72,19 +55,31 @@ class SplitEnum(abc.ABC):
 class HistSplitEnum(SplitEnum):
     """Split enumerator for classification and numerical attributes."""
 
-    def __init__(self, feature_name, n_bins, n_splits):
-        super().__init__(feature_name)
-        self.hists = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
+    def __init__(self, n_bins, n_splits):
+        self.P_xy = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
         self.n_splits = n_splits
 
-    def update(self, x: float, y: 'base.Label'):
-        self.hists[y].update(x)
+    def update(self, x, y):
+        """
+
+        Parameters:
+            x (float)
+            y (base.Label)
+
+        """
+        self.P_xy[y].update(x)
         return self
 
-    def enumerate_splits(self, target_dist: 'proba.Multinomial'):
+    def enumerate_splits(self, target_dist):
+        """
 
-        low = min(h[0].right for h in self.hists.values())
-        high = min(h[-1].right for h in self.hists.values())
+        Parameters:
+            target_dist (proba.Multinomial)
+
+        """
+
+        low = min(h[0].right for h in self.P_xy.values())
+        high = min(h[-1].right for h in self.P_xy.values())
 
         # If only one single value has been observed, then no split can be proposed
         if low >= high:
@@ -92,9 +87,9 @@ class HistSplitEnum(SplitEnum):
             yield
 
         thresholds = list(decimal_range(start=low, stop=high, num=self.n_splits))
-        cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.hists.items()}
+        cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.P_xy.items()}
 
-        for t in thresholds:
+        for at in thresholds:
 
             l_dist = {}
             r_dist = {}
@@ -108,21 +103,33 @@ class HistSplitEnum(SplitEnum):
             l_dist = proba.Multinomial(l_dist)
             r_dist = proba.Multinomial(r_dist)
 
-            yield Split(on=self.feature_name, how=LT, at=t), l_dist, r_dist
+            yield LT, at, l_dist, r_dist
 
 
 class CategoricalSplitEnum(SplitEnum):
     """Split enumerator for classification and categorical attributes."""
 
-    def __init__(self, feature_name):
-        super().__init__(feature_name)
+    def __init__(self):
         self.P_xy = collections.defaultdict(proba.Multinomial)
 
-    def update(self, x: str, y: 'base.Label'):
+    def update(self, x, y):
+        """
+
+        Parameters:
+            x (str)
+            y (base.Label)
+
+        """
         self.P_xy[y].update(x)
         return self
 
-    def enumerate_splits(self, target_dist: 'proba.Multinomial'):
+    def enumerate_splits(self, target_dist):
+        """
+
+        Parameters:
+            target_dist (proba.Multinomial)
+
+        """
 
         categories = set(*(p_x.keys() for p_x in self.P_xy.values()))
 
@@ -145,4 +152,4 @@ class CategoricalSplitEnum(SplitEnum):
             l_dist = proba.Multinomial(l_dist)
             r_dist = proba.Multinomial(r_dist)
 
-            yield Split(on=self.feature_name, how=EQ, at=cat), l_dist, r_dist
+            yield EQ, cat, l_dist, r_dist

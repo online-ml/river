@@ -35,15 +35,15 @@ class Covariance(base.Bivariate):
         self.mean_x = 0
         self.mean_y = 0
         self.n = 0
-        self.C = 0
+        self.cov = 0
 
     def update(self, x, y):
         self.n += 1
         dx = x - self.mean_x
         self.mean_x += dx / self.n
         self.mean_y += (y - self.mean_y) / self.n
-        self.C += dx * (y - self.mean_y)
+        self.cov += (dx * (y - self.mean_y) - self.cov) / max(1, self.n - self.ddof)
         return self
 
     def get(self):
-        return self.C / max(1, self.n - self.ddof)
+        return self.cov

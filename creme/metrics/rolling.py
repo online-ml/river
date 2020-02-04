@@ -53,9 +53,6 @@ class Rolling(base.WrapperMetric, utils.Window):
         self.metric.revert(y_true, y_pred, sample_weight)
         return self
 
-    def get(self):
-        return self.metric.get()
-
     def __repr__(self):
         if isinstance(self.metric, report.ClassificationReport):
             return self.metric.__repr__()

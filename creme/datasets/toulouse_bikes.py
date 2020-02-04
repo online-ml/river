@@ -3,7 +3,7 @@ from .. import stream
 from . import base
 
 
-class ToulouseBikes(base.Dataset):
+class ToulouseBikes(base.FileDataset):
     """Bike sharing station information from the city of Toulouse.
 
     The goal is to predict the number of bikes in 5 different bike stations from the city of
@@ -26,10 +26,8 @@ class ToulouseBikes(base.Dataset):
             n_samples=182_470,
             n_features=8,
             category=base.REG,
-            name='toulouse_bikes',
             url='https://maxhalford.github.io/files/datasets/toulouse_bikes.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

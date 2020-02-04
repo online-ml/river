@@ -5,7 +5,7 @@ from .. import stream
 from . import base
 
 
-class TrumpApproval(base.Dataset):
+class TrumpApproval(base.FileDataset):
     """Donald Trump approval ratings.
 
     This dataset was obtained by reshaping the data used by FiveThirtyEight for analyzing Donald

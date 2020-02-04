@@ -107,18 +107,22 @@ class KerasBinaryClassifier(KerasModel, base.BinaryClassifier):
         return {True: p_true, False: 1. - p_true}
 
 
-class VowpalWabbitRegressor(base.Regressor):
+class VW2CremeBase(pyvw.vw):
 
-    def __init__(self, **kwargs):
-        kwargs['passes'] = 1
-        self.model = pyvw.vw('--quiet', **kwargs)
-
-    def format_features(self, x):
-        return ' '.join((f'{k}:{v}' for k, v in x.items()))
+    def _format_features(self, x):
+        return ' '.join(f'{k}:{v}' for k, v in x.items())
 
     def fit_one(self, x, y):
-        self.model.learn(f'{y} | {self.format_features(x)}')
+        ex = self.example(f'{y} | {self._format_features(x)}')
+        self.learn(ex)
+        self.finish_example(ex)
         return self
 
+
+class VW2CremeRegressor(VW2CremeBase, base.Regressor):
+
     def predict_one(self, x):
-        return self.model.predict(self.format_features(x))
+        ex = self.example(f' | {self._format_features(x)}')
+        y_pred = self.predict(ex)
+        self.finish_example(ex)
+        return y_pred

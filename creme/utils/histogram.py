@@ -128,6 +128,7 @@ class Histogram(collections.UserList):
             return self
 
         # Use bisection to find where to insert
+        # We don't use the bisect module in order to save some CPU cycles
         lo = 0
         hi = len(self)
         i = (lo + hi) // 2

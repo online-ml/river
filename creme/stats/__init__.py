@@ -12,6 +12,8 @@ from .iqr import RollingIQR
 from .kurtosis import Kurtosis
 from .maximum import Max
 from .maximum import RollingMax
+from .maximum import AbsMax
+from .maximum import RollingAbsMax
 from .mean import BayesianMean
 from .mean import Mean
 from .mean import RollingMean
@@ -35,6 +37,7 @@ from .var import RollingVar
 
 
 __all__ = [
+    'AbsMax',
     'AutoCorrelation',
     'BayesianMean',
     'Bivariate',
@@ -56,6 +59,7 @@ __all__ = [
     'RollingIQR',
     'RollingMean',
     'RollingQuantile',
+    'RollingAbsMax',
     'RollingMax',
     'RollingMin',
     'RollingMode',

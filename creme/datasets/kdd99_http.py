@@ -3,7 +3,7 @@ from .. import stream
 from . import base
 
 
-class KDD99HTTP(base.Dataset):
+class KDD99HTTP(base.FileDataset):
     """Data from the HTTP dataset of the KDD 1999 cup.
 
     The goal is to predict whether or not an HTTP connection is anomalous or not. The dataset only contains 2,211 (0.4%) positive labels.
@@ -25,10 +25,8 @@ class KDD99HTTP(base.Dataset):
             n_samples=567_498,
             n_features=3,
             category=base.BINARY_CLF,
-            name='kdd99_http',
             url='https://maxhalford.github.io/files/datasets/kdd99_http.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

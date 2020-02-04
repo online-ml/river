@@ -1,14 +1,10 @@
 import abc
+import collections
 import functools
 import numbers
-try:
-    import graphviz
-    GRAPHVIZ_INSTALLED = True
-except ImportError:
-    GRAPHVIZ_INSTALLED = False
 
-from .. import base
-from .. import proba
+from ... import base
+from ... import proba
 
 from . import criteria
 from . import leaf
@@ -46,8 +42,7 @@ class BaseDecisionTree(abc.ABC):
     def draw(self):
         """Returns a GraphViz representation of the decision tree."""
 
-        if not GRAPHVIZ_INSTALLED:
-            raise RuntimeError('graphviz is not installed')
+        import graphviz
 
         dot = graphviz.Digraph()
 
@@ -82,15 +77,14 @@ class BaseDecisionTree(abc.ABC):
         node = self.root
         _print = functools.partial(print, **print_params)
 
-        while isinstance(node, leaf.Branch):
-            if node.split.test(x):
+        for node in self.root.path(x):
+            if isinstance(node, leaf.Leaf):
+                _print(node.target_dist)
+                break
+            if node.split(x):
                 _print('not', node.split)
-                node = node.left
             else:
                 _print(node.split)
-                node = node.right
-
-        _print(node.target_dist)
 
 
 class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
@@ -121,10 +115,10 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
             >>> from creme import model_selection
             >>> from creme import tree
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> model = tree.DecisionTreeClassifier(
-            ...     patience=2000,
+            ...     patience=100,
             ...     confidence=1e-5,
             ...     criterion='gini'
             ... )
@@ -132,7 +126,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.562813
+            LogLoss: 0.701038
 
     References:
         1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
@@ -140,18 +134,16 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
 
     """
 
-    def _get_split_enum(self, name, value):
+    def _get_split_enum(self, value):
+        """Returns an appropriate split enumerator given a feature's type."""
         if isinstance(value, numbers.Number):
-            return splitting.HistSplitEnum(
-                feature_name=name,
-                n_bins=self.max_bins,
-                n_splits=self.n_split_points
-            )
+            return splitting.HistSplitEnum(n_bins=self.max_bins, n_splits=self.n_split_points)
 
-        elif isinstance(value, str):
-            return splitting.CategoricalSplitEnum(feature_name=name)
+        elif isinstance(value, (str, bool)):
+            return splitting.CategoricalSplitEnum()
 
-        raise ValueError(f'Unsupported feature type: {type(value)} ({name}: {value})')
+        raise ValueError(f'The type of {value} ({type(value)}) is not supported')
 
     def predict_proba_one(self, x):
-        return self.root.get_leaf(x).predict(x)
+        leaf = collections.deque(self.root.path(x), maxlen=1).pop()
+        return leaf.predict(x)

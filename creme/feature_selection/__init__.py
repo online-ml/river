@@ -1,11 +1,11 @@
 """Online feature selection."""
 from .k_best import SelectKBest
-from .random import RandomDiscarder
+from .random import PoissonInclusion
 from .variance import VarianceThreshold
 
 
 __all__ = [
-    'RandomDiscarder',
+    'PoissonInclusion',
     'SelectKBest',
     'VarianceThreshold'
 ]

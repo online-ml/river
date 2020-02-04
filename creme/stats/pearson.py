@@ -12,7 +12,7 @@ class PearsonCorrelation(base.Bivariate):
     Attributes:
         var_x (stats.Var): Running variance of `x`.
         var_y (stats.Var): Running variance of `y`.
-        cov_xy (stats.Var): Running covariance of `x` and `y`.
+        cov_xy (stats.Covariance): Running covariance of `x` and `y`.
 
     Example:
 

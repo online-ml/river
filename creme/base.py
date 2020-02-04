@@ -16,6 +16,7 @@ from . import utils
 
 
 __all__ = [
+    'AnomalyDetector',
     'BinaryClassifier',
     'Clusterer',
     'Ensemble',
@@ -26,7 +27,6 @@ __all__ = [
     'MultiOutputRegressor',
     'Regressor',
     'Transformer',
-    'OutlierDetector'
 ]
 
 
@@ -39,8 +39,7 @@ Probas = typing.Dict[Label, Proba]
 DEFAULT_TAGS = {
     'handles_text': False,
     'requires_positive_data': False,
-    'handles_categorical_features': False,
-    'poor_score': False
+    'handles_categorical_features': False
 }
 
 
@@ -48,7 +47,8 @@ def _update_if_consistent(dict1, dict2):
     common_keys = set(dict1.keys()).intersection(dict2.keys())
     for key in common_keys:
         if dict1[key] != dict2[key]:
-            raise TypeError(f'Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}')
+            raise TypeError(
+                f'Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}')
     dict1.update(dict2)
     return dict1
 
@@ -90,7 +90,10 @@ class Estimator:
 
                 >>> model._set_params(**new_params)
                 Pipeline (
-                  StandardScaler (),
+                  StandardScaler (
+                    with_mean=True
+                    with_std=True
+                  ),
                   LinearRegression (
                     optimizer=SGD (
                       lr=Constant (
@@ -459,6 +462,10 @@ class Wrapper(abc.ABC):
     def _model(self):
         """Provides access to the wrapped model."""
 
+    @abc.abstractproperty
+    def _labelloc(self):
+        """Provides relative location of the subroutine label to the wrapped model."""
+
     def __str__(self):
         return f'{type(self).__name__}({self._model})'
 
@@ -467,10 +474,10 @@ class Ensemble(Estimator, collections.UserList):
     """An ensemble model."""
 
 
-class OutlierDetector(Estimator):
+class AnomalyDetector(Estimator):
 
     @abc.abstractmethod
-    def fit_one(self, x: dict) -> 'OutlierDetector':
+    def fit_one(self, x: dict) -> 'AnomalyDetector':
         """Updates the model."""
 
     @abc.abstractmethod

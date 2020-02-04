@@ -25,14 +25,13 @@ def get_data_home(data_home=None):
     return data_home
 
 
-def download_dataset(name, url, data_home, archive_type=None, verbose=True):
+def download_dataset(url, data_home, uncompress=True, verbose=True):
     """Downloads/decompresses a dataset locally if does not exist.
 
     Parameters:
-        name (str): Dataset filename or directory name.
         url (str): From where to download the dataset.
         data_home (str): The directory where you wish to store the data.
-        archive_type (str): Dataset archive type extension name (e.g. 'zip'). Defaults to None.
+        uncompress (bool): Whether to uncompress the file or not.
         verbose (bool): Whether to indicate download progress or not.
 
     Returns:
@@ -44,46 +43,69 @@ def download_dataset(name, url, data_home, archive_type=None, verbose=True):
         if verbose:
             print(msg)
 
+    name = os.path.basename(url)
+    extension = '.'.join(name.split('.')[1:])
     data_home = get_data_home(data_home=data_home)
-    data_dir_path = os.path.join(data_home, f'{name}')
+    path = os.path.join(data_home, f'{name}')
+    archive_path = path
+    if extension:
+        path = path[:-(len(extension) + 1)]  # e.g. path/to/file.tar.gz becomes path/to/file
 
-    # Download if needed
-    if not os.path.exists(data_dir_path):
+    # Download if necessary
+    if not (os.path.exists(path) or os.path.exists(archive_path)):
+
         _print(f'Downloading {url}')
-
-        if archive_type:
-            data_dir_path = f'{data_dir_path}.{archive_type}'
-
-        with urllib.request.urlopen(url) as r, open(data_dir_path, 'wb') as f:
+        with urllib.request.urlopen(url) as r, open(archive_path, 'wb') as f:
             shutil.copyfileobj(r, f)
 
-        # Uncompress if needed
-        if archive_type:
-            archive_path, data_dir_path = data_dir_path, data_dir_path[:-len(archive_type) - 1]
-            _print(f'Uncompressing into {data_dir_path}')
+    # If no uncompression is required then we're done
+    if not uncompress:
+        return archive_path
 
-            if archive_type == 'zip':
-                with zipfile.ZipFile(archive_path, 'r') as zf:
-                    zf.extractall(data_dir_path)
+    # Uncompress if necessary
+    if not os.path.exists(path):
 
-            elif archive_type in ['gz', 'tar', 'tar.gz', 'tgz']:
-                mode = 'r:' if archive_type == 'tar' else 'r:gz'
-                tar = tarfile.open(archive_path, mode)
-                tar.extractall(data_dir_path)
-                tar.close()
+        _print(f'Uncompressing into {path}')
 
-            # Delete the archive file now that the dataset is available
-            os.remove(archive_path)
+        if extension.endswith('zip'):
+            with zipfile.ZipFile(archive_path, 'r') as zf:
+                zf.extractall(path)
 
-    return data_dir_path
+        elif extension.endswith(('gz', 'tar')):
+            mode = 'r:' if extension.endswith('tar') else 'r:gz'
+            print(archive_path, mode)
+            tar = tarfile.open(archive_path, mode)
+            tar.extractall(path)
+            tar.close()
+
+        else:
+            raise RuntimeError(f'Unhandled extension type: {extension}')
+
+        # Delete the archive file now that the dataset is available
+        os.remove(archive_path)
+
+    return path
 
 
 class Dataset:
 
-    def __init__(self, n_samples, n_features, category, **dl_params):
-        self.n_samples = n_samples
+    def __init__(self, n_features, category):
         self.n_features = n_features
         self.category = category
+
+    def __iter__(self):
+        raise NotImplementedError
+
+    def take(self, k):
+        """Yields the k first (``x``, ``y``) pairs."""
+        return itertools.islice(self, k)
+
+
+class FileDataset(Dataset):
+
+    def __init__(self, n_samples, n_features, category, **dl_params):
+        super().__init__(n_features=n_features, category=category)
+        self.n_samples = n_samples
         self.dl_params = dl_params
 
     def _stream_X_y(self, dir):
@@ -110,7 +132,3 @@ class Dataset:
         else:
             data_dir_path = os.path.dirname(__file__)
         yield from self._stream_X_y(data_dir_path)
-
-    def take(self, k):
-        """Returns the k first (``x``, ``y``) pairs."""
-        return itertools.islice(self, k)
