@@ -175,7 +175,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
                 tfidf_positive: 0.87942 (float)
             <BLANKLINE>
                 1.1 BagOfWords | Renamer
-                -----------------
+                ------------------------
                 count_comment: 1 (int)
                 count_positive: 1 (int)
             <BLANKLINE>

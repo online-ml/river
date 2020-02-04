@@ -395,7 +395,7 @@ cdef class Squared(RegressionLoss):
     cpdef double gradient(self, double y_true, double y_pred):
         return 2. * (y_pred - y_true)
 
-      
+
 class BinaryFocalLoss(BinaryLoss):
     """Binary focal loss.
 
@@ -436,7 +436,7 @@ class BinaryFocalLoss(BinaryLoss):
 
         return y_true * (pt - 1)
 
-      
+
 cdef class Poisson(RegressionLoss):
     """Poisson loss.
 
