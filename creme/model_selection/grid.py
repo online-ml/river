@@ -19,7 +19,7 @@ def expand_param_grid(grid):
         >>> from creme import optim
 
         >>> param_grid = {
-        ...     'BoW': {
+        ...     'BagOfWords': {
         ...         'strip_accents': [False, True]
         ...     },
         ...     'LinearRegression': {
@@ -31,27 +31,27 @@ def expand_param_grid(grid):
         >>> for params in expand_param_grid(param_grid):
         ...     pprint.pprint(params)
         ...     print()
-        {'BoW': {'strip_accents': False},
+        {'BagOfWords': {'strip_accents': False},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'BoW': {'strip_accents': False},
+        {'BagOfWords': {'strip_accents': False},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'BoW': {'strip_accents': False},
+        {'BagOfWords': {'strip_accents': False},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'BoW': {'strip_accents': True},
+        {'BagOfWords': {'strip_accents': True},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'BoW': {'strip_accents': True},
+        {'BagOfWords': {'strip_accents': True},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}}
         <BLANKLINE>
-        {'BoW': {'strip_accents': True},
+        {'BagOfWords': {'strip_accents': True},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}}
         <BLANKLINE>

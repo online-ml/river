@@ -7,7 +7,7 @@ from sklearn import feature_extraction
 from .. import base
 
 
-__all__ = ['BoW', 'TFIDF']
+__all__ = ['BagOfWords', 'TFIDF']
 
 
 class VectorizerMixin:
@@ -49,7 +49,7 @@ class VectorizerMixin:
         return text
 
 
-class BoW(base.Transformer, VectorizerMixin):
+class BagOfWords(base.Transformer, VectorizerMixin):
     """Bag of words which counts token occurrences.
 
     This returns exactly the same results as `sklearn.feature_extraction.text.CountVectorizer`.
@@ -73,7 +73,7 @@ class BoW(base.Transformer, VectorizerMixin):
             ...     'And this is the third one.',
             ...     'Is this the first document?',
             ... ]
-            >>> vectorizer = creme.feature_extraction.BoW()
+            >>> vectorizer = creme.feature_extraction.BagOfWords()
             >>> for sentence in corpus:
             ...     print(vectorizer.transform_one(sentence))
             Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
@@ -103,7 +103,7 @@ class TFIDF(base.Transformer, VectorizerMixin):
         normalize (bool): Whether or not the TF-IDF values by their L2 norm.
 
     Attributes:
-        tfs (feature_extraction.BoW): The term counts.
+        tfs (feature_extraction.BagOfWords): The term counts.
         dfs (collections.defaultdict): The document counts.
         n (int): The number of scanned documents.
 
@@ -132,7 +132,7 @@ class TFIDF(base.Transformer, VectorizerMixin):
                  normalize=True):
         super().__init__(on, strip_accents, lowercase, tokenizer)
         self.normalize = normalize
-        self.tfs = BoW(on, strip_accents, lowercase, tokenizer)
+        self.tfs = BagOfWords(on, strip_accents, lowercase, tokenizer)
         self.dfs = collections.defaultdict(int)
         self.n = 0
 

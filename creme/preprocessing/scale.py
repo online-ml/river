@@ -280,7 +280,7 @@ class RobustScaler(base.Transformer):
         q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to ``0.75``.
 
     Attributes:
-        median (dict): Mapping between features and instances of `stats.Quantile(0.5)`.
+        median (dict): Mapping between features and instances of ``stats.Quantile(0.5)``.
         iqr (dict): Mapping between features and instances of `stats.IQR`.
 
     Example:

@@ -140,8 +140,8 @@ class MicroRecall(precision.MicroPrecision):
 class WeightedRecall(BaseRecall, base.MultiClassMetric):
     """Weighted-average recall score.
 
-    This uses the support of each label to compute an average score, whereas `MacroRecall` ignores
-    the support.
+    This uses the support of each label to compute an average score, whereas `metrics.MacroRecall`
+    ignores the support.
 
     Example:
 

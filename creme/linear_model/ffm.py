@@ -32,16 +32,13 @@ class FFM:
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
         l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `creme.stats.Univariate` instance): Initial intercept value.
+        intercept (float or `stats.Univariate` instance): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
             will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme. Defaults
-            to ``optim.initializers.Zeros()``.
+        weight_initializer (optim.initializers.Initializer): Weights initialization scheme.
         latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-            Defaults to
-            ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
         clip_gradient (float): Clips the absolute value of each gradient value.
         random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
             is the seed used by the random number generator; if ``RandomState`` instance,
@@ -215,7 +212,7 @@ class FFMRegressor(FFM, base.Regressor):
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
         l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `creme.stats.Univariate` instance): Initial intercept value.
+        intercept (float or `stats.Univariate` instance): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
@@ -318,7 +315,7 @@ class FFMClassifier(FFM, base.BinaryClassifier):
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
         l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `creme.stats.Univariate` instance): Initial intercept value.
+        intercept (float or `stats.Univariate` instance): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept

@@ -32,7 +32,7 @@ class HOFM:
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
         l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `creme.stats.Univariate` instance): Initial intercept value.
+        intercept (float or `stats.Univariate` instance): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
@@ -221,7 +221,7 @@ class HOFMRegressor(HOFM, base.Regressor):
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
         l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `creme.stats.Univariate` instance): Initial intercept value.
+        intercept (float or `stats.Univariate` instance): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
@@ -326,7 +326,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
         l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
         l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `creme.stats.Univariate` instance): Initial intercept value.
+        intercept (float or `stats.Univariate` instance): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
