@@ -16,12 +16,17 @@ class BaseBagging(base.Wrapper, base.Ensemble):
         super().__init__(copy.deepcopy(model) for _ in range(n_models))
         self.n_models = n_models
         self.model = model
+        self.labelloc = 't'
         self.random_state = random_state
         self._rng = utils.check_random_state(random_state)
 
     @property
     def _model(self):
         return self.model
+
+    @property
+    def _labelloc(self):
+        return self.labelloc
 
     def fit_one(self, x, y):
 

@@ -7,6 +7,7 @@ from .elec2 import Elec2
 from .higgs import Higgs
 from .kdd99_http import KDD99HTTP
 from .phishing import Phishing
+from .movielens100k import MovieLens100K
 from .restaurants import Restaurants
 from .sms_spam import SMSSpam
 from .toulouse_bikes import ToulouseBikes
@@ -25,6 +26,7 @@ __all__ = [
     'Higgs',
     'MaliciousURL',
     'Phishing',
+    'MovieLens100K',
     'Restaurants',
     'SMSSpam',
     'ToulouseBikes',
