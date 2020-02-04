@@ -9,5 +9,5 @@ User guide
    notebooks/building-a-simple-time-series-model.ipynb
    notebooks/the-art-of-using-pipelines.ipynb
    notebooks/debugging-a-pipeline.ipynb
-   notebooks/imbalance-learning.ipynb
+   notebooks/imbalanced-learning.ipynb
    notebooks/quantile-regression-uncertainty.ipynb
