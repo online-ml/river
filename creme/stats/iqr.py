@@ -106,7 +106,7 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
 
     @property
     def name(self):
-        return f'{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
+        return f'rolling_{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
 
     def update(self, x):
         self.quantile_inf.update(x)
