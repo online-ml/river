@@ -26,7 +26,7 @@ class HOFM:
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -205,7 +205,7 @@ class HOFM:
 
 
 class HOFMRegressor(HOFM, base.Regressor):
-    """Higer-Order Factorization Machines Regressor.
+    """Higher-Order Factorization Machines Regressor.
 
     Parameters:
         degree (int): Polynomial degree or model order.
@@ -215,7 +215,7 @@ class HOFMRegressor(HOFM, base.Regressor):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -320,7 +320,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.

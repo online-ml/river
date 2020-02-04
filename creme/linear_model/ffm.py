@@ -26,7 +26,7 @@ class FFM:
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -209,7 +209,7 @@ class FFMRegressor(FFM, base.Regressor):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -266,7 +266,7 @@ class FFMRegressor(FFM, base.Regressor):
             5.319945...
 
     Note:
-        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'} becomes x = {'user_Joe': 1}``).
+        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'}`` becomes ``x = {'user_Joe': 1}``).
         - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
@@ -312,7 +312,7 @@ class FFMClassifier(FFM, base.BinaryClassifier):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of `x` by `x` L2-norm.
+        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -369,7 +369,7 @@ class FFMClassifier(FFM, base.BinaryClassifier):
             True
 
     Note:
-        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'} becomes x = {'user_Joe': 1}``).
+        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'}`` becomes ``x = {'user_Joe': 1}``).
         - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
