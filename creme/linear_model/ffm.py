@@ -11,13 +11,13 @@ from .. import utils
 
 
 __all__ = [
-    'FMClassifier',
-    'FMRegressor'
+    'FFMClassifier',
+    'FFMRegressor'
 ]
 
 
-class FM:
-    """Factorization Machines.
+class FFM:
+    """Field-aware Factorization Machines.
 
     Parameters:
         n_factors (int): Dimensionality of the factorization or number of latent factors.
@@ -61,7 +61,7 @@ class FM:
         self.weight_optimizer = optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
         self.latent_optimizer = optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
         self.loss = loss
-        self.instance_normalization = instance_normalization
+        self.instance_normalization=instance_normalization
         self.l1_weight = l1_weight
         self.l2_weight = l2_weight
         self.l1_latent = l1_latent
@@ -90,8 +90,12 @@ class FM:
             shape=n_factors
         )
 
+        field_latents_dict = functools.partial(
+            collections.defaultdict, random_latents
+        )
+
         self.weights = collections.defaultdict(weight_initializer)
-        self.latents = collections.defaultdict(random_latents)
+        self.latents = collections.defaultdict(field_latents_dict)
 
     def _ohe_cat_features(self, x):
         """One hot encodes string features considering them as categorical."""
@@ -106,6 +110,10 @@ class FM:
 
         return self._fit_one(x, y, sample_weight=sample_weight)
 
+    def _field(self, j):
+        """Infers feature field name."""
+        return j.split('_')[0]
+
     def _raw_dot(self, x):
 
         # Start with the intercept
@@ -116,8 +124,10 @@ class FM:
         y_pred += utils.math.dot(x, self.weights)
 
         # Add the pairwise interactions
+        field = self._field
+
         y_pred += sum(
-            x[j1] * x[j2] * np.dot(self.latents[j1], self.latents[j2])
+            x[j1] * x[j2] * np.dot(self.latents[j1][field(j2)], self.latents[j2][field(j1)])
             for j1, j2 in itertools.combinations(x.keys(), 2)
         )
 
@@ -160,27 +170,37 @@ class FM:
         self.weights = self.weight_optimizer.update_after_pred(w=w, g=weight_gradient)
 
         # Update the latent weights
-        precomputed_sum = {
-            f: sum(v[j][f] * xj for j, xj in x.items())
-            for f in range(self.n_factors)
-        }
+        latent_gradient = collections.defaultdict(
+            lambda: collections.defaultdict(
+                lambda: collections.defaultdict(float)
+            )
+        )
+        field = self._field
 
-        latent_gradient = {}
-        for j, xj in x.items():
-            latent_gradient[j] = {
-                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2) + \
-                l1_latent * sign(v[j][f]) + l2_latent * v[j][f]
-                for f in range(self.n_factors)
-            }
+        for j1, j2 in itertools.combinations(x.keys(), 2):
+            xj1_xj2 = x[j1] * x[j2]
+            field_j1, field_j2 = field(j1), field(j2)
+
+            for f in range(self.n_factors):
+                latent_gradient[j1][field_j2][f] += xj1_xj2 * v[j2][field_j1][f]
+                latent_gradient[j2][field_j1][f] += xj1_xj2 * v[j1][field_j2][f]
 
         for j in x.keys():
-            self.latents[j] = self.latent_optimizer.update_after_pred(w=v[j], g=latent_gradient[j])
+            for field in latent_gradient[j].keys():
+                self.latents[j][field] = self.latent_optimizer.update_after_pred(
+                    w=v[j][field],
+                    g={
+                        f: g_loss * latent_gradient[j][field][f] + l1_latent * sign(v[j][field][f]) \
+                           + 2. * l2_latent * v[j][field][f]
+                        for f in range(k)
+                    }
+                )
 
         return self
 
 
-class FMRegressor(FM, base.Regressor):
-    """Factorization Machines Regressor.
+class FFMRegressor(FFM, base.Regressor):
+    """Field-aware Factorization Machines Regressor.
 
     Parameters:
         n_factors (int): Dimensionality of the factorization or number of latent factors.
@@ -222,18 +242,18 @@ class FMRegressor(FM, base.Regressor):
             >>> from creme import linear_model
 
             >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter '}, 5),
-            ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+            ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
+            ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
+            ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
+            ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, 2),
+            ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, 5),
+            ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, 8),
+            ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, 9),
+            ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, 8),
+            ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
             ... )
 
-            >>> model = linear_model.FMRegressor(
+            >>> model = linear_model.FFMRegressor(
             ...     n_factors=10,
             ...     intercept=5,
             ...     random_state=42,
@@ -242,17 +262,16 @@ class FMRegressor(FM, base.Regressor):
             >>> for x, y in X_y:
             ...     _ = model.fit_one(x, y)
 
-            >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
-            5.236504...
+            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+            5.319945...
 
     Note:
-        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
+        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'} becomes x = {'user_Joe': 1}``).
+        - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
-        1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
-        2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`_
-
+        1. `Field-aware Factorization Machines for CTR Prediction <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
 
     """
 
@@ -283,8 +302,8 @@ class FMRegressor(FM, base.Regressor):
         return self._raw_dot(x)
 
 
-class FMClassifier(FM, base.BinaryClassifier):
-    """Factorization Machines Classifier.
+class FFMClassifier(FFM, base.BinaryClassifier):
+    """Field-aware Factorization Machines Classifier.
 
     Parameters:
         n_factors (int): Dimensionality of the factorization or number of latent factors.
@@ -326,35 +345,36 @@ class FMClassifier(FM, base.BinaryClassifier):
             >>> from creme import linear_model
 
             >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman'}, True),
-            ...     ({'user': 'Alice', 'item': 'Terminator'}, True),
-            ...     ({'user': 'Alice', 'item': 'Star Wars'}, True),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill'}, False),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter '}, True),
-            ...     ({'user': 'Bob', 'item': 'Superman'}, True),
-            ...     ({'user': 'Bob', 'item': 'Terminator'}, True),
-            ...     ({'user': 'Bob', 'item': 'Star Wars'}, True),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill'}, False)
+            ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
+            ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
+            ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
+            ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, False),
+            ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, True),
+            ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, True),
+            ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, True),
+            ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, True),
+            ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
             ... )
 
-            >>> model = linear_model.FMClassifier(
+            >>> model = linear_model.FFMClassifier(
             ...     n_factors=10,
+            ...     intercept=.5,
             ...     random_state=42,
             ... )
 
             >>> for x, y in X_y:
             ...     _ = model.fit_one(x, y)
 
-            >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
+            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
             True
 
     Note:
-        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
+        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'} becomes x = {'user_Joe': 1}``).
+        - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
-        1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
-        2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`_
+        1. `Field-aware Factorization Machines for CTR Prediction <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
 
     """
 

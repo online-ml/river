@@ -9,6 +9,12 @@ from .. import optim
 from .. import utils
 
 
+__all__ = [
+    'LinearRegression',
+    'LogisticRegression'
+]
+
+
 class GLM:
     """Generalized Linear Model.
 
@@ -21,7 +27,7 @@ class GLM:
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated. Setting this to 0 means that no intercept will be used.
+            will be not be updated.
         clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.initializers.Initializer): Weights initialization scheme.
 
@@ -101,13 +107,13 @@ class LinearRegression(GLM, base.Regressor):
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately. Defaults to ``optim.SGD(.01)``.
         loss (optim.RegressionLoss): The loss function to optimize for. Defaults to
-            ``optim.SquaredLoss``.
+            ``optim.losses.SquaredLoss``.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (float): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated. Setting this to 0 means that no intercept will be used.
+            will be not be updated.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.initializers.Initializer): Weights initialization scheme.
@@ -362,13 +368,14 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
             that the intercept is handled separately. Defaults to ``optim.SGD(.05)``.
-        loss (optim.BinaryLoss): The loss function to optimize for. Defaults to ``optim.LogLoss``.
+        loss (optim.BinaryLoss): The loss function to optimize for. Defaults to
+            ``optim.losses.Log``.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (float): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated. Setting this to 0 means that no intercept will be used.
+            will be not be updated.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         clip_gradient (float): Clips the absolute value of each gradient value.
         initializer (optim.initializers.Initializer): Weights initialization scheme.

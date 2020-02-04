@@ -17,19 +17,16 @@ class Whitelister(base.Transformer):
             >>> from creme import compose
 
             >>> x = {'a': 42, 'b': 12}
-            >>> compose.Whitelister('a', 'zoidberg').transform_one(x)
+            >>> compose.Whitelister('a').transform_one(x)
             {'a': 42}
-
-            >>> compose.Whitelister('b').transform_one(x)
-            {'b': 12}
 
     """
 
     def __init__(self, *whitelist):
-        self.whitelist = set(whitelist)
+        self.whitelist = whitelist
 
     def transform_one(self, x):
-        return {i: x[i] for i in set(x.keys()) & self.whitelist}
+        return {i: x[i] for i in self.whitelist}
 
     def __str__(self):
-        return str(sorted(self.whitelist))
+        return str(self.whitelist)

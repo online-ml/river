@@ -2,7 +2,6 @@ import collections
 import functools
 import itertools
 import numbers
-import numpy as np
 
 from .. import base
 from .. import optim
@@ -11,15 +10,16 @@ from .. import utils
 
 
 __all__ = [
-    'FMClassifier',
-    'FMRegressor'
+    'HOFMClassifier',
+    'HOFMRegressor'
 ]
 
 
-class FM:
-    """Factorization Machines.
+class HOFM:
+    """Higher-Order Factorization Machines.
 
     Parameters:
+        degree (int): Polynomial degree or model order.
         n_factors (int): Dimensionality of the factorization or number of latent factors.
         weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
             weights. Note that the intercept is handled separately.
@@ -54,9 +54,10 @@ class FM:
 
     """
 
-    def __init__(self, n_factors, weight_optimizer, latent_optimizer, loss, instance_normalization,
-                 l1_weight, l2_weight, l1_latent, l2_latent, intercept, intercept_lr,
-                 weight_initializer, latent_initializer, clip_gradient, random_state):
+    def __init__(self, degree, n_factors, weight_optimizer, latent_optimizer, loss,
+                 instance_normalization, l1_weight, l2_weight, l1_latent, l2_latent, intercept,
+                 intercept_lr, weight_initializer, latent_initializer, clip_gradient, random_state):
+        self.degree = degree
         self.n_factors = n_factors
         self.weight_optimizer = optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
         self.latent_optimizer = optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
@@ -90,8 +91,12 @@ class FM:
             shape=n_factors
         )
 
+        order_latents_dict = functools.partial(
+            collections.defaultdict, random_latents
+        )
+
         self.weights = collections.defaultdict(weight_initializer)
-        self.latents = collections.defaultdict(random_latents)
+        self.latents = collections.defaultdict(order_latents_dict)
 
     def _ohe_cat_features(self, x):
         """One hot encodes string features considering them as categorical."""
@@ -106,6 +111,14 @@ class FM:
 
         return self._fit_one(x, y, sample_weight=sample_weight)
 
+    def _calculate_interaction(self, x, l, combination):
+        feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+        latent_scalar_product = sum(
+            functools.reduce(lambda x, y: x * y, (self.latents[j][l][f] for j in combination))
+            for f in range(self.n_factors)
+        )
+        return feature_product * latent_scalar_product
+
     def _raw_dot(self, x):
 
         # Start with the intercept
@@ -115,10 +128,11 @@ class FM:
         # Add the unary interactions
         y_pred += utils.math.dot(x, self.weights)
 
-        # Add the pairwise interactions
+        # Add greater than unary interactions
         y_pred += sum(
-            x[j1] * x[j2] * np.dot(self.latents[j1], self.latents[j2])
-            for j1, j2 in itertools.combinations(x.keys(), 2)
+            self._calculate_interaction(x, l, combination)
+            for l in range(2, self.degree + 1)
+            for combination in itertools.combinations(x.keys(), l)
         )
 
         return y_pred
@@ -160,29 +174,41 @@ class FM:
         self.weights = self.weight_optimizer.update_after_pred(w=w, g=weight_gradient)
 
         # Update the latent weights
-        precomputed_sum = {
-            f: sum(v[j][f] * xj for j, xj in x.items())
-            for f in range(self.n_factors)
-        }
+        latent_gradient = collections.defaultdict(
+            lambda: collections.defaultdict(
+                lambda: collections.defaultdict(float)
+            )
+        )
 
-        latent_gradient = {}
-        for j, xj in x.items():
-            latent_gradient[j] = {
-                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2) + \
-                l1_latent * sign(v[j][f]) + l2_latent * v[j][f]
-                for f in range(self.n_factors)
-            }
+        for l in range(2, self.degree + 1):
+            for combination in itertools.combinations(x.keys(), l):
+                feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+
+                for f in range(self.n_factors):
+                    latent_product = functools.reduce(lambda x, y: x * y, (v[j][l][f] for j in combination))
+
+                    for j in combination:
+                        latent_gradient[j][l][f] += feature_product * latent_product / v[j][l][f]
 
         for j in x.keys():
-            self.latents[j] = self.latent_optimizer.update_after_pred(w=v[j], g=latent_gradient[j])
+            for l in range(2, self.degree + 1):
+                self.latents[j][l] = self.latent_optimizer.update_after_pred(
+                    w=v[j][l],
+                    g={
+                        f: g_loss * latent_gradient[j][l][f] + l1_latent * sign(v[j][l][f]) \
+                           + 2. * l2_latent * v[j][l][f]
+                        for f in range(k)
+                    }
+                )
 
         return self
 
 
-class FMRegressor(FM, base.Regressor):
-    """Factorization Machines Regressor.
+class HOFMRegressor(HOFM, base.Regressor):
+    """Higer-Order Factorization Machines Regressor.
 
     Parameters:
+        degree (int): Polynomial degree or model order.
         n_factors (int): Dimensionality of the factorization or number of latent factors.
         weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
             weights. Note that the intercept is handled separately.
@@ -222,18 +248,19 @@ class FMRegressor(FM, base.Regressor):
             >>> from creme import linear_model
 
             >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter '}, 5),
-            ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+            ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
+            ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
+            ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
+            ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, 2),
+            ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, 5),
+            ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, 8),
+            ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, 9),
+            ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, 8),
+            ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
             ... )
 
-            >>> model = linear_model.FMRegressor(
+            >>> model = linear_model.HOFMRegressor(
+            ...     degree=3,
             ...     n_factors=10,
             ...     intercept=5,
             ...     random_state=42,
@@ -242,8 +269,8 @@ class FMRegressor(FM, base.Regressor):
             >>> for x, y in X_y:
             ...     _ = model.fit_one(x, y)
 
-            >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
-            5.236504...
+            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+            5.311745...
 
     Note:
         - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
@@ -251,16 +278,15 @@ class FMRegressor(FM, base.Regressor):
 
     References:
         1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
-        2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`_
-
 
     """
 
-    def __init__(self, n_factors=10, weight_optimizer=None, latent_optimizer=None, loss=None,
-                 instance_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
+    def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
+                 loss=None, instance_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
                  l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
                  latent_initializer=None, clip_gradient=1e12, random_state=None):
         super().__init__(
+            degree=degree,
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
             latent_optimizer=latent_optimizer,
@@ -283,10 +309,11 @@ class FMRegressor(FM, base.Regressor):
         return self._raw_dot(x)
 
 
-class FMClassifier(FM, base.BinaryClassifier):
-    """Factorization Machines Classifier.
+class HOFMClassifier(HOFM, base.BinaryClassifier):
+    """Higher-Order Factorization Machines Classifier.
 
     Parameters:
+        degree (int): Polynomial degree or model order.
         n_factors (int): Dimensionality of the factorization or number of latent factors.
         weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
             weights. Note that the intercept is handled separately.
@@ -326,26 +353,28 @@ class FMClassifier(FM, base.BinaryClassifier):
             >>> from creme import linear_model
 
             >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman'}, True),
-            ...     ({'user': 'Alice', 'item': 'Terminator'}, True),
-            ...     ({'user': 'Alice', 'item': 'Star Wars'}, True),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill'}, False),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter '}, True),
-            ...     ({'user': 'Bob', 'item': 'Superman'}, True),
-            ...     ({'user': 'Bob', 'item': 'Terminator'}, True),
-            ...     ({'user': 'Bob', 'item': 'Star Wars'}, True),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill'}, False)
+            ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
+            ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
+            ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
+            ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, False),
+            ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, True),
+            ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, True),
+            ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, True),
+            ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, True),
+            ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
             ... )
 
-            >>> model = linear_model.FMClassifier(
+            >>> model = linear_model.HOFMClassifier(
+            ...     degree=3,
             ...     n_factors=10,
+            ...     intercept=.5,
             ...     random_state=42,
             ... )
 
             >>> for x, y in X_y:
             ...     _ = model.fit_one(x, y)
 
-            >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
+            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
             True
 
     Note:
@@ -354,15 +383,15 @@ class FMClassifier(FM, base.BinaryClassifier):
 
     References:
         1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
-        2. `Factorization Machines with libFM <https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf>`_
 
     """
 
-    def __init__(self, n_factors=10, weight_optimizer=None, latent_optimizer=None, loss=None,
-                 instance_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
+    def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
+                 loss=None, instance_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
                  l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
                  latent_initializer=None, clip_gradient=1e12, random_state=None):
         super().__init__(
+            degree=degree,
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
             latent_optimizer=latent_optimizer,
