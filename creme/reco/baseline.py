@@ -19,7 +19,7 @@ class Baseline(base.Recommender):
         \\hat{y}(x) = \\bar{y} + bu_{u} + bi_{i}
 
     Where :math:`bu_{u}` and :math:`bi_{i}` are respectively the user and item biases. The model
-    expect dict inputs containing both a `user` and an `item` entries.
+    expect dict inputs containing both a ``user`` and an ``item`` entries.
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights.
@@ -65,7 +65,7 @@ class Baseline(base.Recommender):
             6.538120...
 
     Note:
-        reco.Baseline model expect a `dict` input with a 'user' and an 'item' entries without any
+        reco.Baseline model expect a dict input with a ``user`` and an ``item`` entries without any
         type constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
     References:
