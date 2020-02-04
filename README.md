@@ -140,7 +140,7 @@ You can visualize the pipeline as so:
 Pipeline (
   TransformerUnion (
     Whitelister (
-      whitelist=['clouds', 'humidity', 'pressure', 'temperature', 'wind']
+      whitelist=('clouds', 'humidity', 'pressure', 'temperature', 'wind')
     ),
     Pipeline (
       FuncTransformer (

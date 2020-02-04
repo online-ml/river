@@ -462,6 +462,10 @@ class Wrapper(abc.ABC):
     def _model(self):
         """Provides access to the wrapped model."""
 
+    @abc.abstractproperty
+    def _labelloc(self):
+        """Provides relative location of the subroutine label to the wrapped model."""
+
     def __str__(self):
         return f'{type(self).__name__}({self._model})'
 
