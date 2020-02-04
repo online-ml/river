@@ -5,7 +5,7 @@ from .. import stream
 from . import base
 
 
-class TREC07(base.Dataset):
+class TREC07(base.FileDataset):
     """TREC's 2007 Spam Track dataset.
 
     The data contains 75,419 chronologically ordered items, i.e. 3 months of emails delivered
@@ -32,10 +32,8 @@ class TREC07(base.Dataset):
             n_samples=75_419,
             n_features=5,
             category=base.BINARY_CLF,
-            name='trec07p',
             url='https://maxhalford.github.io/files/datasets/trec07p.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

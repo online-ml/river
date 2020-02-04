@@ -5,6 +5,8 @@ import typing
 from .. import base
 from .. import utils
 
+from ..reco.base import Recommender
+
 
 __all__ = [
     'BinaryMetric',
@@ -49,7 +51,7 @@ class ClassificationMetric(Metric):
         """Helps to indicate if labels are required instead of probabilities."""
 
     @staticmethod
-    def clamp_proba(p):
+    def _clamp_proba(p):
         return utils.math.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
 
     def __add__(self, other) -> 'Metrics':
@@ -132,7 +134,7 @@ class RegressionMetric(Metric):
         return False
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), base.Regressor)
+        return isinstance(utils.estimator_checks.guess_model(model), (base.Regressor))
 
     def __add__(self, other) -> 'Metrics':
         if not isinstance(other, RegressionMetric):
@@ -238,7 +240,7 @@ class Metrics(Metric, collections.UserList):
     def requires_labels(self):
         return all(m.requires_labels for m in self)
 
-    def __str__(self):
+    def __repr__(self):
         return self.str_sep.join((str(m) for m in self))
 
     def __add__(self, other):
@@ -259,6 +261,9 @@ class WrapperMetric(Metric):
     @abc.abstractproperty
     def metric(self):
         """Gives access to the wrapped metric."""
+
+    def get(self):
+        return self.metric.get()
 
     @property
     def bigger_is_better(self):

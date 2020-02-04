@@ -5,7 +5,7 @@ from .. import stream
 from . import base
 
 
-class Restaurants(base.Dataset):
+class Restaurants(base.FileDataset):
     """Data from the Kaggle Recruit Restaurants challenge.
 
     The goal is to predict the number of visitors in each of 829 Japanese restaurants over a priod
@@ -28,10 +28,8 @@ class Restaurants(base.Dataset):
             n_samples=252_108,
             n_features=7,
             category=base.REG,
-            name='kaggle_recruit_restaurants',
             url='https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

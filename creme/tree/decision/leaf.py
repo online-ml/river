@@ -1,24 +1,11 @@
 import math
 
-from ..proba.base import ContinuousDistribution
+from ...proba.base import ContinuousDistribution
+
+from .. import base
 
 
-class Branch:
-
-    def __init__(self, split, left, right, tree):
-        self.split = split
-        self.left = left
-        self.right = right
-        self.tree = tree
-
-    @property
-    def size(self):
-        return self.left.size + self.right.size
-
-    def get_leaf(self, x):
-        if self.split(x):
-            return self.left.get_leaf(x)
-        return self.right.get_leaf(x)
+class Branch(base.Branch):
 
     def update(self, x, y):
         if self.split(x):
@@ -28,7 +15,7 @@ class Branch:
         return self
 
 
-class Leaf:
+class Leaf(base.Leaf):
 
     def __init__(self, depth, tree, target_dist):
         self.depth = depth
@@ -38,32 +25,22 @@ class Leaf:
         self.split_enums = {}
 
     @property
-    def size(self):
-        return 1
-
-    @property
     def n_classes(self):
         """The number of observed classes."""
         if isinstance(self.target_dist, ContinuousDistribution):
-            raise ValueError('The target is continuous, hence there are not classes')
+            raise AttributeError('The target is continuous, hence there are not classes')
         return len(self.target_dist)
 
     @property
     def is_pure(self):
         try:
             return self.n_classes < 2
-        except ValueError:
-            return False
-
-    def get_leaf(self, x):
-        return self
+        except AttributeError:
+            return self.n_samples > 1
 
     @property
     def hoeffding_bound(self):
-        """Returns the current Hoeffding bound.
-
-        TODO: handle continuous target
-        """
+        """Returns the current Hoeffding bound."""
         R = math.log(self.n_classes)
         n = self.n_samples
         δ = self.tree.confidence
@@ -80,7 +57,7 @@ class Leaf:
             try:
                 ss = self.split_enums[i]
             except KeyError:
-                ss = self.split_enums[i] = self.tree._get_split_enum(name=i, value=xi)
+                ss = self.split_enums[i] = self.tree._get_split_enum(value=xi)
             ss.update(x=xi, y=y)
 
         # Check if splitting is authorized or not
@@ -117,10 +94,10 @@ class Leaf:
         best_r_dist = None
 
         # For each feature
-        for ss in self.split_enums.values():
+        for feature_name, split_enum in self.split_enums.items():
 
             # For each candidate split
-            for split, l_dist, r_dist in ss.enumerate_splits(target_dist=self.target_dist):
+            for how, at, l_dist, r_dist in split_enum.enumerate_splits(target_dist=self.target_dist):
 
                 # Ignore the split if it results in a new leaf with not enough samples
                 if (
@@ -129,7 +106,7 @@ class Leaf:
                 ):
                     continue
 
-                # Compute the gain brought by the split
+                # Compute the decrease in impurity brought by the split
                 left_impurity = self.tree.criterion(dist=l_dist)
                 right_impurity = self.tree.criterion(dist=r_dist)
                 impurity = l_dist.n_samples * left_impurity + r_dist.n_samples * right_impurity
@@ -143,7 +120,7 @@ class Leaf:
                 # Check if the gain brought by the candidate split is better than the current best
                 if gain > best_gain:
                     best_gain, second_best_gain = gain, best_gain
-                    best_split = split
+                    best_split = base.Split(on=feature_name, how=how, at=at)
                     best_l_dist = l_dist
                     best_r_dist = r_dist
                 elif gain > second_best_gain:

@@ -13,6 +13,7 @@ from .ftrl import FTRLProximal
 from .mini_batch import MiniBatcher
 from .momentum import Momentum
 from .nesterov import NesterovMomentum
+from .nadam import Nadam
 from .rms_prop import RMSProp
 from .sgd import SGD
 
@@ -29,6 +30,7 @@ __all__ = [
     'losses',
     'MiniBatcher',
     'Momentum',
+    'Nadam',
     'NesterovMomentum',
     'Optimizer',
     'RMSProp',

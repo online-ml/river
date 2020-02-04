@@ -16,12 +16,17 @@ class BaseBoosting(base.Wrapper, base.Ensemble):
         super().__init__(copy.deepcopy(model) for _ in range(n_models))
         self.n_models = n_models
         self.model = model
+        self.labelloc = 't'
         self.random_state = random_state
         self._rng = utils.check_random_state(random_state)
 
     @property
     def _model(self):
         return self.model
+
+    @property
+    def _labelloc(self):
+        return self.labelloc
 
 
 class AdaBoostClassifier(base.Classifier, BaseBoosting):
@@ -59,7 +64,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             >>> from creme import model_selection
             >>> from creme import tree
 
-            >>> X_y = datasets.Elec2()
+            >>> X_y = datasets.Phishing()
 
             >>> metric = metrics.LogLoss()
 
@@ -76,7 +81,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             ... )
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.562168
+            LogLoss: 0.741097
 
             >>> print(model)
             AdaBoostClassifier(DecisionTreeClassifier)

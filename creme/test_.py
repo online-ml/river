@@ -7,6 +7,7 @@ import pytest
 
 from creme import base
 from creme import dummy
+from creme import compat
 from creme import cluster
 from creme import compose
 from creme import ensemble
@@ -20,6 +21,7 @@ from creme import multiclass
 from creme import multioutput
 from creme import naive_bayes
 from creme import preprocessing
+from creme import reco
 from creme import stats
 from creme import time_series
 from creme import tree
@@ -33,21 +35,35 @@ def get_all_estimators():
     ignored = (
         Creme2SKLBase,
         SKL2CremeBase,
+        compat.PyTorch2CremeRegressor,
         compose.FuncTransformer,
         compose.Pipeline,
         ensemble.StackingBinaryClassifier,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_extraction.Differ,
+        feature_selection.PoissonInclusion,
+        imblearn.RandomOverSampler,
         imblearn.RandomUnderSampler,
+        imblearn.RandomSampler,
         impute.PreviousImputer,
         impute.StatImputer,
+        linear_model.FFMClassifier,
+        linear_model.FFMRegressor,
+        linear_model.FMClassifier,
         linear_model.FMRegressor,
+        linear_model.HOFMClassifier,
+        linear_model.HOFMRegressor,
         linear_model.SoftmaxRegression,
+        meta.PredClipper,
         meta.TransformedTargetRegressor,
         multioutput.ClassifierChain,
         multioutput.RegressorChain,
         preprocessing.OneHotEncoder,
+        reco.Baseline,
+        reco.BiasedMF,
+        reco.FunkMF,
+        reco.RandomNormal,
         time_series.Detrender,
         time_series.GroupDetrender,
         time_series.SNARIMAX
@@ -89,9 +105,6 @@ def get_all_estimators():
                     preprocessing.StandardScaler() | linear_model.LinearRegression(intercept_lr=0.1),
                     preprocessing.StandardScaler() | linear_model.PARegressor(),
                 ])
-
-            elif issubclass(obj, feature_selection.RandomDiscarder):
-                inst = obj(n_to_keep=5)
 
             elif issubclass(obj, feature_selection.SelectKBest):
                 inst = obj(similarity=stats.PearsonCorrelation())

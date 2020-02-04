@@ -31,6 +31,7 @@ from .rmsle import RMSLE
 from .roc_auc import ROCAUC
 from .rolling import Rolling
 from .smape import SMAPE
+from .time_rolling import TimeRolling
 
 
 __all__ = [
@@ -62,6 +63,7 @@ __all__ = [
     'ROCAUC',
     'Rolling',
     'SMAPE',
+    'TimeRolling',
     'WeightedF1',
     'WeightedFBeta',
     'WeightedPrecision',

@@ -213,7 +213,7 @@ def dot(x: dict, y: dict):
             >>> y = {'x1': 21, 'x2': 3}
 
             >>> utils.math.dot(x, y)
-            42.0
+            42
 
     """
 

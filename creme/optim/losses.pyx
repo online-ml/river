@@ -11,6 +11,7 @@ __all__ = [
     'Hinge',
     'EpsilonInsensitiveHinge',
     'Log',
+    'Poisson',
     'Quantile',
     'Squared'
 ]
@@ -156,6 +157,8 @@ cdef class CrossEntropy(MultiClassLoss):
 
     """
 
+    cdef readonly dict class_weight
+
     def __init__(self, class_weight=None):
         if class_weight is None:
             class_weight = {}
@@ -176,7 +179,7 @@ cdef class CrossEntropy(MultiClassLoss):
                 self.class_weight.get(label, 1.) *
                 (clamp_proba(y_pred.get(label, 0.)) - (y_true == label))
             )
-            for label in (y_pred.keys() & y_true.keys())
+            for label in {*y_pred.keys(), y_true}
         }
 
 
@@ -356,7 +359,7 @@ cdef class Quantile(RegressionLoss):
 
 
 cdef class Squared(RegressionLoss):
-    """Computes the squared loss, also known as the L2 loss.
+    """Squared loss, also known as the L2 loss.
 
     Mathematically, it is defined as
 
@@ -392,7 +395,7 @@ cdef class Squared(RegressionLoss):
     cpdef double gradient(self, double y_true, double y_pred):
         return 2. * (y_pred - y_true)
 
-
+      
 class BinaryFocalLoss(BinaryLoss):
     """Binary focal loss.
 
@@ -432,3 +435,25 @@ class BinaryFocalLoss(BinaryLoss):
         pt = utils.math.sigmoid(self.gamma * xt + self.beta)
 
         return y_true * (pt - 1)
+
+      
+cdef class Poisson(RegressionLoss):
+    """Poisson loss.
+
+    The Poisson loss is usually more suited for regression with count data than the squared loss.
+
+    Mathematically, it is defined as
+
+    .. math:: L = exp(p_i) - y_i \\times p_i
+
+    It's gradient w.r.t. to $p_i$ is
+
+    .. math:: \\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i
+
+    """
+
+    cpdef double eval(self, double y_true, double y_pred):
+        return math.exp(y_pred) - y_true * y_pred
+
+    cpdef double gradient(self, double y_true, double y_pred):
+        return math.exp(y_pred) - y_true

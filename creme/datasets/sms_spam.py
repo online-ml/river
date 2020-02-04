@@ -1,7 +1,7 @@
 from . import base
 
 
-class SMS(base.Dataset):
+class SMSSpam(base.FileDataset):
     """SMS Spam Collection dataset.
 
     The data contains 5,574 items and 1 feature (i.e. SMS body). Spam messages represent
@@ -24,10 +24,8 @@ class SMS(base.Dataset):
             n_samples=5_574,
             n_features=1,
             category=base.BINARY_CLF,
-            name='sms_spam',
             url='https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

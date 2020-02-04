@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.5.0 - Unreleased
+
+See progress [here](https://github.com/creme-ml/creme/milestone/1).
 
 ### Added
 - `optim.losses.BinaryFocalLoss` Allows to deal with unbalanced datasets. **(Change the name to FocalLoss when it will handle the multi-classes)** .
@@ -17,6 +19,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `TrumpApproval` dataset, which is a toy regression dataset.
 - Added the `AMSGrad` optimizer to the `optim` module
 - Added `RandomUnderSampler`, `RandomOverSampler`, and `RandomSampler` to the newly created `imblearn` module.
+- Added `PyTorch2CremeRegressor` and to the `compat` module
+- Added `PoissonRegression` to `linear_model`
+- Added `Poisson` to `optim.losses`
+- Added `MaliciousURL` to `datasets`
+- Added `TimeRolling` to `metrics`
+- Added `RBFSampler` to `preprocessing`
+- Added `MaxAbsScaler` and `RobustScaler` to `preprocessing`
+- Added `AbsMax` and `RollingAbsMax` to `stats`
+- Added `PoissonInclusion` to `feature_selection`
+- Added `datasets.gen.SEA`
+- Added `datasets.Higgs`
+- Added `datasets.MovieLens100K`
+- Added `linear_model.FFMClassifier`
+- Added `linear_model.FFMRegressor`
+- Added `linear_model.HOFMClassifier`
+- Added `linear_model.HOFMCRegressor`
+- Added `meta.PredClipper`
+- Added `reco.FunkMF`
 
 ### Fixed
 
@@ -29,10 +49,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `online_score` and `online_qa_score` methods from the `model_selection` module have now been merged into a single method named `progressive_val_score`.
 - Fixed a bug in `NesterovMomentum`.
 - The `datasets` module has been overhauled. Each dataset is now a class (e.g. `fetch_electricity` has become `Elec2`).
+- The `SKL2Creme` classes in `compat` now require `n_features` and a `batch_size` parameters for preemptive memory allocation (which allows doing mini-batching).
+- Added `with_mean` and `with_std` parameters to `preprocessing.StandardScaler`
+- Updated `linear_model.FMClassifier`
+- Updated `linear_model.FMRegressor`
+- Renamed `reco.SVD` to `reco.BiasedMF`
+- Renamed `reco.SGDBaseline` to `reco.Baseline`
+- Models from `reco` module now expect a `dict` input with a `user` and an `item` entries
 
 ### Removed
 
 - `metrics.PerClass`, it is recommended that you use `metrics.ClassificationReport` instead as it gives a better overview.
+- `feature_selection.RandomDiscarder` as it didn't make much sense.
 
 
 ## [0.4.4](https://pypi.org/project/creme/0.4.4/) - 2019-11-11

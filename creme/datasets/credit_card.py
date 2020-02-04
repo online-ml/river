@@ -3,7 +3,7 @@ from .. import stream
 from . import base
 
 
-class CreditCard(base.Dataset):
+class CreditCard(base.FileDataset):
     """Credit card frauds.
 
     The datasets contains transactions made by credit cards in September 2013 by european
@@ -44,10 +44,8 @@ class CreditCard(base.Dataset):
             n_samples=284_807,
             n_features=30,
             category=base.BINARY_CLF,
-            name='credit_card',
             url='https://maxhalford.github.io/files/datasets/creditcardfraud.zip',
             data_home=data_home,
-            archive_type='zip',
             verbose=verbose
         )
 

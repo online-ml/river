@@ -19,9 +19,9 @@ if SURPRISE_INSTALLED:
 
             """
             surprise.AlgoBase.fit(self, trainset)
-            for triplet in trainset.all_ratings():
-                self.creme_recommender.fit_one(*triplet)
+            for user, item, y in trainset.all_ratings():
+                self.creme_recommender.fit_one({'user': user, 'item': item}, y)
             return self
 
-        def estimate(self, *_):
-            return self.creme_recommender.predict_one(*_)
+        def estimate(self, user, item):
+            return self.creme_recommender.predict_one({'user': user, 'item': item})

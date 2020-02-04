@@ -1,6 +1,6 @@
 """Compatibility with other libraries.
 
-This module contains wrappers for making ``creme`` estimators compatible with other libraries, and
+This module contains adapters for making ``creme`` estimators compatible with other libraries, and
 vice-versa whenever possible.
 
 """
@@ -24,3 +24,11 @@ __all__ = [
     'Creme2SKLClusterer',
     'Creme2SKLTransformer'
 ]
+
+
+try:
+    import torch
+    from .pytorch import PyTorch2CremeRegressor
+    __all__ += ['PyTorch2CremeRegressor']
+except ImportError:
+    pass
