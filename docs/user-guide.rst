@@ -2,7 +2,7 @@ User guide
 ==========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    notebooks/introduction.ipynb
    notebooks/bike-sharing-forecasting.ipynb
