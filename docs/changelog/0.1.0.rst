@@ -17,7 +17,7 @@
 - Added `compose.Blacklister`.
 - Added `compose.Whitelister`.
 - Added ``compose.SplitRegressor``.
-- `compose.Pipeline.draw` now works properly for arbitrary amounts of nesting, including nested `compose.FeatureUnion`s.
+- The ``draw`` method of `compose.Pipeline` now works properly for arbitrary amounts of nesting, including nested `compose.FeatureUnion`s.
 
 :mod:`datasets`
 

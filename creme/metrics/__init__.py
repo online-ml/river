@@ -1,5 +1,6 @@
 """Streaming metrics."""
 from .accuracy import Accuracy
+from .base import Metric
 from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .fbeta import F1
@@ -49,6 +50,7 @@ __all__ = [
     'MacroPrecision',
     'MacroRecall',
     'MCC',
+    'Metric',
     'MicroF1',
     'MicroFBeta',
     'MicroPrecision',
