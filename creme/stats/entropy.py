@@ -50,7 +50,7 @@ class Entropy(base.Univariate):
 
 
     References:
-        .. [1] `Sovdat, B., 2014. Updating Formulas and Algorithms for Computing Entropy and Gini Index from Time-Changing Data Streams. arXiv preprint arXiv:1403.6348. <https://arxiv.org/pdf/1403.6348.pdf>`_
+        1. `Sovdat, B., 2014. Updating Formulas and Algorithms for Computing Entropy and Gini Index from Time-Changing Data Streams. arXiv preprint arXiv:1403.6348. <https://arxiv.org/pdf/1403.6348.pdf>`_
 
     """
 

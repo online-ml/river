@@ -19,8 +19,8 @@ class Elec2(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        .. [1] `SPLICE-2 Comparative Evaluation: Electricity Pricing <http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.12.9405>`_
-        .. [2] `DataHub description <https://datahub.io/machine-learning/electricity#readme>`_
+        1. `SPLICE-2 Comparative Evaluation: Electricity Pricing <http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.12.9405>`_
+        2. `DataHub description <https://datahub.io/machine-learning/electricity#readme>`_
 
     """
 

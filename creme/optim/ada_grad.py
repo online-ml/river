@@ -37,7 +37,7 @@ class AdaGrad(base.Optimizer):
             F1: 0.970547
 
     References:
-        .. [1] `Duchi, J., Hazan, E. and Singer, Y., 2011. Adaptive subgradient methods for online learning and stochastic optimization. Journal of machine learning research, 12(Jul), pp.2121-2159. <http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf>`_
+        1. `Duchi, J., Hazan, E. and Singer, Y., 2011. Adaptive subgradient methods for online learning and stochastic optimization. Journal of machine learning research, 12(Jul), pp.2121-2159. <http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf>`_
 
     """
 

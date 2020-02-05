@@ -268,7 +268,7 @@ class FFMRegressor(FFM, base.Regressor):
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
-        .. [1] `Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50). <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
+        1. `Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50). <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
 
     """
 
@@ -371,7 +371,7 @@ class FFMClassifier(FFM, base.BinaryClassifier):
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
-        .. [1] `Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50). <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
+        1. `Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50). <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
 
     """
 

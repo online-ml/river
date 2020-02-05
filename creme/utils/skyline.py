@@ -129,9 +129,9 @@ class Skyline(collections.UserList):
             - Wario Car
 
     References:
-        .. [1] `Skyline queries in Python <https://maxhalford.github.io/blog/skyline-queries-in-python>`_
-        .. [2] `Borzsony, S., Kossmann, D. and Stocker, K., 2001, April. The skyline operator. In Proceedings 17th international conference on data engineering (pp. 421-430). IEEE. <https://infolab.usc.edu/csci599/Fall2007/papers/e-1.pdf>`_
-        .. [3] `Tao, Y. and Papadias, D., 2006. Maintaining sliding window skylines on data streams. IEEE Transactions on Knowledge and Data Engineering, 18(3), pp.377-391. <http://www.cs.ust.hk/~dimitris/PAPERS/TKDE06-Sky.pdf>`_
+        1. `Skyline queries in Python <https://maxhalford.github.io/blog/skyline-queries-in-python>`_
+        2. `Borzsony, S., Kossmann, D. and Stocker, K., 2001, April. The skyline operator. In Proceedings 17th international conference on data engineering (pp. 421-430). IEEE. <https://infolab.usc.edu/csci599/Fall2007/papers/e-1.pdf>`_
+        3. `Tao, Y. and Papadias, D., 2006. Maintaining sliding window skylines on data streams. IEEE Transactions on Knowledge and Data Engineering, 18(3), pp.377-391. <http://www.cs.ust.hk/~dimitris/PAPERS/TKDE06-Sky.pdf>`_
 
     """
 

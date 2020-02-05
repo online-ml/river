@@ -35,7 +35,7 @@ cdef class Var(creme.stats.base.Univariate):
             12.56666...
 
     References:
-        .. [1] `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
+        1. `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
 
     """
 
