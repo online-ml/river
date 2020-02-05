@@ -1,0 +1,25 @@
+`Version 0.4.4 - 2019-11-11 <https://pypi.org/project/creme/0.4.4/>`_
+=====================================================================
+
+This release was mainly made to provide access to `wheels <https://pythonwheels.com/>`_ for Windows and MacOS.
+
+:mod:`ensemble`
+
+- Added `ensemble.AdaBoostClassifier`.
+
+:mod:`linear_model`
+
+- Added a ``clip_gradient`` parameter to `linear_model.LinearRegression` and `linear_model.LogisticRegression`. Gradient clipping was already implemented, but the maximum absolute value can now be set by the user.
+- The ``intercept_lr`` parameter of `linear_model.LinearRegression` and `linear_model.LogisticRegression` can now be passed an instance of `optim.schedulers.Scheduler` as well as a `float`.
+
+:mod:`metrics`
+
+- Fixed `metrics.SMAPE`, the implementation was missing a multiplication by 2.
+
+:mod:`optim`
+
+- Added `optim.schedulers.Optimal` produces results that are identical to `sklearn.linear_model.SGDRegressor` and `sklearn.linear_model.SGDClassifier` when setting their ``learning_rate`` parameter to ``'optimal'``.
+
+:mod:`time_series`
+
+- Added `time_series.SNARIMAX`, a generic model which encompasses well-known time series models such as ARIMA and NARX.

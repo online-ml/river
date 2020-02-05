@@ -476,6 +476,7 @@ Loss functions
     losses.EpsilonInsensitiveHinge
     losses.Hinge
     losses.Log
+    losses.Poisson
     losses.Quantile
     losses.Squared
 

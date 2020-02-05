@@ -1,0 +1,51 @@
+`Version 0.3.0 - 2019-06-23 <https://pypi.org/project/creme/0.3.0/>`_
+=====================================================================
+
+:mod:`datasets`
+
+- Added ``datasets.load_chick_weights``.
+
+:mod:`decomposition`
+
+- Added `decomposition.LDA`.
+
+:mod:`ensemble`
+
+- Added `ensemble.HedgeRegressor`.
+- Added `ensemble.StackingBinaryClassifier`.
+
+:mod:`metrics`
+
+- Added `metrics.FBeta`
+- Added `metrics.MacroFBeta`
+- Added `metrics.MicroFBeta`
+- Added `metrics.MultiFBeta`
+- Added ``metrics.RollingFBeta``
+- Added ``metrics.RollingMacroFBeta``
+- Added ``metrics.RollingMicroFBeta``
+- Added ``metrics.RollingMultiFBeta``
+- Added `metrics.Jaccard`
+- Added ``metrics.RollingConfusionMatrix``
+- Added `metrics.RegressionMultiOutput`
+- Added `metrics.MCC`
+- Added ``metrics.RollingMCC``
+- Added `metrics.ROCAUC`
+- Renamed ``metrics.F1Score`` to `metrics.F1`.
+
+:mod:`multioutput`
+
+- Added `multioutput.ClassifierChain`.
+- Added `multioutput.RegressorChain`.
+
+:mod:`optim`
+
+- Added ``optim.QuantileLoss``
+- Added `optim.MiniBatcher`.
+
+:mod:`preprocessing`
+
+- Added `preprocessing.Normalizer`.
+
+:mod:`proba`
+
+- Added `proba.Multinomial`.

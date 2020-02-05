@@ -7,6 +7,7 @@ __all__ = [
     'Constant',
     'InverseScaling',
     'Optimal'
+    'Scheduler',
 ]
 
 
