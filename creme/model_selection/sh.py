@@ -121,9 +121,9 @@ def successive_halving(model, param_grid, X_y, metric, budget, eta=2, verbose=Tr
             )
 
     References:
-        1. `Non-stochastic Best Arm Identification and Hyperparameter Optimization <http://proceedings.mlr.press/v51/jamieson16.pdf>`_
-        2. `Massively Parallel Hyperparameter Tuning <https://arxiv.org/pdf/1810.05934.pdf>`_
-        3. `Hyperband: A Novel Bandit-Based Approach to Hyperparameter Optimization <https://arxiv.org/pdf/1603.06560.pdf>`_
+        1. `Jamieson, K. and Talwalkar, A., 2016, May. Non-stochastic best arm identification and hyperparameter optimization. In Artificial Intelligence and Statistics (pp. 240-248). <http://proceedings.mlr.press/v51/jamieson16.pdf>`_
+        2. `Li, L., Jamieson, K., Rostamizadeh, A., Gonina, E., Hardt, M., Recht, B. and Talwalkar, A., 2018. Massively parallel hyperparameter tuning. arXiv preprint arXiv:1810.05934. <https://arxiv.org/pdf/1810.05934.pdf>`_
+        3. `Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. Hyperband: A novel bandit-based approach to hyperparameter optimization. The Journal of Machine Learning Research, 18(1), pp.6765-6816. <https://arxiv.org/pdf/1603.06560.pdf>`_
 
     """
 

@@ -131,7 +131,7 @@ class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassMetric):
             MicroPrecision: 0.6
 
     References:
-        1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
+        .. [1] `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
 
     """
 

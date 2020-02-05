@@ -40,8 +40,7 @@ class FeatureHasher(base.Transformer):
             defaultdict(<class 'int'>, {2: -2, 4: 5})
 
     References:
-
-        1. `Feature vectorization using hashing trick <https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick>`_
+        .. [1] `Wikipedia article on feature vectorization using the hashing trick <https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick>`_
 
     """
 

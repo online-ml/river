@@ -74,8 +74,8 @@ class KMeans(base.Clusterer):
             0
 
     References:
-        1. `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
-        2. `Web-Scale K-Means Clustering <https://www.eecs.tufts.edu/~dsculley/papers/fastkmeans.pdf>`_
+        .. [1] `Sequential k-Means Clustering <http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm>`_
+        .. [2] `Sculley, D., 2010, April. Web-scale k-means clustering. In Proceedings of the 19th international conference on World wide web (pp. 1177-1178). <https://www.eecs.tufts.edu/~dsculley/papers/fastkmeans.pdf>`_
 
     """
 

@@ -107,8 +107,8 @@ class Histogram(collections.UserList):
             :align: center
 
     References:
-        1. `A Streaming Parallel Decision Tree Algorithm <http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf>`_
-        2. `Go implementation <https://github.com/VividCortex/gohistogram>`_
+        .. [1] `Ben-Haim, Y. and Tom-Tov, E., 2010. A streaming parallel decision tree algorithm. Journal of Machine Learning Research, 11(Feb), pp.849-872. <http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf>`_
+        .. [2] `Go implementation <https://github.com/VividCortex/gohistogram>`_
 
     """
 

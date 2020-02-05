@@ -80,8 +80,8 @@ class FunkMF(base.Recommender):
         ignored.
 
     References:
-        1. `Netflix update: Try this at home <https://sifter.org/simon/journal/20061211.html>`_
-        2. `Matrix factorization techniques for recommender systems <https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf>`_
+        .. [1] `Netflix update: Try this at home <https://sifter.org/simon/journal/20061211.html>`_
+        .. [2] `Matrix factorization techniques for recommender systems <https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf>`_
 
     """
 

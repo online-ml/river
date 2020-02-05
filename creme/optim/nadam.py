@@ -38,7 +38,7 @@ class Nadam(base.Optimizer):
             F1: 0.958217
 
     References:
-        1. `Nadam: A combination of adam and nesterov <https://ruder.io/optimizing-gradient-descent/index.html#nadam>`_
+        .. [1] `Nadam: A combination of adam and nesterov <https://ruder.io/optimizing-gradient-descent/index.html#nadam>`_
 
     """
 

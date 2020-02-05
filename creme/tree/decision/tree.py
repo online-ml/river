@@ -129,8 +129,8 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
             LogLoss: 0.701038
 
     References:
-        1. `Mining High-Speed Data Streams <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
-        2. `The Morning Paper <https://blog.acolyer.org/2015/08/26/mining-high-speed-data-streams/>`_
+        .. [1] `Domingos, P. and Hulten, G., 2000, August. Mining high-speed data streams. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 71-80). <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
+        .. [2] `Article by The Morning Paper <https://blog.acolyer.org/2015/08/26/mining-high-speed-data-streams/>`_
 
     """
 

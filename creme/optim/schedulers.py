@@ -61,8 +61,7 @@ class Optimal(Scheduler):
         alpha (float)
 
     References:
-        1. `Stochastic Gradient Descent <https://leon.bottou.org/projects/sgd>`_
-        2. `Stochastic Gradient Descent Tricks <https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf>`_
+        .. [1] `Bottou, L., 2012. Stochastic gradient descent tricks. In Neural networks: Tricks of the trade (pp. 421-436). Springer, Berlin, Heidelberg. <https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf>`_
 
     """
 

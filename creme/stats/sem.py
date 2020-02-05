@@ -30,8 +30,7 @@ class SEM(var.Var):
             1.447219...
 
     References:
-
-        1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+        .. [1] `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
 
     """
 

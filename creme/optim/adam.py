@@ -37,7 +37,7 @@ class Adam(base.Optimizer):
             F1: 0.960894
 
     References:
-        1. `Adam: A method for stochastic optimization <https://arxiv.org/pdf/1412.6980.pdf>`_
+        .. [1] `Kingma, D.P. and Ba, J., 2014. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980. <https://arxiv.org/pdf/1412.6980.pdf>`_
 
     """
 

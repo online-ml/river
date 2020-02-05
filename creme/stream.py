@@ -325,7 +325,7 @@ def shuffle(stream, buffer_size, seed=None):
             3
 
     References:
-        1. `Visualizing TensorFlow's streaming shufflers <http://www.moderndescartes.com/essays/shuffle_viz/>`_
+        .. [1] `Visualizing TensorFlow's streaming shufflers <http://www.moderndescartes.com/essays/shuffle_viz/>`_
 
     """
 
