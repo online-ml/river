@@ -76,6 +76,7 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 
 - Added `optim.losses.BinaryFocalLoss`.
 - Added the `optim.AMSGrad` optimizer.
+- Added the `optim.Nadam` optimizer.
 - Added `optim.losses.Poisson`.
 - Fixed a performance bug in `optim.NesterovMomentum`.
 
