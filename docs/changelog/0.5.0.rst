@@ -70,6 +70,7 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 - Added `preprocessing.RBFSampler`..
 - Added `preprocessing.MaxAbsScaler`.
 - Added `preprocessing.RobustScaler`.
+- Added `preprocessing.Binarizer`.
 - Added ``with_mean`` and ``with_std`` parameters to `preprocessing.StandardScaler`.
 
 :mod:`optim`
