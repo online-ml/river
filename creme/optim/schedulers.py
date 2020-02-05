@@ -6,8 +6,8 @@ import math
 __all__ = [
     'Constant',
     'InverseScaling',
-    'Optimal'
-    'Scheduler',
+    'Optimal',
+    'Scheduler'
 ]
 
 
