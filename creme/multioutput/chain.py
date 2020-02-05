@@ -67,7 +67,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             Jaccard: 0.449894
 
     References:
-        .. [1] `Multi-Output Chain Models and their Application in Data Streams <https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf>`_
+        1. `Multi-Output Chain Models and their Application in Data Streams <https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf>`_
 
     """
 

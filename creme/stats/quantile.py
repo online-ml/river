@@ -45,7 +45,7 @@ class Quantile(base.Univariate):
             The real value of the 17th quantile is -0.9072
 
     References:
-        .. [1] `The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
+        1. `The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
 
     """
 

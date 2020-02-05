@@ -87,7 +87,7 @@ class SortedWindow(collections.UserList):
             [0, 1, 2]
 
     References:
-       .. [1] `Left sorted inserts in Python <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
+       1. `Left sorted inserts in Python <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
 
     """
 

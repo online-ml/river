@@ -30,7 +30,7 @@ class SEM(var.Var):
             1.447219...
 
     References:
-        .. [1] `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
+        1. `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
 
     """
 

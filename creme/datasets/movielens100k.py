@@ -20,7 +20,7 @@ class MovieLens100K(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        .. [1] `The MovieLens Datasets: History and Context <http://dx.doi.org/10.1145/2827872>`_
+        1. `The MovieLens Datasets: History and Context <http://dx.doi.org/10.1145/2827872>`_
 
     """
 

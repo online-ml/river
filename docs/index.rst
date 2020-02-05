@@ -12,4 +12,8 @@
     license
 
 
-.. include:: home.rst
+Welcome!
+========
+
+.. mdinclude:: ../README.md
+    :end-line: 34

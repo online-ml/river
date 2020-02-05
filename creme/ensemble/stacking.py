@@ -47,7 +47,7 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
             F1: 0.957123
 
     References:
-        .. [1] `A Kaggler's Guide to Model Stacking in Practice <http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/>`_
+        1. `A Kaggler's Guide to Model Stacking in Practice <http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/>`_
 
     """
 

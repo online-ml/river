@@ -55,34 +55,34 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
 
     Example:
 
-            ::
+        ::
 
-                >>> from creme import decomposition
-                >>> import numpy as np
+            >>> from creme import decomposition
+            >>> import numpy as np
 
-                >>> np.random.seed(42)
+            >>> np.random.seed(42)
 
-                >>> X = [
-                ...    'weather cold',
-                ...    'weather hot dry',
-                ...    'weather cold rainy',
-                ...    'weather hot',
-                ...    'weather cold humid',
-                ... ]
+            >>> X = [
+            ...    'weather cold',
+            ...    'weather hot dry',
+            ...    'weather cold rainy',
+            ...    'weather hot',
+            ...    'weather cold humid',
+            ... ]
 
-                >>> online_lda = decomposition.LDA(n_components=2, number_of_documents=60)
-                >>> for x in X:
-                ...     print(online_lda.fit_transform_one(x))
-                {0: 0.5, 1: 2.5}
-                {0: 3.5, 1: 0.5}
-                {0: 0.5, 1: 3.5}
-                {0: 1.5, 1: 1.5}
-                {0: 2.5, 1: 1.5}
+            >>> online_lda = decomposition.LDA(n_components=2, number_of_documents=60)
+            >>> for x in X:
+            ...     print(online_lda.fit_transform_one(x))
+            {0: 0.5, 1: 2.5}
+            {0: 3.5, 1: 0.5}
+            {0: 0.5, 1: 3.5}
+            {0: 1.5, 1: 1.5}
+            {0: 2.5, 1: 1.5}
 
     References:
-        .. [1] `Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569).
+        1. `Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569).
  <http://proceedings.mlr.press/v28/zhai13.pdf>`_
-        .. [2] `PyInfVoc on GitHub <https://github.com/kzhai/PyInfVoc>`_
+        2. `PyInfVoc on GitHub <https://github.com/kzhai/PyInfVoc>`_
 
     """
 

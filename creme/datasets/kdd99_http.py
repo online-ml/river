@@ -16,7 +16,7 @@ class KDD99HTTP(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        .. [1] `HTTP (KDDCUP99) dataset <http://odds.cs.stonybrook.edu/http-kddcup99-dataset/>`_
+        1. `HTTP (KDDCUP99) dataset <http://odds.cs.stonybrook.edu/http-kddcup99-dataset/>`_
 
     """
 

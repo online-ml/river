@@ -17,7 +17,7 @@ class TrumpApproval(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        .. [1] `Trump Approval Ratings <https://projects.fivethirtyeight.com/trump-approval-ratings/>`_
+        1. `Trump Approval Ratings <https://projects.fivethirtyeight.com/trump-approval-ratings/>`_
 
     """
 

@@ -18,8 +18,8 @@ class RandomUnderSampler(base.Sampler):
     See :ref:`Working with imbalanced data` for example usage.
 
     References:
-        .. [1] `Under-sampling a dataset with desired ratios <https://maxhalford.github.io/blog/under-sampling-a-dataset-with-desired-ratios/>`_
-        .. [2] `Wikipedia article on rejection sampling <https://www.wikiwand.com/en/Rejection_sampling>`_
+        1. `Under-sampling a dataset with desired ratios <https://maxhalford.github.io/blog/under-sampling-a-dataset-with-desired-ratios/>`_
+        2. `Wikipedia article on rejection sampling <https://www.wikiwand.com/en/Rejection_sampling>`_
 
     """
 

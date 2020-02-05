@@ -101,8 +101,8 @@ cdef class Cauchy(RegressionLoss):
     """Cauchy loss function.
 
     References:
-        .. [1] `"Effect of MAE" Kaggle discussion <https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163>`_
-        .. [2] `Paris Madness Kaggle kernel <https://www.kaggle.com/raddar/paris-madness>`_
+        1. `"Effect of MAE" Kaggle discussion <https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163>`_
+        2. `Paris Madness Kaggle kernel <https://www.kaggle.com/raddar/paris-madness>`_
 
     """
 
@@ -153,7 +153,7 @@ cdef class CrossEntropy(MultiClassLoss):
             {0: 0.44941979, 1: 0.32962558, 2: -0.77904537}
 
     References:
-        .. [1] `What is Softmax regression and how is it related to Logistic regression? <https://github.com/rasbt/python-machine-learning-book/blob/master/faq/softmax_regression.md>`_
+        1. `What is Softmax regression and how is it related to Logistic regression? <https://github.com/rasbt/python-machine-learning-book/blob/master/faq/softmax_regression.md>`_
 
     """
 
@@ -235,7 +235,7 @@ cdef class Hinge(BinaryLoss):
         """Returns the gradient with respect to ``y_pred``.
 
         References:
-            .. [1] `WolframAlpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
+            1. `WolframAlpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
 
         """
         y_true = y_true or -1
@@ -261,7 +261,7 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
         """Returns the gradient with respect to ``y_pred``.
 
         References:
-            .. [1] `WolframAlpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p>`_
+            1. `WolframAlpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p>`_
 
         """
         y_true = y_true or -1
@@ -279,7 +279,7 @@ cdef class Log(BinaryLoss):
     the raw output of a linear model or a neural network.
 
     References:
-        .. [1] `Logit Wikipedia page <https://www.wikiwand.com/en/Logit>`_
+        1. `Logit Wikipedia page <https://www.wikiwand.com/en/Logit>`_
 
     """
 
@@ -340,8 +340,8 @@ cdef class Quantile(RegressionLoss):
             -0.5
 
     References:
-        .. [1] `Wikipedia article on quantile regression <https://www.wikiwand.com/en/Quantile_regression>`_
-        .. [2] `Derivative from WolframAlpha <https://www.wolframalpha.com/input/?i=derivative+(y+-+p)+*+(alpha+-+Boole(y+-+p))+wrt+p>`_
+        1. `Wikipedia article on quantile regression <https://www.wikiwand.com/en/Quantile_regression>`_
+        2. `Derivative from WolframAlpha <https://www.wolframalpha.com/input/?i=derivative+(y+-+p)+*+(alpha+-+Boole(y+-+p))+wrt+p>`_
 
     """
 
@@ -406,7 +406,7 @@ class BinaryFocalLoss(BinaryLoss):
         beta (float)
 
     Refenrences:
-        .. [1] `Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988). <https://arxiv.org/pdf/1708.02002.pdf>`_
+        1. `Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988). <https://arxiv.org/pdf/1708.02002.pdf>`_
 
     """
 

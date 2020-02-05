@@ -19,7 +19,7 @@ class NoChangeClassifier(base.MultiClassifier):
 
     Example:
 
-        Taken from example 2.1 from [1]_.
+        Taken from example 2.1 from `this page <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
 
         ::
 
@@ -44,9 +44,6 @@ class NoChangeClassifier(base.MultiClassifier):
 
             >>> pprint.pprint(model.predict_proba_one(new_sentence))
             {'+': 0, '−': 1}
-
-    References:
-        .. [1] `MOA documentation <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
 
     """
 
@@ -80,7 +77,7 @@ class PriorClassifier(base.MultiClassifier):
 
     Example:
 
-        Taken from example 2.1 from [1]_.
+        Taken from example 2.1 from `this page <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
 
         ::
 
@@ -103,9 +100,6 @@ class PriorClassifier(base.MultiClassifier):
             '+'
             >>> model.predict_proba_one(new_sentence)
             {'+': 0.75, '−': 0.25}
-
-    References:
-        .. [1] `MOA documentation <https://www.cms.waikato.ac.nz/~abifet/b
 
     """
 

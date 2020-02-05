@@ -37,8 +37,8 @@ class AdaMax(base.Optimizer):
             F1: 0.973352
 
     References:
-        .. [1] `Kingma, D.P. and Ba, J., 2014. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980. <https://arxiv.org/pdf/1412.6980.pdf>`_
-        .. [2] `Ruder, S., 2016. An overview of gradient descent optimization algorithms. arXiv preprint arXiv:1609.04747. <http://ruder.io/optimizing-gradient-descent/index.html#adamax>`_
+        1. `Kingma, D.P. and Ba, J., 2014. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980. <https://arxiv.org/pdf/1412.6980.pdf>`_
+        2. `Ruder, S., 2016. An overview of gradient descent optimization algorithms. arXiv preprint arXiv:1609.04747. <http://ruder.io/optimizing-gradient-descent/index.html#adamax>`_
 
     """
 

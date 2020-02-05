@@ -37,7 +37,7 @@ class AdaDelta(base.Optimizer):
             F1: 0.946092
 
     References:
-        .. [1] `Zeiler, M.D., 2012. Adadelta: an adaptive learning rate method. arXiv preprint arXiv:1212.5701. <https://arxiv.org/pdf/1212.5701.pdf>`_
+        1. `Zeiler, M.D., 2012. Adadelta: an adaptive learning rate method. arXiv preprint arXiv:1212.5701. <https://arxiv.org/pdf/1212.5701.pdf>`_
 
     """
 

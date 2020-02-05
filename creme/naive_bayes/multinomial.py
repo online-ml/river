@@ -98,7 +98,7 @@ class MultinomialNB(base.BaseNB):
             'yes'
 
     References:
-        .. [1] `Naive Bayes text classification <https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html>`_
+        1. `Naive Bayes text classification <https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html>`_
 
     """
 

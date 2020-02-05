@@ -37,7 +37,7 @@ class RMSProp(base.Optimizer):
             F1: 0.970629
 
     References:
-        .. [1] `Divide the gradient by a running average of itsrecent magnitude <https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf>`_
+        1. `Divide the gradient by a running average of itsrecent magnitude <https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf>`_
 
     """
 

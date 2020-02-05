@@ -17,8 +17,8 @@ class MaliciousURL(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        .. [1] `Detecting Malicious URLs <http://www.sysnet.ucsd.edu/projects/url/>`_
-        .. [2] `Identifying Suspicious URLs: An Application of Large-Scale Online Learning <http://cseweb.ucsd.edu/~jtma/papers/url-icml2009.pdf>`_
+        1. `Detecting Malicious URLs <http://www.sysnet.ucsd.edu/projects/url/>`_
+        2. `Identifying Suspicious URLs: An Application of Large-Scale Online Learning <http://cseweb.ucsd.edu/~jtma/papers/url-icml2009.pdf>`_
 
     """
 

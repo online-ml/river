@@ -58,7 +58,7 @@ class Differencer:
         7
 
     References:
-        .. [1] `Stationarity and differencing <https://otexts.com/fpp2/stationarity.html>`_
+        1. `Stationarity and differencing <https://otexts.com/fpp2/stationarity.html>`_
 
     """
 
@@ -89,7 +89,7 @@ class Differencer:
             8 1
 
         References:
-            .. [1] `Backshift notation <https://otexts.com/fpp2/backshift.html>`_
+            1. `Backshift notation <https://otexts.com/fpp2/backshift.html>`_
 
         """
         coeffs = collections.Counter()
@@ -269,10 +269,10 @@ class SNARIMAX(base.Forecaster):
         work well if the variance of the time series varies widely along time.
 
     References:
-        .. [1] `Wikipedia page on ARMA <https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model>`_
-        .. [2] `Wikipedia page on NARX <https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model>`_
-        .. [3] `ARIMA models <https://otexts.com/fpp2/arima.html>`_
-        .. [4] `Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184). <https://arxiv.org/pdf/1302.6927.pdf>`_
+        1. `Wikipedia page on ARMA <https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model>`_
+        2. `Wikipedia page on NARX <https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model>`_
+        3. `ARIMA models <https://otexts.com/fpp2/arima.html>`_
+        4. `Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184). <https://arxiv.org/pdf/1302.6927.pdf>`_
 
     """
 

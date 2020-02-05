@@ -52,7 +52,7 @@ docs_packages = dev_packages + [
     'nbsphinx>=0.5.1',
     'Sphinx>=2.2.0',
     'sphinx-copybutton>=0.2.8',
-    'sphinx-material==0.0.22'
+    'sphinx-material>=0.0.23'
 ]
 
 # The rest you shouldn't have to touch too much :)
