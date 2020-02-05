@@ -1,0 +1,92 @@
+`Version 0.5.0 - Unreleased <https://pypi.org/project/creme/0.5.0/>`_
+=====================================================================
+
+See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
+
+:mod:`compat`
+
+- Added `compat.PyTorch2CremeRegressor`.
+- The ``SKL2Creme`` classes in ``compat`` now require ``n_features`` and a ``batch_size`` parameters for preemptive memory allocation (which allows doing mini-batching).
+
+:mod:`feature_selection`
+
+- Added `feature_selection.PoissonInclusion`.
+- Removed ``feature_selection.RandomDiscarder`` as it didn't make much sense.
+
+:mod:`feature_extraction`
+
+- Renamed ``feature_extraction.CountVectorizer`` to `feature_extraction.BagOfWords`.
+- Renamed ``feature_extraction.TFIDFVectorizer`` to `feature_extraction.TFIDF`.
+
+:mod:`datasets`
+
+- The `datasets` module has been overhauled. Each dataset is now a class (e.g. ``fetch_electricity`` has become `datasets.Elec2`).
+- Added `datasets.TrumpApproval`.
+- Added `datasets.MaliciousURL`.
+- Added `datasets.gen.SEA`.
+- Added `datasets.Higgs`.
+- Added `datasets.MovieLens100K`.
+
+:mod:`imblearn`
+
+- Added `imblearn.RandomUnderSampler`.
+- Added `imblearn.RandomOverSampler`.
+- Added `imblearn.RandomSampler`.
+
+:mod:`impute`
+
+- Added `impute.PreviousImputer`.
+
+:mod:`linear_model`
+
+- Added `linear_model.PoissonRegression`.
+- Added `linear_model.FFMClassifier`.
+- Added `linear_model.FFMRegressor`.
+- Added `linear_model.HOFMClassifier`.
+- Added `linear_model.HOFMRegressor`.
+- Refactored `linear_model.FMClassifier`.
+- Refactored `linear_model.FMRegressor`.
+
+:mod:`metrics`
+
+- Added `metrics.ClassificationReport`.
+- Added `metrics.TimeRolling`.
+- The implementation of `metrics.ROCAUC` was incorrect. Using the trapezoidal rule instead of Simpson's rule seems to be more robust.
+- ``metrics.PerClass`` has been removed; it is recommended that you use `metrics.ClassificationReport` instead as it gives a better overview.
+
+:mod:`meta`
+
+- Moved `meta.TransformedTargetRegressor` and `meta.BoxCoxRegressor` to this module (they were previously in the ``compose`` module).
+- Added `meta.PredClipper`
+
+:mod:`model_selection`
+
+- Added `model_selection.expand_param_grid` to generate a list of models from a grid of parameters.
+- Added the `model_selection.successive_halving` method for selecting hyperparameters.
+- The ``online_score`` and ``online_qa_score`` methods have been merged into a single method named `model_selection.progressive_val_score`.
+
+:mod:`preprocessing`
+
+- Added `preprocessing.RBFSampler`..
+- Added `preprocessing.MaxAbsScaler`.
+- Added `preprocessing.RobustScaler`.
+- Added ``with_mean`` and ``with_std`` parameters to `preprocessing.StandardScaler`.
+
+:mod:`optim`
+
+- Added `optim.losses.BinaryFocalLoss`.
+- Added the `optim.AMSGrad` optimizer.
+- Added `optim.losses.Poisson`.
+- Fixed a performance bug in `optim.NesterovMomentum`.
+
+:mod:`reco`
+
+- Added `reco.FunkMF`.
+- Renamed ``reco.SVD`` to `reco.BiasedMF`.
+- Renamed ``reco.SGDBaseline`` to `reco.Baseline`.
+- Models now expect a ``dict`` input with ``user`` and ``item`` fields.
+
+:mod:`stats`
+
+- Added `stats.AbsMax`.
+- Added `stats.RollingAbsMax`.
