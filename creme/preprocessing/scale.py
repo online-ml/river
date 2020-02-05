@@ -1,3 +1,4 @@
+import numbers
 import functools
 import collections
 
@@ -7,6 +8,7 @@ from .. import utils
 
 
 __all__ = [
+    'Binarizer',
     'MaxAbsScaler',
     'MinMaxScaler',
     'Normalizer',
@@ -19,6 +21,49 @@ def safe_div(a, b):
     if b == 0:
         return a
     return a / b
+
+
+class Binarizer(base.Transformer):
+    """Binarizes the data to 0 or 1 according to a threshold.
+
+    Parameters:
+        threshold (float): Values above this are replaced by 1 and remaining by 0. Defaults to ``0.0``.
+
+    Attributes:
+        threshold (float): Threshold value for binarizing.
+
+    Example:
+
+        ::
+
+              >>> import creme
+              >>> import numpy as np
+
+              >>> rng = np.random.RandomState(42)
+              >>> X = [{'x1': v, 'x2': int(v)} for v in rng.uniform(low=-4, high=4, size=6)]
+
+              >>> binarizer = creme.preprocessing.Binarizer()
+              >>> for x in X:
+              ...     print(binarizer.fit_one(x).transform_one(x))
+              {'x1': 0.0, 'x2': 0}
+              {'x1': 1.0, 'x2': 1}
+              {'x1': 1.0, 'x2': 1}
+              {'x1': 1.0, 'x2': 0}
+              {'x1': 0.0, 'x2': 0}
+              {'x1': 0.0, 'x2': 0}
+    """
+
+    def __init__(self, threshold=0.0):
+        self.threshold = threshold
+
+    def transform_one(self, x):
+        x_tf = x.copy()
+
+        for i, xi in x_tf.items():
+            if isinstance(xi, numbers.Number):
+                x_tf[i] = type(xi)(xi > self.threshold)
+
+        return x_tf
 
 
 class StandardScaler(base.Transformer):
