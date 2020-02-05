@@ -80,8 +80,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
             {0: 2.5, 1: 1.5}
 
     References:
-        1. `Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569).
- <http://proceedings.mlr.press/v28/zhai13.pdf>`_
+        1. `Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569). <http://proceedings.mlr.press/v28/zhai13.pdf>`_
         2. `PyInfVoc on GitHub <https://github.com/kzhai/PyInfVoc>`_
 
     """

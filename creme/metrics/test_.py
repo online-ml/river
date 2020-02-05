@@ -19,6 +19,9 @@ def load_metrics():
 
     for name, obj in inspect.getmembers(importlib.import_module('creme.metrics'), inspect.isclass):
 
+        if isinstance(obj, metrics.Metric):
+            continue
+
         if issubclass(obj, metrics.Rolling):
             yield obj(metric=metrics.MSE(), window_size=42)
             continue
