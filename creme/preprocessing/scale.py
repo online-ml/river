@@ -40,17 +40,17 @@ class Binarizer(base.Transformer):
               >>> import numpy as np
 
               >>> rng = np.random.RandomState(42)
-              >>> X = [{'x1': v, 'x3': int(v)} for v in rng.uniform(low=-4, high=4, size=6)]
+              >>> X = [{'x1': v, 'x2': int(v)} for v in rng.uniform(low=-4, high=4, size=6)]
 
               >>> binarizer = creme.preprocessing.Binarizer()
               >>> for x in X:
               ...     print(binarizer.fit_one(x).transform_one(x))
-              {'x1': 0.0, 'x3': 0}
-              {'x1': 1.0, 'x3': 1}
-              {'x1': 1.0, 'x3': 1}
-              {'x1': 1.0, 'x3': 0}
-              {'x1': 0.0, 'x3': 0}
-              {'x1': 0.0, 'x3': 0}
+              {'x1': 0.0, 'x2': 0}
+              {'x1': 1.0, 'x2': 1}
+              {'x1': 1.0, 'x2': 1}
+              {'x1': 1.0, 'x2': 0}
+              {'x1': 0.0, 'x2': 0}
+              {'x1': 0.0, 'x2': 0}
     """
 
     def __init__(self, threshold=0.0):
