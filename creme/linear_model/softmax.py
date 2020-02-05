@@ -54,9 +54,8 @@ class SoftmaxRegression(base.MultiClassifier):
             MacroF1: 0.809381
 
     References:
-
-        1. `Stochastic gradient descent; Classification <https://www.inf.ed.ac.uk/teaching/courses/mlp/2016/mlp02-sln.pdf>`_
-        2. `Binary vs. Multi-Class Logistic Regression <https://chrisyeh96.github.io/2018/06/11/logistic-regression.html>`_
+        .. [1] `Course on classification stochastic gradient descent <https://www.inf.ed.ac.uk/teaching/courses/mlp/2016/mlp02-sln.pdf>`_
+        .. [2] `Binary vs. Multi-Class Logistic Regression <https://chrisyeh96.github.io/2018/06/11/logistic-regression.html>`_
 
     """
 

@@ -14,7 +14,7 @@ class Phishing(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        1. `UCI page <http://archive.ics.uci.edu/ml/datasets/Website+Phishing>`_
+        .. [1] `UCI page <http://archive.ics.uci.edu/ml/datasets/Website+Phishing>`_
 
     """
 

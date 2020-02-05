@@ -37,7 +37,7 @@ class AMSGrad(base.Optimizer):
             F1: 0.960894
 
     References:
-        1. `On the convergence of Adam and beyond <https://arxiv.org/pdf/1904.09237.pdf>`_
+        .. [1] `Reddi, S.J., Kale, S. and Kumar, S., 2019. On the convergence of adam and beyond. arXiv preprint arXiv:1904.09237. <https://arxiv.org/pdf/1904.09237.pdf>`_
 
     """
 

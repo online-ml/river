@@ -1,5 +1,3 @@
-import csv
-
 from .. import stream
 
 from . import base
@@ -22,8 +20,8 @@ class TREC07(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        1. `TREC 2007 Spam Track Overview <https://trec.nist.gov/pubs/trec16/papers/SPAM.OVERVIEW16.pdf>`_
-        2. `Code ran to parse the dataset <https://gist.github.com/gbolmier/b6a942699aaaedec54041a32e4f34d40>`_
+        .. [1] `TREC 2007 Spam Track Overview <https://trec.nist.gov/pubs/trec16/papers/SPAM.OVERVIEW16.pdf>`_
+        .. [2] `Code ran to parse the dataset <https://gist.github.com/gbolmier/b6a942699aaaedec54041a32e4f34d40>`_
 
     """
 

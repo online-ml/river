@@ -39,8 +39,8 @@ class FTRLProximal(base.Optimizer):
             F1: 0.962132
 
     References:
-        1. `Ad Click Prediction: a View from the Trenches - Research - Google <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
-        2. `tf.train.FtrlOptimizer <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
+        .. [1] `McMahan, H.B., Holt, G., Sculley, D., Young, M., Ebner, D., Grady, J., Nie, L., Phillips, T., Davydov, E., Golovin, D. and Chikkerur, S., 2013, August. Ad click prediction: a view from the trenches. In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 1222-1230). <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
+        .. [2] Tensorflow's ``FtrlOptimizer`` <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
 
     """
 

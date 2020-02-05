@@ -71,8 +71,8 @@ class PARegressor(BasePA, base.Regressor):
             >>> print(metric)
             MAE: 10.123199, MSE: 843.816135
 
-        References:
-            1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
+    References:
+        .. [1] `Crammer, K., Dekel, O., Keshet, J., Shalev-Shwartz, S. and Singer, Y., 2006. Online passive-aggressive algorithms. Journal of Machine Learning Research, 7(Mar), pp.551-585. <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
 
     """
 
@@ -149,7 +149,7 @@ class PAClassifier(BasePA, base.BinaryClassifier):
             Accuracy: 88.46%, LogLoss: 0.325727
 
     References:
-        1. `Online Passive-Aggressive Algorithms <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
+        .. [1] `Crammer, K., Dekel, O., Keshet, J., Shalev-Shwartz, S. and Singer, Y., 2006. Online passive-aggressive algorithms. Journal of Machine Learning Research, 7(Mar), pp.551-585. <http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf>`_
 
     """
 

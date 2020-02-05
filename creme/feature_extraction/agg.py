@@ -58,7 +58,7 @@ class Agg(base.Transformer):
             {'revenue_mean_by_place': 50.0}
 
     References:
-        1. `Streaming groupbys in pandas for big datasets <(https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
+        .. [1] `Streaming groupbys in pandas for big datasets <https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
 
     """
 
@@ -132,7 +132,7 @@ class TargetAgg(base.Transformer):
             {'target_bayes_mean_by_place': 34.333333...}
 
     References:
-        1. `Streaming groupbys in pandas for big datasets <(https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
+        .. [1] `Streaming groupbys in pandas for big datasets <https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_
 
     """
 

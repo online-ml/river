@@ -55,7 +55,7 @@ class RBFSampler(base.Transformer):
             1 1
 
     References:
-        1. `Random Features for Large-Scale Kernel Machines <https://people.eecs.berkeley.edu/~brecht/papers/07.rah.rec.nips.pdf>`_
+        .. [1] `Rahimi, A. and Recht, B., 2008. Random features for large-scale kernel machines. In Advances in neural information processing systems (pp. 1177-1184). <https://people.eecs.berkeley.edu/~brecht/papers/07.rah.rec.nips.pdf>`_
 
     """
 

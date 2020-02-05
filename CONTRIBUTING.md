@@ -36,6 +36,7 @@ All classes and function are automatically picked up and added to the documentat
 
 - Always use the `__all__` variable at the top of each module
 - Use [Google style Python docstrings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google)
+- When citing references, please use the Harvard referencing style. You can obtain a Harvard styled reference from Google Scholar.
 
 
 ## Building Cython extensions

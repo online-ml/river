@@ -75,7 +75,7 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'manni'
+pygments_style = 'colorful'
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

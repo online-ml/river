@@ -91,7 +91,7 @@ class BernoulliNB(base.BaseNB):
             'no'
 
     References:
-        1. `The Bernoulli model <https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html>`_
+        .. [1] `The Bernoulli model <https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html>`_
 
     """
 

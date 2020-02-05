@@ -87,8 +87,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             AdaBoostClassifier(DecisionTreeClassifier)
 
     References:
-        1. `Online Bagging and Boosting <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
-        2. `Github repository for online boosting <https://github.com/crm416/online_boosting/blob/master/ensemblers/adaboost.py>`_
+        .. [1] `Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee. <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
 
     '''
 

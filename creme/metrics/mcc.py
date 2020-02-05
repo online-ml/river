@@ -11,7 +11,7 @@ class MCC(base.BinaryMetric):
     """Matthews correlation coefficient.
 
     References:
-        1. `Wikipedia article <https://www.wikiwand.com/en/Matthews_correlation_coefficient>`_
+        .. [1] `Wikipedia article <https://www.wikiwand.com/en/Matthews_correlation_coefficient>`_
 
     """
 
