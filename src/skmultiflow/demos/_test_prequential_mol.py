@@ -21,10 +21,8 @@ def demo(output_file=None, instances=40000):
 
     """
     # Setup the File Stream
-    # stream = FileStream("../data/datasets/music.csv", 0, 6)
     stream = MultilabelGenerator(n_samples=instances)
     # stream = WaveformGenerator()
-    stream.prepare_for_use()
 
     # Setup the classifier
     classifier = MultiOutputLearner(SGDClassifier(n_iter=100))

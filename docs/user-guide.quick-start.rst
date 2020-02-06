@@ -19,14 +19,6 @@ In this example, we will use a data stream to train a :class:`HoeffdingTreeClass
 
       stream = WaveformGenerator()
 
-
-   Before using the stream, we need to *prepare it* by calling ``prepare_for_use()``:
-
-   .. code-block:: python
-
-      stream.prepare_for_use()
-
-
 2. Instantiate the Hoeffding Tree classifier
 
    We will use the default parameters.
@@ -76,7 +68,6 @@ In this example, we will use a data stream to train a :class:`HoeffdingTreeClass
 
    # 1. Create a stream
    stream = WaveformGenerator()
-   stream.prepare_for_use()
 
    # 2. Instantiate the HoeffdingTreeClassifier
    ht = HoeffdingTreeClassifier()
@@ -116,12 +107,7 @@ There are cases where we want to use data stored in files. In this example we wi
 
    * ``filepath``. A string indicating the path where the data file is located.
 
-   The ``FileStream`` class will generate a stream using the data contained in the file. Once again, before using the stream, we need to *prepare it* by calling ``prepare_for_use()``:
-
-   .. code-block:: python
-
-      stream.prepare_for_use()
-
+   The ``FileStream`` class will generate a stream using the data contained in the file.
 
 2. Instantiate the Hoeffding Tree classifier
 
@@ -187,7 +173,6 @@ And data related to performance during the evaluation:
 
    # 1. Create a stream
    stream = FileStream("../datasets/elec.csv")
-   stream.prepare_for_use()
 
    # 2. Instantiate the HoeffdingTreeClassifier
    ht = HoeffdingTreeClassifier()

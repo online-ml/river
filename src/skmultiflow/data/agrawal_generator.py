@@ -101,12 +101,11 @@ class AGRAWALGenerator(Stream):
         self._next_class_should_be_zero = False
         self.name = "AGRAWAL Generator"
 
-        self.__configure()
-
-    def __configure(self):
         self.target_names = ["target"]
         self.feature_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue", "hyears", "loan"]
         self.target_values = [i for i in range(self.n_classes)]
+
+        self._prepare_for_use()
 
     @property
     def classification_function(self):
@@ -185,21 +184,12 @@ class AGRAWALGenerator(Stream):
         else:
             raise ValueError("noise percentage should be in [0.0..1.0], and {} was passed".format(perturbation))
 
-    def prepare_for_use(self):
-        """
-        Prepares the stream for use.
-
-        Notes
-        -----
-        This functions should always be called after the stream initialization.
-
-        """
+    def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
         self._next_class_should_be_zero = False
-        self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
-        """ next_sample
+        """ Returns next sample from the stream.
 
         The sample generation works as follows: The 9 features are generated
         with the random generator, initialized with the seed passed by the
@@ -214,7 +204,7 @@ class AGRAWALGenerator(Stream):
 
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of samples to return.
 
         Returns
@@ -228,7 +218,6 @@ class AGRAWALGenerator(Stream):
 
         for j in range(batch_size):
             self.sample_idx += 1
-            salary = commission = age = elevel = car = zipcode = hvalue = hyears = loan = 0
             group = 0
             desired_class_found = False
             while not desired_class_found:
@@ -254,13 +243,13 @@ class AGRAWALGenerator(Stream):
                         self._next_class_should_be_zero = not self._next_class_should_be_zero
 
             if self.perturbation > 0.0:
-                salary = self.perturb_value(salary, 20000, 150000)
+                salary = self._perturb_value(salary, 20000, 150000)
                 if commission > 0:
-                    commission = self.perturb_value(commission, 10000, 75000)
-                age = np.round(self.perturb_value(age, 20, 80))
-                hvalue = self.perturb_value(hvalue, (9 - zipcode) * 100000, 0, 135000)
-                hyears = np.round(self.perturb_value(hyears, 1, 30))
-                loan = self.perturb_value(loan, 0, 500000)
+                    commission = self._perturb_value(commission, 10000, 75000)
+                age = np.round(self._perturb_value(age, 20, 80))
+                hvalue = self._perturb_value(hvalue, (9 - zipcode) * 100000, 0, 135000)
+                hyears = np.round(self._perturb_value(hyears, 1, 30))
+                loan = self._perturb_value(loan, 0, 500000)
 
             for i in range(9):
                 data[j, i] = eval(self.feature_names[i])
@@ -271,7 +260,7 @@ class AGRAWALGenerator(Stream):
 
         return self.current_sample_x, self.current_sample_y
 
-    def perturb_value(self, val, val_min, val_max, val_range=None):
+    def _perturb_value(self, val, val_min, val_max, val_range=None):
         """
         Perturbs the values of the features by adding noise after assigning a label,
         if the perturbation is higher than 0.0.

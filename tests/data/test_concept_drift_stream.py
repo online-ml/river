@@ -5,7 +5,6 @@ from skmultiflow.data import ConceptDriftStream
 
 def test_concept_drift_stream(test_path):
     stream = ConceptDriftStream(random_state=1, position=20, width=5)
-    stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
 

@@ -11,7 +11,6 @@ def test_hoeffding_tree_nb(test_path):
         n_cat_features=2, n_num_features=5, n_categories_per_cat_feature=5,
         max_tree_depth=6, min_leaf_depth=3, fraction_leaves_per_level=0.15
     )
-    stream.prepare_for_use()
 
     nominal_attr_idx = [x for x in range(5, stream.n_features)]
     learner = HoeffdingTreeClassifier(
@@ -52,7 +51,6 @@ def test_hoeffding_tree_nba(test_path):
     stream = RandomTreeGenerator(tree_random_state=23, sample_random_state=12, n_classes=4, n_cat_features=2,
                                  n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
                                  fraction_leaves_per_level=0.15)
-    stream.prepare_for_use()
 
     nominal_attr_idx = [x for x in range(5, stream.n_features)]
     learner = HoeffdingTreeClassifier(nominal_attributes=nominal_attr_idx)
@@ -120,7 +118,6 @@ def test_hoeffding_tree_nba(test_path):
 def test_hoeffding_tree_coverage():
     # Cover memory management
     stream = SEAGenerator(random_state=1, noise_percentage=0.05)
-    stream.prepare_for_use()
     X, y = stream.next_sample(5000)
 
     learner = HoeffdingTreeClassifier(max_byte_size=30, memory_estimate_period=100, grace_period=10, leaf_prediction='mc')
@@ -132,7 +129,6 @@ def test_hoeffding_tree_coverage():
     # Cover nominal attribute observer
     stream = RandomTreeGenerator(tree_random_state=1, sample_random_state=1, n_num_features=0,
                                  n_categories_per_cat_feature=2)
-    stream.prepare_for_use()
     X, y = stream.next_sample(1000)
     learner = HoeffdingTreeClassifier(leaf_prediction='mc', nominal_attributes=[i for i in range(10)])
     learner.partial_fit(X, y, classes=stream.target_values)
@@ -140,7 +136,6 @@ def test_hoeffding_tree_coverage():
 
 def test_hoeffding_tree_model_information():
     stream = SEAGenerator(random_state=1, noise_percentage=0.05)
-    stream.prepare_for_use()
     X, y = stream.next_sample(5000)
 
     nominal_attr_idx = [x for x in range(5, stream.n_features)]

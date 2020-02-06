@@ -61,7 +61,6 @@ class OzaBaggingADWINClassifier(OzaBaggingClassifier):
     >>> from skmultiflow.data.sea_generator import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
-    >>> stream.prepare_for_use()
     >>> # Setting up the OzaBaggingADWINClassifier to work with KNN as base estimator
     >>> clf = OzaBaggingADWINClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=30),
     ...                                 n_estimators=2)

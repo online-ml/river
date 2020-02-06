@@ -5,7 +5,6 @@ from skmultiflow.data.stagger_generator import STAGGERGenerator
 
 def test_stagger_generator(test_path):
     stream = STAGGERGenerator(classification_function=2, random_state=112, balance_classes=False)
-    stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
 

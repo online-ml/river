@@ -35,8 +35,7 @@ class MissingValuesCleaner(StreamTransform):
     >>> from skmultiflow.transform.missing_values_cleaner import MissingValuesCleaner
     >>> # Setting up a stream
     >>> stream = FileStream('skmultiflow/data/datasets/covtype.csv', -1, 1)
-    >>> stream.prepare_for_use()
-    >>> # Setting up the filter to substitute values -47 by the median of the 
+    >>> # Setting up the filter to substitute values -47 by the median of the
     >>> # last 10 samples
     >>> cleaner = MissingValuesCleaner(-47, 'median', 10)
     >>> X, y = stream.next_sample(10)

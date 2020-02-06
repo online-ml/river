@@ -94,7 +94,6 @@ class LeverageBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMix
     >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=6.7)
-    >>> stream.prepare_for_use()
     >>> # Setting up the LeverageBagging classifier to work with KNN classifiers
     >>> clf = LeverageBaggingClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=30),
     >>>                                 n_estimators=2)

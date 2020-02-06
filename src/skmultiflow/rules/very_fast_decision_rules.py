@@ -113,7 +113,6 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
     >>> from skmultiflow.data import AGRAWALGenerator
     >>> # Setup the stream
     >>> stream = AGRAWALGenerator()
-    >>> stream.prepare_for_use()
     >>> X, y = stream.next_sample(20000)
     >>> # Setup the learner
     >>> learner = VeryFastDecisionRulesClassifier()

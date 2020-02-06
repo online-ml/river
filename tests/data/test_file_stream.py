@@ -6,7 +6,6 @@ from skmultiflow.data.file_stream import FileStream
 def test_file_stream(test_path, package_path):
     test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
     stream = FileStream(test_file)
-    stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == 40000
 

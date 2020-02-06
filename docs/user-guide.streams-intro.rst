@@ -17,11 +17,6 @@ Here, we will use the :class:`AGRAWALGenerator` to exemplify how to use generato
    .. code-block:: python
 
       generator = AGRAWALGenerator()
-      generator.prepare_for_use()
-
-
-   The call to ``prepare_for_use()`` ensures that the Stream object is ready and **must** be done before using a Stream object.
-
 
 2. Get data from the stream
 
@@ -91,7 +86,6 @@ Here, we will use the :class:`AGRAWALGenerator` to exemplify how to use generato
 
    # 1. Instantiate the stream generator
    generator = AGRAWALGenerator()
-   generator.prepare_for_use()
 
    # 2. Get data from the stream
    X, y = generator.next_sample()

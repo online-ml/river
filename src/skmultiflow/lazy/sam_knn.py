@@ -68,7 +68,6 @@ class SAMKNNClassifier(BaseSKMObject, ClassifierMixin):
     >>> from skmultiflow.evaluation import EvaluatePrequential
     >>> # Setup the File Stream
     >>> stream = FileStream("moving_squares.csv")
-    >>> stream.prepare_for_use()
     >>> # Setup the classifier
     >>> classifier = SAMKNNClassifier(n_neighbors=5, weighting='distance', max_window_size=1000,
     >>>                               stm_size_option='maxACCApprox', use_ltm=False)

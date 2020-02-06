@@ -20,7 +20,6 @@ def test_pipeline(test_path):
     X = data['X']
     y = data['y']
     stream = DataStream(data=X, y=y)
-    stream.prepare_for_use()
 
     # Setup transformer
     cat_att_idx = [[i + j for i in range(n_categories)] for j in range(0, n_categories * n_categories, n_categories)]

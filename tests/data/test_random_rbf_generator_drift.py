@@ -6,7 +6,6 @@ from skmultiflow.data.random_rbf_generator_drift import RandomRBFGeneratorDrift
 def test_random_rbf_generator_drift(test_path):
     stream = RandomRBFGeneratorDrift(model_random_state=99, sample_random_state=50, n_classes=4, n_features=10, n_centroids=50,
                                      change_speed=0.87, num_drift_centroids=50)
-    stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
 

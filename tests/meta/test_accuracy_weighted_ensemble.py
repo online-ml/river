@@ -8,7 +8,6 @@ from array import array
 def test_awe():
     # prepare the stream
     stream = HyperplaneGenerator(random_state=1)
-    stream.prepare_for_use()
 
     # prepare the ensemble
     classifier = AccuracyWeightedEnsembleClassifier(n_estimators=5, n_kept_estimators=10,

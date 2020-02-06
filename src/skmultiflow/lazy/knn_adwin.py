@@ -64,7 +64,6 @@ class KNNADWINClassifier(KNNClassifier):
     >>> from skmultiflow.data import FileStream
     >>> # Setting up the stream
     >>> stream = FileStream('skmultiflow/data/datasets/covtype.csv')
-    >>> stream.prepare_for_use()
     >>> # Setting up the KNNAdwin classifier
     >>> knn_adwin = KNNADWINClassifier(n_neighbors=8, leaf_size=40, max_window_size=2000)
     >>> # Pre training the classifier with 200 samples

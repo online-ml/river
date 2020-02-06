@@ -52,7 +52,6 @@ class KNNClassifier(BaseSKMObject, ClassifierMixin):
     >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(random_state=1, noise_percentage=.1)
-    >>> stream.prepare_for_use()
     >>> # Pre training the classifier with 200 samples
     >>> X, y = stream.next_sample(200)
     >>> knn = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)

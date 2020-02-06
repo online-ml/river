@@ -7,7 +7,6 @@ import numpy as np
 
 def test_oza_bagging():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
-    stream.prepare_for_use()
     knn = KNNClassifier(n_neighbors=8, leaf_size=40, max_window_size=2000)
     learner = OzaBaggingClassifier(base_estimator=knn, n_estimators=3, random_state=112)
     first = True

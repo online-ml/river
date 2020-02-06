@@ -5,7 +5,6 @@ from skmultiflow.data.regression_generator import RegressionGenerator
 
 def test_regression_generator(test_path):
     stream = RegressionGenerator(n_samples=100, n_features=20, n_targets=4, n_informative=6, random_state=0)
-    stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == 100
 

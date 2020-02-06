@@ -8,7 +8,7 @@ def test_knn_adwin():
     stream = ConceptDriftStream(stream=SEAGenerator(random_state=1),
                                 drift_stream=SEAGenerator(random_state=2, classification_function=2),
                                 random_state=1, position=250, width=10)
-    stream.prepare_for_use()
+
     learner = KNNADWINClassifier(n_neighbors=8, leaf_size=40, max_window_size=200)
 
     cnt = 0

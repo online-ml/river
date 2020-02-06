@@ -16,7 +16,6 @@ def demo():
     
     """
     stream = FileStream('../data/datasets/covtype.csv', -1, 1)
-    stream.prepare_for_use()
 
     filter = MissingValuesCleaner(-47, 'median', 10)
 

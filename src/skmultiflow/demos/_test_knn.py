@@ -15,7 +15,7 @@ def demo():
     
     """
     stream = FileStream('../data/datasets/sea_big.csv', -1, 1)
-    stream.prepare_for_use()
+
     train = 200
     X, y = stream.next_sample(train)
     # t = OneHotToCategorical([[10, 11, 12, 13],

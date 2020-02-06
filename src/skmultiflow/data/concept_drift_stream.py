@@ -90,19 +90,10 @@ class ConceptDriftStream(Stream):
         self.stream = stream
         self.drift_stream = drift_stream
 
-    def prepare_for_use(self):
-        """
-        Prepares the stream for use.
+        self._prepare_for_use()
 
-        Notes
-        -----
-        This functions should always be called after the stream initialization.
-
-        """
+    def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
-        self.sample_idx = 0
-        self.stream.prepare_for_use()
-        self.drift_stream.prepare_for_use()
 
     def n_remaining_samples(self):
         """ Returns the estimated number of remaining samples.
@@ -118,8 +109,7 @@ class ConceptDriftStream(Stream):
         return n_samples
 
     def has_more_samples(self):
-        """
-        Checks if stream has more samples.
+        """ Checks if stream has more samples.
 
         Returns
         -------
@@ -130,6 +120,7 @@ class ConceptDriftStream(Stream):
 
     def is_restartable(self):
         """ Determine if the stream is restartable.
+
          Returns
          -------
          Boolean
@@ -138,12 +129,11 @@ class ConceptDriftStream(Stream):
         return self.stream.is_restartable() and self.drift_stream.is_restartable()
 
     def next_sample(self, batch_size=1):
-
-        """ Returns the next `batch_size` samples.
+        """ Returns next sample from the stream.
 
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of samples to return.
 
         Returns

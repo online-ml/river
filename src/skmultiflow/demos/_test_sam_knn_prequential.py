@@ -30,7 +30,6 @@ def demo(output_file=None, instances=50000):
     # Setup the File Stream
     stream = FileStream("../data/datasets/moving_squares.csv")
     # stream = WaveformGenerator()
-    stream.prepare_for_use()
 
     # Setup the classifier
     classifier = SAMKNNClassifier(n_neighbors=5, weighting='distance', max_window_size=1000, stm_size_option='maxACCApprox',

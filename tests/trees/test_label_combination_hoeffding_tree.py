@@ -6,8 +6,6 @@ from skmultiflow.data import MultilabelGenerator
 def test_label_combination_hoeffding_tree_mc(test_path):
     stream = MultilabelGenerator(n_samples=10000, n_features=15, n_targets=3, n_labels=4, random_state=112)
 
-    stream.prepare_for_use()
-
     learner = LabelCombinationHoeffdingTreeClassifier(n_labels=3, leaf_prediction='mc')
 
     cnt = 0
@@ -53,8 +51,6 @@ def test_label_combination_hoeffding_tree_mc(test_path):
 def test_label_combination_hoeffding_tree_nb(test_path):
     stream = MultilabelGenerator(n_samples=10000, n_features=15, n_targets=3, n_labels=4, random_state=112)
 
-    stream.prepare_for_use()
-
     learner = LabelCombinationHoeffdingTreeClassifier(n_labels=3, leaf_prediction='nb')
 
     cnt = 0
@@ -98,8 +94,6 @@ def test_label_combination_hoeffding_tree_nb(test_path):
 
 def test_label_combination_hoeffding_tree_nba(test_path):
     stream = MultilabelGenerator(n_samples=10000, n_features=15, n_targets=3, n_labels=4, random_state=112)
-
-    stream.prepare_for_use()
 
     learner = LabelCombinationHoeffdingTreeClassifier(n_labels=3)
 

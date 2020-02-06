@@ -6,7 +6,6 @@ import numpy as np
 
 def test_dynamic_weighted_majority():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
-    stream.prepare_for_use()
 
     learner = DynamicWeightedMajorityClassifier(3, NaiveBayes(), beta=0.5, theta=0.01)
 

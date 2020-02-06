@@ -12,7 +12,6 @@ def test_evaluate_prequential_classifier(tmpdir, test_path):
     stream = RandomTreeGenerator(tree_random_state=23, sample_random_state=12, n_classes=4, n_cat_features=2,
                                  n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
                                  fraction_leaves_per_level=0.15)
-    stream.prepare_for_use()
 
     # Setup learner
     nominal_attr_idx = [x for x in range(15, len(stream.feature_names))]
@@ -71,7 +70,6 @@ def test_evaluate_classification_coverage(tmpdir):
     stream = RandomTreeGenerator(tree_random_state=23, sample_random_state=12, n_classes=2, n_cat_features=2,
                                  n_num_features=5, n_categories_per_cat_feature=5, max_tree_depth=6, min_leaf_depth=3,
                                  fraction_leaves_per_level=0.15)
-    stream.prepare_for_use()
 
     # Learner
     nominal_attr_idx = [x for x in range(15, len(stream.feature_names))]
@@ -101,7 +99,6 @@ def test_evaluate_regression_coverage(tmpdir):
 
     # Stream
     stream = RegressionGenerator(n_samples=max_samples)
-    stream.prepare_for_use()
 
     # Learner
     htr = HoeffdingTreeRegressor()
@@ -124,7 +121,6 @@ def test_evaluate_multi_target_classification_coverage(tmpdir):
 
     # Stream
     stream = MultilabelGenerator(n_samples=max_samples, random_state=1)
-    stream.prepare_for_use()
 
     # Learner
     mol = MultiOutputLearner()
@@ -148,7 +144,6 @@ def test_evaluate_multi_target_regression_coverage(tmpdir):
     stream = RegressionGenerator(n_samples=max_samples, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=7)
-    stream.prepare_for_use()
 
     # Learner
     mtrht = iSOUPTreeRegressor(leaf_prediction='adaptive')
@@ -170,7 +165,6 @@ def test_evaluate_coverage(tmpdir):
 
     # Stream
     stream = SEAGenerator(random_state =1)
-    stream.prepare_for_use()
 
     # Learner
     nb = NaiveBayes()

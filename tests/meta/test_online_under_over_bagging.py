@@ -6,7 +6,6 @@ import numpy as np
 
 def test_online_uob():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
-    stream.prepare_for_use()
     nb = NaiveBayes()
     learner = OnlineUnderOverBaggingClassifier(base_estimator=nb, n_estimators=3, sampling_rate=2, random_state=112)
     first = True

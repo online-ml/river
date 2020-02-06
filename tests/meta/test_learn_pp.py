@@ -6,7 +6,7 @@ import numpy as np
 
 def test_learn_pp():
     stream = RandomTreeGenerator(tree_random_state=2212, sample_random_state=2212)
-    stream.prepare_for_use()
+
     estimator = DecisionTreeClassifier(random_state=2212)
     classifier = LearnPPClassifier(base_estimator=estimator, n_estimators=5, n_ensembles=5, random_state=2212)
 

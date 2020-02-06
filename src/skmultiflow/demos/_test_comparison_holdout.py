@@ -24,7 +24,6 @@ def demo(output_file=None, instances=40000):
     # Setup the File Stream
     # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
     stream = WaveformGenerator()
-    stream.prepare_for_use()
 
     # Setup the classifier
     clf_one = HoeffdingTreeClassifier()

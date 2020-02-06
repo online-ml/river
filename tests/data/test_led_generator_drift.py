@@ -5,7 +5,6 @@ from skmultiflow.data.led_generator_drift import LEDGeneratorDrift
 
 def test_led_generator_drift(test_path):
     stream = LEDGeneratorDrift(random_state=112, noise_percentage=0.28, has_noise=True, n_drift_features=4)
-    stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
 

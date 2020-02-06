@@ -28,7 +28,6 @@ class WaveformGenerator(Stream):
     >>> from skmultiflow.data.waveform_generator import WaveformGenerator
     >>> # Setting up the stream
     >>> stream = WaveformGenerator(random_state=774, has_noise=True)
-    >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[ -3.87277692e-03,   5.35892351e-01,  -6.07354638e-02,
@@ -101,16 +100,14 @@ class WaveformGenerator(Stream):
         self.n_targets = 1
         self.name = "Waveform Generator"
 
-        self.__configure()
-
-    def __configure(self):
-
         if self.has_noise:
             self.n_num_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE
         self.n_features = self.n_num_features
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
         self.target_names = ["target_0"]
         self.target_values = [i for i in range(self.n_classes)]
+
+        self._prepare_for_use()
 
     @property
     def has_noise(self):
@@ -137,20 +134,11 @@ class WaveformGenerator(Stream):
         else:
             raise ValueError("has_noise should be boolean, {} was passed".format(has_noise))
 
-    def prepare_for_use(self):
-        """
-        Prepares the stream for use.
-
-        Notes
-        -----
-        This functions should always be called after the stream initialization.
-
-        """
+    def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
-        self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
-        """ next_sample
+        """ Returns next sample from the stream.
         
         An instance is generated based on the parameters passed. If noise 
         is included the total number of features will be 40, if it's not
@@ -167,7 +155,7 @@ class WaveformGenerator(Stream):
         
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of samples to return.
             
         Returns

@@ -17,7 +17,6 @@ def demo(output_file=None):
     stream = RegressionGenerator(n_samples=5000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=7)
-    stream.prepare_for_use()
 
     regressor = iSOUPTreeRegressor(leaf_prediction='adaptive')
 

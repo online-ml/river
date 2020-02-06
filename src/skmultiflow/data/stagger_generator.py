@@ -52,7 +52,6 @@ class STAGGERGenerator(Stream):
     >>> from skmultiflow.data.stagger_generator import STAGGERGenerator
     >>> # Setting up the stream
     >>> stream = STAGGERGenerator(classification_function = 2, random_state = 112, balance_classes = False)
-    >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[0., 0., 2.]]), array([0.]))
@@ -92,16 +91,14 @@ class STAGGERGenerator(Stream):
         self.next_class_should_be_zero = False
         self.name = "Stagger Generator"
 
-        self.__configure()
-
-    def __configure(self):
-
         self.target_names = ["target_0"]
         self.feature_names = ["size", "color", "shape"]
         self.size_labels = ["small", "medium", "large"]
         self.color_labels = ["red", "blue", "green"]
         self.shape_labels = ["circle", "square", "triangle"]
         self.target_values = [i for i in range(self.n_classes)]
+
+        self._prepare_for_use()
 
     @property
     def classification_function(self):
@@ -154,22 +151,12 @@ class STAGGERGenerator(Stream):
         else:
             raise ValueError("balance_classes should be boolean, and {} was passed".format(balance_classes))
 
-    def prepare_for_use(self):
-        """
-        Prepares the stream for use.
-
-        Notes
-        -----
-        This functions should always be called after the stream initialization.
-
-        """
+    def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
         self.next_class_should_be_zero = False
-        self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
-
-        """ next_sample
+        """ Returns next sample from the stream.
 
         The sample generation works as follows: The three attributes are
         generated with the random int generator, initialized with the seed
@@ -183,7 +170,7 @@ class STAGGERGenerator(Stream):
 
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of samples to return.
 
         Returns

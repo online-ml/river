@@ -41,7 +41,7 @@ def run_classifier(estimator, stream, pruning=None, ensemble_size=15, m=200):
 
 def test_learn_nse():
     stream = SEAGenerator(random_state=2212)
-    stream.prepare_for_use()
+
     estimator = GaussianNB()
 
     corrects, acc, classifier = run_classifier(estimator, stream)
@@ -84,7 +84,6 @@ def test_learn_nse():
     assert corrects == expected_correct_predictions
 
     stream = SEAGenerator(random_state=2212)
-    stream.prepare_for_use()
 
     estimator = HoeffdingTreeClassifier()
 

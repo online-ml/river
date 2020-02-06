@@ -11,7 +11,6 @@ from skmultiflow.data import SEAGenerator
 def test_sam_knn():
 
     stream = SEAGenerator(random_state=1)
-    stream.prepare_for_use()
 
     hyperParams = {'maxSize': 1000, 'nNeighbours': 5, 'knnWeights': 'distance', 'STMSizeAdaption': 'maxACCApprox',
                    'use_ltm': False}
@@ -51,7 +50,6 @@ def test_sam_knn():
 def test_sam_knn_coverage():
 
     stream = SEAGenerator(random_state=1)
-    stream.prepare_for_use()
 
     hyperParams = {'maxSize': 50,
                    'n_neighbors': 3,

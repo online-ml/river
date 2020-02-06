@@ -20,11 +20,8 @@ def demo(output_file=None, instances=40000):
     
     """
     # Setup the File Stream
-    # stream = FileStream("../data/datasets/sea_big.csv", -1, 1)
     #stream = SEAGenerator(classification_function=2, noise_percentage=0.0)
-    #stream.prepare_for_use()
     stream = WaveformGenerator()
-    stream.prepare_for_use()
 
     # Setup the classifier
     #classifier = OzaBaggingADWINClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000,

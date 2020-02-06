@@ -11,10 +11,9 @@ def demo():
     :return: 
     """
     stream = FileStream('../data/datasets/covtype.csv', -1, 1)
-    stream.prepare_for_use()
+
     rbf_drift = RandomRBFGeneratorDrift(change_speed=41.00, n_centroids=50, model_seed=32523423, instance_seed=5435,
                                         n_classes=2, n_features=10, num_drift_centroids=50)
-    rbf_drift.prepare_for_use()
 
     sea = SEAGenerator()
 

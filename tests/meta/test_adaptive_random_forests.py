@@ -8,7 +8,6 @@ def test_adaptive_random_forests_mc():
     stream = RandomTreeGenerator(
         tree_random_state=112, sample_random_state=112, n_classes=2
     )
-    stream.prepare_for_use()
 
     learner = AdaptiveRandomForestClassifier(n_estimators=3, leaf_prediction='mc',
                                              random_state=112)
@@ -62,7 +61,6 @@ def test_adaptive_random_forests_mc():
 
 def test_adaptive_random_forests_nb():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112, n_classes=2)
-    stream.prepare_for_use()
 
     learner = AdaptiveRandomForestClassifier(n_estimators=3,
                                              random_state=112, leaf_prediction='nb')
@@ -116,7 +114,6 @@ def test_adaptive_random_forests_nb():
 
 def test_adaptive_random_forests_nba():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112, n_classes=2)
-    stream.prepare_for_use()
 
     learner = AdaptiveRandomForestClassifier(n_estimators=3,
                                              random_state=112)
@@ -171,7 +168,6 @@ def test_adaptive_random_forests_nba():
 
 def test_adaptive_random_forests_labels_given():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112, n_classes=2)
-    stream.prepare_for_use()
 
     learner = AdaptiveRandomForestClassifier(n_estimators=3,
                                              random_state=112)
@@ -212,7 +208,6 @@ def test_adaptive_random_forests_labels_given():
 
 def test_adaptive_random_forests_batch_predict_proba():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112, n_classes=2)
-    stream.prepare_for_use()
 
     learner = AdaptiveRandomForestClassifier(n_estimators=3,
                                              random_state=112)

@@ -8,7 +8,6 @@ def test_hyper_plane_generator(test_path):
     n_samples = 10
     stream = HyperplaneGenerator(random_state=112, n_features=n_features, n_drift_features=2, mag_change=0.6,
                                  noise_percentage=0.28, sigma_percentage=0.1)
-    stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
 

@@ -21,7 +21,6 @@ def demo(instances=2000):
     # Stream setup
     stream = FileStream("../data/datasets/covtype.csv", -1, 1)
     # stream = SEAGenerator(classification_function=2, sample_seed=53432, balance_classes=False)
-    stream.prepare_for_use()
     # Setup the classifier
     clf = SGDClassifier()
     # classifier = KNNADWINClassifier(n_neighbors=8, max_window_size=2000,leaf_size=40, nominal_attributes=None)
