@@ -34,7 +34,7 @@ class AdaSplitNode(SplitNode, AdaNode):
     # Override AdaNode
     def number_leaves(self):
         num_of_leaves = 0
-        for child in self._children:
+        for child in self._children.values():
             if child is not None:
                 num_of_leaves += child.number_leaves()
 
@@ -47,7 +47,7 @@ class AdaSplitNode(SplitNode, AdaNode):
     # Override AdaNode
     def get_error_width(self):
         w = 0.0
-        if self.is_null_error() is False:
+        if not self.is_null_error():
             w = self._estimation_error_weight.width
 
         return w
@@ -73,22 +73,22 @@ class AdaSplitNode(SplitNode, AdaNode):
         old_error = self.get_error_estimation()
 
         # Add element to ADWIN
-        add = 0.0 if (bl_correct is True) else 1.0
+        add = 0.0 if bl_correct else 1.0
 
         self._estimation_error_weight.add_element(add)
         # Detect change with ADWIN
         self.error_change = self._estimation_error_weight.detected_change()
 
-        if self.error_change is True and old_error > self.get_error_estimation():
+        if self.error_change and old_error > self.get_error_estimation():
             self.error_change = False
 
         # Check condition to build a new alternate tree
-        if self.error_change is True:
+        if self.error_change:
             self._alternate_tree = hat._new_learning_node()
             hat.alternate_trees_cnt += 1
 
         # Condition to replace alternate tree
-        elif self._alternate_tree is not None and self._alternate_tree.is_null_error() is False:
+        elif self._alternate_tree is not None and not self._alternate_tree.is_null_error():
             if self.get_error_width() > ERROR_WIDTH_THRESHOLD \
                     and self._alternate_tree.get_error_width() > ERROR_WIDTH_THRESHOLD:
                 old_error_rate = self.get_error_estimation()
@@ -107,7 +107,7 @@ class AdaSplitNode(SplitNode, AdaNode):
                         parent.set_child(parent_branch, self._alternate_tree)
                     else:
                         # Switch tree root
-                        hat._tree_root = hat._tree_root.alternateTree
+                        hat._tree_root = hat._tree_root._alternate_tree
                     hat.switch_alternate_trees_cnt += 1
                 elif bound < alt_error_rate - old_error_rate:
                     if isinstance(self._alternate_tree, ActiveLearningNode):

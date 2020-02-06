@@ -2,6 +2,7 @@ from skmultiflow.trees import HoeffdingTreeClassifier
 from skmultiflow.trees.nodes import InactiveLearningNode
 from skmultiflow.trees.nodes import AdaLearningNode
 from skmultiflow.trees.nodes import AdaSplitNode
+from skmultiflow.utils import add_dict_values
 
 import numpy as np
 
@@ -197,7 +198,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                     if leaf_node is None:
                         leaf_node = fn.parent
                     dist = leaf_node.get_class_votes(X, self)
-                    result.update(dist)  # add elements to dictionary
+                    # add elements to dictionary
+                    result = add_dict_values(result, dist, inplace=True)
         return result
 
     # Override HoeffdingTreeClassifier

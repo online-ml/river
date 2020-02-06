@@ -7,6 +7,7 @@ from skmultiflow.utils.utils import get_dimensions
 from skmultiflow.utils.utils import get_max_value_key
 from skmultiflow.utils.utils import normalize_values_in_dict
 from skmultiflow.utils.utils import calculate_object_size
+from skmultiflow.utils.utils import add_dict_values
 
 
 def test_get_dimensions():
@@ -82,3 +83,20 @@ def test_calculate_object_size():
         calculate_object_size(elems, 'byte')
         calculate_object_size(elems, 'kB')
         calculate_object_size(elems, 'MB')
+
+
+def test_add_dict_values():
+    a = {0: 1, 2: 1}
+    b = {1: 1, 2: 1, 3: 0}
+
+    c = add_dict_values(a, b, inplace=False)
+
+    expected = {0: 1, 1: 1, 2: 2, 3: 0}
+
+    for k in c:
+        assert c[k] == expected[k]
+
+    add_dict_values(a, b, inplace=True)
+
+    for k in a:
+        assert a[k] == expected[k]
