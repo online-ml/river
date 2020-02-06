@@ -13,7 +13,6 @@ from skmultiflow.core import is_regressor
 
 def test_clone():
     stream = SEAGenerator(random_state=1)
-    stream.prepare_for_use()
 
     learner = NaiveBayes()
 

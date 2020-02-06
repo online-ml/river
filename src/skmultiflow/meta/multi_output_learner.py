@@ -41,7 +41,6 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
     >>> from sklearn.linear_model import Perceptron
     >>> # Setup the file stream
     >>> stream = FileStream("skmultiflow/data/datasets/music.csv", 0, 6)
-    >>> stream.prepare_for_use()
     >>> # Setup the MultiOutputLearner using sklearn Perceptron
     >>> classifier = MultiOutputLearner(base_estimator=Perceptron())
     >>> # Setup the pipeline

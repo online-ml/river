@@ -9,7 +9,6 @@ from difflib import SequenceMatcher
 
 def test_hoeffding_tree_regressor():
     stream = RegressionGenerator(n_samples=500, n_features=20, n_informative=15, random_state=1)
-    stream.prepare_for_use()
 
     learner = HoeffdingTreeRegressor(leaf_prediction='mean')
 
@@ -61,7 +60,6 @@ def test_hoeffding_tree_regressor():
 
 def test_hoeffding_tree_regressor_perceptron():
     stream = RegressionGenerator(n_samples=500, n_features=20, n_informative=15, random_state=1)
-    stream.prepare_for_use()
 
     learner = HoeffdingTreeRegressor(leaf_prediction='perceptron', random_state=1)
 
@@ -138,7 +136,6 @@ def test_hoeffding_tree_regressor_model_description():
     stream = RegressionGenerator(
         n_samples=500, n_features=20, n_informative=15, random_state=1
     )
-    stream.prepare_for_use()
 
     learner = HoeffdingTreeRegressor(leaf_prediction='mean')
 

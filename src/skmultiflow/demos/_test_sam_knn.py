@@ -52,7 +52,6 @@ if __name__ == '__main__':
     logging.info('loading dataset')
     # stream = FileStream("../data/datasets/weather.csv")
     stream = FileStream("../data/datasets/moving_squares.csv")
-    stream.prepare_for_use()
 
     X, y = stream.next_sample(stream.n_samples)
 

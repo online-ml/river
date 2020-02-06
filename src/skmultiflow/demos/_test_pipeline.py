@@ -14,16 +14,13 @@ def demo():
     """
     # # Setup the stream
     # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
-    # stream.prepare_for_use()
     # # If used for Hoeffding Trees then need to pass indices for Nominal attributes
 
     # Test with RandomTreeGenerator
     # stream = RandomTreeGenerator(n_classes=2, n_numerical_attributes=5)
-    # stream.prepare_for_use()
 
     # Test with WaveformGenerator
     stream = WaveformGenerator()
-    stream.prepare_for_use()
 
     # Setup the classifier
     #classifier = PerceptronMask()

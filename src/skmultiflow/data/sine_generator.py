@@ -4,7 +4,7 @@ from skmultiflow.utils import check_random_state
 
 
 class SineGenerator(Stream):
-    """ Sine stream generator.
+    r""" Sine stream generator.
 
     This generator is an implementation of the dara stream with abrupt
     concept drift, as described in Gama, Joao, et al [1]_.
@@ -62,7 +62,6 @@ class SineGenerator(Stream):
     >>> # Setting up the stream
     >>> stream = SineGenerator(classification_function = 2, random_state = 112, balance_classes = False,
     ... has_noise = True)
-    >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[0.37505713, 0.64030462, 0.95001658, 0.0756772 ]]), array([1.]))
@@ -103,15 +102,14 @@ class SineGenerator(Stream):
         self.next_class_should_be_zero = False
         self.name = "Sine Generator"
 
-        self.__configure()
-
-    def __configure(self):
         if self.has_noise:
             self.n_num_features = self._TOTAL_ATTRIBUTES_INCLUDING_NOISE
         self.n_features = self.n_num_features
         self.target_names = ["target_0"]
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
         self.target_values = [i for i in range(self.n_classes)]
+
+        self._prepare_for_use()
 
     @property
     def classification_function(self):
@@ -190,20 +188,12 @@ class SineGenerator(Stream):
         else:
             raise ValueError("has_noise should be boolean, {} was passed".format(has_noise))
 
-    def prepare_for_use(self):
-        """
-        Prepares the stream for use.
-
-        Notes
-        -----
-        This functions should always be called after the stream initialization.
-        """
+    def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
         self.next_class_should_be_zero = False
-        self.sample_idx = 0
 
     def next_sample(self, batch_size=1):
-        """ next_sample
+        """ Returns next sample from the stream.
 
         The sample generation works as follows: The two attributes are
         generated with the random generator, initialized with the seed passed
@@ -218,7 +208,7 @@ class SineGenerator(Stream):
 
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of samples to return.
 
         Returns

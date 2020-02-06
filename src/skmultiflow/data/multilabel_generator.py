@@ -42,7 +42,6 @@ class MultilabelGenerator(Stream):
     >>> from skmultiflow.data.multilabel_generator import MultilabelGenerator
     >>> # Setting up the stream
     >>> stream = MultilabelGenerator(n_samples=100, n_features=20, n_targets=4, n_labels=4, random_state=0)
-    >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[3., 0., 1., 3., 6., 2., 5., 0., 5., 6., 3., 5., 1., 2., 0., 3.,
@@ -99,15 +98,9 @@ class MultilabelGenerator(Stream):
         self._random_state = None   # This is the actual random_state object used internally
         self.name = "Multilabel Generator"
 
-    def prepare_for_use(self):
-        """ Prepare the stream for usage
+        self._prepare_for_use()
 
-        Uses the make_multilabel_classification function from scikit-learn 
-        to generate a multilabel classification problem. This problem will 
-        be kept in memory and provided as demanded.
-
-
-        """
+    def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
         self.X, self.y = make_multilabel_classification(n_samples=self.n_samples,
                                                         n_features=self.n_features,
@@ -120,11 +113,11 @@ class MultilabelGenerator(Stream):
             [np.unique(self.y[:, i]).tolist() for i in range(self.n_targets)]
 
     def next_sample(self, batch_size=1):
-        """ Return batch_size samples from the X and y matrices stored in memory.
+        """ Returns next sample from the stream.
         
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of samples to return.
         
         Returns

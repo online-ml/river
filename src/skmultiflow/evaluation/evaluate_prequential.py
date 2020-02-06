@@ -105,7 +105,6 @@ class EvaluatePrequential(StreamEvaluator):
     >>>
     >>> # Set the stream
     >>> stream = SEAGenerator(random_state=1)
-    >>> stream.prepare_for_use()
     >>>
     >>> # Set the model
     >>> ht = HoeffdingTreeClassifier()
@@ -128,7 +127,6 @@ class EvaluatePrequential(StreamEvaluator):
     >>>
     >>> # Set the stream
     >>> stream = SEAGenerator(random_state=1)
-    >>> stream.prepare_for_use()
     >>>
     >>> # Set the models
     >>> ht = HoeffdingTreeClassifier()
@@ -150,7 +148,6 @@ class EvaluatePrequential(StreamEvaluator):
     >>> from skmultiflow.evaluation import EvaluatePrequential
     >>> # Set the stream
     >>> stream = SEAGenerator(random_state=1)
-    >>> stream.prepare_for_use()
     >>> # Set the model
     >>> ht = HoeffdingTreeClassifier()
     >>> # Set the evaluator

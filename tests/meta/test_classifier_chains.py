@@ -13,7 +13,7 @@ import numpy as np
 def test_classifier_chains():
     seed = 112
     stream = MultilabelGenerator(random_state=seed, n_targets=3, n_samples=5150)
-    stream.prepare_for_use()
+
     estimator = SGDClassifier(random_state=seed, tol=1e-3, max_iter=10)
     learner = ClassifierChain(base_estimator=estimator, random_state=seed)
     X, y = stream.next_sample(150)

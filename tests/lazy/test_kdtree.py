@@ -5,7 +5,6 @@ from skmultiflow.lazy import KDTree
 
 def test_kdd_tree_euclidean():
     stream = RandomTreeGenerator(tree_random_state=1, sample_random_state=1)
-    stream.prepare_for_use()
 
     X, _ = stream.next_sample(1000)
     X_test, _ = stream.next_sample(10)
@@ -49,7 +48,6 @@ def test_kdd_tree_euclidean():
 
 def test_kdd_tree_mixed():
     stream = RandomTreeGenerator(tree_random_state=1, sample_random_state=1, n_num_features=0)
-    stream.prepare_for_use()
 
     X, _ = stream.next_sample(1000)
     X_test, _ = stream.next_sample(10)

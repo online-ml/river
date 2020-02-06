@@ -114,7 +114,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     >>> from skmultiflow.evaluation.evaluate_prequential import EvaluatePrequential
     >>> # Setup the File Stream
     >>> stream = FileStream("/skmultiflow/data/datasets/covtype.csv", -1, 1)
-    >>> stream.prepare_for_use()
     >>>
     >>> classifier = HoeffdingAdaptiveTreeClassifier()
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=50000, batch_size=1, n_wait=200, max_time=1000,

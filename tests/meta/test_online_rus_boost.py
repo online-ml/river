@@ -6,7 +6,6 @@ import numpy as np
 
 def test_online_rus_1():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
-    stream.prepare_for_use()
     nb = NaiveBayes()
     learner = OnlineRUSBoostClassifier(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=1,
                                        random_state=112)
@@ -56,7 +55,6 @@ def test_online_rus_1():
 
 def test_online_rus_2():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
-    stream.prepare_for_use()
     nb = NaiveBayes()
     learner = OnlineRUSBoostClassifier(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=2,
                                        random_state=112)
@@ -101,7 +99,6 @@ def test_online_rus_2():
 
 def test_online_rus_3():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
-    stream.prepare_for_use()
     nb = NaiveBayes()
     learner = OnlineRUSBoostClassifier(base_estimator=nb, n_estimators=3, sampling_rate=5, algorithm=3,
                                        random_state=112)

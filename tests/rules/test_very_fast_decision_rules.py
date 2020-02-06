@@ -15,7 +15,6 @@ def test_vfdr_info_gain():
                                               min_weight=100,
                                               nb_prediction=False)
     stream = AGRAWALGenerator(random_state=11)
-    stream.prepare_for_use()
 
     cnt = 0
     max_samples = 5000
@@ -79,7 +78,6 @@ def test_vfdr_foil():
                                               min_weight=100,
                                               nb_prediction=True)
     stream = AGRAWALGenerator(random_state=11)
-    stream.prepare_for_use()
 
     cnt = 0
     max_samples = 5000
@@ -120,7 +118,6 @@ def test_vfdr_hellinger():
                                               min_weight=100,
                                               nb_prediction=True)
     stream = AGRAWALGenerator(random_state=11)
-    stream.prepare_for_use()
 
     cnt = 0
     max_samples = 5000

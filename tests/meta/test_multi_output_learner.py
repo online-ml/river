@@ -17,7 +17,6 @@ from distutils.version import StrictVersion
 def test_multi_output_learner_classifier():
 
     stream = MultilabelGenerator(n_samples=5150, n_features=15, n_targets=3, n_labels=4, random_state=112)
-    stream.prepare_for_use()
 
     estimator = SGDClassifier(random_state=112, tol=1e-3, max_iter=10, loss='log')
     classifier = MultiOutputLearner(base_estimator=estimator)
@@ -111,7 +110,6 @@ def test_multi_output_learner_classifier():
 def test_multi_output_learner_regressor():
 
     stream = RegressionGenerator(n_samples=5500, n_features=10, n_informative=20, n_targets=2, random_state=1)
-    stream.prepare_for_use()
 
     estimator = SGDRegressor(random_state=112, tol=1e-3, max_iter=10, loss='squared_loss')
     learner = MultiOutputLearner(base_estimator=estimator)

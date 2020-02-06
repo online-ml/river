@@ -43,7 +43,6 @@ class RegressionGenerator(Stream):
     >>> from skmultiflow.data.regression_generator import RegressionGenerator
     >>> # Setting up the stream
     >>> stream = RegressionGenerator(n_samples=100, n_features=20, n_targets=4, n_informative=6, random_state=0)
-    >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[ 0.16422776,  0.56729028, -0.76149221,  0.38728048, -1.69810582,
@@ -125,14 +124,9 @@ class RegressionGenerator(Stream):
         self._random_state = None   # This is the actual random_state object used internally
         self.name = "Regression Generator"
 
-    def prepare_for_use(self):
-        """ Prepare the stream for usage
-        
-        Uses the make_regression function from scikit-learn to generate a 
-        regression problem. This problem will be kept in memory and provided 
-        as demanded.
-        
-        """
+        self._prepare_for_use()
+
+    def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
         self.X, self.y = make_regression(n_samples=self.n_samples,
                                          n_features=self.n_features,
@@ -164,13 +158,11 @@ class RegressionGenerator(Stream):
         return self.n_samples - self.sample_idx > 0
 
     def next_sample(self, batch_size=1):
-        """ next_sample
-        
-        Returns batch_size samples from the generated regression problem.
+        """ Returns next sample from the stream.
         
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of sample to return.
             
         Returns

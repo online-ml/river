@@ -7,7 +7,7 @@ import numpy as np
 
 def test_batch_incremental():
     stream = RandomTreeGenerator(tree_random_state=112, sample_random_state=112)
-    stream.prepare_for_use()
+
     estimator = DecisionTreeClassifier(random_state=112)
     learner = BatchIncrementalClassifier(base_estimator=estimator, n_estimators=10)
 

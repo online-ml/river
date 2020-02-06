@@ -60,9 +60,7 @@ class DataStream(Stream):
         self._is_ready = False
         self.name = name
         self.allow_nan = allow_nan
-        self.__configure()
 
-    def __configure(self):
         if self._Y_is_defined:
             self.y = pd.DataFrame(self.y)
             if self.y.shape[0] != self.data.shape[0]:
@@ -71,6 +69,8 @@ class DataStream(Stream):
                 self.X = pd.DataFrame(self.data)
                 self.target_idx = -self.y.shape[1]
                 self.n_targets = self.y.shape[1]
+
+        self._prepare_for_use()
 
     @property
     def y(self):
@@ -243,15 +243,7 @@ class DataStream(Stream):
 
         self._cat_features_idx = cat_features_idx
 
-    def prepare_for_use(self):
-        """
-        Prepares the stream for use.
-
-        Notes
-        -----
-        This functions should always be called after the stream initialization.
-
-        """
+    def _prepare_for_use(self):
         self.restart()
         if not self._is_ready:
             if self._Y_is_defined:
@@ -329,10 +321,7 @@ class DataStream(Stream):
         self.target_values = self._get_target_values()
 
     def restart(self):
-        """ restart
-
-        Restarts the stream's sample feeding, while keeping all of its
-        parameters.
+        """ Restarts the stream.
 
         It basically server the purpose of reinitializing the stream to
         its initial state.
@@ -343,14 +332,14 @@ class DataStream(Stream):
         self.current_sample_y = None
 
     def next_sample(self, batch_size=1):
-        """ next_sample
+        """ Returns next sample from the stream.
 
         If there is enough instances to supply at least batch_size samples, those
         are returned. If there aren't a tuple of (None, None) is returned.
 
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of instances to return.
 
         Returns

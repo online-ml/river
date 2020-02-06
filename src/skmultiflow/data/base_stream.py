@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from skmultiflow.core import BaseSKMObject
+import warnings
 
 
 class Stream(BaseSKMObject, metaclass=ABCMeta):
@@ -180,29 +181,29 @@ class Stream(BaseSKMObject, metaclass=ABCMeta):
         """
         self._target_names = target_names
 
-    @abstractmethod
-    def prepare_for_use(self):
-        """ prepare_for_use
+    @staticmethod
+    def prepare_for_use():     # pragma: no cover
+        """ Prepare the stream for use.
 
-        Prepare the stream for use. Can be the reading of a file, or
-        the generation of a function, or anything necessary for the
-        stream to work after its initialization.
-
-        Notes
-        -----
-        Every time a stream is created this function has to be called.
+        Deprecated in v0.5.0 and will be removed in v0.7.0
 
         """
+        warnings.warn("'prepare_for_use' has been deprecated in v0.5.0 and will be removed in v0.7.0.\n"
+                      "New instances of the Stream class are now ready to use after instantiation.",
+                      category=FutureWarning)
+
+    @abstractmethod
+    def _prepare_for_use(self):
         raise NotImplementedError
 
     @abstractmethod
     def next_sample(self, batch_size=1):
-        """ Generates or returns next `batch_size` samples in the stream.
+        """ Returns next sample from the stream.
         
         Parameters
         ----------
-        batch_size: int
-            How many samples at a time to return.
+        batch_size: int (optional, default=1)
+            The number of samples to return.
         
         Returns
         -------
@@ -236,7 +237,10 @@ class Stream(BaseSKMObject, metaclass=ABCMeta):
 
     def restart(self):
         """  Restart the stream. """
-        self.prepare_for_use()
+        self.current_sample_x = None
+        self.current_sample_y = None
+        self.sample_idx = 0
+        self._prepare_for_use()
 
     def n_remaining_samples(self):
         """ Returns the estimated number of remaining samples.

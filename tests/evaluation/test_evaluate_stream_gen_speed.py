@@ -4,7 +4,6 @@ from skmultiflow.evaluation.evaluate_stream_gen_speed import EvaluateStreamGener
 
 def test_evaluate_stream_gen_speed():
     stream = SEAGenerator(random_state=1)
-    stream.prepare_for_use()
     stream_name = stream.name
 
     evaluator = EvaluateStreamGenerationSpeed(n_samples=100000, max_time=float("inf"), output_file=None, batch_size=5)

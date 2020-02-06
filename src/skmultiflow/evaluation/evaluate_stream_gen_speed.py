@@ -26,7 +26,6 @@ class EvaluateStreamGenerationSpeed(object):
     >>> from skmultiflow.data.random_rbf_generator_drift import RandomRBFGeneratorDrift
     >>> from skmultiflow.evaluation.evaluate_stream_gen_speed import EvaluateStreamGenerationSpeed
     >>> stream = RandomRBFGeneratorDrift(change_speed=0.2)
-    >>> stream.prepare_for_use()
     >>> evaluator = EvaluateStreamGenerationSpeed(100000, float("inf"), None, 5)
     >>> stream = evaluator.evaluate(stream)
     Evaluation time: 110.064

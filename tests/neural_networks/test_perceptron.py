@@ -14,7 +14,6 @@ from sklearn import __version__ as sklearn_version
 @pytest.mark.filterwarnings('ignore::FutureWarning')
 def test_perceptron(test_path):
     stream = SEAGenerator(random_state=1)
-    stream.prepare_for_use()
 
     learner = PerceptronMask(random_state=1)
 

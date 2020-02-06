@@ -105,7 +105,6 @@ class EvaluateHoldout(StreamEvaluator):
     >>>
     >>> # Set the stream
     >>> stream = SEAGenerator(random_state=1)
-    >>> stream.prepare_for_use()
     >>>
     >>> # Set the model
     >>> ht = HoeffdingTreeClassifier()
@@ -128,7 +127,6 @@ class EvaluateHoldout(StreamEvaluator):
     >>>
     >>> # Set the stream
     >>> stream = SEAGenerator(random_state=1)
-    >>> stream.prepare_for_use()
     >>>
     >>> # Set the model
     >>> ht = HoeffdingTreeClassifier()

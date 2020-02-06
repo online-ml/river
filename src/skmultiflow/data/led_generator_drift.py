@@ -33,7 +33,6 @@ class LEDGeneratorDrift(LEDGenerator):
        >>> from skmultiflow.data.led_generator_drift import LEDGeneratorDrift
        >>> # Setting up the stream
        >>> stream = LEDGeneratorDrift(random_state = 112, noise_percentage = 0.28, has_noise= True, n_drift_features=4)
-       >>> stream.prepare_for_use()
        >>> # Retrieving one sample
        >>> stream.next_sample()
        (array([[0., 1., 1., 1., 0., 1., 1., 0., 1., 0., 0., 0., 1., 0., 1., 1.,
@@ -79,10 +78,6 @@ class LEDGeneratorDrift(LEDGenerator):
         self.n_drift_features = n_drift_features
         self.name = "Led Generator with drift"
 
-        self.__configure()
-
-    def __configure(self):
-
         for i in range(self._TOTAL_ATTRIBUTES_INCLUDING_NOISE):
             self._numberAttribute[i] = i
 
@@ -95,9 +90,10 @@ class LEDGeneratorDrift(LEDGenerator):
                 self._numberAttribute[value1] = value2
                 self._numberAttribute[value2] = value1
 
-    def next_sample(self, batch_size=1):
+        self._prepare_for_use()
 
-        """ next_sample
+    def next_sample(self, batch_size=1):
+        """ Returns next sample from the stream.
 
         An instance is generated based on the parameters passed. If noise
         is included the total number of attributes will be 24, if it's not
@@ -105,7 +101,7 @@ class LEDGeneratorDrift(LEDGenerator):
 
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of samples to return.
 
         Returns

@@ -10,7 +10,6 @@ def test_isoup_tree_mean(test_path):
     stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
-    stream.prepare_for_use()
 
     learner = iSOUPTreeRegressor(leaf_prediction='mean')
 
@@ -54,7 +53,6 @@ def test_isoup_tree_perceptron(test_path):
     stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
-    stream.prepare_for_use()
 
     learner = iSOUPTreeRegressor(leaf_prediction='perceptron',
                                  random_state=1)
@@ -98,7 +96,6 @@ def test_isoup_tree_adaptive(test_path):
     stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
-    stream.prepare_for_use()
 
     learner = iSOUPTreeRegressor(leaf_prediction='adaptive',
                                  random_state=1)
@@ -161,7 +158,6 @@ def test_isoup_tree_model_description():
         n_samples=700, n_features=20, n_informative=15, random_state=1,
         n_targets=3
     )
-    stream.prepare_for_use()
 
     learner = iSOUPTreeRegressor(leaf_prediction='mean')
 

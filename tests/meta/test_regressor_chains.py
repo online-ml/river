@@ -13,7 +13,7 @@ import pytest
 def test_regressor_chains():
     X_reg, y_reg = make_regression(random_state=112, n_targets=3, n_samples=5150)
     stream = DataStream(X_reg, y_reg)
-    stream.prepare_for_use()
+
     estimator = SGDRegressor(random_state=112, max_iter=10, tol=1e-3)
     learner = RegressorChain(base_estimator=estimator, random_state=112)
 

@@ -32,7 +32,6 @@ class FastBuffer(object):
     >>> from skmultiflow.lazy import KNNClassifier
     >>> from skmultiflow.data import FileStream
     >>> file_stream = FileStream("skmultiflow/data/datasets/covtype.csv")
-    >>> file_stream.prepare_for_use()
     >>> clf = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)
     >>> # Initially we need to partial_fit at least n_neighbors=8 samples
     >>> X, y = file_stream.next_sample(8)

@@ -70,7 +70,6 @@ class LearnPPClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     >>> from skmultiflow.data.sea_generator import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1)
-    >>> stream.prepare_for_use()
     >>> # Setting up the Learn++ classifier to work with KNN classifiers
     >>> clf = LearnPPClassifier(base_estimator=KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=30), n_estimators=30)
     >>> # Keeping track of sample count and correct prediction count

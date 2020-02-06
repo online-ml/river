@@ -50,7 +50,6 @@ class MIXEDGenerator(Stream):
     >>> from skmultiflow.data.mixed_generator import MIXEDGenerator
     >>> # Setting up the stream
     >>> stream = MIXEDGenerator(classification_function = 1, random_state= 112, balance_classes = False)
-    >>> stream.prepare_for_use()
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[0.        , 1.        , 0.95001658, 0.0756772 ]]), array([1.]))
@@ -92,13 +91,11 @@ class MIXEDGenerator(Stream):
         self.next_class_should_be_zero = False
         self.name = "Mixed Generator"
 
-        self.__configure()
-
-    def __configure(self):
-
         self.target_names = ["target_0"]
         self.feature_names = ["att_num_" + str(i) for i in range(self.n_features)]
         self.target_values = [i for i in range(self.n_classes)]
+
+        self._prepare_for_use()
 
     @property
     def classification_function(self):
@@ -151,8 +148,7 @@ class MIXEDGenerator(Stream):
             raise ValueError("balance_classes should be boolean, {} was passed".format(balance_classes))
 
     def next_sample(self, batch_size=1):
-
-        """ next_sample
+        """ Returns next sample from the stream.
 
         The sample generation works as follows: The two numeric attributes are
         generated with the random  generator, initialized with the seed
@@ -167,7 +163,7 @@ class MIXEDGenerator(Stream):
 
         Parameters
         ----------
-        batch_size: int
+        batch_size: int (optional, default=1)
             The number of samples to return.
 
         Returns
@@ -211,22 +207,13 @@ class MIXEDGenerator(Stream):
 
         return self.current_sample_x, self.current_sample_y
 
-    def prepare_for_use(self):
-        """
-        Prepares the stream for use.
-
-        Notes
-        -----
-        This functions should always be called after the stream initialization.
-
-        """
+    def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
         self.next_class_should_be_zero = False
-        self.sample_idx = 0
 
     @staticmethod
     def _classification_function_zero(v, w, x, y):
-        """ classification_function_zero
+        r""" classification_function_zero
 
         Decides the sample class label as negative  if the two boolean attributes
         are True or one of them is True and  :math:`y  <  0.5 + 0.3  sin(3  \pi  x)`.
@@ -256,7 +243,7 @@ class MIXEDGenerator(Stream):
 
     @staticmethod
     def _classification_function_one(v, w, x, y):
-        """ classification_function_one
+        r""" classification_function_one
 
         Decides the sample class label as positive  if the two boolean attributes
         are True or one of them is True and :math:`y < 0.5 + 0.3  sin(3  \pi  x)`.

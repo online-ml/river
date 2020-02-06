@@ -11,7 +11,6 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def test_naive_bayes(test_path):
     stream = SEAGenerator(random_state=1)
-    stream.prepare_for_use()
 
     learner = NaiveBayes()
 

@@ -10,7 +10,6 @@ def test_hoeffding_adaptive_tree_mc(test_path):
                                 drift_stream=SEAGenerator(random_state=2, classification_function=2,
                                                           noise_percentage=0.05),
                                 random_state=1, position=250, width=10)
-    stream.prepare_for_use()
 
     learner = HoeffdingAdaptiveTreeClassifier(leaf_prediction='mc')
 
@@ -66,7 +65,6 @@ def test_hoeffding_adaptive_tree_nb(test_path):
                                 drift_stream=SEAGenerator(random_state=2, classification_function=2,
                                                           noise_percentage=0.05),
                                 random_state=1, position=250, width=10)
-    stream.prepare_for_use()
 
     learner = HoeffdingAdaptiveTreeClassifier(leaf_prediction='nb')
 
@@ -109,8 +107,6 @@ def test_hoeffding_adaptive_tree_nb(test_path):
 
 def test_hoeffding_adaptive_tree_nba(test_path):
     stream = HyperplaneGenerator(mag_change=0.001, noise_percentage=0.1, random_state=2)
-
-    stream.prepare_for_use()
 
     learner = HoeffdingAdaptiveTreeClassifier(leaf_prediction='nba')
 

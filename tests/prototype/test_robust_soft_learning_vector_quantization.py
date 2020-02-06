@@ -10,7 +10,6 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def test_rslvq():
     stream = SEAGenerator(random_state=1)
-    stream.prepare_for_use()
 
     learner_adadelta = RSLVQ(gradient_descent='adadelta')
     learner_vanilla = RSLVQ(gradient_descent='vanilla')

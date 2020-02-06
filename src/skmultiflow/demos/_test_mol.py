@@ -24,7 +24,6 @@ def demo():
 
     # Setup the file stream
     stream = FileStream("../data/datasets/music.csv", 0, 6)
-    stream.prepare_for_use()
 
     # Setup the classifier, by default it uses Logistic Regression
     # classifier = MultiOutputLearner()

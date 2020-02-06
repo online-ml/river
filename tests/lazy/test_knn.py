@@ -6,7 +6,6 @@ import numpy as np
 
 def test_knn():
     stream = SEAGenerator(random_state=1)
-    stream.prepare_for_use()
 
     learner = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)
     cnt = 0

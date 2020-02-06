@@ -10,7 +10,6 @@ def test_stacked_single_target_hoeffding_tree_regressor_perceptron(test_path):
     stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
-    stream.prepare_for_use()
 
     learner = StackedSingleTargetHoeffdingTreeRegressor(
         leaf_prediction='perceptron',
@@ -64,7 +63,6 @@ def test_stacked_single_target_hoeffding_tree_regressor_adaptive(test_path):
     stream = RegressionGenerator(n_samples=2000, n_features=20,
                                  n_informative=15, random_state=1,
                                  n_targets=3)
-    stream.prepare_for_use()
 
     learner = StackedSingleTargetHoeffdingTreeRegressor(
         leaf_prediction='adaptive',

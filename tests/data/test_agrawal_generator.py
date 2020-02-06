@@ -5,7 +5,6 @@ from skmultiflow.data.agrawal_generator import AGRAWALGenerator
 
 def test_agrawal_generator(test_path):
     stream = AGRAWALGenerator(classification_function=2, random_state=112, balance_classes=False, perturbation=0.28)
-    stream.prepare_for_use()
 
     assert stream.n_remaining_samples() == -1
 
@@ -64,7 +63,6 @@ def test_agrawal_generator(test_path):
 def test_agrawal_generator_all_functions(test_path):
     for f in range(10):
         stream = AGRAWALGenerator(classification_function=f, random_state=1)
-        stream.prepare_for_use()
 
         # Load test data corresponding to first 10 instances
         test_file = os.path.join(test_path, 'agrawal_stream_{}.npz'.format(f))
@@ -79,7 +77,6 @@ def test_agrawal_generator_all_functions(test_path):
 
 def test_agrawal_drift(test_path):
     stream = AGRAWALGenerator(random_state=1)
-    stream.prepare_for_use()
     X, y = stream.next_sample(10)
     stream.generate_drift()
     X_drift, y_drift = stream.next_sample(10)

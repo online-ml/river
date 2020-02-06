@@ -6,7 +6,6 @@ import numpy as np
 
 def test_additive_expert_ensemble_weakest():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
-    stream.prepare_for_use()
 
     learner = AdditiveExpertEnsembleClassifier(3, NaiveBayes(), beta=0.5, gamma=0.1,
                                                pruning='weakest')
@@ -53,7 +52,6 @@ def test_additive_expert_ensemble_weakest():
 
 def test_additive_expert_ensemble_oldest():
     stream = SEAGenerator(1, noise_percentage=0.067, random_state=112)
-    stream.prepare_for_use()
 
     learner = AdditiveExpertEnsembleClassifier(10, NaiveBayes(), beta=0.5, gamma=0.1,
                                                pruning='oldest')
