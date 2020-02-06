@@ -69,13 +69,13 @@ class AdaLearningNode(LearningNodeNBAdaptive, AdaNode):
         old_error = self.get_error_estimation()
 
         # Add element to Adwin
-        add = 0.0 if (bl_correct is True) else 1.0
+        add = 0.0 if bl_correct else 1.0
 
         self._estimation_error_weight.add_element(add)
         # Detect change with Adwin
         self.error_change = self._estimation_error_weight.detected_change()
 
-        if self.error_change is True and old_error > self.get_error_estimation():
+        if self.error_change and old_error > self.get_error_estimation():
             self.error_change = False
 
         # Update statistics

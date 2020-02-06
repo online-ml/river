@@ -73,7 +73,7 @@ class AdaLearningNodeForRegression(ActiveLearningNodePerceptron, AdaNode):
         # Detect change with Adwin
         self._error_change = self._estimation_error_weight.detected_change()
 
-        if self._error_change is True and old_error > self.get_error_estimation():
+        if self._error_change and old_error > self.get_error_estimation():
             self._error_change = False
 
         # call ActiveLearningNode
