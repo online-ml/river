@@ -49,7 +49,11 @@ class AdaBound(base.Optimizer):
 
         if not isinstance(lr, numbers.Number):
             raise ValueError(
-                f'Learning rate in AdaBound should be numeric but got {type(lr)}')
+                f'lr in AdaBound should be numeric but got {type(lr)}')
+
+        if not isinstance(final_lr, numbers.Number):
+            raise ValueError(
+                f'final_lr in AdaBound should be numeric but got {type(final_lr)}')
 
         super().__init__(lr)
         self.base_lr = lr
