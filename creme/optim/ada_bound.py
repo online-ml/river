@@ -1,5 +1,6 @@
-import collections
 import math
+import numbers
+import collections
 
 from .. import utils
 
@@ -45,6 +46,15 @@ class AdaBound(base.Optimizer):
     """
 
     def __init__(self, lr=1e-3, beta_1=0.9, beta_2=0.999, eps=1e-8, gamma=1e-3, final_lr=0.1):
+
+        if not isinstance(lr, numbers.Number):
+            raise ValueError(
+                f'lr in AdaBound should be numeric but got {type(lr)}')
+
+        if not isinstance(final_lr, numbers.Number):
+            raise ValueError(
+                f'final_lr in AdaBound should be numeric but got {type(final_lr)}')
+
         super().__init__(lr)
         self.base_lr = lr
         self.final_lr = final_lr
