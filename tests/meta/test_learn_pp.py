@@ -42,10 +42,10 @@ def test_learn_pp():
     assert corrects == expected_correct_predictions
     assert type(classifier.predict(X)) == np.ndarray
 
-    expected_info = "LearnPPClassifier(base_estimator=DecisionTreeClassifier(class_weight=None, " \
-                    "criterion='gini', max_depth=None, max_features=None, max_leaf_nodes=None, " \
+    expected_info = "LearnPPClassifier(base_estimator=DecisionTreeClassifier(ccp_alpha=0.0, " \
+                    "class_weight=None, criterion='gini', max_depth=None, max_features=None, max_leaf_nodes=None, " \
                     "min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=1, " \
-                    "min_samples_split=2, min_weight_fraction_leaf=0.0, presort=False, " \
+                    "min_samples_split=2, min_weight_fraction_leaf=0.0, presort='deprecated', " \
                     "random_state=2212, splitter='best'), error_threshold=0.5, n_ensembles=5, " \
                     "n_estimators=5, random_state=2212, window_size=100)"
     info = " ".join([line.strip() for line in classifier.get_info().split()])
