@@ -15,7 +15,7 @@ ctypedef np.float_t DTYPE_t
 cdef class ClassificationPerformanceEvaluator:
     """ Classification performance evaluator.
 
-    Tracks a classifier's performance and provides, at any moment, updated
+    Track a classifier's performance and provide, at any moment, updated
     performance metrics. This performance evaluator is designed for single-output
     (binary and multi-class) classification tasks.
 
@@ -46,7 +46,7 @@ cdef class ClassificationPerformanceEvaluator:
         self._total_weight_observed = 0.0
 
     cpdef void add_result(self, int y_true, int y_pred, double sample_weight=1.0):
-        """ Updates internal statistics with the results of a prediction.
+        """ Update internal statistics with the results of a prediction.
 
         Parameters
         ----------
@@ -79,7 +79,7 @@ cdef class ClassificationPerformanceEvaluator:
     @cython.boundscheck(False)  # Deactivate bounds checking
     @cython.wraparound(False)   # Deactivate negative indexing.
     cpdef int majority_class(self):
-        """ Computes the majority class.
+        """ Compute the majority class.
 
         Returns
         -------
@@ -102,7 +102,7 @@ cdef class ClassificationPerformanceEvaluator:
     cpdef double accuracy_score(self):
         """ Accuracy score.
         
-        The accuracy is the ratio or correctly classified samples to the total
+        The accuracy is the ratio of correctly classified samples to the total
         number of samples.
 
         Returns
@@ -251,8 +251,8 @@ cdef class ClassificationPerformanceEvaluator:
         
         Notes
         -----
-        If seen data corresponds to a multi-class problem then calculates the ``macro``
-        average, this is, calculates metrics for each class, and find their unweighted mean.
+        If seen data corresponds to a multi-class problem then calculate the ``macro``
+        average, that is, calculate metrics for each class, and find their unweighted mean.
 
         """
         cdef double total
@@ -299,8 +299,8 @@ cdef class ClassificationPerformanceEvaluator:
         
         Notes
         -----
-        If seen data corresponds to a multi-class problem then calculates the ``macro``
-        average, this is, calculates metrics for each class, and find their unweighted mean.
+        If seen data corresponds to a multi-class problem then calculate the ``macro``
+        average, that is, calculate metrics for each class, and find their unweighted mean.
         
         """
         cdef double total
@@ -351,8 +351,8 @@ cdef class ClassificationPerformanceEvaluator:
         
         Notes
         -----
-        If seen data corresponds to a multi-class problem then calculates the ``macro``
-        average, this is, calculates metrics for each class, and find their unweighted mean.
+        If seen data corresponds to a multi-class problem then calculate the ``macro``
+        average, that is, calculate metrics for each class, and find their unweighted mean.
 
         """
         cdef double total
@@ -467,7 +467,7 @@ cdef class ClassificationPerformanceEvaluator:
 cdef class WindowClassificationPerformanceEvaluator(ClassificationPerformanceEvaluator):
     """ Window classification performance evaluator.
 
-    Tracks a classifier's performance over a sliding window and provides, at any moment,
+    Track a classifier's performance over a sliding window and provide, at any moment,
     updated performance metrics. This performance evaluator is designed for single-output
     (binary and multi-class) classification tasks.
 
@@ -493,7 +493,7 @@ cdef class WindowClassificationPerformanceEvaluator(ClassificationPerformanceEva
         self._queue = deque()
 
     cpdef void add_result(self, int y_true, int y_pred, double sample_weight=1.0):
-        """ Updates internal statistics with the results of a prediction.
+        """ Update internal statistics with the results of a prediction.
 
         Parameters
         ----------
@@ -581,7 +581,7 @@ cdef class WindowClassificationPerformanceEvaluator(ClassificationPerformanceEva
 cdef class MultiLabelClassificationPerformanceEvaluator:
     """ Multi-label classification performance evaluator.
 
-    Tracks a classifier's performance and provides, at any moment, updated
+    Track a classifier's performance and provide, at any moment, updated
     performance metrics. This performance evaluator is designed for multi-output
     (multi-label) classification tasks.
 
@@ -612,7 +612,7 @@ cdef class MultiLabelClassificationPerformanceEvaluator:
     @cython.boundscheck(False)  # Deactivate bounds checking
     @cython.wraparound(False)   # Deactivate negative indexing.
     cpdef void add_result(self, np.ndarray y_true, np.ndarray y_pred, double sample_weight=1.0):
-        """ Updates internal statistics with the results of a prediction.
+        """ Update internal statistics with the results of a prediction.
 
         Parameters
         ----------
@@ -707,7 +707,7 @@ cdef class MultiLabelClassificationPerformanceEvaluator:
         
         The Jaccard index, or Jaccard similarity coefficient, defined as
         the size of the intersection divided by the size of the union of two label
-        sets, is used to compare set of predicted labels for a sample to the
+        sets, is used to compare the set of predicted labels for a sample with the
         corresponding set of labels in ``y_true``.
         
         Returns
@@ -761,7 +761,7 @@ cdef class MultiLabelClassificationPerformanceEvaluator:
 cdef class WindowMultiLabelClassificationPerformanceEvaluator(MultiLabelClassificationPerformanceEvaluator):
     """ Window multi-label classification performance evaluator.
 
-    Tracks a classifier's performance over a sliding window and provides, at any moment,
+    Track a classifier's performance over a sliding window and provide, at any moment,
     updated performance metrics. This performance evaluator is designed for multi-output
     (multi-label) classification tasks.
 
@@ -789,7 +789,7 @@ cdef class WindowMultiLabelClassificationPerformanceEvaluator(MultiLabelClassifi
     @cython.boundscheck(False)  # Deactivate bounds checking
     @cython.wraparound(False)   # Deactivate negative indexing.
     cpdef void add_result(self, np.ndarray y_true, np.ndarray y_pred, double sample_weight=1.0):
-        """ Updates internal statistics with the results of a prediction.
+        """ Update internal statistics with the results of a prediction.
 
         Parameters
         ----------
@@ -887,14 +887,16 @@ cdef class WindowMultiLabelClassificationPerformanceEvaluator(MultiLabelClassifi
 
 
 cdef bool _check_multi_label_inputs(np.ndarray y_true, np.ndarray y_pred):
-    """ Checks multi-label inputs
+    """ Check multi-label inputs
     
     Parameters
     ----------
     y_true: np.ndarray of shape (n_labels,)
         True (actual) values array
+
     y_pred: np.ndarray of shape (n_labels,)
         Predicted values array
+
     Returns
     -------
     bool
@@ -906,7 +908,6 @@ cdef bool _check_multi_label_inputs(np.ndarray y_true, np.ndarray y_pred):
         If y_true and y_pred have different lengths
 
     """
-
     cdef bool is_valid = True
 
     if len(y_true) != len(y_pred):
