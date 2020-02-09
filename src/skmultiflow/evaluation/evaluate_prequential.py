@@ -69,7 +69,7 @@ class EvaluatePrequential(StreamEvaluator):
         | 'average_mean_squared_error'
         | 'average_mean_absolute_error'
         | 'average_root_mean_square_error'
-        | **Experimental**
+        | **Experimental** (no plot generated)
         | 'running_time'
         | 'model_size'
 
@@ -95,6 +95,10 @@ class EvaluatePrequential(StreamEvaluator):
 
     2. The metric 'true_vs_predicted' is intended to be informative only. It corresponds to evaluations at a specific
        moment which might not represent the actual learner performance across all instances.
+
+    3. The metrics `running_time` and `model_size ` are not plotted when the `show_plot` option is set. Only their
+       current value is displayed at the bottom of the figure. However, their values over the evaluation are written
+       into the resulting csv file if the `output_file` option is set.
 
     Examples
     --------
