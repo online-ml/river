@@ -1295,7 +1295,7 @@ class MultiTargetRegressionMeasurements(object):
             m = len(y)
         self.n_targets = m
 
-        self.total_square_error += (y - prediction) ** 2
+        self.total_square_error += (y - prediction) * (y - prediction)
         self.average_error += np.absolute(y - prediction)
         self.sample_count += 1
 
@@ -1413,11 +1413,11 @@ class WindowMultiTargetRegressionMeasurements(object):
             m = len(y)
         self.n_targets = m
 
-        self.total_square_error += (y - prediction) ** 2
+        self.total_square_error += (y - prediction) * (y - prediction)
         self.average_error += np.absolute(y - prediction)
 
         old_square = self.total_square_error_correction.add_element(
-            np.array([-1 * ((y - prediction) ** 2)])
+            np.array([-1 * (y - prediction) * (y - prediction)])
         )
         old_average = self.average_error_correction.add_element(
             np.array([-1 * (np.absolute(y - prediction))])

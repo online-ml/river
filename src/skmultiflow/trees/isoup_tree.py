@@ -212,7 +212,8 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
 
         mean = self.sum_of_attribute_values / self.examples_seen
         variance = (self.sum_of_attribute_squares -
-                    (self.sum_of_attribute_values ** 2) /
+                    (self.sum_of_attribute_values *
+                     self.sum_of_attribute_values) /
                     self.examples_seen) / (self.examples_seen - 1)
 
         sd = np.sqrt(variance, out=np.zeros_like(variance),
@@ -245,7 +246,8 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
 
         mean = self.sum_of_values / self.examples_seen
         variance = (self.sum_of_squares -
-                    (self.sum_of_values ** 2) /
+                    (self.sum_of_values *
+                     self.sum_of_values) /
                     self.examples_seen) / (self.examples_seen - 1)
 
         sd = np.sqrt(variance, out=np.zeros_like(variance),
@@ -504,7 +506,8 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                                   normalized_sample)
                     mean = self.sum_of_values / self.examples_seen
                     variance = (self.sum_of_squares -
-                                (self.sum_of_values ** 2) /
+                                (self.sum_of_values *
+                                 self.sum_of_values) /
                                 self.examples_seen) / (self.examples_seen - 1)
                     sd = np.sqrt(variance, out=np.zeros_like(variance),
                                  where=variance >= 0.0)
@@ -533,7 +536,8 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                                       normalized_sample)
                         mean = self.sum_of_values / self.examples_seen
                         variance = (self.sum_of_squares -
-                                    (self.sum_of_values ** 2) /
+                                    (self.sum_of_values *
+                                     self.sum_of_values) /
                                     self.examples_seen) / (self.examples_seen - 1)
                         sd = np.sqrt(variance, out=np.zeros_like(variance),
                                      where=variance >= 0.0)
