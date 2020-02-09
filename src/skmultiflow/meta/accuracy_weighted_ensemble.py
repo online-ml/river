@@ -308,7 +308,7 @@ class AccuracyWeightedEnsembleClassifier(BaseSKMObject, ClassifierMixin, MetaEst
             if c in labels:
                 index_label_c = np.where(labels == c)[0][0]  # find the index of this label c in probabs[i]
                 probab_ic = probabs[i][index_label_c]
-                sum_error += (1.0 - probab_ic) ** 2
+                sum_error += (1.0 - probab_ic) * (1.0 - probab_ic)
             else:
                 sum_error += 1.0
 
@@ -402,7 +402,9 @@ class AccuracyWeightedEnsembleClassifier(BaseSKMObject, ClassifierMixin, MetaEst
 
         # if we base on the class distribution of the data --> count the number of labels
         classes, class_count = np.unique(y, return_counts=True)
-        class_dist = [class_count[i] / len(y) for i, c in enumerate(classes)]
-        mse_r = np.sum([class_dist[i] * ((1 - class_dist[i]) ** 2) for i, c in enumerate(classes)])
+        class_dist = [class_count[i] / len(y) for i in range(len(classes))]
+        mse_r = np.sum([(class_dist[i]
+                         * (1 - class_dist[i])
+                         * (1 - class_dist[i])) for i in range(len(classes))])
 
         return mse_r

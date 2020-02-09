@@ -123,18 +123,20 @@ class RobustSoftLearningVectorQuantization(ClassifierMixin, BaseSKMObject):
             gradient = - self._p(j, xi, prototypes=self.w_) * d
 
         # Accumulate gradient
-        self.squared_mean_gradient[j] = self.gamma * \
-            self.squared_mean_gradient[j] + (1 - self.gamma) \
-            * gradient ** 2
+        self.squared_mean_gradient[j] = (self.gamma
+                                         * self.squared_mean_gradient[j]
+                                         + (1 - self.gamma)
+                                            * gradient
+                                            * gradient)
 
         # Compute update/step
-        step = ((self.squared_mean_step[j] + self.epsilon) /
-                (self.squared_mean_gradient[j] + self.epsilon)) ** 0.5 * \
-            gradient
+        step = (np.sqrt((self.squared_mean_step[j] + self.epsilon)
+                        / (self.squared_mean_gradient[j] + self.epsilon))
+                * gradient)
 
         # Accumulate updates
-        self.squared_mean_step[j] = self.gamma * \
-            self.squared_mean_step[j] + (1 - self.gamma) * step ** 2
+        self.squared_mean_step[j] = (self.gamma * self.squared_mean_step[j]
+                                     + (1 - self.gamma) * step * step)
 
         # Attract/Distract prototype to/from data point
         self.w_[j] += step
