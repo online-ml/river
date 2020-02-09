@@ -71,7 +71,7 @@ class EvaluateHoldout(StreamEvaluator):
         | 'average_mean_squared_error'
         | 'average_mean_absolute_error'
         | 'average_root_mean_square_error'
-        | **Experimental**
+        | **Experimental** (no plot generated)
         | 'running_time'
         | 'model_size'
 
@@ -95,6 +95,10 @@ class EvaluateHoldout(StreamEvaluator):
     -----
     1. This evaluator can process a single learner to track its performance; or multiple learners  at a time, to
        compare different models on the same stream.
+
+    2. The metrics `running_time` and `model_size ` are not plotted when the `show_plot` option is set. Only their
+       current value is displayed at the bottom of the figure. However, their values over the evaluation are written
+       into the resulting csv file if the `output_file` option is set.
 
     Examples
     --------
