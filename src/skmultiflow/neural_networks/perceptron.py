@@ -14,8 +14,8 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
                  penalty=None,
                  alpha=0.0001,
                  fit_intercept=True,
-                 max_iter=None,
-                 tol=None,
+                 max_iter=1000,
+                 tol=0.001,
                  shuffle=True,
                  verbose=0,
                  eta0=1.0,
@@ -25,8 +25,7 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
                  validation_fraction=0.1,
                  n_iter_no_change=5,
                  class_weight=None,
-                 warm_start=False,
-                 n_iter=None):
+                 warm_start=False):
         self.penalty = penalty
         self.alpha = alpha
         self.fit_intercept = fit_intercept
@@ -42,7 +41,6 @@ class PerceptronMask(BaseSKMObject, ClassifierMixin):
         self.n_iter_no_change = n_iter_no_change
         self.class_weight = class_weight
         self.warm_start = warm_start
-        self.n_iter = n_iter
         super().__init__()
         self.classifier = Perceptron(penalty=self.penalty,
                                      alpha=self.alpha,

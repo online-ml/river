@@ -83,7 +83,7 @@ def test_sam_knn_coverage():
                                        0, 1, 0, 0, 1, 1, 1, 1, 1, 0,
                                        0, 1, 1, 1, 1, 1, 0, 1, 1, 1,
                                        1, 1, 1, 1, 0, 1, 1, 1, 1, 0,
-                                       0, 0, 0, 0, 0, 1, 1, 1, 0])
+                                       0, 0, 0, 0, 0, 1, 0, 1, 1])
     assert np.alltrue(predictions == expected_predictions)
 
     expected_info = "SAMKNNClassifier(ltm_size=0.4, max_window_size=None, min_stm_size=10, n_neighbors=3, " \
