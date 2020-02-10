@@ -106,7 +106,7 @@ The goal is for the user to be able to run the example code without requiring an
 
  The following code snippet is intended as a template and should be modified accordingly:
 
-### Template code
+#### Example code template
 
 ```python
    
