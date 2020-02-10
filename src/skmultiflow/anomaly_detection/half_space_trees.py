@@ -55,6 +55,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
     .. [1] S.C.Tan, K.M.Ting, and T.F.Liu, “Fast anomaly detection for streaming data,”
        in IJCAI Proceedings - International Joint Conference on Artificial Intelligence,
        2011, vol. 22, no. 1, pp. 1511–1516.
+
     """
 
     def __init__(self,
