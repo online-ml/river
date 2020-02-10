@@ -91,4 +91,52 @@ Naming methods properly is important for multiple reasons:
 
 `method's name` + `type
 
-where `type` is optional since in some cases it could be inferred from the method/class name itself. E.g. `RegressorChain`
+where `type` is optional since in some cases it could be inferred from the method/class name itself. E.g. `NaiveBayes`
+
+### Example code in docstrings
+
+The documentation of a new method shall include an example of its usage (or more if required). Code examples shall be added into a method's docstring under the **"Examples"** section. Code examples shall be:
+
+* Clear.
+* Concise.
+* Reproducible.
+* Focus on the method being documented.
+
+The goal is for the user to be able to run the example code without requiring any modifications.
+
+ The following code snippet is intended as a template and should be modified accordingly:
+
+### Template code
+
+```python
+   
+# Import required packages such as estimators, generators, etc
+from skmultiflow.data import SEAGenerator
+from skmultiflow.bayes import NaiveBayes
+
+# Setup a data stream
+stream = SEAGenerator(random_state=1)
+
+# Prepare stream for use
+stream.prepare_for_use()
+
+# Variables to control loop and track performance
+n_samples = 0
+correct_cnt = 0
+max_samples = 200
+
+# Setup the desired estimator
+estimator = NaiveBayes(nominal_attributes=None)
+
+# Run test-then-train loop for max_samples or while there is data in the stream
+while n_samples < max_samples and stream.has_more_samples():
+   X, y = stream.next_sample()
+   y_pred = estimator.predict(X)
+   if y[0] == y_pred[0]:
+       correct_cnt += 1
+   estimator.partial_fit(X, y)
+   n_samples += 1
+
+print('{} samples analyzed.'.format(n_samples))   
+print('Estimator accuracy: {}'.format(correct_cnt / n_samples))
+```
