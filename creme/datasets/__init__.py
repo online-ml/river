@@ -1,6 +1,7 @@
 """Datasets."""
 from . import gen
 from .airline import Airline
+from .banana import Banana
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
 from .elec2 import Elec2
@@ -18,6 +19,7 @@ from .malicious_url import MaliciousURL
 
 __all__ = [
     'Airline',
+    'Banana',
     'ChickWeights',
     'CreditCard',
     'Elec2',

@@ -7,13 +7,14 @@
 Before starting you want to make sure you have Python 3.6 or above installed. We recommend you create a [virtual environment](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/) with `conda`, as so:
 
 ```sh
-conda create --name creme python=3.6 cython
+conda create --name creme python=3.6 anaconda cython
+conda activate creme
 ```
 
-You also will need GCC to compile Cython extensions:
+You also will need GCC to compile Cython extensions. If you don't already have it installed, you can do so via `conda`:
 
 ```sh
-conda install -c anaconda gcc
+conda install -c gcc
 ```
 
 Finally, you may fork the `dev` branch of the repository, which you can do from GitHub. Once you've done the fork, you can clone it to your work station. Once this is done navigate to the cloned directory and install the required dependencies:
@@ -50,17 +51,23 @@ make cython
 
 **Unit tests**
 
+These tests absolutely have to pass.
+
 ```sh
 pytest
 ```
 
 **Web dependent tests**
 
+This involves tests that need an internet connection, such as those in the `datasets` module. In most cases you probably don't need to run these.
+
 ```sh
 pytest -m web
 ```
 
 **Notebook tests**
+
+You don't have to worry too much about these, as we check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way round.
 
 ```sh
 pytest --nbval-lax --current-env docs/notebooks/*.ipynb`
