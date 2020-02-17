@@ -62,7 +62,9 @@ class InfoGainSplitCriterion(SplitCriterion):
             dist_sums[i] = sum(distributions[i].values())
             total_weight += dist_sums[i]
         num_greater = 0
-        for d in dist_sums:
-            if (d / total_weight) > min_frac:
-                num_greater += 1
+
+        if total_weight > 0:
+            for d in dist_sums:
+                if (d / total_weight) > min_frac:
+                    num_greater += 1
         return num_greater
