@@ -26,6 +26,7 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 - Added `datasets.gen.SEA`.
 - Added `datasets.Higgs`.
 - Added `datasets.MovieLens100K`.
+- Added `dataset.Banana`.
 
 :mod:`imblearn`
 
@@ -92,3 +93,8 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 
 - Added `stats.AbsMax`.
 - Added `stats.RollingAbsMax`.
+
+:mod:`stream`
+
+- Added `stream.iter_libsvm`.
+- `stream.iter_csv` now supports reading from '.zip' files.
