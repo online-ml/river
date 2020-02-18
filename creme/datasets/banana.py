@@ -29,5 +29,5 @@ class Banana(base.FileDataset):
     def _stream_X_y(self, directory):
         return stream.iter_libsvm(
             os.path.join(directory, 'banana.zip'),
-            target_type=int
+            target_type=lambda x: x == '1'
         )

@@ -12,3 +12,4 @@ User guide
    notebooks/imbalanced-learning.ipynb
    notebooks/quantile-regression-uncertainty.ipynb
    notebooks/matrix-factorization-for-recommender-systems.ipynb
+   supervised.rst
