@@ -93,3 +93,9 @@ class DampedES:
     @staticmethod
     def _compute_discount_sum(phi: float, h: int) -> float:
         return sum([phi**i for i in range(1, h + 1)])
+
+#TODO Holt-Winters’ additive method
+
+#TODO Holt-Winters’ multiplicative method
+
+#TODO Holt-Winters’ damped method
