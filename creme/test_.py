@@ -124,8 +124,12 @@ def get_all_estimators():
             yield inst
 
 
-@pytest.mark.parametrize('estimator', [
-    pytest.param(copy.deepcopy(estimator), id=str(estimator))
+@pytest.mark.parametrize('estimator, check', [
+    pytest.param(
+        copy.deepcopy(estimator),
+        check,
+        id=f'{estimator}:{check.__name__}'
+    )
     for estimator in list(get_all_estimators()) + [
         feature_extraction.TFIDF(),
         linear_model.LogisticRegression(),
@@ -142,6 +146,7 @@ def get_all_estimators():
         feature_selection.VarianceThreshold(),
         feature_selection.SelectKBest(similarity=stats.PearsonCorrelation())
     ]
+    for check in utils.estimator_checks.yield_checks(estimator)
 ])
-def test_check_estimator(estimator):
-    utils.estimator_checks.check_estimator(estimator)
+def test_check_estimator(estimator, check):
+    check(estimator)

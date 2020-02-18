@@ -210,23 +210,13 @@ cdef class Hinge(BinaryLoss):
         ::
 
             >>> from creme import optim
-            >>> import numpy as np
-            >>> from sklearn import svm
-            >>> from sklearn.metrics import hinge_loss
 
-            >>> X = [[0], [1]]
-            >>> y = [-1, 1]
-            >>> lin_svm = svm.LinearSVC(random_state=0).fit(X, y)
+            >>> loss = optim.losses.Hinge(threshold=1)
+            >>> loss.eval(1, .2)
+            0.8
 
-            >>> y_true = [0, 1, 1]
-            >>> y_pred = lin_svm.decision_function([[-2], [3], [0.5]])
-
-            >>> hinge_loss([0, 1, 1], y_pred)
-            0.303036...
-
-            >>> loss = optim.losses.Hinge()
-            >>> np.mean([loss.eval(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
-            0.303036...
+            >>> loss.gradient(1, .2)
+            -0.2
 
     """
 

@@ -2,3 +2,4 @@
 plugins = Cython.Coverage
 omit =
     *__init__.py
+    *.so
