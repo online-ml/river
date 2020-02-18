@@ -1,4 +1,5 @@
 """Linear models."""
+from .alma import ALMAClassifier
 from .ffm import FFMClassifier
 from .ffm import FFMRegressor
 from .fm import FMClassifier
@@ -14,6 +15,7 @@ from .softmax import SoftmaxRegression
 
 
 __all__ = [
+    'ALMAClassifier',
     'FFMClassifier',
     'FFMRegressor',
     'FMClassifier',

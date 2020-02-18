@@ -11,6 +11,7 @@ __all__ = [
     'Hinge',
     'EpsilonInsensitiveHinge',
     'Log',
+    'Perceptron',
     'Poisson',
     'Quantile',
     'Squared'
@@ -200,6 +201,10 @@ cdef class Hinge(BinaryLoss):
         \\end{array}
         \\right.
 
+    Parameters:
+        threshold (float): Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to
+            the loss used in the Perceptron algorithm.
+
     Example:
 
         ::
@@ -225,11 +230,15 @@ cdef class Hinge(BinaryLoss):
 
     """
 
+    cdef readonly double threshold
+
+    def __init__(self, double threshold=1.):
+        self.threshold = threshold
+
     cpdef double eval(self, bint y_true, double y_pred):
-        # Our convention is to use 0s instead of -1s for negatives, but the Hinge loss uses -1s as
-        # a convention
+        # Convert 0 to -1
         y_true = y_true or -1
-        return math.fmax(0, 1 - y_true * y_pred)
+        return math.fmax(0, self.threshold - y_true * y_pred)
 
     cpdef double gradient(self, bint y_true, double y_pred):
         """Returns the gradient with respect to ``y_pred``.
@@ -239,7 +248,7 @@ cdef class Hinge(BinaryLoss):
 
         """
         y_true = y_true or -1
-        if y_true * y_pred < 1:
+        if y_true * y_pred < self.threshold:
             return -y_pred
         return 0
 
@@ -252,8 +261,7 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
         self.eps = eps
 
     cpdef double eval(self, double y_true, double y_pred):
-        # Our convention is to use 0s instead of -1s for negatives, but the Hinge loss uses -1s as
-        # a convention
+        # Convert 0 to -1
         y_true = y_true or -1
         return math.fmax(0, math.fabs(y_pred - y_true) - self.eps)
 
@@ -416,9 +424,8 @@ class BinaryFocalLoss(BinaryLoss):
 
     def eval(self, y_true, y_pred):
 
-        # Focal loss expects y_true to be in {-1, +1}
-        if y_true == 0:
-            y_true = -1
+        # Convert 0 to -1
+        y_true = int(y_true or -1)
 
         xt = y_true * y_pred
         pt = utils.math.sigmoid(self.gamma * xt + self.beta)
@@ -427,9 +434,8 @@ class BinaryFocalLoss(BinaryLoss):
 
     def gradient(self, y_true, y_pred):
 
-        # Focal loss expects y_true to be in {-1, +1}
-        if y_true == 0:
-            y_true = -1
+        # Convert 0 to -1
+        y_true = int(y_true or -1)
 
         xt = y_true * y_pred
         pt = utils.math.sigmoid(self.gamma * xt + self.beta)
@@ -457,3 +463,26 @@ cdef class Poisson(RegressionLoss):
 
     cpdef double gradient(self, double y_true, double y_pred):
         return math.exp(y_pred) - y_true
+
+
+cdef class Perceptron(Hinge):
+    """Perceptron loss.
+
+    The Perceptron loss is the loss used in the Perceptron algorithm. Using this loss in a logistic
+    regression yields the Perceptron algorithm.
+
+    Mathematically, it is defined as
+
+    .. math:: L = exp(p_i) - y_i \\times p_i
+
+    It's gradient w.r.t. to $p_i$ is
+
+    .. math:: \\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i
+
+    References:
+        1. `Wikipedia page on the Perceptron algorithm <https://www.wikiwand.com/en/Perceptron>`_
+
+    """
+
+    def __init__(self):
+        super().__init__(threshold=0.)
