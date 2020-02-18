@@ -170,19 +170,7 @@ class DictReader(csv.DictReader):
             while self.rng.random() > self.fraction:
                 row = next(self.reader)
 
-        self.line_num = self.reader.line_num
-
-        while row == []:
-            row = next(self.reader)
-        d = dict(zip(self.fieldnames, row))
-        lf = len(self.fieldnames)
-        lr = len(row)
-        if lf < lr:
-            d[self.restkey] = row[lf:]
-        elif lf > lr:
-            for key in self.fieldnames[lr:]:
-                d[key] = self.restval
-        return d
+        return dict(zip(self.fieldnames, row))
 
 
 def open_filepath(filepath_or_buffer, compression):
