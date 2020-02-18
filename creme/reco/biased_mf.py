@@ -1,4 +1,5 @@
 import collections
+import copy
 import functools
 
 import numpy as np
@@ -109,10 +110,10 @@ class BiasedMF(base.Recommender):
                  l2_bias=0., l2_latent=0., weight_initializer=None, latent_initializer=None,
                  clip_gradient=1e12, random_state=None):
         self.n_factors = n_factors
-        self.u_bias_optimizer = optim.SGD() if bias_optimizer is None else bias_optimizer
-        self.i_bias_optimizer = optim.SGD() if bias_optimizer is None else bias_optimizer
-        self.u_latent_optimizer = optim.SGD() if latent_optimizer is None else latent_optimizer
-        self.i_latent_optimizer = optim.SGD() if latent_optimizer is None else latent_optimizer
+        self.u_bias_optimizer = optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
+        self.i_bias_optimizer = optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
+        self.u_latent_optimizer = optim.SGD() if latent_optimizer is None else copy.deepcopy(latent_optimizer)
+        self.i_latent_optimizer = optim.SGD() if latent_optimizer is None else copy.deepcopy(latent_optimizer)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2_bias = l2_bias
         self.l2_latent = l2_latent

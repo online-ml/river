@@ -98,6 +98,9 @@ def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
 
     """
 
+    if not hasattr(estimator, 'partial_fit'):
+        raise ValueError(f'{estimator} does not have a partial_fit method')
+
     wrappers = [
         (sklearn_base.RegressorMixin, functools.partial(
             SKL2CremeRegressor,
