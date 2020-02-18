@@ -57,7 +57,7 @@ class HoltES:
 class DampedES:
     """
     #TODO : Docstring + test
-    
+
     Parameters:
         alpha (float): ... .Defaults to `0.5`.
         beta (float): ... .Defaults to `0.5`.
@@ -65,10 +65,12 @@ class DampedES:
 
     References:
         1. `Damped trend methods <https://otexts.com/fpp2/holt.html>`_
-    """    
-    def __init__(self, alpha:float = 0.5, beta:float = 0.5, phi:float = 0.5):
+    """
+
+    def __init__(self, alpha: float = 0.5, beta: float = 0.5,
+                 phi: float = 0.5):
         self.alpha = alpha
-        self.beta = beta 
+        self.beta = beta
         self.phi = phi
         self.lt = 0
         self.bt = 0
@@ -79,14 +81,15 @@ class DampedES:
         bt_1 = self.bt
 
         self.lt = self.alpha * x + (1 - self.alpha) * (lt_1 + self.phi * bt_1)
-        self.bt = self.beta * ( self.lt - lt_1) + (1 - self.beta) * bt_1 * self.phi
+        self.bt = self.beta * (self.lt - lt_1) + (
+            1 - self.beta) * bt_1 * self.phi
 
         return self
-    
-    def get(self, h:int) -> float:
+
+    def get(self, h: int) -> float:
         discount_sum = self._compute_discount_sum(self.phi, h)
         return self.lt + (discount_sum * self.bt)
-    
+
     @staticmethod
-    def _compute_discount_sum(phi: float, h:int) -> float:
-        return sum([phi ** i for i in range(1, h+1)])
+    def _compute_discount_sum(phi: float, h: int) -> float:
+        return sum([phi**i for i in range(1, h + 1)])
