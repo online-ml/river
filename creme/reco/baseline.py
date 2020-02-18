@@ -1,4 +1,5 @@
 import collections
+import copy
 
 from .. import stats
 from .. import optim
@@ -74,10 +75,10 @@ class Baseline(base.Recommender):
     """
 
     def __init__(self, optimizer=None, loss=None, l2=0., initializer=None, clip_gradient=1e12):
-        self.optimizer = optim.SGD() if optimizer is None else optimizer
-        self.u_optimizer = optim.SGD() if optimizer is None else optimizer
-        self.i_optimizer = optim.SGD() if optimizer is None else optimizer
-        self.loss = optim.losses.Squared() if loss is None else u_optimizer
+        self.optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        self.loss = optim.losses.Squared() if loss is None else loss
         self.l2 = l2
 
         if initializer is None:

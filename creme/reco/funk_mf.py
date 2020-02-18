@@ -1,4 +1,5 @@
 import collections
+import copy
 import functools
 
 import numpy as np
@@ -88,8 +89,8 @@ class FunkMF(base.Recommender):
     def __init__(self, n_factors=10, optimizer=None, loss=None, l2=0., initializer=None,
                  clip_gradient=1e12, random_state=None):
         self.n_factors = n_factors
-        self.u_optimizer = optim.SGD() if optimizer is None else optimizer
-        self.i_optimizer = optim.SGD() if optimizer is None else optimizer
+        self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2 = l2
 
