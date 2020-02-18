@@ -47,6 +47,7 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 - Added `linear_model.HOFMRegressor`.
 - Refactored `linear_model.FMClassifier`.
 - Refactored `linear_model.FMRegressor`.
+- Added `linear_model.ALMAClassifier`.
 
 :mod:`metrics`
 
