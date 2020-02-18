@@ -22,7 +22,7 @@ class Banana(base.FileDataset):
     def __init__(self):
         super().__init__(
             n_samples=5300,
-            n_features=3,
+            n_features=2,
             category=base.BINARY_CLF
         )
 
