@@ -58,10 +58,6 @@ class TransformedTargetRegressor(base.Regressor, base.Wrapper):
     def _model(self):
         return self.regressor
 
-    @property
-    def _labelloc(self):
-        return 't'  # for top
-
     def fit_one(self, x, y):
         self.regressor.fit_one(x, self.func(y))
         return self
