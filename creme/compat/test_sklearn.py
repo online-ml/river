@@ -12,7 +12,7 @@ from creme import preprocessing
     for estimator in [
         linear_model.LinearRegression(),
         preprocessing.StandardScaler(),
-        cluster.KMeans()
+        cluster.KMeans(seed=42)
     ]
 ])
 def test_sklearn_check_estimator(estimator):
