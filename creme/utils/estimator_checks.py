@@ -1,5 +1,6 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
+import functools
 import math
 import pickle
 
@@ -22,24 +23,32 @@ def guess_model(model):
     return model
 
 
-def pick_X_y(model):
+def yield_datasets(model):
 
     from .. import base
     from .. import datasets
+    from .. import stream
+    from sklearn import datasets as sk_datasets
 
     model = guess_model(model)
 
-    if isinstance(model, base.BinaryClassifier):
-        yield from datasets.Phishing()
-    elif isinstance(model, base.Regressor):
-        yield from datasets.TrumpApproval()
+    if isinstance(model, base.Classifier):
+        yield datasets.Phishing()
+    if isinstance(model, base.MultiClassifier):
+        yield stream.iter_sklearn_dataset(sk_datasets.load_iris())
+    if isinstance(model, base.Regressor):
+        yield datasets.TrumpApproval()
+    if isinstance(model, base.MultiOutputRegressor):
+        yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
+    if isinstance(model, base.MultiOutputRegressor):
+        yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
 
 
-def check_fit_one(model):
+def check_fit_one(model, dataset):
 
     klass = model.__class__
 
-    for x, y in pick_X_y(model):
+    for x, y in dataset:
 
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
@@ -53,9 +62,9 @@ def check_fit_one(model):
         assert y == yy
 
 
-def check_predict_proba_one(classifier):
+def check_predict_proba_one(classifier, dataset):
 
-    for x, y in pick_X_y(classifier):
+    for x, y in dataset:
 
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
@@ -73,9 +82,9 @@ def check_predict_proba_one(classifier):
         assert y == yy
 
 
-def check_predict_proba_one_binary(classifier):
+def check_predict_proba_one_binary(classifier, dataset):
 
-    for x, y in pick_X_y(classifier):
+    for x, y in dataset:
         y_pred = classifier.predict_proba_one(x)
         classifier = classifier.fit_one(x, y)
         assert len(y_pred) == 2
@@ -83,7 +92,19 @@ def check_predict_proba_one_binary(classifier):
         assert False in y_pred
 
 
-def check_pickling(model):
+def check_debug_one(model, dataset):
+    for x, y in dataset:
+        model.debug_one(x)
+        model.fit_one(x, y)
+        model.debug_one(x)
+        break
+
+
+def check_pickling(model, dataset):
+    assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
+    for x, y in dataset:
+        model.predict_one(x)
+        model.fit_one(x, y)
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
 
 
@@ -95,42 +116,44 @@ def check_str(model):
     assert isinstance(str(model), str)
 
 
-def check_debug_one(model):
-    for x, y in pick_X_y(model):
-        model.debug_one(x)
-        model.fit_one(x, y)
-        model.debug_one(x)
-        break
-
-
 def check_get_tags(model):
     """Checks that the ``_get_tags`` method works."""
     assert isinstance(model._get_tags(), dict)
 
 
-def yield_all_checks(model):
+def yield_checks(model):
+    """Generates unit tests that can be applied to a given model.
+
+    Parameters:
+        model (base.Estimator)
+
+    """
 
     from .. import base
 
-    if isinstance(model, base.AnomalyDetector):
-        return
-        yield
-
-    yield check_fit_one
-    yield check_pickling
     yield check_repr
     yield check_str
     yield check_get_tags
-    if hasattr(model, 'debug_one'):
-        yield check_debug_one
 
-    model = guess_model(model)
+    for dataset in yield_datasets(model):
 
-    if isinstance(model, base.Classifier):
-        yield check_predict_proba_one
+        def with_dataset(method):
+            check = functools.partial(check_fit_one, dataset=dataset)
+            functools.update_wrapper(check, method)
+            return check
 
-        if not isinstance(model, base.MultiClassifier):
-            yield check_predict_proba_one_binary
+        yield with_dataset(check_fit_one)
+        yield with_dataset(check_pickling)
+        if hasattr(model, 'debug_one'):
+            yield with_dataset(check_debug_one)
+
+        model = guess_model(model)
+
+        if isinstance(model, base.Classifier):
+            yield with_dataset(check_predict_proba_one)
+
+        if not isinstance(model, base.MultiClassifier):  # only binary classifiers
+            yield with_dataset(check_predict_proba_one_binary)
 
 
 def check_estimator(model):
@@ -140,6 +163,5 @@ def check_estimator(model):
         model (base.Estimator)
 
     """
-
-    for check in yield_all_checks(model):
+    for check in yield_checks(model):
         check(copy.deepcopy(model))

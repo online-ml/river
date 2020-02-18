@@ -9,8 +9,10 @@ __all__ = ['ClassifierChain', 'RegressorChain']
 
 class BaseChain(collections.OrderedDict):
 
-    def __init__(self, model, order):
+    def __init__(self, model, order=None):
         super().__init__()
+        self.model = model
+        self.order = order
         for o in order:
             self[o] = copy.deepcopy(model)
 
