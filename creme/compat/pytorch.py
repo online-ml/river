@@ -87,7 +87,7 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 2.805633
+            MAE: 2.805634
 
     """
 
@@ -97,8 +97,8 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
             loss_fn=loss_fn,
             optimizer=optimizer,
             batch_size=batch_size,
-            x_tensor=torch.FloatTensor,
-            y_tensor=torch.FloatTensor
+            x_tensor=torch.tensor,
+            y_tensor=torch.tensor
         )
 
     def predict_one(self, x):

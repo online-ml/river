@@ -17,7 +17,35 @@ class ROCAUC(base.BinaryMetric):
 
     Attributes:
         thresholds (list)
-        cms (list): Contains the `metrics.ConfusionMatrix` for each threshold.
+        cms (list): Contains a `metrics.ConfusionMatrix` for each threshold.
+
+    Example:
+
+        ::
+
+            >>> from creme import metrics
+
+            >>> y_true = [ 0,  0,   1,  1]
+            >>> y_pred = [.1, .4, .35, .8]
+
+            >>> metric = metrics.ROCAUC()
+
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     metric = metric.update(yt, yp)
+
+            >>> metric
+            ROCAUC: 0.875
+
+            The true ROC AUC is in fact 0.75. We can improve the accuracy by increasing the amount
+            of thresholds. This comes at the cost more computation time and more memory usage.
+
+            >>> metric = metrics.ROCAUC(num_thresholds=20)
+
+            >>> for yt, yp in zip(y_true, y_pred):
+            ...     metric = metric.update(yt, yp)
+
+            >>> metric
+            ROCAUC: 0.75
 
     .. warning::
         This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would
