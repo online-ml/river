@@ -99,3 +99,4 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 
 - Added `stream.iter_libsvm`.
 - `stream.iter_csv` now supports reading from '.zip' files.
+- Added `stream.Cache`.
