@@ -12,12 +12,12 @@ __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 class BaseBagging(base.Wrapper, base.Ensemble):
 
-    def __init__(self, model, n_models=10, random_state=None):
+    def __init__(self, model, n_models=10, seed=None):
         super().__init__(copy.deepcopy(model) for _ in range(n_models))
         self.n_models = n_models
         self.model = model
-        self.random_state = random_state
-        self._rng = utils.check_random_state(random_state)
+        self.seed = seed
+        self._rng = utils.check_random_state(seed)
 
     @property
     def _model(self):
@@ -44,10 +44,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     Parameters:
         model (BinaryClassifier or MultiClassifier): The classifier to bag.
         n_models (int): The number of models in the ensemble.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Random number generator seed for reproducibility.
 
     Example:
 
@@ -56,33 +53,27 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
         ::
 
-            >>> from creme import compose
+            >>> from creme import datasets
             >>> from creme import ensemble
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.Phishing()
             >>> model = ensemble.BaggingClassifier(
             ...     model=(
             ...         preprocessing.StandardScaler() |
             ...         linear_model.LogisticRegression()
             ...     ),
             ...     n_models=3,
-            ...     random_state=42
+            ...     seed=42
             ... )
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.963889
+            F1: 0.878788
 
             >>> print(model)
             BaggingClassifier(StandardScaler | LogisticRegression)
@@ -115,10 +106,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
     Parameters:
         model (Regressor): The regressor to bag.
         n_models (int): The number of models in the ensemble.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Random number generator seed for reproducibility.
 
     Example:
 
@@ -127,31 +115,25 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
         ::
 
-            >>> from creme import compose
+            >>> from creme import datasets
             >>> from creme import ensemble
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_boston(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.TrumpApproval()
             >>> model = preprocessing.StandardScaler()
             >>> model |= ensemble.BaggingRegressor(
             ...     model=linear_model.LinearRegression(intercept_lr=0.1),
             ...     n_models=3,
-            ...     random_state=42
+            ...     seed=42
             ... )
             >>> metric = metrics.MAE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 4.260989
+            MAE: 0.71322
 
     References:
         1. `Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee. <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_

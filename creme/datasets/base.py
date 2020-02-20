@@ -2,7 +2,7 @@ import itertools
 import os
 import shutil
 import tarfile
-import urllib
+from urllib import request
 import zipfile
 
 
@@ -55,7 +55,7 @@ def download_dataset(url, data_home, uncompress=True, verbose=True):
     if not (os.path.exists(path) or os.path.exists(archive_path)):
 
         _print(f'Downloading {url}')
-        with urllib.request.urlopen(url) as r, open(archive_path, 'wb') as f:
+        with request.urlopen(url) as r, open(archive_path, 'wb') as f:
             shutil.copyfileobj(r, f)
 
     # If no uncompression is required then we're done

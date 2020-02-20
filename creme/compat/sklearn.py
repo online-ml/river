@@ -163,7 +163,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_boston(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> scaler = preprocessing.StandardScaler()
@@ -176,7 +176,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 10.832054
+            MAE: 11.001388
 
     """
 
@@ -237,7 +237,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> model = preprocessing.StandardScaler()
@@ -254,7 +254,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.203717
+            LogLoss: 0.201367
 
     """
 

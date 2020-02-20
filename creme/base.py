@@ -178,12 +178,7 @@ class Estimator:
             return size
 
         mem_usage = get_size(self)
-
-        for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
-            if abs(mem_usage) < 1024.0:
-                return f'{mem_usage:3.1f}{unit}B'
-            mem_usage /= 1024.0
-        return f'{mem_usage:.1f}YiB'
+        return utils.pretty.humanize_bytes(mem_usage)
 
 
 class Regressor(Estimator):

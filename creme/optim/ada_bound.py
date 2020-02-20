@@ -17,19 +17,14 @@ class AdaBound(base.Optimizer):
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.Phishing()
             >>> optimizer = optim.AdaBound()
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -38,7 +33,7 @@ class AdaBound(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.963889
+            F1: 0.879004
 
     References:
         1. `Luo, L., Xiong, Y., Liu, Y. and Sun, X., 2019. Adaptive gradient methods with dynamic bound of learning rate. arXiv preprint arXiv:1902.09843. <https://arxiv.org/abs/1902.09843>`_

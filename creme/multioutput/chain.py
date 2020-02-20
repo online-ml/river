@@ -46,7 +46,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.fetch_openml('yeast', version=4),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> model = feature_selection.VarianceThreshold(threshold=0.01)
@@ -66,7 +66,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             ...     model = model.fit_one(x, y)
 
             >>> metric
-            Jaccard: 0.449894
+            Jaccard: 0.452366
 
     References:
         1. `Multi-Output Chain Models and their Application in Data Streams <https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf>`_
@@ -103,7 +103,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_linnerud(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> model = multioutput.RegressorChain(
@@ -117,7 +117,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 16.9709
+            MAE: 16.495095
 
     """
 
