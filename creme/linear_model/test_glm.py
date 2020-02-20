@@ -44,7 +44,7 @@ def iter_perturbations(keys, n=10):
                     stream.iter_sklearn_dataset,
                     dataset=datasets.load_boston(),
                     shuffle=True,
-                    random_state=42
+                    seed=42
                 )
             ),
             (
@@ -53,7 +53,7 @@ def iter_perturbations(keys, n=10):
                     stream.iter_sklearn_dataset,
                     dataset=datasets.load_breast_cancer(),
                     shuffle=True,
-                    random_state=42
+                    seed=42
                 )
             )
         ]
