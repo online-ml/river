@@ -13,10 +13,7 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
 
     Parameters:
         n_trees (int): The number of trees in the forest.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Random number generator seed for reproducibility.
         **tree_params (dict): The parameters of the decision tree.
 
     Example:
@@ -32,7 +29,7 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
 
             >>> model = tree.RandomForestClassifier(
             ...     n_trees=10,
-            ...     random_state=42,
+            ...     seed=42,
             ...     # Tree parameters
             ...     patience=100,
             ...     confidence=1e-5,
@@ -46,11 +43,11 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
 
     """
 
-    def __init__(self, n_trees=10, random_state=None, **tree_params):
+    def __init__(self, n_trees=10, seed=None, **tree_params):
         super().__init__(
             model=tree.DecisionTreeClassifier(**tree_params),
             n_models=n_trees,
-            random_state=random_state
+            seed=seed
         )
         self.tree_params = tree_params
 

@@ -2,19 +2,25 @@
 import csv
 import datetime as dt
 import functools
+import glob
 import gzip
+import inspect
 import io
 import itertools
+import pickle
+import platform
 import random
 import types
 import os
 import zipfile
 
 import numpy as np
-from sklearn import utils
+
+from . import utils
 
 
 __all__ = [
+    'Cache',
     'iter_array',
     'iter_csv',
     'iter_libsvm',
@@ -25,7 +31,8 @@ __all__ = [
 ]
 
 
-def iter_array(X, y=None, feature_names=None, target_names=None, shuffle=False, random_state=None):
+
+def iter_array(X, y=None, feature_names=None, target_names=None, shuffle=False, seed=None):
     """Yields rows from an array of features and an array of targets.
 
     This method is compatible with ``numpy`` arrays as well as Python lists.
@@ -36,10 +43,7 @@ def iter_array(X, y=None, feature_names=None, target_names=None, shuffle=False, 
         feature_names (list of length n_features)
         target_names (list of length n_outputs)
         shuffle (bool): Whether to shuffle the inputs or not.
-        random_state (int, np.random.RandomState instance or None, default=None): If int,
-            ``random_state`` is the seed used by the random number generator; if ``RandomState``
-            instance, ``random_state`` is the random number generator; if ``None``, the random
-            number generator is the ``RandomState`` instance used by ``np.random``.
+        seed (int): Random seed used for shuffling the data.
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
@@ -52,9 +56,9 @@ def iter_array(X, y=None, feature_names=None, target_names=None, shuffle=False, 
         target_names = list(range(len(y[0])))
 
     # Shuffle the data
-    rng = utils.check_random_state(random_state)
+    rng = random.Random(seed)
     if shuffle:
-        order = rng.permutation(len(X))
+        order = rng.sample(range(len(X)), k=len(X))
         X, y = X[order], y if y is None else y[order]
 
     if multioutput:
@@ -412,3 +416,140 @@ def shuffle(stream, buffer_size, seed=None):
     rng.shuffle(buff)
     for element in buff:
         yield element
+
+
+class Cache:
+    """Utility for caching iterables.
+
+    This can be used to save a stream of data to the disk in order to iterate over it faster the
+    following time. This can save time depending on the nature of stream. The more processing
+    happens in a stream, the more time will be saved. Even in the case where no processing is done
+    apart from reading the data, the cache will save some time because it is using the pickle
+    binary protocol. It can thus improve the speed in common cases such as reading from a CSV file.
+
+    Parameters:
+        directory (str): The path where to store the pickled data streams. If not provided, then
+            it will be automatically inferred whenever possible, if not an exception will be
+            raised.
+
+    Attributes:
+        keys (set): The set of keys that are being cached.
+
+    Example:
+
+        ::
+
+            >>> import time
+            >>> from creme import datasets
+            >>> from creme import stream
+
+            >>> X_y = datasets.Phishing()
+            >>> cache = stream.Cache()
+
+            The cache can be used by wrapping it around an iterable. Because this is the first time
+            are iterating over the data, nothing is cached.
+
+            >>> tic = time.time()
+            >>> for x, y in cache(X_y, key='phishing'):
+            ...     pass
+            >>> toc = time.time()
+            >>> print(toc - tic)  # doctest: +SKIP
+            0.012813
+
+            If we do the same thing again, we can see the loop is now faster.
+
+            >>> tic = time.time()
+            >>> for x, y in cache(X_y, key='phishing'):
+            ...     pass
+            >>> toc = time.time()
+            >>> print(toc - tic)  # doctest: +SKIP
+            0.001927
+
+            We can see an overview of the cache. The first line indicates the location of the
+            cache.
+
+            >>> cache
+            /tmp
+            phishing - 126.4KiB
+
+            Finally, we can clear the stream from the cache.
+
+            >>> cache.clear('phishing')
+            >>> cache
+            /tmp
+
+            There is also a ``clear_all`` method to remove all the items in the cache.
+
+            >>> cache.clear_all()
+
+    """
+
+    def __init__(self, directory=None):
+
+        # Guess the directory from the system
+        system = platform.system()
+        if directory is None:
+            directory = {'Linux': '/tmp', 'Darwin': '/tmp'}.get(system)
+
+        if directory is None:
+            raise ValueError('There is no default directory defined for {systems} systems, '
+                             'please provide one')
+
+        self.directory = directory
+        self.keys = set()
+
+        # Check if there is anything already in the cache
+        for f in glob.glob(f'{self.directory}/*.creme_cache.pkl'):
+            key = os.path.basename(f).split('.')[0]
+            self.keys.add(key)
+
+    def _get_path(self, key):
+        return os.path.join(self.directory, f'{key}.creme_cache.pkl')
+
+    def __call__(self, stream, key=None):
+
+        # Try to guess a key from the stream object
+        if key is None:
+            if inspect.isfunction(stream):
+                key = stream.__name__
+
+        if key is None:
+            raise ValueError('No default key could be guessed for the given stream, '
+                             'please provide one')
+
+        path = self._get_path(key)
+
+        if os.path.exists(path):
+            yield from self[key]
+            return
+
+        with open(path, 'wb') as f:
+            pickler = pickle.Pickler(f)
+            for el in stream:
+                pickler.dump(el)
+                yield el
+            self.keys.add(key)
+
+    def __getitem__(self, key):
+        """Iterates over the stream associated with the given key."""
+        with open(self._get_path(key), 'rb') as f:
+            unpickler = pickle.Unpickler(f)
+            while f.peek(1):
+                yield unpickler.load()
+
+    def clear(self, key):
+        """Deletes the cached stream associated with the given key."""
+        os.remove(self._get_path(key))
+        self.keys.remove(key)
+
+    def clear_all(self):
+        """Deletes all the cached streams."""
+        for key in list(self.keys):
+            os.remove(self._get_path(key))
+            self.keys.remove(key)
+
+    def __repr__(self):
+        return '\n'.join([self.directory] + [
+            f'{key} - {utils.pretty.humanize_bytes(os.path.getsize(self._get_path(key)))}'
+            for key in self.keys
+        ])

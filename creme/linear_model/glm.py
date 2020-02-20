@@ -187,7 +187,7 @@ class LinearRegression(GLM, base.Regressor):
                 >>> X_y = stream.iter_sklearn_dataset(
                 ...     dataset=datasets.load_boston(),
                 ...     shuffle=True,
-                ...     random_state=42
+                ...     seed=42
                 ... )
 
                 >>> model = (
@@ -203,55 +203,55 @@ class LinearRegression(GLM, base.Regressor):
                 ... # doctest: +NORMALIZE_WHITESPACE
                 0. Input
                 --------
-                AGE: 85.40000 (float64)
-                B: 70.80000 (float64)
-                CHAS: 0.00000 (float64)
-                CRIM: 0.22876 (float64)
-                DIS: 2.71470 (float64)
-                INDUS: 8.56000 (float64)
-                LSTAT: 10.63000 (float64)
-                NOX: 0.52000 (float64)
-                PTRATIO: 20.90000 (float64)
-                RAD: 5.00000 (float64)
-                RM: 6.40500 (float64)
-                TAX: 384.00000 (float64)
+                AGE: 83.40000 (float64)
+                B: 395.43000 (float64)
+                CHAS: 1.00000 (float64)
+                CRIM: 5.20177 (float64)
+                DIS: 2.72270 (float64)
+                INDUS: 18.10000 (float64)
+                LSTAT: 11.48000 (float64)
+                NOX: 0.77000 (float64)
+                PTRATIO: 20.20000 (float64)
+                RAD: 24.00000 (float64)
+                RM: 6.12700 (float64)
+                TAX: 666.00000 (float64)
                 ZN: 0.00000 (float64)
                 <BLANKLINE>
                 1. StandardScaler
                 -----------------
-                AGE: 0.59772 (float64)
-                B: -3.13133 (float64)
-                CHAS: -0.27233 (float64)
-                CRIM: -0.39351 (float64)
-                DIS: -0.51305 (float64)
-                INDUS: -0.37560 (float64)
-                LSTAT: -0.28330 (float64)
-                NOX: -0.29941 (float64)
-                PTRATIO: 1.12911 (float64)
-                RAD: -0.52248 (float64)
-                RM: 0.17131 (float64)
-                TAX: -0.14381 (float64)
+                AGE: 0.52667 (float64)
+                B: 0.42451 (float64)
+                CHAS: 3.66477 (float64)
+                CRIM: 0.18465 (float64)
+                DIS: -0.50925 (float64)
+                INDUS: 1.01499 (float64)
+                LSTAT: -0.16427 (float64)
+                NOX: 1.85804 (float64)
+                PTRATIO: 0.80578 (float64)
+                RAD: 1.65960 (float64)
+                RM: -0.22435 (float64)
+                TAX: 1.52941 (float64)
                 ZN: -0.48724 (float64)
                 <BLANKLINE>
                 2. LinearRegression
                 -------------------
                 Name        Value      Weight      Contribution
-                Intercept    1.00000    22.18990       22.18990
-                      DIS   -0.51305    -1.82221        0.93489
-                    LSTAT   -0.28330    -3.02012        0.85560
-                       RM    0.17131     3.45849        0.59247
-                     CRIM   -0.39351    -0.68592        0.26991
-                      NOX   -0.29941    -0.57055        0.17083
-                      TAX   -0.14381    -0.30286        0.04355
-                    INDUS   -0.37560     0.08940       -0.03358
-                      AGE    0.59772    -0.08943       -0.05346
-                       ZN   -0.48724     0.47393       -0.23092
-                     CHAS   -0.27233     1.14376       -0.31148
-                      RAD   -0.52248     0.70114       -0.36633
-                  PTRATIO    1.12911    -1.61355       -1.82188
-                        B   -3.13133     1.13617       -3.55773
+                Intercept    1.00000    21.30237       21.30237
+                    CHAS    3.66477     0.80408        2.94679
+                    RAD    1.65960     0.58526        0.97129
+                    DIS   -0.50925    -1.57885        0.80404
+                    LSTAT   -0.16427    -3.16813        0.52043
+                        B    0.42451     1.05251        0.44681
+                    CRIM    0.18465    -0.88817       -0.16400
+                    ZN   -0.48724     0.43327       -0.21111
+                    AGE    0.52667    -0.45398       -0.23909
+                    INDUS    1.01499    -0.35933       -0.36471
+                    RM   -0.22435     3.41237       -0.76558
+                    TAX    1.52941    -0.64650       -0.98876
+                    NOX    1.85804    -0.59396       -1.10361
+                PTRATIO    0.80578    -1.78695       -1.43988
                 <BLANKLINE>
-                Prediction: 18.68179
+                Prediction: 21.71498
 
         """
 
