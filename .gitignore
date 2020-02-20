@@ -96,6 +96,7 @@ dmypy.json
 /*.ipynb
 /*.csv*
 /*.arff
+/*.pkl
 test.py
 
 # For all-contributors

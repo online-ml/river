@@ -124,15 +124,14 @@ def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
 
 class SKL2CremeBase:
 
-    def __init__(self, sklearn_estimator, n_features, batch_size, x_dtype, y_dtype):
+    def __init__(self, sklearn_estimator, n_features, batch_size, x_dtype):
         self.sklearn_estimator = sklearn_estimator
         self.batch_size = batch_size
         self.n_features = n_features
         self.batch_size = batch_size
         self.x_dtype = x_dtype
-        self.y_dtype = y_dtype
         self._x_batch = np.empty(shape=(batch_size, n_features), dtype=x_dtype)
-        self._y_batch = np.empty(shape=batch_size, dtype=y_dtype)
+        self._y_batch = [None] * batch_size
         self._batch_i = 0
 
 
@@ -185,8 +184,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             sklearn_estimator=sklearn_estimator,
             n_features=n_features,
             batch_size=batch_size,
-            x_dtype=np.float,
-            y_dtype=np.float
+            x_dtype=np.float
         )
 
     def fit_one(self, x, y):
@@ -263,8 +261,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             sklearn_estimator=sklearn_estimator,
             n_features=n_features,
             batch_size=batch_size,
-            x_dtype=np.float,
-            y_dtype=np.object
+            x_dtype=np.float
         )
         self.classes = classes
 
