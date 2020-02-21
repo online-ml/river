@@ -1,3 +1,5 @@
+# INIT LO BO ETC ......
+from typing import Optional
 import collections  # replace by creme utils windows
 from . import base
 
@@ -19,9 +21,17 @@ class ExponentialSmoothing(base.Forecaster):
         1. `Simple exponential smoothing <https://otexts.com/fpp2/ses.html>`_
     """
 
-    def __init__(self, alpha=0.5):
-        self.alpha = alpha
-        self.st = 0
+    def __init__(self, alpha=0.5, s0: Optional[float] = None):
+
+        if 0 < self.alpha <= 1:
+            self.alpha = alpha
+        else:
+            raise ValueError(f'The value of alpha must be between (0, 1]')
+
+        if s0 is None:
+            self.st = 0
+        else:
+            self.st = s0
 
     def fit_one(self, y: float):
         self.st = self.alpha * y + (1 - self.alpha) * self.st
