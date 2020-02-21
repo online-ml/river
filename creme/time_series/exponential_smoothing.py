@@ -162,7 +162,7 @@ class HoltWinterMultiplicative:
         gamma (float): ... .Defaults to `0.5`.
 
     References:
-        1. `Holt-Winters’ Multiplicative method <https://otexts.com/fpp2/holt-winters.html>`_
+        1. `Holt-Winters’ multiplicative method <https://otexts.com/fpp2/holt-winters.html>`_
     """
 
     def __init__(self,
@@ -217,7 +217,7 @@ class HoltWinterDamped:
         phi (float): ... .Defaults to `0.5`.
 
     References:
-        1. `Holt-Winters’ Multiplicative method <https://otexts.com/fpp2/holt-winters.html>`_
+        1. `Holt-Winters’ damped method <https://otexts.com/fpp2/holt-winters.html>`_
     """
 
     def __init__(self,
