@@ -32,7 +32,7 @@ class ExponentialSmoothing(base.Forecaster):
         return [self.st for _ in range(horizon)]
 
 
-class HoltES(base.Forecaster):
+class HoltLinearTrend(base.Forecaster):
     """
     #TODO : Docstring + test
 
@@ -64,7 +64,7 @@ class HoltES(base.Forecaster):
         return [self.lt + (h * self.bt) for h in range(horizon)]
 
 
-class DampedES(base.Forecaster, _DampedSmoothing):
+class DampedTrend(base.Forecaster, _DampedSmoothing):
     """
     #TODO : Docstring + test
 
