@@ -110,7 +110,8 @@ class HoltWinterAdditive:
 
     References:
         1. `Holt-Winters’ additive method <https://otexts.com/fpp2/holt-winters.html>`_
-    """    
+    """
+
     def __init__(self,
                  m: int,
                  alpha: float = 0.5,
@@ -150,6 +151,57 @@ class HoltWinterAdditive:
         return self.lt + h * self.bt + self.s[h - self.m * (k + 1)]
 
 
-#TODO Holt-Winters’ multiplicative method
+class HoltWinterMultiplicative:
+    """
+    #TODO : Docstring + test
+
+    Parameters:
+        m (int): ...
+        alpha (float): ... .Defaults to `0.5`.
+        beta (float): ... .Defaults to `0.5`.
+        gamma (float): ... .Defaults to `0.5`.
+
+    References:
+        1. `Holt-Winters’ Multiplicative method <https://otexts.com/fpp2/holt-winters.html>`_
+    """    
+    def __init__(self,
+                 m: int,
+                 alpha: float = 0.5,
+                 beta: float = 0.5,
+                 gamma: float = 0.5):
+
+        self.m = m
+        self.alpha = alpha
+        self.beta = beta
+        self.gamma = gamma
+
+        # init st
+        self.s = collections.deque(maxlen=m)
+        for i in range(self.m):
+            self.s.append(1)
+
+        self.lt = 0.5
+        self.bt = 0.5
+
+    def update(self, x: float):
+
+        st_1 = self.s[-1]
+        st_m = self.s[-self.m]
+
+        lt_1 = self.lt
+        bt_1 = self.bt
+
+        # replace by safe division
+        self.lt = self.alpha * (x / st_m) + (1 - self.alpha) * (lt_1 + bt_1)
+        self.bt = self.beta * (self.lt - lt_1) + (1 - self.beta) * bt_1
+        st = self.gamma * (x / (lt_1 + bt_1)) + (1 - self.gamma) * st_m
+        self.s.append(st)
+
+        return self
+
+    def get(self, h: int) -> float:
+        k = (h - 1) // self.m
+        return (self.lt + h * self.bt) * self.s[h - self.m * (k + 1)]
+
 
 #TODO Holt-Winters’ damped method
