@@ -1,7 +1,14 @@
 import collections  # replace by creme utils windows
+from . import base
 
 
-class ExponentialSmoothing:
+class _DampedSmoothing:
+    @staticmethod
+    def _discount_sum(phi: float, h: int) -> list:
+        return sum([phi**i for i in range(1, h + 1)])
+
+
+class ExponentialSmoothing(base.Forecaster):
     """
      #TODO : Docstring + test
 
@@ -16,16 +23,16 @@ class ExponentialSmoothing:
         self.alpha = alpha
         self.st = 0
 
-    def update(self, x: float):
-        self.st = self.alpha * x + (1 - self.alpha) * self.st
+    def fit_one(self, y: float):
+        self.st = self.alpha * y + (1 - self.alpha) * self.st
 
         return self
 
-    def get(self) -> float:
-        return self.st
+    def forecast(self, horizon: int) -> list:
+        return [self.st for _ in range(horizon)]
 
 
-class HoltES:
+class HoltES(base.Forecaster):
     """
     #TODO : Docstring + test
 
@@ -43,21 +50,21 @@ class HoltES:
         self.lt = 0
         self.bt = 0
 
-    def update(self, x):
+    def fit_one(self, y):
 
         lt_1 = self.lt
         bt_1 = self.bt
 
-        self.lt = self.alpha * x + (1 - self.alpha) * (lt_1 + bt_1)
+        self.lt = self.alpha * y + (1 - self.alpha) * (lt_1 + bt_1)
         self.bt = self.beta * (self.lt - lt_1) + (1 - self.beta) * bt_1
 
         return self
 
-    def get(self, h: int) -> float:
-        return self.lt + (h * self.bt)
+    def forecast(self, horizon: int) -> float:
+        return [self.lt + (h * self.bt) for h in range(horizon)]
 
 
-class DampedES:
+class DampedES(base.Forecaster, _DampedSmoothing):
     """
     #TODO : Docstring + test
 
@@ -78,27 +85,25 @@ class DampedES:
         self.lt = 0
         self.bt = 0
 
-    def update(self, x):
+    def fit_one(self, y):
 
         lt_1 = self.lt
         bt_1 = self.bt
 
-        self.lt = self.alpha * x + (1 - self.alpha) * (lt_1 + self.phi * bt_1)
+        self.lt = self.alpha * y + (1 - self.alpha) * (lt_1 + self.phi * bt_1)
         self.bt = self.beta * (self.lt - lt_1) + (
             1 - self.beta) * bt_1 * self.phi
 
         return self
 
-    def get(self, h: int) -> float:
-        discount_sum = self._compute_discount_sum(self.phi, h)
-        return self.lt + (discount_sum * self.bt)
-
-    @staticmethod
-    def _compute_discount_sum(phi: float, h: int) -> float:
-        return sum([phi**i for i in range(1, h + 1)])
+    def forecast(self, horizon: int) -> list:
+        return [
+            self.lt + (self._discount_sum(self.phi, h) * self.bt)
+            for h in range(horizon)
+        ]
 
 
-class HoltWinterAdditive:
+class HoltWinterAdditive(base.Forecaster):
     """
     #TODO : Docstring + test
 
@@ -131,7 +136,7 @@ class HoltWinterAdditive:
         self.lt = 0
         self.bt = 0
 
-    def update(self, x: float):
+    def fit_one(self, y: float):
 
         st_1 = self.s[-1]
         st_m = self.s[-self.m]
@@ -139,19 +144,21 @@ class HoltWinterAdditive:
         lt_1 = self.lt
         bt_1 = self.bt
 
-        self.lt = self.alpha * (x - st_m) + (1 - self.alpha) * (lt_1 + bt_1)
+        self.lt = self.alpha * (y - st_m) + (1 - self.alpha) * (lt_1 + bt_1)
         self.bt = self.beta * (self.lt - lt_1) + (1 - self.beta) * bt_1
-        st = self.gamma * (x - lt_1 - bt_1) + (1 - self.gamma) * st_m
+        st = self.gamma * (y - lt_1 - bt_1) + (1 - self.gamma) * st_m
         self.s.append(st)
 
         return self
 
-    def get(self, h: int) -> float:
-        k = (h - 1) // self.m
-        return self.lt + h * self.bt + self.s[h - self.m * (k + 1)]
+    def forecast(self, horizon: int) -> list:
+        return [
+            self.lt + h * self.bt + self.s[h - self.m * ((
+                (h - 1) // self.m) + 1)] for h in range(horizon)
+        ]
 
 
-class HoltWinterMultiplicative:
+class HoltWinterMultiplicative(base.Forecaster):
     """
     #TODO : Docstring + test
 
@@ -184,7 +191,7 @@ class HoltWinterMultiplicative:
         self.lt = 0.5
         self.bt = 0.5
 
-    def update(self, x: float):
+    def fit_one(self, y: float):
 
         st_1 = self.s[-1]
         st_m = self.s[-self.m]
@@ -193,19 +200,19 @@ class HoltWinterMultiplicative:
         bt_1 = self.bt
 
         # replace by safe division
-        self.lt = self.alpha * (x / st_m) + (1 - self.alpha) * (lt_1 + bt_1)
+        self.lt = self.alpha * (y / st_m) + (1 - self.alpha) * (lt_1 + bt_1)
         self.bt = self.beta * (self.lt - lt_1) + (1 - self.beta) * bt_1
-        st = self.gamma * (x / (lt_1 + bt_1)) + (1 - self.gamma) * st_m
+        st = self.gamma * (y / (lt_1 + bt_1)) + (1 - self.gamma) * st_m
         self.s.append(st)
 
         return self
 
-    def get(self, h: int) -> float:
-        k = (h - 1) // self.m
-        return (self.lt + h * self.bt) * self.s[h - self.m * (k + 1)]
+    def forecast(self, horizon: int) -> list:
+        return [(self.lt + h * self.bt) * self.s[h - self.m * ((
+            (h - 1) // self.m) + 1)] for h in range(horizon)]
 
 
-class HoltWinterDamped:
+class HoltWinterDamped(base.Forecaster, _DampedSmoothing):
     """
         #TODO : Docstring + test
 
@@ -241,7 +248,7 @@ class HoltWinterDamped:
         self.lt = 0.5
         self.bt = 0.5
 
-    def update(self, x: float):
+    def fit_one(self, y: float):
 
         st_1 = self.s[-1]
         st_m = self.s[-self.m]
@@ -250,22 +257,16 @@ class HoltWinterDamped:
         bt_1 = self.bt
 
         # replace by safe division
-        self.lt = self.alpha * (x / st_m) + (1 - self.alpha) * (
+        self.lt = self.alpha * (y / st_m) + (1 - self.alpha) * (
             lt_1 + self.phi * bt_1)
         self.bt = self.beta * (self.lt - lt_1) + (
             1 - self.beta) * self.phi * bt_1
-        st = self.gamma * (x /
+        st = self.gamma * (y /
                            (lt_1 + self.phi * bt_1)) + (1 - self.gamma) * st_m
         self.s.append(st)
 
         return self
 
-    def get(self, h: int) -> float:
-        k = (h - 1) // self.m
-        discount_sum = self._compute_discount_sum(self.phi, h)
-        return (self.lt + discount_sum * self.bt) * self.s[h - self.m *
-                                                           (k + 1)]
-
-    @staticmethod
-    def _compute_discount_sum(phi: float, h: int) -> float:
-        return sum([phi**i for i in range(1, h + 1)])
+    def forecast(self, h: int) -> float:
+        return (self.lt + self._discount_sum(self.phi, h) * self.bt
+                ) * self.s[h - self.m * (((h - 1) // self.m) + 1)]
