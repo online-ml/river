@@ -1,38 +1,116 @@
 <div align="center">
-  <img height="240px" src="https://docs.google.com/drawings/d/e/2PACX-1vSl80T4MnWRsPX3KvlB2kn6zVdHdUleG_w2zBiLS7RxLGAHxiSYTnw3LZtXh__YMv6KcIOYOvkSt9PB/pub?w=841&h=350" alt="creme_logo"/>
+  <img height="200px" src="https://docs.google.com/drawings/d/e/2PACX-1vSl80T4MnWRsPX3KvlB2kn6zVdHdUleG_w2zBiLS7RxLGAHxiSYTnw3LZtXh__YMv6KcIOYOvkSt9PB/pub?w=841&h=350" alt="creme_logo">
 </div>
 
 <div align="center">
+  <!-- PyPI -->
+  <a href="https://pypi.org/project/creme">
+    <img src="https://img.shields.io/pypi/v/creme.svg?color=blue&style=flat-square" alt="pypi">
+  </a>
+  <!-- Documentation -->
+  <a href="https://creme-ml.github.io/">
+    <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Fcreme-ml.github.io%2F" alt="documentation">
+  </a>
   <!-- Travis -->
   <a href="https://travis-ci.org/creme-ml/creme">
-    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=for-the-badge" alt="travis" />
+    <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=flat-square" alt="travis">
   </a>
   <!-- Codecov -->
   <a href="https://codecov.io/gh/creme-ml/creme">
-    <img src="https://img.shields.io/codecov/c/gh/creme-ml/creme.svg?style=for-the-badge" alt="codecov" />
-  </a>
-  <!-- PyPI -->
-  <a href="https://pypi.org/project/creme">
-    <img src="https://img.shields.io/pypi/v/creme.svg?style=for-the-badge" alt="pypi" />
+    <img src="https://img.shields.io/codecov/c/gh/creme-ml/creme.svg?style=flat-square" alt="codecov">
   </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
-    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=for-the-badge" alt="bsd_3_license"/>
+    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
   </a>
 </div>
 
-<br/>
+<div align="center">
+    <p>**creme** is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. All the tools in the library can be updated with a single observation at a time, and can therefore be used to learn from streaming data.</p>
+</div>
 
-`creme` is a library for online machine learning, also known as in**creme**ntal learning. Online learning is a machine learning regime where a **model learns one observation at a time**. This is in contrast to batch learning where all the data is processed in one go. Incremental learning is desirable when the data is too big to fit in memory, or simply when you want to **handle streaming data**. In addition to many online machine learning algorithms, `creme` provides utilities for **extracting features from a stream of data**.
+## ⚡️Quickstart
+
+As a quick example, we'll train a logistic regression to classify the [website phishing dataset](http://archive.ics.uci.edu/ml/datasets/Website+Phishing). Here's a look at the first observation in the dataset.
+
+```python
+>>> from pprint import pprint
+>>> from creme import datasets
+
+>>> X_y = datasets.Phishing()
+
+>>> for x, y in X_y:
+...     pprint(x)
+...     print(y)
+...     break
+
+```
+
+Now let's run the model on the stream observations. We will sequentially make predictions and update the model, while at the same updating a performance metric.
+
+```python
+>>> from creme import linear_model
+>>> from creme import metrics
+>>> from creme import preprocessing
+
+>>> model = (
+...     preprocessing.StandardScaler() |
+...     linear_model.LogisticRegression()
+... )
+
+>>> for x, y in datasets.Phishing():
+...     y_pred = model.predict_one(x)
+...     metric = metric.update(y, y_pred)
+...     model = model.fit_one(x, y)
+
+>>> metric
+
+```
+
+## 🛠 Installation
+
+:point_up: You need to install Python 3.6 or above. :snake:
+
+Installation can be done by using `pip`.
+
+    pip install creme
+
+You can also install the latest development version as so:
+
+    pip install git+https://github.com/creme-ml/creme
+
+    # Or, through SSH:
+    pip install git+ssh://git@github.com/creme-ml/creme.git
+
+If you're looking to contribute to ``creme`` and want to have a development setup, then please check out the [contribution guidelines](CONTRIBUTING.md).
+
+## 🧠 Philosophy
+
+Machine learning is often done in a batch setting, whereby a model is fitted to a dataset in one go. This results in a static model which has be retrained in order to learn from new data. In many cases, this isn't elegant nor efficient, and usually incurs [a fair amount of technical debt](https://research.google/pubs/pub43146/). Indeed, if you're using a batch model, then you need to think about maintaining a training set, monitoring real-time performance, model retraining, etc.
+
+With `creme`, we encourage a different approach, which is to fit a model to a stream of data. This means that the model learns from one observation at a time, and can therefore be updated on the fly. This allows to learn from massive datasets that don't fit in main memory. Online machine learning also integrates nicely with web applications where observations are flowing in. Online machine learning shines in event-based situations, such as time series forecasting, spam filtering, recommender systems, CTR prediction, and IoT applications. If you're bored with retraining models and want to process streams, then online machine learning (and therefore `creme`!) might be what you're looking for.
 
 Here are some benefits of using `creme` (and online machine learning in general):
 
-- Incremental: models can update themselves in real-time.
-- Adaptive: models can adapt to [concept drift](https://www.wikiwand.com/en/Concept_drift).
-- Production-ready: models that work in development can naturally be brought into production.
-- Efficient: models don't have to be retrained and require little compute power, which [lowers their carbon footprint](https://arxiv.org/abs/1907.10597)
+- **Incremental**: models can update themselves in real-time.
+- **Adaptive**: models can adapt to [concept drift](https://www.wikiwand.com/en/Concept_drift).
+- **Production-ready**: working with data streams makes it simple to replicate production scenarios during model development.
+- **Efficient**: models don't have to be retrained and require little compute power, which [lowers their carbon footprint](https://arxiv.org/abs/1907.10597)
 
-## Useful links
+## 📝 Features
+
+- Linear models with a wide array of optimizers
+- Nearest neighbors, decision trees, naïve Bayes
+- [Progressive model validation](https://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf)
+- Model pipelines
+- Anomaly detection
+- Recommender systems
+- Feature extraction and selection
+- Online statistics and metrics
+- Built-in datasets
+- And [much more](https://creme-ml.github.io/api.html)
+
+## 🔗 Useful links
 
 - [Documentation](https://creme-ml.github.io/)
   - [API reference](https://creme-ml.github.io/api.html)
@@ -42,168 +120,18 @@ Here are some benefits of using `creme` (and online machine learning in general)
 - [Benchmarks](https://github.com/creme-ml/creme/tree/master/benchmarks)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
+
+## 💬 Media
+
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
 - [Toulouse Data Science presentation](https://maxhalford.github.io/slides/creme-tds/)
+- [Blog post on pyimagesearch](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
 
-## Installation
+## 👍 Contributing
 
-:point_up: `creme` is intended to work with Python 3.6 and above.
+Feel free to contribute in any way you like, we're always open to new ideas and approaches. If you want to contribute to the code base please check out the [CONTRIBUTING.md file](https://github.com/creme-ml/creme/blob/master/CONTRIBUTING.md). Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
 
-`creme` can simply be installed with `pip`.
-
-    pip install creme
-
-You can also install the bleeding edge version as so:
-
-    pip install git+https://github.com/creme-ml/creme
-    # Or through SSH:
-    pip install git+ssh://git@github.com/creme-ml/creme.git
-
-If you're looking to contribute to ``creme`` and want to have a development setup, then please check out the [contribution guidelines](CONTRIBUTING.md).
-
-## Example
-
-In the following example we'll use a linear regression to forecast the number of available bikes in [bike stations](https://www.wikiwand.com/en/Bicycle-sharing_system) from the city of Toulouse. Each observation looks like this:
-
-```python
->>> import pprint
->>> from creme import datasets
-
->>> X_y = datasets.ToulouseBikes()
->>> x, y = next(iter(X_y))
-
->>> pprint.pprint(x)
-{'clouds': 75,
- 'description': 'light rain',
- 'humidity': 81,
- 'moment': datetime.datetime(2016, 4, 1, 0, 0, 7),
- 'pressure': 1017.0,
- 'station': 'metro-canal-du-midi',
- 'temperature': 6.54,
- 'wind': 9.3}
-
->>> print(f'Number of bikes: {y}')
-Number of bikes: 1
-
-```
-
-We will include all the available numeric features in our model. We will also use target encoding by calculating a running average of the target per station and hour. Before being fed to the linear regression, the features will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead while delaying the true answers, which ensures that we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
-
-```python
->>> import datetime as dt
->>> from creme import compose
->>> from creme import datasets
->>> from creme import feature_extraction
->>> from creme import linear_model
->>> from creme import metrics
->>> from creme import model_selection
->>> from creme import preprocessing
->>> from creme import stats
-
->>> X_y = datasets.ToulouseBikes()
-
->>> def add_hour(x):
-...     x['hour'] = x['moment'].hour
-...     return x
-
->>> model = compose.Whitelister('clouds', 'humidity', 'pressure', 'temperature', 'wind')
->>> model += (
-...     add_hour |
-...     feature_extraction.TargetAgg(by=['station', 'hour'], how=stats.Mean())
-... )
->>> model += feature_extraction.TargetAgg(by='station', how=stats.EWMean(0.5))
->>> model |= preprocessing.StandardScaler()
->>> model |= linear_model.LinearRegression()
-
->>> model_selection.progressive_val_score(
-...     X_y=X_y,
-...     model=model,
-...     metric=metrics.MAE(),
-...     on='moment',
-...     delay=dt.timedelta(minutes=30),
-...     print_every=30_000
-... )
-[30,000] MAE: 2.230049
-[60,000] MAE: 2.290409
-[90,000] MAE: 2.334638
-[120,000] MAE: 2.315149
-[150,000] MAE: 2.319982
-[180,000] MAE: 2.335385
-MAE: 2.338837
-
-```
-
-You can visualize the pipeline as so:
-
-```python
->>> model
-Pipeline (
-  TransformerUnion (
-    Whitelister (
-      whitelist=('clouds', 'humidity', 'pressure', 'temperature', 'wind')
-    ),
-    Pipeline (
-      FuncTransformer (
-        func="add_hour"
-      ),
-      TargetAgg (
-        by=['station', 'hour']
-        how=Mean ()
-        target_name="target"
-      )
-    ),
-    TargetAgg (
-      by=['station']
-      how=EWMean (
-        alpha=0.5
-      )
-      target_name="target"
-    )
-  ),
-  StandardScaler (
-    with_mean=True
-    with_std=True
-  ),
-  LinearRegression (
-    optimizer=SGD (
-      lr=InverseScaling (
-        learning_rate=0.01
-        power=0.25
-      )
-    )
-    loss=Squared ()
-    l2=0.
-    intercept=9.742884
-    intercept_lr=Constant (
-      learning_rate=0.01
-    )
-    clip_gradient=1e+12
-    initializer=Zeros ()
-  )
-)
-
-```
-
-We can also draw the pipeline.
-
-```python
->>> dot = model.draw()
-
-```
-
-<div align="center">
-  <img src="./docs/_static/bikes_pipeline.svg" alt="bikes_pipeline"/>
-</div>
-
-By only using a few lines of code, we've built a robust model and evaluated it by simulating a production scenario. You can find a more detailed version of this example [here](https://creme-ml.github.io/notebooks/bike-sharing-forecasting.html). `creme` is a framework that has a lot to offer, and as such we kindly refer you to the [documentation](https://creme-ml.github.io/) if you want to know more.
-
-## Contributing
-
-Like many subfields of machine learning, online learning is far from being an exact science and so there is still a lot to do. Feel free to contribute in any way you like, we're always open to new ideas and approaches. If you want to contribute to the code base please check out the [CONTRIBUTING.md file](https://github.com/creme-ml/creme/blob/master/CONTRIBUTING.md). Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
-
-Last but not least you are more than welcome to share with us on how you're using `creme` or online learning in general! We believe that online learning solves a lot of pain points in practice, and would love to share experiences.
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind are welcome!
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Again, contributions of any kind are welcome!
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -226,11 +154,10 @@ This project follows the [all-contributors](https://github.com/all-contributors/
     <td align="center"><a href="https://github.com/greatsharma"><img src="https://avatars0.githubusercontent.com/u/32649388?v=4" width="100px;" alt="Gaurav Sharma"/><br /><sub><b>Gaurav Sharma</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=greatsharma" title="Code">💻</a></td>
   </tr>
 </table>
-
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## License
 
-See the [license file](LICENSE).
+`creme` is free and open-source software licensed under the [3-Clause BSD license](https://github.com/creme-ml/creme/blob/master/LICENSE).

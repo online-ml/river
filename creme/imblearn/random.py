@@ -14,6 +14,7 @@ class RandomUnderSampler(base.Sampler):
         classifier (base.Classifier)
         desired_dist (dict): The desired class distribution. The keys are the classes whilst the
             values are the desired class percentages. The values must sum up to 1.
+        seed (int): Random seed for reproducibility.
 
     See :ref:`Working with imbalanced data` for example usage.
 
@@ -64,6 +65,7 @@ class RandomOverSampler(base.Sampler):
         classifier (base.Classifier)
         desired_dist (dict): The desired class distribution. The keys are the classes whilst the
             values are the desired class percentages. The values must sum up to 1.
+        seed (int): Random seed for reproducibility.
 
     See :ref:`Working with imbalanced data` for example usage.
 
@@ -107,8 +109,11 @@ class RandomSampler(base.Sampler):
     Parameters:
         classifier (base.Classifier)
         desired_dist (dict): The desired class distribution. The keys are the classes whilst the
-            values are the desired class percentages. The values must sum up to 1.
+            values are the desired class percentages. The values must sum up to 1. If set to
+            ``None``, then the observations will be sampled uniformly at random, which is stricly
+            equivalent to using `ensemble.BaggingClassifier`.
         sampling_rate (float): The desired ratio of data to sample.
+        seed (int): Random seed for reproducibility.
 
     See :ref:`Working with imbalanced data` for example usage.
 
@@ -116,9 +121,11 @@ class RandomSampler(base.Sampler):
 
     def __init__(self, classifier, desired_dist, sampling_rate=1., seed=None):
         super().__init__(classifier=classifier, seed=seed)
-        self.desired_dist = desired_dist
         self.sampling_rate = sampling_rate
         self._actual_dist = collections.Counter()
+        if desired_dist is None:
+            desired_dist = self._actual_dist
+        self.desired_dist = desired_dist
         self._n = 0
 
     def fit_one(self, x, y):
