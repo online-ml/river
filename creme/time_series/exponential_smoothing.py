@@ -53,6 +53,10 @@ class HoltLinearTrend(base.Forecaster):
     Parameters:
         alpha (float): ... .Defaults to `0.5`.
         beta (float): ... .Defaults to `0.5`.
+    
+    Example:
+    ::
+        >>> #TODO
 
     References:
         1. `Holt’s linear trend method <https://otexts.com/fpp2/holt.html>`_
@@ -96,6 +100,10 @@ class DampedTrend(base.Forecaster):
         alpha (float): ... .Defaults to `0.5`.
         beta (float): ... .Defaults to `0.5`.
         phi (float): ... .Defaults to `0.5`.
+
+    Example:
+    ::
+        >>> #TODO
 
     References:
         1. `Damped trend methods <https://otexts.com/fpp2/holt.html>`_
@@ -147,6 +155,10 @@ class HoltWinterAdditive(base.Forecaster):
         alpha (float): ... .Defaults to `0.5`.
         beta (float): ... .Defaults to `0.5`.
         gamma (float): ... .Defaults to `0.5`.
+
+    Example:
+    ::
+        >>> #TODO
 
     References:
         1. `Holt-Winters’ additive method <https://otexts.com/fpp2/holt-winters.html>`_
@@ -217,6 +229,10 @@ class HoltWinterMultiplicative(base.Forecaster):
         beta (float): ... .Defaults to `0.5`.
         gamma (float): ... .Defaults to `0.5`.
 
+    Example:
+    ::
+        >>> #TODO
+
     References:
         1. `Holt-Winters’ multiplicative method <https://otexts.com/fpp2/holt-winters.html>`_
     """
@@ -285,6 +301,10 @@ class HoltWinterDamped(base.Forecaster):
         beta (float): ... .Defaults to `0.5`.
         gamma (float): ... .Defaults to `0.5`.
         phi (float): ... .Defaults to `0.5`.
+
+    Example:
+    ::
+        >>> #TODO
 
     References:
         1. `Holt-Winters’ damped method <https://otexts.com/fpp2/holt-winters.html>`_
