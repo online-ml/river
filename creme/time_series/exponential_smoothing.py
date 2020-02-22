@@ -51,7 +51,13 @@ class HoltLinearTrend(base.Forecaster):
     Holt (1957) extended simple exponential smoothing to allow the forecasting
     of data with a trend. This method involves a forecast equation and
     two smoothing equations (one for the level and one for the trend).
-
+    Mathematically, it is defined as:
+    Forecast equation
+    .. math:: \hat{y}_{t+h | t}=\ell_{t}+h b_{t}
+    Level equation
+    .. math:: \ell_{t}=\alpha y_{t}+(1-\alpha)\left(\ell_{t-1}+b_{t-1}\right)
+    Trend equation
+    .. math:: b_{t}=\beta^{*}\left(\ell_{t}-\ell_{t-1}\right)+\left(1-\beta^{*}\right) b_{t-1}
 
     Parameters:
         alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 .Defaults to `0.5`.
