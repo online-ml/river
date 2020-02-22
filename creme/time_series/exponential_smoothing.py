@@ -48,12 +48,17 @@ class SimpleExponentialSmoothing(base.Forecaster):
 
 class HoltLinearTrend(base.Forecaster):
     """
-    #TODO : Docstring + test
+    Holt (1957) extended simple exponential smoothing to allow the forecasting
+    of data with a trend. This method involves a forecast equation and
+    two smoothing equations (one for the level and one for the trend).
+
 
     Parameters:
-        alpha (float): ... .Defaults to `0.5`.
-        beta (float): ... .Defaults to `0.5`.
-    
+        alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 .Defaults to `0.5`.
+        beta (float): The smoothing parameter for the level, 0 ≤ beta ≤ 1 .Defaults to `0.5`.
+        l0 (float): Initialization value for the level. Defaults to `0`.
+        b0 (float): Initialization value for the trend. Defaults to `0`.
+
     Example:
     ::
         >>> #TODO
@@ -164,14 +169,15 @@ class HoltWinterAdditive(base.Forecaster):
         1. `Holt-Winters’ additive method <https://otexts.com/fpp2/holt-winters.html>`_
     """
 
-    def __init__(self,
-                 m: int,
-                 alpha: float = 0.5,
-                 beta: float = 0.5,
-                 gamma: float = 0.5,
-                 s: Optional[List[float]] = None,  # We can discuss for this choice 
-                 l0: float = 0,
-                 b0: float = 0):
+    def __init__(
+            self,
+            m: int,
+            alpha: float = 0.5,
+            beta: float = 0.5,
+            gamma: float = 0.5,
+            s: Optional[List[float]] = None,  # We can discuss for this choice 
+            l0: float = 0,
+            b0: float = 0):
 
         self.m = m
 
@@ -237,14 +243,15 @@ class HoltWinterMultiplicative(base.Forecaster):
         1. `Holt-Winters’ multiplicative method <https://otexts.com/fpp2/holt-winters.html>`_
     """
 
-    def __init__(self,
-                 m: int,
-                 alpha: float = 0.5,
-                 beta: float = 0.5,
-                 gamma: float = 0.5,
-                 s: Optional[List[float]] = None,  # We can discuss for this choice 
-                 l0: float = 0.5,
-                 b0: float = 0.5):
+    def __init__(
+            self,
+            m: int,
+            alpha: float = 0.5,
+            beta: float = 0.5,
+            gamma: float = 0.5,
+            s: Optional[List[float]] = None,  # We can discuss for this choice 
+            l0: float = 0.5,
+            b0: float = 0.5):
 
         self.m = m
 
@@ -310,15 +317,16 @@ class HoltWinterDamped(base.Forecaster):
         1. `Holt-Winters’ damped method <https://otexts.com/fpp2/holt-winters.html>`_
     """
 
-    def __init__(self,
-                 m: int,
-                 alpha: float = 0.5,
-                 beta: float = 0.5,
-                 gamma: float = 0.5,
-                 phi: float = 0.5,
-                 s: Optional[List[float]] = None,  # We can discuss for this choice 
-                 l0: float = 0.5,
-                 b0: float = 0.5):
+    def __init__(
+            self,
+            m: int,
+            alpha: float = 0.5,
+            beta: float = 0.5,
+            gamma: float = 0.5,
+            phi: float = 0.5,
+            s: Optional[List[float]] = None,  # We can discuss for this choice 
+            l0: float = 0.5,
+            b0: float = 0.5):
 
         self.m = m
         if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <=
