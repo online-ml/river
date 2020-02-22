@@ -4,10 +4,8 @@ import collections  # replace by creme utils windows
 from . import base
 
 
-class _DampedSmoothing:
-    @staticmethod
-    def _discount_sum(phi: float, h: int) -> list:
-        return sum([phi**i for i in range(1, h + 1)])
+def _discount_sum(phi: float, h: int) -> list:
+    return sum([phi**i for i in range(1, h + 1)])
 
 
 class ExponentialSmoothing(base.Forecaster):
@@ -92,7 +90,7 @@ class HoltLinearTrend(base.Forecaster):
         return [self.lt + (h * self.bt) for h in range(horizon)]
 
 
-class DampedTrend(base.Forecaster, _DampedSmoothing):
+class DampedTrend(base.Forecaster):
     """
     #TODO : Docstring + test
 
@@ -144,7 +142,7 @@ class DampedTrend(base.Forecaster, _DampedSmoothing):
 
     def forecast(self, horizon: int) -> list:
         return [
-            self.lt + (self._discount_sum(self.phi, h) * self.bt)
+            self.lt + (_discount_sum(self.phi, h) * self.bt)
             for h in range(horizon)
         ]
 
@@ -286,7 +284,7 @@ class HoltWinterMultiplicative(base.Forecaster):
             (h - 1) // self.m) + 1)] for h in range(horizon)]
 
 
-class HoltWinterDamped(base.Forecaster, _DampedSmoothing):
+class HoltWinterDamped(base.Forecaster):
     """
         #TODO : Docstring + test
 
@@ -326,7 +324,7 @@ class HoltWinterDamped(base.Forecaster, _DampedSmoothing):
         self.s = collections.deque(maxlen=m)
         for i in range(self.m):
             self.s.append(1)
-            
+
         if l0 is None:
             self.lt = 0.5
         else:
@@ -357,5 +355,5 @@ class HoltWinterDamped(base.Forecaster, _DampedSmoothing):
         return self
 
     def forecast(self, h: int) -> float:
-        return (self.lt + self._discount_sum(self.phi, h) * self.bt
+        return (self.lt + _discount_sum(self.phi, h) * self.bt
                 ) * self.s[h - self.m * (((h - 1) // self.m) + 1)]
