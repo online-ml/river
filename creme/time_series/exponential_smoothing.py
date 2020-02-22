@@ -1,5 +1,5 @@
 # INIT LO BO ETC ......
-from typing import Optional
+from typing import List, Optional
 import collections  # replace by creme utils windows
 from . import base
 
@@ -166,6 +166,7 @@ class HoltWinterAdditive(base.Forecaster):
                  alpha: float = 0.5,
                  beta: float = 0.5,
                  gamma: float = 0.5,
+                 s: Optional[List[float]] = None,
                  l0: Optional[float] = None,
                  b0: Optional[float] = None):
 
@@ -180,9 +181,15 @@ class HoltWinterAdditive(base.Forecaster):
                 'The value of alpha, beta and gamma must be between [0, 1]')
 
         # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
-        self.s = collections.deque(maxlen=m)
-        for i in range(self.m):
-            self.s.append(0)
+        if s is None:
+            self.s = collections.deque(maxlen=m)
+            for i in range(self.m):
+                self.s.append(0)
+        else:
+            if len(s) == m:
+                self.s = collections.deque(s, maxlen=m)
+            else:
+                raise ValueError('s must have a size of m obligatory')
 
         if l0 is None:
             self.lt = 0
@@ -235,6 +242,7 @@ class HoltWinterMultiplicative(base.Forecaster):
                  alpha: float = 0.5,
                  beta: float = 0.5,
                  gamma: float = 0.5,
+                 s: Optional[List[float]] = None,
                  l0: Optional[float] = None,
                  b0: Optional[float] = None):
 
@@ -248,10 +256,16 @@ class HoltWinterMultiplicative(base.Forecaster):
             raise ValueError(
                 'The value of alpha, beta and gamma must be between [0, 1]')
 
-        # init st
-        self.s = collections.deque(maxlen=m)
-        for i in range(self.m):
-            self.s.append(1)
+        # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
+        if s is None:
+            self.s = collections.deque(maxlen=m)
+            for i in range(self.m):
+                self.s.append(1)
+        else:
+            if len(s) == m:
+                self.s = collections.deque(s, maxlen=m)
+            else:
+                raise ValueError('s must have a size of m obligatory')
 
         if l0 is None:
             self.lt = 0.5
@@ -305,6 +319,7 @@ class HoltWinterDamped(base.Forecaster):
                  beta: float = 0.5,
                  gamma: float = 0.5,
                  phi: float = 0.5,
+                 s: Optional[List[float]] = None,
                  l0: Optional[float] = None,
                  b0: Optional[float] = None):
 
@@ -320,10 +335,16 @@ class HoltWinterDamped(base.Forecaster):
                 'The value of alpha, beta and gamma must be between [0, 1] and phi must be between (0, 1)'
             )
 
-        # init st
-        self.s = collections.deque(maxlen=m)
-        for i in range(self.m):
-            self.s.append(1)
+        # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
+        if s is None:
+            self.s = collections.deque(maxlen=m)
+            for i in range(self.m):
+                self.s.append(1)
+        else:
+            if len(s) == m:
+                self.s = collections.deque(s, maxlen=m)
+            else:
+                raise ValueError('s must have a size of m obligatory')
 
         if l0 is None:
             self.lt = 0.5
