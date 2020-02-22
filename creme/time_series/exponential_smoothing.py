@@ -16,6 +16,7 @@ class ExponentialSmoothing(base.Forecaster):
 
     Parameters:
         alpha (float): Defaults to `0.5`.
+        s0 (float): Defaults to `None`.
 
     References:
         1. `Simple exponential smoothing <https://otexts.com/fpp2/ses.html>`_
@@ -23,10 +24,10 @@ class ExponentialSmoothing(base.Forecaster):
 
     def __init__(self, alpha=0.5, s0: Optional[float] = None):
 
-        if 0 < self.alpha <= 1:
+        if 0 <= alpha <= 1:
             self.alpha = alpha
         else:
-            raise ValueError(f'The value of alpha must be between (0, 1]')
+            raise ValueError(f'The value of alpha must be between [0, 1]')
 
         if s0 is None:
             self.st = 0
@@ -54,13 +55,30 @@ class HoltLinearTrend(base.Forecaster):
         1. `Holt’s linear trend method <https://otexts.com/fpp2/holt.html>`_
     """
 
-    def __init__(self, alpha: float = 0.5, beta: float = 0.5):
-        self.alpha = alpha
-        self.beta = beta
-        self.lt = 0
-        self.bt = 0
+    def __init__(self,
+                 alpha: float = 0.5,
+                 beta: float = 0.5,
+                 l0: Optional[float] = None,
+                 b0: Optional[float] = None):
 
-    def fit_one(self, y):
+        if (0 <= alpha <= 1) and (0 <= beta <= 1):
+            self.alpha = alpha
+            self.beta = beta
+        else:
+            raise ValueError(
+                'The value of alpha and beta must be between [0, 1]')
+
+        if l0 is None:
+            self.lt = 0
+        else:
+            self.lt = l0
+
+        if b0 is None:
+            self.bt = 0
+        else:
+            self.bt = b0
+
+    def fit_one(self, y: float):
 
         lt_1 = self.lt
         bt_1 = self.bt
@@ -87,13 +105,31 @@ class DampedTrend(base.Forecaster, _DampedSmoothing):
         1. `Damped trend methods <https://otexts.com/fpp2/holt.html>`_
     """
 
-    def __init__(self, alpha: float = 0.5, beta: float = 0.5,
-                 phi: float = 0.5):
-        self.alpha = alpha
-        self.beta = beta
-        self.phi = phi
-        self.lt = 0
-        self.bt = 0
+    def __init__(self,
+                 alpha: float = 0.5,
+                 beta: float = 0.5,
+                 phi: float = 0.5,
+                 l0: Optional[float] = None,
+                 b0: Optional[float] = None):
+
+        if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= phi <= 1):
+            self.alpha = alpha
+            self.beta = beta
+            self.phi = phi
+        else:
+            raise ValueError(
+                'The value of alpha and beta must be between [0, 1] and phi must be between (0, 1)'
+            )
+
+        if l0 is None:
+            self.lt = 0
+        else:
+            self.lt = l0
+
+        if b0 is None:
+            self.bt = 0
+        else:
+            self.bt = b0
 
     def fit_one(self, y):
 
@@ -131,20 +167,34 @@ class HoltWinterAdditive(base.Forecaster):
                  m: int,
                  alpha: float = 0.5,
                  beta: float = 0.5,
-                 gamma: float = 0.5):
+                 gamma: float = 0.5,
+                 l0: Optional[float] = None,
+                 b0: Optional[float] = None):
 
         self.m = m
-        self.alpha = alpha
-        self.beta = beta
-        self.gamma = gamma
+
+        if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <= 1):
+            self.alpha = alpha
+            self.beta = beta
+            self.gamma = gamma
+        else:
+            raise ValueError(
+                'The value of alpha, beta and gamma must be between [0, 1]')
 
         # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
         self.s = collections.deque(maxlen=m)
         for i in range(self.m):
             self.s.append(0)
 
-        self.lt = 0
-        self.bt = 0
+        if l0 is None:
+            self.lt = 0
+        else:
+            self.lt = l0
+
+        if b0 is None:
+            self.bt = 0
+        else:
+            self.bt = b0
 
     def fit_one(self, y: float):
 
@@ -186,20 +236,34 @@ class HoltWinterMultiplicative(base.Forecaster):
                  m: int,
                  alpha: float = 0.5,
                  beta: float = 0.5,
-                 gamma: float = 0.5):
+                 gamma: float = 0.5,
+                 l0: Optional[float] = None,
+                 b0: Optional[float] = None):
 
         self.m = m
-        self.alpha = alpha
-        self.beta = beta
-        self.gamma = gamma
+
+        if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <= 1):
+            self.alpha = alpha
+            self.beta = beta
+            self.gamma = gamma
+        else:
+            raise ValueError(
+                'The value of alpha, beta and gamma must be between [0, 1]')
 
         # init st
         self.s = collections.deque(maxlen=m)
         for i in range(self.m):
             self.s.append(1)
 
-        self.lt = 0.5
-        self.bt = 0.5
+        if l0 is None:
+            self.lt = 0.5
+        else:
+            self.lt = l0
+
+        if b0 is None:
+            self.bt = 0.5
+        else:
+            self.bt = b0
 
     def fit_one(self, y: float):
 
@@ -242,21 +306,36 @@ class HoltWinterDamped(base.Forecaster, _DampedSmoothing):
                  alpha: float = 0.5,
                  beta: float = 0.5,
                  gamma: float = 0.5,
-                 phi: float = 0.5):
+                 phi: float = 0.5,
+                 l0: Optional[float] = None,
+                 b0: Optional[float] = None):
 
         self.m = m
-        self.alpha = alpha
-        self.beta = beta
-        self.gamma = gamma
-        self.phi = phi
+        if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <=
+                                                       1) and (0 <= phi <= 1):
+            self.alpha = alpha
+            self.beta = beta
+            self.gamma = gamma
+            self.phi = phi
+        else:
+            raise ValueError(
+                'The value of alpha, beta and gamma must be between [0, 1] and phi must be between (0, 1)'
+            )
 
         # init st
         self.s = collections.deque(maxlen=m)
         for i in range(self.m):
             self.s.append(1)
+            
+        if l0 is None:
+            self.lt = 0.5
+        else:
+            self.lt = l0
 
-        self.lt = 0.5
-        self.bt = 0.5
+        if b0 is None:
+            self.bt = 0.5
+        else:
+            self.bt = b0
 
     def fit_one(self, y: float):
 
