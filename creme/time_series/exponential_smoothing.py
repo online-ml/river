@@ -61,8 +61,8 @@ class HoltLinearTrend(base.Forecaster):
     def __init__(self,
                  alpha: float = 0.5,
                  beta: float = 0.5,
-                 l0: Optional[float] = None,
-                 b0: Optional[float] = None):
+                 l0: float = 0,
+                 b0: float = 0):
 
         if (0 <= alpha <= 1) and (0 <= beta <= 1):
             self.alpha = alpha
@@ -71,15 +71,8 @@ class HoltLinearTrend(base.Forecaster):
             raise ValueError(
                 'The value of alpha and beta must be between [0, 1]')
 
-        if l0 is None:
-            self.lt = 0
-        else:
-            self.lt = l0
-
-        if b0 is None:
-            self.bt = 0
-        else:
-            self.bt = b0
+        self.lt = l0
+        self.bt = b0
 
     def fit_one(self, y: float):
 
@@ -112,8 +105,8 @@ class DampedTrend(base.Forecaster):
                  alpha: float = 0.5,
                  beta: float = 0.5,
                  phi: float = 0.5,
-                 l0: Optional[float] = None,
-                 b0: Optional[float] = None):
+                 l0: float = 0,
+                 b0: float = 0):
 
         if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= phi <= 1):
             self.alpha = alpha
@@ -124,15 +117,8 @@ class DampedTrend(base.Forecaster):
                 'The value of alpha and beta must be between [0, 1] and phi must be between (0, 1)'
             )
 
-        if l0 is None:
-            self.lt = 0
-        else:
-            self.lt = l0
-
-        if b0 is None:
-            self.bt = 0
-        else:
-            self.bt = b0
+        self.lt = l0
+        self.bt = b0
 
     def fit_one(self, y):
 
@@ -171,9 +157,9 @@ class HoltWinterAdditive(base.Forecaster):
                  alpha: float = 0.5,
                  beta: float = 0.5,
                  gamma: float = 0.5,
-                 s: Optional[List[float]] = None,
-                 l0: Optional[float] = None,
-                 b0: Optional[float] = None):
+                 s: Optional[List[float]] = None,  # We can discuss for this choice 
+                 l0: float = 0,
+                 b0: float = 0):
 
         self.m = m
 
@@ -196,15 +182,8 @@ class HoltWinterAdditive(base.Forecaster):
             else:
                 raise ValueError('s must have a size of m obligatory')
 
-        if l0 is None:
-            self.lt = 0
-        else:
-            self.lt = l0
-
-        if b0 is None:
-            self.bt = 0
-        else:
-            self.bt = b0
+        self.lt = l0
+        self.bt = b0
 
     def fit_one(self, y: float):
 
@@ -247,9 +226,9 @@ class HoltWinterMultiplicative(base.Forecaster):
                  alpha: float = 0.5,
                  beta: float = 0.5,
                  gamma: float = 0.5,
-                 s: Optional[List[float]] = None,
-                 l0: Optional[float] = None,
-                 b0: Optional[float] = None):
+                 s: Optional[List[float]] = None,  # We can discuss for this choice 
+                 l0: float = 0.5,
+                 b0: float = 0.5):
 
         self.m = m
 
@@ -272,15 +251,8 @@ class HoltWinterMultiplicative(base.Forecaster):
             else:
                 raise ValueError('s must have a size of m obligatory')
 
-        if l0 is None:
-            self.lt = 0.5
-        else:
-            self.lt = l0
-
-        if b0 is None:
-            self.bt = 0.5
-        else:
-            self.bt = b0
+        self.lt = l0
+        self.bt = b0
 
     def fit_one(self, y: float):
 
@@ -324,9 +296,9 @@ class HoltWinterDamped(base.Forecaster):
                  beta: float = 0.5,
                  gamma: float = 0.5,
                  phi: float = 0.5,
-                 s: Optional[List[float]] = None,
-                 l0: Optional[float] = None,
-                 b0: Optional[float] = None):
+                 s: Optional[List[float]] = None,  # We can discuss for this choice 
+                 l0: float = 0.5,
+                 b0: float = 0.5):
 
         self.m = m
         if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <=
@@ -351,15 +323,8 @@ class HoltWinterDamped(base.Forecaster):
             else:
                 raise ValueError('s must have a size of m obligatory')
 
-        if l0 is None:
-            self.lt = 0.5
-        else:
-            self.lt = l0
-
-        if b0 is None:
-            self.bt = 0.5
-        else:
-            self.bt = b0
+        self.lt = l0
+        self.bt = b0
 
     def fit_one(self, y: float):
 
