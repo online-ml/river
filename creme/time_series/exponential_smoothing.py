@@ -1,4 +1,3 @@
-# INIT LO BO ETC ......
 from typing import List, Optional
 import collections  # replace by creme utils windows
 from . import base
@@ -8,37 +7,43 @@ def _discount_sum(phi: float, h: int) -> list:
     return sum([phi**i for i in range(1, h + 1)])
 
 
-class ExponentialSmoothing(base.Forecaster):
+class SimpleExponentialSmoothing(base.Forecaster):
     """
-     #TODO : Docstring + test
+     Simple exponential smoothing.
+     Mathematically, it is defined as:
+     Forecast equation
+     .. math:: \hat{y}_{t+h | t}=\ell_{t}
+     Smoothing equation
+     .. math:: \ell_{t}=\alpha y_{t}+(1-\alpha) \ell_{t-1} 
 
     Parameters:
-        alpha (float): Defaults to `0.5`.
-        s0 (float): Defaults to `None`.
+        alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 . Defaults to `0.5`.
+        l0 (float): Initialization value for the level. Defaults to `0`.
+
+    Example:
+        ::
+            >>> #TODO
 
     References:
         1. `Simple exponential smoothing <https://otexts.com/fpp2/ses.html>`_
     """
 
-    def __init__(self, alpha=0.5, s0: Optional[float] = None):
+    def __init__(self, alpha=0.5, l0: float = 0):
 
         if 0 <= alpha <= 1:
             self.alpha = alpha
         else:
             raise ValueError(f'The value of alpha must be between [0, 1]')
 
-        if s0 is None:
-            self.st = 0
-        else:
-            self.st = s0
+        self.lt = l0
 
     def fit_one(self, y: float):
-        self.st = self.alpha * y + (1 - self.alpha) * self.st
+        self.st = self.alpha * y + (1 - self.alpha) * self.lt
 
         return self
 
     def forecast(self, horizon: int) -> list:
-        return [self.st for _ in range(horizon)]
+        return [self.lt for _ in range(horizon)]
 
 
 class HoltLinearTrend(base.Forecaster):
