@@ -30,10 +30,7 @@ class SimpleExponentialSmoothing(base.Forecaster):
 
     def __init__(self, alpha=0.5, l0: float = 0):
 
-        if 0 <= alpha <= 1:
-            self.alpha = alpha
-        else:
-            raise ValueError(f'The value of alpha must be between [0, 1]')
+        self.alpha = alpha
 
         self.lt = l0
 
@@ -61,7 +58,7 @@ class HoltLinearTrend(base.Forecaster):
 
     Parameters:
         alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 .Defaults to `0.5`.
-        beta (float): The smoothing parameter for the level, 0 ≤ beta ≤ 1 .Defaults to `0.5`.
+        beta (float): The smoothing parameter for the trend, 0 ≤ beta ≤ 1 .Defaults to `0.5`.
         l0 (float): Initialization value for the level. Defaults to `0`.
         b0 (float): Initialization value for the trend. Defaults to `0`.
 
@@ -79,12 +76,8 @@ class HoltLinearTrend(base.Forecaster):
                  l0: float = 0,
                  b0: float = 0):
 
-        if (0 <= alpha <= 1) and (0 <= beta <= 1):
-            self.alpha = alpha
-            self.beta = beta
-        else:
-            raise ValueError(
-                'The value of alpha and beta must be between [0, 1]')
+        self.alpha = alpha
+        self.beta = beta
 
         self.lt = l0
         self.bt = b0
@@ -120,7 +113,7 @@ class DampedTrend(base.Forecaster):
 
     Parameters:
         alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 .Defaults to `0.5`.
-        beta (float): The smoothing parameter for the level, 0 ≤ beta ≤ 1 .Defaults to `0.5`.
+        beta (float): The smoothing parameter for the trend, 0 ≤ beta ≤ 1 .Defaults to `0.5`.
         phi (float): damping parameter  0 < phi < 1. Defaults to `0.8`.
         l0 (float): Initialization value for the level. Defaults to `0`.
         b0 (float): Initialization value for the trend. Defaults to `0`.
@@ -140,14 +133,9 @@ class DampedTrend(base.Forecaster):
                  l0: float = 0,
                  b0: float = 0):
 
-        if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= phi <= 1):
-            self.alpha = alpha
-            self.beta = beta
-            self.phi = phi
-        else:
-            raise ValueError(
-                'The value of alpha and beta must be between [0, 1] and phi must be between (0, 1)'
-            )
+        self.alpha = alpha
+        self.beta = beta
+        self.phi = phi
 
         self.lt = l0
         self.bt = b0
@@ -172,13 +160,22 @@ class DampedTrend(base.Forecaster):
 
 class HoltWinterAdditive(base.Forecaster):
     """
-    #TODO : Docstring + test
+    Holt (1957) and Winters (1960) extended Holt’s method to capture seasonality.
+    The Holt-Winters seasonal method comprises the forecast equation
+    and three smoothing equations — one for the level  $l_{t}$,
+    one for the trend $b_{t}$ , and one for the seasonal component $s_{t}$,
+    with corresponding smoothing parameters alpha, beta and gamma.
+    We use m to denote the frequency of the seasonality, 
+    i.e., the number of seasons in a year. For example, for quarterly data  m=4, and for monthly data  m=12.
 
     Parameters:
-        m (int): ...
-        alpha (float): ... .Defaults to `0.5`.
-        beta (float): ... .Defaults to `0.5`.
-        gamma (float): ... .Defaults to `0.5`.
+        m (int): m the frequency of the seasonality
+        alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 . Defaults to `0.5`.
+        beta (float): The smoothing parameter for the trend, 0 ≤ beta ≤ 1 . Defaults to `0.5`.
+        gamma (float): The smoothing parameter seasonal component 0 ≤ gamma ≤ 1. Defaults to `0.5`.
+        s (List[float]): Initialization values for the seasonality. Defaults to `None`.
+        l0 (float): Initialization value for the level. Defaults to `0`.
+        b0 (float): Initialization value for the trend. Defaults to `0`.
 
     Example:
     ::
@@ -200,24 +197,15 @@ class HoltWinterAdditive(base.Forecaster):
 
         self.m = m
 
-        if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <= 1):
-            self.alpha = alpha
-            self.beta = beta
-            self.gamma = gamma
-        else:
-            raise ValueError(
-                'The value of alpha, beta and gamma must be between [0, 1]')
+        self.alpha = alpha
+        self.beta = beta
+        self.gamma = gamma
 
         # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
         if s is None:
-            self.s = collections.deque(maxlen=m)
-            for i in range(self.m):
-                self.s.append(0)
+            self.s = collections.deque([0 for _ in range(m)], maxlen=m)
         else:
-            if len(s) == m:
-                self.s = collections.deque(s, maxlen=m)
-            else:
-                raise ValueError('s must have a size of m obligatory')
+            self.s = collections.deque(s, maxlen=m)
 
         self.lt = l0
         self.bt = b0
@@ -249,10 +237,13 @@ class HoltWinterMultiplicative(base.Forecaster):
     #TODO : Docstring + test
 
     Parameters:
-        m (int): ...
-        alpha (float): ... .Defaults to `0.5`.
-        beta (float): ... .Defaults to `0.5`.
-        gamma (float): ... .Defaults to `0.5`.
+        m (int): m the frequency of the seasonality
+        alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 . Defaults to `0.5`.
+        beta (float): The smoothing parameter for the trend, 0 ≤ beta ≤ 1 . Defaults to `0.5`.
+        gamma (float): The smoothing parameter seasonal component 0 ≤ gamma ≤ 1. Defaults to `0.5`.
+        s (List[float]): Initialization values for the seasonality. Defaults to `None`.
+        l0 (float): Initialization value for the level. Defaults to `0.5`.
+        b0 (float): Initialization value for the trend. Defaults to `0.5`.
 
     Example:
     ::
@@ -268,30 +259,21 @@ class HoltWinterMultiplicative(base.Forecaster):
             alpha: float = 0.5,
             beta: float = 0.5,
             gamma: float = 0.5,
-            s: Optional[List[float]] = None,  # We can discuss for this choice 
+            s: Optional[List[float]] = None,  # We can discuss for this choice
             l0: float = 0.5,
             b0: float = 0.5):
 
         self.m = m
 
-        if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <= 1):
-            self.alpha = alpha
-            self.beta = beta
-            self.gamma = gamma
-        else:
-            raise ValueError(
-                'The value of alpha, beta and gamma must be between [0, 1]')
+        self.alpha = alpha
+        self.beta = beta
+        self.gamma = gamma
 
         # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
         if s is None:
-            self.s = collections.deque(maxlen=m)
-            for i in range(self.m):
-                self.s.append(1)
+            self.s = collections.deque([1 for _ in range(m)], maxlen=m)
         else:
-            if len(s) == m:
-                self.s = collections.deque(s, maxlen=m)
-            else:
-                raise ValueError('s must have a size of m obligatory')
+            self.s = collections.deque(s, maxlen=m)
 
         self.lt = l0
         self.bt = b0
@@ -322,11 +304,15 @@ class HoltWinterDamped(base.Forecaster):
         #TODO : Docstring + test
 
     Parameters:
-        m (int): ...
-        alpha (float): ... .Defaults to `0.5`.
-        beta (float): ... .Defaults to `0.5`.
-        gamma (float): ... .Defaults to `0.5`.
-        phi (float): ... .Defaults to `0.5`.
+        m (int): m the frequency of the seasonality
+        alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 . Defaults to `0.5`.
+        beta (float): The smoothing parameter for the trend, 0 ≤ beta ≤ 1 . Defaults to `0.5`.
+        gamma (float): The smoothing parameter seasonal component 0 ≤ gamma ≤ 1. Defaults to `0.5`.
+        phi (float): damping parameter  0 < phi < 1. Defaults to `0.8`.
+        s (List[float]): Initialization values for the seasonality. Defaults to `None`.
+        l0 (float): Initialization value for the level. Defaults to `0.5`.
+        b0 (float): Initialization value for the trend. Defaults to `0.5`.
+
 
     Example:
     ::
@@ -343,32 +329,22 @@ class HoltWinterDamped(base.Forecaster):
             beta: float = 0.5,
             gamma: float = 0.5,
             phi: float = 0.5,
-            s: Optional[List[float]] = None,  # We can discuss for this choice 
+            s: Optional[List[float]] = None,  # We can discuss for this choice
             l0: float = 0.5,
             b0: float = 0.5):
 
         self.m = m
-        if (0 <= alpha <= 1) and (0 <= beta <= 1) and (0 <= gamma <=
-                                                       1) and (0 <= phi <= 1):
-            self.alpha = alpha
-            self.beta = beta
-            self.gamma = gamma
-            self.phi = phi
-        else:
-            raise ValueError(
-                'The value of alpha, beta and gamma must be between [0, 1] and phi must be between (0, 1)'
-            )
+
+        self.alpha = alpha
+        self.beta = beta
+        self.gamma = gamma
+        self.phi = phi
 
         # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
         if s is None:
-            self.s = collections.deque(maxlen=m)
-            for i in range(self.m):
-                self.s.append(1)
+            self.s = collections.deque([1 for _ in range(m)], maxlen=m)
         else:
-            if len(s) == m:
-                self.s = collections.deque(s, maxlen=m)
-            else:
-                raise ValueError('s must have a size of m obligatory')
+            self.s = collections.deque(s, maxlen=m)
 
         self.lt = l0
         self.bt = b0
