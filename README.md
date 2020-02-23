@@ -110,7 +110,7 @@ Here are some benefits of using `creme` (and online machine learning in general)
 - **Production-ready**: working with data streams makes it simple to replicate production scenarios during model development.
 - **Efficient**: models don't have to be retrained and require little compute power, which [lowers their carbon footprint](https://arxiv.org/abs/1907.10597)
 
-## 📝 Features
+## 🔥 Features
 
 - Linear models with a wide array of optimizers
 - Nearest neighbors, decision trees, naïve Bayes
