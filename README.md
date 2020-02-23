@@ -95,8 +95,6 @@ You can also install the latest development version as so:
     # Or, through SSH:
     pip install git+ssh://git@github.com/creme-ml/creme.git
 
-If you're looking to contribute to ``creme`` and want to have a development setup, then please check out the [contribution guidelines](CONTRIBUTING.md).
-
 ## 🧠 Philosophy
 
 Machine learning is often done in a batch setting, whereby a model is fitted to a dataset in one go. This results in a static model which has be retrained in order to learn from new data. In many cases, this isn't elegant nor efficient, and usually incurs [a fair amount of technical debt](https://research.google/pubs/pub43146/). Indeed, if you're using a batch model, then you need to think about maintaining a training set, monitoring real-time performance, model retraining, etc.
