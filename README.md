@@ -1,16 +1,8 @@
-<div align="center">
+<p align="center">
   <img height="200px" src="https://docs.google.com/drawings/d/e/2PACX-1vSl80T4MnWRsPX3KvlB2kn6zVdHdUleG_w2zBiLS7RxLGAHxiSYTnw3LZtXh__YMv6KcIOYOvkSt9PB/pub?w=841&h=350" alt="creme_logo">
-</div>
+</p>
 
-<div align="center">
-  <!-- PyPI -->
-  <a href="https://pypi.org/project/creme">
-    <img src="https://img.shields.io/pypi/v/creme.svg?color=blue&style=flat-square" alt="pypi">
-  </a>
-  <!-- Documentation -->
-  <a href="https://creme-ml.github.io/">
-    <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Fcreme-ml.github.io%2F" alt="documentation">
-  </a>
+<p align="center">
   <!-- Travis -->
   <a href="https://travis-ci.org/creme-ml/creme">
     <img src="https://img.shields.io/travis/creme-ml/creme/master.svg?style=flat-square" alt="travis">
@@ -19,15 +11,23 @@
   <a href="https://codecov.io/gh/creme-ml/creme">
     <img src="https://img.shields.io/codecov/c/gh/creme-ml/creme.svg?style=flat-square" alt="codecov">
   </a>
+  <!-- Documentation -->
+  <a href="https://creme-ml.github.io/">
+    <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Fcreme-ml.github.io%2F" alt="documentation">
+  </a>
+  <!-- PyPI -->
+  <a href="https://pypi.org/project/creme">
+    <img src="https://img.shields.io/pypi/v/creme.svg?label=release&color=blue&style=flat-square" alt="pypi">
+  </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
   </a>
-</div>
+</p>
 
-<div align="center">
-    <p>**creme** is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. All the tools in the library can be updated with a single observation at a time, and can therefore be used to learn from streaming data.</p>
-</div>
+<p align="center">
+  <p><b>creme</b> is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. All the tools in the library can be updated with a single observation at a time, and can therefore be used to learn from streaming data.</p>
+</p>
 
 ## ⚡️Quickstart
 
@@ -43,10 +43,20 @@ As a quick example, we'll train a logistic regression to classify the [website p
 ...     pprint(x)
 ...     print(y)
 ...     break
+{'age_of_domain': 1,
+ 'anchor_from_other_domain': 0.0,
+ 'empty_server_form_handler': 0.0,
+ 'https': 0.0,
+ 'ip_in_url': 1,
+ 'is_popular': 0.5,
+ 'long_url': 1.0,
+ 'popup_window': 0.0,
+ 'request_from_other_domain': 0.0}
+1
 
 ```
 
-Now let's run the model on the stream observations. We will sequentially make predictions and update the model, while at the same updating a performance metric.
+Now let's run the model on the dataset in a streaming fashion. We will sequentially make predictions and model updates. Meanwhile we will update a performance metric to see how well the model is doing.
 
 ```python
 >>> from creme import linear_model
@@ -58,20 +68,23 @@ Now let's run the model on the stream observations. We will sequentially make pr
 ...     linear_model.LogisticRegression()
 ... )
 
->>> for x, y in datasets.Phishing():
-...     y_pred = model.predict_one(x)
-...     metric = metric.update(y, y_pred)
-...     model = model.fit_one(x, y)
+>>> metric = metrics.Accuracy()
+
+>>> for x, y in X_y:
+...     y_pred = model.predict_one(x)  # make a prediction
+...     metric = metric.update(y, y_pred)  # update the metric
+...     model = model.fit_one(x, y)  # update the model
 
 >>> metric
+Accuracy: 89.28%
 
 ```
 
 ## 🛠 Installation
 
-:point_up: You need to install Python 3.6 or above. :snake:
+:snake: You need to install Python 3.6 or above.
 
-Installation can be done by using `pip`.
+Installation can be done by using `pip`. There are [wheels available](https://pypi.org/project/creme/#files) for Linux, MacOS, and Windows.
 
     pip install creme
 
@@ -158,6 +171,6 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-## License
+## 📝 License
 
 `creme` is free and open-source software licensed under the [3-Clause BSD license](https://github.com/creme-ml/creme/blob/master/LICENSE).
