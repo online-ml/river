@@ -80,6 +80,8 @@ Accuracy: 89.28%
 
 ```
 
+Note that the `|` operator is shorthand for building a pipeline.
+
 ## 🛠 Installation
 
 :snake: You need to install Python 3.6 or above.
@@ -113,9 +115,11 @@ Here are some benefits of using `creme` (and online machine learning in general)
 - Linear models with a wide array of optimizers
 - Nearest neighbors, decision trees, naïve Bayes
 - [Progressive model validation](https://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf)
-- Model pipelines
+- Model pipelines as a first-class citizen
 - Anomaly detection
 - Recommender systems
+- Time series forecasting
+- Clustering
 - Feature extraction and selection
 - Online statistics and metrics
 - Built-in datasets
