@@ -80,7 +80,7 @@ Accuracy: 89.28%
 
 ```
 
-Note that the `|` operator is shorthand for building a pipeline.
+Note that the `|` (pipe) operator is shorthand for building a pipeline.
 
 ## 🛠 Installation
 
@@ -99,7 +99,7 @@ You can also install the latest development version as so:
 
 ## 🧠 Philosophy
 
-Machine learning is often done in a batch setting, whereby a model is fitted to a dataset in one go. This results in a static model which has be retrained in order to learn from new data. In many cases, this isn't elegant nor efficient, and usually incurs [a fair amount of technical debt](https://research.google/pubs/pub43146/). Indeed, if you're using a batch model, then you need to think about maintaining a training set, monitoring real-time performance, model retraining, etc.
+Machine learning is often done in a batch setting, whereby a model is fitted to a dataset in one go. This results in a static model which has to be retrained in order to learn from new data. In many cases, this isn't elegant nor efficient, and usually incurs [a fair amount of technical debt](https://research.google/pubs/pub43146/). Indeed, if you're using a batch model, then you need to think about maintaining a training set, monitoring real-time performance, model retraining, etc.
 
 With `creme`, we encourage a different approach, which is to fit a model to a stream of data. This means that the model learns from one observation at a time, and can therefore be updated on the fly. This allows to learn from massive datasets that don't fit in main memory. Online machine learning also integrates nicely in cases where new data is constantly arriving. It shines in many use cases, such as time series forecasting, spam filtering, recommender systems, CTR prediction, and IoT applications. If you're bored with retraining models and want to instead build dynamic models, then online machine learning (and therefore `creme`!) might be what you're looking for.
 
@@ -175,4 +175,4 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 ## 📝 License
 
-`creme` is free and open-source software licensed under the [3-Clause BSD license](https://github.com/creme-ml/creme/blob/master/LICENSE).
+`creme` is free and open-source software licensed under the [3-clause BSD license](https://github.com/creme-ml/creme/blob/master/LICENSE).
