@@ -26,7 +26,7 @@
 </p>
 
 <p align="center">
-  <b>creme</b> is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. All the tools in the library can be updated with a single observation at a time, and can therefore be used to **learn from streaming data**.
+  <b>creme</b> is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. All the tools in the library can be updated with a single observation at a time, and can therefore be used to <b>learn from streaming data</b>.
 </p>
 
 ## ⚡️Quickstart
