@@ -28,8 +28,8 @@ following the philosophy of `scikit-learn <http://scikit-learn.org/stable/>`_.
    :hidden:
    :caption: Documentation
 
-   User Guide <user-guide>
-   scikit-multiflow API <documentation>
+   User Guide <user-guide/user-guide>
+   API Reference <api/api>
 
 .. toctree::
    :maxdepth: 1
@@ -58,12 +58,12 @@ Information to install `scikit-multiflow`.
 
 A map to help navigate available methods in `scikit-multiflow`.
 
-`User Guide <user-guide.html>`_
--------------------------------
+`User Guide <user-guide/user-guide.html>`_
+------------------------------------------
 
 Covers the core elements of `scikit-multiflow`, describing how its different elements work together.
 
-`API Documentation <documentation.html>`_
+`API Reference <api/api.html>`_
 ------------------------------------------
 
 The API documentation provides detailed information of the implemented methods.

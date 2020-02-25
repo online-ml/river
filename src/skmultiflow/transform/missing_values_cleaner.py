@@ -7,7 +7,7 @@ from skmultiflow.utils import FastBuffer, get_dimensions
 
 
 class MissingValuesCleaner(StreamTransform):
-    """ Fills missing values with some defined value.
+    """ Fill missing values with some defined value.
 
     Provides a simple way to replace missing values in data samples with some value. The imputation value
     can be set via a set of imputation strategies.

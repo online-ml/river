@@ -12,5 +12,5 @@ Different to batch learning, where all data is available for training :math:`tra
    :maxdepth: 1
    :caption: Read more:
 
-   Architecture <user-guide.core-concepts.architecture>
-   Stream class <user-guide.core-concepts.stream-class>
+   Architecture <core-concepts.architecture>
+   Stream class <core-concepts.stream-class>

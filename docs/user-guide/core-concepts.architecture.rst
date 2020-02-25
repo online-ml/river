@@ -19,7 +19,7 @@ The :class:`~skmultiflow.core.RegressorMixin` defines the same methods for the r
 
 The following UML diagram provides an overview of the base classes in ``scikit-multiflow`` with their methods.
 
-.. image:: _static/images/base_classes_with_methods.png
+.. image:: ../_static/images/base_classes_with_methods.png
    :width: 1000px
    :alt: base classes with methods
    :align: center
@@ -28,7 +28,7 @@ A stream model interacts with two other objects: a :class:`~skmultiflow.data.bas
 
 Following, is the sequence to train a stream model and track performance in ``scikit-multiflow`` using the ``Prequential`` evaluator.
 
-.. image:: _static/images/prequential_sequence.png
+.. image:: ../_static/images/prequential_sequence.png
    :width: 1000px
    :alt: prequential evaluation sequence
    :align: center
