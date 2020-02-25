@@ -5,6 +5,8 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 class HDDM_A(BaseDriftDetector):
     """
+    Drift Detection Method based on Hoeffding’s bounds with moving average-test.
+
     Parameters
     ----------
     drift_confidence : float (default=0.001)
@@ -18,7 +20,7 @@ class HDDM_A(BaseDriftDetector):
 
     Notes
     -----
-    HDDM_A (Drift Detection Method based on the Hoeffding’s inequality.) [1]_ uses
+    HDDM_A [1]_ is a drift detection method based on the Hoeffding’s inequality. HDDM_A uses
     the average as estimator. It receives as input a stream of real values and
     returns the estimated status of the stream: STABLE, WARNING or DRIFT.
 
@@ -27,7 +29,7 @@ class HDDM_A(BaseDriftDetector):
     References
     ----------
     .. [1] Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al.
-       Online and non-parametric drift detection methods based on Hoeffding’s bounds[J].
+       Online and non-parametric drift detection methods based on Hoeffding’s bounds.
        IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
 
     .. [2] Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.

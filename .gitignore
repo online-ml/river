@@ -13,7 +13,7 @@ __pycache__/
 
 # Sphinx documentation
 docs/_build/
-docs/_autosummary
+docs/api/generated
 
 # Distribution / packaging
 .Python

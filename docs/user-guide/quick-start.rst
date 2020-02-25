@@ -83,7 +83,7 @@ In this example, we will use a data stream to train a :class:`HoeffdingTreeClass
 
 **Note:** Since we set `show_plot=True`, a new window will be created for the plot:
 
-.. image:: _static/images/example_classifier_plot.gif
+.. image:: ../_static/images/example_classifier_plot.gif
    :alt: classifier plot
    :align: center
 
