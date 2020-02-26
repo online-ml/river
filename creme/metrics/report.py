@@ -138,7 +138,7 @@ class ClassificationReport(base.MultiClassMetric):
         classes = sorted(self.support.keys())
         columns = [
             # Row names
-            ['', *classes, '', 'Macro', 'Micro', 'Weighted'],
+            ['', *map(str, classes), '', 'Macro', 'Micro', 'Weighted'],
             # Precision values
             [
                 '', *[fmt_float(self.f1s[c].precision.get()) for c in classes], '',

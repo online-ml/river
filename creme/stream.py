@@ -470,7 +470,7 @@ class Cache:
 
             >>> cache
             /tmp
-            phishing - 126.4KiB
+            phishing - 125.2KiB
 
             Finally, we can clear the stream from the cache.
 

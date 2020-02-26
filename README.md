@@ -52,7 +52,7 @@ As a quick example, we'll train a logistic regression to classify the [website p
  'long_url': 1.0,
  'popup_window': 0.0,
  'request_from_other_domain': 0.0}
-1
+True
 
 ```
 
