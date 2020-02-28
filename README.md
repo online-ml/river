@@ -15,6 +15,10 @@
   <a href="https://creme-ml.github.io/">
     <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Fcreme-ml.github.io%2F" alt="documentation">
   </a>
+  <!-- Gitter -->
+  <a href="https://gitter.im/creme-ml/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link">
+    <img src="https://img.shields.io/gitter/room/creme-ml/community?color=blueviolet&style=flat-square" alt="gitter">
+  </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/creme">
     <img src="https://img.shields.io/pypi/v/creme.svg?label=release&color=blue&style=flat-square" alt="pypi">
