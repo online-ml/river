@@ -85,9 +85,6 @@ def get_all_estimators():
             elif issubclass(obj, dummy.StatisticRegressor):
                 inst = obj(statistic=stats.Mean())
 
-            elif issubclass(obj, meta.BoxCoxRegressor):
-                inst = obj(regressor=linear_model.LinearRegression())
-
             elif issubclass(obj, tree.RandomForestClassifier):
                 inst = obj()
 
