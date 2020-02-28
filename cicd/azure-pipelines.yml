@@ -1,0 +1,56 @@
+# Install and test scikit-multiflow on multiple Python versions and platforms
+
+jobs:
+
+- job: Linux
+  
+  strategy:
+    matrix:
+      Python35:
+        python.version: '3.5'
+      Python36:
+        python.version: '3.6'
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
+  
+  pool:
+    vmImage: 'ubuntu-latest'
+  
+  steps:
+    - template: azure-install.yml
+    - template: azure-test.yml
+
+- job: macOS
+  
+  strategy:
+    matrix:
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
+  
+  pool:
+    vmImage: 'macOS-latest'
+  
+  steps:
+    - template: azure-install.yml
+    - template: azure-test.yml
+
+
+- job: Windows
+  
+  strategy:
+    matrix:
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
+  
+  pool:
+    vmImage: 'windows-latest'
+  
+  steps:
+    - template: azure-install.yml
+    - template: azure-test.yml

@@ -1,0 +1,19 @@
+  steps:
+    - script: |
+        python -m pytest --junitxml=junit/test-results.xml --cov=skmultiflow --cov-report=xml --showlocals -v tests
+      displayName: 'Running tests'
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: '**/test-results.xml'
+        testRunTitle: '$(Agent.OS) - Python $(python.version)'
+      condition: succeededOrFailed()
+
+    - script: |
+        curl https://codecov.io/bash -t f9f0bf07-aa4b-4349-af68-7cf713422d09 -f coverage.xml -F adder -F subtractor | bash
+      displayName: 'Uploading to codecov.io'
+
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
