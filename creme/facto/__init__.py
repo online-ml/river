@@ -3,8 +3,8 @@ from .ffm import FFMClassifier
 from .ffm import FFMRegressor
 from .fm import FMClassifier
 from .fm import FMRegressor
-from .fwfm import FWFMClassifier
-from .fwfm import FWFMRegressor
+from .fwfm import FwFMClassifier
+from .fwfm import FwFMRegressor
 from .hofm import HOFMClassifier
 from .hofm import HOFMRegressor
 
@@ -14,8 +14,8 @@ __all__ = [
     'FFMRegressor',
     'FMClassifier',
     'FMRegressor',
-    'FWFMClassifier',
-    'FWFMRegressor',
+    'FwFMClassifier',
+    'FwFMRegressor',
     'HOFMClassifier',
     'HOFMRegressor',
 ]

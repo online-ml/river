@@ -11,8 +11,8 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 :mod:`facto`
 - Added `facto.FFMClassifier`.
 - Added `facto.FFMRegressor`.
-- Added `facto.FWFMClassifier`.
-- Added `facto.FWFMRegressor`.
+- Added `facto.FwFMClassifier`.
+- Added `facto.FwFMRegressor`.
 - Added `facto.HOFMClassifier`.
 - Added `facto.HOFMRegressor`.
 - Refactored `facto.FMClassifier`.
