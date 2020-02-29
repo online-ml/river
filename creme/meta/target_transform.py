@@ -32,7 +32,7 @@ class TransformedTargetRegressor(base.Regressor, base.Wrapper):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_boston(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -45,7 +45,7 @@ class TransformedTargetRegressor(base.Regressor, base.Wrapper):
             >>> metric = metrics.MSE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MSE: 37.498761
+            MSE: 35.436624
 
     """
 
@@ -57,10 +57,6 @@ class TransformedTargetRegressor(base.Regressor, base.Wrapper):
     @property
     def _model(self):
         return self.regressor
-
-    @property
-    def _labelloc(self):
-        return 't'  # for top
 
     def fit_one(self, x, y):
         self.regressor.fit_one(x, self.func(y))
@@ -101,7 +97,7 @@ class BoxCoxRegressor(TransformedTargetRegressor):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_boston(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -113,7 +109,7 @@ class BoxCoxRegressor(TransformedTargetRegressor):
             >>> metric = metrics.MSE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MSE: 37.224392
+            MSE: 37.038959
 
     """
 

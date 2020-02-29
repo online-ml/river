@@ -98,6 +98,9 @@ def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
 
     """
 
+    if not hasattr(estimator, 'partial_fit'):
+        raise ValueError(f'{estimator} does not have a partial_fit method')
+
     wrappers = [
         (sklearn_base.RegressorMixin, functools.partial(
             SKL2CremeRegressor,
@@ -121,15 +124,14 @@ def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
 
 class SKL2CremeBase:
 
-    def __init__(self, sklearn_estimator, n_features, batch_size, x_dtype, y_dtype):
+    def __init__(self, sklearn_estimator, n_features, batch_size, x_dtype):
         self.sklearn_estimator = sklearn_estimator
         self.batch_size = batch_size
         self.n_features = n_features
         self.batch_size = batch_size
         self.x_dtype = x_dtype
-        self.y_dtype = y_dtype
         self._x_batch = np.empty(shape=(batch_size, n_features), dtype=x_dtype)
-        self._y_batch = np.empty(shape=batch_size, dtype=y_dtype)
+        self._y_batch = [None] * batch_size
         self._batch_i = 0
 
 
@@ -160,7 +162,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_boston(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> scaler = preprocessing.StandardScaler()
@@ -173,7 +175,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             >>> metric = metrics.MAE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 10.832054
+            MAE: 11.001388
 
     """
 
@@ -182,8 +184,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             sklearn_estimator=sklearn_estimator,
             n_features=n_features,
             batch_size=batch_size,
-            x_dtype=np.float,
-            y_dtype=np.float
+            x_dtype=np.float
         )
 
     def fit_one(self, x, y):
@@ -234,7 +235,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_breast_cancer(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> model = preprocessing.StandardScaler()
@@ -251,7 +252,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.203717
+            LogLoss: 0.201367
 
     """
 
@@ -260,8 +261,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             sklearn_estimator=sklearn_estimator,
             n_features=n_features,
             batch_size=batch_size,
-            x_dtype=np.float,
-            y_dtype=np.object
+            x_dtype=np.float
         )
         self.classes = classes
 

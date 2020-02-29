@@ -51,9 +51,8 @@ class ComplementNB(base.BaseNB):
             {'health': 0.779191..., 'butcher': 0.220808...}
 
     References:
-
-        1. `Tackling the Poor Assumptions of Naive Bayes Text Classifiers <https://people.csail.mit.edu/jrennie/papers/icml03-nb.pdf>`_
-        2. `Complement naive bayes <https://stats.stackexchange.com/questions/126009/complement-naive-bayes>`_
+        1. `Rennie, J.D., Shih, L., Teevan, J. and Karger, D.R., 2003. Tackling the poor assumptions of naive bayes text classifiers. In Proceedings of the 20th international conference on machine learning (ICML-03) (pp. 616-623). <https://people.csail.mit.edu/jrennie/papers/icml03-nb.pdf>`_
+        2. `StackExchange discussion <https://stats.stackexchange.com/questions/126009/complement-naive-bayes>`_
 
     """
 

@@ -15,19 +15,14 @@ class FTRLProximal(base.Optimizer):
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.Phishing()
             >>> optimizer = optim.FTRLProximal()
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -36,11 +31,11 @@ class FTRLProximal(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.962132
+            F1: 0.87942
 
     References:
-        1. `Ad Click Prediction: a View from the Trenches - Research - Google <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
-        2. `tf.train.FtrlOptimizer <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
+        1. `McMahan, H.B., Holt, G., Sculley, D., Young, M., Ebner, D., Grady, J., Nie, L., Phillips, T., Davydov, E., Golovin, D. and Chikkerur, S., 2013, August. Ad click prediction: a view from the trenches. In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 1222-1230). <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
+        2. Tensorflow's ``FtrlOptimizer`` <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
 
     """
 

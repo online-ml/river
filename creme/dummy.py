@@ -19,7 +19,7 @@ class NoChangeClassifier(base.MultiClassifier):
 
     Example:
 
-        Taken from example 2.1 from `here <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
+        Taken from example 2.1 from `this page <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
 
         ::
 
@@ -77,7 +77,7 @@ class PriorClassifier(base.MultiClassifier):
 
     Example:
 
-        Taken from example 2.1 from `here <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
+        Taken from example 2.1 from `this page <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
 
         ::
 

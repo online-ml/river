@@ -81,8 +81,8 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_
-        2. `Multiplicative weight update method <https://www.wikiwand.com/en/Multiplicative_weight_update_method>`_
-        3. `Exponentiated Gradient versus GradientDescent for Linear Predictors <https://users.soe.ucsc.edu/~manfred/pubs/J36.pdf>`_
+        2. `Wikipedia page on the multiplicative weight update method <https://www.wikiwand.com/en/Multiplicative_weight_update_method>`_
+        3. `Kivinen, J. and Warmuth, M.K., 1997. Exponentiated gradient versus gradient descent for linear predictors. information and computation, 132(1), pp.1-63. <https://users.soe.ucsc.edu/~manfred/pubs/J36.pdf>`_
 
     """
 

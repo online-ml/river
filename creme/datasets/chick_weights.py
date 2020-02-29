@@ -16,7 +16,7 @@ class ChickWeights(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        1. `Chick Weight <http://rstudio-pubs-static.s3.amazonaws.com/107631_131ad1c022df4f90aa2d214a5c5609b2.html>`_
+        1. `Chick weight dataset overview <http://rstudio-pubs-static.s3.amazonaws.com/107631_131ad1c022df4f90aa2d214a5c5609b2.html>`_
 
     """
 

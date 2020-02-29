@@ -89,7 +89,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
             Anomaly score for 0.000: 0.0
 
     References:
-        1. `Fast Anomaly Detection for Streaming Data <https://www.ijcai.org/Proceedings/11/Papers/254.pdf>`_
+        1. `Tan, S.C., Ting, K.M. and Liu, T.F., 2011, June. Fast anomaly detection for streaming data. In Twenty-Second International Joint Conference on Artificial Intelligence. <https://www.ijcai.org/Proceedings/11/Papers/254.pdf>`_
 
     """
 

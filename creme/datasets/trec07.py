@@ -1,5 +1,3 @@
-import csv
-
 from .. import stream
 
 from . import base

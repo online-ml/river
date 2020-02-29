@@ -272,7 +272,7 @@ class SNARIMAX(base.Forecaster):
         1. `Wikipedia page on ARMA <https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model>`_
         2. `Wikipedia page on NARX <https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model>`_
         3. `ARIMA models <https://otexts.com/fpp2/arima.html>`_
-        4. `Online Learning for Time Series Prediction <https://arxiv.org/pdf/1302.6927.pdf>`_
+        4. `Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184). <https://arxiv.org/pdf/1302.6927.pdf>`_
 
     """
 

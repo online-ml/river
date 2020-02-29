@@ -13,7 +13,7 @@ class Newton(base.Optimizer):
     addition to first-order information (i.e. the gradient of the cost function).
 
     References:
-        1. `Logarithmic Regret Algorithms for Online Convex Optimization <https://www.cs.princeton.edu/~ehazan/papers/log-journal.pdf>`_
+        1. `Hazan, E., Agarwal, A. and Kale, S., 2007. Logarithmic regret algorithms for online convex optimization. Machine Learning, 69(2-3), pp.169-192. <https://www.cs.princeton.edu/~ehazan/papers/log-journal.pdf>`_
 
     """
 

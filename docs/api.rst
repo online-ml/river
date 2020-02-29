@@ -326,6 +326,7 @@ Random data generators
     MacroFBeta
     MacroPrecision
     MacroRecall
+    Metric
     MicroF1
     MicroFBeta
     MicroPrecision
@@ -491,6 +492,7 @@ Learning rate schedulers
     schedulers.Constant
     schedulers.InverseScaling
     schedulers.Optimal
+    schedulers.Scheduler
 
 
 **preprocessing**: Feature preprocessing

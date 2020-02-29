@@ -39,14 +39,13 @@ def progressive_val_score(X_y, model, metric, on=None, delay=0, print_every=math
 
     References:
         1. `Beating the Hold-Out: Bounds for K-fold and Progressive Cross-Validation <http://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf>`_
-        2. `Delayed labelling evaluation for data streams <https://link.springer.com/content/pdf/10.1007%2Fs10618-019-00654-y.pdf>`_
+        2. `Grzenda, M., Gomes, H.M. and Bifet, A., 2019. Delayed labelling evaluation for data streams. Data Mining and Knowledge Discovery, pp.1-30. <https://link.springer.com/content/pdf/10.1007%2Fs10618-019-00654-y.pdf>`_
 
     """
 
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
-        raise ValueError(f"{metric.__class__.__name__} metric can't be used to evaluate a " +
-                         f'{model.__class__.__name__}')
+        raise ValueError(f'{metric.__class__.__name__} metric is not compatible with {model}')
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     pred_func = model.predict_one

@@ -71,16 +71,13 @@ def get_all_estimators():
         if submodule == 'base':
             continue
 
-        for name, obj in inspect.getmembers(importlib.import_module(f'creme.{submodule}'), is_estimator):
+        for _, obj in inspect.getmembers(importlib.import_module(f'creme.{submodule}'), is_estimator):
 
             if issubclass(obj, ignored):
                 continue
 
             elif issubclass(obj, dummy.StatisticRegressor):
                 inst = obj(statistic=stats.Mean())
-
-            elif issubclass(obj, meta.BoxCoxRegressor):
-                inst = obj(regressor=linear_model.LinearRegression())
 
             elif issubclass(obj, tree.RandomForestClassifier):
                 inst = obj()
@@ -96,7 +93,7 @@ def get_all_estimators():
 
             elif issubclass(obj, ensemble.HedgeRegressor):
                 inst = obj([
-                    preprocessing.StandardScaler() | linear_model.LinearRegression(intercept_lr=0.1),
+                    preprocessing.StandardScaler() | linear_model.LinearRegression(intercept_lr=.1),
                     preprocessing.StandardScaler() | linear_model.PARegressor(),
                 ])
 
@@ -104,7 +101,7 @@ def get_all_estimators():
                 inst = obj(similarity=stats.PearsonCorrelation())
 
             elif issubclass(obj, linear_model.LinearRegression):
-                inst = preprocessing.StandardScaler() | obj(intercept_lr=0.1)
+                inst = preprocessing.StandardScaler() | obj(intercept_lr=.1)
 
             elif issubclass(obj, linear_model.PARegressor):
                 inst = preprocessing.StandardScaler() | obj()
@@ -118,8 +115,12 @@ def get_all_estimators():
             yield inst
 
 
-@pytest.mark.parametrize('estimator', [
-    pytest.param(copy.deepcopy(estimator), id=str(estimator))
+@pytest.mark.parametrize('estimator, check', [
+    pytest.param(
+        copy.deepcopy(estimator),
+        check,
+        id=f'{estimator}:{check.__name__}'
+    )
     for estimator in list(get_all_estimators()) + [
         feature_extraction.TFIDF(),
         linear_model.LogisticRegression(),
@@ -136,6 +137,7 @@ def get_all_estimators():
         feature_selection.VarianceThreshold(),
         feature_selection.SelectKBest(similarity=stats.PearsonCorrelation())
     ]
+    for check in utils.estimator_checks.yield_checks(estimator)
 ])
-def test_check_estimator(estimator):
-    utils.estimator_checks.check_estimator(estimator)
+def test_check_estimator(estimator, check):
+    check(estimator)

@@ -97,8 +97,8 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
             loss_fn=loss_fn,
             optimizer=optimizer,
             batch_size=batch_size,
-            x_tensor=torch.FloatTensor,
-            y_tensor=torch.FloatTensor
+            x_tensor=torch.Tensor,
+            y_tensor=torch.Tensor
         )
 
     def predict_one(self, x):

@@ -96,9 +96,13 @@ dmypy.json
 /*.ipynb
 /*.csv*
 /*.arff
+/*.pkl
 test.py
 
 # For all-contributors
 yarn.lock
 node_modules/
 package.json
+
+# For MacOS
+.DS_store

@@ -15,7 +15,7 @@ class SMSSpam(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        1. `Contributions to the Study of SMS Spam Filtering: New Collection and Results <http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/doceng11.pdf>`_
+        1. `Almeida, T.A., Hidalgo, J.M.G. and Yamakami, A., 2011, September. Contributions to the study of SMS spam filtering: new collection and results. In Proceedings of the 11th ACM symposium on Document engineering (pp. 259-262). <http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/doceng11.pdf>`_
 
     """
 

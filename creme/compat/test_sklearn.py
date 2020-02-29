@@ -1,11 +1,20 @@
+import pytest
 from sklearn.utils import estimator_checks
 
+from creme import cluster
 from creme import compat
 from creme import linear_model
+from creme import preprocessing
 
 
-def test_check_estimator():
-
-    model = linear_model.LinearRegression()
-    skl_model = compat.convert_creme_to_sklearn(model)
-    estimator_checks.check_estimator(skl_model)
+@pytest.mark.parametrize('estimator', [
+    pytest.param(estimator, id=str(estimator))
+    for estimator in [
+        linear_model.LinearRegression(),
+        preprocessing.StandardScaler(),
+        cluster.KMeans(seed=42)
+    ]
+])
+def test_sklearn_check_estimator(estimator):
+    skl_estimator = compat.convert_creme_to_sklearn(estimator)
+    estimator_checks.check_estimator(skl_estimator)

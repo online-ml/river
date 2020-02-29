@@ -35,7 +35,7 @@ class SDFT(window.Window):
             ...         assert np.allclose(sdft, np.fft.fft(X[i+1 - window_size:i+1]))
 
     References:
-        1. `The Sliding DFT <https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf>`_
+        1. `Jacobsen, E. and Lyons, R., 2003. The sliding DFT. IEEE Signal Processing Magazine, 20(2), pp.74-80. <https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf>`_
         2. `Understanding and Implementing the Sliding DFT <https://www.dsprelated.com/showarticle/776.php>`_
 
     """

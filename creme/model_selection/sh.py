@@ -50,29 +50,24 @@ def successive_halving(model, param_grid, X_y, metric, budget, eta=2, verbose=Tr
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import preprocessing
             >>> from creme import model_selection
             >>> from creme import optim
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_boston(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.TrumpApproval()
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
-            ...     linear_model.LinearRegression()
+            ...     linear_model.LinearRegression(intercept_lr=.1)
             ... )
 
             >>> param_grid = {
             ...     'LinearRegression': {
             ...         'optimizer': [
-            ...             (optim.SGD, {'lr': [1, 2, 3]}),
+            ...             (optim.SGD, {'lr': [0.1, 0.01, 0.005]}),
             ...             (optim.Adam, {'beta_1': [0.01, 0.001], 'lr': [0.1, 0.01, 0.001]}),
             ...             (optim.Adam, {'beta_1': [0.1], 'lr': [0.001]}),
             ...         ]
@@ -83,15 +78,15 @@ def successive_halving(model, param_grid, X_y, metric, budget, eta=2, verbose=Tr
             ...     model=model,
             ...     param_grid=param_grid,
             ...     X_y=X_y,
-            ...     metric=metrics.MSE(),
+            ...     metric=metrics.MAE(),
             ...     budget=2000,
             ...     eta=2
             ... )
             ... # doctest: +NORMALIZE_WHITESPACE
-            [1] 5 removed   5 left  50 iterations   budget used: 500    budget left: 1500   best MSE: 254.450992
-            [2] 2 removed   3 left  100 iterations  budget used: 1000   budget left: 1000   best MSE: 169.045235
-            [3] 1 removed   2 left  166 iterations  budget used: 1498   budget left: 502    best MSE: 113.623094
-            [4] 1 removed   1 left  250 iterations  budget used: 1998   budget left: 2      best MSE: 90.453983
+            [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best MAE: 4.541564
+            [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best MAE: 2.447818
+            [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best MAE: 1.574464
+            [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	best MAE: 1.137359
 
             >>> best_model = model._set_params(**best_params)
             >>> best_model
@@ -113,7 +108,7 @@ def successive_halving(model, param_grid, X_y, metric, budget, eta=2, verbose=Tr
                 l2=0.
                 intercept=0.
                 intercept_lr=Constant (
-                  learning_rate=0.01
+                  learning_rate=0.1
                 )
                 clip_gradient=1e+12
                 initializer=Zeros ()
@@ -121,9 +116,9 @@ def successive_halving(model, param_grid, X_y, metric, budget, eta=2, verbose=Tr
             )
 
     References:
-        1. `Non-stochastic Best Arm Identification and Hyperparameter Optimization <http://proceedings.mlr.press/v51/jamieson16.pdf>`_
-        2. `Massively Parallel Hyperparameter Tuning <https://arxiv.org/pdf/1810.05934.pdf>`_
-        3. `Hyperband: A Novel Bandit-Based Approach to Hyperparameter Optimization <https://arxiv.org/pdf/1603.06560.pdf>`_
+        1. `Jamieson, K. and Talwalkar, A., 2016, May. Non-stochastic best arm identification and hyperparameter optimization. In Artificial Intelligence and Statistics (pp. 240-248). <http://proceedings.mlr.press/v51/jamieson16.pdf>`_
+        2. `Li, L., Jamieson, K., Rostamizadeh, A., Gonina, E., Hardt, M., Recht, B. and Talwalkar, A., 2018. Massively parallel hyperparameter tuning. arXiv preprint arXiv:1810.05934. <https://arxiv.org/pdf/1810.05934.pdf>`_
+        3. `Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. Hyperband: A novel bandit-based approach to hyperparameter optimization. The Journal of Machine Learning Research, 18(1), pp.6765-6816. <https://arxiv.org/pdf/1603.06560.pdf>`_
 
     """
 

@@ -13,19 +13,14 @@ class AdaDelta(base.Optimizer):
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.Phishing()
             >>> optimizer = optim.AdaDelta()
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -34,11 +29,10 @@ class AdaDelta(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.946092
+            F1: 0.811133
 
     References:
-
-        1. `AdaDelta: an adaptive learning rate method <https://arxiv.org/pdf/1212.5701.pdf>`_
+        1. `Zeiler, M.D., 2012. Adadelta: an adaptive learning rate method. arXiv preprint arXiv:1212.5701. <https://arxiv.org/pdf/1212.5701.pdf>`_
 
     """
 

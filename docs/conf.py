@@ -75,7 +75,7 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'manni'
+pygments_style = 'friendly'
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -263,7 +263,7 @@ html_theme_options = {
     # If True, show hidden TOC entries
     'globaltoc_includehidden': True,
     'heroes': {
-        'index': 'Incremental machine learning in Python.',
+        'index': 'A library for incremental machine learning in Python.',
     },
 }
 
