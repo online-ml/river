@@ -8,6 +8,16 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 - Added `compat.PyTorch2CremeRegressor`.
 - The ``SKL2Creme`` classes in ``compat`` now require ``n_features`` and a ``batch_size`` parameters for preemptive memory allocation (which allows doing mini-batching).
 
+:mod:`facto`
+- Added `facto.FFMClassifier`.
+- Added `facto.FFMRegressor`.
+- Added `facto.FwFMClassifier`.
+- Added `facto.FwFMRegressor`.
+- Added `facto.HOFMClassifier`.
+- Added `facto.HOFMRegressor`.
+- Refactored `facto.FMClassifier`.
+- Refactored `facto.FMRegressor`.
+
 :mod:`feature_selection`
 
 - Added `feature_selection.PoissonInclusion`.
@@ -40,13 +50,9 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 
 :mod:`linear_model`
 
+- `linear_model.FMClassifier` moved to new module `facto`.
+- `linear_model.FMRegressor` moved to new module `facto`.
 - Added `linear_model.PoissonRegression`.
-- Added `linear_model.FFMClassifier`.
-- Added `linear_model.FFMRegressor`.
-- Added `linear_model.HOFMClassifier`.
-- Added `linear_model.HOFMRegressor`.
-- Refactored `linear_model.FMClassifier`.
-- Refactored `linear_model.FMRegressor`.
 - Added `linear_model.ALMAClassifier`.
 
 :mod:`metrics`

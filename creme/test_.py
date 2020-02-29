@@ -11,6 +11,7 @@ from creme import compat
 from creme import cluster
 from creme import compose
 from creme import ensemble
+from creme import facto
 from creme import feature_extraction
 from creme import feature_selection
 from creme import imblearn
@@ -39,6 +40,14 @@ def get_all_estimators():
         compose.FuncTransformer,
         compose.Pipeline,
         ensemble.StackingBinaryClassifier,
+        facto.FFMClassifier,
+        facto.FFMRegressor,
+        facto.FMClassifier,
+        facto.FMRegressor,
+        facto.FWFMClassifier,
+        facto.FWFMRegressor,
+        facto.HOFMClassifier,
+        facto.HOFMRegressor,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_extraction.Differ,
@@ -48,12 +57,6 @@ def get_all_estimators():
         imblearn.RandomSampler,
         impute.PreviousImputer,
         impute.StatImputer,
-        linear_model.FFMClassifier,
-        linear_model.FFMRegressor,
-        linear_model.FMClassifier,
-        linear_model.FMRegressor,
-        linear_model.HOFMClassifier,
-        linear_model.HOFMRegressor,
         linear_model.SoftmaxRegression,
         meta.PredClipper,
         meta.TransformedTargetRegressor,
