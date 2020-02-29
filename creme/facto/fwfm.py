@@ -223,7 +223,7 @@ class FWFMRegressor(FWFM, base.Regressor):
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
-        1. `Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising <https://arxiv.org/abs/1806.03514>`_
+        1. `Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357). <https://arxiv.org/abs/1806.03514>`_
 
 
     """
@@ -331,7 +331,7 @@ class FWFMClassifier(FWFM, base.BinaryClassifier):
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
-        1. `Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising <https://arxiv.org/abs/1806.03514>`_
+        1. `Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357). <https://arxiv.org/abs/1806.03514>`_
 
     """
 
