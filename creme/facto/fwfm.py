@@ -11,12 +11,12 @@ from .base import BaseFM
 
 
 __all__ = [
-    'FWFMClassifier',
-    'FWFMRegressor'
+    'FwFMClassifier',
+    'FwFMRegressor'
 ]
 
 
-class FWFM(BaseFM):
+class FwFM(BaseFM):
     """Field-Weighted Factorization Machines.
 
     Parameters:
@@ -148,8 +148,8 @@ class FWFM(BaseFM):
         self.int_weights = self.int_weight_optimizer.update_after_pred(w=w_int, g=int_gradients)
 
 
-class FWFMRegressor(FWFM, base.Regressor):
-    """Field-Weighted Factorization Machines Regressor.
+class FwFMRegressor(FwFM, base.Regressor):
+    """Field-weighted Factorization Machines Regressor.
 
     Parameters:
         n_factors (int): Dimensionality of the factorization or number of latent factors.
@@ -206,7 +206,7 @@ class FWFMRegressor(FWFM, base.Regressor):
             ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
             ... )
 
-            >>> model = facto.FWFMRegressor(
+            >>> model = facto.FwFMRegressor(
             ...     n_factors=10,
             ...     intercept=5,
             ...     random_state=42,
@@ -257,8 +257,8 @@ class FWFMRegressor(FWFM, base.Regressor):
         return self._raw_dot(x)
 
 
-class FWFMClassifier(FWFM, base.BinaryClassifier):
-    """Field-Weighted Factorization Machines Classifier.
+class FwFMClassifier(FwFM, base.BinaryClassifier):
+    """Field-weighted Factorization Machines Classifier.
 
     Parameters:
         n_factors (int): Dimensionality of the factorization or number of latent factors.
@@ -315,7 +315,7 @@ class FWFMClassifier(FWFM, base.BinaryClassifier):
             ...     ({'user': 'Bob', 'item': 'Notting Hill'}, False)
             ... )
 
-            >>> model = facto.FWFMClassifier(
+            >>> model = facto.FwFMClassifier(
             ...     n_factors=10,
             ...     random_state=42,
             ... )
