@@ -22,6 +22,7 @@ __all__ = [
     'outer',
     'prod',
     'sigmoid',
+    'sign',
     'sherman_morrison',
     'softmax'
 ]
@@ -257,3 +258,6 @@ def clamp(x: float, minimum=0., maximum=1.):
 
 def norm(x, order=None):
     return np.linalg.norm(list(x.values()), ord=order)
+
+def sign(x: float):
+    return -1 if x < 0 else (1 if x > 0 else 0)
