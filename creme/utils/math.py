@@ -34,7 +34,7 @@ def sherman_morrison(A_inv, u, v):
     This modifies ``A_inv`` inplace.
 
     References:
-        1. `Wikipedia entry <https://www.wikiwand.com/en/Sherman%E2%80%93Morrison_formula>`_
+        1. `Wikipedia article <https://www.wikiwand.com/en/Sherman%E2%80%93Morrison_formula>`_
 
     Example:
 
@@ -116,7 +116,7 @@ def matmul2d(A, B):
              (1, 3): 18.0}
 
     References:
-        1. `Wikipedia entry <https://www.wikiwand.com/en/Matrix_multiplication>`_
+        1. `Wikipedia article <https://www.wikiwand.com/en/Matrix_multiplication>`_
 
     """
     C = {}

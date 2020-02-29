@@ -178,12 +178,7 @@ class Estimator:
             return size
 
         mem_usage = get_size(self)
-
-        for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
-            if abs(mem_usage) < 1024.0:
-                return f'{mem_usage:3.1f}{unit}B'
-            mem_usage /= 1024.0
-        return f'{mem_usage:.1f}YiB'
+        return utils.pretty.humanize_bytes(mem_usage)
 
 
 class Regressor(Estimator):
@@ -462,9 +457,10 @@ class Wrapper(abc.ABC):
     def _model(self):
         """Provides access to the wrapped model."""
 
-    @abc.abstractproperty
+    @property
     def _labelloc(self):
-        """Provides relative location of the subroutine label to the wrapped model."""
+        """Indicates location of the wrapper name when drawing pipelines."""
+        return 't'  # for top
 
     def __str__(self):
         return f'{type(self).__name__}({self._model})'

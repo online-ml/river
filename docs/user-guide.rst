@@ -2,7 +2,7 @@ User guide
 ==========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    notebooks/introduction.ipynb
    notebooks/bike-sharing-forecasting.ipynb
@@ -12,3 +12,4 @@ User guide
    notebooks/imbalanced-learning.ipynb
    notebooks/quantile-regression-uncertainty.ipynb
    notebooks/matrix-factorization-for-recommender-systems-part-1.ipynb
+   supervised.rst

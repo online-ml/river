@@ -222,7 +222,7 @@ class HOFMRegressor(HOFM, base.Regressor):
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
-        1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
+        1. `Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE. <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
 
     """
 
@@ -327,7 +327,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
         - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
 
     References:
-        1. `Factorization Machines <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
+        1. `Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE. <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
 
     """
 

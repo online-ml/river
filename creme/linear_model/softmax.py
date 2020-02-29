@@ -41,7 +41,7 @@ class SoftmaxRegression(base.MultiClassifier):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_iris(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> model = preprocessing.PolynomialExtender(degree=2)
@@ -51,11 +51,10 @@ class SoftmaxRegression(base.MultiClassifier):
             >>> metric = metrics.MacroF1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MacroF1: 0.809381
+            MacroF1: 0.802595
 
     References:
-
-        1. `Stochastic gradient descent; Classification <https://www.inf.ed.ac.uk/teaching/courses/mlp/2016/mlp02-sln.pdf>`_
+        1. `Course on classification stochastic gradient descent <https://www.inf.ed.ac.uk/teaching/courses/mlp/2016/mlp02-sln.pdf>`_
         2. `Binary vs. Multi-Class Logistic Regression <https://chrisyeh96.github.io/2018/06/11/logistic-regression.html>`_
 
     """

@@ -11,6 +11,7 @@ __all__ = [
     'Hinge',
     'EpsilonInsensitiveHinge',
     'Log',
+    'Perceptron',
     'Poisson',
     'Quantile',
     'Squared'
@@ -101,8 +102,8 @@ cdef class Cauchy(RegressionLoss):
     """Cauchy loss function.
 
     References:
-        1. `Effect of MAE <https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163>`_
-        2. `Paris Madness <https://www.kaggle.com/raddar/paris-madness>`_
+        1. `"Effect of MAE" Kaggle discussion <https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163>`_
+        2. `Paris Madness Kaggle kernel <https://www.kaggle.com/raddar/paris-madness>`_
 
     """
 
@@ -200,46 +201,44 @@ cdef class Hinge(BinaryLoss):
         \\end{array}
         \\right.
 
+    Parameters:
+        threshold (float): Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to
+            the loss used in the Perceptron algorithm.
+
     Example:
 
         ::
 
             >>> from creme import optim
-            >>> import numpy as np
-            >>> from sklearn import svm
-            >>> from sklearn.metrics import hinge_loss
 
-            >>> X = [[0], [1]]
-            >>> y = [-1, 1]
-            >>> lin_svm = svm.LinearSVC(random_state=0).fit(X, y)
+            >>> loss = optim.losses.Hinge(threshold=1)
+            >>> loss.eval(1, .2)
+            0.8
 
-            >>> y_true = [0, 1, 1]
-            >>> y_pred = lin_svm.decision_function([[-2], [3], [0.5]])
-
-            >>> hinge_loss([0, 1, 1], y_pred)
-            0.303036...
-
-            >>> loss = optim.losses.Hinge()
-            >>> np.mean([loss.eval(y_t, y_p) for y_t, y_p in zip(y_true, y_pred)])
-            0.303036...
+            >>> loss.gradient(1, .2)
+            -0.2
 
     """
 
+    cdef readonly double threshold
+
+    def __init__(self, double threshold=1.):
+        self.threshold = threshold
+
     cpdef double eval(self, bint y_true, double y_pred):
-        # Our convention is to use 0s instead of -1s for negatives, but the Hinge loss uses -1s as
-        # a convention
+        # Convert 0 to -1
         y_true = y_true or -1
-        return math.fmax(0, 1 - y_true * y_pred)
+        return math.fmax(0, self.threshold - y_true * y_pred)
 
     cpdef double gradient(self, bint y_true, double y_pred):
         """Returns the gradient with respect to ``y_pred``.
 
         References:
-            1. `Wolfram Alpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
+            1. `WolframAlpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
 
         """
         y_true = y_true or -1
-        if y_true * y_pred < 1:
+        if y_true * y_pred < self.threshold:
             return -y_pred
         return 0
 
@@ -252,8 +251,7 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
         self.eps = eps
 
     cpdef double eval(self, double y_true, double y_pred):
-        # Our convention is to use 0s instead of -1s for negatives, but the Hinge loss uses -1s as
-        # a convention
+        # Convert 0 to -1
         y_true = y_true or -1
         return math.fmax(0, math.fabs(y_pred - y_true) - self.eps)
 
@@ -261,7 +259,7 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
         """Returns the gradient with respect to ``y_pred``.
 
         References:
-            1. `Wolfram Alpha <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p>`_
+            1. `WolframAlpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p>`_
 
         """
         y_true = y_true or -1
@@ -406,7 +404,7 @@ class BinaryFocalLoss(BinaryLoss):
         beta (float)
 
     Refenrences:
-        1. `Focal Loss for Dense Object Detection <https://arxiv.org/pdf/1708.02002.pdf>`_
+        1. `Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988). <https://arxiv.org/pdf/1708.02002.pdf>`_
 
     """
 
@@ -416,9 +414,8 @@ class BinaryFocalLoss(BinaryLoss):
 
     def eval(self, y_true, y_pred):
 
-        # Focal loss expects y_true to be in {-1, +1}
-        if y_true == 0:
-            y_true = -1
+        # Convert 0 to -1
+        y_true = int(y_true or -1)
 
         xt = y_true * y_pred
         pt = utils.math.sigmoid(self.gamma * xt + self.beta)
@@ -427,9 +424,8 @@ class BinaryFocalLoss(BinaryLoss):
 
     def gradient(self, y_true, y_pred):
 
-        # Focal loss expects y_true to be in {-1, +1}
-        if y_true == 0:
-            y_true = -1
+        # Convert 0 to -1
+        y_true = int(y_true or -1)
 
         xt = y_true * y_pred
         pt = utils.math.sigmoid(self.gamma * xt + self.beta)
@@ -457,3 +453,26 @@ cdef class Poisson(RegressionLoss):
 
     cpdef double gradient(self, double y_true, double y_pred):
         return math.exp(y_pred) - y_true
+
+
+cdef class Perceptron(Hinge):
+    """Perceptron loss.
+
+    The Perceptron loss is the loss used in the Perceptron algorithm. Using this loss in a logistic
+    regression yields the Perceptron algorithm.
+
+    Mathematically, it is defined as
+
+    .. math:: L = exp(p_i) - y_i \\times p_i
+
+    It's gradient w.r.t. to $p_i$ is
+
+    .. math:: \\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i
+
+    References:
+        1. `Wikipedia page on the Perceptron algorithm <https://www.wikiwand.com/en/Perceptron>`_
+
+    """
+
+    def __init__(self):
+        super().__init__(threshold=0.)

@@ -99,3 +99,12 @@ def print_table(headers, columns, order=None):
     )
 
     return table
+
+
+def humanize_bytes(n_bytes):
+    """Returns a human-friendly byte size."""
+    for unit in ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi'):
+        if abs(n_bytes) < 1024:
+            return f'{n_bytes:3.1f}{unit}B'
+        n_bytes /= 1024
+    return f'{n_bytes:.1f}YiB'

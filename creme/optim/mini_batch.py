@@ -24,19 +24,14 @@ class MiniBatcher(base.Optimizer):
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=True,
-            ...     random_state=42
-            ... )
+            >>> X_y = datasets.Phishing()
             >>> optimizer = optim.MiniBatcher(optim.SGD(0.1), 4)
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -45,7 +40,7 @@ class MiniBatcher(base.Optimizer):
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.96756
+            F1: 0.882511
 
     """
 

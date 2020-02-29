@@ -8,7 +8,7 @@ from creme import base
 class RBFSampler(base.Transformer):
     """Extracts random features which approximate an RBF kernel.
 
-    This is a powerful to give non-linear capacity to linear classifiers.
+    This is a powerful way to give non-linear capacity to linear classifiers.
 
     Parameters:
         gamma (float): RBF kernel parameter: ``(-gamma * x^2)``.
@@ -55,7 +55,7 @@ class RBFSampler(base.Transformer):
             1 1
 
     References:
-        1. `Random Features for Large-Scale Kernel Machines <https://people.eecs.berkeley.edu/~brecht/papers/07.rah.rec.nips.pdf>`_
+        1. `Rahimi, A. and Recht, B., 2008. Random features for large-scale kernel machines. In Advances in neural information processing systems (pp. 1177-1184). <https://people.eecs.berkeley.edu/~brecht/papers/07.rah.rec.nips.pdf>`_
 
     """
 
@@ -65,7 +65,8 @@ class RBFSampler(base.Transformer):
         self.seed = seed
         self.rng = random.Random(seed)
         self.weights = collections.defaultdict(self._random_weights)
-        self.offsets = [random.uniform(0, 2 * math.pi) for _ in range(n_components)]
+        self.offsets = [random.uniform(0, 2 * math.pi)
+                        for _ in range(n_components)]
 
     def _random_weights(self):
         return [

@@ -45,9 +45,8 @@ class NUnique(base.Univariate):
             26
 
     References:
-
         1. `My favorite algorithm (and data structure): HyperLogLog <https://odino.org/my-favorite-data-structure-hyperloglog/>`_
-        2. `HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm <http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf>`_
+        2. `Flajolet, P., Fusy, É., Gandouet, O. and Meunier, F., 2007, June. Hyperloglog: the analysis of a near-optimal cardinality estimation algorithm. <http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf>`_
 
     """
 

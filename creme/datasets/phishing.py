@@ -39,6 +39,6 @@ class Phishing(base.FileDataset):
                 'long_url': float,
                 'age_of_domain': int,
                 'ip_in_url': int,
-                'is_phishing': int
+                'is_phishing': lambda x: x == '1'
             }
         )

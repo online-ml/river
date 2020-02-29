@@ -15,7 +15,7 @@ class CentralMoments(base.Univariate):
         M4 (float): sums of powers of differences from the mean order 4.
 
     References:
-        1. `Welford's online algorithm <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Welford's_Online_algorithm>`_
+        1. `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
 
     """
 

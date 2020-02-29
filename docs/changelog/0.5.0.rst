@@ -36,6 +36,7 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 - Added `datasets.gen.SEA`.
 - Added `datasets.Higgs`.
 - Added `datasets.MovieLens100K`.
+- Added `dataset.Banana`.
 
 :mod:`imblearn`
 
@@ -51,6 +52,8 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 
 - `linear_model.FMClassifier` moved to new module `facto`.
 - `linear_model.FMRegressor` moved to new module `facto`.
+- Added `linear_model.PoissonRegression`.
+- Added `linear_model.ALMAClassifier`.
 
 :mod:`metrics`
 
@@ -75,6 +78,7 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 - Added `preprocessing.RBFSampler`..
 - Added `preprocessing.MaxAbsScaler`.
 - Added `preprocessing.RobustScaler`.
+- Added `preprocessing.Binarizer`.
 - Added ``with_mean`` and ``with_std`` parameters to `preprocessing.StandardScaler`.
 
 :mod:`optim`
@@ -96,3 +100,9 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 
 - Added `stats.AbsMax`.
 - Added `stats.RollingAbsMax`.
+
+:mod:`stream`
+
+- Added `stream.iter_libsvm`.
+- `stream.iter_csv` now supports reading from '.zip' files.
+- Added `stream.Cache`.

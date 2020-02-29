@@ -39,7 +39,7 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
             >>> X_y = stream.iter_sklearn_dataset(
             ...     dataset=datasets.load_iris(),
             ...     shuffle=True,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> model = compose.Pipeline([
@@ -53,7 +53,7 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
             >>> metric = metrics.MacroF1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MacroF1: 0.801453
+            MacroF1: 0.794589
 
     """
 

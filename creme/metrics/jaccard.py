@@ -33,7 +33,7 @@ class Jaccard(stats.Mean, base.MultiOutputClassificationMetric):
             Jaccard: 0.583333
 
     References:
-        1. `Similarity of asymmetric binary attributes <https://www.wikiwand.com/en/Jaccard_index#/Similarity_of_asymmetric_binary_attributes>`_
+        1. `Wikipedia section on similarity of asymmetric binary attributes <https://www.wikiwand.com/en/Jaccard_index#/Similarity_of_asymmetric_binary_attributes>`_
 
     """
 
