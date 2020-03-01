@@ -45,8 +45,7 @@ class Metric(abc.ABC):
 
 class ClassificationMetric(Metric):
 
-    @property
-    @abc.abstractmethod
+    @abc.abstractproperty
     def requires_labels(self) -> bool:
         """Helps to indicate if labels are required instead of probabilities."""
 
