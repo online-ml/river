@@ -1,5 +1,3 @@
-import numpy as np
-
 from . import base
 
 
@@ -29,7 +27,7 @@ class ReplayBufferRegressor(base.ReplayBuffer, base.BufferRegressor):
     def __init__(self, regressor, loss_function, size, p, seed = None):
         base.ReplayBuffer.__init__(self, p=p, size=size, seed=seed)
         base.BufferRegressor.__init__(self, regressor=regressor, seed=seed)
-        self.seed = seed
+        self.loss_function = loss_function
 
     def fit_one(self, x, y):
         """
