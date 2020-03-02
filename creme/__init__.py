@@ -35,6 +35,7 @@ __all__ = [
     'preprocessing',
     'proba',
     'reco',
+    'replay',
     'stats',
     'stream',
     'time_series',
