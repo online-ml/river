@@ -1,6 +1,6 @@
-from . import base
+import numpy as np
 
-import random
+from . import base
 
 
 class ReplayBufferRegressor(base.ReplayBuffer, base.BufferRegressor):
@@ -23,13 +23,13 @@ class ReplayBufferRegressor(base.ReplayBuffer, base.BufferRegressor):
         size (int): Number of stored tuples (features, target).
         p (float): Probability to update the model with an observation from the buffer when fitting
             on a new observation. 0. <= p <= 1.
-        seed (int): Fix random state.
+        seed (int): Random state.
 
     """
     def __init__(self, regressor, loss_function, size, p, seed = None):
-        base.ReplayBuffer.__init__(self, p=p, size=size)
+        base.ReplayBuffer.__init__(self, p=p, size=size, seed=seed)
         base.BufferRegressor.__init__(self, regressor=regressor, seed=seed)
-        self.loss_function = loss_function
+        self.seed = seed
 
     def fit_one(self, x, y):
         """
@@ -58,8 +58,7 @@ class ReplayBufferRegressor(base.ReplayBuffer, base.BufferRegressor):
             # observation from the buffer. After fitting this bufferized observation, we update it's
             # loss stored in the buffer.
             loss = self.loss_function.eval(y_true=y, y_pred=self.predict_one(x))
-
-            self._update_criterion(x, y, key, loss)
+            self._update_criterion(key, loss)
 
         return self
 
@@ -84,14 +83,13 @@ class ReplayBufferClassifier(base.ReplayBuffer, base.BufferClassifier):
         size (int): Number of stored tuples (features, target).
         p (float): Probability to update the model with an observation from the buffer when fitting
             on a new observation. 0. <= p <= 1.
-        seed (int): Fix random state.
+        seed (int): Random state.
 
     """
     def __init__(self, classifier, loss_function, size, p, seed = None):
-        base.ReplayBuffer.__init__(self, p=p, size=size)
+        base.ReplayBuffer.__init__(self, p=p, size=size, seed=seed)
         base.BufferClassifier.__init__(self, classifier=classifier, seed=seed)
         self.loss_function = loss_function
-
 
     def fit_one(self, x, y):
         # Eval loss of the model when predicting the input observation.
@@ -111,8 +109,6 @@ class ReplayBufferClassifier(base.ReplayBuffer, base.BufferClassifier):
             # observation from the buffer. After fitting this bufferized observation, we update it's
             # loss stored in the buffer.
             loss = self.loss_function.eval(y_true=y, y_pred=self.predict_proba_one(x))
-
-            self._update_criterion(x, y, key, loss)
+            self._update_criterion(key, loss)
 
         return self
-

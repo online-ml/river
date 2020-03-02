@@ -1,7 +1,7 @@
+import numpy as np
+
 import collections
 import random
-
-import numpy as np
 
 from .. import base
 
@@ -23,9 +23,10 @@ class ReplayBuffer:
         size (int): Number of stored tuples (features, target).
         p (float): Probability to update the model with an observation from the buffer when fitting
             on a new observation. 0. <= p <= 1.
+        seed (int): Random state.
 
     """
-    def __init__(self, size, p):
+    def __init__(self, size, p, seed=None):
         self.size = size
         self.p = p
         self.buffer = {}
@@ -35,6 +36,8 @@ class ReplayBuffer:
         self.min_loss = -1.
         # Initialize the key associated to the minimum loss observed.
         self.key_min_loss = 0
+        self.seed = seed
+        self._rng = np.random.RandomState(seed)
 
     def _update_buffer(self, x, y, loss):
         """
@@ -45,10 +48,8 @@ class ReplayBuffer:
             x (dict): Features.
             y (float): Target.
             loss (float): Error of the model.
-
         """
         if loss > self.min_loss:
-
             self.buffer[self.key_min_loss] = (x, y)
             self.loss_history[self.key_min_loss] = loss
 
@@ -56,15 +57,16 @@ class ReplayBuffer:
             # To reduce this cost we look for the minimum stored loss only when updating the buffer.
             self.key_min_loss = min(self.loss_history.keys(), key=(lambda k: self.loss_history[k]))
             self.min_loss = self.loss_history[self.key_min_loss]
-
         return self
 
-    def _update_criterion(self, x, y, key, loss):
+    def _update_criterion(self, key, loss):
         """
+        _update_criterion is called when the model fit on a observation (x, y) already stored in
+        the buffer. _update_criterion aim at re-computing the loss associated to the key of the
+        stored observation (x, y).
 
         Parameters:
-            x (dict): Features.
-            y (float): Target.
+            key (int): Key of the input observation stored in the buffer
             loss (float): Error of the model.
         """
         self.loss_history[key] = loss
@@ -91,10 +93,10 @@ class ReplayBuffer:
             x (dict): Set of features.
             y (float): Target.
         """
-
-        if random.uniform(0, 1) <= self.p:
+        if self._rng.uniform(0, 1) <= self.p:
             # Probability p:
-            key, (x, y) = random.choice(list(self.buffer.items()))
+            key = self._rng.choice(list(self.buffer.keys()))
+            x, y = self.buffer[key]
             return key, x, y
         else:
             # Probability (1 - p):
