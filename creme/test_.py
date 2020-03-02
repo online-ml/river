@@ -22,6 +22,7 @@ from creme import multioutput
 from creme import naive_bayes
 from creme import preprocessing
 from creme import reco
+from creme import replay
 from creme import stats
 from creme import time_series
 from creme import tree
@@ -64,6 +65,8 @@ def get_all_estimators():
         reco.BiasedMF,
         reco.FunkMF,
         reco.RandomNormal,
+        replay.ReplayBufferClassifier,
+        replay.ReplayBufferRegressor,
         time_series.Detrender,
         time_series.GroupDetrender,
         time_series.SNARIMAX
