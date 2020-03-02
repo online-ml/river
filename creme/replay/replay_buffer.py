@@ -11,8 +11,8 @@ class ReplayBufferRegressor(base.ReplayBuffer, base.BufferRegressor):
     it is re-trained with probability p on one of the observations (sampled uniformly) in the
     buffer. The model is re-trained with a probability (1 - p) on the new data.
 
-    New observations will be stored if in the buffer if loss is sufficiently high compared to the losses already
-    stored in the buffer.
+    New observations will be stored if in the buffer if loss is sufficiently high compared to the
+    losses already stored in the buffer.
 
     Parameters:
         regressor (base.Regressor): Selected regressor.
@@ -70,8 +70,8 @@ class ReplayBufferClassifier(base.ReplayBuffer, base.BufferClassifier):
     it is re-trained with probability p on one of the observations (sampled uniformly) in the
     buffer. The model is re-trained with a probability (1 - p) on the new data.
 
-    New observations will be stored if in the buffer if loss is sufficiently high compared to the losses already
-    stored in the buffer.
+    New observations will be stored if in the buffer if loss is sufficiently high compared to the
+    losses already stored in the buffer.
 
     Parameters:
         classifier (base.Classifier): Selected classifier.
