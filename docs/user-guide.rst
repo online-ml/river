@@ -11,5 +11,5 @@ User guide
    notebooks/debugging-a-pipeline.ipynb
    notebooks/imbalanced-learning.ipynb
    notebooks/quantile-regression-uncertainty.ipynb
-   notebooks/matrix-factorization-for-recommender-systems.ipynb
+   notebooks/matrix-factorization-for-recommender-systems-part-1.ipynb
    supervised.rst

@@ -399,22 +399,22 @@ def shuffle(stream, buffer_size, seed=None):
     if not isinstance(stream, types.GeneratorType):
         stream = iter(stream)
 
-    # Initialize the buffer
-    buff = list(itertools.islice(stream, buffer_size))
+    # Initialize the buffer with the first buffer_size elements of the stream
+    buffer = list(itertools.islice(stream, buffer_size))
 
     # Deplete the stream until it is empty
     for element in stream:
 
         # Pick a random element from the buffer and yield it
-        i = rng.randint(0, len(buff) - 1)
-        yield buff[i]
+        i = rng.randint(0, len(buffer) - 1)
+        yield buffer[i]
 
         # Replace the yielded element from the buffer with the new element from the stream
-        buff[i] = element
+        buffer[i] = element
 
     # Shuffle the remaining buffer elements and yield them one by one
-    rng.shuffle(buff)
-    for element in buff:
+    rng.shuffle(buffer)
+    for element in buffer:
         yield element
 
 
@@ -470,7 +470,7 @@ class Cache:
 
             >>> cache
             /tmp
-            phishing - 126.4KiB
+            phishing - 125.2KiB
 
             Finally, we can clear the stream from the cache.
 
