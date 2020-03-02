@@ -93,7 +93,7 @@ class HoltLinearTrend(base.Forecaster):
         return self
 
     def forecast(self, horizon: int) -> float:
-        return [self.lt + (h * self.bt) for h in range(horizon)]
+        return [self.lt + (h * self.bt) for h in range(1, horizon + 1)]
 
 
 class DampedTrend(base.Forecaster):
@@ -154,7 +154,7 @@ class DampedTrend(base.Forecaster):
     def forecast(self, horizon: int) -> list:
         return [
             self.lt + (_discount_sum(self.phi, h) * self.bt)
-            for h in range(horizon)
+            for h in range(1, horizon + 1)
         ]
 
 
@@ -228,7 +228,7 @@ class HoltWinterAdditive(base.Forecaster):
     def forecast(self, horizon: int) -> list:
         return [
             self.lt + h * self.bt + self.s[h - self.m * ((
-                (h - 1) // self.m) + 1)] for h in range(horizon)
+                (h - 1) // self.m) + 1)] for h in range(1, horizon + 1)
         ]
 
 
@@ -296,7 +296,7 @@ class HoltWinterMultiplicative(base.Forecaster):
 
     def forecast(self, horizon: int) -> list:
         return [(self.lt + h * self.bt) * self.s[h - self.m * ((
-            (h - 1) // self.m) + 1)] for h in range(horizon)]
+            (h - 1) // self.m) + 1)] for h in range(1, horizon + 1)]
 
 
 class HoltWinterDamped(base.Forecaster):
@@ -304,7 +304,7 @@ class HoltWinterDamped(base.Forecaster):
         #TODO : Docstring + test
 
     Parameters:
-        m (int): m the frequency of the seasonality
+        m (int): m the frequency of the seasonality.
         alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 . Defaults to `0.5`.
         beta (float): The smoothing parameter for the trend, 0 ≤ beta ≤ 1 . Defaults to `0.5`.
         gamma (float): The smoothing parameter seasonal component 0 ≤ gamma ≤ 1. Defaults to `0.5`.
@@ -368,6 +368,87 @@ class HoltWinterDamped(base.Forecaster):
 
         return self
 
-    def forecast(self, h: int) -> float:
-        return (self.lt + _discount_sum(self.phi, h) * self.bt
-                ) * self.s[h - self.m * (((h - 1) // self.m) + 1)]
+    def forecast(self, horizon: int) -> float:
+        return [(self.lt + _discount_sum(self.phi, h) * self.bt) *
+                self.s[h - self.m * (((h - 1) // self.m) + 1)]
+                for h in range(1, horizon + 1)]
+
+
+#TODO Trend No and Seasonal additive
+class AdditiveSeasonal(base.Forecaster):  # Need better naming
+    """
+         #TODO : Docstring + test
+    Parameters:
+        m (int): m the frequency of the seasonality.
+        alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 . Defaults to `0.5`.
+        gamma (float): The smoothing parameter seasonal component 0 ≤ gamma ≤ 1. Defaults to `0.5`.
+        s (List[float]): Initialization values for the seasonality. Defaults to `None`.
+        l0 (float): Initialization value for the level. Defaults to `0.5`.
+
+    Example:
+    ::
+        >>> #TODO
+
+    References:
+        1. `Holt-Winters’ damped method <https://otexts.com/fpp2/taxonomy.html>`_
+    """    
+    def __init__(
+            self,
+            m: int,
+            alpha: float = 0.5,
+            gamma: float = 0.5,
+            s: Optional[List[float]] = None,  # We can discuss for this choice
+            l0: float = 0.5,
+    ):
+        self.alpha = alpha
+        self.gamma = gamma
+
+        # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
+        if s is None:
+            self.s = collections.deque([1 for _ in range(m)], maxlen=m)
+        else:
+            self.s = collections.deque(s, maxlen=m)
+
+        self.lt = l0
+
+    def fit_one(self, y):
+
+        st_1 = self.s[-1]
+        st_m = self.s[-self.m]
+
+        lt_1 = self.lt
+
+        self.lt = self.alpha * (y - st_m) + (1 - self.alpha) * lt_1
+        st = self.gamma * (y - lt_1) + (1 - self.gamma) * st_m
+        self.s.append(st)
+        return self
+
+    def forecast(self, horizon: int) -> list:
+        return [
+            self.lt + self.s[h - self.m * (((h - 1) // self.m) + 1)]
+            for h in range(1, horizon + 1)
+        ]
+
+
+#TODO Trend additive damped amd seasonal additive
+class AdditiveDampedAdditiveSeasonal(base.Forecaster):  # Need better naming
+    def __init__(self, alpha: float = 0.5, gamma: float = 0.5):
+        pass
+
+    def fit_one(self, y):
+        pass
+
+    def forecast(self, horizon):
+        pass
+
+
+#TODO Trend no and seasonal Multiplicative
+class MultiplicativeSeasonal(base.Forecaster):  # Need better naming
+    def __init__(self):
+        pass
+
+    def fit_one(self, y):
+        pass
+
+    def forecast(self, horizon):
+        pass
