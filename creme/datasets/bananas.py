@@ -5,8 +5,8 @@ from .. import stream
 from . import base
 
 
-class Banana(base.FileDataset):
-    """Banana dataset.
+class Bananas(base.FileDataset):
+    """Bananas dataset.
 
     An artificial dataset where instances belongs to several clusters with a banana shape.
     There are two attributes that correspond to the x and y axis, respectively.
