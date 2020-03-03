@@ -81,6 +81,9 @@ class ConfusionMatrix(base.MultiClassMetric):
         # The classes are sorted alphabetically for reproducibility reasons
         classes = sorted(self.classes)
 
+        if not classes:
+            return ''
+
         # Determine the required width of each column in the table
         largest_label_len = max(len(str(c)) for c in classes)
         largest_number_len = len(str(max(max(c.values()) for c in self.counts.values())))
