@@ -1,7 +1,9 @@
 """Replay buffer."""
-from .replay_buffer import ReplayBuffer
+from .replay_buffer import ReplayBufferClassifier
+from .replay_buffer import ReplayBufferRegressor
 
 
 __all__ = [
-    'ReplayBuffer'
+    'ReplayBufferRegressor',
+    'ReplayBufferClassifier'
 ]
