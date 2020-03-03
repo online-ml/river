@@ -42,4 +42,4 @@ class Optimizer(abc.ABC):
         return self.__class__.__name__
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.__dict__})'
+        return f'{self.__class__.__name__}({vars(self)})'
