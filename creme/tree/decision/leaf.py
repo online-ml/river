@@ -153,7 +153,7 @@ class Leaf(base.Leaf):
         if total == 0:
             return {label: 1. / len(y_pred) for label in y_pred}
 
-        for label, proba in y_pred.items():
+        for label in y_pred:
             y_pred[label] /= total
 
         return y_pred
