@@ -27,6 +27,16 @@ cdef class Loss:
     def __str__(self):
         return utils.pretty.format_object(self)
 
+    def mean_func(self, y_pred):
+        """Mean function.
+
+        This is the inverse of the link function.
+
+        References:
+            1. `Wikipedia section on link and mean function <https://www.wikiwand.com/en/Generalized_linear_model#/Link_function>`_
+
+        """
+
 
 cdef class ClassificationLoss(Loss):
     pass
@@ -41,6 +51,9 @@ cdef class BinaryLoss(ClassificationLoss):
     cpdef double gradient(self, bint y_true, double y_pred):
         """Returns the gradient with respect to ``y_pred``."""
 
+    cpdef double mean_func(self, double y_pred):
+        return utils.math.sigmoid(y_pred)
+
 
 cdef class MultiClassLoss(ClassificationLoss):
     """A loss appropriate for multi-class classification tasks."""
@@ -51,6 +64,9 @@ cdef class MultiClassLoss(ClassificationLoss):
     cpdef dict gradient(self, object y_true, dict y_pred):
         """Returns the gradient with respect to ``y_pred``."""
 
+    cpdef dict mean_func(self, dict y_pred):
+        return utils.math.softmax(y_pred)
+
 
 cdef class RegressionLoss(Loss):
     """A loss appropriate for regression tasks."""
@@ -60,6 +76,9 @@ cdef class RegressionLoss(Loss):
 
     cpdef double gradient(self, double y_true, double y_pred):
         """Returns the gradient with respect to ``y_pred``."""
+
+    cpdef double mean_func(self, double y_pred):
+        return y_pred
 
 
 cdef class Absolute(RegressionLoss):
@@ -453,6 +472,9 @@ cdef class Poisson(RegressionLoss):
 
     cpdef double gradient(self, double y_true, double y_pred):
         return math.exp(y_pred) - y_true
+
+    cpdef double mean_func(self, double y_pred):
+        return math.exp(y_pred)
 
 
 cdef class Perceptron(Hinge):
