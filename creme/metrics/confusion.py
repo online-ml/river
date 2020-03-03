@@ -1,10 +1,12 @@
+from . import base
+
 import collections
 
 
 __all__ = ['ConfusionMatrix']
 
 
-class ConfusionMatrix:
+class ConfusionMatrix(base.MultiClassMetric):
     """Confusion matrix.
 
     This class is different from the rest of the classes from the `metrics` module in that it
@@ -40,6 +42,17 @@ class ConfusionMatrix:
     """
 
     fmt = '0.0f'
+
+    @property
+    def bigger_is_better(self):
+        return None
+
+    @property
+    def requires_labels(self):
+        return True
+
+    def get(self):
+        return self
 
     def __init__(self):
         self.counts = collections.defaultdict(collections.Counter)

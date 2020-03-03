@@ -40,9 +40,14 @@ def load_metrics():
             yield obj()
 
 
-@pytest.mark.parametrize('metric', load_metrics(), ids=lambda metric: type(metric).__name__)
+@pytest.mark.parametrize('metric', [
+    pytest.param(
+        metric,
+        id=type(metric).__name__
+    )
+    for metric in load_metrics()
+])
 def test_pickling(metric):
-    print(metric.__class__)
     assert isinstance(pickle.loads(pickle.dumps(metric)), metric.__class__)
     assert isinstance(copy.deepcopy(metric), metric.__class__)
 
@@ -75,32 +80,42 @@ def generate_test_cases(metric, n):
             sample_weights
         )
 
+def partial(f, **kwargs):
+    return functools.update_wrapper(functools.partial(f, **kwargs), f)
+
 
 TEST_CASES = [
     (metrics.Accuracy(), sk_metrics.accuracy_score),
     (metrics.Precision(), sk_metrics.precision_score),
-    (metrics.MacroPrecision(), functools.partial(sk_metrics.precision_score, average='macro')),
-    (metrics.MicroPrecision(), functools.partial(sk_metrics.precision_score, average='micro')),
-    (metrics.WeightedPrecision(), functools.partial(sk_metrics.precision_score, average='weighted')),
+    (metrics.MacroPrecision(), partial(sk_metrics.precision_score, average='macro')),
+    (metrics.MicroPrecision(), partial(sk_metrics.precision_score, average='micro')),
+    (metrics.WeightedPrecision(), partial(sk_metrics.precision_score, average='weighted')),
     (metrics.Recall(), sk_metrics.recall_score),
-    (metrics.MacroRecall(), functools.partial(sk_metrics.recall_score, average='macro')),
-    (metrics.MicroRecall(), functools.partial(sk_metrics.recall_score, average='micro')),
-    (metrics.WeightedRecall(), functools.partial(sk_metrics.recall_score, average='weighted')),
-    (metrics.FBeta(beta=.5), functools.partial(sk_metrics.fbeta_score, beta=.5)),
-    (metrics.MacroFBeta(beta=.5), functools.partial(sk_metrics.fbeta_score, beta=.5, average='macro')),
-    (metrics.MicroFBeta(beta=.5), functools.partial(sk_metrics.fbeta_score, beta=.5, average='micro')),
-    (metrics.WeightedFBeta(beta=.5), functools.partial(sk_metrics.fbeta_score, beta=.5, average='weighted')),
+    (metrics.MacroRecall(), partial(sk_metrics.recall_score, average='macro')),
+    (metrics.MicroRecall(), partial(sk_metrics.recall_score, average='micro')),
+    (metrics.WeightedRecall(), partial(sk_metrics.recall_score, average='weighted')),
+    (metrics.FBeta(beta=.5), partial(sk_metrics.fbeta_score, beta=.5)),
+    (metrics.MacroFBeta(beta=.5), partial(sk_metrics.fbeta_score, beta=.5, average='macro')),
+    (metrics.MicroFBeta(beta=.5), partial(sk_metrics.fbeta_score, beta=.5, average='micro')),
+    (metrics.WeightedFBeta(beta=.5), partial(sk_metrics.fbeta_score, beta=.5, average='weighted')),
     (metrics.F1(), sk_metrics.f1_score),
-    (metrics.MacroF1(), functools.partial(sk_metrics.f1_score, average='macro')),
-    (metrics.MicroF1(), functools.partial(sk_metrics.f1_score, average='micro')),
-    (metrics.WeightedF1(), functools.partial(sk_metrics.f1_score, average='weighted')),
+    (metrics.MacroF1(), partial(sk_metrics.f1_score, average='macro')),
+    (metrics.MicroF1(), partial(sk_metrics.f1_score, average='micro')),
+    (metrics.WeightedF1(), partial(sk_metrics.f1_score, average='weighted')),
     (metrics.MCC(), sk_metrics.matthews_corrcoef),
     (metrics.MAE(), sk_metrics.mean_absolute_error),
     (metrics.MSE(), sk_metrics.mean_squared_error),
 ]
 
 
-@pytest.mark.parametrize('metric, sk_metric', TEST_CASES)
+@pytest.mark.parametrize('metric, sk_metric', [
+    pytest.param(
+        metric,
+        sk_metric,
+        id=f'{metric.__class__.__name__}'
+    )
+    for metric, sk_metric in TEST_CASES
+])
 @pytest.mark.filterwarnings('ignore::RuntimeWarning')
 @pytest.mark.filterwarnings('ignore::sklearn.metrics.classification.UndefinedMetricWarning')
 def test_metric(metric, sk_metric):
@@ -128,7 +143,14 @@ def test_metric(metric, sk_metric):
                 ) < 1e-10
 
 
-@pytest.mark.parametrize('metric, sk_metric', TEST_CASES)
+@pytest.mark.parametrize('metric, sk_metric', [
+    pytest.param(
+        metric,
+        sk_metric,
+        id=f'{metric.__class__.__name__}'
+    )
+    for metric, sk_metric in TEST_CASES
+])
 @pytest.mark.filterwarnings('ignore::RuntimeWarning')
 @pytest.mark.filterwarnings('ignore::sklearn.metrics.classification.UndefinedMetricWarning')
 def test_rolling_metric(metric, sk_metric):
@@ -262,6 +284,9 @@ def test_rolling_multi_f1():
 
 
 def test_compose():
+
+    metrics.Accuracy() + metrics.LogLoss()
+    metrics.Accuracy() + metrics.ConfusionMatrix()
 
     with pytest.raises(ValueError):
         _ = metrics.MSE() + metrics.LogLoss()
