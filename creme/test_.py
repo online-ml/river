@@ -65,8 +65,7 @@ def get_all_estimators():
         reco.BiasedMF,
         reco.FunkMF,
         reco.RandomNormal,
-        replay.ReplayBufferClassifier,
-        replay.ReplayBufferRegressor,
+        replay.ReplayBuffer,
         time_series.Detrender,
         time_series.GroupDetrender,
         time_series.SNARIMAX
