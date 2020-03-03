@@ -68,15 +68,7 @@ def coverage_ratio(x, y):
     return max(0, min(x.right, y.right) - max(x.left, y.left)) / (y.right - y.left)
 
 
-
-def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = itertools.tee(iterable)
-    next(b, None)
-    return zip(a, b)
-
-
-class Histogram:
+class Histogram(collections.UserList):
     """Streaming histogram.
 
     Parameters:
@@ -121,7 +113,7 @@ class Histogram:
     """
 
     def __init__(self, max_bins=256):
-        self.bins = []
+        super().__init__()
         self.max_bins = max_bins
         self.n = 0
 
@@ -132,34 +124,34 @@ class Histogram:
 
         # Insert the bin if the histogram is empty
         if not self:
-            self.bins.append(b)
+            self.append(b)
             return self
 
         # Use bisection to find where to insert
         # We don't use the bisect module in order to save some CPU cycles
         lo = 0
-        hi = len(self.bins)
+        hi = len(self)
         i = (lo + hi) // 2
         while lo < hi:
-            if self.bins[i] < b:
+            if self[i] < b:
                 lo = i + 1
             else:
                 hi = i
             i = (lo + hi) // 2
 
-        if i == len(self.bins):
+        if i == len(self):
             # x is past the right-most bin
-            self.bins.append(b)
+            self.append(b)
         else:
             # Increment the bin counter if x is part of the ith bin
-            if x >= self.bins[i].left:
-                self.bins[i].count += 1
+            if x >= self[i].left:
+                self[i].count += 1
             # Insert the bin if it is between bin i-1 and bin i
             else:
-                self.bins.insert(i, b)
+                self.insert(i, b)
 
         # Bins have to be merged if there are more than max_bins
-        if len(self.bins) > self.max_bins:
+        if len(self) > self.max_bins:
             self._shrink(1)
 
         return self
@@ -167,30 +159,28 @@ class Histogram:
     def _shrink(self, k):
         """Shrinks the histogram by merging the two closest bins."""
 
-
-
         if k == 1:
 
             # Find the closest pair of bins
             min_diff = math.inf
             min_idx = None
-            for idx, (b1, b2) in enumerate(pairwise(self.bins)):
+            for idx, (b1, b2) in enumerate(zip(self.data[:-1], self.data[1:])):
                 diff = b2.right - b1.right
                 if diff < min_diff:
                     min_diff = diff
                     min_idx = idx
 
             # Merge the bins
-            self.bins[min_idx] += self.bins.pop(min_idx + 1)
+            self[min_idx] += self.pop(min_idx + 1)
             return
 
-        indexes = range(len(self.bins) - 1)
+        indexes = range(len(self) - 1)
 
         def bin_distance(i):
-            return self.bins[i + 1].right - self.bins[i].right
+            return self[i + 1].right - self[i].right
 
         for i in sorted(heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True):
-            self.bins[i] += self.bins.pop(i + 1)  # Calls Bin.__iadd__
+            self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
 
     def iter_cdf(self, X, verbose=False):
         """Yields CDF values for a sorted iterable of values.
@@ -225,7 +215,7 @@ class Histogram:
 
         """
 
-        bins = iter(self.bins)
+        bins = iter(self)
         b = next(bins)
         INF = Bin(math.inf, math.inf, 0)
 
@@ -308,8 +298,8 @@ class Histogram:
         xs = iter(self)
         ys = iter(other)
         rights = heapq.merge(
-            itertools.chain.from_iterable((b.left, b.right) for b in self.bins),
-            itertools.chain.from_iterable((b.left, b.right) for b in other.bins)
+            itertools.chain.from_iterable((b.left, b.right) for b in self),
+            itertools.chain.from_iterable((b.left, b.right) for b in other)
         )
 
         b = Bin(next(rights), next(rights), 0)
@@ -325,7 +315,7 @@ class Histogram:
             b.count += coverage_ratio(b, y) * y.count
 
             if b.count:
-                hist.bins.append(b)
+                hist.append(b)
 
             try:
                 b = Bin(b.right, next(rights), 0)
@@ -337,9 +327,9 @@ class Histogram:
             if b.left >= y.right:
                 y = next(ys, y)
 
-        hist._shrink(k=len(hist.bins) - hist.max_bins)
+        hist._shrink(k=len(hist) - hist.max_bins)
 
         return hist
 
     def __repr__(self):
-        return '\n'.join(str(b) for b in self.bins)
+        return '\n'.join(str(b) for b in self)

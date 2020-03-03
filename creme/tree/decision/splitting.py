@@ -78,8 +78,8 @@ class HistSplitEnum(SplitEnum):
 
         """
 
-        low = min(h.bins[0].right for h in self.P_xy.values())
-        high = min(h.bins[-1].right for h in self.P_xy.values())
+        low = min(h[0].right for h in self.P_xy.values())
+        high = min(h[-1].right for h in self.P_xy.values())
 
         # If only one single value has been observed, then no split can be proposed
         if low >= high:
