@@ -86,8 +86,8 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
             ... )
             >>> metric = metrics.MAE()
 
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 2.805634
+            >>> model_selection.progressive_val_score(X_y, model, metric).get()
+            2.80563...
 
     """
 

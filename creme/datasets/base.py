@@ -73,7 +73,6 @@ def download_dataset(url, data_home, uncompress=True, verbose=True):
 
         elif extension.endswith(('gz', 'tar')):
             mode = 'r:' if extension.endswith('tar') else 'r:gz'
-            print(archive_path, mode)
             tar = tarfile.open(archive_path, mode)
             tar.extractall(path)
             tar.close()

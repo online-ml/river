@@ -49,16 +49,6 @@ def progressive_val_score(X_y, model, metric, moment=None, delay=None, print_eve
     Returns:
         metrics.Metric
 
-    Examples:
-
-        We'll use the `Bikes` dataset as an example.
-
-        ::
-
-            >>> from creme import datasets
-            >>> X_y = datasets.Bikes()
-            >>> next(iter(X_y))
-
     References:
         1. `Beating the Hold-Out: Bounds for K-fold and Progressive Cross-Validation <http://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf>`_
         2. `Grzenda, M., Gomes, H.M. and Bifet, A., 2019. Delayed labelling evaluation for data streams. Data Mining and Knowledge Discovery, pp.1-30. <https://link.springer.com/content/pdf/10.1007%2Fs10618-019-00654-y.pdf>`_
