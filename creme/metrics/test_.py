@@ -19,7 +19,7 @@ def load_metrics():
 
     for name, obj in inspect.getmembers(importlib.import_module('creme.metrics'), inspect.isclass):
 
-        if issubclass(obj, metrics.Metric):
+        if name == 'Metric':
             continue
 
         if issubclass(obj, metrics.Rolling):
@@ -285,6 +285,7 @@ def test_rolling_multi_f1():
 
 def test_compose():
 
+    metrics.MAE() + metrics.MSE()
     metrics.Accuracy() + metrics.LogLoss()
     metrics.Accuracy() + metrics.ConfusionMatrix()
 
