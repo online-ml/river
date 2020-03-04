@@ -202,8 +202,8 @@ def open_filepath(filepath_or_buffer, compression):
     return open_func(filepath_or_buffer)
 
 
-def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None, fraction=1.,
-             compression='infer', seed=None, field_size_limit=None, **kwargs):
+def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None, drop=None,
+             fraction=1., compression='infer', seed=None, field_size_limit=None, **kwargs):
     """Yields rows from a CSV file.
 
     Parameters:
@@ -214,6 +214,7 @@ def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None,
             associated values.
         parse_dates (dict): A `dict` mapping feature names to a format passed to the
             `datetime.datetime.strptime` method.
+        drop (list): Fields to ignore.
         fraction (float): Sampling fraction.
         compression (str): For on-the-fly decompression of on-disk data. If 'infer' and
             ``filepath_or_buffer`` is path-like, then the decompression method is inferred for the
@@ -269,6 +270,10 @@ def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None,
         f=filepath_or_buffer,
         **kwargs
     ):
+
+        if drop:
+            for i in drop:
+                del x[i]
 
         # Cast the values to the given types
         if converters is not None:

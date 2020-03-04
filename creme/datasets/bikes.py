@@ -3,7 +3,7 @@ from .. import stream
 from . import base
 
 
-class ToulouseBikes(base.FileDataset):
+class Bikes(base.FileDataset):
     """Bike sharing station information from the city of Toulouse.
 
     The goal is to predict the number of bikes in 5 different bike stations from the city of
