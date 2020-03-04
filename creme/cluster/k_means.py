@@ -96,7 +96,7 @@ class KMeans(base.Clusterer):
         """Returns a random value sampled from a normal distribution."""
         return self._rng.gauss(self.mu, self.sigma)
 
-    def fit_predict_one(self, x, y=None):
+    def fit_predict_one(self, x):
         """Equivalent to ``k_means.fit_one(x).predict_one(x)``, but faster."""
 
         # Find the cluster with the closest center
@@ -108,7 +108,7 @@ class KMeans(base.Clusterer):
 
         return closest
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
         self.fit_predict_one(x)
         return self
 
