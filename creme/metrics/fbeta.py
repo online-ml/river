@@ -152,7 +152,7 @@ class MacroFBeta(BaseFBeta, base.MultiClassMetric):
             return 0.
 
 
-class MicroFBeta(FBeta, base.MultiClassMetric):
+class MicroFBeta(BaseFBeta, base.MultiClassMetric):
     """Micro-average F-Beta score.
 
     This computes the F-Beta score by merging all the predictions and true labels, and then
@@ -190,6 +190,25 @@ class MicroFBeta(FBeta, base.MultiClassMetric):
         super().__init__(beta=beta)
         self.precision = precision.MicroPrecision()
         self.recall = recall.MicroRecall()
+
+    def update(self, y_true, y_pred, sample_weight=1.):
+        self.precision.update(y_true, y_pred, sample_weight)
+        self.recall.update(y_true, y_pred, sample_weight)
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        self.precision.revert(y_true, y_pred, sample_weight)
+        self.recall.revert(y_true, y_pred, sample_weight)
+        return self
+
+    def get(self):
+        p = self.precision.get()
+        r = self.recall.get()
+        b2 = self.beta ** 2
+        try:
+            return (1 + b2) * p * r / (b2 * p + r)
+        except ZeroDivisionError:
+            return 0.
 
 
 class WeightedFBeta(BaseFBeta, base.MultiClassMetric):

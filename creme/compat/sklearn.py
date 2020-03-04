@@ -1,5 +1,6 @@
 import copy
 import functools
+import typing
 
 import numpy as np
 try:
@@ -30,7 +31,7 @@ __all__ = [
 ]
 
 # Define a streaming method for each kind of batch input
-STREAM_METHODS = {
+STREAM_METHODS: typing.Dict[typing.Type, typing.Callable] = {
     np.ndarray: stream.iter_array
 }
 
@@ -621,7 +622,7 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)
-        for i, (x, _) in enumerate(stream.iter_array(X)):
+        for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
             X_trans[i] = list(self.instance_.transform_one(x).values())
 
         return np.asarray(X_trans)
@@ -664,8 +665,8 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
 
         # Call fit_one for each observation
         self.labels_ = np.empty(len(X), dtype=np.int32)
-        for i, (x, yi) in enumerate(STREAM_METHODS[type(X)](X, y)):
-            label = self.instance_.fit_one(x, yi).predict_one(x)
+        for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
+            label = self.instance_.fit_one(x).predict_one(x)
             self.labels_[i] = label
 
         return self
@@ -689,12 +690,7 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
 
         # Call predict_proba_one for each observation
         y_pred = np.empty(len(X), dtype=np.int32)
-        for i, (x, _) in enumerate(stream.iter_array(X)):
+        for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
             y_pred[i] = self.instance_.predict_one(x)
 
         return y_pred
-
-    def fit_predict(self, X, y=None):
-        """Calls ``fit`` return the ``labels_`` computed attribute."""
-        self.fit(X, y)
-        return self.labels_
