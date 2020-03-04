@@ -1,6 +1,6 @@
 """Online optimization."""
 from . import initializers
-from . import losses
+from . import losses  # type: ignore
 from . import schedulers
 from .ada_bound import AdaBound
 from .ada_delta import AdaDelta

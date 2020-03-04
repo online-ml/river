@@ -473,7 +473,7 @@ class Cache:
             We can see an overview of the cache. The first line indicates the location of the
             cache.
 
-            >>> cache
+            >>> cache  # doctest: +SKIP
             /tmp
             phishing - 125.2KiB
 
