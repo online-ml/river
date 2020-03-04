@@ -187,7 +187,11 @@ class MicroFBeta(BaseFBeta, base.MultiClassMetric):
     """
 
     def __init__(self, beta):
-        super().__init__(beta=beta)
+
+        if beta <= 0:
+            raise ValueError('beta should be strictly positive')
+
+        self.beta = beta
         self.precision = precision.MicroPrecision()
         self.recall = recall.MicroRecall()
 
