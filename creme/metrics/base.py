@@ -35,7 +35,7 @@ class Metric(abc.ABC):
         """Indicates if a high value is better than a low one or not."""
 
     @abc.abstractmethod
-    def works_with(self, model) -> bool:
+    def works_with(self, model: base.Estimator) -> bool:
         """Indicates whether or not a metric can work with a given model."""
 
     def __repr__(self):
@@ -66,8 +66,8 @@ class BinaryMetric(ClassificationMetric):
     def update(
         self,
         y_true: bool,
-        y_pred: typing.Union[bool, base.Probas],
-        sample_weight: float
+        y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
+        sample_weight: typing.Union[float, int]
     ) -> 'BinaryMetric':
         """Update the metric."""
 
@@ -75,23 +75,23 @@ class BinaryMetric(ClassificationMetric):
     def revert(
         self,
         y_true: bool,
-        y_pred: typing.Union[bool, base.Probas],
-        sample_weight: float
+        y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
+        sample_weight: typing.Union[float, int]
     ) -> 'BinaryMetric':
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), base.BinaryClassifier)
+        return isinstance(utils.estimator_checks.guess_model(model), base.Classifier)
 
 
-class MultiClassMetric(BinaryMetric):
+class MultiClassMetric(ClassificationMetric):
 
     @abc.abstractmethod
     def update(
         self,
-        y_true: base.Label,
-        y_pred: typing.Union[base.Label, base.Probas],
-        sample_weight: float
+        y_true: typing.Hashable,
+        y_pred: typing.Union[typing.Hashable, typing.Dict[typing.Hashable, float]],
+        sample_weight: typing.Union[float, int]
     ) -> 'MultiClassMetric':
         """Update the metric."""
 
@@ -99,8 +99,8 @@ class MultiClassMetric(BinaryMetric):
     def revert(
         self,
         y_true: bool,
-        y_pred: typing.Union[base.Label, base.Probas],
-        sample_weight: float
+        y_pred: typing.Union[typing.Hashable, typing.Dict[typing.Hashable, float]],
+        sample_weight: typing.Union[float, int]
     ) -> 'MultiClassMetric':
         """Revert the metric."""
 
@@ -113,18 +113,18 @@ class RegressionMetric(Metric):
     @abc.abstractmethod
     def update(
         self,
-        y_true: float,
-        y_pred: float,
-        sample_weight: float
+        y_true: typing.Union[float, int],
+        y_pred: typing.Union[float, int],
+        sample_weight: typing.Union[float, int]
     ) -> 'RegressionMetric':
         """Update the metric."""
 
     @abc.abstractmethod
     def revert(
         self,
-        y_true: float,
-        y_pred: float,
-        sample_weight: float
+        y_true: typing.Union[float, int],
+        y_pred: typing.Union[float, int],
+        sample_weight: typing.Union[float, int]
     ) -> 'RegressionMetric':
         """Revert the metric."""
 
@@ -133,7 +133,7 @@ class RegressionMetric(Metric):
         return False
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), (base.Regressor))
+        return isinstance(utils.estimator_checks.guess_model(model), base.Regressor)
 
     def __add__(self, other) -> 'Metrics':
         if not isinstance(other, RegressionMetric):
@@ -142,21 +142,27 @@ class RegressionMetric(Metric):
         return Metrics([self, other])
 
 
-class MultiOutputClassificationMetric(ClassificationMetric):
+class MultiOutputClassificationMetric:
 
     def update(
         self,
-        y_true: typing.Dict[str, base.Label],
-        y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]],
-        sample_weight: float
+        y_true: typing.Dict[typing.Hashable, typing.Hashable],
+        y_pred: typing.Union[
+            typing.Dict[typing.Hashable, typing.Hashable],
+            typing.Dict[typing.Hashable, typing.Dict[typing.Hashable, float]]
+        ],
+        sample_weight: typing.Union[float, int]
     ) -> 'MultiOutputClassificationMetric':
         """Update the metric."""
 
     def revert(
         self,
-        y_true: typing.Dict[str, base.Label],
-        y_pred: typing.Dict[str, typing.Union[base.Label, base.Probas]],
-        sample_weight: float
+        y_true: typing.Dict[typing.Hashable, typing.Hashable],
+        y_pred: typing.Union[
+            typing.Dict[typing.Hashable, typing.Hashable],
+            typing.Dict[typing.Hashable, typing.Dict[typing.Hashable, float]]
+        ],
+        sample_weight: typing.Union[float, int]
     ) -> 'MultiOutputClassificationMetric':
         """Revert the metric."""
 
@@ -164,21 +170,21 @@ class MultiOutputClassificationMetric(ClassificationMetric):
         return isinstance(utils.estimator_checks.guess_model(model), base.MultiOutputClassifier)
 
 
-class MultiOutputRegressionMetric(RegressionMetric):
+class MultiOutputRegressionMetric:
 
     def update(
         self,
-        y_true: typing.Dict[str, float],
-        y_pred: typing.Dict[str, float],
-        sample_weight: float
+        y_true: typing.Dict[typing.Hashable, typing.Union[float, int]],
+        y_pred: typing.Dict[typing.Hashable, typing.Union[float, int]],
+        sample_weight: typing.Union[float, int]
     ) -> 'MultiOutputRegressionMetric':
         """Update the metric."""
 
     def revert(
         self,
-        y_true: typing.Dict[str, float],
-        y_pred: typing.Dict[str, float],
-        sample_weight: float
+        y_true: typing.Dict[typing.Hashable, typing.Union[float, int]],
+        y_pred: typing.Dict[typing.Hashable, typing.Union[float, int]],
+        sample_weight: typing.Union[float, int]
     ) -> 'MultiOutputRegressionMetric':
         """Revert the metric."""
 
