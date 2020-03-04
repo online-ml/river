@@ -5,8 +5,6 @@ These are used to categorize, organize, and standardize the many estimators that
 contains.
 
 """
-import typing
-
 from .anomaly import AnomalyDetector
 from .classifier import Classifier
 from .classifier import BinaryClassifier

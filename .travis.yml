@@ -22,7 +22,7 @@ jobs:
     services:
       - docker
     env: &pypi-env
-      - CIBW_BUILD="cp36-* cp37-*"
+      - CIBW_BUILD="cp36-* cp37-* cp38-*"
       - CIBW_BEFORE_BUILD="pip install cython"
     install: &pypi-install
       - pip install cibuildwheel==1.0.0 cython twine
@@ -45,7 +45,7 @@ jobs:
     os: windows
     language: shell
     env:
-      - CIBW_BUILD="cp36-* cp37-*"
+      - CIBW_BUILD="cp36-* cp37-* cp38-*"
       - CIBW_BEFORE_BUILD="pip install cython"
       - PATH=/c/Python36:/c/Python36/Scripts:$PATH
     before_install:
