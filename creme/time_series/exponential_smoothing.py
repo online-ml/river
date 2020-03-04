@@ -505,11 +505,28 @@ class AdditiveDampedAdditiveSeasonal(base.Forecaster):  # Need better naming
 
 #TODO Trend no and seasonal Multiplicative
 class MultiplicativeSeasonal(base.Forecaster):  # Need better naming
+    """
+        #TODO : Docstring + test
+
+    Parameters:
+        m (int): m the frequency of the seasonality.
+        alpha (float): The smoothing parameter for the level, 0 ≤ alpha ≤ 1 . Defaults to `0.5`.
+        gamma (float): The smoothing parameter seasonal component 0 ≤ gamma ≤ 1. Defaults to `0.5`.
+        s (List[float]): Initialization values for the seasonality. Defaults to `None`.
+        l0 (float): Initialization value for the level. Defaults to `0.5`.
+
+
+    Example:
+    ::
+        >>> #TODO
+
+    References:
+        1. `Multiplicative seasonal method <https://otexts.com/fpp2/taxonomy.html>`_
+    """
     def __init__(
             self,
             m: int,
             alpha: float = 0.5,
-            beta: float = 0.5,
             gamma: float = 0.5,
             s: Optional[List[float]] = None,  # We can discuss for this choice
             l0: float = 0.5):
