@@ -505,11 +505,45 @@ class AdditiveDampedAdditiveSeasonal(base.Forecaster):  # Need better naming
 
 #TODO Trend no and seasonal Multiplicative
 class MultiplicativeSeasonal(base.Forecaster):  # Need better naming
-    def __init__(self):
-        pass
+    def __init__(
+            self,
+            m: int,
+            alpha: float = 0.5,
+            beta: float = 0.5,
+            gamma: float = 0.5,
+            s: Optional[List[float]] = None,  # We can discuss for this choice
+            l0: float = 0.5):
 
-    def fit_one(self, y):
-        pass
+        self.m = m
 
-    def forecast(self, horizon):
-        pass
+        self.alpha = alpha
+        self.gamma = gamma
+
+        # init s : [s_{t-m}, s_{t-m+1}, ..., s_{t}]
+        if s is None:
+            self.s = collections.deque([1 for _ in range(m)], maxlen=m)
+        else:
+            self.s = collections.deque(s, maxlen=m)
+
+        self.lt = l0
+
+    def fit_one(self, y: float):
+
+        st_1 = self.s[-1]
+        st_m = self.s[-self.m]
+
+        lt_1 = self.lt
+
+
+        # replace by safe division
+        self.lt = self.alpha * (y / st_m) + (1 - self.alpha) * lt_1
+        st = self.gamma * (y / lt_1) + (1 - self.gamma) * st_m
+        self.s.append(st)
+
+        return self
+
+    def forecast(self, horizon: int) -> list:
+        return [
+            self.lt * self.s[h - self.m * (((h - 1) // self.m) + 1)]
+            for h in range(1, horizon + 1)
+        ]
