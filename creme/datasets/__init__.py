@@ -1,7 +1,7 @@
 """Datasets."""
 from . import gen
 from .airline import Airline
-from .banana import Banana
+from .bananas import Bananas
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
 from .elec2 import Elec2
@@ -11,7 +11,8 @@ from .phishing import Phishing
 from .movielens100k import MovieLens100K
 from .restaurants import Restaurants
 from .sms_spam import SMSSpam
-from .toulouse_bikes import ToulouseBikes
+from .bikes import Bikes
+from .taxis import Taxis
 from .trec07 import TREC07
 from .trump_approval import TrumpApproval
 from .malicious_url import MaliciousURL
@@ -19,7 +20,8 @@ from .malicious_url import MaliciousURL
 
 __all__ = [
     'Airline',
-    'Banana',
+    'Bananas',
+    'Bikes',
     'ChickWeights',
     'CreditCard',
     'Elec2',
@@ -31,7 +33,7 @@ __all__ = [
     'MovieLens100K',
     'Restaurants',
     'SMSSpam',
-    'ToulouseBikes',
+    'Taxis',
     'TREC07',
     'TrumpApproval'
 ]

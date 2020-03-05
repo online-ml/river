@@ -1,12 +1,12 @@
 import collections
 import functools
 import itertools
-import numbers
 
 from .. import base
 from .. import optim
-from .. import stats
 from .. import utils
+
+from .base import BaseFM
 
 
 __all__ = [
@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-class HOFM:
+class HOFM(BaseFM):
     """Higher-Order Factorization Machines.
 
     Parameters:
@@ -26,7 +26,7 @@ class HOFM:
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
+        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -37,11 +37,8 @@ class HOFM:
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
             will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme. Defaults
-            to ``optim.initializers.Zeros()``.
+        weight_initializer (optim.initializers.Initializer): Weights initialization scheme.
         latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-            Defaults to
-            ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
         clip_gradient (float): Clips the absolute value of each gradient value.
         random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
             is the seed used by the random number generator; if ``RandomState`` instance,
@@ -55,61 +52,44 @@ class HOFM:
     """
 
     def __init__(self, degree, n_factors, weight_optimizer, latent_optimizer, loss,
-                 instance_normalization, l1_weight, l2_weight, l1_latent, l2_latent, intercept,
+                 sample_normalization, l1_weight, l2_weight, l1_latent, l2_latent, intercept,
                  intercept_lr, weight_initializer, latent_initializer, clip_gradient, random_state):
+        super().__init__(
+            n_factors=n_factors,
+            weight_optimizer=weight_optimizer,
+            latent_optimizer=latent_optimizer,
+            loss=loss,
+            sample_normalization=sample_normalization,
+            l1_weight=l1_weight,
+            l2_weight=l2_weight,
+            l1_latent=l1_latent,
+            l2_latent=l2_latent,
+            intercept=intercept,
+            intercept_lr=intercept_lr,
+            weight_initializer=weight_initializer,
+            latent_initializer=latent_initializer,
+            clip_gradient=clip_gradient,
+            random_state=random_state
+        )
         self.degree = degree
-        self.n_factors = n_factors
-        self.weight_optimizer = optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
-        self.latent_optimizer = optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
-        self.loss = loss
-        self.instance_normalization = instance_normalization
-        self.l1_weight = l1_weight
-        self.l2_weight = l2_weight
-        self.l1_latent = l1_latent
-        self.l2_latent = l2_latent
-        self.intercept = intercept
 
-        self.intercept_lr = (
-            optim.schedulers.Constant(intercept_lr)
-            if isinstance(intercept_lr, numbers.Number) else
-            intercept_lr
-        )
-
-        if weight_initializer is None:
-            weight_initializer = optim.initializers.Zeros()
-        self.weight_initializer = weight_initializer
-
-        if latent_initializer is None:
-            latent_initializer = optim.initializers.Normal(sigma=.1, random_state=random_state)
-        self.latent_initializer = latent_initializer
-
-        self.clip_gradient = clip_gradient
-        self.random_state = random_state
-
+    def _init_latents(self):
         random_latents = functools.partial(
-            latent_initializer,
-            shape=n_factors
+            self.latent_initializer,
+            shape=self.n_factors
         )
-
         order_latents_dict = functools.partial(
             collections.defaultdict, random_latents
         )
+        return collections.defaultdict(order_latents_dict)
 
-        self.weights = collections.defaultdict(weight_initializer)
-        self.latents = collections.defaultdict(order_latents_dict)
-
-    def _ohe_cat_features(self, x):
-        """One hot encodes string features considering them as categorical."""
-        return dict((f'{j}_{xj}', 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
-
-    def fit_one(self, x, y, sample_weight=1.):
-        x = self._ohe_cat_features(x)
-
-        if self.instance_normalization:
-            x_l2_norm = sum((xj ** 2 for xj in x.values())) ** 0.5
-            x = {j: xj / x_l2_norm for j, xj in x.items()}
-
-        return self._fit_one(x, y, sample_weight=sample_weight)
+    def _calculate_interactions(self, x):
+        """Calculates greater than unary interactions."""
+        return sum(
+            self._calculate_interaction(x, l, combination)
+            for l in range(2, self.degree + 1)
+            for combination in itertools.combinations(x.keys(), l)
+        )
 
     def _calculate_interaction(self, x, l, combination):
         feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
@@ -119,62 +99,29 @@ class HOFM:
         )
         return feature_product * latent_scalar_product
 
-    def _raw_dot(self, x):
-
-        # Start with the intercept
-        intercept = self.intercept
-        y_pred = intercept.get() if isinstance(intercept, stats.Univariate) else intercept
-
-        # Add the unary interactions
-        y_pred += utils.math.dot(x, self.weights)
-
-        # Add greater than unary interactions
-        y_pred += sum(
-            self._calculate_interaction(x, l, combination)
-            for l in range(2, self.degree + 1)
-            for combination in itertools.combinations(x.keys(), l)
-        )
-
-        return y_pred
-
-    def _sign(self, x):
-        return -1 if x < 0 else (1 if x > 0 else 0)
-
-    def _fit_one(self, x, y, sample_weight=1.):
+    def _calculate_weights_gradients(self, x, g_loss):
 
         # For notational convenience
-        w, v = self.weights, self.latents
-        k, sign = self.n_factors, self._sign
-        l1_weight, l2_weight = self.l1_weight, self.l2_weight
-        l1_latent, l2_latent = self.l1_latent, self.l2_latent
+        w, l1, l2, sign = self.weights, self.l1_weight, self.l2_weight, utils.math.sign
 
-        # Update the intercept if statistic before calculating the gradient
-        if isinstance(self.intercept, stats.Univariate):
-            self.intercept.update(y)
-
-        # Calculate the gradient of the loss with respect to the raw output
-        g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
-
-        # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
-
-        # Apply the sample weight
-        g_loss *= sample_weight
-
-        # Update the intercept if not statistic
-        if not isinstance(self.intercept, stats.Univariate):
-            w0_lr = self.intercept_lr.get(self.weight_optimizer.n_iterations)
-            self.intercept -= w0_lr * g_loss
-
-        # Update the weights
-        weight_gradient = {
-            j: g_loss * xj + l1_weight * sign(w[j]) + l2_weight * w[j]
+        return {
+            j: g_loss * xj + l1 * sign(w[j]) + l2 * w[j]
             for j, xj in x.items()
         }
-        self.weights = self.weight_optimizer.update_after_pred(w=w, g=weight_gradient)
 
-        # Update the latent weights
-        latent_gradient = collections.defaultdict(
+    def _update_latents(self, x, g_loss):
+
+        # For notational convenience
+        v, l1, l2, sign = self.latents, self.l1_latent, self.l2_latent, utils.math.sign
+
+        # Precompute feature independent sum for time efficiency
+        precomputed_sum = {
+            f: sum(v[j][f] * xj for j, xj in x.items())
+            for f in range(self.n_factors)
+        }
+
+        # Calculate each latent factor gradient before updating any
+        gradients = collections.defaultdict(
             lambda: collections.defaultdict(
                 lambda: collections.defaultdict(float)
             )
@@ -188,20 +135,18 @@ class HOFM:
                     latent_product = functools.reduce(lambda x, y: x * y, (v[j][l][f] for j in combination))
 
                     for j in combination:
-                        latent_gradient[j][l][f] += feature_product * latent_product / v[j][l][f]
+                        gradients[j][l][f] += feature_product * latent_product / v[j][l][f]
 
+        # Finally update the latent weights
         for j in x.keys():
             for l in range(2, self.degree + 1):
                 self.latents[j][l] = self.latent_optimizer.update_after_pred(
                     w=v[j][l],
                     g={
-                        f: g_loss * latent_gradient[j][l][f] + l1_latent * sign(v[j][l][f]) \
-                           + 2. * l2_latent * v[j][l][f]
-                        for f in range(k)
+                        f: g_loss * gradients[j][l][f] + l1 * sign(v[j][l][f]) + 2 * l2 * v[j][l][f]
+                        for f in range(self.n_factors)
                     }
                 )
-
-        return self
 
 
 class HOFMRegressor(HOFM, base.Regressor):
@@ -215,7 +160,7 @@ class HOFMRegressor(HOFM, base.Regressor):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
+        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -245,7 +190,7 @@ class HOFMRegressor(HOFM, base.Regressor):
 
         ::
 
-            >>> from creme import linear_model
+            >>> from creme import facto
 
             >>> X_y = (
             ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
@@ -259,7 +204,7 @@ class HOFMRegressor(HOFM, base.Regressor):
             ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
             ... )
 
-            >>> model = linear_model.HOFMRegressor(
+            >>> model = facto.HOFMRegressor(
             ...     degree=3,
             ...     n_factors=10,
             ...     intercept=5,
@@ -270,7 +215,7 @@ class HOFMRegressor(HOFM, base.Regressor):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-            5.311745...
+            5.304874...
 
     Note:
         - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
@@ -282,7 +227,7 @@ class HOFMRegressor(HOFM, base.Regressor):
     """
 
     def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
-                 loss=None, instance_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
+                 loss=None, sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
                  l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
                  latent_initializer=None, clip_gradient=1e12, random_state=None):
         super().__init__(
@@ -291,7 +236,7 @@ class HOFMRegressor(HOFM, base.Regressor):
             weight_optimizer=weight_optimizer,
             latent_optimizer=latent_optimizer,
             loss=optim.losses.Squared() if loss is None else loss,
-            instance_normalization=instance_normalization,
+            sample_normalization=sample_normalization,
             l1_weight=l1_weight,
             l2_weight=l2_weight,
             l1_latent=l1_latent,
@@ -320,7 +265,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
         latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
             factors.
         loss (optim.Loss): The loss function to optimize for.
-        instance_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
+        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
             Defaults to False.
         l1_weight (float): Amount of L1 regularization used to push weights towards 0.
         l2_weight (float): Amount of L2 regularization used to push weights towards 0.
@@ -350,7 +295,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
 
         ::
 
-            >>> from creme import linear_model
+            >>> from creme import facto
 
             >>> X_y = (
             ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
@@ -364,7 +309,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
             ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
             ... )
 
-            >>> model = linear_model.HOFMClassifier(
+            >>> model = facto.HOFMClassifier(
             ...     degree=3,
             ...     n_factors=10,
             ...     intercept=.5,
@@ -387,7 +332,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
     """
 
     def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
-                 loss=None, instance_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
+                 loss=None, sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
                  l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
                  latent_initializer=None, clip_gradient=1e12, random_state=None):
         super().__init__(
@@ -396,7 +341,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
             weight_optimizer=weight_optimizer,
             latent_optimizer=latent_optimizer,
             loss=optim.losses.Log() if loss is None else loss,
-            instance_normalization=instance_normalization,
+            sample_normalization=sample_normalization,
             l1_weight=l1_weight,
             l2_weight=l2_weight,
             l1_latent=l1_latent,

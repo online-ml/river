@@ -1,10 +1,12 @@
+from . import base
+
 import collections
 
 
 __all__ = ['ConfusionMatrix']
 
 
-class ConfusionMatrix:
+class ConfusionMatrix(base.MultiClassMetric):
     """Confusion matrix.
 
     This class is different from the rest of the classes from the `metrics` module in that it
@@ -41,6 +43,17 @@ class ConfusionMatrix:
 
     fmt = '0.0f'
 
+    @property
+    def bigger_is_better(self):
+        return None
+
+    @property
+    def requires_labels(self):
+        return True
+
+    def get(self):
+        return self
+
     def __init__(self):
         self.counts = collections.defaultdict(collections.Counter)
         self.class_counts = collections.Counter()
@@ -67,6 +80,9 @@ class ConfusionMatrix:
 
         # The classes are sorted alphabetically for reproducibility reasons
         classes = sorted(self.classes)
+
+        if not classes:
+            return ''
 
         # Determine the required width of each column in the table
         largest_label_len = max(len(str(c)) for c in classes)

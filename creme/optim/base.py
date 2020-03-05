@@ -7,12 +7,10 @@ from . import schedulers
 
 class Optimizer(abc.ABC):
 
-    def __init__(self, lr: typing.Union[schedulers.Scheduler, float]):
-        self.lr = (
-            schedulers.Constant(lr)
-            if isinstance(lr, numbers.Number) else
-            lr
-        )
+    def __init__(self, lr: typing.Union[schedulers.Scheduler, numbers.Number]):
+        if isinstance(lr, numbers.Number):
+            lr = schedulers.Constant(lr)
+        self.lr = lr
         self.n_iterations = 0
 
     @property
@@ -42,4 +40,4 @@ class Optimizer(abc.ABC):
         return self.__class__.__name__
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.__dict__})'
+        return f'{self.__class__.__name__}({vars(self)})'
