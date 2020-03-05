@@ -222,6 +222,12 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             '\n)'
         ).expandtabs(2)
 
+    def _set_params(self, **new_params):
+        return self.__class__(
+            step._set_params(**new_params.get(name, {}))
+            for name, step in self.items()
+        )
+
     @property
     def transformers(self):
         """If a pipeline has $n$ steps, then the first $n-1$ are necessarily transformers."""

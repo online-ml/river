@@ -77,7 +77,7 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
             ... )
 
             >>> model_selection.progressive_val_score(X_y, hedge, metric)
-            MAE: 3.245396
+            MAE: 3.249167
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_

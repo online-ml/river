@@ -6,7 +6,8 @@ doc:
 		$(MAKE) clean && \
 		rm -rf generated && \
 		python make_datasets_table.py && \
-		python make_api_page.py && \
+		python make_api.py && \
+		python make_supervised.py && \
 		$(MAKE) html -j 4
 
 clean:

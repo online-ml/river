@@ -19,6 +19,7 @@ __all__ = [
     'dummy',
     'decomposition',
     'ensemble',
+    'facto',
     'feature_extraction',
     'feature_selection',
     'imblearn',
