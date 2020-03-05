@@ -9,9 +9,7 @@ from .. import utils
 class Triplet(collections.namedtuple('Triplet', 'x y loss')):
 
     def __lt__(self, other):
-
         return self.loss < other.loss
-
 
 
 class ReplayBuffer(base.Wrapper):
@@ -41,6 +39,9 @@ class ReplayBuffer(base.Wrapper):
 
         if isinstance(model, base.Classifier):
             self.pred_func = model.predict_proba_one
+
+        elif isinstance(model, base.BinaryClassifier):
+            self.pred_func = lambda x: model.predict_proba_one(x)[True]
 
         self.p = p
         self.size = size
