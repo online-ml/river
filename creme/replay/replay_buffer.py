@@ -202,24 +202,20 @@ class ReplayBufferClassifier(ReplayBuffer):
             ...         classifier = linear_model.LogisticRegression(),
             ...         loss_function = optim.losses.CrossEntropy(),
             ...          p = 0.1,
-            ...          size = 30,
+            ...          size = 40,
             ...         seed = 42,
             ...     )
             ... )
 
             >>> model_selection.progressive_val_score(
-            ...     datasets.CreditCard(),
-            ...     model,
-            ...     metrics.ROCAUC(),
-            ...     print_every = 45_000
+            ...     X_y = datasets.Phishing(),
+            ...     model = model,
+            ...     metric = metrics.ROCAUC(),
+            ...     print_every = 500,
             ... )
-            [45,000] ROCAUC: 0.927917
-            [90,000] ROCAUC: 0.924025
-            [135,000] ROCAUC: 0.920276
-            [180,000] ROCAUC: 0.916839
-            [225,000] ROCAUC: 0.91115
-            [270,000] ROCAUC: 0.914077
-            ROCAUC: 0.911448
+            [500] ROCAUC: 0.928271
+            [1,000] ROCAUC: 0.948547
+            ROCAUC: 0.952755
 
     """
     def __init__(self, classifier, loss_function, size, p, seed=None):
