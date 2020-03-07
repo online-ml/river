@@ -15,14 +15,16 @@ class Triplet(collections.namedtuple('Triplet', 'x y loss')):
 class ReplayBuffer(base.Wrapper):
     """ReplayBuffer
 
-    Re-train the model on the observations where it produces important errors.
-    ReplayBuffer stores a dictionnary of tuples  (features, target). The tuples stored in the
-    buffer are the observations which are difficult for a model to regress. When fitting the model,
-    it is re-trained with probability p on one of the observations (sampled uniformly) in the
-    buffer. The model is re-trained with a probability (1 - p) on the new data. When the model fit
-    on an observation from the buffer, the loss is re-computed to refresh the buffer. New
-    observations will be stored if in the buffer if loss is sufficiently high compared to the losses
-    already stored in the buffer.
+    Stores the hardest data to predict in a buffer. When the fit_one method is called, the model
+    trains on an observation of the buffer with probability p or trains on current observation with
+    a probability (1 - p).
+
+    The model systematically evaluates the difficulty of an input data of the fit_one method and
+    stores it in the buffer if the associated loss to this observation is greater than the smallest
+    buffer loss.
+
+    If a new observation is storred and that the buffer is full, then the new observation will
+    take the place of the observation associated with the smallest loss.
 
     Parameters:
         model (base.Estimator): Selected model.
@@ -95,14 +97,16 @@ class ReplayBuffer(base.Wrapper):
 class ReplayBufferRegressor(ReplayBuffer):
     """ReplayBufferRegressor
 
-    Re-train the model on the observations where it produces important errors.
-    ReplayBuffer stores a dictionnary of tuples  (features, target). The tuples stored in the
-    buffer are the observations which are difficult for a model to regress. When fitting the model,
-    it is re-trained with probability p on one of the observations (sampled uniformly) in the
-    buffer. The model is re-trained with a probability (1 - p) on the new data. When the model fit
-    on an observation from the buffer, the loss is re-computed to refresh the buffer. New
-    observations will be stored if in the buffer if loss is sufficiently high compared to the losses
-    already stored in the buffer.
+    Stores the hardest data to predict in a buffer. When the fit_one method is called, the model
+    trains on an observation of the buffer with probability p or trains on current observation with
+    a probability (1 - p).
+
+    The model systematically evaluates the difficulty of an input data of the fit_one method and
+    stores it in the buffer if the associated loss to this observation is greater than the smallest
+    buffer loss.
+
+    If a new observation is storred and that the buffer is full, then the new observation will
+    take the place of the observation associated with the smallest loss.
 
     Parameters:
         Regressor (base.Regressor): Selected model.
@@ -164,14 +168,16 @@ class ReplayBufferRegressor(ReplayBuffer):
 class ReplayBufferClassifier(ReplayBuffer):
     """ReplayBufferClassifier
 
-    Re-train the model on the observations where it produces important errors.
-    ReplayBuffer stores a dictionnary of tuples  (features, target). The tuples stored in the
-    buffer are the observations which are difficult for a model to regress. When fitting the model,
-    it is re-trained with probability p on one of the observations (sampled uniformly) in the
-    buffer. The model is re-trained with a probability (1 - p) on the new data. When the model fit
-    on an observation from the buffer, the loss is re-computed to refresh the buffer. New
-    observations will be stored if in the buffer if loss is sufficiently high compared to the losses
-    already stored in the buffer.
+    Stores the hardest data to predict in a buffer. When the fit_one method is called, the model
+    trains on an observation of the buffer with probability p or trains on current observation with
+    a probability (1 - p).
+
+    The model systematically evaluates the difficulty of an input data of the fit_one method and
+    stores it in the buffer if the associated loss to this observation is greater than the smallest
+    buffer loss.
+
+    If a new observation is storred and that the buffer is full, then the new observation will
+    take the place of the observation associated with the smallest loss.
 
     Parameters:
         classifier (base.Classifier): Selected model.
