@@ -15,16 +15,18 @@ class Triplet(collections.namedtuple('Triplet', 'x y loss')):
 class ReplayBuffer(base.Wrapper):
     """ReplayBuffer
 
-    Stores the hardest data to predict in a buffer. When the fit_one method is called, the model
-    trains on an observation of the buffer with probability p or trains on current observation with
-    a probability (1 - p).
+    Stores the hardest data to fit in a buffer. When the fit_one method is called, the model
+    is updated on an observation of the buffer with a probability p or updated with the current
+    observation with a probability (1 - p).
 
     The model systematically evaluates the difficulty of an input data of the fit_one method and
     stores it in the buffer if the associated loss to this observation is greater than the smallest
-    buffer loss.
+    loss already storred in the buffer.
 
-    If a new observation is storred and that the buffer is full, then the new observation will
-    take the place of the observation associated with the smallest loss.
+    If a new observation is storred and if the buffer is full, then the new observation will take
+    the place of the observation associated with the smallest loss.
+
+    If the buffer is not full, the input observation is systematically added to the buffer.
 
     Parameters:
         model (base.Estimator): Selected model.
@@ -97,16 +99,18 @@ class ReplayBuffer(base.Wrapper):
 class ReplayBufferRegressor(ReplayBuffer):
     """ReplayBufferRegressor
 
-    Stores the hardest data to predict in a buffer. When the fit_one method is called, the model
-    trains on an observation of the buffer with probability p or trains on current observation with
-    a probability (1 - p).
+    Stores the hardest data to fit in a buffer. When the fit_one method is called, the model
+    is updated on an observation of the buffer with a probability p or updated with the current
+    observation with a probability (1 - p).
 
     The model systematically evaluates the difficulty of an input data of the fit_one method and
     stores it in the buffer if the associated loss to this observation is greater than the smallest
-    buffer loss.
+    loss already storred in the buffer.
 
-    If a new observation is storred and that the buffer is full, then the new observation will
-    take the place of the observation associated with the smallest loss.
+    If a new observation is storred and if the buffer is full, then the new observation will take
+    the place of the observation associated with the smallest loss.
+
+    If the buffer is not full, the input observation is systematically added to the buffer.
 
     Parameters:
         Regressor (base.Regressor): Selected model.
@@ -168,16 +172,18 @@ class ReplayBufferRegressor(ReplayBuffer):
 class ReplayBufferClassifier(ReplayBuffer):
     """ReplayBufferClassifier
 
-    Stores the hardest data to predict in a buffer. When the fit_one method is called, the model
-    trains on an observation of the buffer with probability p or trains on current observation with
-    a probability (1 - p).
+    Stores the hardest data to fit in a buffer. When the fit_one method is called, the model
+    is updated on an observation of the buffer with a probability p or updated with the current
+    observation with a probability (1 - p).
 
     The model systematically evaluates the difficulty of an input data of the fit_one method and
     stores it in the buffer if the associated loss to this observation is greater than the smallest
-    buffer loss.
+    loss already storred in the buffer.
 
-    If a new observation is storred and that the buffer is full, then the new observation will
-    take the place of the observation associated with the smallest loss.
+    If a new observation is storred and if the buffer is full, then the new observation will take
+    the place of the observation associated with the smallest loss.
+
+    If the buffer is not full, the input observation is systematically added to the buffer.
 
     Parameters:
         classifier (base.Classifier): Selected model.
