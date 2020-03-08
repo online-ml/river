@@ -74,11 +74,11 @@ def progressive_val_score(X_y, model, metric, moment=None, delay=None, print_eve
 
     # Coerce moment to a function
     if moment is None:
-        moment = lambda i, _: i
+        moment_func = lambda i, _: i
     elif isinstance(moment, str):
-        moment = lambda _, x: x[moment]
+        moment_func = lambda _, x: x[moment]
     elif callable(moment):
-        moment = lambda _, x: moment(x)
+        moment_func = lambda _, x: moment(x)
 
     # Coerce delay to a function
     if delay is None:
@@ -96,7 +96,7 @@ def progressive_val_score(X_y, model, metric, moment=None, delay=None, print_eve
 
     for i, (x, y) in enumerate(X_y):
 
-        t = moment(i, x)
+        t = moment_func(i, x)
         d = delay(x, y)
 
         while mementos:
