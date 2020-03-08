@@ -70,7 +70,7 @@ pytest -m web
 You don't have to worry too much about these, as we check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way round.
 
 ```sh
-pytest --nbval-lax --current-env docs/notebooks/*.ipynb`
+pytest --nbval-lax --current-env docs/notebooks/*.ipynb
 ```
 
 
