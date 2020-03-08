@@ -44,7 +44,12 @@ dev_packages = [
     'pytest-cython>=0.1.0'
 ]
 
-docs_packages = dev_packages + [
+dev_extra_packages = dev_packages + [
+    'pandas>=1.0.1',
+    'torch>=1.4.0'
+]
+
+docs_packages = dev_extra_packages + [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
     'm2r>=0.2.1',
@@ -87,7 +92,11 @@ setup(
     url=URL,
     packages=find_packages(exclude=('tests',)),
     install_requires=base_packages,
-    extras_require={'dev': dev_packages, 'docs': docs_packages},
+    extras_require={
+        'dev': dev_packages,
+        'dev_extra': dev_extra_packages,
+        'docs': docs_packages
+    },
     include_package_data=True,
     license='BSD-3',
     classifiers=[
