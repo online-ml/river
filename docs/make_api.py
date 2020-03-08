@@ -53,10 +53,18 @@ def write_module(mod, f, override=None):
     sub_mods = [name for name, _ in inspect.getmembers(mod, inspect.ismodule) if name in mod.__all__]
     for sub_mod_name in sub_mods:
         sub_mod = importlib.import_module(f'{mod.__name__}.{sub_mod_name}')
-        desc = sub_mod.__doc__.splitlines()[0].rstrip('.')
 
-        f.write(desc + '\n')
-        f.write('~' * len(desc) + '\n\n')
+        lines = sub_mod.__doc__.splitlines()
+
+        # Write the title, which is the first line of the sub_mod's docstring
+        title = lines[0].rstrip('.')
+        f.write(title + '\n')
+        f.write('~' * len(title) + '\n\n')
+
+        # Write the description, which is the rest of the lines of the sub_mod's docstring
+        if len(lines) > 2:
+            f.write(' '.join(lines[2:]) + '\n\n')
+
         f.write(f'''.. autosummary::
     :toctree: generated/
     :nosignatures:
@@ -66,6 +74,17 @@ def write_module(mod, f, override=None):
         klasses = [name for name, _ in inspect.getmembers(sub_mod, inspect.isclass) if name in sub_mod.__all__]
         for klass in sorted(klasses):
             f.write(f'    {sub_mod_name}.{klass}\n')
+
+        f.write(f'''.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: function.rst
+        \n''')
+
+        funcs = [name for name, _ in inspect.getmembers(sub_mod, inspect.isfunction) if name in sub_mod.__all__]
+        for func in sorted(funcs):
+            f.write(f'    {sub_mod_name}.{func}\n')
+
         f.write('\n')
 
 

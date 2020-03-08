@@ -32,6 +32,7 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
         
     AnomalyDetector
     BinaryClassifier
+    Classifier
     Clusterer
     Ensemble
     Estimator
@@ -121,6 +122,8 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :template: class.rst
         
     Airline
+    Bananas
+    Bikes
     ChickWeights
     CreditCard
     Elec2
@@ -132,7 +135,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     Restaurants
     SMSSpam
     TREC07
-    ToulouseBikes
+    Taxis
     TrumpApproval
 
 Random data generators
@@ -144,6 +147,11 @@ Random data generators
     :template: class.rst
         
     gen.SEA
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: function.rst
+        
 
 
 **decomposition**: Online matrix decomposition
@@ -192,6 +200,27 @@ Random data generators
     BaggingRegressor
     HedgeRegressor
     StackingBinaryClassifier
+
+
+**facto**: Factorization machines
+----------------------------------
+
+.. rubric:: Classes
+
+.. currentmodule:: creme.facto
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
+    FFMClassifier
+    FFMRegressor
+    FMClassifier
+    FMRegressor
+    FwFMClassifier
+    FwFMRegressor
+    HOFMClassifier
+    HOFMRegressor
 
 
 **feature_extraction**: Feature extraction from a stream
@@ -270,22 +299,16 @@ Random data generators
     :nosignatures:
     :template: class.rst
         
-    FFMClassifier
-    FFMRegressor
-    FMClassifier
-    FMRegressor
-    HOFMClassifier
-    HOFMRegressor
+    ALMAClassifier
     LinearRegression
     LogisticRegression
     PAClassifier
     PARegressor
-    PoissonRegression
     SoftmaxRegression
 
 
-**meta**: Meta-models that work by wrapping other models
----------------------------------------------------------
+**meta**: Meta-models that wrap other models
+---------------------------------------------
 
 .. rubric:: Classes
 
@@ -461,6 +484,11 @@ Weight initialization schemes
     initializers.Constant
     initializers.Normal
     initializers.Zeros
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: function.rst
+        
 
 Loss functions
 ~~~~~~~~~~~~~~
@@ -477,9 +505,15 @@ Loss functions
     losses.EpsilonInsensitiveHinge
     losses.Hinge
     losses.Log
+    losses.Perceptron
     losses.Poisson
     losses.Quantile
     losses.Squared
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: function.rst
+        
 
 Learning rate schedulers
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -493,6 +527,11 @@ Learning rate schedulers
     schedulers.InverseScaling
     schedulers.Optimal
     schedulers.Scheduler
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: function.rst
+        
 
 
 **preprocessing**: Feature preprocessing
@@ -506,6 +545,7 @@ Learning rate schedulers
     :nosignatures:
     :template: class.rst
         
+    Binarizer
     FeatureHasher
     MaxAbsScaler
     MinMaxScaler
@@ -600,6 +640,16 @@ Learning rate schedulers
 **stream**: Helper functions for streaming data
 ------------------------------------------------
 
+.. rubric:: Classes
+
+.. currentmodule:: creme.stream
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
+    Cache
+
 .. rubric:: Functions
 
 .. currentmodule:: creme.stream
@@ -610,6 +660,7 @@ Learning rate schedulers
         
     iter_array
     iter_csv
+    iter_libsvm
     iter_pandas
     iter_sklearn_dataset
     iter_vaex
@@ -672,15 +723,42 @@ Utilities for unit testing and sanity checking estimators
     :nosignatures:
     :template: class.rst
         
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: function.rst
+        
+    estimator_checks.check_estimator
+    estimator_checks.guess_model
 
-Mathematical utility functions mostly intended for internal purposes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mathematical utility functions (intended for internal purposes)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A lot of this is experimental and has a high probability of changing in the future. 
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: class.rst
         
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: function.rst
+        
+    math.chain_dot
+    math.clamp
+    math.dot
+    math.dotvecmat
+    math.matmul2d
+    math.minkowski_distance
+    math.norm
+    math.outer
+    math.prod
+    math.sherman_morrison
+    math.sigmoid
+    math.sign
+    math.softmax
 
 Helper functions for making things readable by humans
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -690,5 +768,12 @@ Helper functions for making things readable by humans
     :nosignatures:
     :template: class.rst
         
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: function.rst
+        
+    pretty.format_object
+    pretty.print_table
 
 

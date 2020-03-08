@@ -1,4 +1,4 @@
-"""Factorization Machines models."""
+"""Factorization machines."""
 from .ffm import FFMClassifier
 from .ffm import FFMRegressor
 from .fm import FMClassifier
