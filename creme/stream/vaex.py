@@ -9,6 +9,7 @@ def iter_vaex(X, y=None, features=None, **kwargs):
 
     Yields:
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+
     """
 
     from vaex.utils import _ensure_strings_from_expressions, _ensure_list
