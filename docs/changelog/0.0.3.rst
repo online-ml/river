@@ -39,7 +39,7 @@
 
 :mod:`linear_model`
 
-- Added `linear_model.FMRegressor`.
+- Added ``linear_model.FMRegressor``.
 - Removed all the passive-aggressive estimators.
 
 :mod:`metrics`

@@ -85,12 +85,11 @@ def convert_creme_to_sklearn(estimator):
     raise ValueError("Couldn't find an appropriate wrapper")
 
 
-def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
+def convert_sklearn_to_creme(estimator, batch_size=1, classes=None):
     """Wraps a scikit-learn estimator to make it compatible with creme.
 
     Parameters:
         estimator (sklearn.base.BaseEstimator)
-        n_features (int)
         batch_size (int): The amount of observations that will be used during each ``partial_fit``
             call. Setting this to 1 means that the model will learn with each given observation.
             Increasing the batch size means that the observations will be stored in a buffer and
@@ -105,12 +104,10 @@ def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
     wrappers = [
         (sklearn_base.RegressorMixin, functools.partial(
             SKL2CremeRegressor,
-            n_features=n_features,
             batch_size=batch_size
         )),
         (sklearn_base.ClassifierMixin, functools.partial(
             SKL2CremeClassifier,
-            n_features=n_features,
             batch_size=batch_size,
             classes=classes
         ))
@@ -125,14 +122,13 @@ def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
 
 class SKL2CremeBase:
 
-    def __init__(self, sklearn_estimator, n_features, batch_size, x_dtype):
+    def __init__(self, sklearn_estimator, batch_size, x_dtype):
         self.sklearn_estimator = sklearn_estimator
         self.batch_size = batch_size
-        self.n_features = n_features
         self.batch_size = batch_size
         self.x_dtype = x_dtype
-        self._x_batch = np.empty(shape=(batch_size, n_features), dtype=x_dtype)
-        self._y_batch = [None] * batch_size
+        self._x_batch = None
+        self._y_batch = None
         self._batch_i = 0
 
 
@@ -140,9 +136,8 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
     """``sklearn`` to ``creme`` regressor adapter.
 
     Parameters:
-        sklearn_estimator (sklearn.base.Regressor): A scikit-learn regressor which has a
+        sklearn_estimator (sklearn.base.Transformer): A scikit-learn transformer which has a
             ``partial_fit`` method.
-        n_features (int)
         batch_size (int): The amount of observations that will be used during each ``partial_fit``
             call. Setting this to 1 means that the model will learn with each given observation.
             Increasing the batch size means that the observations will be stored in a buffer and
@@ -167,10 +162,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             ... )
 
             >>> scaler = preprocessing.StandardScaler()
-            >>> sgd_reg = compat.convert_sklearn_to_creme(
-            ...     linear_model.SGDRegressor(),
-            ...     n_features=13
-            ... )
+            >>> sgd_reg = compat.convert_sklearn_to_creme(linear_model.SGDRegressor())
             >>> model = scaler | sgd_reg
 
             >>> metric = metrics.MAE()
@@ -180,15 +172,19 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
 
     """
 
-    def __init__(self, sklearn_estimator, n_features, batch_size=1):
+    def __init__(self, sklearn_estimator, batch_size=1):
         super().__init__(
             sklearn_estimator=sklearn_estimator,
-            n_features=n_features,
             batch_size=batch_size,
             x_dtype=np.float
         )
 
     def fit_one(self, x, y):
+
+        if self._x_batch is None:
+            n_features = len(x)
+            self._x_batch = np.empty(shape=(self.batch_size, n_features), dtype=self.x_dtype)
+            self._y_batch = [None] * self.batch_size
 
         self._x_batch[self._batch_i, :] = list(x.values())
         self._y_batch[self._batch_i] = y
@@ -215,7 +211,6 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
         sklearn_estimator (sklearn.base.Regressor): A scikit-learn regressor which has a
             ``partial_fit`` method.
         classes (list)
-        n_features (int)
         batch_size (int): The amount of observations that will be used during each ``partial_fit``
             call. Setting this to 1 means that the model will learn with each given observation.
             Increasing the batch size means that the observations will be stored in a buffer and
@@ -246,8 +241,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             ...         eta0=0.01,
             ...         learning_rate='constant'
             ...     ),
-            ...     classes=[False, True],
-            ...     n_features=30
+            ...     classes=[False, True]
             ... )
 
             >>> metric = metrics.LogLoss()
@@ -257,16 +251,20 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
 
     """
 
-    def __init__(self, sklearn_estimator, classes, n_features, batch_size=1):
+    def __init__(self, sklearn_estimator, classes, batch_size=1):
         super().__init__(
             sklearn_estimator=sklearn_estimator,
-            n_features=n_features,
             batch_size=batch_size,
             x_dtype=np.float
         )
         self.classes = classes
 
     def fit_one(self, x, y):
+
+        if self._x_batch is None:
+            n_features = len(x)
+            self._x_batch = np.empty(shape=(self.batch_size, n_features), dtype=self.x_dtype)
+            self._y_batch = [None] * self.batch_size
 
         self._x_batch[self._batch_i, :] = list(x.values())
         self._y_batch[self._batch_i] = y
