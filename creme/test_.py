@@ -14,7 +14,6 @@ from creme import ensemble
 from creme import facto
 from creme import feature_extraction
 from creme import feature_selection
-from creme import imblearn
 from creme import impute
 from creme import linear_model
 from creme import meta
@@ -23,7 +22,7 @@ from creme import multioutput
 from creme import naive_bayes
 from creme import preprocessing
 from creme import reco
-from creme import replay
+from creme import sampling
 from creme import stats
 from creme import time_series
 from creme import tree
@@ -53,9 +52,6 @@ def get_all_estimators():
         feature_extraction.TargetAgg,
         feature_extraction.Differ,
         feature_selection.PoissonInclusion,
-        imblearn.RandomOverSampler,
-        imblearn.RandomUnderSampler,
-        imblearn.RandomSampler,
         impute.PreviousImputer,
         impute.StatImputer,
         linear_model.SoftmaxRegression,
@@ -68,8 +64,11 @@ def get_all_estimators():
         reco.BiasedMF,
         reco.FunkMF,
         reco.RandomNormal,
-        replay.ReplayBufferClassifier,
-        replay.ReplayBufferRegressor,
+        sampling.HardSamplingClassifier,
+        sampling.HardSamplingRegressor,
+        sampling.RandomOverSampler,
+        sampling.RandomUnderSampler,
+        sampling.RandomSampler,
         time_series.Detrender,
         time_series.GroupDetrender,
         time_series.SNARIMAX
