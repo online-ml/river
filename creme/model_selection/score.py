@@ -66,11 +66,9 @@ def progressive_val_score(X_y, model, metric, moment=None, delay=None, print_eve
         pred_func = model.predict_proba_one
 
     # Determine how to insert mementos into the queue
-    queue = (
-        lambda q, el: bisect.insort(q, el)
-        if callable(delay) or isinstance(delay, str) else
-        lambda q, el: q.append(el)
-    )
+    queue = lambda q, el: q.append(el)
+    if callable(delay) or isinstance(delay, str):
+        queue = lambda q, el: bisect.insort(q, el)
 
     # Coerce moment to a function
     if moment is None:
