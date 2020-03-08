@@ -1,7 +1,7 @@
 Quick example
 =============
 
-In the following example we'll use a linear regression to forecast the number of available bikes in [bike stations](https://www.wikiwand.com/en/Bicycle-sharing_system) from the city of Toulouse. Each observation looks like this:
+In the following example we'll use a linear regression to forecast the number of available bikes in `bike stations <https://www.wikiwand.com/en/Bicycle-sharing_system>`_ from the city of Toulouse. Each observation looks like this:
 
 .. code-block:: python
 
@@ -25,7 +25,7 @@ In the following example we'll use a linear regression to forecast the number of
     >>> print(f'Number of bikes: {y}')
     Number of bikes: 1
 
-We will include all the available numeric features in our model. We will also use target encoding by calculating a running average of the target per station and hour. Before being fed to the linear regression, the features will be scaled using a `StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead while delaying the true answers, which ensures that we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
+We will include all the available numeric features in our model. We will also use target encoding by calculating a running average of the target per station and hour. Before being fed to the linear regression, the features will be scaled using a `preprocessing.StandardScaler`. Note that each of these steps works in a streaming fashion, including the feature extraction. We'll evaluate the model by asking it to forecast 30 minutes ahead while delaying the true answers, which ensures that we're simulating a production scenario. Finally we will print the current score every 20,000 predictions.
 
 .. code-block:: python
 
@@ -88,7 +88,6 @@ You can visualize the pipeline as so:
             by=['station', 'hour']
             how=Mean ()
             target_name="target"
-        )
         ),
         TargetAgg (
         by=['station']
@@ -108,16 +107,14 @@ You can visualize the pipeline as so:
             learning_rate=0.01
             power=0.25
         )
-        )
         loss=Squared ()
         l2=0.
         intercept=9.742884
         intercept_lr=Constant (
-        learning_rate=0.01
+            learning_rate=0.01
         )
         clip_gradient=1e+12
         initializer=Zeros ()
-    )
     )
 
 You can also obtain a graphical representation of the pipeline.
@@ -126,6 +123,5 @@ You can also obtain a graphical representation of the pipeline.
 
     >>> dot = model.draw()
 
-<div align="center">
-  <img src="_static/bikes_pipeline.svg" alt="bikes_pipeline"/>
-</div>
+.. image:: _static/bikes_pipeline.svg
+    :align: center

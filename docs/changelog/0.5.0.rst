@@ -6,7 +6,7 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 :mod:`compat`
 
 - Added `compat.PyTorch2CremeRegressor`.
-- The ``SKL2Creme`` classes in ``compat`` now require ``n_features`` and a ``batch_size`` parameters for preemptive memory allocation (which allows doing mini-batching).
+- `compat.SKL2CremeRegressor` and `compat.SKL2CremeClassifier` now have an optional ``batch_size`` parameter in order to perform mini-batching.
 
 :mod:`facto`
 - Added `facto.FFMClassifier`.
@@ -36,8 +36,8 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 - Added `datasets.gen.SEA`.
 - Added `datasets.Higgs`.
 - Added `datasets.MovieLens100K`.
-- Added `dataset.Bananas`.
-- Added `dataset.Taxis`.
+- Added `datasets.Bananas`.
+- Added `datasets.Taxis`.
 
 :mod:`imblearn`
 
@@ -51,8 +51,8 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 
 :mod:`linear_model`
 
-- `linear_model.FMClassifier` moved to new module `facto`.
-- `linear_model.FMRegressor` moved to new module `facto`.
+- ``linear_model.FMClassifier`` has been moved to the ``facto`` module.
+- ``linear_model.FMRegressor`` has been  moved to the ``facto`` module.
 - Added `linear_model.ALMAClassifier`.
 
 :mod:`metrics`

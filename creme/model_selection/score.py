@@ -66,27 +66,25 @@ def progressive_val_score(X_y, model, metric, moment=None, delay=None, print_eve
         pred_func = model.predict_proba_one
 
     # Determine how to insert mementos into the queue
-    queue = (
-        lambda q, el: bisect.insort(q, el)
-        if callable(delay) or isinstance(delay, str) else
-        lambda q, el: q.append(el)
-    )
+    queue = lambda q, el: q.append(el)
+    if callable(delay) or isinstance(delay, str):
+        queue = lambda q, el: bisect.insort(q, el)
 
     # Coerce moment to a function
     if moment is None:
-        moment = lambda i, _: i
+        moment_func = lambda i, _: i
     elif isinstance(moment, str):
-        moment = lambda _, x: x[moment]
+        moment_func = lambda _, x: x[moment]
     elif callable(moment):
-        moment = lambda _, x: moment(x)
+        moment_func = lambda _, x: moment(x)
 
     # Coerce delay to a function
     if delay is None:
-        delay = lambda _, __: 0
+        delay_func = lambda _, __: 0
     elif isinstance(delay, str):
-        delay = lambda x, _: x[delay]
+        delay_func = lambda x, _: x[delay]
     elif not callable(delay):
-        delay = lambda _, __: delay
+        delay_func = lambda _, __: delay
 
     mementos = []
     n_total_answers = 0
@@ -96,8 +94,8 @@ def progressive_val_score(X_y, model, metric, moment=None, delay=None, print_eve
 
     for i, (x, y) in enumerate(X_y):
 
-        t = moment(i, x)
-        d = delay(x, y)
+        t = moment_func(i, x)
+        d = delay_func(x, y)
 
         while mementos:
 
