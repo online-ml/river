@@ -12,30 +12,9 @@ class Triplet(collections.namedtuple('Triplet', 'x y loss')):
         return self.loss < other.loss
 
 
-class ReplayBuffer(base.Wrapper):
-    """ReplayBuffer
-
-    Stores the hardest data to fit in a buffer. When the fit_one method is called, the model
-    is updated on an observation of the buffer with a probability p or updated with the current
-    observation with a probability (1 - p).
-
-    The model systematically evaluates the difficulty of an input data of the fit_one method and
-    stores it in the buffer if the associated loss to this observation is greater than the smallest
-    loss already storred in the buffer.
-
-    If a new observation is storred and if the buffer is full, then the new observation will take
-    the place of the observation associated with the smallest loss.
-
-    If the buffer is not full, the input observation is systematically added to the buffer.
-
-    Parameters:
-        model (base.Estimator): Selected model.
-        loss_function (creme.optim.losses): Criterion to store observations in the buffer.
-        size (int): Number of stored tuples (features, target).
-        p (float): Probability to update the model with an observation from the buffer when fitting
-            on a new observation. 0. <= p <= 1.
-        seed (int): Random state.
-    """
+class HardSampling(base.Wrapper):
+    """Hard sampler."""
+    
     def __init__(self, model, loss_function, size, p,seed = None):
         self.model = model
         self.loss_function = loss_function
@@ -96,29 +75,26 @@ class ReplayBuffer(base.Wrapper):
         return self
 
 
-class ReplayBufferRegressor(ReplayBuffer):
-    """ReplayBufferRegressor
+class HardSamplingRegressor(HardSampling):
+    """Hard-sampling regressor.
+    
+    This wrapper enables a model to retrain on past samples who's output was hard to predict.
+    This works by storing the hardest samples in a buffer of a fixed size. When a new sample
+    arrives, the wrapped model is either trained on one of the buffered samples with a probability p
+    or on the new sample with a probability (1 - p).
 
-    Stores the hardest data to fit in a buffer. When the fit_one method is called, the model
-    is updated on an observation of the buffer with a probability p or updated with the current
-    observation with a probability (1 - p).
-
-    The model systematically evaluates the difficulty of an input data of the fit_one method and
-    stores it in the buffer if the associated loss to this observation is greater than the smallest
-    loss already storred in the buffer.
-
-    If a new observation is storred and if the buffer is full, then the new observation will take
-    the place of the observation associated with the smallest loss.
-
-    If the buffer is not full, the input observation is systematically added to the buffer.
+    The hardness of an observation is evaluated with a loss function that compares the sample's ground truth
+    with the wrapped model's prediction. If the buffer is not full, then the sample is added to the buffer.
+    If the buffer is full and the new sample has a bigger loss than the lowest loss in the buffer, then the
+    sample takes it's place. 
 
     Parameters:
-        Regressor (base.Regressor): Selected model.
-        loss_function (creme.optim.losses): Criterion to store observations in the buffer.
-        size (int): Number of stored tuples (features, target).
-        p (float): Probability to update the model with an observation from the buffer when fitting
-            on a new observation. 0. <= p <= 1.
-        seed (int): Random state.
+        regressor (base.Regressor)
+        loss_function (creme.optim.losses.RegressionLoss): Criterion used to evaluate the hardness of a sample.
+        size (int): Size of the buffer.
+        p (float): Probability of updating the model with a sample from the buffer instead of a
+            new incoming sample.
+        seed (int): Random seed.
 
     Example:
 
