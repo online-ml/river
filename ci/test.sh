@@ -28,7 +28,7 @@ conda create --yes --name testenv python=$PYTHON_VERSION
 source activate testenv
 
 # Install dependencies required for full testing
-pip install codecov
+pip install codecov cython
 pip install -e ".[dev,compat]"
 
 # Run linting, type checking, unit tests, and coverage
