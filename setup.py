@@ -41,8 +41,7 @@ dev_packages = [
     'nbval>=0.9.1',
     'pytest>=4.5.0',
     'pytest-cov>=2.6.1',
-    'pytest-cython>=0.1.0',
-    'torch>=1.3.1'
+    'pytest-cython>=0.1.0'
 ]
 
 docs_packages = dev_packages + [
