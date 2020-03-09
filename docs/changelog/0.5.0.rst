@@ -40,12 +40,6 @@
 - Added `datasets.Bananas`.
 - Added `datasets.Taxis`.
 
-:mod:`imblearn`
-
-- Added `imblearn.RandomUnderSampler`.
-- Added `imblearn.RandomOverSampler`.
-- Added `imblearn.RandomSampler`.
-
 :mod:`impute`
 
 - Added `impute.PreviousImputer`.
@@ -96,6 +90,14 @@
 - Renamed ``reco.SVD`` to `reco.BiasedMF`.
 - Renamed ``reco.SGDBaseline`` to `reco.Baseline`.
 - Models now expect a ``dict`` input with ``user`` and ``item`` fields.
+
+:mod:`sampling`
+
+- Added `sampling.RandomUnderSampler`.
+- Added `sampling.RandomOverSampler`.
+- Added `sampling.RandomSampler`.
+- Added `sampling.HardSamplingClassifier`.
+- Added `sampling.HardSamplingRegressor`.
 
 :mod:`stats`
 

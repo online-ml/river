@@ -1,9 +1,29 @@
 import collections
 
-from . import base
+import numpy as np
+
+from .. import base
 
 
-class RandomUnderSampler(base.Sampler):
+class ClassificationSampler(base.Wrapper, base.Classifier):
+
+    def __init__(self, classifier, seed=None):
+        self.classifier = classifier
+        self.seed = seed
+        self._rng = np.random.RandomState(seed)
+
+    @property
+    def _model(self):
+        return self.classifier
+
+    def predict_proba_one(self, x):
+        return self.classifier.predict_proba_one(x)
+
+    def predict_one(self, x):
+        return self.classifier.predict_one(x)
+
+
+class RandomUnderSampler(ClassificationSampler):
     """Random under-sampling.
 
     This is a wrapper for classifiers. It will train the provided classifier by under-sampling the
@@ -53,7 +73,7 @@ class RandomUnderSampler(base.Sampler):
         return self
 
 
-class RandomOverSampler(base.Sampler):
+class RandomOverSampler(ClassificationSampler):
     """Random over-sampling.
 
     This is a wrapper for classifiers. It will train the provided classifier by over-sampling the
@@ -99,7 +119,7 @@ class RandomOverSampler(base.Sampler):
         return self
 
 
-class RandomSampler(base.Sampler):
+class RandomSampler(ClassificationSampler):
     """Random sampling by mixing under-sampling and over-sampling.
 
     This is a wrapper for classifiers. It will train the provided classifier by both under-sampling
