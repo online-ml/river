@@ -382,7 +382,7 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -487,7 +487,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -518,7 +518,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -610,7 +610,7 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -681,7 +681,7 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
