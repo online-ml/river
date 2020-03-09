@@ -23,6 +23,10 @@
   <a href="https://pypi.org/project/creme">
     <img src="https://img.shields.io/pypi/v/creme.svg?label=release&color=blue&style=flat-square" alt="pypi">
   </a>
+  <!-- PePy -->
+  <a href="https://pepy.tech/project/creme">
+    <img src="https://img.shields.io/badge/dynamic/json?style=flat-square&maxAge=86400&label=downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Fcreme" alt="pepy">
+  </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
