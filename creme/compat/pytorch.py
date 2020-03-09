@@ -8,9 +8,6 @@ __all__ = [
 ]
 
 
-pytest.importorskip('torch')
-
-
 class PyTorch2CremeBase:
 
     def __init__(self, net, loss_fn, optimizer, batch_size, x_tensor, y_tensor):
@@ -54,6 +51,46 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
         loss_fn (torch.nn.modules.loss._Loss)
         optimizer (torch.optim.Optimizer)
         batch_size (int)
+
+    Example:
+
+        ::
+
+            >>> import pytest
+            >>> pytest.importorskip('torch')
+
+            >>> from creme import compat
+            >>> from creme import datasets
+            >>> from creme import metrics
+            >>> from creme import model_selection
+            >>> from creme import preprocessing
+            >>> import torch
+            >>> from torch import nn
+            >>> from torch import optim
+
+            >>> _ = torch.manual_seed(0)
+
+            >>> X_y = datasets.TrumpApproval()
+
+            >>> n_features = 6
+            >>> net = nn.Sequential(
+            ...     nn.Linear(n_features, 3),
+            ...     nn.Linear(3, 1)
+            ... )
+
+            >>> model = (
+            ...     preprocessing.StandardScaler() |
+            ...     compat.PyTorch2CremeRegressor(
+            ...         net=net,
+            ...         loss_fn=nn.MSELoss(),
+            ...         optimizer=optim.SGD(net.parameters(), lr=1e-3),
+            ...         batch_size=2
+            ...     )
+            ... )
+            >>> metric = metrics.MAE()
+
+            >>> model_selection.progressive_val_score(X_y, model, metric).get()
+            2.80563...
 
     """
 

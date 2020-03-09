@@ -27,7 +27,8 @@ def simulate_qa(X_y, moment, delay):
             is passed, then it is expected to take as input a `dict` of features and the target. If
             a `str` is passed, then it will be used to access the relevant field from the features.
             If ``None`` is passed, then no delay will be used, which leads to doing standard online
-            validation.
+            validation. If a scalar is passed, such an `int` or a `datetime.timedelta`, then the
+            delay is constant.
 
     """
 
@@ -51,6 +52,8 @@ def simulate_qa(X_y, moment, delay):
         get_delay = lambda x, _: x[delay]
     elif not callable(delay):
         get_delay = lambda _, __: delay
+    else:
+        get_delay = delay
 
     mementos = []
 
