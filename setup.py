@@ -32,7 +32,7 @@ REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
 # Package requirements.
-base_packages = ['numpy>=1.16.4', 'scipy>=1.3.0', 'scikit-learn>=0.21.2']
+base_packages = ['numpy>=1.18.1', 'scipy>=1.4.1', 'scikit-learn>=0.22.1']
 
 compat_packages = base_packages + [
     'pandas>=1.0.1',
