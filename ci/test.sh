@@ -29,7 +29,7 @@ source activate testenv
 
 # Install dependencies required for full testing
 pip install codecov cython
-pip install -e ".[dev,compat]"
+pip install -e ".[dev]"
 
 # Run linting, type checking, unit tests, and coverage
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
