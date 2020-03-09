@@ -34,6 +34,11 @@ VERSION = None
 # Package requirements.
 base_packages = ['numpy>=1.16.4', 'scipy>=1.3.0', 'scikit-learn>=0.21.2']
 
+compat_packages = base_packages + [
+    'pandas>=1.0.1',
+    'torch>=1.4.0'
+]
+
 dev_packages = [
     'Cython>=0.29.6',
     'graphviz>=0.10.1',
@@ -41,7 +46,9 @@ dev_packages = [
     'nbval>=0.9.1',
     'pytest>=4.5.0',
     'pytest-cov>=2.6.1',
-    'pytest-cython>=0.1.0'
+    'pytest-cython>=0.1.0',
+    'flake8>=3.7.9',
+    'mypy>=0.761',
 ]
 
 docs_packages = dev_packages + [
@@ -87,7 +94,11 @@ setup(
     url=URL,
     packages=find_packages(exclude=('tests',)),
     install_requires=base_packages,
-    extras_require={'dev': dev_packages, 'docs': docs_packages},
+    extras_require={
+        'dev': dev_packages,
+        'compat': compat_packages,
+        'docs': docs_packages
+    },
     include_package_data=True,
     license='BSD-3',
     classifiers=[
