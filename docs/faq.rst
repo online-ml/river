@@ -31,3 +31,20 @@ Reinforcement learning works in an online manner because of the nature of the ta
 **What are the differences between scikit-learn's online learning algorithm which have a ``partial_fit`` method and their equivalents in ``creme``?**
 
 The algorithms from ``sklearn`` that support incremental learning are mostly meant for mini-batch learning. In a pure streaming context where the observations arrive one by one, then `creme` is much faster than `sklearn`. This is mostly because ``sklearn`` incurs a lot of overhead by performing data checks. Also, sklearn assumes that you're always using the same number of features. This is not the case with ``creme`` because it use dictionaries which allows you to drop and add features as you wish.
+
+**How do I save and load models?**
+
+::
+
+    >>> from creme import tree
+    >>> import pickle
+
+    >>> model = tree.RandomForestClassifier()
+
+    # save
+    >>> with open('model.pkl', 'wb') as f:
+    ...     pickle.dump(model, f)
+
+    # load
+    >>> with open('model.pkl', 'rb') as f:
+    ...     model = pickle.load(f)
