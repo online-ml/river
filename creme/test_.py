@@ -33,9 +33,10 @@ from creme.compat.sklearn import SKL2CremeBase
 
 def get_all_estimators():
 
-    ignored = [
+    ignored = (
         Creme2SKLBase,
         SKL2CremeBase,
+        compat.PyTorch2CremeRegressor,
         compose.FuncTransformer,
         compose.Pipeline,
         ensemble.StackingBinaryClassifier,
@@ -71,12 +72,7 @@ def get_all_estimators():
         time_series.Detrender,
         time_series.GroupDetrender,
         time_series.SNARIMAX
-    ]
-
-    try:
-        ignored.append(compat.PyTorch2CremeRegressor)
-    except AttributeError:
-        pass
+    )
 
     def is_estimator(obj):
         return inspect.isclass(obj) and issubclass(obj, base.Estimator)
