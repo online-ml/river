@@ -135,7 +135,7 @@ class VectorizerMixin:
 
 
 class BagOfWords(base.Transformer, VectorizerMixin):
-    """Bag of words which counts token occurrences.
+    """Counts tokens in sentences.
 
     This returns exactly the same results as `sklearn.feature_extraction.text.CountVectorizer`.
 
@@ -211,8 +211,8 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         return collections.Counter(self.process_text(x))
 
 
-class TFIDF(base.Transformer):
-    """Computes values TF-IDF values.
+class TFIDF(BagOfWords):
+    """Computes TF-IDF values from sentences.
 
     We use the same definition as scikit-learn. The only difference in the results comes the fact
     that the document frequencies have to be computed online.
@@ -234,9 +234,8 @@ class TFIDF(base.Transformer):
             ``False``.
 
     Attributes:
-        bow (feature_extraction.BagOfWords): The term counter.
-        dfs (collections.defaultdict): The document counts.
-        n (int): The number of scanned documents.
+        dfs (collections.defaultdict): Document counts.
+        n (int): Number of scanned documents.
 
     Example:
 
@@ -265,19 +264,32 @@ class TFIDF(base.Transformer):
 
     def __init__(self, normalize=True, on=None, strip_accents=True, lowercase=True,
                  preprocessor=None, tokenizer=None, ngram_range=(1, 1)):
+        super().__init__(
+            on=on,
+            strip_accents=strip_accents,
+            lowercase=lowercase,
+            preprocessor=preprocessor,
+            tokenizer=tokenizer,
+            ngram_range=ngram_range
+        )
         self.normalize = normalize
-        self.on = on
-        self.strip_accents = strip_accents
-        self.lowercase = lowercase
-        self.preprocessor = preprocessor
-        self.tokenizer = tokenizer
-        self.ngram_range = ngram_range
-
-        self.bow = BagOfWords(on, strip_accents, lowercase, preprocessor, tokenizer, ngram_range)
-        self.dfs = collections.defaultdict(int)
+        self.dfs = collections.Counter()
         self.n = 0
 
-    def compute_tfidfs(self, term_counts: typing.Dict[str, int]) -> typing.Dict[str, float]:
+    def fit_one(self, x, y=None):
+
+        # Update the document counts
+        terms = self.process_text(x)
+        self.dfs.update(set(terms))
+
+        # Increment the global document counter
+        self.n += 1
+
+        return self
+
+    def transform_one(self, x):
+
+        term_counts = super().transform_one(x)
         n_terms = sum(term_counts.values())
 
         tfidfs = {}
@@ -291,21 +303,3 @@ class TFIDF(base.Transformer):
             norm = math.sqrt(sum(tfidf ** 2 for tfidf in tfidfs.values()))
             return {term: tfidf / norm for term, tfidf in tfidfs.items()}
         return tfidfs
-
-    def fit_one(self, x, y=None):
-
-        # Compute the term counts
-        term_counts = self.bow.transform_one(x)
-
-        # Increment the document frequencies of each term
-        for term in term_counts:
-            self.dfs[term] += 1
-
-        # Increment the global document counter
-        self.n += 1
-
-        return self
-
-    def transform_one(self, x):
-        term_counts = self.bow.transform_one(x)
-        return self.compute_tfidfs(term_counts)
