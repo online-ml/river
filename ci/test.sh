@@ -27,8 +27,8 @@ PYTHON_VERSION=$1
 conda create --yes --name testenv python=$PYTHON_VERSION
 source activate testenv
 
-# Install dependencies required for testing
-pip install codecov cython flake8 mypy
+# Install dependencies required for full testing
+pip install codecov cython
 pip install -e ".[dev]"
 
 # Run linting, type checking, unit tests, and coverage
