@@ -8,9 +8,6 @@ __all__ = [
 ]
 
 
-pytest.importorskip('torch')
-
-
 class PyTorch2CremeBase:
 
     def __init__(self, net, loss_fn, optimizer, batch_size, x_tensor, y_tensor):
@@ -58,6 +55,9 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
     Example:
 
         ::
+
+            >>> import pytest
+            >>> pytest.importorskip('torch')
 
             >>> from creme import compat
             >>> from creme import datasets
