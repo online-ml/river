@@ -1,14 +1,13 @@
 `Version 0.5.0 - Unreleased <https://pypi.org/project/creme/0.5.0/>`_
 =====================================================================
 
-See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
-
 :mod:`compat`
 
 - Added `compat.PyTorch2CremeRegressor`.
 - `compat.SKL2CremeRegressor` and `compat.SKL2CremeClassifier` now have an optional ``batch_size`` parameter in order to perform mini-batching.
 
 :mod:`facto`
+
 - Added `facto.FFMClassifier`.
 - Added `facto.FFMRegressor`.
 - Added `facto.FwFMClassifier`.
@@ -27,6 +26,8 @@ See progress `here <https://github.com/creme-ml/creme/milestone/1>`_.
 
 - Renamed ``feature_extraction.CountVectorizer`` to `feature_extraction.BagOfWords`.
 - Renamed ``feature_extraction.TFIDFVectorizer`` to `feature_extraction.TFIDF`.
+- Added ``preprocessor`` and ``ngram_range`` parameters to `feature_extraction.BagOfWords`.
+- Added ``preprocessor`` and ``ngram_range`` parameters to `feature_extraction.TFIDF`.
 
 :mod:`datasets`
 
