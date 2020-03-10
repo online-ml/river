@@ -10,6 +10,7 @@ from .kdd99_http import KDD99HTTP
 from .phishing import Phishing
 from .movielens100k import MovieLens100K
 from .restaurants import Restaurants
+from .segment import ImageSegments
 from .sms_spam import SMSSpam
 from .bikes import Bikes
 from .taxis import Taxis
@@ -32,6 +33,7 @@ __all__ = [
     'Phishing',
     'MovieLens100K',
     'Restaurants',
+    'ImageSegments',
     'SMSSpam',
     'Taxis',
     'TREC07',

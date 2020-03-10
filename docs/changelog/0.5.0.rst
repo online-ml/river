@@ -39,6 +39,7 @@
 - Added `datasets.MovieLens100K`.
 - Added `datasets.Bananas`.
 - Added `datasets.Taxis`.
+- Added `datasets.ImageSegments`.
 
 :mod:`imblearn`
 
