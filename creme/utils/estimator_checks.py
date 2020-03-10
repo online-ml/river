@@ -35,7 +35,7 @@ def yield_datasets(model):
     if isinstance(model, (base.BinaryClassifier, base.MultiClassifier)):
         yield datasets.Phishing()
     if isinstance(model, base.MultiClassifier):
-        yield stream.iter_sklearn_dataset(sk_datasets.load_iris())
+        yield datasets.ImageSegments().take(500)
     if isinstance(model, base.Regressor):
         yield datasets.TrumpApproval()
     if isinstance(model, base.MultiOutputRegressor):
