@@ -2,7 +2,7 @@ import collections
 import copy
 import statistics
 
-from sklearn import utils
+import numpy as np
 
 from .. import base
 
@@ -17,7 +17,7 @@ class BaseBagging(base.Wrapper, base.Ensemble):
         self.n_models = n_models
         self.model = model
         self.seed = seed
-        self._rng = utils.check_random_state(seed)
+        self._rng = np.random.RandomState(seed)
 
     @property
     def _model(self):
