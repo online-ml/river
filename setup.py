@@ -48,17 +48,15 @@ dev_packages = [
     'pytest-cov>=2.6.1',
     'pytest-cython>=0.1.0',
     'flake8>=3.7.9',
-    'mypy>=0.761',
+    'mypy>=0.761'
 ]
 
 docs_packages = dev_packages + [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
-    'm2r>=0.2.1',
     'nbsphinx>=0.5.1',
     'Sphinx>=2.2.0',
-    'sphinx-copybutton>=0.2.8',
-    'sphinx-material>=0.0.23'
+    'sphinx-autobuild>=0.7.1'
 ]
 
 # The rest you shouldn't have to touch too much :)

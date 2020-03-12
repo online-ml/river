@@ -22,7 +22,7 @@ __all__ = [
     'Creme2SKLClassifier',
     'Creme2SKLClusterer',
     'Creme2SKLTransformer',
-    'PyTorch2CremeRegressor'
+    'PyTorch2CremeRegressor',
     'SKL2CremeClassifier',
     'SKL2CremeRegressor'
 ]

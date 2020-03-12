@@ -52,13 +52,14 @@ class NUnique(base.Univariate):
 
     P32 = 2 ** 32
 
-    def __init__(self, error_rate=0.01, encoding='utf-8', random_state=None):
+    def __init__(self, error_rate=0.01, encoding='utf-8', seed=None):
         self.n_bits = int(math.ceil(math.log((1.04 / error_rate) ** 2, 2)))
         self.n_buckets = 1 << self.n_bits
         self.buckets = [0] * self.n_buckets
         self.encoding = encoding
-        self.random_state = utils.check_random_state(random_state)
-        self.seed = self.random_state.randint(0, 2 ** 32 - 1)
+        self.seed = seed
+        self._rng = np.random.RandomState(seed)
+        self._hash_seed = self._rng.randint(0, 2 ** 32 - 1)
 
     @property
     def name(self):

@@ -2,7 +2,7 @@ import collections
 import copy
 import math
 
-from sklearn import utils
+import numpy as np
 
 from .. import base
 
@@ -12,12 +12,12 @@ __all__ = ['AdaBoostClassifier']
 
 class BaseBoosting(base.Wrapper, base.Ensemble):
 
-    def __init__(self, model, n_models=10, random_state=None):
+    def __init__(self, model, n_models=10, seed=None):
         super().__init__(copy.deepcopy(model) for _ in range(n_models))
         self.n_models = n_models
         self.model = model
-        self.random_state = random_state
-        self._rng = utils.check_random_state(random_state)
+        self.seed = seed
+        self._rng = np.random.RandomState(seed)
 
     @property
     def _model(self):
@@ -34,10 +34,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
     Parameters:
         model (BinaryClassifier or MultiClassifier): The classifier to boost.
         n_models (int): The number of models in the ensemble.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Random number generator seed for reproducibility.
 
     Attributes:
         wrong_weight (collections.defaultdict): Number of times a model has made a mistake
@@ -72,7 +69,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
             ...         )
             ...     ),
             ...     n_models=5,
-            ...     random_state=42
+            ...     seed=42
             ... )
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
@@ -86,8 +83,8 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
 
     '''
 
-    def __init__(self, model, n_models=10, random_state=None):
-        super().__init__(model, n_models, random_state)
+    def __init__(self, model, n_models=10, seed=None):
+        super().__init__(model, n_models, seed)
         self.wrong_weight = collections.defaultdict(int)
         self.correct_weight = collections.defaultdict(int)
 

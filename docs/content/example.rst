@@ -1,4 +1,4 @@
-Quick example
+Example usage
 =============
 
 In the following example we'll use a linear regression to forecast the number of available bikes in `bike stations <https://www.wikiwand.com/en/Bicycle-sharing_system>`_ from the city of Toulouse. Each observation looks like this:
@@ -123,5 +123,5 @@ You can also obtain a graphical representation of the pipeline.
 
     >>> dot = model.draw()
 
-.. image:: _static/bikes_pipeline.svg
+.. image:: ../_static/bikes_pipeline.svg
     :align: center
