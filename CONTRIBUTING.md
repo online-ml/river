@@ -86,8 +86,8 @@ Once you're happy with your changes, you can push them to your remote fork. By t
 The documentation is built with [Sphinx](http://www.sphinx-doc.org/en/master/).
 
 ```sh
-pip install -e ".[docs]"
-make doc
+pip install -e ".[docs]"  # installs dependencies required for building the docs
+make livedoc  # builds the docs from scratch and starts a local server
 ```
 
 

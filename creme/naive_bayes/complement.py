@@ -29,7 +29,6 @@ class ComplementNB(base.BaseNB):
 
             >>> from creme import feature_extraction
             >>> from creme import naive_bayes
-            >>> from sklearn import datasets
 
             >>> sentences = [
             ...     ('food food meat brain', 'health'),

@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import os
 
 
 def write_module(mod, f, override=None):
@@ -109,7 +110,8 @@ if __name__ == '__main__':
 
     print('Making api.rst...')
 
-    with open('api.rst', 'w') as f:
+    here = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(here, '../content/api.rst'), 'w') as f:
 
         f.write('API reference\n')
         f.write('=============\n\n')

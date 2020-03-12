@@ -1,6 +1,5 @@
 """Weight initialization schemes."""
 import numpy as np
-from sklearn import utils
 
 
 __all__ = [
@@ -92,10 +91,10 @@ class Normal(Initializer):
 
     """
 
-    def __init__(self, mu=0., sigma=1., random_state=None):
+    def __init__(self, mu=0., sigma=1., seed=None):
         self.mu = mu
         self.sigma = sigma
-        self.random_state = utils.check_random_state(random_state)
+        self.random_state = np.random.RandomState(seed)
 
     def __call__(self, shape=1):
         weights = self.random_state.normal(loc=self.mu, scale=self.sigma, size=shape)

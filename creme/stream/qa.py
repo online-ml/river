@@ -19,7 +19,7 @@ def simulate_qa(X_y, moment, delay):
         moment (callable or str): The attribute used for measuring time. If a callable
             is passed, then it is expected to take as input a `dict` of features. If ``None``, then
             the observations are implicitely timestamped in the order in which they arrive. If a
-            ``str``is passed, then it will be used to obtain the time from the input features.
+            ``str`` is passed, then it will be used to obtain the time from the input features.
         delay (callable or str or datetime.timedelta or int): The amount to wait before revealing
             the target associated with each observation to the model. This value is expected to be
             able to sum with the ``moment`` value. For instance, if ``moment`` is a

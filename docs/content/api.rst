@@ -128,6 +128,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     CreditCard
     Elec2
     Higgs
+    ImageSegments
     KDD99HTTP
     MaliciousURL
     MovieLens100K
@@ -255,22 +256,6 @@ Random data generators
     PoissonInclusion
     SelectKBest
     VarianceThreshold
-
-
-**imblearn**: Imbalanced learning
-----------------------------------
-
-.. rubric:: Classes
-
-.. currentmodule:: creme.imblearn
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-    :template: class.rst
-        
-    RandomOverSampler
-    RandomSampler
-    RandomUnderSampler
 
 
 **impute**: Missing data imputation
@@ -589,6 +574,24 @@ Learning rate schedulers
     RandomNormal
 
 
+**sampling**: Sampling methods
+-------------------------------
+
+.. rubric:: Classes
+
+.. currentmodule:: creme.sampling
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
+    HardSamplingClassifier
+    HardSamplingRegressor
+    RandomOverSampler
+    RandomSampler
+    RandomUnderSampler
+
+
 **stats**: Running statistics
 ------------------------------
 
@@ -637,8 +640,8 @@ Learning rate schedulers
     Var
 
 
-**stream**: Helper functions for streaming data
-------------------------------------------------
+**stream**: Utilities for handling streaming datasets
+------------------------------------------------------
 
 .. rubric:: Classes
 
@@ -665,6 +668,7 @@ Learning rate schedulers
     iter_sklearn_dataset
     iter_vaex
     shuffle
+    simulate_qa
 
 
 **time_series**: Time series forecasting
