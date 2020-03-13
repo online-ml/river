@@ -22,12 +22,16 @@ Binary classification
 
 - `ensemble.StackingBinaryClassifier`
 
+:mod:`facto`
+
+- `facto.FFMClassifier`
+- `facto.FMClassifier`
+- `facto.FWFMClassifier`
+- `facto.HOFMClassifier`
+
 :mod:`linear_model`
 
 - `linear_model.ALMAClassifier`
-- `linear_model.FFMClassifier`
-- `linear_model.FMClassifier`
-- `linear_model.HOFMClassifier`
 - `linear_model.LogisticRegression`
 - `linear_model.PAClassifier`
 - `linear_model.SoftmaxRegression`
@@ -72,12 +76,16 @@ Multi-class classification
 
 - `ensemble.StackingBinaryClassifier`
 
+:mod:`facto`
+
+- `facto.FFMClassifier`
+- `facto.FMClassifier`
+- `facto.FWFMClassifier`
+- `facto.HOFMClassifier`
+
 :mod:`linear_model`
 
 - `linear_model.ALMAClassifier`
-- `linear_model.FFMClassifier`
-- `linear_model.FMClassifier`
-- `linear_model.HOFMClassifier`
 - `linear_model.LogisticRegression`
 - `linear_model.PAClassifier`
 - `linear_model.SoftmaxRegression`
@@ -122,11 +130,15 @@ Regression
 - `ensemble.BaggingRegressor`
 - `ensemble.HedgeRegressor`
 
+:mod:`facto`
+
+- `facto.FFMRegressor`
+- `facto.FMRegressor`
+- `facto.FWFMRegressor`
+- `facto.HOFMRegressor`
+
 :mod:`linear_model`
 
-- `linear_model.FFMRegressor`
-- `linear_model.FMRegressor`
-- `linear_model.HOFMRegressor`
 - `linear_model.LinearRegression`
 - `linear_model.PARegressor`
 - `linear_model.PoissonRegression`
