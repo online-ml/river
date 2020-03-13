@@ -49,7 +49,7 @@ html_logo = '_static/creme_square.svg'
 html_theme_options = {
 
     # Set the name of the project to appear in the navigation.
-    'nav_title': f'creme {version}',
+    'nav_title': f'creme v{version}',
 
     # Set you GA account ID to enable tracking
     'google_analytics_account': 'UA-63302552-3',
@@ -62,7 +62,7 @@ html_theme_options = {
     #'color_primary': 'white',
     #'color_accent': 'red',
 
-    'nav_links': [{'href': 'index', 'internal': True, 'title': ''},],
+    'nav_links': [],
 
     # Set the repo location to get a badge with stats
     'repo_url': 'https://github.com/creme-ml/creme/',

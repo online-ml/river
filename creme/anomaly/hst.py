@@ -1,3 +1,4 @@
+import collections
 import functools
 import operator
 import random
@@ -56,8 +57,8 @@ class HalfSpaceTrees(base.AnomalyDetector):
             levels and therefore contains ``2 ** (h + 1) - 1`` nodes.
         window_size (int): Number of observations to use for calculating the mass at each node in
             each tree.
-        scale (bool): Whether or not to scale features between 0 and 1. Only set to ``False`` if
-            you know that all your features are already contained between 0 and 1.
+        limits (dict): Specifies the range of each feature. By default each feature is assumed to
+            be in range ``[0, 1]``.
         seed (int): Random number seed.
 
     Example:
@@ -71,7 +72,6 @@ class HalfSpaceTrees(base.AnomalyDetector):
             ...     n_trees=5,
             ...     height=3,
             ...     window_size=3,
-            ...     scale=False,
             ...     seed=42
             ... )
 
@@ -81,29 +81,31 @@ class HalfSpaceTrees(base.AnomalyDetector):
             >>> for x in X:
             ...     features = {'x': x}
             ...     hst = hst.fit_one(features)
-            ...     print(f'Anomaly score for {x:.3f}: {hst.score_one(features)}')
-            Anomaly score for 0.500: 1.0
-            Anomaly score for 0.450: 1.0
-            Anomaly score for 0.430: 1.0
-            Anomaly score for 0.440: 1.0
-            Anomaly score for 0.445: 1.0
-            Anomaly score for 0.450: 1.0
-            Anomaly score for 0.000: 0.0
+            ...     print(f'Anomaly score for x={x:.3f}: {hst.score_one(features):.3f}')
+            Anomaly score for x=0.500: 0.107
+            Anomaly score for x=0.450: 0.071
+            Anomaly score for x=0.430: 0.107
+            Anomaly score for x=0.440: 0.107
+            Anomaly score for x=0.445: 0.107
+            Anomaly score for x=0.450: 0.071
+            Anomaly score for x=0.000: 0.853
 
     References:
         1. `Tan, S.C., Ting, K.M. and Liu, T.F., 2011, June. Fast anomaly detection for streaming data. In Twenty-Second International Joint Conference on Artificial Intelligence. <https://www.ijcai.org/Proceedings/11/Papers/254.pdf>`_
 
     """
 
-    def __init__(self, n_trees=25, height=15, window_size=250, scale=True, seed=None):
+    def __init__(self, n_trees=25, height=15, window_size=250, limits=None, seed=None):
         self.n_trees = n_trees
         self.window_size = window_size
         self.height = height
-        self.scale = scale
+        self.limits = collections.defaultdict(functools.partial(tuple, (0, 1)))
+        if limits is not None:
+            self.limits.update(limits)
         self.seed = seed
         self.rng = random.Random(seed)
+
         self.trees = []
-        self.min_max_scaler = preprocessing.MinMaxScaler() if scale else None
         self.counter = 0
         self._first_window = True
 
@@ -123,15 +125,11 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     def fit_one(self, x):
 
-        # Scale the features if desired
-        if self.min_max_scaler:
-            x = self.min_max_scaler.transform_one(x)
-
         # The trees are built when the first observation comes in
         if not self.trees:
             self.trees = [
                 make_padded_tree(
-                    limits={f: (0, 1) for f in x},
+                    limits={i: self.limits[i] for i in x},
                     height=self.height,
                     padding=.15,
                     rng=self.rng,
@@ -160,9 +158,6 @@ class HalfSpaceTrees(base.AnomalyDetector):
         return self
 
     def score_one(self, x):
-
-        if self.min_max_scaler:
-            x = self.min_max_scaler.fit_one(x).transform_one(x)
 
         if self._first_window:
             return 0

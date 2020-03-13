@@ -40,10 +40,7 @@ class HOFM(BaseFM):
         weight_initializer (optim.initializers.Initializer): Weights initialization scheme.
         latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Randomization seed used for reproducibility.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -53,7 +50,7 @@ class HOFM(BaseFM):
 
     def __init__(self, degree, n_factors, weight_optimizer, latent_optimizer, loss,
                  sample_normalization, l1_weight, l2_weight, l1_latent, l2_latent, intercept,
-                 intercept_lr, weight_initializer, latent_initializer, clip_gradient, random_state):
+                 intercept_lr, weight_initializer, latent_initializer, clip_gradient, seed):
         super().__init__(
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
@@ -69,7 +66,7 @@ class HOFM(BaseFM):
             weight_initializer=weight_initializer,
             latent_initializer=latent_initializer,
             clip_gradient=clip_gradient,
-            random_state=random_state
+            seed=seed
         )
         self.degree = degree
 
@@ -177,10 +174,7 @@ class HOFMRegressor(HOFM, base.Regressor):
             Defaults to
             ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Randomization seed used for reproducibility.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -208,7 +202,7 @@ class HOFMRegressor(HOFM, base.Regressor):
             ...     degree=3,
             ...     n_factors=10,
             ...     intercept=5,
-            ...     random_state=42,
+            ...     seed=42,
             ... )
 
             >>> for x, y in X_y:
@@ -229,7 +223,7 @@ class HOFMRegressor(HOFM, base.Regressor):
     def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
                  loss=None, sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
                  l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
-                 latent_initializer=None, clip_gradient=1e12, random_state=None):
+                 latent_initializer=None, clip_gradient=1e12, seed=None):
         super().__init__(
             degree=degree,
             n_factors=n_factors,
@@ -246,7 +240,7 @@ class HOFMRegressor(HOFM, base.Regressor):
             weight_initializer=weight_initializer,
             latent_initializer=latent_initializer,
             clip_gradient=clip_gradient,
-            random_state=random_state
+            seed=seed
         )
 
     def predict_one(self, x):
@@ -282,10 +276,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
             Defaults to
             ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Randomization seed used for reproducibility.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -313,7 +304,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
             ...     degree=3,
             ...     n_factors=10,
             ...     intercept=.5,
-            ...     random_state=42,
+            ...     seed=42,
             ... )
 
             >>> for x, y in X_y:
@@ -334,7 +325,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
     def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
                  loss=None, sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
                  l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
-                 latent_initializer=None, clip_gradient=1e12, random_state=None):
+                 latent_initializer=None, clip_gradient=1e12, seed=None):
         super().__init__(
             degree=degree,
             n_factors=n_factors,
@@ -351,7 +342,7 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
             weight_initializer=weight_initializer,
             latent_initializer=latent_initializer,
             clip_gradient=clip_gradient,
-            random_state=random_state
+            seed=seed
         )
 
     def predict_proba_one(self, x):
