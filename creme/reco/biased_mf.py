@@ -43,10 +43,7 @@ class BiasedMF(base.Recommender):
         weight_initializer (optim.initializers.Initializer): Weights initialization scheme.
         latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Randomization seed used for reproducibility.
 
     Attributes:
         global_mean (stats.Mean): The target arithmetic mean.
@@ -86,7 +83,7 @@ class BiasedMF(base.Recommender):
             ...     n_factors=10,
             ...     bias_optimizer=optim.SGD(0.025),
             ...     latent_optimizer=optim.SGD(0.025),
-            ...     latent_initializer=optim.initializers.Normal(mu=0., sigma=0.1, random_state=71)
+            ...     latent_initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=71)
             ... )
 
             >>> for x, y in X_y:
@@ -108,7 +105,7 @@ class BiasedMF(base.Recommender):
 
     def __init__(self, n_factors=10, bias_optimizer=None, latent_optimizer=None, loss=None,
                  l2_bias=0., l2_latent=0., weight_initializer=None, latent_initializer=None,
-                 clip_gradient=1e12, random_state=None):
+                 clip_gradient=1e12, seed=None):
         self.n_factors = n_factors
         self.u_bias_optimizer = optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
         self.i_bias_optimizer = optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
@@ -123,11 +120,11 @@ class BiasedMF(base.Recommender):
         self.weight_initializer = weight_initializer
 
         if latent_initializer is None:
-            latent_initializer = optim.initializers.Normal(sigma=.1, random_state=random_state)
+            latent_initializer = optim.initializers.Normal(sigma=.1, seed=seed)
         self.latent_initializer = latent_initializer
 
         self.clip_gradient = clip_gradient
-        self.random_state = random_state
+        self.seed = seed
         self.global_mean = stats.Mean()
 
         self.u_biases = collections.defaultdict(weight_initializer)
