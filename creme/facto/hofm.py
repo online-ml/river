@@ -204,7 +204,7 @@ class HOFMRegressor(HOFM, base.Regressor):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-            5.304874...
+            5.311745...
 
     Note:
         - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
