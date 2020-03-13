@@ -1,4 +1,4 @@
-import torch
+import pytest
 
 from .. import base
 
@@ -56,6 +56,9 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
 
         ::
 
+            >>> import pytest
+            >>> pytest.importorskip('torch')
+
             >>> from creme import compat
             >>> from creme import datasets
             >>> from creme import metrics
@@ -86,12 +89,13 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
             ... )
             >>> metric = metrics.MAE()
 
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 2.805633
+            >>> model_selection.progressive_val_score(X_y, model, metric).get()
+            2.80563...
 
     """
 
     def __init__(self, net, loss_fn, optimizer, batch_size=1):
+        import torch
         super().__init__(
             net=net,
             loss_fn=loss_fn,

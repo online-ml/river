@@ -9,8 +9,6 @@ try:
 except ImportError:
     GRAPHVIZ_INSTALLED = False
 
-from sklearn.utils import metaestimators
-
 from .. import base
 
 from . import func
@@ -123,9 +121,9 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
             >>> tfidf = feature_extraction.TFIDF('text')
             >>> counts = feature_extraction.BagOfWords('text')
-            >>> text_part = compose.Whitelister('text') | (tfidf + counts)
+            >>> text_part = compose.Select('text') | (tfidf + counts)
 
-            >>> num_part = compose.Whitelister('a', 'b') | preprocessing.PolynomialExtender()
+            >>> num_part = compose.Select('a', 'b') | preprocessing.PolynomialExtender()
 
             >>> model = text_part + num_part
             >>> model |= preprocessing.StandardScaler()
@@ -133,7 +131,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
             >>> dot = model.draw()
 
-        .. image:: ../_static/pipeline_docstring.svg
+        .. image:: ../../_static/pipeline_docstring.svg
             :align: center
 
         The following shows an example of using ``debug_one`` to visualize how the information
@@ -144,7 +142,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             >>> from creme import compose
             >>> from creme import feature_extraction
             >>> from creme import naive_bayes
-            >>> from sklearn import datasets
 
             >>> X_y = [
             ...     ('A positive comment', True),
@@ -222,6 +219,12 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             '\n)'
         ).expandtabs(2)
 
+    def _set_params(self, **new_params):
+        return self.__class__(
+            step._set_params(**new_params.get(name, {}))
+            for name, step in self.items()
+        )
+
     @property
     def transformers(self):
         """If a pipeline has $n$ steps, then the first $n-1$ are necessarily transformers."""
@@ -290,7 +293,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         self.final_estimator.fit_one(x=x, y=y, **fit_params)
         return self
 
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def fit_predict_one(self, x, y, **fit_params):
         """Updates the pipeline and returns a the out-of-fold prediction.
 
@@ -301,7 +303,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         x = self.transform_one(x=x)
         return self.final_estimator.fit_predict_one(x=x, y=y, **fit_params)
 
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def fit_predict_proba_one(self, x, y, **fit_params):
         """Updates the pipeline and returns a the out-of-fold prediction.
 
@@ -334,7 +335,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         return x
 
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def predict_one(self, x):
         """Returns a prediction.
 
@@ -345,7 +345,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         x = self.transform_one(x=x)
         return self.final_estimator.predict_one(x=x)
 
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def predict_proba_one(self, x):
         """Returns prediction probabilities.
 
@@ -356,7 +355,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         x = self.transform_one(x=x)
         return self.final_estimator.predict_proba_one(x=x)
 
-    @metaestimators.if_delegate_has_method(delegate='final_estimator')
     def forecast(self, horizon, xs=None):
         """Returns a forecast.
 

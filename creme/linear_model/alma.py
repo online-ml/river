@@ -40,8 +40,7 @@ class ALMAClassifier(base.BinaryClassifier):
             Accuracy: 82.56%
 
     References:
-        1. `Gentile, Claudio. "A new approximate maximal margin classification algorithm." Journal of Machine Learning Research 2.Dec (2001): 213-242.
- <http://www.jmlr.org/papers/volume2/gentile01a/gentile01a.pdf>`_
+        1. `Gentile, Claudio. "A new approximate maximal margin classification algorithm." Journal of Machine Learning Research 2.Dec (2001): 213-242. <http://www.jmlr.org/papers/volume2/gentile01a/gentile01a.pdf>`_
 
     """
 

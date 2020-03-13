@@ -1,5 +1,6 @@
 import copy
 import functools
+import typing
 
 import numpy as np
 try:
@@ -30,7 +31,7 @@ __all__ = [
 ]
 
 # Define a streaming method for each kind of batch input
-STREAM_METHODS = {
+STREAM_METHODS: typing.Dict[typing.Type, typing.Callable] = {
     np.ndarray: stream.iter_array
 }
 
@@ -84,12 +85,11 @@ def convert_creme_to_sklearn(estimator):
     raise ValueError("Couldn't find an appropriate wrapper")
 
 
-def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
+def convert_sklearn_to_creme(estimator, batch_size=1, classes=None):
     """Wraps a scikit-learn estimator to make it compatible with creme.
 
     Parameters:
         estimator (sklearn.base.BaseEstimator)
-        n_features (int)
         batch_size (int): The amount of observations that will be used during each ``partial_fit``
             call. Setting this to 1 means that the model will learn with each given observation.
             Increasing the batch size means that the observations will be stored in a buffer and
@@ -104,12 +104,10 @@ def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
     wrappers = [
         (sklearn_base.RegressorMixin, functools.partial(
             SKL2CremeRegressor,
-            n_features=n_features,
             batch_size=batch_size
         )),
         (sklearn_base.ClassifierMixin, functools.partial(
             SKL2CremeClassifier,
-            n_features=n_features,
             batch_size=batch_size,
             classes=classes
         ))
@@ -124,14 +122,13 @@ def convert_sklearn_to_creme(estimator, n_features, batch_size=1, classes=None):
 
 class SKL2CremeBase:
 
-    def __init__(self, sklearn_estimator, n_features, batch_size, x_dtype):
+    def __init__(self, sklearn_estimator, batch_size, x_dtype):
         self.sklearn_estimator = sklearn_estimator
         self.batch_size = batch_size
-        self.n_features = n_features
         self.batch_size = batch_size
         self.x_dtype = x_dtype
-        self._x_batch = np.empty(shape=(batch_size, n_features), dtype=x_dtype)
-        self._y_batch = [None] * batch_size
+        self._x_batch = None
+        self._y_batch = None
         self._batch_i = 0
 
 
@@ -139,9 +136,8 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
     """``sklearn`` to ``creme`` regressor adapter.
 
     Parameters:
-        sklearn_estimator (sklearn.base.Regressor): A scikit-learn regressor which has a
+        sklearn_estimator (sklearn.base.Transformer): A scikit-learn transformer which has a
             ``partial_fit`` method.
-        n_features (int)
         batch_size (int): The amount of observations that will be used during each ``partial_fit``
             call. Setting this to 1 means that the model will learn with each given observation.
             Increasing the batch size means that the observations will be stored in a buffer and
@@ -166,10 +162,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             ... )
 
             >>> scaler = preprocessing.StandardScaler()
-            >>> sgd_reg = compat.convert_sklearn_to_creme(
-            ...     linear_model.SGDRegressor(),
-            ...     n_features=13
-            ... )
+            >>> sgd_reg = compat.convert_sklearn_to_creme(linear_model.SGDRegressor())
             >>> model = scaler | sgd_reg
 
             >>> metric = metrics.MAE()
@@ -179,15 +172,19 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
 
     """
 
-    def __init__(self, sklearn_estimator, n_features, batch_size=1):
+    def __init__(self, sklearn_estimator, batch_size=1):
         super().__init__(
             sklearn_estimator=sklearn_estimator,
-            n_features=n_features,
             batch_size=batch_size,
             x_dtype=np.float
         )
 
     def fit_one(self, x, y):
+
+        if self._x_batch is None:
+            n_features = len(x)
+            self._x_batch = np.empty(shape=(self.batch_size, n_features), dtype=self.x_dtype)
+            self._y_batch = [None] * self.batch_size
 
         self._x_batch[self._batch_i, :] = list(x.values())
         self._y_batch[self._batch_i] = y
@@ -214,7 +211,6 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
         sklearn_estimator (sklearn.base.Regressor): A scikit-learn regressor which has a
             ``partial_fit`` method.
         classes (list)
-        n_features (int)
         batch_size (int): The amount of observations that will be used during each ``partial_fit``
             call. Setting this to 1 means that the model will learn with each given observation.
             Increasing the batch size means that the observations will be stored in a buffer and
@@ -245,8 +241,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             ...         eta0=0.01,
             ...         learning_rate='constant'
             ...     ),
-            ...     classes=[False, True],
-            ...     n_features=30
+            ...     classes=[False, True]
             ... )
 
             >>> metric = metrics.LogLoss()
@@ -256,16 +251,20 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
 
     """
 
-    def __init__(self, sklearn_estimator, classes, n_features, batch_size=1):
+    def __init__(self, sklearn_estimator, classes, batch_size=1):
         super().__init__(
             sklearn_estimator=sklearn_estimator,
-            n_features=n_features,
             batch_size=batch_size,
             x_dtype=np.float
         )
         self.classes = classes
 
     def fit_one(self, x, y):
+
+        if self._x_batch is None:
+            n_features = len(x)
+            self._x_batch = np.empty(shape=(self.batch_size, n_features), dtype=self.x_dtype)
+            self._y_batch = [None] * self.batch_size
 
         self._x_batch[self._batch_i, :] = list(x.values())
         self._y_batch[self._batch_i] = y
@@ -383,7 +382,7 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -488,7 +487,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -519,7 +518,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -611,7 +610,7 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -621,7 +620,7 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)
-        for i, (x, _) in enumerate(stream.iter_array(X)):
+        for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
             X_trans[i] = list(self.instance_.transform_one(x).values())
 
         return np.asarray(X_trans)
@@ -664,8 +663,8 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
 
         # Call fit_one for each observation
         self.labels_ = np.empty(len(X), dtype=np.int32)
-        for i, (x, yi) in enumerate(STREAM_METHODS[type(X)](X, y)):
-            label = self.instance_.fit_one(x, yi).predict_one(x)
+        for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
+            label = self.instance_.fit_one(x).predict_one(x)
             self.labels_[i] = label
 
         return self
@@ -682,19 +681,14 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self)
+        utils.validation.check_is_fitted(self, attributes='instance_')
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         # Call predict_proba_one for each observation
         y_pred = np.empty(len(X), dtype=np.int32)
-        for i, (x, _) in enumerate(stream.iter_array(X)):
+        for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
             y_pred[i] = self.instance_.predict_one(x)
 
         return y_pred
-
-    def fit_predict(self, X, y=None):
-        """Calls ``fit`` return the ``labels_`` computed attribute."""
-        self.fit(X, y)
-        return self.labels_

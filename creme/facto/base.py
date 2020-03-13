@@ -34,10 +34,7 @@ class BaseFM:
             Defaults to
             ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Randomization seed used for reproducibility.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -47,7 +44,7 @@ class BaseFM:
 
     def __init__(self, n_factors, weight_optimizer, latent_optimizer, loss, sample_normalization,
                  l1_weight, l2_weight, l1_latent, l2_latent, intercept, intercept_lr,
-                 weight_initializer, latent_initializer, clip_gradient, random_state):
+                 weight_initializer, latent_initializer, clip_gradient, seed):
         self.n_factors = n_factors
         self.weight_optimizer = optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
         self.latent_optimizer = optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
@@ -71,12 +68,12 @@ class BaseFM:
         self.weights = collections.defaultdict(weight_initializer)
 
         if latent_initializer is None:
-            latent_initializer = optim.initializers.Normal(sigma=.1, random_state=random_state)
+            latent_initializer = optim.initializers.Normal(sigma=.1, seed=seed)
         self.latent_initializer = latent_initializer
         self.latents = self._init_latents()
 
         self.clip_gradient = clip_gradient
-        self.random_state = random_state
+        self.seed = seed
 
     @abc.abstractmethod
     def _init_latents(self) -> collections.defaultdict:

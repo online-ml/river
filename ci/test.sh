@@ -27,11 +27,12 @@ PYTHON_VERSION=$1
 conda create --yes --name testenv python=$PYTHON_VERSION
 source activate testenv
 
-# Install dependencies required for testing
-pip install codecov cython flake8
+# Install dependencies required for full testing
+pip install codecov cython
 pip install -e ".[dev]"
 
-# Run tests and coverage
+# Run linting, type checking, unit tests, and coverage
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+mypy creme
 pytest --cov=creme -m "not web"
 codecov

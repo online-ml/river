@@ -53,7 +53,7 @@ class Skyline(collections.UserList):
             >>> xlabel = ax.set_xlabel('Size')
             >>> ylabel = ax.set_ylabel('Price')
 
-        .. image:: ../_static/skyline_docstring.svg
+        .. image:: ../../_static/skyline_docstring.svg
             :align: center
 
         Here is another example using the kart data from *Mario Kart: Double Dash!!*.

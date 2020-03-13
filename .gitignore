@@ -1,6 +1,6 @@
 # Documentation
 docs/_build/
-docs/generated/
+docs/content/generated/
 docs/notebooks/.ipynb_checkpoints/
 docs/*.csv
 

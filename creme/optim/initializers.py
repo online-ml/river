@@ -1,6 +1,5 @@
 """Weight initialization schemes."""
 import numpy as np
-from sklearn import utils
 
 
 __all__ = [
@@ -82,7 +81,7 @@ class Normal(Initializer):
 
             >>> from creme import optim
 
-            >>> init = optim.initializers.Normal(mu=0, sigma=1, random_state=42)
+            >>> init = optim.initializers.Normal(mu=0, sigma=1, seed=42)
 
             >>> init(shape=1)
             0.496714...
@@ -92,13 +91,14 @@ class Normal(Initializer):
 
     """
 
-    def __init__(self, mu=0., sigma=1., random_state=None):
+    def __init__(self, mu=0., sigma=1., seed=None):
         self.mu = mu
         self.sigma = sigma
-        self.random_state = utils.check_random_state(random_state)
+        self.seed = seed
+        self._rng = np.random.RandomState(seed)
 
     def __call__(self, shape=1):
-        weights = self.random_state.normal(loc=self.mu, scale=self.sigma, size=shape)
+        weights = self._rng.normal(loc=self.mu, scale=self.sigma, size=shape)
         if shape == 1:
             return weights[0]
         return weights

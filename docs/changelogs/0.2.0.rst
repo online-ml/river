@@ -1,0 +1,74 @@
+`Version 0.2.0 - 2019-05-27 <https://pypi.org/project/creme/0.2.0/>`_
+=====================================================================
+
+:mod:`compose`
+
+- `compose.Pipeline` now has a ``debug_one``.
+- `compose.Discard` and `compose.Select` now take variadic inputs, which means you don't have to provide a list of features to exclude/include.
+
+:mod:`datasets`
+
+- Added ``datasets.fetch_bikes``
+
+:mod:`feature_extraction`
+
+- Classes that inherit from ``feature_extraction.VectorizerMixin`` can now directly be passed `str` instances instead of `dict` instances.
+- `feature_extraction.Agg` and `feature_extraction.TargetAgg` can now aggregate on multiple attributes.
+
+:mod:`metrics`
+
+- Added ``RollingAccuracy``
+- Added ``RollingCrossEntropy``
+- Added ``RollingF1``
+- Added ``RollingLogLoss``
+- Added ``RollingMacroF1``
+- Added ``RollingMacroPrecision``
+- Added ``RollingMacroRecall``
+- Added ``RollingMAE``
+- Added ``RollingMicroF1``
+- Added ``RollingMicroPrecision``
+- Added ``RollingMicroRecall``
+- Added ``RollingMSE``
+- Added ``RollingPrecision``
+- Added ``RollingRecall``
+- Added ``RollingRMSE``
+- Added ``RollingRMSLE``
+- Added ``RollingSMAPE``
+
+:mod:`model_selection`
+
+- Added ``model_selection.online_qa_score``.
+
+:mod:`proba`
+
+The ``dist`` module has been renamed to ``proba`` and is now public, for the moment it contains a single distribution called `proba.Gaussian`.
+
+:mod:`naive_bayes`
+
+- Added `naive_bayes.BernoulliNB`.
+- Added `naive_bayes.ComplementNB`.
+
+:mod:`optim`
+
+- Added `optim.AdaBound`.
+
+:mod:`tree`
+
+- Added `tree.DecisionTreeClassifier`.
+- Removed ``tree.MondrianTreeClassifier`` and ``tree.MondrianTreeRegressor`` because their performance wasn't good enough.
+
+:mod:`stats`
+
+- Added `stats.AutoCorrelation`.
+- Added `stats.EWVar`.
+- Rename ``stats.Variance`` to `stats.Var` and ``stats.RollingVariance`` to `stats.RollingVar`.
+
+:mod:`stream`
+
+- Added ``stream.simulate_qa``.
+
+:mod:`utils`
+
+- Added `utils.SDFT`.
+- Added `utils.Skyline`.
+- Renamed the ``window_size`` parameter to ``size`` in `utils.Window` and `utils.SortedWindow`.

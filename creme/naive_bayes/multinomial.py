@@ -108,6 +108,7 @@ class MultinomialNB(base.BaseNB):
         self.feature_counts = collections.defaultdict(collections.Counter)
         self.class_totals = collections.Counter()
 
+    @property
     def _more_tags(self):
         return {'requires_positive_data': True}
 

@@ -31,10 +31,7 @@ class FunkMF(base.Recommender):
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         initializer (optim.initializers.Initializer): Latent factors initialization scheme.
         clip_gradient (float): Clips the absolute value of each gradient value.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed (int): Randomization seed used for reproducibility.
 
     Attributes:
         u_latents (collections.defaultdict): The user latent vectors randomly initialized.
@@ -66,7 +63,7 @@ class FunkMF(base.Recommender):
             >>> model = reco.FunkMF(
             ...     n_factors=10,
             ...     optimizer=optim.SGD(0.1),
-            ...     initializer=optim.initializers.Normal(mu=0., sigma=0.1, random_state=11),
+            ...     initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=11),
             ... )
 
             >>> for x, y in X_y:
@@ -87,7 +84,7 @@ class FunkMF(base.Recommender):
     """
 
     def __init__(self, n_factors=10, optimizer=None, loss=None, l2=0., initializer=None,
-                 clip_gradient=1e12, random_state=None):
+                 clip_gradient=1e12, seed=None):
         self.n_factors = n_factors
         self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
@@ -95,11 +92,11 @@ class FunkMF(base.Recommender):
         self.l2 = l2
 
         if initializer is None:
-            initializer = optim.initializers.Normal(mu=0., sigma=.1, random_state=random_state)
+            initializer = optim.initializers.Normal(mu=0., sigma=.1, seed=seed)
         self.initializer = initializer
 
         self.clip_gradient = clip_gradient
-        self.random_state = random_state
+        self.seed = seed
 
         random_latents = functools.partial(
             self.initializer,

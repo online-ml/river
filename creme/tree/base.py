@@ -48,7 +48,7 @@ class Branch(Node):
         """Distance to the deepest node."""
         return 1 + max(self.left.height, self.right.height)
 
-    def _iter_dfs(self, depth=0):
+    def iter_dfs(self, depth=0):
         """Iterates over nodes via depth-first search.
 
         Example:
@@ -65,7 +65,7 @@ class Branch(Node):
             ...     no=0
             ... )
 
-            >>> for node, depth in tree._iter_dfs():
+            >>> for node, depth in tree.iter_dfs():
             ...     print(f'#{node.no}, depth {depth}')
             #0, depth 0
             #1, depth 1
@@ -75,8 +75,8 @@ class Branch(Node):
 
         """
         yield self, depth
-        yield from self.left._iter_dfs(depth=depth + 1)
-        yield from self.right._iter_dfs(depth=depth + 1)
+        yield from self.left.iter_dfs(depth=depth + 1)
+        yield from self.right.iter_dfs(depth=depth + 1)
 
 
 class Leaf(Node):
@@ -92,7 +92,7 @@ class Leaf(Node):
     def height(self):
         return 0
 
-    def _iter_dfs(self, depth):
+    def iter_dfs(self, depth):
         yield self, depth
 
 
