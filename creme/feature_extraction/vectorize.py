@@ -214,8 +214,8 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 class TFIDF(BagOfWords):
     """Computes TF-IDF values from sentences.
 
-    We use the same definition as scikit-learn. The only difference in the results comes the fact
-    that the document frequencies have to be computed online.
+    We use the same definition as scikit-learn. The only difference in the results comes from the
+    fact that the document frequencies have to be computed online.
 
     Parameters:
         normalize (bool): Whether or not the TF-IDF values by their L2 norm.
