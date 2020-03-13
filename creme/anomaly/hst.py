@@ -1,3 +1,4 @@
+import functools
 import operator
 import random
 
@@ -9,37 +10,37 @@ from ..tree.base import Leaf, Branch, Split
 __all__ = ['HalfSpaceTrees']
 
 
-def make_tree(limits, height, rng=random, **node_params):
+def make_padded_tree(limits, height, padding, rng=random, **node_params):
 
     if height == 0:
         return Leaf(**node_params)
 
-    # Randomly pick a feature and find the center of it's limits
-    feature = rng.choice(list(limits.keys()))
-    center = (limits[feature][0] + limits[feature][1]) / 2
+    # Randomly pick a feature
+    # We weight each feature by the gap between each feature's limits
+    on = rng.choices(
+        population=list(limits.keys()),
+        weights=[limits[i][1] - limits[i][0] for i in limits]
+    )[0]
+
+    # Pick a split point; use padding to avoid too narrow a split
+    a = limits[on][0]
+    b = limits[on][1]
+    at = rng.uniform(a + padding * (b - a), b - padding * (b - a))
 
     # Build the left node
-    tmp = limits[feature]
-    limits[feature] = (tmp[0], center)
-    left = make_tree(limits=limits, height=height - 1, rng=rng, **node_params)
-    limits[feature] = tmp
+    tmp = limits[on]
+    limits[on] = (tmp[0], at)
+    left = make_padded_tree(limits=limits, height=height - 1, padding=padding, rng=rng, **node_params)
+    limits[on] = tmp
 
     # Build the right node
-    tmp = limits[feature]
-    limits[feature] = (center, tmp[1])
-    right = make_tree(limits=limits, height=height - 1, rng=rng, **node_params)
-    limits[feature] = tmp
+    tmp = limits[on]
+    limits[on] = (at, tmp[1])
+    right = make_padded_tree(limits=limits, height=height - 1, padding=padding, rng=rng, **node_params)
+    limits[on] = tmp
 
-    split = Split(on=feature, how=operator.lt, at=center)
+    split = Split(on=on, how=operator.lt, at=at)
     return Branch(split=split, left=left, right=right, **node_params)
-
-
-def make_limits(rng):
-    sq = rng.random()
-    return (
-        sq - 2 * max(sq, 1 - sq),
-        sq + 2 * max(sq, 1 - sq)
-    )
 
 
 class HalfSpaceTrees(base.AnomalyDetector):
@@ -51,7 +52,8 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     Parameters:
         n_trees (int): Number of trees to use.
-        height (int): Height of each tree.
+        height (int): Height of each tree. Note that a tree of height ``h`` is made up of ``h + 1``
+            levels and therefore contains ``2 ** (h + 1) - 1`` nodes.
         window_size (int): Number of observations to use for calculating the mass at each node in
             each tree.
         scale (bool): Whether or not to scale features between 0 and 1. Only set to ``False`` if
@@ -101,36 +103,37 @@ class HalfSpaceTrees(base.AnomalyDetector):
         self.seed = seed
         self.rng = random.Random(seed)
         self.trees = []
-        self.min_max_scaler = preprocessing.MinMaxScaler()
+        self.min_max_scaler = preprocessing.MinMaxScaler() if scale else None
         self.counter = 0
+        self._first_window = True
 
     @property
     def size_limit(self):
+        """This is the threshold under which the node search stops during the scoring phase.
+
+        The value .1 is a magic constant indicated in the original paper.
+
+        """
         return .1 * self.window_size
 
     @property
     def _max_score(self):
-        """The maximum possible score.
-
-        We obtain this by looking at the extreme case where all the samples from a particular
-        window have fallen the same leaf within each tree.
-
-        """
-        return self.n_trees * self.window_size * 2 ** self.height
+        """The largest potential anomaly score."""
+        return self.n_trees * self.window_size * (2 ** (self.height + 1) - 1)
 
     def fit_one(self, x):
 
-        # Scale the features between 0 and 1
-        if self.scale:
+        # Scale the features if desired
+        if self.min_max_scaler:
             x = self.min_max_scaler.transform_one(x)
-            self.min_max_scaler.fit_one(x)
 
         # The trees are built when the first observation comes in
         if not self.trees:
             self.trees = [
-                make_tree(
-                    limits={f: make_limits(rng=self.rng) for f in x},
+                make_padded_tree(
+                    limits={f: (0, 1) for f in x},
                     height=self.height,
+                    padding=.15,
                     rng=self.rng,
                     # kwargs
                     r_mass=0,
@@ -148,20 +151,31 @@ class HalfSpaceTrees(base.AnomalyDetector):
         self.counter += 1
         if self.counter == self.window_size:
             for tree in self.trees:
-                for node in tree.path(x):
+                for node, _ in tree.iter_dfs():
                     node.r_mass = node.l_mass
                     node.l_mass = 0
+            self._first_window = False
             self.counter = 0
 
         return self
 
     def score_one(self, x):
-        score = 0
 
+        if self.min_max_scaler:
+            x = self.min_max_scaler.fit_one(x).transform_one(x)
+
+        if self._first_window:
+            return 0
+
+        score = 0.
         for tree in self.trees:
             for depth, node in enumerate(tree.path(x)):
+                score += node.r_mass * 2 ** depth
                 if node.r_mass < self.size_limit:
                     break
-            score += node.r_mass * 2 ** depth
 
-        return score / self._max_score
+        # Normalize the score between 0 and 1
+        score /= self._max_score
+
+        # We want high score -> anomaly, but we have high score -> normal
+        return 1 - score

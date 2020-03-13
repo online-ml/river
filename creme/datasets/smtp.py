@@ -3,10 +3,11 @@ from .. import stream
 from . import base
 
 
-class KDD99HTTP(base.FileDataset):
-    """Data from the HTTP dataset of the KDD 1999 cup.
+class SMTP(base.FileDataset):
+    """SMTP dataset from the KDD 1999 cup.
 
-    The goal is to predict whether or not an HTTP connection is anomalous or not. The dataset only contains 2,211 (0.4%) positive labels.
+    The goal is to predict whether or not an SMTP connection is anomalous or not.
+    The dataset only contains 2,211 (0.4%) positive labels.
 
     Parameters:
         data_home (str): The directory where you wish to store the data.
@@ -16,23 +17,23 @@ class KDD99HTTP(base.FileDataset):
         tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
 
     References:
-        1. `HTTP (KDDCUP99) dataset <http://odds.cs.stonybrook.edu/http-kddcup99-dataset/>`_
+        1. `SMTP (KDDCUP99) dataset <http://odds.cs.stonybrook.edu/smtp-kddcup99-dataset/>`_
 
     """
 
     def __init__(self, data_home=None, verbose=True):
         super().__init__(
-            n_samples=567_498,
+            n_samples=95_156,
             n_features=3,
             category=base.BINARY_CLF,
-            url='https://maxhalford.github.io/files/datasets/kdd99_http.zip',
+            url='https://maxhalford.github.io/files/datasets/smtp.zip',
             data_home=data_home,
             verbose=verbose
         )
 
     def _stream_X_y(self, directory):
         return stream.iter_csv(
-            f'{directory}/kdd99_http.csv',
+            f'{directory}/smtp.csv',
             target_name='service',
             converters={
                 'duration': float,
