@@ -4,7 +4,7 @@
 :mod:`compose`
 
 - `compose.Pipeline` now has a ``debug_one``.
-- `compose.Blacklister` and `compose.Whitelister` now take variadic inputs, which means you don't have to provide a list of features to exclude/include.
+- `compose.Discard` and `compose.Select` now take variadic inputs, which means you don't have to provide a list of features to exclude/include.
 
 :mod:`datasets`
 

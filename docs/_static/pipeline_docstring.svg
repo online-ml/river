@@ -15,27 +15,27 @@
 <ellipse fill="none" stroke="#000000" cx="325.0934" cy="-378" rx="30.5947" ry="18"/>
 <text text-anchor="middle" x="325.0934" y="-374.3" font-family="Times,serif" font-size="14.00" fill="#000000">input</text>
 </g>
-<!-- Whitelister([&#39;text&#39;]) -->
+<!-- Select([&#39;text&#39;]) -->
 <g id="node2" class="node">
-<title>Whitelister([&#39;text&#39;])</title>
+<title>Select([&#39;text&#39;])</title>
 <ellipse fill="none" stroke="#000000" cx="236.0934" cy="-306" rx="79.0865" ry="18"/>
-<text text-anchor="middle" x="236.0934" y="-302.3" font-family="Times,serif" font-size="14.00" fill="#000000">Whitelister([&#39;text&#39;])</text>
+<text text-anchor="middle" x="236.0934" y="-302.3" font-family="Times,serif" font-size="14.00" fill="#000000">Select([&#39;text&#39;])</text>
 </g>
-<!-- input&#45;&gt;Whitelister([&#39;text&#39;]) -->
+<!-- input&#45;&gt;Select([&#39;text&#39;]) -->
 <g id="edge1" class="edge">
-<title>input&#45;&gt;Whitelister([&#39;text&#39;])</title>
+<title>input&#45;&gt;Select([&#39;text&#39;])</title>
 <path fill="none" stroke="#000000" d="M307.0829,-363.4297C295.1093,-353.7432 279.1127,-340.8021 265.3358,-329.6568"/>
 <polygon fill="#000000" stroke="#000000" points="267.5038,-326.9087 257.5279,-323.3403 263.1011,-332.3509 267.5038,-326.9087"/>
 </g>
-<!-- Whitelister([&#39;b&#39;, &#39;a&#39;]) -->
+<!-- Select([&#39;b&#39;, &#39;a&#39;]) -->
 <g id="node5" class="node">
-<title>Whitelister([&#39;b&#39;, &#39;a&#39;])</title>
+<title>Select([&#39;b&#39;, &#39;a&#39;])</title>
 <ellipse fill="none" stroke="#000000" cx="415.0934" cy="-306" rx="81.7856" ry="18"/>
-<text text-anchor="middle" x="415.0934" y="-302.3" font-family="Times,serif" font-size="14.00" fill="#000000">Whitelister([&#39;b&#39;, &#39;a&#39;])</text>
+<text text-anchor="middle" x="415.0934" y="-302.3" font-family="Times,serif" font-size="14.00" fill="#000000">Select([&#39;b&#39;, &#39;a&#39;])</text>
 </g>
-<!-- input&#45;&gt;Whitelister([&#39;b&#39;, &#39;a&#39;]) -->
+<!-- input&#45;&gt;Select([&#39;b&#39;, &#39;a&#39;]) -->
 <g id="edge4" class="edge">
-<title>input&#45;&gt;Whitelister([&#39;b&#39;, &#39;a&#39;])</title>
+<title>input&#45;&gt;Select([&#39;b&#39;, &#39;a&#39;])</title>
 <path fill="none" stroke="#000000" d="M343.3063,-363.4297C355.3286,-353.8119 371.3616,-340.9855 385.2257,-329.8942"/>
 <polygon fill="#000000" stroke="#000000" points="387.4691,-332.5817 393.0913,-323.6017 383.0962,-327.1156 387.4691,-332.5817"/>
 </g>
@@ -45,9 +45,9 @@
 <ellipse fill="none" stroke="#000000" cx="74.0934" cy="-234" rx="74.187" ry="18"/>
 <text text-anchor="middle" x="74.0934" y="-230.3" font-family="Times,serif" font-size="14.00" fill="#000000">TFIDFVectorizer</text>
 </g>
-<!-- Whitelister([&#39;text&#39;])&#45;&gt;TFIDFVectorizer -->
+<!-- Select([&#39;text&#39;])&#45;&gt;TFIDFVectorizer -->
 <g id="edge2" class="edge">
-<title>Whitelister([&#39;text&#39;])&#45;&gt;TFIDFVectorizer</title>
+<title>Select([&#39;text&#39;])&#45;&gt;TFIDFVectorizer</title>
 <path fill="none" stroke="#000000" d="M199.7375,-289.8418C175.9143,-279.2537 144.5983,-265.3355 119.1908,-254.0433"/>
 <polygon fill="#000000" stroke="#000000" points="120.3299,-250.7195 109.7703,-249.8564 117.4869,-257.1162 120.3299,-250.7195"/>
 </g>
@@ -57,9 +57,9 @@
 <ellipse fill="none" stroke="#000000" cx="238.0934" cy="-234" rx="71.4873" ry="18"/>
 <text text-anchor="middle" x="238.0934" y="-230.3" font-family="Times,serif" font-size="14.00" fill="#000000">CountVectorizer</text>
 </g>
-<!-- Whitelister([&#39;text&#39;])&#45;&gt;CountVectorizer -->
+<!-- Select([&#39;text&#39;])&#45;&gt;CountVectorizer -->
 <g id="edge3" class="edge">
-<title>Whitelister([&#39;text&#39;])&#45;&gt;CountVectorizer</title>
+<title>Select([&#39;text&#39;])&#45;&gt;CountVectorizer</title>
 <path fill="none" stroke="#000000" d="M236.5981,-287.8314C236.812,-280.131 237.0664,-270.9743 237.3041,-262.4166"/>
 <polygon fill="#000000" stroke="#000000" points="240.8028,-262.5066 237.5819,-252.4133 233.8055,-262.3122 240.8028,-262.5066"/>
 </g>
@@ -87,9 +87,9 @@
 <ellipse fill="none" stroke="#000000" cx="415.0934" cy="-234" rx="87.9851" ry="18"/>
 <text text-anchor="middle" x="415.0934" y="-230.3" font-family="Times,serif" font-size="14.00" fill="#000000">PolynomialExtender</text>
 </g>
-<!-- Whitelister([&#39;b&#39;, &#39;a&#39;])&#45;&gt;PolynomialExtender -->
+<!-- Select([&#39;b&#39;, &#39;a&#39;])&#45;&gt;PolynomialExtender -->
 <g id="edge5" class="edge">
-<title>Whitelister([&#39;b&#39;, &#39;a&#39;])&#45;&gt;PolynomialExtender</title>
+<title>Select([&#39;b&#39;, &#39;a&#39;])&#45;&gt;PolynomialExtender</title>
 <path fill="none" stroke="#000000" d="M415.0934,-287.8314C415.0934,-280.131 415.0934,-270.9743 415.0934,-262.4166"/>
 <polygon fill="#000000" stroke="#000000" points="418.5935,-262.4132 415.0934,-252.4133 411.5935,-262.4133 418.5935,-262.4132"/>
 </g>

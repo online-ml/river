@@ -4,7 +4,7 @@ API reference
 **anomaly**: Anomaly detection
 -------------------------------
 
-The estimators in ``anomaly`` are slightly different than the rest of the estimators. Instead of a ``predict_one`` method, each anomaly detector has a ``score_one`` method which returns an anomaly score for a given set of features. Anomalies will have high scores whereas normal observations will have low scores. The range of the scores depends on the estimator. 
+The estimators in ``anomaly`` are slightly different than the rest of the estimators. Instead of a ``predict_one`` method, each anomaly detector has a ``score_one`` method which returns an anomaly score for a given set of features. Anomalies will have high scores whereas normal observations will have low scores. The range of the scores depends on the estimator.
 
 .. rubric:: Classes
 
@@ -13,14 +13,14 @@ The estimators in ``anomaly`` are slightly different than the rest of the estima
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     HalfSpaceTrees
 
 
 **base**: Base interfaces
 --------------------------
 
-Every estimator in ``creme`` is a class, and as such inherits from at least one base interface. These are used to categorize, organize, and standardize the many estimators that ``creme`` contains. 
+Every estimator in ``creme`` is a class, and as such inherits from at least one base interface. These are used to categorize, organize, and standardize the many estimators that ``creme`` contains.
 
 .. rubric:: Classes
 
@@ -29,7 +29,7 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     AnomalyDetector
     BinaryClassifier
     Classifier
@@ -54,14 +54,14 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     KMeans
 
 
 **compat**: Compatibility with other libraries
 -----------------------------------------------
 
-This module contains adapters for making ``creme`` estimators compatible with other libraries, and vice-versa whenever possible. 
+This module contains adapters for making ``creme`` estimators compatible with other libraries, and vice-versa whenever possible.
 
 .. rubric:: Classes
 
@@ -70,7 +70,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Creme2SKLClassifier
     Creme2SKLClusterer
     Creme2SKLRegressor
@@ -86,7 +86,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
     convert_creme_to_sklearn
     convert_sklearn_to_creme
 
@@ -101,13 +101,13 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
-    Blacklister
+
+    Discard
     FuncTransformer
     Pipeline
     Renamer
     TransformerUnion
-    Whitelister
+    Select
 
 
 **datasets**: Datasets
@@ -120,7 +120,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Airline
     Bananas
     Bikes
@@ -146,13 +146,13 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     gen.SEA
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
 
 
 **decomposition**: Online matrix decomposition
@@ -165,7 +165,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     LDA
 
 
@@ -179,7 +179,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     NoChangeClassifier
     PriorClassifier
     StatisticRegressor
@@ -195,7 +195,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     AdaBoostClassifier
     BaggingClassifier
     BaggingRegressor
@@ -213,7 +213,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     FFMClassifier
     FFMRegressor
     FMClassifier
@@ -234,7 +234,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Agg
     BagOfWords
     Differ
@@ -252,7 +252,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     PoissonInclusion
     SelectKBest
     VarianceThreshold
@@ -268,7 +268,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     PreviousImputer
     StatImputer
 
@@ -283,7 +283,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     ALMAClassifier
     LinearRegression
     LogisticRegression
@@ -302,7 +302,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     BoxCoxRegressor
     PredClipper
     TransformedTargetRegressor
@@ -318,7 +318,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Accuracy
     ClassificationReport
     ConfusionMatrix
@@ -365,7 +365,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
     expand_param_grid
     progressive_val_score
     successive_halving
@@ -381,7 +381,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     OneVsRestClassifier
 
 
@@ -395,7 +395,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     ClassifierChain
     RegressorChain
 
@@ -410,7 +410,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     BernoulliNB
     ComplementNB
     GaussianNB
@@ -427,7 +427,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     KNeighborsClassifier
     KNeighborsRegressor
 
@@ -442,7 +442,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     AMSGrad
     AdaBound
     AdaDelta
@@ -465,7 +465,7 @@ Weight initialization schemes
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     initializers.Constant
     initializers.Normal
     initializers.Zeros
@@ -473,7 +473,7 @@ Weight initialization schemes
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
 
 Loss functions
 ~~~~~~~~~~~~~~
@@ -482,7 +482,7 @@ Loss functions
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     losses.Absolute
     losses.BinaryFocalLoss
     losses.Cauchy
@@ -498,7 +498,7 @@ Loss functions
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
 
 Learning rate schedulers
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -507,7 +507,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     schedulers.Constant
     schedulers.InverseScaling
     schedulers.Optimal
@@ -516,7 +516,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
 
 
 **preprocessing**: Feature preprocessing
@@ -529,7 +529,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Binarizer
     FeatureHasher
     MaxAbsScaler
@@ -552,7 +552,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Gaussian
     Multinomial
 
@@ -567,7 +567,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Baseline
     BiasedMF
     FunkMF
@@ -584,7 +584,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     HardSamplingClassifier
     HardSamplingRegressor
     RandomOverSampler
@@ -602,7 +602,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     AbsMax
     AutoCorrelation
     BayesianMean
@@ -650,7 +650,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Cache
 
 .. rubric:: Functions
@@ -660,7 +660,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
     iter_array
     iter_csv
     iter_libsvm
@@ -681,7 +681,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Detrender
     GroupDetrender
     SNARIMAX
@@ -697,7 +697,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     DecisionTreeClassifier
     RandomForestClassifier
 
@@ -712,7 +712,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
     Histogram
     SDFT
     Skyline
@@ -726,30 +726,30 @@ Utilities for unit testing and sanity checking estimators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
     estimator_checks.check_estimator
     estimator_checks.guess_model
 
 Mathematical utility functions (intended for internal purposes)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A lot of this is experimental and has a high probability of changing in the future. 
+A lot of this is experimental and has a high probability of changing in the future.
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
     math.chain_dot
     math.clamp
     math.dot
@@ -771,12 +771,12 @@ Helper functions for making things readable by humans
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-        
+
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-        
+
     pretty.format_object
     pretty.print_table
 

@@ -6,6 +6,11 @@
 - Added `compat.PyTorch2CremeRegressor`.
 - `compat.SKL2CremeRegressor` and `compat.SKL2CremeClassifier` now have an optional ``batch_size`` parameter in order to perform mini-batching.
 
+:mod:`compose`
+
+- Renamed ``compose.Whitelister`` to ``compose.Select``.
+- Renamed ``compose.Blacklister`` to ``compose.Discard``.
+
 :mod:`facto`
 
 - Added `facto.FFMClassifier`.
