@@ -131,15 +131,15 @@ Here are some benefits of using `creme` (and online machine learning in general)
 - Feature extraction and selection
 - Online statistics and metrics
 - Built-in datasets
-- And [much more](https://creme-ml.github.io/api.html)
+- And [much more](https://creme-ml.github.io/content/api.html)
 
 ## 🔗 Useful links
 
 - [Documentation](https://creme-ml.github.io/)
-  - [API reference](https://creme-ml.github.io/api.html)
-  - [User guide](https://creme-ml.github.io/user-guide.html)
-  - [FAQ](https://creme-ml.github.io/faq.html)
-  - [Change history](https://creme-ml.github.io/changelog.html)
+  - [API reference](https://creme-ml.github.io/content/api.html)
+  - [User guide](https://creme-ml.github.io/content/user-guide.html)
+  - [FAQ](https://creme-ml.github.io/content/faq.html)
+  - [Change history](https://creme-ml.github.io/content/changelog.html)
 - [Benchmarks](https://github.com/creme-ml/creme/tree/master/benchmarks)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
