@@ -114,12 +114,6 @@ class HOFM(BaseFM):
         # For notational convenience
         v, l1, l2, sign = self.latents, self.l1_latent, self.l2_latent, utils.math.sign
 
-        # Precompute feature independent sum for time efficiency
-        precomputed_sum = {
-            f: sum(v[j][f] * xj for j, xj in x.items())
-            for f in range(self.n_factors)
-        }
-
         # Calculate each latent factor gradient before updating any
         gradients = collections.defaultdict(
             lambda: collections.defaultdict(
@@ -128,6 +122,7 @@ class HOFM(BaseFM):
         )
 
         for l in range(2, self.degree + 1):
+
             for combination in itertools.combinations(x.keys(), l):
                 feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
 
