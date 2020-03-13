@@ -1,17 +1,17 @@
 """Models composition."""
-from .blacklist import Blacklister
+from .blacklist import Discard
 from .func import FuncTransformer
 from .pipeline import Pipeline
 from .rename import Renamer
 from .union import TransformerUnion
-from .whitelist import Whitelister
+from .whitelist import Select
 
 
 __all__ = [
-    'Blacklister',
+    'Discard',
     'FuncTransformer',
     'Pipeline',
     'Renamer',
     'TransformerUnion',
-    'Whitelister'
+    'Select'
 ]

@@ -14,8 +14,8 @@
 
 :mod:`compose`
 
-- Added `compose.Blacklister`.
-- Added `compose.Whitelister`.
+- Added `compose.Discard`.
+- Added `compose.Select`.
 - Added ``compose.SplitRegressor``.
 - The ``draw`` method of `compose.Pipeline` now works properly for arbitrary amounts of nesting, including multiple nested ``compose.FeatureUnion``.
 

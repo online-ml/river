@@ -312,7 +312,7 @@ class FMClassifier(FM, base.BinaryClassifier):
             weight_initializer=weight_initializer,
             latent_initializer=latent_initializer,
             clip_gradient=clip_gradient,
-            seed=random_state
+            seed=seed
         )
 
     def predict_proba_one(self, x):

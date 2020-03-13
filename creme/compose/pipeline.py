@@ -121,9 +121,9 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
             >>> tfidf = feature_extraction.TFIDF('text')
             >>> counts = feature_extraction.BagOfWords('text')
-            >>> text_part = compose.Whitelister('text') | (tfidf + counts)
+            >>> text_part = compose.Select('text') | (tfidf + counts)
 
-            >>> num_part = compose.Whitelister('a', 'b') | preprocessing.PolynomialExtender()
+            >>> num_part = compose.Select('a', 'b') | preprocessing.PolynomialExtender()
 
             >>> model = text_part + num_part
             >>> model |= preprocessing.StandardScaler()

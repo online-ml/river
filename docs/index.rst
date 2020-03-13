@@ -21,7 +21,7 @@ Contents
    :maxdepth: 2
 
    content/install
-   content/example
+   content/notebooks/example.ipynb
    content/api
    content/user-guide
    content/faq

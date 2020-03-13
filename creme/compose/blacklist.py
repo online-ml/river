@@ -1,10 +1,10 @@
 from .. import base
 
 
-__all__ = ['Blacklister']
+__all__ = ['Discard']
 
 
-class Blacklister(base.Transformer):
+class Discard(base.Transformer):
     """Subsets a set of features by applying a blacklist.
 
     Parameters:
@@ -17,7 +17,7 @@ class Blacklister(base.Transformer):
             >>> from creme import compose
 
             >>> x = {'a': 42, 'b': 12}
-            >>> compose.Blacklister('a').transform_one(x)
+            >>> compose.Discard('a').transform_one(x)
             {'b': 12}
 
     """
