@@ -88,6 +88,37 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
        In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD '18).
        ACM, New York, NY, USA, 1953-1962. DOI: https://doi.org/10.1145/3219819.3220005
 
+    Examples
+    --------
+    .. code-block:: python
+
+       # Imports
+       from skmultiflow.data import SEAGenerator
+       from skmultiflow.trees import ExtremelyFastDecisionTreeClassifier
+
+       # Setting up a data stream
+       stream = SEAGenerator(random_state=1)
+
+       # Setup Extremely Fast Decision Tree estimator
+       efdt = ExtremelyFastDecisionTreeClassifier()
+
+       # Setup variables to control loop and track performance
+       n_samples = 0
+       correct_cnt = 0
+       max_samples = 200
+
+       # Train the estimator with the samples provided by the data stream
+       while n_samples < max_samples and stream.has_more_samples():
+           X, y = stream.next_sample()
+           y_pred = efdt.predict(X)
+           if y[0] == y_pred[0]:
+               correct_cnt += 1
+           efdt.partial_fit(X, y)
+           n_samples += 1
+
+       # Display results
+       print('{} samples analyzed.'.format(n_samples))
+       print('Extremely Fast Decision Tree accuracy: {}'.format(correct_cnt / n_samples))
     """
 
     # Override _new_learning_node

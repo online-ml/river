@@ -57,7 +57,7 @@ class OzaBaggingADWINClassifier(OzaBaggingClassifier):
     --------
     >>> # Imports
     >>> from skmultiflow.meta import OzaBaggingADWINClassifier
-    >>> from skmultiflow.lazy.knn import KNNClassifier
+    >>> from skmultiflow.lazy import KNNClassifier
     >>> from skmultiflow.data.sea_generator import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=6.7)

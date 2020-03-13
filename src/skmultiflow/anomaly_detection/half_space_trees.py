@@ -56,6 +56,36 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
        in IJCAI Proceedings - International Joint Conference on Artificial Intelligence,
        2011, vol. 22, no. 1, pp. 1511–1516.
 
+    Examples
+    --------
+    .. code-block:: python
+
+       # Imports
+       from skmultiflow.data import SEAGenerator
+       from skmultiflow.anomaly_detection import HalfSpaceTrees
+
+       # Setup a data stream
+       stream = SEAGenerator(random_state=1)
+
+       # Setup Half-Space Trees estimator
+       half_space_trees = HalfSpaceTrees()
+
+       # Setup variables to control loop and track performance
+       n_samples = 0
+       correct_cnt = 0
+
+       # Train the estimator(s) with the samples provided by the data stream
+       while n_samples < max_samples and stream.has_more_samples():
+           X, y = stream.next_sample()
+           y_pred = half_space_trees.predict(X) # Error is thrown here
+           if y[0] == y_pred[0]:
+               correct_cnt += 1
+           half_space_trees = half_space_trees.partial_fit(X, y)
+           n_samples += 1
+
+       # Display results
+       print('{} samples analyzed.'.format(n_samples))
+       print('Half-Space Trees accuracy: {}'.format(correct_cnt / n_samples))
     """
 
     def __init__(self,
