@@ -92,7 +92,7 @@ class FunkMF(base.Recommender):
         self.l2 = l2
 
         if initializer is None:
-            initializer = optim.initializers.Normal(mu=0., sigma=.1, seed=random_state)
+            initializer = optim.initializers.Normal(mu=0., sigma=.1, seed=seed)
         self.initializer = initializer
 
         self.clip_gradient = clip_gradient
