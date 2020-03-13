@@ -1,5 +1,5 @@
 from sklearn.linear_model import SGDClassifier, SGDRegressor
-from sklearn.metrics.regression import mean_absolute_error
+from sklearn.metrics import mean_absolute_error
 from sklearn import __version__ as sklearn_version
 
 from skmultiflow.meta.multi_output_learner import MultiOutputLearner
@@ -10,7 +10,7 @@ import numpy as np
 
 import pytest
 
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 
 
 @pytest.mark.filterwarnings('ignore::UserWarning')
@@ -43,7 +43,7 @@ def test_multi_output_learner_classifier():
         classifier.partial_fit(X, y)
         cnt += 1
 
-    if StrictVersion(sklearn_version) < StrictVersion("0.21"):
+    if LooseVersion(sklearn_version) < LooseVersion("0.21"):
         expected_predictions = [[1.0, 1.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0],
                                 [0.0, 1.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 1.0],
                                 [0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 1.0], [0.0, 1.0, 1.0], [1.0, 1.0, 1.0],
