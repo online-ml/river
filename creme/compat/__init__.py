@@ -4,6 +4,7 @@ This module contains adapters for making ``creme`` estimators compatible with ot
 vice-versa whenever possible.
 
 """
+from .pytorch import PyTorch2CremeRegressor
 from .sklearn import convert_creme_to_sklearn
 from .sklearn import convert_sklearn_to_creme
 from .sklearn import SKL2CremeClassifier
@@ -17,18 +18,11 @@ from .sklearn import Creme2SKLTransformer
 __all__ = [
     'convert_creme_to_sklearn',
     'convert_sklearn_to_creme',
-    'SKL2CremeClassifier',
-    'SKL2CremeRegressor',
     'Creme2SKLRegressor',
     'Creme2SKLClassifier',
     'Creme2SKLClusterer',
-    'Creme2SKLTransformer'
+    'Creme2SKLTransformer',
+    'PyTorch2CremeRegressor',
+    'SKL2CremeClassifier',
+    'SKL2CremeRegressor'
 ]
-
-
-try:
-    import torch
-    from .pytorch import PyTorch2CremeRegressor
-    __all__ += ['PyTorch2CremeRegressor']
-except ImportError:
-    pass

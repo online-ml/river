@@ -1,4 +1,4 @@
-"""Mathematical utility functions mostly intended for internal purposes.
+"""Mathematical utility functions (intended for internal purposes).
 
 A lot of this is experimental and has a high probability of changing in the future.
 

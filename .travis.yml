@@ -3,6 +3,7 @@ language: python
 python:
   - 3.6
   - 3.7
+  - 3.8
 
 cache:
   apt: true
@@ -21,7 +22,7 @@ jobs:
     services:
       - docker
     env: &pypi-env
-      - CIBW_BUILD="cp36-* cp37-*"
+      - CIBW_BUILD="cp36-* cp37-* cp38-*"
       - CIBW_BEFORE_BUILD="pip install cython"
     install: &pypi-install
       - pip install cibuildwheel==1.0.0 cython twine
@@ -44,7 +45,7 @@ jobs:
     os: windows
     language: shell
     env:
-      - CIBW_BUILD="cp36-* cp37-*"
+      - CIBW_BUILD="cp36-* cp37-* cp38-*"
       - CIBW_BEFORE_BUILD="pip install cython"
       - PATH=/c/Python36:/c/Python36/Scripts:$PATH
     before_install:
@@ -73,7 +74,6 @@ jobs:
       - git add -A
       - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
       - git push --set-upstream origin master
-    if: tag IS present
 
 env:
   global:

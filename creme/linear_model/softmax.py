@@ -30,28 +30,22 @@ class SoftmaxRegression(base.MultiClassifier):
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_iris(),
-            ...     shuffle=True,
-            ...     seed=42
-            ... )
+            >>> X_y = datasets.ImageSegments()
 
-            >>> model = preprocessing.PolynomialExtender(degree=2)
-            >>> model |= preprocessing.StandardScaler()
+            >>> model = preprocessing.StandardScaler()
             >>> model |= linear_model.SoftmaxRegression()
 
             >>> metric = metrics.MacroF1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MacroF1: 0.802595
+            MacroF1: 0.818653
 
     References:
         1. `Course on classification stochastic gradient descent <https://www.inf.ed.ac.uk/teaching/courses/mlp/2016/mlp02-sln.pdf>`_

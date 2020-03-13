@@ -1,10 +1,10 @@
 from .. import base
 
 
-__all__ = ['Whitelister']
+__all__ = ['Select']
 
 
-class Whitelister(base.Transformer):
+class Select(base.Transformer):
     """Subsets a set of features by applying a whitelist.
 
     Parameters:
@@ -17,7 +17,7 @@ class Whitelister(base.Transformer):
             >>> from creme import compose
 
             >>> x = {'a': 42, 'b': 12}
-            >>> compose.Whitelister('a').transform_one(x)
+            >>> compose.Select('a').transform_one(x)
             {'a': 42}
 
     """

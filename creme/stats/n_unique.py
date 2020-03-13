@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 from sklearn import utils
 
 from . import base
@@ -31,7 +32,7 @@ class NUnique(base.Univariate):
             >>> from creme import stats
 
             >>> alphabet = string.ascii_lowercase
-            >>> n_unique = stats.NUnique(error_rate=0.1)
+            >>> n_unique = stats.NUnique(error_rate=0.1, seed=42)
 
             >>> n_unique.update('a').get()
             1
@@ -39,6 +40,14 @@ class NUnique(base.Univariate):
             >>> n_unique.update('b').get()
             2
 
+            >>> for letter in alphabet:
+            ...     n_unique = n_unique.update(letter)
+            >>> n_unique.get()
+            24
+
+            We can increase the precision by lowering the ``error_rate`` parameter.
+
+            >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
             >>> for letter in alphabet:
             ...     n_unique = n_unique.update(letter)
             >>> n_unique.get()
@@ -52,20 +61,21 @@ class NUnique(base.Univariate):
 
     P32 = 2 ** 32
 
-    def __init__(self, error_rate=0.01, encoding='utf-8', random_state=None):
+    def __init__(self, error_rate=0.01, encoding='utf-8', seed=None):
         self.n_bits = int(math.ceil(math.log((1.04 / error_rate) ** 2, 2)))
         self.n_buckets = 1 << self.n_bits
         self.buckets = [0] * self.n_buckets
         self.encoding = encoding
-        self.random_state = utils.check_random_state(random_state)
-        self.seed = self.random_state.randint(0, 2 ** 32 - 1)
+        self.seed = seed
+        self._rng = np.random.RandomState(seed)
+        self._hash_seed = self._rng.randint(0, 2 ** 32 - 1)
 
     @property
     def name(self):
         return 'n_unique'
 
     def _hash_str(self, string):
-        return utils.murmurhash3_32(bytes(string, self.encoding), self.seed)
+        return utils.murmurhash3_32(bytes(string, self.encoding), self._hash_seed)
 
     def update(self, x):
         x = self._hash_str(x)

@@ -27,23 +27,17 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
         ::
 
             >>> from creme import compose
+            >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import multiclass
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_iris(),
-            ...     shuffle=True,
-            ...     seed=42
-            ... )
+            >>> X_y = datasets.ImageSegments()
 
             >>> model = compose.Pipeline([
-            ...     ('poly', preprocessing.PolynomialExtender(degree=2)),
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', multiclass.OneVsRestClassifier(
             ...         binary_classifier=linear_model.LogisticRegression())
@@ -53,7 +47,7 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
             >>> metric = metrics.MacroF1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MacroF1: 0.794589
+            MacroF1: 0.774148
 
     """
 

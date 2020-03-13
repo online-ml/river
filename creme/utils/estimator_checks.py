@@ -32,10 +32,10 @@ def yield_datasets(model):
 
     model = guess_model(model)
 
-    if isinstance(model, base.Classifier):
+    if isinstance(model, (base.BinaryClassifier, base.MultiClassifier)):
         yield datasets.Phishing()
     if isinstance(model, base.MultiClassifier):
-        yield stream.iter_sklearn_dataset(sk_datasets.load_iris())
+        yield datasets.ImageSegments().take(500)
     if isinstance(model, base.Regressor):
         yield datasets.TrumpApproval()
     if isinstance(model, base.MultiOutputRegressor):
@@ -116,9 +116,9 @@ def check_str(model):
     assert isinstance(str(model), str)
 
 
-def check_get_tags(model):
-    """Checks that the ``_get_tags`` method works."""
-    assert isinstance(model._get_tags(), dict)
+def check_tags(model):
+    """Checks that the ``_tags`` property works."""
+    assert isinstance(model._tags, dict)
 
 
 def yield_checks(model):
@@ -133,7 +133,7 @@ def yield_checks(model):
 
     yield check_repr
     yield check_str
-    yield check_get_tags
+    yield check_tags
 
     for dataset in yield_datasets(model):
 

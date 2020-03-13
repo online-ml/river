@@ -103,7 +103,7 @@ class Histogram(collections.UserList):
             ...     width=[(b.right - b.left) / 2 for b in hist]
             ... )
 
-        .. image:: ../_static/histogram_docstring.svg
+        .. image:: ../../_static/histogram_docstring.svg
             :align: center
 
     References:

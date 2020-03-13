@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="200px" src="https://docs.google.com/drawings/d/e/2PACX-1vSl80T4MnWRsPX3KvlB2kn6zVdHdUleG_w2zBiLS7RxLGAHxiSYTnw3LZtXh__YMv6KcIOYOvkSt9PB/pub?w=841&h=350" alt="creme_logo">
+  <img height="200px" src="docs/_static/creme.svg" alt="creme_logo">
 </p>
 
 <p align="center">
@@ -23,6 +23,10 @@
   <a href="https://pypi.org/project/creme">
     <img src="https://img.shields.io/pypi/v/creme.svg?label=release&color=blue&style=flat-square" alt="pypi">
   </a>
+  <!-- PePy -->
+  <a href="https://pepy.tech/project/creme">
+    <img src="https://img.shields.io/badge/dynamic/json?style=flat-square&maxAge=86400&label=downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Fcreme" alt="pepy">
+  </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
@@ -30,7 +34,7 @@
 </p>
 
 <p align="center">
-  <b>creme</b> is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. All the tools in the library can be updated with a single observation at a time, and can therefore be used to <b>learn from streaming data</b>.
+  creme is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. All the tools in the library can be updated with a single observation at a time, and can therefore be used to <b>learn from streaming data</b>.
 </p>
 
 ## ⚡️Quickstart
@@ -88,18 +92,18 @@ Note that the `|` (pipe) operator is shorthand for building a pipeline.
 
 ## 🛠 Installation
 
-:snake: You need to install Python 3.6 or above.
-
-Installation can be done by using `pip`. There are [wheels available](https://pypi.org/project/creme/#files) for Linux, MacOS, and Windows.
+`creme` is intended to work with Python 3.6 or above. Installation can be done by using `pip`:
 
     pip install creme
 
-You can also install the latest development version as so:
+There are [wheels available](https://pypi.org/project/creme/#files) for Linux, MacOS, and Windows. You can also install the latest development version as so:
 
     pip install git+https://github.com/creme-ml/creme
 
     # Or, through SSH:
     pip install git+ssh://git@github.com/creme-ml/creme.git
+
+Note that installing the development version requires already having [Cython](https://github.com/cython/cython) installed.
 
 ## 🧠 Philosophy
 

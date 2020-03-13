@@ -1,0 +1,90 @@
+`Version 0.1.0 - 2019-05-08 <https://pypi.org/project/creme/0.1.0/>`_
+=====================================================================
+
+:mod:`base`
+
+- Removed the ``fit_predict_one`` estimator method.
+- Removed the ``fit_predict_proba_one`` estimator method.
+- Removed the ``fit_transform_one`` estimator method.
+
+:mod:`compat`
+
+- Added `compat.convert_sklearn_to_creme`.
+- `compat.convert_creme_to_sklearn` now returns an `sklearn.pipeline.Pipeline` when provided with a `compose.Pipeline`.
+
+:mod:`compose`
+
+- Added `compose.Discard`.
+- Added `compose.Select`.
+- Added ``compose.SplitRegressor``.
+- The ``draw`` method of `compose.Pipeline` now works properly for arbitrary amounts of nesting, including multiple nested ``compose.FeatureUnion``.
+
+:mod:`datasets`
+
+- Added ``datasets.fetch_electricity``.
+
+:mod:`dummy`
+
+- Added `dummy.NoChangeClassifier`.
+- Added `dummy.PriorClassifier`.
+- Added `dummy.StatisticRegressor`.
+
+:mod:`feature_extraction`
+
+- Added `feature_extraction.Differ`.
+- Renamed ``feature_extraction.GroupBy`` to `feature_extraction.Agg`.
+- Renamed ``feature_extraction.TargetGroupBy`` to `feature_extraction.TargetAgg`.
+
+:mod:`feature_selection`
+
+- Added `feature_selection.SelectKBest`.
+- Added `feature_selection.VarianceThreshold`.
+
+:mod:`impute`
+
+- Added `impute.StatImputer`.
+- Removed ``impute.CategoricalImputer``.
+- Removed ``impute.NumericImputer``.
+
+:mod:`linear_model`
+
+- Added `linear_model.PAClassifier`.
+- Added `linear_model.PARegressor`.
+- Added `linear_model.SoftmaxRegression`.
+
+:mod:`metrics`
+
+- Added `metrics.ConfusionMatrix`.
+- Added `metrics.CrossEntropy`.
+- Added `metrics.MacroF1`.
+- Added `metrics.MacroPrecision`.
+- Added `metrics.MacroRecall`.
+- Added `metrics.MicroF1`.
+- Added `metrics.MicroPrecision`.
+- Added `metrics.MicroRecall`.
+- Each metric now has a ``bigger_is_better`` property to indicate if a high value is better than a low one or not.
+
+:mod:`optim`
+
+- Added ``optim.OptimalLR``.
+- Added ``optim.CrossEntropy``.
+- Removed ``optim.PassiveAggressiveI``.
+- Removed ``optim.PassiveAggressiveII``.
+
+:mod:`preprocessing`
+
+- Removed ``preprocessing.Discarder``.
+- Added ``on`` and ``sparse`` parameters to `preprocessing.OneHotEncoder`.
+
+:mod:`stats`
+
+- Added `stats.Covariance`.
+- Added `stats.PearsonCorrelation`.
+- Added ``stats.SmoothMean``.
+
+:mod:`utils`
+
+- Added ``utils.check_estimator``.
+- Added `utils.Histogram`.
+- Added `utils.SortedWindow`.
+- Added `utils.Window`.
