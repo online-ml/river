@@ -460,7 +460,7 @@ class Wrapper(abc.ABC):
     @property
     def _labelloc(self):
         """Indicates location of the wrapper name when drawing pipelines."""
-        return 't'  # for top
+        return 't'  # for top, use 'b' for bottom
 
     def __str__(self):
         return f'{type(self).__name__}({self._model})'
