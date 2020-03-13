@@ -90,8 +90,8 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 class TFIDF(base.Transformer, VectorizerMixin):
     """Computes values TF-IDF values.
 
-    We use the same definition as scikit-learn. The only difference in the results comes the fact
-    that the document frequencies have to be computed online.
+    We use the same definition as scikit-learn. The only difference in the results comes from the
+    fact that the document frequencies have to be computed online.
 
     Parameters:
         on (str): The name of the feature that contains the text to vectorize. If ``None``, then
