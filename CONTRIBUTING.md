@@ -30,7 +30,7 @@ You're now ready to make some changes. How you make the changes is up to you of 
 
 ### Adding your change to the documentation
 
-All classes and function are automatically picked up and added to the documentation. The only thing you have to do is to add an entry to the latest version file in the [`changelog` directory](docs/changelog).
+All classes and function are automatically picked up and added to the documentation. The only thing you have to do is to add an entry to the relevant file in the [`changelogs` directory](docs/changelogs).
 
 
 ## Style conventions
@@ -89,12 +89,6 @@ The documentation is built with [Sphinx](http://www.sphinx-doc.org/en/master/).
 pip install -e ".[docs]"  # installs dependencies required for building the docs
 make livedoc  # builds the docs from scratch and starts a local server
 ```
-
-
-## Release checklist
-
-- Bump the version in `__version__.py`
-- Update `CHANGELOG.md`
 
 
 ## Adding contributors
