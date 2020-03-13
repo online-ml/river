@@ -80,7 +80,7 @@ class BaseFM:
 
     @abc.abstractmethod
     def _init_latents(self) -> collections.defaultdict:
-        """Initializes latents weight dict."""
+        """Initializes latent weights dict."""
 
     def fit_one(self, x, y, sample_weight=1.):
         x = self._ohe_cat_features(x)
