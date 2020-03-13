@@ -56,7 +56,8 @@ docs_packages = dev_packages + [
     'jupyter-client>=5.2.3',
     'nbsphinx>=0.5.1',
     'Sphinx>=2.2.0',
-    'sphinx-autobuild>=0.7.1'
+    'sphinx-autobuild>=0.7.1',
+    'sphinx-material>=0.0.21'
 ]
 
 # The rest you shouldn't have to touch too much :)
