@@ -66,7 +66,7 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     --------
     >>> # Imports
     >>> from skmultiflow.meta import OzaBaggingClassifier
-    >>> from skmultiflow.lazy.knn import KNNClassifier
+    >>> from skmultiflow.lazy import KNNClassifier
     >>> from skmultiflow.data import SEAGenerator
     >>> # Setting up the stream
     >>> stream = SEAGenerator(1, noise_percentage=0.07)

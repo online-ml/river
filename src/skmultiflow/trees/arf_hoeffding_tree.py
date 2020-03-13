@@ -71,6 +71,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
     (see skmultiflow.classification.meta.adaptive_random_forests).
     This Hoeffding Tree includes a max_features parameter, which defines the
     number of randomly selected features to be considered at each split.
+
     """
     def __init__(self,
                  max_byte_size=33554432,

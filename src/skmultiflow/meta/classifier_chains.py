@@ -44,20 +44,6 @@ class ClassifierChain(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiO
     >>> cc.fit(X, Y)
     >>> print(cc.predict(X))
     >>>
-    >>> print("MCC")
-    >>> mcc = MonteCarloClassifierChain(base_estimator=SGDClassifier(max_iter=100, loss='log', random_state=1), M=1000)
-    >>> mcc.fit(X, Y)
-    >>> Yp = mcc.predict(X, M=50)
-    >>> print("with 50 iterations ...")
-    >>> print(Yp)
-    >>> Yp = mcc.predict(X, 'default')
-    >>> print("with default (%d) iterations ..." % 1000)
-    >>> print(Yp)
-    >>>
-    >>> print("PCC")
-    >>> pcc = ProbabilisticClassifierChain(SGDClassifier(max_iter=100, loss='log', random_state=1))
-    >>> pcc.fit(X, Y)
-    >>> print(pcc.predict(X))
     TRUE:
     [[1. 0. 1.]
      [1. 1. 0.]
@@ -74,22 +60,7 @@ class ClassifierChain(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, MultiO
      [1. 1. 0.]
      [0. 0. 0.]
      [1. 1. 0.]]
-    MCC
-    with 50 iterations ...
-    [[1. 0. 1.]
-     [1. 1. 0.]
-     [0. 0. 0.]
-     [1. 1. 0.]]
-    with default (1000) iterations ...
-    [[1. 0. 1.]
-     [1. 1. 0.]
-     [0. 0. 0.]
-     [1. 1. 0.]]
-    PCC
-    [[1. 0. 1.]
-     [1. 1. 0.]
-     [0. 0. 0.]
-     [1. 1. 0.]]
+
 
 
     Notes
@@ -317,6 +288,31 @@ class ProbabilisticClassifierChain(ClassifierChain):
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
+
+    Examples
+    --------
+    >>> from skmultiflow.data import make_logical
+    >>>
+    >>> X, Y = make_logical(random_state=1)
+    >>>
+    >>> print("TRUE: ")
+    >>> print(Y)
+    >>> print("vs")
+    >>> print("PCC")
+    >>> pcc = ProbabilisticClassifierChain(SGDClassifier(max_iter=100, loss='log', random_state=1))
+    >>> pcc.fit(X, Y)
+    >>> print(pcc.predict(X))
+    TRUE:
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+    vs
+    PCC
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
     """
 
     def __init__(self, base_estimator=LogisticRegression(), order=None, random_state=None):
@@ -382,6 +378,42 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
+
+    Examples
+    --------
+    >>> from skmultiflow.data import make_logical
+    >>>
+    >>> X, Y = make_logical(random_state=1)
+    >>>
+    >>> print("TRUE: ")
+    >>> print(Y)
+    >>> print("vs")
+    >>> print("MCC")
+    >>> mcc = MonteCarloClassifierChain()
+    >>> mcc.fit(X, Y)
+    >>> Yp = mcc.predict(X, M=50)
+    >>> print("with 50 iterations ...")
+    >>> print(Yp)
+    >>> Yp = mcc.predict(X, 'default')
+    >>> print("with default (%d) iterations ..." % 1000)
+    >>> print(Yp)
+    TRUE:
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+    vs
+    MCC
+    with 50 iterations ...
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
+    with default (1000) iterations ...
+    [[1. 0. 1.]
+     [1. 1. 0.]
+     [0. 0. 0.]
+     [1. 1. 0.]]
     """
     def __init__(self, base_estimator=LogisticRegression(), M=10, random_state=None):
         # Do M iterations, unless overridden by M at prediction time

@@ -73,6 +73,38 @@ class OnlineSMOTEBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimator
     .. [1] B. Wang and J. Pineau, "Online Bagging and Boosting for Imbalanced Data Streams,"
        in IEEE Transactions on Knowledge and Data Engineering, vol. 28, no. 12, pp. 3353-3366,
        1 Dec. 2016. doi: 10.1109/TKDE.2016.2609424
+
+    Examples
+    --------
+    .. code-block:: python
+
+       # Imports
+       from skmultiflow.data import SEAGenerator
+       from skmultiflow.meta import OnlineSMOTEBaggingClassifier
+
+       # Setup a data stream
+       stream = SEAGenerator(random_state=1)
+
+       # Setup variables to control loop and track performance
+       n_samples = 0
+       correct_cnt = 0
+       max_samples = 200
+
+       # Setup the Online RUSBoost Classifier
+       online_smote_bagging_classifier = OnlineSMOTEBaggingClassifier()
+
+       # Train the classifier with the samples provided by the data stream
+       while n_samples < max_samples and stream.has_more_samples():
+           X, y = stream.next_sample()
+           y_pred = online_smote_bagging_classifier.predict(X)
+           if y[0] == y_pred[0]:
+               correct_cnt += 1
+           online_smote_bagging_classifier = online_smote_bagging_classifier.partial_fit(X, y)
+           n_samples += 1
+
+       # Display results
+       print('{} samples analyzed.'.format(n_samples))
+       print('Online SMOTE Bagging Classifier performance: {}'.format(correct_cnt / n_samples))
     """
 
     def __init__(self, base_estimator=KNNADWINClassifier(), n_estimators=10, sampling_rate=1, drift_detection=True,
