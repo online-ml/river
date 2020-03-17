@@ -7,11 +7,6 @@ from skmultiflow.trees.nodes import AdaNode
 
 from skmultiflow.utils import get_max_value_key, normalize_values_in_dict
 
-MAJORITY_CLASS = 'mc'
-NAIVE_BAYES = 'nb'
-NAIVE_BAYES_ADAPTIVE = 'nba'
-ERROR_WIDTH_THRESHOLD = 300
-
 
 class AdaLearningNode(LearningNodeNBAdaptive, AdaNode):
     """ Learning node for Hoeffding Adaptive Tree that uses Adaptive Naive
@@ -89,24 +84,30 @@ class AdaLearningNode(LearningNodeNBAdaptive, AdaNode):
             self.set_weight_seen_at_last_split_evaluation(weight_seen)
 
     # Override LearningNodeNBAdaptive
-    def get_class_votes(self, X, ht):
+    def get_class_votes(self, X, hat):
         # dist = {}
-        prediction_option = ht.leaf_prediction
+        prediction_option = hat.leaf_prediction
         # MC
-        if prediction_option == MAJORITY_CLASS:
+        if prediction_option == hat._MAJORITY_CLASS:
             dist = self.get_observed_class_distribution()
         # NB
-        elif prediction_option == NAIVE_BAYES:
-            dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
+        elif prediction_option == hat._NAIVE_BAYES:
+            dist = do_naive_bayes_prediction(
+                X, self._observed_class_distribution, self._attribute_observers
+            )
         # NBAdaptive (default)
         else:
             if self._mc_correct_weight > self._nb_correct_weight:
                 dist = self.get_observed_class_distribution()
             else:
-                dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
+                dist = do_naive_bayes_prediction(
+                    X, self._observed_class_distribution,
+                    self._attribute_observers
+                )
 
         dist_sum = sum(dist.values())  # sum all values in dictionary
-        normalization_factor = dist_sum * self.get_error_estimation() * self.get_error_estimation()
+        normalization_factor = dist_sum * self.get_error_estimation() * \
+            self.get_error_estimation()
 
         if normalization_factor > 0.0:
             dist = normalize_values_in_dict(dist, normalization_factor, inplace=False)
