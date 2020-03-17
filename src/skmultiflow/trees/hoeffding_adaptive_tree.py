@@ -31,12 +31,6 @@ def HAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200
                                            bootstrap_sampling=bootstrap_sampling)
 
 
-MAJORITY_CLASS = 'mc'
-NAIVE_BAYES = 'nb'
-NAIVE_BAYES_ADAPTIVE = 'nba'
-ERROR_WIDTH_THRESHOLD = 300
-
-
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     """ Hoeffding Adaptive Tree classifier.
 
@@ -125,6 +119,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     # =============================================
     # == Hoeffding Adaptive Tree implementation ===
     # =============================================
+
+    _ERROR_WIDTH_THRESHOLD = 300
 
     def __init__(self,
                  max_byte_size=33554432,
