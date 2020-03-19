@@ -24,7 +24,7 @@ class AutoCorrelation(base.Univariate):
             0
             0
             -1.0
-            0.103552...
+            0.103552
 
             >>> auto_corr = stats.AutoCorrelation(lag=2)
             >>> for x in [0.25, 0.5, 0.2, -0.05]:

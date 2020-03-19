@@ -143,7 +143,7 @@ class LinearRegression(GLM, base.Regressor):
             MAE: 0.616405
 
             >>> model['LinearRegression'].intercept
-            38.000439...
+            38.000439
 
     Note:
         Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
@@ -177,18 +177,13 @@ class LinearRegression(GLM, base.Regressor):
 
             ::
 
+                >>> from creme import datasets
                 >>> from creme import linear_model
                 >>> from creme import metrics
                 >>> from creme import model_selection
                 >>> from creme import preprocessing
-                >>> from creme import stream
-                >>> from sklearn import datasets
 
-                >>> X_y = stream.iter_sklearn_dataset(
-                ...     dataset=datasets.load_boston(),
-                ...     shuffle=True,
-                ...     seed=42
-                ... )
+                >>> X_y = datasets.TrumpApproval()
 
                 >>> model = (
                 ...     preprocessing.StandardScaler() |
@@ -200,58 +195,36 @@ class LinearRegression(GLM, base.Regressor):
                 ...     model = model.fit_one(x, y)
 
                 >>> model.debug_one(x)
-                ... # doctest: +NORMALIZE_WHITESPACE
                 0. Input
                 --------
-                AGE: 83.40000 (float64)
-                B: 395.43000 (float64)
-                CHAS: 1.00000 (float64)
-                CRIM: 5.20177 (float64)
-                DIS: 2.72270 (float64)
-                INDUS: 18.10000 (float64)
-                LSTAT: 11.48000 (float64)
-                NOX: 0.77000 (float64)
-                PTRATIO: 20.20000 (float64)
-                RAD: 24.00000 (float64)
-                RM: 6.12700 (float64)
-                TAX: 666.00000 (float64)
-                ZN: 0.00000 (float64)
+                gallup: 43.84321 (float)
+                ipsos: 40.57068 (float)
+                morning_consult: 37.81875 (float)
+                ordinal_date: 737389 (int)
+                rasmussen: 40.10469 (float)
+                you_gov: 41.63691 (float)
                 <BLANKLINE>
                 1. StandardScaler
                 -----------------
-                AGE: 0.52667 (float64)
-                B: 0.42451 (float64)
-                CHAS: 3.66477 (float64)
-                CRIM: 0.18465 (float64)
-                DIS: -0.50925 (float64)
-                INDUS: 1.01499 (float64)
-                LSTAT: -0.16427 (float64)
-                NOX: 1.85804 (float64)
-                PTRATIO: 0.80578 (float64)
-                RAD: 1.65960 (float64)
-                RM: -0.22435 (float64)
-                TAX: 1.52941 (float64)
-                ZN: -0.48724 (float64)
+                gallup: 1.18751 (float)
+                ipsos: -0.04683 (float)
+                morning_consult: -1.22583 (float)
+                ordinal_date: 1.72946 (float)
+                rasmussen: -0.23857 (float)
+                you_gov: 0.44131 (float)
                 <BLANKLINE>
                 2. LinearRegression
                 -------------------
-                Name        Value      Weight      Contribution
-                Intercept    1.00000    21.30237       21.30237
-                    CHAS    3.66477     0.80408        2.94679
-                    RAD    1.65960     0.58526        0.97129
-                    DIS   -0.50925    -1.57885        0.80404
-                    LSTAT   -0.16427    -3.16813        0.52043
-                        B    0.42451     1.05251        0.44681
-                    CRIM    0.18465    -0.88817       -0.16400
-                    ZN   -0.48724     0.43327       -0.21111
-                    AGE    0.52667    -0.45398       -0.23909
-                    INDUS    1.01499    -0.35933       -0.36471
-                    RM   -0.22435     3.41237       -0.76558
-                    TAX    1.52941    -0.64650       -0.98876
-                    NOX    1.85804    -0.59396       -1.10361
-                PTRATIO    0.80578    -1.78695       -1.43988
+                Name              Value      Weight      Contribution
+                      Intercept    1.00000    38.00044       38.00044
+                   ordinal_date    1.72946     2.23125        3.85885
+                         gallup    1.18751     0.28647        0.34019
+                        you_gov    0.44131    -0.01270       -0.00560
+                          ipsos   -0.04683     1.01815       -0.04768
+                      rasmussen   -0.23857     0.45099       -0.10759
+                morning_consult   -1.22583     0.35181       -0.43126
                 <BLANKLINE>
-                Prediction: 21.71498
+                Prediction: 41.60735
 
         """
 

@@ -128,8 +128,8 @@ class TargetAgg(base.Transformer):
             {'target_bayes_mean_by_place': 3.0}
             {'target_bayes_mean_by_place': 9.5}
             {'target_bayes_mean_by_place': 22.5}
-            {'target_bayes_mean_by_place': 14.333333...}
-            {'target_bayes_mean_by_place': 34.333333...}
+            {'target_bayes_mean_by_place': 14.333}
+            {'target_bayes_mean_by_place': 34.333}
 
     References:
         1. `Streaming groupbys in pandas for big datasets <https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/>`_

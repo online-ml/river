@@ -1,4 +1,8 @@
-"""Dummy estimators."""
+"""Dummy estimators.
+
+This module is here for testing purposes, as well as providing baseline performances.
+
+"""
 import collections
 
 from . import base

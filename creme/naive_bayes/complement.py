@@ -47,7 +47,7 @@ class ComplementNB(base.BaseNB):
             True
 
             >>> model.predict_proba_one('food job meat')
-            {'health': 0.779191..., 'butcher': 0.220808...}
+            {'health': 0.779191, 'butcher': 0.220808}
 
     References:
         1. `Rennie, J.D., Shih, L., Teevan, J. and Karger, D.R., 2003. Tackling the poor assumptions of naive bayes text classifiers. In Proceedings of the 20th international conference on machine learning (ICML-03) (pp. 616-623). <https://people.csail.mit.edu/jrennie/papers/icml03-nb.pdf>`_

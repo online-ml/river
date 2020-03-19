@@ -160,10 +160,10 @@ cdef class CrossEntropy(MultiClassLoss):
 
             >>> for y_t, y_p in zip(y_true, y_pred):
             ...     print(loss.eval(y_t, y_p))
-            1.222454...
-            1.116929...
-            1.437209...
-            1.509797...
+            1.222454
+            1.116929
+            1.437209
+            1.509797
 
             >>> for y_t, y_p in zip(y_true, y_pred):
             ...     print(loss.gradient(y_t, y_p))

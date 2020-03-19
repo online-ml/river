@@ -90,7 +90,7 @@ class BiasedMF(base.Recommender):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-            6.489025...
+            6.489025
 
     Note:
         `reco.BiasedMF` model expect a dict input with a ``user`` and an ``item`` entries without

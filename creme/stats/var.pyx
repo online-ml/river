@@ -30,9 +30,9 @@ cdef class Var(creme.stats.base.Univariate):
             0.0
             2.0
             1.0
-            2.916666...
+            2.916666
             7.7
-            12.56666...
+            12.56666
 
     References:
         1. `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
@@ -92,9 +92,9 @@ class RollingVar(base.RollingUnivariate):
             ...     print(rolling_variance.update(x).get())
             0.0
             4.5
-            2.333333...
-            17.333333...
-            25.333333...
+            2.333333
+            17.333333
+            25.333333
             16.0
 
     """

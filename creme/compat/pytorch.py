@@ -95,7 +95,6 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
     """
 
     def __init__(self, net, loss_fn, optimizer, batch_size=1):
-        import torch
         super().__init__(
             net=net,
             loss_fn=loss_fn,

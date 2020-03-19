@@ -26,7 +26,6 @@ class CrossEntropy(stats.Mean, BaseCrossEntropy):
         ::
 
             >>> from creme import metrics
-            >>> from sklearn.metrics import log_loss
 
             >>> y_true = [0, 1, 2, 2]
             >>> y_pred = [
@@ -41,10 +40,10 @@ class CrossEntropy(stats.Mean, BaseCrossEntropy):
             >>> for y_t, y_p in zip(y_true, y_pred):
             ...     metric = metric.update(y_t, y_p)
             ...     print(metric.get())
-            1.222454...
-            1.169691...
-            1.258864...
-            1.321597...
+            1.222454
+            1.169691
+            1.258864
+            1.321597
 
             >>> metric
             CrossEntropy: 1.321598

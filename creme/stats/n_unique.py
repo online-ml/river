@@ -1,7 +1,7 @@
 import math
+import random
 
-import numpy as np
-from sklearn import utils
+import mmh3
 
 from . import base
 
@@ -16,8 +16,7 @@ class NUnique(base.Univariate):
     Parameters:
         error_rate (float): Desired error rate. Memory usage is inversely proportional to this
             value.
-        encoding (str): Encoding used for `sklearn.utils.murmurhash3_32`. Defaults to ``'utf-8'``.
-        random_state (int): Integer seed for the hashing algorithm. Defaults to `None`.
+        seed (int): Set the seed to produce identical results.
 
     Attributes:
         n_bits (int)
@@ -43,7 +42,7 @@ class NUnique(base.Univariate):
             >>> for letter in alphabet:
             ...     n_unique = n_unique.update(letter)
             >>> n_unique.get()
-            24
+            27
 
             We can increase the precision by lowering the ``error_rate`` parameter.
 
@@ -61,24 +60,19 @@ class NUnique(base.Univariate):
 
     P32 = 2 ** 32
 
-    def __init__(self, error_rate=0.01, encoding='utf-8', seed=None):
+    def __init__(self, error_rate=0.01, seed=None):
         self.n_bits = int(math.ceil(math.log((1.04 / error_rate) ** 2, 2)))
         self.n_buckets = 1 << self.n_bits
         self.buckets = [0] * self.n_buckets
-        self.encoding = encoding
         self.seed = seed
-        self._rng = np.random.RandomState(seed)
-        self._hash_seed = self._rng.randint(0, 2 ** 32 - 1)
+        self._hash_seed = random.Random(seed).randint(0, 2 ** 10)
 
     @property
     def name(self):
         return 'n_unique'
 
-    def _hash_str(self, string):
-        return utils.murmurhash3_32(bytes(string, self.encoding), self._hash_seed)
-
     def update(self, x):
-        x = self._hash_str(x)
+        x = mmh3.hash(x, seed=self._hash_seed)
         i = x & NUnique.P32 - 1 >> 32 - self.n_bits
         z = 35 - len(bin(NUnique.P32 - 1 & x << self.n_bits | 1 << self.n_bits - 1))
         self.buckets[i] = max(self.buckets[i], z)

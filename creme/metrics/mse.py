@@ -24,7 +24,7 @@ class MSE(stats.Mean, base.RegressionMetric):
             ...     print(metric.update(y_t, y_p).get())
             0.25
             0.25
-            0.166666...
+            0.1666
             0.375
 
     """

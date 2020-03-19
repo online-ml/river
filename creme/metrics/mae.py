@@ -24,7 +24,7 @@ class MAE(stats.Mean, base.RegressionMetric):
             ...     print(metric.update(y_t, y_p).get())
             0.5
             0.5
-            0.333333...
+            0.333
             0.5
 
             >>> metric

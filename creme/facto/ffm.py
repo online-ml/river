@@ -192,7 +192,7 @@ class FFMRegressor(FFM, base.Regressor):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-            5.319945...
+            5.319945
 
     Note:
         - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'}`` becomes ``x = {'user_Joe': 1}``).

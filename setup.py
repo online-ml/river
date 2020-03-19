@@ -23,7 +23,7 @@ except ImportError:
 
 # Package meta-data.
 NAME = 'creme'
-DESCRIPTION = 'Incremental machine learning in Python'
+DESCRIPTION = 'Online machine learning in Python'
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
 URL = 'https://github.com/creme-ml/creme'
 EMAIL = 'maxhalford25@gmail.com'
@@ -32,23 +32,25 @@ REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
 # Package requirements.
-base_packages = ['numpy>=1.18.1', 'scipy>=1.4.1', 'scikit-learn>=0.22.1']
+base_packages = ['mmh3==2.5.1', 'numpy>=1.18.1', 'scipy>=1.4.1']
 
 compat_packages = base_packages + [
+    'scikit-learn>=0.22.1',
     'pandas>=1.0.1',
     'torch>=1.4.0'
 ]
 
 dev_packages = [
     'Cython>=0.29.6',
+    'flake8>=3.7.9',
     'graphviz>=0.10.1',
     'matplotlib>=3.0.2',
+    'mypy>=0.761',
     'nbval>=0.9.1',
     'pytest>=4.5.0',
     'pytest-cov>=2.6.1',
     'pytest-cython>=0.1.0',
-    'flake8>=3.7.9',
-    'mypy>=0.761'
+    'scikit-learn>=0.22.1'
 ]
 
 docs_packages = dev_packages + [

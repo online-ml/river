@@ -1,4 +1,4 @@
-from sklearn import utils
+import random
 
 from .. import stats
 
@@ -43,13 +43,13 @@ class RandomNormal(base.Recommender):
             ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
             ... )
 
-            >>> model = reco.RandomNormal(random_state=42)
+            >>> model = reco.RandomNormal(seed=42)
 
             >>> for x, y in X_y:
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-            8.092809...
+            6.883895
 
     Note:
         `reco.RandomNormal` model expect a dict input with a ``user`` and an ``item`` entries
@@ -58,11 +58,12 @@ class RandomNormal(base.Recommender):
 
     """
 
-    def __init__(self, random_state=None):
+    def __init__(self, seed=None):
         super().__init__()
         self.variance = stats.Var()
         self.mean = stats.Mean()
-        self.random_state = utils.check_random_state(random_state)
+        self.seed = seed
+        self._rng = random.Random(seed)
 
     def _fit_one(self, user, item, y):
         y_pred = self._predict_one(user, item)
@@ -73,4 +74,4 @@ class RandomNormal(base.Recommender):
     def _predict_one(self, user, item):
         μ = self.mean.get() or 0
         σ = (self.variance.get() or 1) ** 0.5
-        return self.random_state.normal(μ, σ)
+        return self._rng.gauss(μ, σ)
