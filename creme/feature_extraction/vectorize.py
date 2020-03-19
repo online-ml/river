@@ -5,8 +5,7 @@ import math
 import operator
 import re
 import typing
-
-from sklearn import feature_extraction
+import unicodedata
 
 from .. import base
 
@@ -18,6 +17,19 @@ N_GRAM = typing.Union[
     str,  # unigram
     typing.Tuple[str, ...]  # n-gram
 ]
+
+
+def strip_accents_unicode(s: str) -> str:
+    """Transform accentuated unicode symbols into their ASCII counterpart."""
+    try:
+        # If `s` is ASCII-compatible, then it does not contain any accented
+        # characters and we can avoid an expensive list comprehension
+        s.encode('ASCII', errors='strict')
+        return s
+    except UnicodeEncodeError:
+        normalized = unicodedata.normalize('NFKD', s)
+        return ''.join([c for c in normalized if not unicodedata.combining(c)])
+
 
 
 def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
@@ -110,7 +122,7 @@ class VectorizerMixin:
             self.processing_steps.append(preprocessor)
         else:
             if self.strip_accents:
-                self.processing_steps.append(feature_extraction.text.strip_accents_unicode)
+                self.processing_steps.append(strip_accents_unicode)
             if self.lowercase:
                 self.processing_steps.append(str.lower)
 
@@ -255,10 +267,10 @@ class TFIDF(BagOfWords):
             >>> for sentence in corpus:
             ...     tfidf = tfidf.fit_one(sentence)
             ...     print(tfidf.transform_one(sentence))
-            {'this': 0.447..., 'is': 0.447..., 'the': 0.447..., 'first': 0.447..., 'document': 0.447...}
-            {'this': 0.333..., 'document': 0.667..., 'is': 0.333..., 'the': 0.333..., 'second': 0.469...}
-            {'and': 0.497..., 'this': 0.293..., 'is': 0.293..., 'the': 0.293..., 'third': 0.497..., 'one': 0.497...}
-            {'is': 0.384..., 'this': 0.384..., 'the': 0.384..., 'first': 0.580..., 'document': 0.469...}
+            {'this': 0.447, 'is': 0.447, 'the': 0.447, 'first': 0.447, 'document': 0.447}
+            {'this': 0.333, 'document': 0.667, 'is': 0.333, 'the': 0.333, 'second': 0.469}
+            {'and': 0.497, 'this': 0.293, 'is': 0.293, 'the': 0.293, 'third': 0.497, 'one': 0.497}
+            {'is': 0.384, 'this': 0.384, 'the': 0.384, 'first': 0.580, 'document': 0.469}
 
     """
 

@@ -26,14 +26,13 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
 
         ::
 
+            >>> from creme import datasets
             >>> from creme import ensemble
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import optim
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
             >>> optimizers = [
             ...     optim.SGD(0.01),
@@ -43,10 +42,7 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
 
             >>> for optimizer in optimizers:
             ...
-            ...     X_y = stream.iter_sklearn_dataset(
-            ...         dataset=datasets.load_boston(),
-            ...         shuffle=False
-            ...     )
+            ...     X_y = datasets.TrumpApproval()
             ...     metric = metrics.MAE()
             ...     model = (
             ...         preprocessing.StandardScaler() |
@@ -57,14 +53,11 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
             ...     )
             ...
             ...     print(optimizer, model_selection.progressive_val_score(X_y, model, metric))
-            SGD MAE: 7.204077
-            RMSProp MAE: 3.312495
-            AdaGrad MAE: 3.98455
+            SGD MAE: 0.535662
+            RMSProp MAE: 0.527917
+            AdaGrad MAE: 0.480025
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_boston(),
-            ...     shuffle=False
-            ... )
+            >>> X_y = datasets.TrumpApproval()
             >>> metric = metrics.MAE()
             >>> hedge = (
             ...     preprocessing.StandardScaler() |
@@ -72,12 +65,13 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
             ...         regressors=[
             ...             linear_model.LinearRegression(optimizer=o, intercept_lr=.1)
             ...             for o in optimizers
-            ...         ]
+            ...         ],
+            ...         learning_rate=0.005
             ...     )
             ... )
 
             >>> model_selection.progressive_val_score(X_y, hedge, metric)
-            MAE: 3.245396
+            MAE: 0.474782
 
     References:
         1. `Online Learning from Experts: Weighed Majority and Hedge <https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf>`_

@@ -210,7 +210,7 @@ class FwFMRegressor(FwFM, base.Regressor):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
-            5.236501...
+            5.236501
 
     Note:
         - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.

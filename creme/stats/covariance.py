@@ -21,7 +21,7 @@ class Covariance(base.Bivariate):
             >>> for xi, yi in zip(x, y):
             ...     print(cov.update(xi, yi).get())
             0.0
-            -1.044999...
+            -1.044999
             -4.286
 
     References:

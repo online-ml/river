@@ -21,8 +21,8 @@ class RMSE(mse.MSE):
             ...     print(metric.update(y_t, y_p).get())
             0.5
             0.5
-            0.408248...
-            0.612372...
+            0.408248
+            0.612372
 
             >>> metric
             RMSE: 0.612372

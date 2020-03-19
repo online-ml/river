@@ -24,10 +24,10 @@ class SEM(var.Var):
             ...     print(sem.update(x).get())
             0.0
             1.0
-            0.577350...
-            0.853912...
-            1.240967...
-            1.447219...
+            0.577350
+            0.853912
+            1.240967
+            1.447219
 
     References:
         1. `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
@@ -67,10 +67,10 @@ class RollingSEM(var.RollingVar):
             ...     print(rolling_sem.update(x).get())
             0.0
             1.5
-            0.881917...
-            2.403700...
-            2.905932...
-            2.309401...
+            0.881917
+            2.403700
+            2.905932
+            2.309401
 
     """
 

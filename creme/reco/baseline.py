@@ -63,7 +63,7 @@ class Baseline(base.Recommender):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-            6.538120...
+            6.538120
 
     Note:
         reco.Baseline model expect a dict input with a ``user`` and an ``item`` entries without any

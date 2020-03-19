@@ -18,18 +18,15 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
         ::
 
             >>> from creme import compose
+            >>> from creme import datasets
             >>> from creme import ensemble
             >>> from creme import linear_model
             >>> from creme import metrics
             >>> from creme import model_selection
             >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=False
-            ... )
+            >>> X_y = datasets.Phishing()
+
             >>> model = compose.Pipeline([
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('stack', ensemble.StackingBinaryClassifier(
@@ -41,10 +38,11 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
             ...         meta_classifier=linear_model.LogisticRegression()
             ...     ))
             ... ])
+
             >>> metric = metrics.F1()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.957123
+            F1: 0.878005
 
     References:
         1. `A Kaggler's Guide to Model Stacking in Practice <http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/>`_

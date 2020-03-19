@@ -70,7 +70,7 @@ class FunkMF(base.Recommender):
             ...     _ = model.fit_one(x, y)
 
             >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-            1.866272...
+            1.866272
 
     Note:
         `reco.FunkMF` model expect a dict input with a ``user`` and an ``item`` entries without any

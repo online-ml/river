@@ -28,8 +28,8 @@ class Rolling(base.WrapperMetric, utils.Window):
             ...     print(metric.update(y_t, y_p))
             Rolling of size 2 MSE: 0.25
             Rolling of size 2 MSE: 0.25
-            Rolling of size 2 MSE: 0.125...
-            Rolling of size 2 MSE: 0.5...
+            Rolling of size 2 MSE: 0.125
+            Rolling of size 2 MSE: 0.5
 
     """
 

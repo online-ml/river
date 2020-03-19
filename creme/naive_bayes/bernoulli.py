@@ -84,9 +84,9 @@ class BernoulliNB(base.BaseNB):
             >>> tokens = model['tokenize'].transform_one(new_text)
             >>> jlh = model['nb'].joint_log_likelihood(tokens)
             >>> math.exp(jlh['yes'])
-            0.005184...
+            0.005184
             >>> math.exp(jlh['no'])
-            0.021947...
+            0.021947
             >>> model.predict_one(new_text)
             'no'
 

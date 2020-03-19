@@ -23,7 +23,7 @@ class Gaussian(base.ContinuousDistribution):
             𝒩(μ=6.500, σ=0.707)
 
             >>> p.pdf(6.5)
-            0.564189...
+            0.564189
 
     """
 

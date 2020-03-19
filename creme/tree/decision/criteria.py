@@ -20,7 +20,7 @@ def entropy(dist):
         >>> dist = proba.Multinomial(events)
 
         >>> entropy(dist)
-        1.970950...
+        1.97095
 
     References:
         1. `A Simple Explanation of Information Gain and Entropy <https://victorzhou.com/blog/information-gain/>`_

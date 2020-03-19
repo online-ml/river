@@ -72,9 +72,9 @@ class MultinomialNB(base.BaseNB):
             >>> tokens = model['tokenize'].transform_one(new_text)
             >>> jlh = model['nb'].joint_log_likelihood(tokens)
             >>> math.exp(jlh['yes'])
-            0.000301...
+            0.000301
             >>> math.exp(jlh['no'])
-            0.000135...
+            0.000135
             >>> model.predict_one(new_text)
             'yes'
 
