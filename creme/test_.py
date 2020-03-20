@@ -75,7 +75,7 @@ def get_all_estimators():
 
     try:
         ignored.append(compat.PyTorch2CremeRegressor)
-    except ImportError:
+    except AttributeError:
         pass
 
     def is_estimator(obj):
