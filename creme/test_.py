@@ -33,7 +33,7 @@ from creme.compat.sklearn import SKL2CremeBase
 
 def get_all_estimators():
 
-    ignored = [
+    ignored = (
         Creme2SKLBase,
         SKL2CremeBase,
         compose.FuncTransformer,
@@ -71,10 +71,10 @@ def get_all_estimators():
         time_series.Detrender,
         time_series.GroupDetrender,
         time_series.SNARIMAX
-    ]
+    )
 
     try:
-        ignored.append(compat.PyTorch2CremeRegressor)
+        ignored = (*ignored, compat.PyTorch2CremeRegressor)
     except AttributeError:
         pass
 
