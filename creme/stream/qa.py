@@ -12,7 +12,7 @@ class Memento(collections.namedtuple('Memento', 'i x y t_expire')):
         return self.t_expire < other.t_expire
 
 
-def simulate_qa(X_y, moment, delay):
+def simulate_qa(X_y, moment, delay, copy=True):
     """Simulate a time-ordered question and answer session.
 
     Parameters:
@@ -30,6 +30,9 @@ def simulate_qa(X_y, moment, delay):
             If ``None`` is passed, then no delay will be used, which leads to doing standard online
             validation. If a scalar is passed, such an `int` or a `datetime.timedelta`, then the
             delay is constant.
+        copy (bool): If ``True``, then a separate copy of the features are yielded the second time
+            around. This ensures that inadvertent modifications in downstream code don't have any
+            effect.
 
     """
 
@@ -76,7 +79,9 @@ def simulate_qa(X_y, moment, delay):
             yield i_old, x_old, y_old
             del mementos[0]
 
-        queue(mementos, Memento(i, copy.deepcopy(x), y, t + d))
+        queue(mementos, Memento(i, x, y, t + d))
+        if copy:
+            x = copy.deepcopy(x)
         yield i, x, None
 
     for memento in mementos:

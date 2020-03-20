@@ -1,0 +1,6 @@
+`Version 0.6.0 - 2020-06-01 <https://pypi.org/project/creme/0.6.0/>`_
+=====================================================================
+
+:mod:`simulate`
+
+- Add a ``copy`` parameter to `stream.simulate_qa` in order to handle unwanted feature modifications.

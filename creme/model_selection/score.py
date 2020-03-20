@@ -66,7 +66,7 @@ def progressive_val_score(X_y, model, metric, moment=None, delay=None, print_eve
     if show_time:
         start = time.perf_counter()
 
-    for i, x, y in stream.simulate_qa(X_y, moment, delay):
+    for i, x, y in stream.simulate_qa(X_y, moment, delay, copy=True):
 
         # Question
         if y is None:
