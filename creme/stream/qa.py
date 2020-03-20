@@ -1,6 +1,6 @@
 import bisect
 import collections
-import copy
+from copy import deepcopy
 
 
 __all__ = ['simulate_qa']
@@ -81,7 +81,7 @@ def simulate_qa(X_y, moment, delay, copy=True):
 
         queue(mementos, Memento(i, x, y, t + d))
         if copy:
-            x = copy.deepcopy(x)
+            x = deepcopy(x)
         yield i, x, None
 
     for memento in mementos:
