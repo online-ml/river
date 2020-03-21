@@ -101,11 +101,12 @@ class Branch(Node):
             ... )
 
             >>> for parent_no, child_no, parent, child, child_depth in tree.iter_edges():
-            ...     print(parent_no, child_no, parent.no, child.no, child_depth)
-            0 1 0 1 1
-            1 2 1 2 2
-            1 3 1 3 2
-            0 4 0 4 1
+            ...     print(parent_no, child_no, child_depth)
+            None 0 0
+            0 1 1
+            1 2 2
+            1 3 2
+            0 4 1
 
         """
 
