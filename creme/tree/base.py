@@ -55,7 +55,9 @@ class Branch(Node):
 
     def iter_dfs(self, depth=0):
         """Iterates over nodes in a depth-first manner.
+
         Example:
+
             >>> tree = Branch(
             ...     None,
             ...     Branch(
@@ -67,6 +69,7 @@ class Branch(Node):
             ...     Leaf(no=4),
             ...     no=0
             ... )
+
             >>> for node, depth in tree.iter_dfs():
             ...     print(f'#{node.no}, depth {depth}')
             #0, depth 0
@@ -74,6 +77,7 @@ class Branch(Node):
             #2, depth 2
             #3, depth 2
             #4, depth 1
+
         """
         yield self, depth
         yield from self.left.iter_dfs(depth=depth + 1)
@@ -95,14 +99,15 @@ class Branch(Node):
             ...     Leaf(no=4),
             ...     no=0
             ... )
+
             >>> for parent_no, child_no, parent, child, child_depth in tree.iter_edges():
             ...     print(parent_no, child_no, parent.no, child.no, child_depth)
             0 1 0 1 1
             1 2 1 2 2
             1 3 1 3 2
             0 4 0 4 1
-        """
 
+        """
         counter = 0
 
         def iterate(node, depth):
@@ -144,11 +149,14 @@ def iter_blocks(tree, limits, depth=-1):
     """Returns the block which encloses each node at a given depth.
     This only makes sense if the branches of the provided tree use the ``<`` operator as a split
     rule.
+
     Parameters:
         tree (Node)
         limits (dict)
         depth (int): Desired tree depth. Set to ``-1`` to iterate over the leaves.
+
     Example:
+
         >>> import operator
         >>> tree = Branch(
         ...     Split('x', operator.lt, .5),
@@ -159,13 +167,14 @@ def iter_blocks(tree, limits, depth=-1):
         ...         Leaf(no=2)
         ...     )
         ... )
+
         >>> for leaf, block in iter_blocks(tree, limits={'x': (0, 1), 'y': (0, 1)}):
         ...     print(leaf.no, block)
         0 {'x': (0, 0.5), 'y': (0, 1)}
         1 {'x': (0.5, 1), 'y': (0, 0.5)}
         2 {'x': (0.5, 1), 'y': (0.5, 1)}
-    """
 
+    """
     if depth == 0 or isinstance(tree, Leaf):
         yield (tree, limits)
         return
