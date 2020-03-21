@@ -37,7 +37,7 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
     @property
     def mode(self):
         try:
-            return max(self, key=self.get())
+            return max(self, key=self.get)
         except:
             return None
 
