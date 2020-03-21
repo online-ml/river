@@ -1,6 +1,12 @@
 """Generic branch and leaf implementation."""
 import collections
 
+try:
+    import graphviz
+    GRAPHVIZ_INSTALLED = True
+except ImportError:
+    GRAPHVIZ_INSTALLED = False
+
 
 class Split(collections.namedtuple('Split', 'on how at')):
     """A data class for storing split details."""
@@ -77,6 +83,60 @@ class Branch(Node):
         yield self, depth
         yield from self.left.iter_dfs(depth=depth + 1)
         yield from self.right.iter_dfs(depth=depth + 1)
+
+    def draw(self, max_depth = 30):
+        """Draws the tree using the ``graphviz`` library."""
+
+        dot = graphviz.Digraph(
+            graph_attr={'splines': 'ortho'},
+            node_attr={'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
+                    'fontsize': '11', 'margin': '0.1,0.0'},
+            edge_attr={'penwidth': '0.6', 'center': 'true'}
+        )
+
+        structure = [(idx, node, depth) for idx, (node, depth) in enumerate(self.iter_dfs())]
+
+        for idx, node, depth in structure:
+
+            if depth <= max_depth:
+
+                if isinstance(node, Branch):
+
+                    text = f'{node.split}'
+
+                elif isinstance(node, Leaf):
+
+                    text = ''
+
+                dot.node(f'{idx}', text)
+
+        def get_edges(structure, max_depth):
+            """Construct list of edges of the tree."""
+            edges = []
+
+            for id_parent, _, depth_parent in structure:
+
+                n_child = 0
+
+                if depth_parent >= max_depth:
+                    continue
+
+                for id_children, _, depth_children in structure[id_parent + 1:]:
+
+                    if depth_parent == (depth_children - 1):
+
+                        edges.append((str(id_parent), str(id_children)))
+
+                        n_child += 1
+
+                    if depth_parent >= depth_children or n_child == 2 :
+                        break
+
+            return edges
+
+        dot.edges(get_edges(structure, max_depth))
+
+        return dot
 
 
 class Leaf(Node):
