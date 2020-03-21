@@ -39,7 +39,7 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
             >>> metric = metrics.LogLoss()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.695681
+            LogLoss: 0.70025
 
     """
 
