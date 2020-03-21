@@ -2,8 +2,13 @@
 import collections
 
 
-class Split(collections.namedtuple('Split', 'on how at')):
+class Split:
     """A data class for storing split details."""
+
+    def __init__(self, on, how, at):
+        self.on = on
+        self.how = how
+        self.at = at
 
     def __call__(self, x):
         return self.how(x[self.on], self.at)
@@ -49,7 +54,7 @@ class Branch(Node):
         return 1 + max(self.left.height, self.right.height)
 
     def iter_dfs(self, depth=0):
-        """Iterates over nodes via depth-first search.
+        """Iterates over nodes in a depth-first manner.
 
         Example:
 
@@ -77,6 +82,48 @@ class Branch(Node):
         yield self, depth
         yield from self.left.iter_dfs(depth=depth + 1)
         yield from self.right.iter_dfs(depth=depth + 1)
+
+    def iter_edges(self):
+        """Iterates over edges in a depth-first manner.
+
+        Example:
+
+            >>> tree = Branch(
+            ...     None,
+            ...     Branch(
+            ...         None,
+            ...         Leaf(no=2),
+            ...         Leaf(no=3),
+            ...         no=1
+            ...     ),
+            ...     Leaf(no=4),
+            ...     no=0
+            ... )
+
+            >>> for parent_no, child_no, parent, child in tree.iter_edges():
+            ...     print(parent_no, child_no, parent.no, child.no)
+            0 1 0 1
+            1 2 1 2
+            1 3 1 3
+            0 4 0 4
+
+        """
+
+        counter = 0
+
+        def iterate(node):
+
+            nonlocal counter
+            no = counter
+
+            if isinstance(node, Branch):
+                for child in (node.left, node.right):
+                    counter += 1
+                    yield no, counter, node, child
+                    if isinstance(child, Branch):
+                        yield from iterate(child)
+
+        yield from iterate(self)
 
 
 class Leaf(Node):
