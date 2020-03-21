@@ -47,6 +47,13 @@ def HoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000, grace_
                                    nb_threshold=nb_threshold,
                                    nominal_attributes=nominal_attributes)
 
+GINI_SPLIT = 'gini'
+INFO_GAIN_SPLIT = 'info_gain'
+HELLINGER = 'hellinger'
+MAJORITY_CLASS = 'mc'
+NAIVE_BAYES = 'nb'
+NAIVE_BAYES_ADAPTIVE = 'nba'
+
 
 class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
     """ Hoeffding Tree or Very Fast Decision Tree classifier.
@@ -140,14 +147,6 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
        print('{} samples analyzed.'.format(n_samples))
        print('Hoeffding Tree accuracy: {}'.format(correct_cnt / n_samples))
     """
-
-    _GINI_SPLIT = 'gini'
-    _INFO_GAIN_SPLIT = 'info_gain'
-    _HELLINGER = 'hellinger'
-    _MAJORITY_CLASS = 'mc'
-    _NAIVE_BAYES = 'nb'
-    _NAIVE_BAYES_ADAPTIVE = 'nba'
-
     # ====================================
     # == Hoeffding Tree implementation ===
     # ====================================
@@ -222,14 +221,9 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
 
     @split_criterion.setter
     def split_criterion(self, split_criterion):
-        if split_criterion != self._GINI_SPLIT and split_criterion != self._INFO_GAIN_SPLIT \
-                and split_criterion != self._HELLINGER:
-            print(
-                "Invalid split_criterion option {}', will use default '{}'".format(
-                    split_criterion, self._INFO_GAIN_SPLIT
-                )
-            )
-            self._split_criterion = self._INFO_GAIN_SPLIT
+        if split_criterion != GINI_SPLIT and split_criterion != INFO_GAIN_SPLIT and split_criterion != HELLINGER:
+            print("Invalid split_criterion option {}', will use default '{}'".format(split_criterion, INFO_GAIN_SPLIT))
+            self._split_criterion = INFO_GAIN_SPLIT
         else:
             self._split_criterion = split_criterion
 
@@ -287,14 +281,11 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
 
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction != self._MAJORITY_CLASS and leaf_prediction != self._NAIVE_BAYES \
-                and leaf_prediction != self._NAIVE_BAYES_ADAPTIVE:
-            print(
-                "Invalid leaf_prediction option {}', will use default '{}'".format(
-                    leaf_prediction, self._NAIVE_BAYES_ADAPTIVE
-                )
-            )
-            self._leaf_prediction = self._NAIVE_BAYES_ADAPTIVE
+        if leaf_prediction != MAJORITY_CLASS and leaf_prediction != NAIVE_BAYES \
+                and leaf_prediction != NAIVE_BAYES_ADAPTIVE:
+            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction,
+                                                                                     NAIVE_BAYES_ADAPTIVE))
+            self._leaf_prediction = NAIVE_BAYES_ADAPTIVE
         else:
             self._leaf_prediction = leaf_prediction
 
@@ -343,7 +334,7 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         self._active_leaf_byte_size_estimate = 0.0
         self._byte_size_estimate_overhead_fraction = 1.0
         self._growth_allowed = True
-        if self._leaf_prediction != self._MAJORITY_CLASS:
+        if self._leaf_prediction != MAJORITY_CLASS:
             self._remove_poor_atts = None
         self._train_weight_seen_by_model = 0.0
 
@@ -573,9 +564,9 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         """ Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
-        if self._leaf_prediction == self._MAJORITY_CLASS:
+        if self._leaf_prediction == MAJORITY_CLASS:
             return ActiveLearningNode(initial_class_observations)
-        elif self._leaf_prediction == self._NAIVE_BAYES:
+        elif self._leaf_prediction == NAIVE_BAYES:
             return LearningNodeNB(initial_class_observations)
         else:  # NAIVE BAYES ADAPTIVE (default)
             return LearningNodeNBAdaptive(initial_class_observations)
@@ -666,11 +657,11 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
 
         """
         if not node.observed_class_distribution_is_pure():
-            if self._split_criterion == self._GINI_SPLIT:
+            if self._split_criterion == GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
-            elif self._split_criterion == self._INFO_GAIN_SPLIT:
+            elif self._split_criterion == INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
-            elif self._split_criterion == self._HELLINGER:
+            elif self._split_criterion == HELLINGER:
                 split_criterion = HellingerDistanceCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()

@@ -10,6 +10,8 @@ from skmultiflow.trees.nodes import AdaNode
 from skmultiflow.drift_detection.adwin import ADWIN
 from skmultiflow.utils import check_random_state
 
+ERROR_WIDTH_THRESHOLD = 300
+
 
 class AdaSplitNodeForRegression(SplitNode, AdaNode):
     """ Node that splits the data in a Regression Hoeffding Adaptive Tree.
@@ -31,10 +33,6 @@ class AdaSplitNodeForRegression(SplitNode, AdaNode):
         self.error_change = False
         self._random_seed = 1
         self._classifier_random = check_random_state(self._random_seed)
-
-        # To normalize the observed errors in the [0, 1] range
-        self._min_error = float('Inf')
-        self._max_error = float('-Inf')
 
     # Override AdaNode
     def number_leaves(self):
@@ -63,11 +61,14 @@ class AdaSplitNodeForRegression(SplitNode, AdaNode):
 
     # Override AdaNode
     def learn_from_instance(self, X, y, weight, rhat, parent, parent_branch):
+
+        true_target = y
+
         normalized_error = 0.0
 
         if self.filter_instance_to_leaf(X, parent, parent_branch).node is not None:
-            y_pred = rhat.predict([X])[0]
-            normalized_error = self.get_normalized_error(y, y_pred)
+            target_prediction = rhat.predict([X])[0]
+            normalized_error = rhat.get_normalized_error(target_prediction, true_target)
         if self._estimation_error_weight is None:
             self._estimation_error_weight = ADWIN()
 
@@ -89,12 +90,12 @@ class AdaSplitNodeForRegression(SplitNode, AdaNode):
 
         # Condition to replace alternate tree
         elif self._alternate_tree is not None and not self._alternate_tree.is_null_error():
-            if self.get_error_width() > rhat._ERROR_WIDTH_THRESHOLD \
-                    and self._alternate_tree.get_error_width() > rhat._ERROR_WIDTH_THRESHOLD:
+            if self.get_error_width() > ERROR_WIDTH_THRESHOLD \
+                    and self._alternate_tree.get_error_width() > ERROR_WIDTH_THRESHOLD:
                 old_error_rate = self.get_error_estimation()
                 alt_error_rate = self._alternate_tree.get_error_estimation()
                 fDelta = .05
-                fN = 1.0 / self._alternate_tree.get_error_width() + 1.0 / self.get_error_width()
+                fN = 1.0 / self._alternate_tree.get_error_width() + 1.0 / (self.get_error_width())
 
                 bound = math.sqrt(2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / fDelta) * fN)
                 # To check, bound never less than (old_error_rate - alt_error_rate)
@@ -111,7 +112,7 @@ class AdaSplitNodeForRegression(SplitNode, AdaNode):
                 elif bound < alt_error_rate - old_error_rate:
                     if isinstance(self._alternate_tree, ActiveLearningNode):
                         self._alternate_tree = None
-                    elif isinstance(self._alternate_tree, InactiveLearningNode):
+                    elif isinstance(self._alternate_tree, ActiveLearningNode):
                         self._alternate_tree = None
                     else:
                         self._alternate_tree.kill_tree_children(rhat)
@@ -140,11 +141,11 @@ class AdaSplitNodeForRegression(SplitNode, AdaNode):
 
     # Override AdaNode
     def kill_tree_children(self, rhat):
-        for child in self._children.values():
+        for child in self._children:
             if child is not None:
                 # Delete alternate tree if it exists
                 if isinstance(child, SplitNode) and child._alternate_tree is not None:
-                    rhat.pruned_alternate_trees_cnt += 1
+                    self._pruned_alternate_trees += 1
                 # Recursive delete of SplitNodes
                 if isinstance(child, SplitNode):
                     child.kill_tree_children(rhat)
@@ -186,17 +187,3 @@ class AdaSplitNodeForRegression(SplitNode, AdaNode):
         if self._alternate_tree is not None:
             self._alternate_tree.filter_instance_to_leaves(X, y, weight, self, -999,
                                                            update_splitter_counts, found_nodes)
-
-    def get_normalized_error(self, y, y_pred):
-        abs_error = abs(y - y_pred)
-
-        # Incremental maintenance of the normalization ranges
-        if abs_error < self._min_error:
-            self._min_error = abs_error
-        if abs_error > self._max_error:
-            self._max_error = abs_error
-
-        if self._min_error != self._max_error:
-            return (abs_error - self._min_error) / (self._max_error - self._min_error)
-        else:
-            return 0.0
