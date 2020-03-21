@@ -93,12 +93,6 @@ class BaggingClassifier(BaseBagging, base.Classifier):
         total = sum(y_pred.values())
         return {label: proba / total for label, proba in y_pred.items()}
 
-    def predict_one(self, x):
-        y_pred = self.predict_proba_one(x)
-        if y_pred:
-            return max(y_pred, key=y_pred.get)
-        return None
-
 
 class BaggingRegressor(BaseBagging, base.Regressor):
     """Online bootstrap aggregation for regression.
