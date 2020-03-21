@@ -9,7 +9,7 @@ cython:
 	python setup.py build_ext --inplace --force
 
 doc:
-	cd docs && $(MAKE) clean && rm -rf generated && python scripts/make_api.py && $(MAKE) html -j 4
+	cd docs && $(MAKE) clean && rm -rf content/generated && python scripts/make_api.py && $(MAKE) html -j 4
 
 livedoc:
 	sphinx-autobuild docs docs/_build/html --port 0 --open-browser --delay 0

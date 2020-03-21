@@ -1,10 +1,18 @@
 `Version 0.6.0 - 2020-06-01 <https://pypi.org/project/creme/0.6.0/>`_
 =====================================================================
 
-:mod:`simulate`
+`creme.model_selection`
+-----------------------
 
-- Add a ``copy`` parameter to `stream.simulate_qa` in order to handle unwanted feature modifications.
+- Removed ``model_selection.successive_halving``
+- Added `model_selection.SuccessiveHalvingRegressor` and `model_selection.SuccessiveHalvingClassifier`
 
-:mod:`tree`
+`creme.stream`
+--------------
 
-- Add a ``curtail_under`` parameter to `tree.DecisionTreeClassifier`.
+- Added a ``copy`` parameter to `stream.simulate_qa` in order to handle unwanted feature modifications.
+
+`creme.tree`
+------------
+
+- Added a ``curtail_under`` parameter to `tree.DecisionTreeClassifier`.
