@@ -17,7 +17,7 @@ class Split:
         at = self.at
         if isinstance(at, float):
             at = f'{at:.5f}'
-        return f'{self.on} {self.how.__name__} {at}'
+        return f'{self.on} {repr(self.how)} {at}'
 
 
 class Node:

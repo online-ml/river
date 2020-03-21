@@ -4,7 +4,7 @@ API reference
 **anomaly**: Anomaly detection
 -------------------------------
 
-The estimators in ``anomaly`` are slightly different than the rest of the estimators. Instead of a ``predict_one`` method, each anomaly detector has a ``score_one`` method which returns an anomaly score for a given set of features. Anomalies will have high scores whereas normal observations will have low scores. The range of the scores depends on the estimator.
+The estimators in ``anomaly`` are slightly different than the rest of the estimators. Instead of a ``predict_one`` method, each anomaly detector has a ``score_one`` method which returns an anomaly score for a given set of features. High scores indicate anomalies whereas low scores indicate normal observations will have low scores. Note that the range of the scores depends on each particular estimator. 
 
 .. rubric:: Classes
 
@@ -13,14 +13,14 @@ The estimators in ``anomaly`` are slightly different than the rest of the estima
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     HalfSpaceTrees
 
 
 **base**: Base interfaces
 --------------------------
 
-Every estimator in ``creme`` is a class, and as such inherits from at least one base interface. These are used to categorize, organize, and standardize the many estimators that ``creme`` contains.
+Every estimator in ``creme`` is a class, and as such inherits from at least one base interface. These are used to categorize, organize, and standardize the many estimators that ``creme`` contains. 
 
 .. rubric:: Classes
 
@@ -29,7 +29,7 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     AnomalyDetector
     BinaryClassifier
     Classifier
@@ -54,14 +54,14 @@ Every estimator in ``creme`` is a class, and as such inherits from at least one 
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     KMeans
 
 
 **compat**: Compatibility with other libraries
 -----------------------------------------------
 
-This module contains adapters for making ``creme`` estimators compatible with other libraries, and vice-versa whenever possible.
+This module contains adapters for making ``creme`` estimators compatible with other libraries, and vice-versa whenever possible. The relevant adapters will only be usable if you have installed the necessary library. For instance, to use the ``compat.convert_sklearn_to_creme`` function, you have to install scikit-learn. 
 
 .. rubric:: Classes
 
@@ -70,12 +70,11 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Creme2SKLClassifier
     Creme2SKLClusterer
     Creme2SKLRegressor
     Creme2SKLTransformer
-    PyTorch2CremeRegressor
     SKL2CremeClassifier
     SKL2CremeRegressor
 
@@ -86,13 +85,15 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
     convert_creme_to_sklearn
     convert_sklearn_to_creme
 
 
-**compose**: Models composition
---------------------------------
+**compose**: Model composition
+-------------------------------
+
+This module contains utilities for merging multiple modeling steps into a single pipeline. Although pipelines are not the only way to process a stream of data, we highly encourage you to use them. 
 
 .. rubric:: Classes
 
@@ -101,13 +102,13 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Discard
     FuncTransformer
     Pipeline
     Renamer
-    TransformerUnion
     Select
+    TransformerUnion
 
 
 **datasets**: Datasets
@@ -120,21 +121,22 @@ This module contains adapters for making ``creme`` estimators compatible with ot
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Airline
     Bananas
     Bikes
     ChickWeights
     CreditCard
     Elec2
+    HTTP
     Higgs
     ImageSegments
-    KDD99HTTP
     MaliciousURL
     MovieLens100K
     Phishing
     Restaurants
     SMSSpam
+    SMTP
     TREC07
     Taxis
     TrumpApproval
@@ -146,13 +148,13 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     gen.SEA
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
 
 
 **decomposition**: Online matrix decomposition
@@ -165,12 +167,14 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     LDA
 
 
 **dummy**: Dummy estimators
 ----------------------------
+
+This module is here for testing purposes, as well as providing baseline performances. 
 
 .. rubric:: Classes
 
@@ -179,7 +183,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     NoChangeClassifier
     PriorClassifier
     StatisticRegressor
@@ -195,7 +199,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     AdaBoostClassifier
     BaggingClassifier
     BaggingRegressor
@@ -213,7 +217,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     FFMClassifier
     FFMRegressor
     FMClassifier
@@ -234,7 +238,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Agg
     BagOfWords
     Differ
@@ -252,7 +256,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     PoissonInclusion
     SelectKBest
     VarianceThreshold
@@ -268,7 +272,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     PreviousImputer
     StatImputer
 
@@ -283,7 +287,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     ALMAClassifier
     LinearRegression
     LogisticRegression
@@ -302,7 +306,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     BoxCoxRegressor
     PredClipper
     TransformedTargetRegressor
@@ -318,7 +322,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Accuracy
     ClassificationReport
     ConfusionMatrix
@@ -358,6 +362,16 @@ Random data generators
 **model_selection**: Model selection and evaluation
 ----------------------------------------------------
 
+.. rubric:: Classes
+
+.. currentmodule:: creme.model_selection
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+    :template: class.rst
+        
+    SuccessiveHalvingRegressor
+
 .. rubric:: Functions
 
 .. currentmodule:: creme.model_selection
@@ -365,10 +379,9 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
     expand_param_grid
     progressive_val_score
-    successive_halving
 
 
 **multiclass**: Multi-class classification
@@ -381,7 +394,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     OneVsRestClassifier
 
 
@@ -395,7 +408,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     ClassifierChain
     RegressorChain
 
@@ -410,7 +423,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     BernoulliNB
     ComplementNB
     GaussianNB
@@ -427,7 +440,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     KNeighborsClassifier
     KNeighborsRegressor
 
@@ -442,7 +455,7 @@ Random data generators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     AMSGrad
     AdaBound
     AdaDelta
@@ -465,7 +478,7 @@ Weight initialization schemes
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     initializers.Constant
     initializers.Normal
     initializers.Zeros
@@ -473,7 +486,7 @@ Weight initialization schemes
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
 
 Loss functions
 ~~~~~~~~~~~~~~
@@ -482,7 +495,7 @@ Loss functions
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     losses.Absolute
     losses.BinaryFocalLoss
     losses.Cauchy
@@ -498,7 +511,7 @@ Loss functions
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
 
 Learning rate schedulers
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -507,7 +520,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     schedulers.Constant
     schedulers.InverseScaling
     schedulers.Optimal
@@ -516,7 +529,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
 
 
 **preprocessing**: Feature preprocessing
@@ -529,7 +542,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Binarizer
     FeatureHasher
     MaxAbsScaler
@@ -552,7 +565,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Gaussian
     Multinomial
 
@@ -567,7 +580,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Baseline
     BiasedMF
     FunkMF
@@ -584,7 +597,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     HardSamplingClassifier
     HardSamplingRegressor
     RandomOverSampler
@@ -602,7 +615,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     AbsMax
     AutoCorrelation
     BayesianMean
@@ -650,7 +663,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Cache
 
 .. rubric:: Functions
@@ -660,7 +673,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
     iter_array
     iter_csv
     iter_libsvm
@@ -681,7 +694,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Detrender
     GroupDetrender
     SNARIMAX
@@ -697,7 +710,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     DecisionTreeClassifier
     RandomForestClassifier
 
@@ -712,7 +725,7 @@ Learning rate schedulers
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
     Histogram
     SDFT
     Skyline
@@ -726,30 +739,30 @@ Utilities for unit testing and sanity checking estimators
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
     estimator_checks.check_estimator
     estimator_checks.guess_model
 
 Mathematical utility functions (intended for internal purposes)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A lot of this is experimental and has a high probability of changing in the future.
+A lot of this is experimental and has a high probability of changing in the future. 
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
     math.chain_dot
     math.clamp
     math.dot
@@ -771,12 +784,12 @@ Helper functions for making things readable by humans
     :toctree: generated/
     :nosignatures:
     :template: class.rst
-
+        
 .. autosummary::
     :toctree: generated/
     :nosignatures:
     :template: function.rst
-
+        
     pretty.format_object
     pretty.print_table
 

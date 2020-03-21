@@ -72,7 +72,7 @@
 :mod:`model_selection`
 
 - Added `model_selection.expand_param_grid` to generate a list of models from a grid of parameters.
-- Added the `model_selection.successive_halving` method for selecting hyperparameters.
+- Added the ``model_selection.successive_halving`` method for selecting hyperparameters.
 - The ``online_score`` and ``online_qa_score`` methods have been merged into a single method named `model_selection.progressive_val_score`.
 
 :mod:`preprocessing`
