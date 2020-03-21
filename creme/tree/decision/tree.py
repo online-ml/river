@@ -95,7 +95,9 @@ class BaseDecisionTree(abc.ABC):
                         fillcolor = '#FFFFFF'
 
                     dot.node(f'{child_no}', text, fillcolor=fillcolor, style='filled')
-                    dot.edge(f'{parent_no}', f'{child_no}')
+
+                    if parent_no is not None:
+                        dot.edge(f'{parent_no}', f'{child_no}')
         return dot
 
     def debug_one(self, x, **print_params):
