@@ -34,6 +34,13 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
     def n_samples(self):
         return self._n
 
+    @property
+    def mode(self):
+        try:
+            return max(self, key=self.get())
+        except:
+            return None
+
     def update(self, x):
         super().update([x])
         self._n += 1
