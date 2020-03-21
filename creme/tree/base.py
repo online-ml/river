@@ -1,15 +1,14 @@
 """Generic branch and leaf implementation."""
 import collections
 
-try:
-    import graphviz
-    GRAPHVIZ_INSTALLED = True
-except ImportError:
-    GRAPHVIZ_INSTALLED = False
 
-
-class Split(collections.namedtuple('Split', 'on how at')):
+class Split:
     """A data class for storing split details."""
+
+    def __init__(self, on, how, at):
+        self.on = on
+        self.how = how
+        self.at = at
 
     def __call__(self, x):
         return self.how(x[self.on], self.at)
@@ -55,10 +54,8 @@ class Branch(Node):
         return 1 + max(self.left.height, self.right.height)
 
     def iter_dfs(self, depth=0):
-        """Iterates over nodes via depth-first search.
-
+        """Iterates over nodes in a depth-first manner.
         Example:
-
             >>> tree = Branch(
             ...     None,
             ...     Branch(
@@ -70,7 +67,6 @@ class Branch(Node):
             ...     Leaf(no=4),
             ...     no=0
             ... )
-
             >>> for node, depth in tree.iter_dfs():
             ...     print(f'#{node.no}, depth {depth}')
             #0, depth 0
@@ -78,47 +74,14 @@ class Branch(Node):
             #2, depth 2
             #3, depth 2
             #4, depth 1
-
         """
         yield self, depth
         yield from self.left.iter_dfs(depth=depth + 1)
         yield from self.right.iter_dfs(depth=depth + 1)
 
-    def draw(self, max_depth = 30):
-        """Draws the tree using the ``graphviz`` library."""
-        dot = graphviz.Digraph(
-            graph_attr={'splines': 'ortho'},
-            node_attr={'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
-                    'fontsize': '11', 'margin': '0.1,0.0'},
-            edge_attr={'penwidth': '0.6', 'center': 'true'}
-        )
-
-        structure = [(idx, node, depth) for idx, (node, depth) in enumerate(self.iter_dfs())]
-
-        for idx, node, depth in structure:
-
-            if depth <= max_depth:
-
-                if isinstance(node, Branch):
-
-                    text = f'{node.split}'
-
-                elif isinstance(node, Leaf):
-
-                    text = ''
-
-                dot.node(f'{idx}', text)
-
-        dot.edges(self._get_edges(structure, max_depth))
-
-        return dot
-
-    @classmethod
-    def _get_edges(cls, structure, max_depth):
-        """Construct list of edges of the tree for drawing.
-
+    def iter_edges(self):
+        """Iterates over edges in a depth-first manner.
         Example:
-
             >>> tree = Branch(
             ...     None,
             ...     Branch(
@@ -130,35 +93,30 @@ class Branch(Node):
             ...     Leaf(no=4),
             ...     no=0
             ... )
-
-            >>> structure = [
-            ...    (idx, node, depth) for idx, (node, depth) in enumerate(tree.iter_dfs())
-            ... ]
-
-            >>> tree._get_edges(structure, max_depth = 3)
-            [('0', '1'), ('0', '4'), ('1', '2'), ('1', '3')]
-
+            >>> for parent_no, child_no, parent, child, child_depth in tree.iter_edges():
+            ...     print(parent_no, child_no, parent.no, child.no, child_depth)
+            0 1 0 1 1
+            1 2 1 2 2
+            1 3 1 3 2
+            0 4 0 4 1
         """
-        edges = []
 
-        for id_parent, _, depth_parent in structure:
+        counter = 0
 
-            n_child = 0
+        def iterate(node, depth):
 
-            if depth_parent >= max_depth:
-                continue
+            nonlocal counter
+            no = counter
 
-            for id_children, _, depth_children in structure[id_parent + 1:]:
+            if isinstance(node, Branch):
+                for child in (node.left, node.right):
+                    counter += 1
+                    yield no, counter, node, child, depth + 1
+                    if isinstance(child, Branch):
+                        yield from iterate(child, depth=depth + 1)
 
-                if depth_parent == (depth_children - 1):
+        yield from iterate(self, depth=0)
 
-                    edges.append((str(id_parent), str(id_children)))
-
-                    n_child += 1
-
-                if depth_parent >= depth_children or n_child == 2:
-                    break
-        return edges
 
 class Leaf(Node):
 
@@ -176,22 +134,20 @@ class Leaf(Node):
     def iter_dfs(self, depth):
         yield self, depth
 
+    def iter_edges(self):
+        yield None, 0, None, self, 0
+
 
 def iter_blocks(tree, limits, depth=-1):
     """Returns the block which encloses each node at a given depth.
-
     This only makes sense if the branches of the provided tree use the ``<`` operator as a split
     rule.
-
     Parameters:
         tree (Node)
         limits (dict)
         depth (int): Desired tree depth. Set to ``-1`` to iterate over the leaves.
-
     Example:
-
         >>> import operator
-
         >>> tree = Branch(
         ...     Split('x', operator.lt, .5),
         ...     Leaf(no=0),
@@ -201,13 +157,11 @@ def iter_blocks(tree, limits, depth=-1):
         ...         Leaf(no=2)
         ...     )
         ... )
-
         >>> for leaf, block in iter_blocks(tree, limits={'x': (0, 1), 'y': (0, 1)}):
         ...     print(leaf.no, block)
         0 {'x': (0, 0.5), 'y': (0, 1)}
         1 {'x': (0.5, 1), 'y': (0, 0.5)}
         2 {'x': (0.5, 1), 'y': (0.5, 1)}
-
     """
 
     if depth == 0 or isinstance(tree, Leaf):
