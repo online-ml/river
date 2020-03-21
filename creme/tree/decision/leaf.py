@@ -79,7 +79,9 @@ class Leaf(base.Leaf):
                 split=split,
                 left=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=left_dist),
                 right=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=right_dist),
-                tree=self.tree
+                tree=self.tree,
+                target_dist=self.target_dist,
+                n_samples=self.n_samples
             )
         return self
 
