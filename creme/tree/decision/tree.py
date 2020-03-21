@@ -71,7 +71,7 @@ class BaseDecisionTree(abc.ABC):
 
             return f'#{alpha_map[alpha]}{color.split("#")[1]}'
 
-        colors = itertools.cycle(COLORS)
+        colors = collections.defaultdict(functools.partial(next, itertools.cycle(COLORS)))
 
         for parent_no, child_no, _, child, child_depth in self.root.iter_edges():
 
