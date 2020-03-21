@@ -79,6 +79,25 @@ class Branch(Node):
             #3, depth 2
             #4, depth 1
 
+            >>> tree = Branch(
+            ...     None,
+            ...     Branch(
+            ...         None,
+            ...         Leaf(no=2),
+            ...         Leaf(no=3),
+            ...         no=1
+            ...     ),
+            ...     Leaf(no=4),
+            ...     no=0
+            ... )
+
+            >>> structure = [
+            ...    (idx, node, depth) for idx, (node, depth) in enumerate(tree.iter_dfs())
+            ... ]
+
+            >>> tree._get_edges(structure, max_depth = 3)
+            [('0', '1'), ('0', '4'), ('1', '2'), ('1', '3')]
+
         """
         yield self, depth
         yield from self.left.iter_dfs(depth=depth + 1)
@@ -110,34 +129,33 @@ class Branch(Node):
 
                 dot.node(f'{idx}', text)
 
-        def get_edges(structure, max_depth):
-            """Construct list of edges of the tree."""
-            edges = []
-
-            for id_parent, _, depth_parent in structure:
-
-                n_child = 0
-
-                if depth_parent >= max_depth:
-                    continue
-
-                for id_children, _, depth_children in structure[id_parent + 1:]:
-
-                    if depth_parent == (depth_children - 1):
-
-                        edges.append((str(id_parent), str(id_children)))
-
-                        n_child += 1
-
-                    if depth_parent >= depth_children or n_child == 2 :
-                        break
-
-            return edges
-
-        dot.edges(get_edges(structure, max_depth))
+        dot.edges(self._get_edges(structure, max_depth))
 
         return dot
 
+    @classmethod
+    def _get_edges(cls, structure, max_depth):
+        """Construct list of edges of the tree."""
+        edges = []
+
+        for id_parent, _, depth_parent in structure:
+
+            n_child = 0
+
+            if depth_parent >= max_depth:
+                continue
+
+            for id_children, _, depth_children in structure[id_parent + 1:]:
+
+                if depth_parent == (depth_children - 1):
+
+                    edges.append((str(id_parent), str(id_children)))
+
+                    n_child += 1
+
+                if depth_parent >= depth_children or n_child == 2:
+                    break
+        return edges
 
 class Leaf(Node):
 
