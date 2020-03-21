@@ -8,7 +8,7 @@ class Classifier(estimator.Estimator):
     """A classifier."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: typing.Hashable) -> 'Classifier':
+    def fit_one(self, x, y):
         """Fits to a set of features ``x`` and a label ``y``.
 
         Parameters:
@@ -21,7 +21,7 @@ class Classifier(estimator.Estimator):
         """
 
     @abc.abstractmethod
-    def predict_proba_one(self, x: dict) -> typing.Dict[typing.Hashable, float]:
+    def predict_proba_one(self, x):
         """Predicts the probability output of a set of features ``x``."""
 
     def predict_one(self, x: dict) -> typing.Union[typing.Hashable, None]:
@@ -42,6 +42,23 @@ class Classifier(estimator.Estimator):
 
 class MultiClassifier(Classifier):
     """A multi-class classifier."""
+
+    @abc.abstractmethod
+    def fit_one(self, x: dict, y: typing.Hashable) -> 'Classifier':
+        """Fits to a set of features ``x`` and a label ``y``.
+
+        Parameters:
+            x (dict)
+            y (Label)
+
+        Returns:
+            self
+
+        """
+
+    @abc.abstractmethod
+    def predict_proba_one(self, x: dict) -> typing.Dict[typing.Hashable, float]:
+        """Predicts the probability output of a set of features ``x``."""
 
 
 class BinaryClassifier(Classifier):
