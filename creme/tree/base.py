@@ -79,25 +79,6 @@ class Branch(Node):
             #3, depth 2
             #4, depth 1
 
-            >>> tree = Branch(
-            ...     None,
-            ...     Branch(
-            ...         None,
-            ...         Leaf(no=2),
-            ...         Leaf(no=3),
-            ...         no=1
-            ...     ),
-            ...     Leaf(no=4),
-            ...     no=0
-            ... )
-
-            >>> structure = [
-            ...    (idx, node, depth) for idx, (node, depth) in enumerate(tree.iter_dfs())
-            ... ]
-
-            >>> tree._get_edges(structure, max_depth = 3)
-            [('0', '1'), ('0', '4'), ('1', '2'), ('1', '3')]
-
         """
         yield self, depth
         yield from self.left.iter_dfs(depth=depth + 1)
@@ -105,7 +86,6 @@ class Branch(Node):
 
     def draw(self, max_depth = 30):
         """Draws the tree using the ``graphviz`` library."""
-
         dot = graphviz.Digraph(
             graph_attr={'splines': 'ortho'},
             node_attr={'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
@@ -135,7 +115,30 @@ class Branch(Node):
 
     @classmethod
     def _get_edges(cls, structure, max_depth):
-        """Construct list of edges of the tree for drawing."""
+        """Construct list of edges of the tree for drawing.
+
+        Example:
+
+            >>> tree = Branch(
+            ...     None,
+            ...     Branch(
+            ...         None,
+            ...         Leaf(no=2),
+            ...         Leaf(no=3),
+            ...         no=1
+            ...     ),
+            ...     Leaf(no=4),
+            ...     no=0
+            ... )
+
+            >>> structure = [
+            ...    (idx, node, depth) for idx, (node, depth) in enumerate(tree.iter_dfs())
+            ... ]
+
+            >>> tree._get_edges(structure, max_depth = 3)
+            [('0', '1'), ('0', '4'), ('1', '2'), ('1', '3')]
+
+        """
         edges = []
 
         for id_parent, _, depth_parent in structure:
