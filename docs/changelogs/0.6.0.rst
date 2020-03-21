@@ -4,3 +4,7 @@
 :mod:`simulate`
 
 - Add a ``copy`` parameter to `stream.simulate_qa` in order to handle unwanted feature modifications.
+
+:mod:`tree`
+
+- Add a ``curtail_under`` parameter to `tree.DecisionTreeClassifier`.
