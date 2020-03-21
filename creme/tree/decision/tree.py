@@ -49,7 +49,34 @@ class BaseDecisionTree(abc.ABC):
         """Returns the appropriate split enumerator for a given type."""
 
     def draw(self, max_depth=30):
-        """Draws the tree using the ``graphviz`` library."""
+        """Draws the tree using the ``graphviz`` library.
+
+        Example:
+
+            ::
+
+            >>> from creme import datasets
+            >>> from creme import tree
+
+
+            >>> model = tree.DecisionTreeClassifier(
+            ...    patience=10,
+            ...    confidence=1e-5,
+            ...    criterion='gini',
+            ...    max_depth = 10,
+            ...    tie_threshold = 0.05,
+            ...    min_child_samples = 0,
+            ... )
+
+            >>> for x, y in datasets.Phishing():
+            ...    model = model.fit_one(x, y)
+
+            >>> dot = model.draw()
+
+        .. image:: ../../../_static/model.svg
+            :align: center
+
+        """
 
         dot = graphviz.Digraph(
             graph_attr={'splines': 'ortho'},
