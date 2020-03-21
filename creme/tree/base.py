@@ -135,7 +135,7 @@ class Branch(Node):
 
     @classmethod
     def _get_edges(cls, structure, max_depth):
-        """Construct list of edges of the tree."""
+        """Construct list of edges of the tree for drawing."""
         edges = []
 
         for id_parent, _, depth_parent in structure:
