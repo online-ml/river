@@ -2,6 +2,8 @@ from skmultiflow.trees.attribute_observer import NumericAttributeClassObserverGa
 from skmultiflow.trees.attribute_observer import NominalAttributeClassObserver
 from skmultiflow.trees.nodes import ActiveLearningNode
 
+NAIVE_BAYES_ADAPTIVE = 'nba'
+
 
 class LCActiveLearningNode(ActiveLearningNode):
     """ Active Learning node for the Label Combination Hoeffding Tree.
@@ -17,7 +19,7 @@ class LCActiveLearningNode(ActiveLearningNode):
 
     def learn_from_instance(self, X, y, weight, ht):
 
-        if ht.leaf_prediction != ht._NAIVE_BAYES_ADAPTIVE:
+        if not(ht.leaf_prediction == NAIVE_BAYES_ADAPTIVE):
             y = ''.join(str(e) for e in y)
             y = int(y, 2)
 

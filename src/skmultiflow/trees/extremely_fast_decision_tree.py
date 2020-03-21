@@ -32,6 +32,12 @@ def HATT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=20
                                                nb_threshold=nb_threshold,
                                                nominal_attributes=nominal_attributes)
 
+GINI_SPLIT = 'gini'
+INFO_GAIN_SPLIT = 'info_gain'
+MAJORITY_CLASS = 'mc'
+NAIVE_BAYES = 'nb'
+NAIVE_BAYES_ADAPTIVE = 'nba'
+
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     """ Extremely Fast Decision Tree classifier.
@@ -115,17 +121,14 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
        print('Extremely Fast Decision Tree accuracy: {}'.format(correct_cnt / n_samples))
     """
 
-    _GINI_SPLIT = 'gini'
-    _INFO_GAIN_SPLIT = 'info_gain'
-
     # Override _new_learning_node
     def _new_learning_node(self, initial_class_observations=None):
         """ Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
-        if self._leaf_prediction == self._MAJORITY_CLASS:
+        if self._leaf_prediction == MAJORITY_CLASS:
             return AnyTimeActiveLearningNode(initial_class_observations)
-        elif self._leaf_prediction == self._NAIVE_BAYES:
+        elif self._leaf_prediction == NAIVE_BAYES:
             return AnyTimeLearningNodeNB(initial_class_observations)
         else:  # NAIVE BAYES ADAPTIVE (default)
             return AnyTimeLearningNodeNBAdaptive(initial_class_observations)
@@ -383,9 +386,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         stop_flag = False
         if not node.observed_class_distribution_is_pure():
-            if self._split_criterion == self._GINI_SPLIT:
+            if self._split_criterion == GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
-            elif self._split_criterion == self._INFO_GAIN_SPLIT:
+            elif self._split_criterion == INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
@@ -504,9 +507,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         """
 
         if not node.observed_class_distribution_is_pure():
-            if self._split_criterion == self._GINI_SPLIT:
+            if self._split_criterion == GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
-            elif self._split_criterion == self._INFO_GAIN_SPLIT:
+            elif self._split_criterion == INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()

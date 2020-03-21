@@ -22,6 +22,11 @@ from skmultiflow.trees.nodes import InactiveLearningNodeAdaptiveMultiTarget
 import warnings
 
 
+_TARGET_MEAN = 'mean'
+_PERCEPTRON = 'perceptron'
+_ADAPTIVE = 'adaptive'
+
+
 def MultiTargetRegressionHoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
                                        split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
                                        stop_mem_management=False, remove_poor_atts=False, leaf_prediction='perceptron',
@@ -137,8 +142,6 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
        print('iSOUP Tree Regressor mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
     """
 
-    _ADAPTIVE = 'adaptive'
-
     # ============================================================
     # == Multi-target Regression Hoeffding Tree implementation ===
     # ============================================================
@@ -203,13 +206,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
 
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in {self._TARGET_MEAN, self._PERCEPTRON, self._ADAPTIVE}:
-            print(
-                "Invalid leaf_prediction option {}', will use default '{}'".format(
-                    leaf_prediction, self._PERCEPTRON
-                )
-            )
-            self._leaf_prediction = self._PERCEPTRON
+        if leaf_prediction not in {_TARGET_MEAN, _PERCEPTRON, _ADAPTIVE}:
+            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction, _PERCEPTRON))
+            self._leaf_prediction = _PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
 
@@ -301,17 +300,17 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
         """
         if initial_class_observations is None:
             initial_class_observations = {}
-        if self.leaf_prediction == self._TARGET_MEAN:
+        if self.leaf_prediction == _TARGET_MEAN:
             return ActiveLearningNodeForRegressionMultiTarget(
                 initial_class_observations
             )
-        elif self.leaf_prediction == self._PERCEPTRON:
+        elif self.leaf_prediction == _PERCEPTRON:
             return ActiveLearningNodePerceptronMultiTarget(
                 initial_class_observations,
                 perceptron_weight,
                 self.random_state
             )
-        elif self.leaf_prediction == self._ADAPTIVE:
+        elif self.leaf_prediction == _ADAPTIVE:
             return ActiveLearningNodeAdaptiveMultiTarget(
                 initial_class_observations,
                 perceptron_weight,
@@ -516,7 +515,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
         except AttributeError:
             return [0.0]
         for i in range(r):
-            if self.leaf_prediction == self._TARGET_MEAN:
+            if self.leaf_prediction == _TARGET_MEAN:
                 votes = self.get_votes_for_instance(X[i]).copy()
                 # Tree is not empty, otherwise, all target_values are set
                 # equally, default to zero
@@ -524,7 +523,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     number_of_examples_seen = votes[0]
                     sum_of_values = votes[1]
                     predictions[i] = sum_of_values / number_of_examples_seen
-            elif self.leaf_prediction == self._PERCEPTRON:
+            elif self.leaf_prediction == _PERCEPTRON:
                 if self.examples_seen > 1:
                     perceptron_weights = self.get_weights_for_instance(X[i])
                     if perceptron_weights is None:
@@ -550,7 +549,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     # Samples are normalized using just one sd, as proposed in
                     # the iSoup-Tree method
                     predictions[i] = normalized_prediction * sd + mean
-            elif self.leaf_prediction == self._ADAPTIVE:
+            elif self.leaf_prediction == _ADAPTIVE:
                 if self.examples_seen > 1:
                     # Mean predictor
                     votes = self.get_votes_for_instance(X[i]).copy()
@@ -673,18 +672,18 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     node.get_observed_class_distribution()
                 )
                 for i in range(split_decision.num_splits()):
-                    if self.leaf_prediction == self._PERCEPTRON:
+                    if self.leaf_prediction == _PERCEPTRON:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
                             node.perceptron_weight
                         )
-                    elif self.leaf_prediction == self._TARGET_MEAN:
+                    elif self.leaf_prediction == _TARGET_MEAN:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
                             None)
-                    elif self.leaf_prediction == self._ADAPTIVE:
+                    elif self.leaf_prediction == _ADAPTIVE:
                         new_child = self._new_learning_node(
                             split_decision.
                             resulting_class_distribution_from_split(i),
@@ -722,17 +721,17 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
         parent_branch: int
             Parent node's branch index.
         """
-        if self.leaf_prediction == self._TARGET_MEAN:
+        if self.leaf_prediction == _TARGET_MEAN:
             new_leaf = InactiveLearningNodeForRegression(
                 to_deactivate.get_observed_class_distribution()
             )
-        elif self.leaf_prediction == self._PERCEPTRON:
+        elif self.leaf_prediction == _PERCEPTRON:
             new_leaf = InactiveLearningNodePerceptronMultiTarget(
                 to_deactivate.get_observed_class_distribution(),
                 to_deactivate.perceptron_weight,
                 to_deactivate.random_state
             )
-        elif self.leaf_prediction == self._ADAPTIVE:
+        elif self.leaf_prediction == _ADAPTIVE:
             new_leaf = InactiveLearningNodeAdaptiveMultiTarget(
                 to_deactivate.get_observed_class_distribution(),
                 to_deactivate.perceptron_weight,

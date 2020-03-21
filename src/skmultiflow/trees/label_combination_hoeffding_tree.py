@@ -34,6 +34,11 @@ def LCHT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=20
                                                    n_labels=n_labels)
 
 
+MAJORITY_CLASS = 'mc'
+NAIVE_BAYES = 'nb'
+NAIVE_BAYES_ADAPTIVE = 'nba'
+
+
 class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutputMixin):
     """ Label Combination Hoeffding Tree for multi-label classification.
 
@@ -209,9 +214,9 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
         """Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
-        if self._leaf_prediction == self._MAJORITY_CLASS:
+        if self._leaf_prediction == MAJORITY_CLASS:
             return LCActiveLearningNode(initial_class_observations)
-        elif self._leaf_prediction == self._NAIVE_BAYES:
+        elif self._leaf_prediction == NAIVE_BAYES:
             return LCLearningNodeNB(initial_class_observations)
         else:  # NAIVE BAYES ADAPTIVE (default)
             return LCLearningNodeNBA(initial_class_observations)

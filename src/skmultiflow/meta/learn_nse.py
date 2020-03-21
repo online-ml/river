@@ -115,9 +115,12 @@ class LearnPPNSEClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     @staticmethod
     def _train_model(estimator, X, y, classes=None):
         try:
-            estimator.fit(X, y)
-        except (NotImplementedError, TypeError):
-            estimator.partial_fit(X, y, classes=classes)
+            estimator.fit(X, y, classes=classes)
+        except TypeError:
+            try:
+                estimator.fit(X, y)
+            except NotImplementedError:
+                estimator.partial_fit(X, y, classes=classes)
 
     def partial_fit(self, X, y=None, classes=None, sample_weight=None):
         """
@@ -181,7 +184,9 @@ class LearnPPNSEClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
                     self.instance_weights[votes == self.y_batch] = et / mt
 
                     # normalize instance weights (distribution)
-                    self.instance_weights = self.instance_weights / np.sum(self.instance_weights)
+                    sum_weights = np.sum(self.instance_weights)
+                    if sum_weights > 0:
+                        self.instance_weights = self.instance_weights / sum_weights
 
                     # Train base classifier with Dt
                     self._train_model(classifier, self.X_batch, self.y_batch, classes=self.classes)
@@ -265,10 +270,38 @@ class LearnPPNSEClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
                     h = self.ensemble[i]
                     y_predicts = h.predict_proba(X[m].reshape(1, -1))
                     y_predicts /= np.linalg.norm(y_predicts, ord=1, axis=1, keepdims=True)
-                    votes += self.ensemble_weights[i] * y_predicts
+                    try:
+                        votes += self.ensemble_weights[i] * y_predicts
+                    except ValueError:
+                        if hasattr(h, 'classes_'):  # sklearn learner
+                            obs_classes = h.classes_
+                        elif hasattr(h, 'classes'):  # skmultiflow learner
+                            obs_classes = h.classes
+                        else:
+                            raise AttributeError(
+                                'The base estimator does not define the "classes" or "classes_" ' +
+                                'parameter. The base estimator must specify the classes it has ' +
+                                'observed during the training stage in order to maintain ' +
+                                'consistency across the ensemble.'
+                            )
+                        votes += self.ensemble_weights[i] * \
+                            self._fill_missing_probs(
+                                y_predicts, obs_classes, self.classes
+                            )
 
             res.append(votes.reshape(len(classes)))
         return np.array(res)
+
+    def _fill_missing_probs(self, probs, obs_classes, all_classes):
+        proba_ordered = np.zeros(
+            (probs.shape[0], all_classes.size), dtype=np.float
+        )
+        sorted_classes = np.argsort(all_classes)
+        # Find positions to insert existing classes' probs to the complete set
+        # of classes
+        idx = sorted_classes[np.searchsorted(all_classes, obs_classes, sorter=sorted_classes)]
+        proba_ordered[:, idx] = probs
+        return proba_ordered
 
     def predict_proba(self, X):
         """ Predicts the probability of each sample belonging to each one of the
