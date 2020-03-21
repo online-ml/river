@@ -142,6 +142,9 @@ class Leaf(Node):
     def iter_dfs(self, depth):
         yield self, depth
 
+    def iter_edges(self):
+        yield None, 0, None, self
+
 
 def iter_blocks(tree, limits, depth=-1):
     """Returns the block which encloses each node at a given depth.
