@@ -100,18 +100,18 @@ class Branch(Node):
             ...     no=0
             ... )
 
-            >>> for parent_no, child_no, parent, child in tree.iter_edges():
-            ...     print(parent_no, child_no, parent.no, child.no)
-            0 1 0 1
-            1 2 1 2
-            1 3 1 3
-            0 4 0 4
+            >>> for parent_no, child_no, parent, child, child_depth in tree.iter_edges():
+            ...     print(parent_no, child_no, parent.no, child.no, child_depth)
+            0 1 0 1 1
+            1 2 1 2 2
+            1 3 1 3 2
+            0 4 0 4 1
 
         """
 
         counter = 0
 
-        def iterate(node):
+        def iterate(node, depth):
 
             nonlocal counter
             no = counter
@@ -119,11 +119,11 @@ class Branch(Node):
             if isinstance(node, Branch):
                 for child in (node.left, node.right):
                     counter += 1
-                    yield no, counter, node, child
+                    yield no, counter, node, child, depth + 1
                     if isinstance(child, Branch):
-                        yield from iterate(child)
+                        yield from iterate(child, depth=depth + 1)
 
-        yield from iterate(self)
+        yield from iterate(self, depth=0)
 
 
 class Leaf(Node):
@@ -143,7 +143,7 @@ class Leaf(Node):
         yield self, depth
 
     def iter_edges(self):
-        yield None, 0, None, self
+        yield None, 0, None, self, 0
 
 
 def iter_blocks(tree, limits, depth=-1):
