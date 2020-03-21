@@ -81,7 +81,9 @@ class Branch(Node):
 
     def iter_edges(self):
         """Iterates over edges in a depth-first manner.
+
         Example:
+
             >>> tree = Branch(
             ...     None,
             ...     Branch(
