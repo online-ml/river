@@ -123,6 +123,7 @@ class Branch(Node):
                     if isinstance(child, Branch):
                         yield from iterate(child, depth=depth + 1)
 
+        yield None, 0, None, self, 0
         yield from iterate(self, depth=0)
 
 
