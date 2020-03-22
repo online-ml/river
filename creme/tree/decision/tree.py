@@ -124,7 +124,9 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
             samples, then it's parent will be used instead. If said parent also doesn't contain at
             leaf ``curtail_under`` samples, then it's parent is used, etc. This helps to counter
             the fact that new leaves start with no samples at all, therefore their predictions
-            might be unreliable.
+            might be unreliable. No curtailment will be applied if you set this to ``0``. However,
+            note that using even a small amount of curtailment almost always results in better
+            performance.
 
     Attributes:
         root (Leaf)

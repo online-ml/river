@@ -57,7 +57,8 @@ def test_union_funcs():
         ('a', compose.FuncTransformer(a)) + compose.FuncTransformer(b)
     ]
 
-    for pipeline in pipelines:
+    for i, pipeline in enumerate(pipelines):
+        print(i, str(pipeline))
         assert str(pipeline) == 'a + b'
 
 

@@ -188,10 +188,9 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
     """
 
-    def __init__(self, steps=None):
-        if steps is not None:
-            for step in steps:
-                self |= step
+    def __init__(self, *steps):
+        for step in steps:
+            self |= step
 
     def __or__(self, other):
         """Inserts a step at the end of the pipeline."""
@@ -207,7 +206,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         """Merges with another Pipeline or TransformerUnion into a TransformerUnion."""
         if isinstance(other, union.TransformerUnion):
             return other.__add__(self)
-        return union.TransformerUnion([self, other])
+        return union.TransformerUnion(self, other)
 
     def __str__(self):
         return ' | '.join(map(str, self.values()))
@@ -220,10 +219,10 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         ).expandtabs(2)
 
     def _set_params(self, **new_params):
-        return self.__class__(
+        return self.__class__(*[
             step._set_params(**new_params.get(name, {}))
             for name, step in self.items()
-        )
+        ])
 
     @property
     def transformers(self):
