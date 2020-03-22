@@ -27,7 +27,7 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
 
             >>> X_y = datasets.Phishing()
 
-            >>> model = compose.Pipeline([
+            >>> model = compose.Pipeline(
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('stack', ensemble.StackingBinaryClassifier(
             ...         classifiers=[
@@ -37,7 +37,7 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
             ...         ],
             ...         meta_classifier=linear_model.LogisticRegression()
             ...     ))
-            ... ])
+            ... )
 
             >>> metric = metrics.F1()
 

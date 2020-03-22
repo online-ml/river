@@ -126,9 +126,3 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
         y_pred = predictions[max(model_weights, key=model_weights.get)]
         total = sum(y_pred.values())
         return {label: proba / total for label, proba in y_pred.items()}
-
-    def predict_one(self, x):
-        y_pred = self.predict_proba_one(x)
-        if y_pred:
-            return max(y_pred, key=y_pred.get)
-        return None

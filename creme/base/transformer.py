@@ -53,25 +53,25 @@ class Transformer(estimator.Estimator):
         from .. import compose
         if isinstance(other, compose.Pipeline):
             return other.__ror__(self)
-        return compose.Pipeline([self, other])
+        return compose.Pipeline(self, other)
 
     def __ror__(self, other):
         """Merges with another Transformer into a Pipeline."""
         from .. import compose
         if isinstance(other, compose.Pipeline):
             return other.__or__(self)
-        return compose.Pipeline([other, self])
+        return compose.Pipeline(other, self)
 
     def __add__(self, other):
         """Merges with another Transformer into a TransformerUnion."""
         from .. import compose
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
-        return compose.TransformerUnion([self, other])
+        return compose.TransformerUnion(self, other)
 
     def __radd__(self, other):
         """Merges with another Transformer into a TransformerUnion."""
         from .. import compose
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
-        return compose.TransformerUnion([other, self])
+        return compose.TransformerUnion(other, self)

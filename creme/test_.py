@@ -17,6 +17,7 @@ from creme import feature_selection
 from creme import impute
 from creme import linear_model
 from creme import meta
+from creme import model_selection
 from creme import multiclass
 from creme import multioutput
 from creme import naive_bayes
@@ -56,6 +57,8 @@ def get_all_estimators():
         linear_model.SoftmaxRegression,
         meta.PredClipper,
         meta.TransformedTargetRegressor,
+        model_selection.SuccessiveHalvingClassifier,
+        model_selection.SuccessiveHalvingRegressor,
         multioutput.ClassifierChain,
         multioutput.RegressorChain,
         preprocessing.OneHotEncoder,

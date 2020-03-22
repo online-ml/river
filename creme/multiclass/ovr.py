@@ -37,12 +37,12 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
 
             >>> X_y = datasets.ImageSegments()
 
-            >>> model = compose.Pipeline([
+            >>> model = compose.Pipeline(
             ...     ('scale', preprocessing.StandardScaler()),
             ...     ('learn', multiclass.OneVsRestClassifier(
             ...         binary_classifier=linear_model.LogisticRegression())
             ...     )
-            ... ])
+            ... )
 
             >>> metric = metrics.MacroF1()
 

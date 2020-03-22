@@ -1,5 +1,6 @@
 import math
 
+from ... import proba
 from ...proba.base import ContinuousDistribution
 
 from .. import base
@@ -69,7 +70,7 @@ class Leaf(base.Leaf):
             return self
 
         # Search for the best split given the current information
-        top_2_diff, split, left_dist, right_dist = self.find_best_split()
+        top_2_diff, split = self.find_best_split()
 
         # Calculate the Hoeffding bound
         ε = self.hoeffding_bound
@@ -77,8 +78,8 @@ class Leaf(base.Leaf):
         if top_2_diff > ε or ε < self.tree.tie_threshold:
             return Branch(
                 split=split,
-                left=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=left_dist),
-                right=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=right_dist),
+                left=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=self.tree._make_leaf_dist()),
+                right=Leaf(depth=self.depth + 1, tree=self.tree, target_dist=self.tree._make_leaf_dist()),
                 tree=self.tree,
                 target_dist=self.target_dist,
                 n_samples=self.n_samples
@@ -92,8 +93,6 @@ class Leaf(base.Leaf):
         best_gain = -math.inf
         second_best_gain = -math.inf
         best_split = None
-        best_l_dist = None
-        best_r_dist = None
 
         # For each feature
         for feature_name, split_enum in self.split_enums.items():
@@ -123,39 +122,10 @@ class Leaf(base.Leaf):
                 if gain > best_gain:
                     best_gain, second_best_gain = gain, best_gain
                     best_split = base.Split(on=feature_name, how=how, at=at)
-                    best_l_dist = l_dist
-                    best_r_dist = r_dist
                 elif gain > second_best_gain:
                     second_best_gain = gain
 
         if best_split is None:
             raise RuntimeError('No best split was found')
 
-        return best_gain - second_best_gain, best_split, best_l_dist, best_r_dist
-
-    def predict(self, x):
-        if isinstance(self.target_dist, ContinuousDistribution):
-            return self.target_dist.mode
-        return {c: self.target_dist.pmf(c) for c in self.target_dist}
-
-    def predict_naive_bayes(self, x):
-
-        y_pred = self.predict(x)
-
-        for i, xi in x.items():
-            if i in self.split_enums:
-                for label, dist in self.split_enums[i].items():
-                    if isinstance(dist, ContinuousDistribution):
-                        y_pred[label] *= dist.pdf(xi)
-                    else:
-                        y_pred[label] *= dist.pmf(xi)
-
-        total = sum(y_pred.values())
-
-        if total == 0:
-            return {label: 1. / len(y_pred) for label in y_pred}
-
-        for label in y_pred:
-            y_pred[label] /= total
-
-        return y_pred
+        return best_gain - second_best_gain, best_split

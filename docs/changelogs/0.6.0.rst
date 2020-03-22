@@ -1,6 +1,23 @@
 `Version 0.6.0 - 2020-06-01 <https://pypi.org/project/creme/0.6.0/>`_
 =====================================================================
 
-:mod:`simulate`
+`creme.compose`
+---------------
 
-- Add a ``copy`` parameter to `stream.simulate_qa` in order to handle unwanted feature modifications.
+- `compose.Pipeline` and `compose.Union` now variadic arguments as input instead of a list. This doesn't change anything when using the shorthand operators ``|`` and ``+``.
+
+`creme.model_selection`
+-----------------------
+
+- Removed ``model_selection.successive_halving``
+- Added `model_selection.SuccessiveHalvingRegressor` and `model_selection.SuccessiveHalvingClassifier`
+
+`creme.stream`
+--------------
+
+- Added a ``copy`` parameter to `stream.simulate_qa` in order to handle unwanted feature modifications.
+
+`creme.tree`
+------------
+
+- Added a ``curtail_under`` parameter to `tree.DecisionTreeClassifier`.
