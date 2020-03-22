@@ -2,8 +2,9 @@ import abc
 import collections
 import functools
 import itertools
+import math
 import numbers
-import itertools
+import typing
 
 try:
     import graphviz
@@ -65,76 +66,86 @@ class BaseDecisionTree(abc.ABC):
     def _get_split_enum(self, value):
         """Returns the appropriate split enumerator for a given value based on it's type."""
 
-    def draw(self, max_depth=30, n_colors = 7):
+    def draw(self, max_depth=None):
         """Draws the tree using the ``graphviz`` library.
+
+        Parameters:
+            max_depth (int): Only the root will be drawn when set to ``0``. Every node will be
+                drawn when set to ``None``.
 
         Example:
 
             ::
 
-            >>> from creme import datasets
-            >>> from creme import tree
+                >>> from creme import datasets
+                >>> from creme import tree
 
 
-            >>> model = tree.DecisionTreeClassifier(
-            ...    patience=10,
-            ...    confidence=1e-5,
-            ...    criterion='gini',
-            ...    max_depth = 10,
-            ...    tie_threshold = 0.05,
-            ...    min_child_samples = 0,
-            ... )
+                >>> model = tree.DecisionTreeClassifier(
+                ...    patience=10,
+                ...    confidence=1e-5,
+                ...    criterion='gini',
+                ...    max_depth=10,
+                ...    tie_threshold=0.05,
+                ...    min_child_samples=0,
+                ... )
 
-            >>> for x, y in datasets.Phishing():
-            ...    model = model.fit_one(x, y)
+                >>> for x, y in datasets.Phishing():
+                ...    model = model.fit_one(x, y)
 
-            >>> dot = model.draw()
+                >>> dot = model.draw()
 
-        .. image:: ../../../_static/model.svg
-            :align: center
+            .. image:: ../../../_static/dtree_draw.svg
+                :align: center
 
         """
 
+        if max_depth is None:
+            max_depth = math.inf
+
         dot = graphviz.Digraph(
             graph_attr={'splines': 'ortho'},
-            node_attr={'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
-                    'fontsize': '11', 'margin': '0.1,0.0'},
+            node_attr={
+                'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
+                'fontsize': '11', 'margin': '0.1,0.0'
+            },
             edge_attr={'penwidth': '0.6', 'center': 'true'}
         )
 
-        def transparency_hex(color, alpha):
-            """Apply alpha coefficient on hexadecimal color."""
-            color = [int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]
-            return '#%02x%02x%02x' % tuple(color)
+        # Do a first pass to guess the number of classes
+        n_classes = len(set(itertools.chain(*[
+            list(node.target_dist.keys())
+            for node, _ in self.root.iter_dfs()])
+        ))
 
-        colors = collections.defaultdict(
-            functools.partial(next, itertools.cycle(_color_brew(n_colors))))
+        # Pick a color palette which maps classes to colors
+        new_color = functools.partial(next, iter(_color_brew(n_classes)))
+        palette = collections.defaultdict(new_color)
 
         for parent_no, child_no, _, child, child_depth in self.root.iter_edges():
 
-                if child_depth <= max_depth:
+            if child_depth > max_depth:
+                continue
 
-                    if isinstance(child, Branch):
+            if isinstance(child, Branch):
+                text = f'{child.split} \n {child.target_dist} \n samples: {child.n_samples}'
+            elif isinstance(child, Leaf):
+                text = f'{child.target_dist} \n samples: {child.n_samples}'
 
-                        text = f'{child.split} \n {child.target_dist} \n samples: {child.n_samples}'
+            # Pick a color, the hue depends on the class and the transparency on the distribution
+            mode = child.target_dist.mode
+            if mode is not None:
+                p_mode = child.target_dist.pmf(mode)
+                alpha = (p_mode - 1 / n_classes) / (1 - 1 / n_classes)
+                fillcolor = str(transparency_hex(color=palette[mode], alpha=alpha))
+            else:
+                fillcolor = '#FFFFFF'
 
-                    elif isinstance(child, Leaf):
+            dot.node(f'{child_no}', text, fillcolor=fillcolor, style='filled')
 
-                        text = f'{child.target_dist} \n samples: {child.n_samples}'
+            if parent_no is not None:
+                dot.edge(f'{parent_no}', f'{child_no}')
 
-                    mode = child.target_dist.mode
-
-                    if mode is not None:
-                        fillcolor = str(transparency_hex(colors[mode],
-                            child.target_dist.pmf(child.target_dist.mode))
-                        )
-                    else:
-                        fillcolor = '#FFFFFF'
-
-                    dot.node(f'{child_no}', text, fillcolor=fillcolor, style='filled')
-
-                    if parent_no is not None:
-                        dot.edge(f'{parent_no}', f'{child_no}')
         return dot
 
     def debug_one(self, x, **print_params):
@@ -236,7 +247,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
         return {c: node.target_dist.pmf(c) for c in node.target_dist}
 
 
-def _color_brew(n):
+def _color_brew(n: int) -> typing.List[typing.Tuple[str, str, str]]:
     """Generate n colors with equally spaced hues.
 
     Parameters:
@@ -280,3 +291,9 @@ def _color_brew(n):
         color_list.append(rgb)
 
     return color_list
+
+
+def transparency_hex(color: str, alpha: float) -> str:
+    """Apply alpha coefficient on hexadecimal color."""
+    color = [int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]
+    return '#%02x%02x%02x' % tuple(color)
