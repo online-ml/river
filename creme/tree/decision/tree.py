@@ -244,7 +244,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
         return {c: node.target_dist.pmf(c) for c in node.target_dist}
 
 
-def _color_brew(n: int) -> typing.List[typing.Tuple[str, str, str]]:
+def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
     """Generate n colors with equally spaced hues.
 
     Parameters:
@@ -257,10 +257,10 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[str, str, str]]:
         https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py
 
     """
-    color_list = []
+    colors = []
 
     # Initialize saturation & value; calculate chroma & value shift
-    s, v = 0.75, 0.9
+    s, v = .75, .9
     c = s * v
     m = v - c
 
@@ -281,16 +281,15 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[str, str, str]]:
         r, g, b = rgb[int(h_bar)]
 
         # Shift the initial RGB values to match value and store
-        rgb = ((int(255 * (r + m))),
-               (int(255 * (g + m))),
-               (int(255 * (b + m))))
+        colors.append((
+            (int(255 * (r + m))),
+            (int(255 * (g + m))),
+            (int(255 * (b + m)))
+        ))
 
-        color_list.append(rgb)
-
-    return color_list
+    return colors
 
 
-def transparency_hex(color: str, alpha: float) -> str:
+def transparency_hex(color: typing.Tuple[int, int, int], alpha: float) -> str:
     """Apply alpha coefficient on hexadecimal color."""
-    color = [int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]
-    return '#%02x%02x%02x' % tuple(color)
+    return '#%02x%02x%02x' % tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color])
