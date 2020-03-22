@@ -2,15 +2,22 @@ import abc
 import collections
 import functools
 import itertools
+import math
 import numbers
+import typing
+
+try:
+    import graphviz
+    GRAPHVIZ_INSTALLED = True
+except ImportError:
+    GRAPHVIZ_INSTALLED = False
 
 from ... import base
 from ... import proba
 
 from . import criteria
-from . import leaf
+from . import node
 from . import splitting
-
 
 CRITERIA_CLF = {'gini': criteria.gini_impurity, 'entropy': criteria.entropy}
 
@@ -42,7 +49,7 @@ class BaseDecisionTree(abc.ABC):
         self.max_bins = max_bins
         self.curtail_under = curtail_under
 
-        self.root = leaf.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
+        self.root = node.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
 
     def fit_one(self, x, y):
         self.root = self.root.update(x, y)
@@ -56,30 +63,85 @@ class BaseDecisionTree(abc.ABC):
     def _get_split_enum(self, value):
         """Returns the appropriate split enumerator for a given value based on it's type."""
 
-    def draw(self):
-        """Returns a GraphViz representation of the decision tree."""
+    def draw(self, max_depth=None):
+        """Draws the tree using the ``graphviz`` library.
 
-        import graphviz
+        Parameters:
+            max_depth (int): Only the root will be drawn when set to ``0``. Every node will be
+                drawn when set to ``None``.
 
-        dot = graphviz.Digraph()
+        Example:
 
-        def add_node(node, path):
+            ::
 
-            if isinstance(node, leaf.Leaf):
-                # Draw a leaf
-                dot.node(path, str(node.target_dist), shape='box')
+                >>> from creme import datasets
+                >>> from creme import tree
+
+
+                >>> model = tree.DecisionTreeClassifier(
+                ...    patience=10,
+                ...    confidence=1e-5,
+                ...    criterion='gini',
+                ...    max_depth=10,
+                ...    tie_threshold=0.05,
+                ...    min_child_samples=0,
+                ... )
+
+                >>> for x, y in datasets.Phishing():
+                ...    model = model.fit_one(x, y)
+
+                >>> dot = model.draw()
+
+            .. image:: ../../../_static/dtree_draw.svg
+                :align: center
+
+        """
+
+        if max_depth is None:
+            max_depth = math.inf
+
+        dot = graphviz.Digraph(
+            graph_attr={'splines': 'ortho'},
+            node_attr={
+                'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
+                'fontsize': '11', 'margin': '0.1,0.0'
+            },
+            edge_attr={'penwidth': '0.6', 'center': 'true'}
+        )
+
+        # Do a first pass to guess the number of classes
+        n_classes = len(set(itertools.chain(*[
+            list(node.target_dist.keys())
+            for node, _ in self.root.iter_dfs()])
+        ))
+
+        # Pick a color palette which maps classes to colors
+        new_color = functools.partial(next, iter(_color_brew(n_classes)))
+        palette = collections.defaultdict(new_color)
+
+        for parent_no, child_no, _, child, child_depth in self.root.iter_edges():
+
+            if child_depth > max_depth:
+                continue
+
+            if isinstance(child, node.Branch):
+                text = f'{child.split} \n {child.target_dist} \n samples: {child.n_samples}'
+            elif isinstance(child, node.Leaf):
+                text = f'{child.target_dist} \n samples: {child.n_samples}'
+
+            # Pick a color, the hue depends on the class and the transparency on the distribution
+            mode = child.target_dist.mode
+            if mode is not None:
+                p_mode = child.target_dist.pmf(mode)
+                alpha = (p_mode - 1 / n_classes) / (1 - 1 / n_classes)
+                fillcolor = str(transparency_hex(color=palette[mode], alpha=alpha))
             else:
-                # Draw a branch
-                dot.node(path, str(node.split))
-                add_node(node.left, f'{path}0')
-                add_node(node.right, f'{path}1')
+                fillcolor = '#FFFFFF'
 
-            # Draw the link with the previous node
-            is_root = len(path) == 1
-            if not is_root:
-                dot.edge(path[:-1], path)
+            dot.node(f'{child_no}', text, fillcolor=fillcolor, style='filled')
 
-        add_node(node=self.root, path='0')
+            if parent_no is not None:
+                dot.edge(f'{parent_no}', f'{child_no}')
 
         return dot
 
@@ -95,7 +157,7 @@ class BaseDecisionTree(abc.ABC):
         _print = functools.partial(print, **print_params)
 
         for node in self.root.path(x):
-            if isinstance(node, leaf.Leaf):
+            if isinstance(node, node.Leaf):
                 _print(node.target_dist)
                 break
             if node.split(x):
@@ -180,3 +242,55 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
                 break
 
         return {c: node.target_dist.pmf(c) for c in node.target_dist}
+
+
+def _color_brew(n: int) -> typing.List[typing.Tuple[str, str, str]]:
+    """Generate n colors with equally spaced hues.
+
+    Parameters:
+        n (int): The number of colors required.
+
+    Returns:
+        list, length n: List of n tuples of form (R, G, B) being the components of each color.
+
+    References:
+        https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py
+
+    """
+    color_list = []
+
+    # Initialize saturation & value; calculate chroma & value shift
+    s, v = 0.75, 0.9
+    c = s * v
+    m = v - c
+
+    for h in [i for i in range(25, 385, int(360 / n))]:
+
+        # Calculate some intermediate values
+        h_bar = h / 60.
+        x = c * (1 - abs((h_bar % 2) - 1))
+
+        # Initialize RGB with same hue & chroma as our color
+        rgb = [(c, x, 0),
+               (x, c, 0),
+               (0, c, x),
+               (0, x, c),
+               (x, 0, c),
+               (c, 0, x),
+               (c, x, 0)]
+        r, g, b = rgb[int(h_bar)]
+
+        # Shift the initial RGB values to match value and store
+        rgb = ((int(255 * (r + m))),
+               (int(255 * (g + m))),
+               (int(255 * (b + m))))
+
+        color_list.append(rgb)
+
+    return color_list
+
+
+def transparency_hex(color: str, alpha: float) -> str:
+    """Apply alpha coefficient on hexadecimal color."""
+    color = [int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]
+    return '#%02x%02x%02x' % tuple(color)
