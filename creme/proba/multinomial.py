@@ -38,7 +38,7 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
     def mode(self):
         try:
             return max(self, key=self.get)
-        except:
+        except ValueError:
             return None
 
     def update(self, x):
