@@ -46,4 +46,7 @@ class Multinomial(collections.Counter, base.DiscreteDistribution):
             return 0.
 
     def __str__(self):
-        return '\n'.join(f'P({c}) = {self.pmf(c):.3f}' for c in self)
+        return '\n'.join(
+            f'P({c}) = {self.pmf(c):.3f}'
+            for c in sorted(self, key=self.get, reverse=True)
+        )
