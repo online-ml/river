@@ -109,7 +109,6 @@ class Branch(Node):
             0 4 1
 
         """
-
         counter = 0
 
         def iterate(node, depth):
@@ -150,7 +149,6 @@ class Leaf(Node):
 
 def iter_blocks(tree, limits, depth=-1):
     """Returns the block which encloses each node at a given depth.
-
     This only makes sense if the branches of the provided tree use the ``<`` operator as a split
     rule.
 
@@ -162,7 +160,6 @@ def iter_blocks(tree, limits, depth=-1):
     Example:
 
         >>> import operator
-
         >>> tree = Branch(
         ...     Split('x', operator.lt, .5),
         ...     Leaf(no=0),
@@ -180,7 +177,6 @@ def iter_blocks(tree, limits, depth=-1):
         2 {'x': (0.5, 1), 'y': (0.5, 1)}
 
     """
-
     if depth == 0 or isinstance(tree, Leaf):
         yield (tree, limits)
         return
