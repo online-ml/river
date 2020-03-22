@@ -21,3 +21,5 @@
 ------------
 
 - Added a ``curtail_under`` parameter to `tree.DecisionTreeClassifier`.
+- The speed and accuracy of both `tree.DecisionTreeClassifier` and `tree.RandomForestClassifier` has been slightly improved for numerical attributes.
+- The esthetics of the `tree.DecisionTreeClassifier.draw` method have been improved.
