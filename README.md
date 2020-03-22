@@ -67,12 +67,13 @@ True
 Now let's run the model on the dataset in a streaming fashion. We will sequentially make predictions and model updates. Meanwhile we will update a performance metric to see how well the model is doing.
 
 ```python
+>>> from creme import compose
 >>> from creme import linear_model
 >>> from creme import metrics
 >>> from creme import preprocessing
 
->>> model = (
-...     preprocessing.StandardScaler() |
+>>> model = compose.Pipeline(
+...     preprocessing.StandardScaler(),
 ...     linear_model.LogisticRegression()
 ... )
 
@@ -87,8 +88,6 @@ Now let's run the model on the dataset in a streaming fashion. We will sequentia
 Accuracy: 89.28%
 
 ```
-
-Note that the `|` (pipe) operator is shorthand for building a pipeline.
 
 ## 🛠 Installation
 

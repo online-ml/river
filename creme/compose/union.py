@@ -52,7 +52,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
             ...     by='place',
             ...     how=creme.stats.Count()
             ... )
-            >>> agg = creme.compose.TransformerUnion([mean])
+            >>> agg = creme.compose.TransformerUnion(mean)
             >>> agg += count
 
             >>> for x in X:
@@ -69,11 +69,10 @@ class TransformerUnion(collections.UserDict, base.Transformer):
 
     """
 
-    def __init__(self, transformers=None):
+    def __init__(self, *transformers):
         super().__init__()
-        if transformers is not None:
-            for transformer in transformers:
-                self += transformer
+        for transformer in transformers:
+            self += transformer
 
     @property
     def is_supervised(self):
