@@ -57,6 +57,14 @@ These tests absolutely have to pass.
 pytest
 ```
 
+**Static typing**
+
+These tests absolutely have to pass.
+
+```sh
+mypy creme
+```
+
 **Web dependent tests**
 
 This involves tests that need an internet connection, such as those in the `datasets` module. In most cases you probably don't need to run these.
