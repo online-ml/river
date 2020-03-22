@@ -12,26 +12,31 @@ def decimal_range(start, stop, num):
 
     Example:
 
-        >>> for x in decimal_range(1, 3, 5):
+        >>> for x in decimal_range(0, 1, 4):
         ...     print(x)
-        1
-        1.5
-        2.0
-        2.5
-        3.0
+        0.2
+        0.4
+        0.6
+        0.8
 
     """
-    step = (stop - start) / (num - 1)
+    step = (stop - start) / (num + 1)
 
     for _ in range(num):
-        yield start
         start += step
+        yield start
 
 
-class Op(collections.namedtuple('Op', 'symbol operator')):
+class Op:
+
+    __slots__ = 'symbol', 'func'
+
+    def __init__(self, symbol, func):
+        self.symbol = symbol
+        self.func = func
 
     def __call__(self, a, b):
-        return self.operator(a, b)
+        return self.func(a, b)
 
     def __repr__(self):
         return self.symbol
@@ -56,7 +61,7 @@ class HistSplitEnum(SplitEnum):
     """Split enumerator for classification and numerical attributes."""
 
     def __init__(self, n_bins, n_splits):
-        self.P_xy = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
+        self.hists = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
         self.n_splits = n_splits
 
     def update(self, x, y):
@@ -67,7 +72,7 @@ class HistSplitEnum(SplitEnum):
             y (base.Label)
 
         """
-        self.P_xy[y].update(x)
+        self.hists[y].update(x)
         return self
 
     def enumerate_splits(self, target_dist):
@@ -78,16 +83,21 @@ class HistSplitEnum(SplitEnum):
 
         """
 
-        low = min(h[0].right for h in self.P_xy.values())
-        high = min(h[-1].right for h in self.P_xy.values())
+        low = min(h[0].right for h in self.hists.values())
+        high = min(h[-1].right for h in self.hists.values())
 
         # If only one single value has been observed, then no split can be proposed
         if low >= high:
             return
             yield
 
-        thresholds = list(decimal_range(start=low, stop=high, num=self.n_splits))
-        cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.P_xy.items()}
+        n_thresholds = min(
+            self.n_splits,
+            max(map(len, self.hists.values())) - 1
+        )
+
+        thresholds = list(decimal_range(start=low, stop=high, num=n_thresholds))
+        cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.hists.items()}
 
         for at in thresholds:
 
