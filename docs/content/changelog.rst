@@ -6,6 +6,7 @@ Release history
 .. toctree::
     :maxdepth: 1
 
+    ../changelogs/0.6.0.rst
     ../changelogs/0.5.0.rst
     ../changelogs/0.4.4.rst
     ../changelogs/0.4.3.rst

@@ -36,10 +36,10 @@ class BernoulliNB(base.BaseNB):
             ...     ('Chinese Macao', 'yes'),
             ...     ('Tokyo Japan Chinese', 'no')
             ... ]
-            >>> model = compose.Pipeline([
+            >>> model = compose.Pipeline(
             ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
             ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
-            ... ])
+            ... )
             >>> for sentence, label in docs:
             ...     model = model.fit_one(sentence, label)
 

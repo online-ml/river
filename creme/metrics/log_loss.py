@@ -8,18 +8,7 @@ from . import base
 __all__ = ['LogLoss']
 
 
-class BaseLogLoss(base.BinaryMetric):
-
-    @property
-    def bigger_is_better(self):
-        return False
-
-    @property
-    def requires_labels(self):
-        return False
-
-
-class LogLoss(stats.Mean, BaseLogLoss):
+class LogLoss(stats.Mean, base.BinaryMetric):
     """Binary logarithmic loss.
 
     Example:
@@ -44,6 +33,14 @@ class LogLoss(stats.Mean, BaseLogLoss):
             LogLoss: 0.216162
 
     """
+
+    @property
+    def bigger_is_better(self):
+        return False
+
+    @property
+    def requires_labels(self):
+        return False
 
     def _get_log_loss(self, y_true, y_pred):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred

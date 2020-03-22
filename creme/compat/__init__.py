@@ -6,8 +6,9 @@ necessary library. For instance, to use the ``compat.convert_sklearn_to_creme`` 
 to install scikit-learn.
 
 """
+import typing
 
-__all__ = []
+__all__: typing.List[str] = []
 
 try:
     from .sklearn import convert_creme_to_sklearn
