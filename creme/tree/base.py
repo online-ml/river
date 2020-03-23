@@ -140,7 +140,7 @@ class Leaf(Node):
     def height(self):
         return 0
 
-    def iter_dfs(self, depth):
+    def iter_dfs(self, depth = 0):
         yield self, depth
 
     def iter_edges(self):
