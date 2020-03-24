@@ -8,7 +8,8 @@ from creme import base
 class RBFSampler(base.Transformer):
     """Extracts random features which approximate an RBF kernel.
 
-    This is a powerful way to give non-linear capacity to linear classifiers.
+    This is a powerful way to give non-linear capacity to linear classifiers. In the litterature
+    this is also called "random Fourier features".
 
     Parameters:
         gamma (float): RBF kernel parameter: ``(-gamma * x^2)``.
