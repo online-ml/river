@@ -89,6 +89,12 @@ class TransformerUnion(collections.UserDict, base.Transformer):
             '\n)'
         ).expandtabs(2)
 
+    def _set_params(self, **new_params):
+        return TransformerUnion(*[
+            step._set_params(**new_params.get(name, {}))
+            for name, step in self.items()
+        ])
+
     def add_step(self, other):
         """Adds a transformer while taking care of the input type."""
 

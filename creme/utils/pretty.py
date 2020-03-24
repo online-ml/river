@@ -27,7 +27,10 @@ def format_object(obj, show_modules=False, depth=0):
             continue
 
         # Retrieve the attribute associated with the parameter
-        attr = getattr(obj, name)
+        try:
+            attr = getattr(obj, name)
+        except AttributeError:
+            continue
         n_params += 1
 
         # Prettify the attribute when applicable
