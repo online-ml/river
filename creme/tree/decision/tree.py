@@ -38,7 +38,7 @@ class BaseDecisionTree(abc.ABC):
     def __init__(self, criterion='gini', patience=250, max_depth=5, min_split_gain=0.,
                  min_child_samples=20, confidence=1e-10, tie_threshold=5e-2, n_split_points=30,
                  max_bins=60, curtail_under=10):
-        self.criterion = CRITERIA_CLF[criterion]
+        self.criterion = criterion
         self.patience = patience
         self.max_depth = max_depth
         self.min_split_gain = min_split_gain
@@ -49,6 +49,7 @@ class BaseDecisionTree(abc.ABC):
         self.max_bins = max_bins
         self.curtail_under = curtail_under
 
+        self.criterion_func = CRITERIA_CLF[criterion]
         self.root = node.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
 
     def fit_one(self, x, y):

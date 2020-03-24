@@ -89,7 +89,7 @@ class Leaf(base.Leaf):
     def find_best_split(self):
         """Returns the best potential split."""
 
-        current_impurity = self.tree.criterion(dist=self.target_dist)
+        current_impurity = self.tree.criterion_func(dist=self.target_dist)
         best_gain = -math.inf
         second_best_gain = -math.inf
         best_split = None
@@ -108,8 +108,8 @@ class Leaf(base.Leaf):
                     continue
 
                 # Compute the decrease in impurity brought by the split
-                left_impurity = self.tree.criterion(dist=l_dist)
-                right_impurity = self.tree.criterion(dist=r_dist)
+                left_impurity = self.tree.criterion_func(dist=l_dist)
+                right_impurity = self.tree.criterion_func(dist=r_dist)
                 impurity = l_dist.n_samples * left_impurity + r_dist.n_samples * right_impurity
                 impurity /= l_dist.n_samples + r_dist.n_samples
                 gain = current_impurity - impurity
