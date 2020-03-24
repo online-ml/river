@@ -121,6 +121,10 @@ def check_tags(model):
     assert isinstance(model._tags, dict)
 
 
+def check_set_params_idempotent(model):
+    assert len(model.__dict__) == len(model._set_params().__dict__)
+
+
 def yield_checks(model):
     """Generates unit tests that can be applied to a given model.
 
@@ -134,6 +138,7 @@ def yield_checks(model):
     yield check_repr
     yield check_str
     yield check_tags
+    yield check_set_params_idempotent
 
     for dataset in yield_datasets(model):
 

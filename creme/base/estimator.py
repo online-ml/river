@@ -82,13 +82,12 @@ class Estimator(abc.ABC):
 
         """
 
-        # Get the input parameters
-        sig = inspect.signature(self.__class__)
-        params = dict(sig.parameters)
-
-        # Get the current input parameters, assuming that they are stored
-        for name in params:
-            params[name] = getattr(self, name)
+        # Get the input parameters, assuming that they are stored in the class
+        params = {
+            name: getattr(self, name)
+            for name, param in inspect.signature(self.__class__).parameters.items()
+            if param.kind != param.VAR_KEYWORD
+        }
 
         # Add the new parameters
         params.update(new_params)

@@ -12,6 +12,7 @@ class NearestNeighbours(collections.deque):
 
     def __init__(self, window_size, p):
         super().__init__(self, maxlen=window_size)
+        self.window_size = window_size
         self.p = p
 
     def update(self, x, y):

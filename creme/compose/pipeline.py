@@ -219,7 +219,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         ).expandtabs(2)
 
     def _set_params(self, **new_params):
-        return self.__class__(*[
+        return Pipeline(*[
             step._set_params(**new_params.get(name, {}))
             for name, step in self.items()
         ])
