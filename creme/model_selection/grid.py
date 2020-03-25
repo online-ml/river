@@ -16,6 +16,7 @@ def expand_param_grid(grid):
     Example:
 
         >>> import pprint
+        >>> from creme import model_selection
         >>> from creme import optim
 
         >>> param_grid = {
@@ -28,7 +29,7 @@ def expand_param_grid(grid):
         ...     }
         ... }
 
-        >>> for params in expand_param_grid(param_grid):
+        >>> for params in model_selection.expand_param_grid(param_grid):
         ...     pprint.pprint(params)
         ...     print()
         {'BagOfWords': {'strip_accents': False},

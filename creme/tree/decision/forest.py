@@ -49,11 +49,13 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
             n_models=n_trees,
             seed=seed
         )
-        self.__dict__.update(tree_params)
 
     @property
     def n_trees(self):
         return len(self)
+
+    def _get_params(self):
+        return {**super()._get_params(), **self.model._get_params()}
 
     def __str__(self):
         return 'RandomForestClassifier'

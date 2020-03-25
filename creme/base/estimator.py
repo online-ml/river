@@ -2,6 +2,8 @@ import abc
 import copy
 import inspect
 import sys
+import types
+import typing
 
 from .. import utils
 
@@ -13,15 +15,6 @@ DEFAULT_TAGS = {
 }
 
 
-def _update_if_consistent(dict1, dict2):
-    common_keys = set(dict1.keys()).intersection(dict2.keys())
-    for key in common_keys:
-        if dict1[key] != dict2[key]:
-            raise TypeError(
-                f'Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}')
-    dict1.update(dict2)
-
-
 class Estimator(abc.ABC):
     """An estimator."""
 
@@ -29,9 +22,16 @@ class Estimator(abc.ABC):
         return self.__class__.__name__
 
     def __repr__(self):
-        return utils.pretty.format_object(self)
+        return _repr_obj(obj=self, params=self._get_params())
 
-    def _set_params(self, **new_params):
+    def _get_params(self) -> typing.Dict[str, typing.Any]:
+        return {
+            name: getattr(self, name)
+            for name, param in inspect.signature(self.__init__).parameters.items()
+            if param.kind != param.VAR_KEYWORD
+        }
+
+    def _set_params(self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None) -> 'Estimator':
         """Returns a new instance with the current parameters as well as new ones.
 
         The algorithm will be recursively called down ``Pipeline``s and ``TransformerUnion``s.
@@ -57,7 +57,7 @@ class Estimator(abc.ABC):
                 ...     }
                 ... }
 
-                >>> model._set_params(**new_params)
+                >>> model._set_params(new_params)
                 Pipeline (
                   StandardScaler (
                     with_mean=True
@@ -82,24 +82,21 @@ class Estimator(abc.ABC):
 
         """
 
-        # Get the input parameters, assuming that they are stored in the class
+        if new_params is None:
+            new_params = {}
+
         params = {
-            name: getattr(self, name)
-            for name, param in inspect.signature(self.__class__).parameters.items()
-            if param.kind != param.VAR_KEYWORD
+            **self._get_params(),
+            **new_params
         }
 
-        # Add the new parameters
-        params.update(new_params)
-
-        # Return a new instance
         return self.__class__(**copy.deepcopy(params))
 
     @property
-    def _tags(self) -> dict:
+    def _tags(self) -> typing.Dict[str, bool]:
         """Returns the estimator's tags."""
 
-        tags: dict = {}
+        tags: typing.Dict[str, bool] = {}
 
         for base_class in inspect.getmro(self.__class__)[1:]:
             if isinstance(base_class, Estimator):
@@ -110,7 +107,7 @@ class Estimator(abc.ABC):
         return {**DEFAULT_TAGS, **tags}
 
     @property
-    def _more_tags(self) -> dict:
+    def _more_tags(self) -> typing.Dict[str, bool]:
         """Specific tags for this estimator."""
         return {}
 
@@ -140,3 +137,61 @@ class Estimator(abc.ABC):
 
         mem_usage = get_size(self)
         return utils.pretty.humanize_bytes(mem_usage)
+
+
+def _update_if_consistent(dict1: dict, dict2: dict) -> dict:
+    common_keys = set(dict1.keys()).intersection(dict2.keys())
+    for key in common_keys:
+        if dict1[key] != dict2[key]:
+            raise TypeError(
+                f'Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}')
+    dict1.update(dict2)
+
+
+def _repr_obj(obj: Estimator, params=None, show_modules: bool = False, depth: int = 0) -> str:
+    """Returns a pretty representation of an instanted object."""
+
+    rep = f'{obj.__class__.__name__} ('
+    if show_modules:
+        rep = f'{obj.__class__.__module__}.{rep}'
+    tab = '\t'
+
+    if params is None:
+        params = {
+            name: getattr(obj, name)
+            for name, param in inspect.signature(obj.__init__).parameters.items()
+            if not (
+                param.name == 'args' and param.kind == param.VAR_POSITIONAL or
+                param.name == 'kwargs' and param.kind == param.VAR_KEYWORD
+            )
+        }
+
+    n_params = 0
+
+    for name, val in params.items():
+
+        n_params += 1
+
+        # Prettify the attribute when applicable
+        if isinstance(val, types.FunctionType):
+            val = val.__name__
+        if isinstance(val, str):
+            val = f'"{val}"'
+        elif isinstance(val, float):
+            val = (
+                f'{val:.0e}'
+                if (val > 1e5 or (val < 1e-4 and val > 0)) else
+                f'{val:.6f}'.rstrip('0')
+            )
+        elif isinstance(val, set):
+            val = sorted(val)
+        elif hasattr(val, '__class__') and 'creme.' in str(type(val)):
+            val = _repr_obj(obj=val, show_modules=show_modules, depth=depth + 1)
+
+        rep += f'\n{tab * (depth + 1)}{name}={val}'
+
+    if n_params:
+        rep += f'\n{tab * depth}'
+    rep += ')'
+
+    return rep.expandtabs(2)

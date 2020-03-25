@@ -2,6 +2,7 @@ import collections
 import functools
 import itertools
 import types
+import typing
 
 try:
     import graphviz
@@ -16,86 +17,6 @@ from . import union
 
 
 __all__ = ['Pipeline']
-
-
-class Network(collections.UserList):
-    """An abstraction to help with drawing pipelines."""
-
-    def __init__(self, nodes, links, directed, name=None, labelloc=None):
-        super().__init__()
-        for node in nodes:
-            self.append(node)
-        self.links = set()
-        for link in links:
-            self.link(*link)
-        self.directed = directed
-        self.name = name
-        self.labelloc = labelloc
-
-    def append(self, a):
-        if a not in self:
-            super().append(a)
-
-    def link(self, a, b):
-        self.append(a)
-        self.append(b)
-        self.links.add((self.index(a), self.index(b)))
-
-    def draw(self):
-        dot = graphviz.Digraph(
-            graph_attr={'splines': 'ortho'},
-            node_attr={'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
-                       'fontsize': '11', 'margin': '0.1,0.0'},
-            edge_attr={'penwidth': '0.6'}
-        )
-
-        def draw_node(a):
-            if isinstance(a, Network):
-                for part in a:
-                    draw_node(part)
-            else:
-                dot.node(a)
-
-        for a in self:
-            draw_node(a)
-
-        def draw_link(a, b):
-
-            if isinstance(a, Network):
-                # Connect the last part of a with b
-                if a.directed:
-                    draw_link(a[-1], b)
-                # Connect each part of a with b
-                else:
-                    for part in a:
-                        draw_link(part, b)
-
-            elif isinstance(b, Network):
-                # Connect the first part of b with a
-                if b.directed:
-
-                    if b.name is not None:
-                        # If the graph has a name, then we treat is as a cluster
-                        c = b.draw()
-                        c.attr(label=b.name, labelloc=b.labelloc)
-                        c.name = f'cluster_{b.name}'
-                        dot.subgraph(c)
-                    else:
-                        dot.subgraph(b.draw())
-
-                    draw_link(a, b[0])
-                # Connect each part of b with a
-                else:
-                    for part in b:
-                        draw_link(a, part)
-
-            else:
-                dot.edge(a, b)
-
-        for a, b in self.links:
-            draw_link(self[a], self[b])
-
-        return dot
 
 
 class Pipeline(base.Estimator, collections.OrderedDict):
@@ -218,9 +139,16 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             '\n)'
         ).expandtabs(2)
 
-    def _set_params(self, **new_params):
+    def _get_params(self):
+        return dict(self.items())
+
+    def _set_params(self, new_params=None):
+        if new_params is None:
+            new_params = {}
         return Pipeline(*[
-            step._set_params(**new_params.get(name, {}))
+            (name, new_params[name])
+            if isinstance(new_params.get(name), base.Estimator) else
+            (name, step._set_params(new_params.get(name, {})))
             for name, step in self.items()
         ])
 
@@ -236,23 +164,36 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         """Only works if all the steps of the pipelines are transformers."""
         return any(transformer.is_supervised for transformer in self.values())
 
-    def add_step(self, step, at_start):
+    def add_step(self, estimator: typing.Union[base.Estimator, typing.Tuple[typing.Hashable, base.Estimator]],
+                 at_start: bool):
         """Adds a step to either end of the pipeline while taking care of the input type."""
 
-        # Infer a name if none is given
-        if not isinstance(step, (list, tuple)):
-            step = (str(step), step)
+        name = None
+        if isinstance(estimator, tuple):
+            name, estimator = estimator
 
-        name, estimator = step
-
-        # If a function is given then wrap it in a FuncTransformer
+        # If the step is a function then wrap it in a FuncTransformer
         if isinstance(estimator, (types.FunctionType, types.LambdaType)):
-            name = estimator.__name__
             estimator = func.FuncTransformer(estimator)
 
-        # Check if an identical step has already been inserted
+        def infer_name(estimator):
+            if isinstance(estimator, func.FuncTransformer):
+                return infer_name(estimator.func)
+            elif isinstance(estimator, (types.FunctionType, types.LambdaType)):
+                return estimator.__name__
+            elif hasattr(estimator, '__class__'):
+                return estimator.__class__.__name__
+            return str(estimator)
+
+        # Infer a name if none is given
+        if name is None:
+            name = infer_name(estimator)
+
         if name in self:
-            raise KeyError(f'{name} already exists')
+            counter = 1
+            while f'{name}{counter}' in self:
+                counter += 1
+            name = f'{name}{counter}'
 
         # Instantiate the estimator if it hasn't been done
         if isinstance(estimator, type):
@@ -268,7 +209,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     @property
     def final_estimator(self):
         """The final estimator."""
-        return self[next(reversed(self))]
+        return next(reversed(self.values()))
 
     def fit_one(self, x, y=None, **fit_params):
         """Fits each step with ``x``."""
@@ -410,6 +351,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             if isinstance(t, union.TransformerUnion):
                 print_title(f'{i+1}. Transformer union')
                 for j, (name, sub_t) in enumerate(t.items()):
+                    if isinstance(sub_t, Pipeline):
+                        name = str(sub_t)
                     print_title(f'{i+1}.{j} {name}', indent=True)
                     print_dict(sub_t.transform_one(x), show_types=show_types, indent=True)
                 x = t.transform_one(x)
@@ -483,3 +426,83 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         net.link(previous, 'y')
 
         return net.draw()
+
+
+class Network(collections.UserList):
+    """An abstraction to help with drawing pipelines."""
+
+    def __init__(self, nodes, links, directed, name=None, labelloc=None):
+        super().__init__()
+        for node in nodes:
+            self.append(node)
+        self.links = set()
+        for link in links:
+            self.link(*link)
+        self.directed = directed
+        self.name = name
+        self.labelloc = labelloc
+
+    def append(self, a):
+        if a not in self:
+            super().append(a)
+
+    def link(self, a, b):
+        self.append(a)
+        self.append(b)
+        self.links.add((self.index(a), self.index(b)))
+
+    def draw(self):
+        dot = graphviz.Digraph(
+            graph_attr={'splines': 'ortho'},
+            node_attr={'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
+                       'fontsize': '11', 'margin': '0.1,0.0'},
+            edge_attr={'penwidth': '0.6'}
+        )
+
+        def draw_node(a):
+            if isinstance(a, Network):
+                for part in a:
+                    draw_node(part)
+            else:
+                dot.node(a)
+
+        for a in self:
+            draw_node(a)
+
+        def draw_link(a, b):
+
+            if isinstance(a, Network):
+                # Connect the last part of a with b
+                if a.directed:
+                    draw_link(a[-1], b)
+                # Connect each part of a with b
+                else:
+                    for part in a:
+                        draw_link(part, b)
+
+            elif isinstance(b, Network):
+                # Connect the first part of b with a
+                if b.directed:
+
+                    if b.name is not None:
+                        # If the graph has a name, then we treat is as a cluster
+                        c = b.draw()
+                        c.attr(label=b.name, labelloc=b.labelloc)
+                        c.name = f'cluster_{b.name}'
+                        dot.subgraph(c)
+                    else:
+                        dot.subgraph(b.draw())
+
+                    draw_link(a, b[0])
+                # Connect each part of b with a
+                else:
+                    for part in b:
+                        draw_link(a, part)
+
+            else:
+                dot.edge(a, b)
+
+        for a, b in self.links:
+            draw_link(self[a], self[b])
+
+        return dot

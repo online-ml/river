@@ -36,8 +36,10 @@ class Discard(base.Transformer):
             return 'Discard (\n  ' + '\n  '.join(map(str, sorted(self.blacklist))) + '\n)'
         return 'Discard ()'
 
-    def _set_params(self, **new_params):
-        return Discard(*self.blacklist)
+    def _set_params(self, blacklist=None):
+        if not blacklist:
+            blacklist = self.blacklist
+        return Select(*blacklist)
 
 
 class Select(base.Transformer):
@@ -72,5 +74,10 @@ class Select(base.Transformer):
             return 'Select (\n  ' + '\n  '.join(map(str, sorted(self.whitelist))) + '\n)'
         return 'Select ()'
 
-    def _set_params(self, **new_params):
-        return Select(*self.whitelist)
+    def _get_params(self):
+        return self.whitelist
+
+    def _set_params(self, whitelist=None):
+        if not whitelist:
+            whitelist = self.whitelist
+        return Select(*whitelist)

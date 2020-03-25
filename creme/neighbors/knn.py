@@ -29,7 +29,7 @@ class NearestNeighbours(collections.deque):
         return sorted(points, key=operator.itemgetter(2))[:k]
 
 
-class KNeighborsRegressor(NearestNeighbours, base.Regressor):
+class KNeighborsRegressor(base.Regressor, NearestNeighbours):
     """K-Nearest Neighbors (KNN) for regression.
 
     Parameters:
@@ -94,7 +94,7 @@ class KNeighborsRegressor(NearestNeighbours, base.Regressor):
         return sum(y for _, y, _ in nearest) / self.n_neighbors
 
 
-class KNeighborsClassifier(NearestNeighbours, base.MultiClassifier):
+class KNeighborsClassifier(base.MultiClassifier, NearestNeighbours):
     """K-Nearest Neighbors (KNN) for classification.
 
     Parameters:

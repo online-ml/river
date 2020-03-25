@@ -155,7 +155,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
             ...     }
             ... })
 
-            >>> models = [model._set_params(**params) for params in param_grid]
+            >>> models = [model._set_params(params) for params in param_grid]
 
             >>> sh = model_selection.SuccessiveHalvingRegressor(
             ...     models=models,
@@ -254,9 +254,9 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
             >>> from creme import datasets
             >>> from creme import linear_model
             >>> from creme import metrics
-            >>> from creme import preprocessing
             >>> from creme import model_selection
             >>> from creme import optim
+            >>> from creme import preprocessing
 
             >>> model = (
             ...     preprocessing.StandardScaler() |
@@ -273,7 +273,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
             ...     }
             ... })
 
-            >>> models = [model._set_params(**params) for params in param_grid]
+            >>> models = [model._set_params(params) for params in param_grid]
 
             >>> sh = model_selection.SuccessiveHalvingClassifier(
             ...     models=models,
