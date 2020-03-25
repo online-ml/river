@@ -111,8 +111,6 @@ def check_pickling(model, dataset):
 def check_repr_works(model):
     rep = repr(model)
     assert isinstance(rep, str)
-    for name in model._get_params():
-        assert name in rep
 
 
 def check_str_works(model):
