@@ -34,7 +34,8 @@ cdef class Mean(creme.stats.base.Univariate):
             0.0
 
     References:
-        1. `Finch, T., 2009. Incremental calculation of weighted mean and variance. University of Cambridge, 4(11-5), pp.41-42. <https://fanf2.user.srcf.net/hermes/doc/antiforgery/stats.pdf>`_
+        1. `West, D. H. D. (1979). Updating mean and variance estimates: An improved method. Communications of the ACM, 22(9), 532-535. <https://people.xiph.org/~tterribe/tmp/homs/West79-_Updating_Mean_and_Variance_Estimates-_An_Improved_Method.pdf>`_
+        2. `Finch, T., 2009. Incremental calculation of weighted mean and variance. University of Cambridge, 4(11-5), pp.41-42. <https://fanf2.user.srcf.net/hermes/doc/antiforgery/stats.pdf>`_
 
     """
 
