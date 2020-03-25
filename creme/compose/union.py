@@ -79,8 +79,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         return any(transformer.is_supervised for transformer in self.values())
 
     def __str__(self):
-        """Returns a human friendly representation of the pipeline."""
-        return f' + '.join(map(str, self.keys()))
+        return ' + '.join(map(str, self.values()))
 
     def __repr__(self):
         return (
@@ -89,28 +88,48 @@ class TransformerUnion(collections.UserDict, base.Transformer):
             '\n)'
         ).expandtabs(2)
 
-    def _set_params(self, **new_params):
+    def _get_params(self):
+        return dict(self.items())
+
+    def _set_params(self, new_params=None):
+        if new_params is None:
+            new_params = {}
         return TransformerUnion(*[
-            step._set_params(**new_params.get(name, {}))
+            (name, new_params[name])
+            if isinstance(new_params.get(name), base.Estimator) else
+            (name, step._set_params(new_params.get(name, {})))
             for name, step in self.items()
         ])
 
-    def add_step(self, other):
+    def add_step(self, transformer):
         """Adds a transformer while taking care of the input type."""
 
-        # Infer a name if none is given
-        if not isinstance(other, (list, tuple)):
-            other = (str(other), other)
-        name, transformer = other
+        name = None
+        if isinstance(transformer, tuple):
+            name, transformer = transformer
 
-        # If a function is given then wrap it in a FuncTransformer
-        if isinstance(transformer, types.FunctionType):
-            name = transformer.__name__
+        # If the step is a function then wrap it in a FuncTransformer
+        if isinstance(transformer, (types.FunctionType, types.LambdaType)):
             transformer = func.FuncTransformer(transformer)
 
-        # Prefer clarity to magic
+        def infer_name(transformer):
+            if isinstance(transformer, func.FuncTransformer):
+                return infer_name(transformer.func)
+            elif isinstance(transformer, (types.FunctionType, types.LambdaType)):
+                return transformer.__name__
+            elif hasattr(transformer, '__class__'):
+                return transformer.__class__.__name__
+            return str(transformer)
+
+        # Infer a name if none is given
+        if name is None:
+            name = infer_name(transformer)
+
         if name in self:
-            raise KeyError(f'{name} already exists')
+            counter = 1
+            while f'{name}{counter}' in self:
+                counter += 1
+            name = f'{name}{counter}'
 
         # Store the transformer
         self[name] = transformer

@@ -108,11 +108,14 @@ def check_pickling(model, dataset):
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
 
 
-def check_repr(model):
-    assert isinstance(repr(model), str)
+def check_repr_works(model):
+    rep = repr(model)
+    assert isinstance(rep, str)
+    for name in model._get_params():
+        assert name in rep
 
 
-def check_str(model):
+def check_str_works(model):
     assert isinstance(str(model), str)
 
 
@@ -135,8 +138,8 @@ def yield_checks(model):
 
     from .. import base
 
-    yield check_repr
-    yield check_str
+    yield check_repr_works
+    yield check_str_works
     yield check_tags
     yield check_set_params_idempotent
 
