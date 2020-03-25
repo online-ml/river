@@ -27,7 +27,7 @@ class Estimator(abc.ABC):
     def _get_params(self) -> typing.Dict[str, typing.Any]:
         return {
             name: getattr(self, name)
-            for name, param in inspect.signature(self.__init__).parameters.items()
+            for name, param in inspect.signature(self.__init__).parameters.items()  # type: ignore
             if param.kind != param.VAR_KEYWORD
         }
 
@@ -90,7 +90,7 @@ class Estimator(abc.ABC):
             **new_params
         }
 
-        return self.__class__(**copy.deepcopy(params))
+        return self.__class__(**copy.deepcopy(params))  # type: ignore
 
     @property
     def _tags(self) -> typing.Dict[str, bool]:
@@ -139,7 +139,7 @@ class Estimator(abc.ABC):
         return utils.pretty.humanize_bytes(mem_usage)
 
 
-def _update_if_consistent(dict1: dict, dict2: dict) -> dict:
+def _update_if_consistent(dict1: dict, dict2: dict):
     common_keys = set(dict1.keys()).intersection(dict2.keys())
     for key in common_keys:
         if dict1[key] != dict2[key]:
@@ -159,7 +159,7 @@ def _repr_obj(obj: Estimator, params=None, show_modules: bool = False, depth: in
     if params is None:
         params = {
             name: getattr(obj, name)
-            for name, param in inspect.signature(obj.__init__).parameters.items()
+            for name, param in inspect.signature(obj.__init__).parameters.items()  # type: ignore
             if not (
                 param.name == 'args' and param.kind == param.VAR_POSITIONAL or
                 param.name == 'kwargs' and param.kind == param.VAR_KEYWORD
