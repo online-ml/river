@@ -1,13 +1,13 @@
 import bisect
 import datetime as dt
 
-from .. import metrics
+from . import base
 
 
 __all__ = ['TimeRolling']
 
 
-class TimeRolling(metrics.base.WrapperMetric):
+class TimeRolling(base.WrapperMetric):
     """Wrapper for computing metrics over a period of time.
 
     Parameters:
