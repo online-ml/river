@@ -48,3 +48,9 @@ The algorithms from ``sklearn`` that support incremental learning are mostly mea
     # load
     >>> with open('model.pkl', 'rb') as f:
     ...     model = pickle.load(f)
+
+We also encourage you to try out `dill <https://dill.readthedocs.io/en/latest/dill.html>`_.
+
+**What about neural networks?**
+
+There are many great open-source libraries for building neural network models. We don't feel that we can bring anything of value to the existing Python ecosystem. However, we are open to implementing compatibility wrappers for popular libraries such as PyTorch and Keras.
