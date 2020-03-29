@@ -1,24 +1,20 @@
 `Version 0.5.0 - 2020-03-29 <https://pypi.org/project/creme/0.5.1/>`_
 =====================================================================
 
-`creme.compose`
----------------
+:mod:`compose`
 
-- `compose.Pipeline` and `compose.Union` now variadic arguments as input instead of a list. This doesn't change anything when using the shorthand operators ``|`` and ``+``.
+- `compose.Pipeline` and `compose.TransformerUnion` now variadic arguments as input instead of a list. This doesn't change anything when using the shorthand operators ``|`` and ``+``.
 
-`creme.model_selection`
------------------------
+:mod:`model_selection`
 
 - Removed ``model_selection.successive_halving``
 - Added `model_selection.SuccessiveHalvingRegressor` and `model_selection.SuccessiveHalvingClassifier`
 
-`creme.stream`
---------------
+:mod:`stream`
 
 - Added a ``copy`` parameter to `stream.simulate_qa` in order to handle unwanted feature modifications.
 
-`creme.tree`
-------------
+:mod:`tree`
 
 - Added a ``curtail_under`` parameter to `tree.DecisionTreeClassifier`.
 - The speed and accuracy of both `tree.DecisionTreeClassifier` and `tree.RandomForestClassifier` has been slightly improved for numerical attributes.

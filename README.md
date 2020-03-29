@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="200px" src="docs/_static/creme.svg" alt="creme_logo">
+  <img height="200px" src="https://docs.google.com/drawings/d/e/2PACX-1vSl80T4MnWRsPX3KvlB2kn6zVdHdUleG_w2zBiLS7RxLGAHxiSYTnw3LZtXh__YMv6KcIOYOvkSt9PB/pub?w=447&h=182" alt="creme_logo">
 </p>
 
 <p align="center">
