@@ -126,6 +126,7 @@ Here are some benefits of using `creme` (and online machine learning in general)
 - Anomaly detection
 - Recommender systems
 - Time series forecasting
+- Imbalanced learning
 - Clustering
 - Feature extraction and selection
 - Online statistics and metrics
