@@ -1,4 +1,4 @@
-`Version 0.6.0 - 2020-06-01 <https://pypi.org/project/creme/0.6.0/>`_
+`Version 0.5.0 - 2020-03-29 <https://pypi.org/project/creme/0.5.1/>`_
 =====================================================================
 
 `creme.compose`

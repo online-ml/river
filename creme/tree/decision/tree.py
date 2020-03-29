@@ -170,6 +170,9 @@ class BaseDecisionTree(abc.ABC):
 class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
     """Decision tree classifier.
 
+    Numeric features will be treated as continuous features. You can cast a feature to a string in
+    order to treat it as a categorical feature.
+
     Parameters:
         criterion (str): The function to measure the quality of a split. Set to ``'gini'`` in order
             to use Gini impurity and ``'entropy'`` for information gain.
