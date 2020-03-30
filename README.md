@@ -102,8 +102,6 @@ There are [wheels available](https://pypi.org/project/creme/#files) for Linux, M
     # Or, through SSH:
     pip install git+ssh://git@github.com/creme-ml/creme.git
 
-Note that installing the development version requires already having [Cython](https://github.com/cython/cython) installed.
-
 ## 🧠 Philosophy
 
 Machine learning is often done in a batch setting, whereby a model is fitted to a dataset in one go. This results in a static model which has to be retrained in order to learn from new data. In many cases, this isn't elegant nor efficient, and usually incurs [a fair amount of technical debt](https://research.google/pubs/pub43146/). Indeed, if you're using a batch model, then you need to think about maintaining a training set, monitoring real-time performance, model retraining, etc.
@@ -148,7 +146,8 @@ Here are some benefits of using `creme` (and online machine learning in general)
 
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
 - [Toulouse Data Science presentation](https://maxhalford.github.io/slides/creme-tds/)
-- [Blog post on pyimagesearch](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
+- [*Online/Incremental Learning with Keras and Creme* on pyimagesearch](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
+- [*Machine learning for streaming data with creme* on Medium](https://towardsdatascience.com/machine-learning-for-streaming-data-with-creme-dacf5fb469df)
 
 ## 👍 Contributing
 

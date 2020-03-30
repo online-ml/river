@@ -1,24 +1,20 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-# Note: To use the 'upload' functionality of this file, you must:
-#   $ pip install twine
-
 import io
 import platform
 import os
-
-from setuptools import Extension
-from setuptools import find_packages
-from setuptools import setup
+import setuptools
+import sys
 
 try:
     from Cython.Build import cythonize
 except ImportError:
-    # Create closure for deferred import
-    def cythonize(*args, **kwargs):
+    import subprocess
+
+    errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'Cython'])
+    if errno:
+        print('Please install Cython')
+        raise SystemExit(errno)
+    else:
         from Cython.Build import cythonize
-        return cythonize(*args, ** kwargs)
 
 
 # Package meta-data.
@@ -41,7 +37,6 @@ compat_packages = base_packages + [
 ]
 
 dev_packages = [
-    'Cython>=0.29.6',
     'flake8>=3.7.9',
     'graphviz>=0.10.1',
     'matplotlib>=3.0.2',
@@ -84,7 +79,7 @@ else:
     about['__version__'] = VERSION
 
 # Where the magic happens:
-setup(
+setuptools.setup(
     name=NAME,
     version=about['__version__'],
     description=DESCRIPTION,
@@ -94,7 +89,7 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=find_packages(exclude=('tests',)),
+    packages=setuptools.find_packages(exclude=('tests',)),
     install_requires=base_packages,
     extras_require={
         'dev': dev_packages,
@@ -116,7 +111,7 @@ setup(
     ],
     ext_modules=cythonize(
         module_list=[
-            Extension(
+            setuptools.Extension(
                 '*',
                 sources=['**/*.pyx'],
                 libraries=[] if platform.system() == 'Windows' else ['m']
