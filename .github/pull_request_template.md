@@ -1,7 +1,7 @@
 <!-- 
 Thank you for contributing with a PR!
 
-Please fill the description of change(s) and/or if it fixes an open issue (optional).
+Please fill the description of change(s) and/or indicate if it fixes an open issue (optional).
 
 To ease the merge process please review the attached checklist.
 -->
@@ -10,15 +10,21 @@ Changes proposed in this pull request:
 
 * 
 * 
-* Fixes # . [Optional]
+* Fixes # [Optional]
 
 ---
 
-Checklist
-
+### Checklist
+#### Implementation
+- [ ] Implementation is correct (it performs its intended function).
 - [ ] Code complies with PEP-8 and is consistent with the framework.
 - [ ] Code is properly documented.
-- [ ] Tests are included for new functionality or updated accordingly.
-- [ ] Travis CI build passes with no errors.
-- [ ] Test Coverage is maintained (threshold is -0.2%).
+- [ ] PR description covers ALL the changes performed.
 - [ ] Files changed (update, add, delete) are in the PR's scope (no extra files are included).
+
+#### Tests
+- [ ] New functionality is tested.
+- [ ] Tests are created for the new functionality or existing tests are updated accordingly.
+- [ ] ALL tests pass with no errors.
+- [ ] CI/CD pipelines run with no errors.
+- [ ] Test Coverage is maintained (coverage may drop by no more than 0.2%).
