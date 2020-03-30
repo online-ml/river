@@ -28,7 +28,7 @@ def demo(instances=2000):
     #                                                                     leaf_size=30))
     clf_one = KNNADWINClassifier(n_neighbors=8, max_window_size=1000, leaf_size=30)
     # clf_two = KNNClassifier(n_neighbors=8, max_window_size=1000, leaf_size=30)
-    # clf_two = LeverageBaggingClassifier(base_estimator=KNNClassifier(), n_estimators=2)
+    # clf_two = LeveragingBaggingClassifier(base_estimator=KNNClassifier(), n_estimators=2)
 
     t_one = OneHotToCategorical([[10, 11, 12, 13],
                                  [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,

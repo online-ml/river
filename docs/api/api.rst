@@ -142,7 +142,7 @@ Ensemble methods
    meta.DynamicWeightedMajorityClassifier
    meta.LearnPPNSEClassifier
    meta.LearnPPClassifier
-   meta.LeverageBaggingClassifier
+   meta.LeveragingBaggingClassifier
    meta.MultiOutputLearner
    meta.OnlineAdaC2Classifier
    meta.OnlineBoostingClassifier
