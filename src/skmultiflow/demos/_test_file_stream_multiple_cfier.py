@@ -1,6 +1,6 @@
 from skmultiflow.trees import HoeffdingTreeClassifier
 from skmultiflow.lazy import SAMKNNClassifier
-from skmultiflow.meta import LeverageBaggingClassifier
+from skmultiflow.meta import LeveragingBaggingClassifier
 from sklearn.linear_model import SGDClassifier
 from skmultiflow.evaluation import EvaluatePrequential
 from skmultiflow.data import FileStream
@@ -19,10 +19,10 @@ def demo_parameterized(h, filename="covtype.csv", show_plot=True, model_names=No
 
 def demo():
 
-    # The classifier we will use (other options: SAMKNNClassifier, LeverageBaggingClassifier, SGD)
-    h1 = [HoeffdingTreeClassifier(), SAMKNNClassifier(), LeverageBaggingClassifier(random_state=1), SGDClassifier()]
-    h2 = [HoeffdingTreeClassifier(), SAMKNNClassifier(), LeverageBaggingClassifier(random_state=1), SGDClassifier()]
-    h3 = [HoeffdingTreeClassifier(), SAMKNNClassifier(), LeverageBaggingClassifier(random_state=1), SGDClassifier()]
+    # The classifier we will use (other options: SAMKNNClassifier, LeveragingBaggingClassifier, SGD)
+    h1 = [HoeffdingTreeClassifier(), SAMKNNClassifier(), LeveragingBaggingClassifier(random_state=1), SGDClassifier()]
+    h2 = [HoeffdingTreeClassifier(), SAMKNNClassifier(), LeveragingBaggingClassifier(random_state=1), SGDClassifier()]
+    h3 = [HoeffdingTreeClassifier(), SAMKNNClassifier(), LeveragingBaggingClassifier(random_state=1), SGDClassifier()]
     model_names = ['HT', 'SAMKNNClassifier', 'LBkNN', 'SGDC']
 
     # Demo 1 -- plot should not fail
