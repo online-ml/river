@@ -28,6 +28,7 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
 
 
 RUN python3.6 -m pip install -U numpy
+RUN python3.6 -m pip install -U Cython
 
 # Install Jupyter
 RUN python3.6 -m pip install -U jupyter
