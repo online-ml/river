@@ -250,7 +250,7 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
                     k = 0.0
 
             # leveraging_bag_half - Resampling without replacement for
-            #                       half od the instances
+            #                       half of the instances
             elif self.leverage_algorithm == self._LEVERAGE_ALGORITHMS[2]:
                 w = 1.0
                 k = 0.0 if (self._random_state.randint(2) == 1) else w
