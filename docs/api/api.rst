@@ -118,6 +118,7 @@ Lazy learning methods
    lazy.KNNClassifier
    lazy.KNNADWINClassifier
    lazy.SAMKNNClassifier
+   lazy.KNNRegressor
 
 Ensemble methods
 ----------------
@@ -278,17 +279,6 @@ Transform: :mod:`skmultiflow.transform`
 
 Misc:
 =====
-
-Data structure
---------------
-
-.. currentmodule:: skmultiflow
-
-.. autosummary::
-   :nosignatures:
-   :toctree: generated
-
-   lazy.KDTree
 
 Utilities
 ---------

@@ -12,8 +12,9 @@ from .utils import get_max_value_key
 from .utils import add_dict_values
 from .data_structures import FastBuffer
 from .data_structures import FastComplexBuffer
+from .data_structures import SlidingWindow
 from ._show_versions import show_versions
 
 __all__ = ["check_random_state", "check_weights", "calculate_object_size", "get_dimensions",
            "is_scalar_nan", "normalize_values_in_dict", "FastBuffer", "FastComplexBuffer",
-           "show_versions", "get_max_value_key", "add_dict_values"]
+           "show_versions", "get_max_value_key", "add_dict_values", "SlidingWindow"]

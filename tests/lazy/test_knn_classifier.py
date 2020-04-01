@@ -38,7 +38,8 @@ def test_knn():
     expected_correct_predictions = 49
     assert correct_predictions == expected_correct_predictions
 
-    expected_info = 'KNNClassifier(leaf_size=40, max_window_size=2000, n_neighbors=8, nominal_attributes=None)'
+    expected_info = "KNNClassifier(leaf_size=40, max_window_size=2000, " \
+                    "metric='euclidean', n_neighbors=8)"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
 

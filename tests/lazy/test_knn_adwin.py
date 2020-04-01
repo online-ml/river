@@ -38,9 +38,10 @@ def test_knn_adwin():
     assert correct_predictions == expected_correct_predictions
 
     learner.reset()
-    assert learner.window.n_samples == 0
+    assert learner.data_window.size == 0
 
-    expected_info = 'KNNADWINClassifier(leaf_size=40, max_window_size=200, n_neighbors=8, nominal_attributes=None)'
+    expected_info = "KNNADWINClassifier(leaf_size=40, max_window_size=200, " \
+                    "metric='euclidean', n_neighbors=8)"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
 
