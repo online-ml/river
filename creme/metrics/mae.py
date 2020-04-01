@@ -1,12 +1,10 @@
-from .. import stats
-
 from . import base
 
 
 __all__ = ['MAE']
 
 
-class MAE(stats.Mean, base.RegressionMetric):
+class MAE(base.MeanMetric, base.RegressionMetric):
     """Mean absolute error.
 
     Example:
@@ -32,8 +30,5 @@ class MAE(stats.Mean, base.RegressionMetric):
 
     """
 
-    def update(self, y_true, y_pred, sample_weight=1.):
-        return super().update(x=abs(y_true - y_pred), w=sample_weight)
-
-    def revert(self, y_true, y_pred, sample_weight=1.):
-        return super().revert(x=abs(y_true - y_pred), w=sample_weight)
+    def _eval(self, y_true, y_pred):
+        return abs(y_true - y_pred)

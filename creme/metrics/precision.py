@@ -24,7 +24,7 @@ class BasePrecision:
         return True
 
 
-class Precision(stats.Mean, BasePrecision, base.BinaryMetric):
+class Precision(BasePrecision, base.BinaryMetric):
     """Binary precision score.
 
     Example:
@@ -48,15 +48,21 @@ class Precision(stats.Mean, BasePrecision, base.BinaryMetric):
 
     """
 
+    def __init__(self):
+        self._mean = stats.Mean()
+
     def update(self, y_true, y_pred, sample_weight=1.):
         if y_pred:
-            super().update(x=y_true == y_pred, w=sample_weight)
+            self._mean.update(x=y_true == y_pred, w=sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.):
         if y_pred:
-            super().revert(x=y_true == y_pred, w=sample_weight)
+            self._mean.revert(x=y_true == y_pred, w=sample_weight)
         return self
+
+    def get(self):
+        return self._mean.get()
 
 
 class MacroPrecision(BasePrecision, base.MultiClassMetric):
@@ -105,7 +111,7 @@ class MacroPrecision(BasePrecision, base.MultiClassMetric):
             return 0.
 
 
-class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassMetric):
+class MicroPrecision(BasePrecision, base.MeanMetric, base.MultiClassMetric):
     """Micro-average precision score.
 
     The micro-average precision score is exactly equivalent to the micro-average recall as well as
@@ -135,13 +141,8 @@ class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassMetric):
 
     """
 
-    def update(self, y_true, y_pred, sample_weight=1.):
-        super().update(x=y_true == y_pred, w=sample_weight)
-        return self
-
-    def revert(self, y_true, y_pred, sample_weight=1.):
-        super().revert(x=y_true == y_pred, w=sample_weight)
-        return self
+    def _eval(self, y_true, y_pred):
+        return y_true == y_pred
 
 
 class WeightedPrecision(BasePrecision, base.MultiClassMetric):
