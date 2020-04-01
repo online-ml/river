@@ -45,7 +45,7 @@ As a quick example, we'll train a logistic regression to classify the [website p
 >>> from pprint import pprint
 >>> from creme import datasets
 
->>> X_y = datasets.Phishing()
+>>> X_y = datasets.Phishing()  # this is a generator
 
 >>> for x, y in X_y:
 ...     pprint(x)
