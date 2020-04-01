@@ -53,7 +53,7 @@ def test_leverage_bagging():
     assert type(learner.predict_proba(X)) == np.ndarray
 
     expected_info = "LeveragingBaggingClassifier(base_estimator=KNNClassifier(leaf_size=40, " \
-                    "max_window_size=2000, n_neighbors=8, nominal_attributes=None), " \
+                    "max_window_size=2000, metric='euclidean', n_neighbors=8), " \
                     "delta=0.002, enable_code_matrix=False, leverage_algorithm='leveraging_bag'," \
                     " n_estimators=3, random_state=112, w=6)"
     info = " ".join([line.strip() for line in learner.get_info().split()])
