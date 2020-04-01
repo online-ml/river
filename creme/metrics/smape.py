@@ -28,7 +28,7 @@ class SMAPE(stats.Mean, base.RegressionMetric):
     """
 
     def update(self, y_true, y_pred, sample_weight=1.):
-        return super().update(
+        return 0 if abs(y_true) == abs(y_pred) else super().update(
             x=2. * abs(y_true - y_pred) / (abs(y_true) + abs(y_pred)),
             w=sample_weight
         )
