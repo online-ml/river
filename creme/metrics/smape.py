@@ -25,7 +25,7 @@ class SMAPE(base.MeanMetric, base.RegressionMetric):
 
     """
 
-    def _eval(self, y_true, y_pred, sample_weight=1.):
+    def _eval(self, y_true, y_pred):
         den = abs(y_true) + abs(y_pred)
         if den == 0:
             return 0.
