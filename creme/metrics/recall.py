@@ -25,7 +25,7 @@ class BaseRecall:
         return True
 
 
-class Recall(stats.Mean, BaseRecall, base.BinaryMetric):
+class Recall(BaseRecall, base.BinaryMetric):
     """Binary recall score.
 
     Example:
@@ -49,15 +49,21 @@ class Recall(stats.Mean, BaseRecall, base.BinaryMetric):
 
     """
 
+    def __init__(self):
+        self._mean = stats.Mean()
+
     def update(self, y_true, y_pred, sample_weight=1.):
         if y_true:
-            return super().update(x=y_true == y_pred, w=sample_weight)
+            self._mean.update(x=y_true == y_pred, w=sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.):
         if y_true:
-            return super().revert(x=y_true == y_pred, w=sample_weight)
+            self._mean.revert(x=y_true == y_pred, w=sample_weight)
         return self
+
+    def get(self):
+        return self._mean.get()
 
 
 class MacroRecall(BaseRecall, base.MultiClassMetric):

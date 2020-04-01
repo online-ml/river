@@ -1,5 +1,4 @@
 from .. import optim
-from .. import stats
 
 from . import base
 
@@ -7,18 +6,7 @@ from . import base
 __all__ = ['CrossEntropy']
 
 
-class BaseCrossEntropy(base.MultiClassMetric):
-
-    @property
-    def bigger_is_better(self):
-        return False
-
-    @property
-    def requires_labels(self):
-        return False
-
-
-class CrossEntropy(stats.Mean, BaseCrossEntropy):
+class CrossEntropy(base.MeanMetric, base.MultiClassMetric):
     """Multiclass generalization of the logarithmic loss.
 
     Example:
@@ -50,8 +38,13 @@ class CrossEntropy(stats.Mean, BaseCrossEntropy):
 
     """
 
-    def update(self, y_true, y_pred, sample_weight=1.):
-        return super().update(x=optim.losses.CrossEntropy().eval(y_true, y_pred), w=sample_weight)
+    @property
+    def bigger_is_better(self):
+        return False
 
-    def revert(self, y_true, y_pred, sample_weight=1.):
-        return super().revert(x=optim.losses.CrossEntropy().eval(y_true, y_pred), w=sample_weight)
+    @property
+    def requires_labels(self):
+        return False
+
+    def _eval(self, y_true, y_pred):
+        return optim.losses.CrossEntropy().eval(y_true, y_pred)
