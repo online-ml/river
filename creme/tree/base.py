@@ -69,6 +69,32 @@ class Branch(Node):
         yield from self.next(x).path(x)
 
     def __repr__(self):
+        """
+
+        Example:
+
+            ::
+
+                >>> tree = Branch(
+                ...     Split('x', LT, 17.42),
+                ...     Branch(
+                ...         Split('y', LT, -4.38),
+                ...         Leaf(no=2),
+                ...         Leaf(no=3),
+                ...         no=1
+                ...     ),
+                ...     Leaf(no=4),
+                ...     no=0
+                ... )
+
+                >>> tree
+                x < 17.42000 {'no': 0}
+                  y < -4.38000 {'no': 1}
+                    {'no': 2}
+                    {'no': 3}
+                  {'no': 4}
+
+        """
         return (
             repr(self.split) + ' ' +
             str({k: v for k, v in self.__dict__.items() if k not in ('split', 'left', 'right')}) +
