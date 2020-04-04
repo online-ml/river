@@ -19,7 +19,25 @@ If you are not familiar with Git or GitHub, here are good resources to start in 
 
 ## Development
 This section contains relevant information for development, including project setup, coding best practices, etc.
- 
+
+### Dependencies
+
+`scikit-multiflow` works with Python 3.5+ **only**.
+
+`scikit-multiflow` requires [numpy](www.numpy.org) to be already installed
+in your system. There are multiple ways to install `numpy`, the easiest is
+using [pip](https://pip.pypa.io/en/stable/#):
+
+```bash
+$ pip install -U numpy
+```
+
+From v0.5.0, [Cython](https://cython.org/) is also required. Cython can also be installed using pip:
+
+```bash
+$ pip install -U Cython
+```
+
 ### pip setup in editable mode
 As default, `pip` installs a *fixed* version of a python package. However, during development, new code is added to a project incrementally and it is desired for developers to "see" these changes reflected immediately. For this purpose, `pip install` provides an `editable mode` option, to avoid re-running the setup script as new code is added.
 
