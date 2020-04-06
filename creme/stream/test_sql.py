@@ -1,4 +1,4 @@
-from sql import iter_sql
+from sql import iter_sql # type: ignore
 from sqlalchemy import create_engine, MetaData 
 
 db_uri = 'sqlite:///db.sqlite'
