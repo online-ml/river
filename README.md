@@ -97,10 +97,10 @@ Accuracy: 89.28%
 
 There are [wheels available](https://pypi.org/project/creme/#files) for Linux, MacOS, and Windows. You can also install the latest development version as so:
 
-    pip install git+https://github.com/creme-ml/creme
+    pip install git+https://github.com/creme-ml/creme --upgrade
 
     # Or, through SSH:
-    pip install git+ssh://git@github.com/creme-ml/creme.git
+    pip install git+ssh://git@github.com/creme-ml/creme.git --upgrade
 
 ## 🧠 Philosophy
 
