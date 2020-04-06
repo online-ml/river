@@ -13,8 +13,15 @@ class BaseChain(collections.UserDict):
         super().__init__()
         self.model = model
         self.order = order
-        for o in order:
-            self[o] = copy.deepcopy(model)
+
+        # If the order is specified, then we can instantiate a model for each label, if not we'll
+        # do it in the first call to fit_one
+        if order is not None:
+            self._init_models()
+
+    def _init_models(self):
+        for o in self.order:
+            self[o] = copy.deepcopy(self.model)
 
 
 class ClassifierChain(BaseChain, base.MultiOutputClassifier):
@@ -55,7 +62,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             ...     model = model.fit_one(x, y)
 
             >>> metric
-            Jaccard: 0.452366
+            Jaccard: 0.451234
 
     References:
         1. `Multi-Output Chain Models and their Application in Data Streams <https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf>`_
@@ -63,6 +70,10 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
     """
 
     def fit_one(self, x, y):
+
+        if self.order is None:
+            self.order = list(y.keys())
+            self._init_models()
 
         x = copy.copy(x)
 
@@ -140,6 +151,10 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
     """
 
     def fit_one(self, x, y):
+
+        if self.order is None:
+            self.order = list(y.keys())
+            self._init_models()
 
         x = copy.copy(x)
 
