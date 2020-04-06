@@ -8,7 +8,7 @@ from .libsvm import iter_libsvm
 from .qa import simulate_qa
 from .shuffle import shuffle
 from .vaex import iter_vaex
-
+from .sql import iter_sql
 
 __all__ = [
     'Cache',
@@ -19,5 +19,6 @@ __all__ = [
     'iter_sklearn_dataset',
     'iter_vaex',
     'simulate_qa',
-    'shuffle'
+    'shuffle',
+    'iter_sql'
 ]
