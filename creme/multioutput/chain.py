@@ -7,7 +7,7 @@ from .. import base
 __all__ = ['ClassifierChain', 'RegressorChain']
 
 
-class BaseChain(collections.UserDict):
+class BaseChain(base.Wrapper, collections.UserDict):
 
     def __init__(self, model, order=None):
         super().__init__()
@@ -18,6 +18,10 @@ class BaseChain(collections.UserDict):
         # do it in the first call to fit_one
         if order is not None:
             self._init_models()
+
+    @property
+    def _model(self):
+        return self.model
 
     def _init_models(self):
         for o in self.order:
