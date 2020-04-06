@@ -1,5 +1,4 @@
-import sql
-from sql import iter_sql 
+from . import sql
 from sqlalchemy import create_engine, MetaData 
 
 db_uri = 'sqlite:///db.sqlite'
@@ -11,5 +10,5 @@ metadata.reflect(bind=engine)
 query = 'SELECT * FROM census'
 
 with engine.connect() as con:
-    for row in iter_sql(query, con):
+    for row in sql.iter_sql(query, con):
         print(row)
