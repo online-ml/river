@@ -26,7 +26,7 @@ def iter_array(X, y=None, feature_names=None, target_names=None, shuffle=False, 
     multioutput = y is not None and not np.isscalar(y[0])
     if multioutput and target_names is None:
         target_names = list(range(len(y[0])))
-
+    
     # Shuffle the data
     rng = random.Random(seed)
     if shuffle:
@@ -41,8 +41,8 @@ def iter_array(X, y=None, feature_names=None, target_names=None, shuffle=False, 
     else:
 
         for x, yi in itertools.zip_longest(X, y if hasattr(y, '__iter__') else []):
+            print(dict(zip(feature_names, x)), yi)
             yield dict(zip(feature_names, x)), yi
-
 
 
 def iter_pandas(X, y=None, **kwargs):
@@ -82,6 +82,6 @@ def iter_sklearn_dataset(dataset, **kwargs):
         kwargs['feature_names'] = dataset.feature_names
     except AttributeError:
         pass
-
+    
     for x, yi in iter_array(**kwargs):
         yield x, yi

@@ -1,4 +1,4 @@
-import itertools
+mport itertools
 import random
 import types
 
