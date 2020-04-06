@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, VARCHAR
+
 db_uri = 'sqlite:///db.sqlite'
 engine = create_engine(db_uri)
 
