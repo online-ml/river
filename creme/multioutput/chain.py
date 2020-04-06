@@ -7,7 +7,7 @@ from .. import base
 __all__ = ['ClassifierChain', 'RegressorChain']
 
 
-class BaseChain(collections.OrderedDict):
+class BaseChain(collections.UserDict):
 
     def __init__(self, model, order=None):
         super().__init__()
@@ -15,17 +15,6 @@ class BaseChain(collections.OrderedDict):
         self.order = order
         for o in order:
             self[o] = copy.deepcopy(model)
-
-    def fit_one(self, x, y):
-
-        x = copy.copy(x)
-
-        for o, clf in self.items():
-            y_pred = clf.predict_one(x)
-            clf.fit_one(x, y[o])
-            x[o] = y_pred
-
-        return self
 
 
 class ClassifierChain(BaseChain, base.MultiOutputClassifier):
@@ -73,14 +62,43 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
 
     """
 
+    def fit_one(self, x, y):
+
+        x = copy.copy(x)
+
+        for o in self.order:
+            clf = self[o]
+
+            # Make predictions before the model is updated to avoid leakage
+            y_pred = clf.predict_proba_one(x)
+
+            clf.fit_one(x, y[o])
+
+            # The predictions are stored as features for the next label
+            if isinstance(clf, base.BinaryClassifier):
+                x[o] = y_pred[True]
+            else:
+                for label, proba in y_pred.items():
+                    x[f'{o}_{label}'] = proba
+
+        return self
+
     def predict_proba_one(self, x):
 
         x = copy.copy(x)
         y_pred = {}
 
-        for o, clf in self.items():
+        for o in self.order:
+            clf = self[o]
+
             y_pred[o] = clf.predict_proba_one(x)
-            x[o] = max(y_pred[o], key=y_pred[o].get)
+
+            # The predictions are stored as features for the next label
+            if isinstance(clf, base.BinaryClassifier):
+                x[o] = y_pred[o][True]
+            else:
+                for label, proba in y_pred.items():
+                    x[f'{o}_{label}'] = proba
 
         return y_pred
 
@@ -120,6 +138,23 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             MAE: 16.495095
 
     """
+
+    def fit_one(self, x, y):
+
+        x = copy.copy(x)
+
+        for o in self.order:
+            reg = self[o]
+
+            # Make predictions before the model is updated to avoid leakage
+            y_pred = reg.predict_one(x)
+
+            reg.fit_one(x, y[o])
+
+            # The predictions are stored as features for the next label
+            x[o] = y_pred
+
+        return self
 
     def predict_one(self, x):
 

@@ -148,7 +148,7 @@ def _update_if_consistent(dict1: dict, dict2: dict):
     dict1.update(dict2)
 
 
-def _repr_obj(obj: Estimator, params=None, show_modules: bool = False, depth: int = 0) -> str:
+def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> str:
     """Returns a pretty representation of an instanted object."""
 
     rep = f'{obj.__class__.__name__} ('

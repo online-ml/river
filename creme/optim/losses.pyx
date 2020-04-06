@@ -25,7 +25,7 @@ cdef double clamp_proba(double x):
 cdef class Loss:
 
     def __str__(self):
-        return utils.pretty.format_object(self)
+        return self.__class__.__name__
 
     def mean_func(self, y_pred):
         """Mean function.
