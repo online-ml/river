@@ -91,7 +91,7 @@ Accuracy: 89.28%
 
 ## 🛠 Installation
 
-`creme` is intended to work with Python 3.6 or above. Installation can be done by using `pip`:
+`creme` is intended to work with **Python 3.6 or above**. Installation can be done by using `pip`:
 
     pip install creme
 
