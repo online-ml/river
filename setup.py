@@ -37,7 +37,8 @@ base_packages = ['mmh3==2.5.1', 'numpy>=1.18.1', 'scipy>=1.4.1']
 compat_packages = base_packages + [
     'scikit-learn>=0.22.1',
     'pandas>=1.0.1',
-    'torch>=1.4.0'
+    'torch>=1.4.0',
+    'sqlalchemy>=1.3.15'
 ]
 
 dev_packages = [
@@ -50,7 +51,8 @@ dev_packages = [
     'pytest>=4.5.0',
     'pytest-cov>=2.6.1',
     'pytest-cython>=0.1.0',
-    'scikit-learn>=0.22.1'
+    'scikit-learn>=0.22.1',
+    'sqlalchemy>=1.3.15'
 ]
 
 docs_packages = dev_packages + [
