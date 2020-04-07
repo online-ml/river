@@ -1,83 +1,112 @@
-from . import sql
-from . import create_database
-from sqlalchemy import create_engine, MetaData 
+import json
+import os
+
 import pytest
+import sqlalchemy as sql
+from sqlalchemy import orm
+import zipfile
 
-@pytest.mark.parametrize("query,expected",[
-    ("SELECT * FROM census", {
-        ('state', 'sex', 'age', 'pop2000', 'pop2008'): [
-            ['Illinois', 'M', 0, 89600, 5012],
-            ['Illinois', 'M', 1, 88445, 91829],
-            ['Illinois', 'M', 2, 88729, 89547],
-            ['Illinois', 'M', 3, 88868, 90037],
-            ['Illinois', 'M', 4, 91947, 91111],
-            ['Illinois', 'M', 5, 93894, 89802],
-            ['Illinois', 'M', 6, 93676, 88931],
-            ['Illinois', 'M', 7, 94818, 90940],
-            ['Illinois', 'M', 8, 95035, 86943],
-            ['Illinois', 'M', 9, 96436, 86055],
-            ['Illinois', 'M', 10, 97280, 86565],
-            ['Illinois', 'M', 11, 94029, 86606],
-            ['Illinois', 'M', 12, 92402, 89596],
-            ['Illinois', 'M', 13, 89926, 91661],
-            ['Illinois', 'M', 14, 90717, 91256]
-        ]}          
-    ),
-    ("SELECT * FROM state_fact", {
-        ('id', 'name', 'abbrevation', 'country', 'type', 'sort', 
-         'status', 'occupied', 'notes', 'fips_state', 'assoc_press',
-         'standard_federal_region', 'census_region', 'census_region_name',
-         'census_division', 'census_division_name', 'circuit_court'): [
-            ['13', 'Illinois', None, 'USA', 'state', '10', 'current', 'occupied',
-            '', '17', 'Ill.', 'V', '2', 'Midwest', '3', 'East North Central', '7'],
-            ['30', 'New Jersey', None, 'USA', 'state', '10', 'current', 'occupied',
-            '', '34', 'N.J.', 'II', '1', 'Northeast', '2', 'Mid-Atlantic', '3'],
-            ['34', 'North Dakota', None, 'USA', 'state', '10', 'current', 'occupied',
-            '', '38', 'N.D.', 'VIII', '2', 'Midwest', '4', 'West North Central', '8'],
-            ['37', 'Oregon', None, 'USA', 'state', '10', 'current', 'occupied',
-            '', '41', 'Ore.', 'X', '4', 'West', '9', 'Pacific', '9'],
-            ['51', 'Washington DC', None, 'USA', 'capitol', '10', 'current',
-            'occupied', '', '11', '', 'III', '3', 'South', '5', 'South Atlantic', 'D.C.'],
-            ['49', 'Wisconsin', None, 'USA', 'state', '10', 'current', 'occupied',
-            '', '55', 'Wis.', 'V', '2', 'Midwest', '3', 'East North Central', '7'],
-            ['3', 'Arizona', None, 'USA', 'state', '10', 'current', 'occupied', '',
-            '4', 'Ariz.', 'IX', '4', 'West', '8', 'Mountain', '9'],
-            ['4', 'Arkansas', None, 'USA', 'state', '10', 'current', 'occupied',
-            '', '5', 'Ark.', 'VI', '3', 'South', '7', 'West South Central', '8'],
-            ['6', 'Colorado', None, 'USA', 'state', '10', 'current', 'occupied', 
-            '', '8', 'Colo.', 'VIII', '4', 'West', '8', 'Mountain', '10'],
-            ['11', 'Hawaii', None, 'USA', 'state', '10', 'current', 'occupied',
-            '', '15', 'Hawaii', 'IX', '4', 'West', '9', 'Pacific', '9'],
-            ['16', 'Kansas', None, 'USA', 'state', '10', 'current', 'occupied', 
-            '', '20', 'Kan.', 'VII', '2', 'Midwest', '4', 'West North Central', '10'],
-            ['18', 'Louisiana', None, 'USA', 'state', '10', 'current', 'occupied', 
-            '', '22', 'La.', 'VI', '3', 'South', '7', 'West South Central', '5'],
-            ['26', 'Montana', None, 'USA', 'state', '10', 'current', 'occupied', 
-            '', '30', 'Mont.', 'VIII', '4', 'West', '8', 'Mountain', '9'],
-            ['27', 'Nebraska', None, 'USA', 'state', '10', 'current', 'occupied', 
-            '', '31', 'Nebr.', 'VII', '2', 'Midwest', '4', 'West North Central', '8'],
-            ['36', 'Oklahoma', None, 'USA', 'state', '10', 'current', 'occupied', 
-            '', '40', 'Okla.', 'VI', '3', 'South', '7', 'West South Central', '10']
-        ]}
+from creme import stream
+
+
+@pytest.fixture
+def pokedb():
+    engine = sql.create_engine('sqlite://')  # in-memory
+
+    # Load the fixtures
+    here = os.path.dirname(os.path.realpath(__file__))
+    with zipfile.ZipFile(os.path.join(here, 'pokedb.zip')) as z:
+        pokemons = json.loads(z.read('pokemons.json'))
+        types = json.loads(z.read('types.json'))
+        pokemon_types = json.loads(z.read('pokemon_types.json'))
+
+    # Define the tables
+    metadata = sql.MetaData()
+
+    t_pokemons = sql.Table('pokemons', metadata,
+        sql.Column('id', sql.Integer, primary_key=True),
+        sql.Column('name', sql.String),
+        sql.Column('HP', sql.Integer),
+        sql.Column('Attack', sql.Integer),
+        sql.Column('Defense', sql.Integer),
+        sql.Column('Sp. Attack', sql.Integer),
+        sql.Column('Sp. Defense', sql.Integer),
+        sql.Column('Speed', sql.Integer)
     )
-])
 
-def initialization():
-    # Create the database file.
-    create_database.init_database()
+    t_types = sql.Table('types', metadata,
+        sql.Column('id', sql.Integer, primary_key=True),
+        sql.Column('name', sql.String)
+    )
 
-    db_uri = 'sqlite:///db.sqlite'
-    engine = create_engine(db_uri)
+    t_pokemon_types = sql.Table('pokemon_types', metadata,
+        sql.Column('pokemon_id', sql.Integer, primary_key=True),
+        sql.Column('type_id', sql.Integer, primary_key=True),
+        sql.Column('no', sql.Integer, primary_key=True)
+    )
 
-    return engine 
+    # Create the tables
+    metadata.create_all(engine)
 
-def test_sql(query, expected):
-    expected_keys = list(expected.keys())
-    expected_values = list(expected.values())[0]
-    engine = initialization()
+    # Insert the fixtures
+    with engine.connect() as conn:
+        conn.execute(t_pokemons.insert(), pokemons)
+        conn.execute(t_types.insert(), types)
+        conn.execute(t_pokemon_types.insert(), pokemon_types)
 
-    with engine.connect() as con:
-        for index, row in enumerate(sql.iter_sql(query, con)):
-            assert list(row.keys()) == expected_keys()
-            assert list(row.keys()) == expected_values[index]
+    return engine
 
+
+def test_iter_sql(pokedb):
+
+    with pokedb.connect() as conn:
+        X_y = stream.iter_sql(query='SELECT * FROM pokemons;', conn=conn)
+        x, y = next(X_y)
+        assert x['name'] == 'Bulbasaur'
+        assert y == None
+
+    # This raises an exception because the resource is closed...
+    with pytest.raises(sql.exc.StatementError):
+        for x, y in stream.iter_sql(query='SELECT * FROM pokemons;', conn=conn):
+            pass
+
+    # ... and yet we can still stream over the results because SQLAlchemy prefetches them
+    x, y = next(X_y)
+    assert x['name'] == 'Ivysaur'
+
+    # The Pokedex from generation 1 contains 151 pokemons, and we've already seen 2
+    assert sum(1 for _ in X_y) == 149
+
+    # Check that the stream is depleted
+    assert sum(1 for _ in X_y) == 0
+
+
+def test_iter_sql_join(pokedb):
+
+    query = '''
+        SELECT
+            p.name,
+            t1.name AS type_1,
+            t2.name AS type_2
+        FROM
+            pokemons p,
+            pokemon_types pt1,
+            pokemon_types pt2,
+            types t1,
+            types t2
+        WHERE
+            pt1.no = 1 AND
+            pt1.pokemon_id = p.id AND
+            pt1.type_id = t1.id AND
+
+            pt2.no = 2 AND
+            pt2.pokemon_id = p.id AND
+            pt2.type_id = t2.id;
+    '''
+
+    with pokedb.connect() as conn:
+        X_y = stream.iter_sql(query=query, conn=conn)
+        x, y = next(X_y)
+        assert x['name'] == 'Bulbasaur'
+        assert x['type_1'] == 'Grass'
+        assert x['type_2'] == 'Poison'

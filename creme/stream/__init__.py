@@ -7,8 +7,8 @@ from .csv import iter_csv
 from .libsvm import iter_libsvm
 from .qa import simulate_qa
 from .shuffle import shuffle
-from .vaex import iter_vaex
 from .sql import iter_sql
+from .vaex import iter_vaex
 
 __all__ = [
     'Cache',
@@ -17,8 +17,8 @@ __all__ = [
     'iter_libsvm',
     'iter_pandas',
     'iter_sklearn_dataset',
+    'iter_sql',
     'iter_vaex',
     'simulate_qa',
-    'shuffle',
-    'iter_sql'
+    'shuffle'
 ]
