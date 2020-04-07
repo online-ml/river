@@ -9,12 +9,15 @@ def iter_sql(query, con):
         dict: dict of features.
 
     Example:
-        >>> from creme import stream
-        >>> engine = create_engine('your_db_uri')
-        >>> metadata = MetaData().reflect(bind=engine)
-        >>> with engine.connect() as con:
-        ...     for row in stream.iter_sql(query="SELECT * FROM your_table_name", con=engine):
-        ...         print(row)
+        
+        :: 
+        
+            >>> from creme import stream
+            >>> engine = create_engine('your_db_uri')
+            >>> metadata = MetaData().reflect(bind=engine)
+            >>> with engine.connect() as con:
+            ...     for row in stream.iter_sql(query="SELECT * FROM your_table_name", con=engine):
+            ...         print(row)
     """ 
     
     result = con.execute(query)
