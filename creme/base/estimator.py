@@ -94,7 +94,14 @@ class Estimator(abc.ABC):
 
     @property
     def _tags(self) -> typing.Dict[str, bool]:
-        """Returns the estimator's tags."""
+        """Returns the estimator's tags.
+
+        Tags can be used to specify what kind of inputs an estimator is able to process. For
+        instance, some estimators can handle text, whilst others require positive numeric data.
+        Inheriting from `base.Estimator` will imply a set of default tags which can be overrided
+        by implementing the `base.Estimator._more_tags` method.
+
+        """
 
         tags: typing.Dict[str, bool] = {}
 
@@ -149,7 +156,7 @@ def _update_if_consistent(dict1: dict, dict2: dict):
 
 
 def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> str:
-    """Returns a pretty representation of an instanted object."""
+    """Returns a pretty representation of an object."""
 
     rep = f'{obj.__class__.__name__} ('
     if show_modules:

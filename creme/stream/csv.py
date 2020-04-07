@@ -28,7 +28,7 @@ class DictReader(csv.DictReader):
         return dict(zip(self.fieldnames, row))
 
 
-def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None, drop=None,
+def iter_csv(filepath_or_buffer, target_name=None, converters=None, parse_dates=None, drop=None,
              fraction=1., compression='infer', seed=None, field_size_limit=None, **kwargs):
     """Yields rows from a CSV file.
 
@@ -58,26 +58,48 @@ def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None,
 
         ::
 
-            >>> import io
+            Although this function is designed to handle different kinds of inputs, the most common
+            use case is to read a file on the disk. We'll first create a little CSV file to
+            illustrate.
+
+            >>> tv_shows = '''name,year,rating
+            ... Planet Earth II,2016,9.5
+            ... Planet Earth,2006,9.4
+            ... Band of Brothers,2001,9.4
+            ... Breaking Bad,2008,9.4
+            ... Chernobyl,2019,9.4
+            ... '''
+            >>> with open('tv_shows.csv', mode='w') as f:
+            ...     _ = f.write(tv_shows)
+
+            We can now go through the rows one by one.
+
             >>> from creme import stream
 
-            >>> data = io.StringIO('''name,day,viewers
-            ... Breaking Bad,2018-03-14,1337
-            ... The Sopranos,2018-03-14,42
-            ... Breaking Bad,2018-03-15,7331
-            ... ''')
-
-            >>> params = dict(
-            ...     target_name='viewers',
-            ...     converters={'viewers': int},
-            ...     parse_dates={'day': '%Y-%m-%d'}
-            ... )
-
-            >>> for x, y in stream.iter_csv(data, **params):
+            >>> params = {
+            ...     'converters': {'rating': float},
+            ...     'parse_dates': {'year': '%Y'}
+            ... }
+            >>> for x, y in stream.iter_csv('tv_shows.csv', **params):
             ...     print(x, y)
-            {'name': 'Breaking Bad', 'day': datetime.datetime(2018, 3, 14, 0, 0)} 1337
-            {'name': 'The Sopranos', 'day': datetime.datetime(2018, 3, 14, 0, 0)} 42
-            {'name': 'Breaking Bad', 'day': datetime.datetime(2018, 3, 15, 0, 0)} 7331
+            {'name': 'Planet Earth II', 'year': datetime.datetime(2016, 1, 1, 0, 0), 'rating': 9.5} None
+            {'name': 'Planet Earth', 'year': datetime.datetime(2006, 1, 1, 0, 0), 'rating': 9.4} None
+            {'name': 'Band of Brothers', 'year': datetime.datetime(2001, 1, 1, 0, 0), 'rating': 9.4} None
+            {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0), 'rating': 9.4} None
+            {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0), 'rating': 9.4} None
+
+            The value ``y`` is always ``None`` because we haven't provided a value for the
+            ``target_name`` parameter. Here is an example where a ``target_name`` is provided:
+
+            >>> for x, y in stream.iter_csv('tv_shows.csv', target_name='rating', **params):
+            ...     print(x, y)
+            {'name': 'Planet Earth II', 'year': datetime.datetime(2016, 1, 1, 0, 0)} 9.5
+            {'name': 'Planet Earth', 'year': datetime.datetime(2006, 1, 1, 0, 0)} 9.4
+            {'name': 'Band of Brothers', 'year': datetime.datetime(2001, 1, 1, 0, 0)} 9.4
+            {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0)} 9.4
+            {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0)} 9.4
+
+            >>> import os; os.remove('tv_shows.csv')
 
     """
 
@@ -112,7 +134,7 @@ def iter_csv(filepath_or_buffer, target_name, converters=None, parse_dates=None,
                 x[i] = dt.datetime.strptime(x[i], fmt)
 
         # Separate the target from the features
-        y = x.pop(target_name)
+        y = x.pop(target_name, None)
 
         yield x, y
 
