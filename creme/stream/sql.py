@@ -1,8 +1,9 @@
+import sqlalchemy
 import typing
 
 
-def iter_sql(query: typing.Union[str, 'sqlalchemy.sql.expression.Selectable'],
-             conn: 'sqlalchemy.engine.Connectable', target_name: str = None):
+def iter_sql(query: typing.Union[str, sqlalchemy.sql.expression.Selectable],
+             conn: sqlalchemy.engine.Connectable, target_name: str = None):
     """Yields over a query result.
 
     Parameters:
