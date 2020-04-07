@@ -1,4 +1,4 @@
-from .. import utils
+from . import utils
 
 
 def iter_libsvm(filepath_or_buffer, target_type=float, compression='infer'):
