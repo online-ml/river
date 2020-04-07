@@ -7,7 +7,6 @@ from .csv import iter_csv
 from .libsvm import iter_libsvm
 from .qa import simulate_qa
 from .shuffle import shuffle
-from .sql import iter_sql
 from .vaex import iter_vaex
 
 __all__ = [
@@ -22,3 +21,10 @@ __all__ = [
     'simulate_qa',
     'shuffle'
 ]
+
+try:
+    from .sql import iter_sql
+
+    __all__ += ['iter_sql']
+except ImportError:
+    pass
