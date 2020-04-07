@@ -6,7 +6,7 @@ from . import base
 __all__ = ['Jaccard']
 
 
-class Jaccard(stats.Mean, base.MultiOutputClassificationMetric):
+class Jaccard(base.MeanMetric, base.MultiOutputClassificationMetric):
     """Jaccard index for binary multi-outputs.
 
     Example:
@@ -43,7 +43,7 @@ class Jaccard(stats.Mean, base.MultiOutputClassificationMetric):
     def requires_labels(self):
         return True
 
-    def _jaccard(self, y_true, y_pred):
+    def _eval(self, y_true, y_pred):
 
         one_and_ones = 0
         zero_or_ones = 0
@@ -55,11 +55,3 @@ class Jaccard(stats.Mean, base.MultiOutputClassificationMetric):
                 zero_or_ones += 1
 
         return one_and_ones / (zero_or_ones + one_and_ones)
-
-    def update(self, y_true, y_pred):
-        super().update(self._jaccard(y_true, y_pred))
-        return self
-
-    def revert(self, y_true, y_pred):
-        super().revert(self._jaccard(y_true, y_pred))
-        return self

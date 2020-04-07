@@ -1,6 +1,7 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
+import itertools
 import math
 import pickle
 
@@ -16,7 +17,9 @@ def guess_model(model):
     from .. import base
     from .. import compose
 
-    if isinstance(model, compose.Pipeline):
+    if isinstance(model, (base.MultiOutputRegressor, base.MultiOutputClassifier)):
+        return model
+    elif isinstance(model, compose.Pipeline):
         return guess_model(model.final_estimator)
     elif isinstance(model, base.Wrapper):
         return guess_model(model._model)
@@ -40,8 +43,9 @@ def yield_datasets(model):
         yield datasets.TrumpApproval()
     if isinstance(model, base.MultiOutputRegressor):
         yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
-    if isinstance(model, base.MultiOutputRegressor):
-        yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
+    if isinstance(model, base.MultiOutputClassifier):
+        yeast = stream.iter_sklearn_dataset(sk_datasets.fetch_openml('yeast', version=4))
+        yield itertools.islice(yeast, 100)
 
 
 def check_fit_one(model, dataset):

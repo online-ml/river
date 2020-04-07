@@ -4,7 +4,7 @@ import typing
 
 from .. import base
 from .. import utils
-
+from .. import stats
 from ..reco.base import Recommender
 
 
@@ -142,7 +142,7 @@ class RegressionMetric(Metric):
         return Metrics([self, other])
 
 
-class MultiOutputClassificationMetric:
+class MultiOutputClassificationMetric(Metric):
 
     def update(
         self,
@@ -170,7 +170,7 @@ class MultiOutputClassificationMetric:
         return isinstance(utils.estimator_checks.guess_model(model), base.MultiOutputClassifier)
 
 
-class MultiOutputRegressionMetric:
+class MultiOutputRegressionMetric(Metric):
 
     def update(
         self,
@@ -287,3 +287,28 @@ class WrapperMetric(Metric):
 
     def __repr__(self):
         return str(self.metric)
+
+
+class MeanMetric(abc.ABC):
+    """Many metrics are just running averages. This is a utility class that avoids repeating
+    tedious stuff throughout the module for such metrics.
+
+    """
+
+    def __init__(self):
+        self._mean = stats.Mean()
+
+    @abc.abstractmethod
+    def _eval(self, y_true, y_pred):
+        pass
+
+    def update(self, y_true, y_pred, sample_weight=1.):
+        self._mean.update(x=self._eval(y_true, y_pred), w=sample_weight)
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        self._mean.revert(x=self._eval(y_true, y_pred), w=sample_weight)
+        return self
+
+    def get(self):
+        return self._mean.get()

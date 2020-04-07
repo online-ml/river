@@ -59,8 +59,6 @@ def get_all_estimators():
         meta.TransformedTargetRegressor,
         model_selection.SuccessiveHalvingClassifier,
         model_selection.SuccessiveHalvingRegressor,
-        multioutput.ClassifierChain,
-        multioutput.RegressorChain,
         preprocessing.OneHotEncoder,
         reco.Baseline,
         reco.BiasedMF,
@@ -93,6 +91,12 @@ def get_all_estimators():
 
             if issubclass(obj, ignored):
                 continue
+
+            elif issubclass(obj, multioutput.RegressorChain):
+                inst = obj(model=linear_model.LinearRegression())
+
+            elif issubclass(obj, multioutput.ClassifierChain):
+                inst = obj(model=linear_model.LogisticRegression())
 
             elif issubclass(obj, dummy.StatisticRegressor):
                 inst = obj(statistic=stats.Mean())

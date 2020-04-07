@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="200px" src="docs/_static/creme.svg" alt="creme_logo">
+  <img height="200px" src="https://docs.google.com/drawings/d/e/2PACX-1vSl80T4MnWRsPX3KvlB2kn6zVdHdUleG_w2zBiLS7RxLGAHxiSYTnw3LZtXh__YMv6KcIOYOvkSt9PB/pub?w=447&h=182" alt="creme_logo">
 </p>
 
 <p align="center">
@@ -45,7 +45,7 @@ As a quick example, we'll train a logistic regression to classify the [website p
 >>> from pprint import pprint
 >>> from creme import datasets
 
->>> X_y = datasets.Phishing()
+>>> X_y = datasets.Phishing()  # this is a generator
 
 >>> for x, y in X_y:
 ...     pprint(x)
@@ -91,18 +91,16 @@ Accuracy: 89.28%
 
 ## 🛠 Installation
 
-`creme` is intended to work with Python 3.6 or above. Installation can be done by using `pip`:
+`creme` is intended to work with **Python 3.6 or above**. Installation can be done by using `pip`:
 
     pip install creme
 
 There are [wheels available](https://pypi.org/project/creme/#files) for Linux, MacOS, and Windows. You can also install the latest development version as so:
 
-    pip install git+https://github.com/creme-ml/creme
+    pip install git+https://github.com/creme-ml/creme --upgrade
 
     # Or, through SSH:
-    pip install git+ssh://git@github.com/creme-ml/creme.git
-
-Note that installing the development version requires already having [Cython](https://github.com/cython/cython) installed.
+    pip install git+ssh://git@github.com/creme-ml/creme.git --upgrade
 
 ## 🧠 Philosophy
 
@@ -126,6 +124,7 @@ Here are some benefits of using `creme` (and online machine learning in general)
 - Anomaly detection
 - Recommender systems
 - Time series forecasting
+- Imbalanced learning
 - Clustering
 - Feature extraction and selection
 - Online statistics and metrics
@@ -147,7 +146,8 @@ Here are some benefits of using `creme` (and online machine learning in general)
 
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
 - [Toulouse Data Science presentation](https://maxhalford.github.io/slides/creme-tds/)
-- [Blog post on pyimagesearch](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
+- [*Online/Incremental Learning with Keras and Creme* on pyimagesearch](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
+- [*Machine learning for streaming data with creme* on Medium](https://towardsdatascience.com/machine-learning-for-streaming-data-with-creme-dacf5fb469df)
 
 ## 👍 Contributing
 

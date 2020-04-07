@@ -1,14 +1,12 @@
 import math
 
-from .. import stats
-
 from . import base
 
 
 __all__ = ['LogLoss']
 
 
-class LogLoss(stats.Mean, base.BinaryMetric):
+class LogLoss(base.MeanMetric, base.BinaryMetric):
     """Binary logarithmic loss.
 
     Example:
@@ -42,17 +40,9 @@ class LogLoss(stats.Mean, base.BinaryMetric):
     def requires_labels(self):
         return False
 
-    def _get_log_loss(self, y_true, y_pred):
+    def _eval(self, y_true, y_pred):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         p_true = self._clamp_proba(p_true)
         if y_true:
             return -math.log(p_true)
         return -math.log(1 - p_true)
-
-    def update(self, y_true, y_pred, sample_weight=1.):
-        ll = self._get_log_loss(y_true, y_pred)
-        return super().update(x=ll, w=sample_weight)
-
-    def revert(self, y_true, y_pred, sample_weight=1.):
-        ll = self._get_log_loss(y_true, y_pred)
-        return super().revert(x=ll, w=sample_weight)

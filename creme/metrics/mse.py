@@ -1,12 +1,10 @@
-from .. import stats
-
 from . import base
 
 
 __all__ = ['MSE']
 
 
-class MSE(stats.Mean, base.RegressionMetric):
+class MSE(base.MeanMetric, base.RegressionMetric):
     """Mean squared error.
 
     Example:
@@ -29,8 +27,5 @@ class MSE(stats.Mean, base.RegressionMetric):
 
     """
 
-    def update(self, y_true, y_pred, sample_weight=1.):
-        return super().update(x=(y_true - y_pred) ** 2, w=sample_weight)
-
-    def revert(self, y_true, y_pred, sample_weight=1.):
-        return super().revert(x=(y_true - y_pred) ** 2, w=sample_weight)
+    def _eval(self, y_true, y_pred):
+        return (y_true - y_pred) ** 2
