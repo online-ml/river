@@ -370,6 +370,7 @@ This module is here for testing purposes, as well as providing baseline performa
     :nosignatures:
     :template: class.rst
         
+    SuccessiveHalvingClassifier
     SuccessiveHalvingRegressor
 
 .. rubric:: Functions
@@ -790,7 +791,7 @@ Helper functions for making things readable by humans
     :nosignatures:
     :template: function.rst
         
-    pretty.format_object
+    pretty.humanize_bytes
     pretty.print_table
 
 
