@@ -7,21 +7,21 @@
 Before starting you want to make sure you have Python 3.6 or above installed. We recommend you create a [virtual environment](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/) with `conda`, as so:
 
 ```sh
-conda create --name creme python=3.6 anaconda cython
-conda activate creme
+$ conda create --name creme python=3.7 anaconda cython
+$ conda activate creme
 ```
 
 You also will need GCC to compile Cython extensions. If you don't already have it installed, you can do so via `conda`:
 
 ```sh
-conda install -c gcc
+$ conda install -c gcc
 ```
 
-Finally, you may fork the `dev` branch of the repository, which you can do from GitHub. Once you've done the fork, you can clone it to your work station. Once this is done navigate to the cloned directory and install the required dependencies:
+Finally, you may fork the `master` branch of the repository, which you can do from GitHub. Once you've done the fork, you can clone it to your work station. Once this is done navigate to the cloned directory and install the required dependencies:
 
 ```sh
-pip install -e ".[dev]"
-python setup.py develop
+$ pip install -e ".[dev]"
+$ python setup.py develop
 ```
 
 ### Making changes
@@ -43,7 +43,7 @@ All classes and function are automatically picked up and added to the documentat
 ## Building Cython extensions
 
 ```sh
-make cython
+$ make cython
 ```
 
 
@@ -54,7 +54,7 @@ make cython
 These tests absolutely have to pass.
 
 ```sh
-pytest
+$ pytest
 ```
 
 **Static typing**
@@ -62,7 +62,7 @@ pytest
 These tests absolutely have to pass.
 
 ```sh
-mypy creme
+$ mypy creme
 ```
 
 **Web dependent tests**
@@ -70,7 +70,7 @@ mypy creme
 This involves tests that need an internet connection, such as those in the `datasets` module. In most cases you probably don't need to run these.
 
 ```sh
-pytest -m web
+$ pytest -m web
 ```
 
 **Notebook tests**
@@ -78,15 +78,13 @@ pytest -m web
 You don't have to worry too much about these, as we check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way round.
 
 ```sh
-pytest --nbval-lax --current-env docs/notebooks/*.ipynb
+$ pytest --nbval-lax --current-env docs/notebooks/*.ipynb
 ```
 
 
 ## Making a pull request
 
 Once you're happy with your changes, you can push them to your remote fork. By the way do not hesitate to make small commits rather than one big one, it makes things easier to review. You can create a pull request to `creme`'s `master` branch.
-
-:warning: Don't make pull requests towards the `master` branch.
 
 
 ## Documentation
@@ -102,4 +100,4 @@ make livedoc  # builds the docs from scratch and starts a local server
 ## Adding contributors
 
 - Install the [allcontributors CLI](https://allcontributors.org/docs/en/cli/installation)
-- Run `yarn all-contributors add <GitHub username> code`
+- Run `yarn all-contributors add <GitHub username$ code`
