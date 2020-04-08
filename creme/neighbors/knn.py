@@ -42,25 +42,23 @@ class KNeighborsRegressor(base.Regressor, NearestNeighbours):
 
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import neighbors
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import neighbors
-            >>> from creme import preprocessing
+        >>> X_y = datasets.TrumpApproval()
 
-            >>> X_y = datasets.TrumpApproval()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     neighbors.KNeighborsRegressor()
+        ... )
 
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     neighbors.KNeighborsRegressor()
-            ... )
+        >>> metric = metrics.MAE()
 
-            >>> metric = metrics.MAE()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 0.335012
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        MAE: 0.335012
 
     """
 
@@ -107,25 +105,23 @@ class KNeighborsClassifier(base.MultiClassifier, NearestNeighbours):
 
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import neighbors
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import neighbors
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
 
-            >>> X_y = datasets.Phishing()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     neighbors.KNeighborsClassifier()
+        ... )
 
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     neighbors.KNeighborsClassifier()
-            ... )
+        >>> metric = metrics.Accuracy()
 
-            >>> metric = metrics.Accuracy()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            Accuracy: 84.39%
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        Accuracy: 84.39%
 
     """
 

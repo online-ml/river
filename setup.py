@@ -32,11 +32,12 @@ base_packages = ['mmh3==2.5.1', 'numpy>=1.18.1', 'scipy>=1.4.1']
 
 compat_packages = base_packages + [
     'scikit-learn>=0.22.1',
+    'scikit-surprise>=1.1.0',
     'pandas>=1.0.1',
     'torch>=1.4.0'
 ]
 
-dev_packages = [
+dev_packages = compat_packages + [
     'flake8>=3.7.9',
     'graphviz>=0.10.1',
     'matplotlib>=3.0.2',
@@ -47,15 +48,12 @@ dev_packages = [
     'pytest-cython>=0.1.0',
     'scikit-learn>=0.22.1'
 ]
+dev_packages = list(set(dev_packages))  # remove duplicates
 
 docs_packages = dev_packages + [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
-    'nbsphinx>=0.5.1',
-    'Sphinx>=2.2.0',
-    'sphinx-autobuild>=0.7.1',
-    'sphinx-material>=0.0.21',
-    'sphinx-copybutton>=0.2.8'
+    'pdoc3>=0.7.5'
 ]
 
 # The rest you shouldn't have to touch too much :)

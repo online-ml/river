@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.5" />
+<title>creme.base.estimator API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>creme.base.estimator</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import abc
+import copy
+import inspect
+import sys
+import types
+import typing
+
+from .. import utils
+
+
+DEFAULT_TAGS = {
+    &#39;handles_text&#39;: False,
+    &#39;requires_positive_data&#39;: False,
+    &#39;handles_categorical_features&#39;: False
+}
+
+
+class Estimator(abc.ABC):
+    &#34;&#34;&#34;An estimator.&#34;&#34;&#34;
+
+    def __str__(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return _repr_obj(obj=self, params=self._get_params())
+
+    def _get_params(self) -&gt; typing.Dict[str, typing.Any]:
+        return {
+            name: getattr(self, name)
+            for name, param in inspect.signature(self.__init__).parameters.items()  # type: ignore
+            if param.kind != param.VAR_KEYWORD
+        }
+
+    def _set_params(self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None) -&gt; &#39;Estimator&#39;:
+        &#34;&#34;&#34;Returns a new instance with the current parameters as well as new ones.
+
+        The algorithm will be recursively called down ``Pipeline``s and ``TransformerUnion``s.
+
+        Example:
+
+            ::
+
+                &gt;&gt;&gt; from creme import linear_model
+                &gt;&gt;&gt; from creme import optim
+                &gt;&gt;&gt; from creme import preprocessing
+
+                &gt;&gt;&gt; model = (
+                ...     preprocessing.StandardScaler() |
+                ...     linear_model.LinearRegression(
+                ...         optimizer=optim.SGD(lr=0.042),
+                ...     )
+                ... )
+
+                &gt;&gt;&gt; new_params = {
+                ...     &#39;LinearRegression&#39;: {
+                ...         &#39;l2&#39;: .001
+                ...     }
+                ... }
+
+                &gt;&gt;&gt; model._set_params(new_params)
+                Pipeline (
+                  StandardScaler (
+                    with_mean=True
+                    with_std=True
+                  ),
+                  LinearRegression (
+                    optimizer=SGD (
+                      lr=Constant (
+                        learning_rate=0.042
+                      )
+                    )
+                    loss=Squared ()
+                    l2=0.001
+                    intercept=0.
+                    intercept_lr=Constant (
+                      learning_rate=0.01
+                    )
+                    clip_gradient=1e+12
+                    initializer=Zeros ()
+                  )
+                )
+
+        &#34;&#34;&#34;
+
+        if new_params is None:
+            new_params = {}
+
+        params = {
+            **self._get_params(),
+            **new_params
+        }
+
+        return self.__class__(**copy.deepcopy(params))  # type: ignore
+
+    @property
+    def _tags(self) -&gt; typing.Dict[str, bool]:
+        &#34;&#34;&#34;Returns the estimator&#39;s tags.
+
+        Tags can be used to specify what kind of inputs an estimator is able to process. For
+        instance, some estimators can handle text, whilst others require positive numeric data.
+        Inheriting from `base.Estimator` will imply a set of default tags which can be overrided
+        by implementing the `base.Estimator._more_tags` method.
+
+        &#34;&#34;&#34;
+
+        tags: typing.Dict[str, bool] = {}
+
+        for base_class in inspect.getmro(self.__class__)[1:]:
+            if isinstance(base_class, Estimator):
+                _update_if_consistent(tags, base_class._more_tags)
+
+        _update_if_consistent(tags, self._more_tags)
+
+        return {**DEFAULT_TAGS, **tags}
+
+    @property
+    def _more_tags(self) -&gt; typing.Dict[str, bool]:
+        &#34;&#34;&#34;Specific tags for this estimator.&#34;&#34;&#34;
+        return {}
+
+    @property
+    def _memory_usage(self) -&gt; str:
+        &#34;&#34;&#34;Returns the memory usage in a human readable format.&#34;&#34;&#34;
+
+        def get_size(obj, seen=None):
+            &#34;&#34;&#34;Recursively finds size of objects&#34;&#34;&#34;
+            size = sys.getsizeof(obj)
+            if seen is None:
+                seen = set()
+            obj_id = id(obj)
+            if obj_id in seen:
+                return 0
+            # Important mark as seen *before* entering recursion to gracefully handle
+            # self-referential objects
+            seen.add(obj_id)
+            if isinstance(obj, dict):
+                size += sum([get_size(v, seen) for v in obj.values()])
+                size += sum([get_size(k, seen) for k in obj.keys()])
+            elif hasattr(obj, &#39;__dict__&#39;):
+                size += get_size(vars(obj), seen)
+            elif hasattr(obj, &#39;__iter__&#39;) and not isinstance(obj, (str, bytes, bytearray)):
+                size += sum([get_size(i, seen) for i in obj])
+            return size
+
+        mem_usage = get_size(self)
+        return utils.pretty.humanize_bytes(mem_usage)
+
+
+def _update_if_consistent(dict1: dict, dict2: dict):
+    common_keys = set(dict1.keys()).intersection(dict2.keys())
+    for key in common_keys:
+        if dict1[key] != dict2[key]:
+            raise TypeError(
+                f&#39;Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}&#39;)
+    dict1.update(dict2)
+
+
+def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -&gt; str:
+    &#34;&#34;&#34;Returns a pretty representation of an object.&#34;&#34;&#34;
+
+    rep = f&#39;{obj.__class__.__name__} (&#39;
+    if show_modules:
+        rep = f&#39;{obj.__class__.__module__}.{rep}&#39;
+    tab = &#39;\t&#39;
+
+    if params is None:
+        params = {
+            name: getattr(obj, name)
+            for name, param in inspect.signature(obj.__init__).parameters.items()  # type: ignore
+            if not (
+                param.name == &#39;args&#39; and param.kind == param.VAR_POSITIONAL or
+                param.name == &#39;kwargs&#39; and param.kind == param.VAR_KEYWORD
+            )
+        }
+
+    n_params = 0
+
+    for name, val in params.items():
+
+        n_params += 1
+
+        # Prettify the attribute when applicable
+        if isinstance(val, types.FunctionType):
+            val = val.__name__
+        if isinstance(val, str):
+            val = f&#39;&#34;{val}&#34;&#39;
+        elif isinstance(val, float):
+            val = (
+                f&#39;{val:.0e}&#39;
+                if (val &gt; 1e5 or (val &lt; 1e-4 and val &gt; 0)) else
+                f&#39;{val:.6f}&#39;.rstrip(&#39;0&#39;)
+            )
+        elif isinstance(val, set):
+            val = sorted(val)
+        elif hasattr(val, &#39;__class__&#39;) and &#39;creme.&#39; in str(type(val)):
+            val = _repr_obj(obj=val, show_modules=show_modules, depth=depth + 1)
+
+        rep += f&#39;\n{tab * (depth + 1)}{name}={val}&#39;
+
+    if n_params:
+        rep += f&#39;\n{tab * depth}&#39;
+    rep += &#39;)&#39;
+
+    return rep.expandtabs(2)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="creme.base.estimator.Estimator"><code class="flex name class">
+<span>class <span class="ident">Estimator</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>An estimator.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Estimator(abc.ABC):
+    &#34;&#34;&#34;An estimator.&#34;&#34;&#34;
+
+    def __str__(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return _repr_obj(obj=self, params=self._get_params())
+
+    def _get_params(self) -&gt; typing.Dict[str, typing.Any]:
+        return {
+            name: getattr(self, name)
+            for name, param in inspect.signature(self.__init__).parameters.items()  # type: ignore
+            if param.kind != param.VAR_KEYWORD
+        }
+
+    def _set_params(self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None) -&gt; &#39;Estimator&#39;:
+        &#34;&#34;&#34;Returns a new instance with the current parameters as well as new ones.
+
+        The algorithm will be recursively called down ``Pipeline``s and ``TransformerUnion``s.
+
+        Example:
+
+            ::
+
+                &gt;&gt;&gt; from creme import linear_model
+                &gt;&gt;&gt; from creme import optim
+                &gt;&gt;&gt; from creme import preprocessing
+
+                &gt;&gt;&gt; model = (
+                ...     preprocessing.StandardScaler() |
+                ...     linear_model.LinearRegression(
+                ...         optimizer=optim.SGD(lr=0.042),
+                ...     )
+                ... )
+
+                &gt;&gt;&gt; new_params = {
+                ...     &#39;LinearRegression&#39;: {
+                ...         &#39;l2&#39;: .001
+                ...     }
+                ... }
+
+                &gt;&gt;&gt; model._set_params(new_params)
+                Pipeline (
+                  StandardScaler (
+                    with_mean=True
+                    with_std=True
+                  ),
+                  LinearRegression (
+                    optimizer=SGD (
+                      lr=Constant (
+                        learning_rate=0.042
+                      )
+                    )
+                    loss=Squared ()
+                    l2=0.001
+                    intercept=0.
+                    intercept_lr=Constant (
+                      learning_rate=0.01
+                    )
+                    clip_gradient=1e+12
+                    initializer=Zeros ()
+                  )
+                )
+
+        &#34;&#34;&#34;
+
+        if new_params is None:
+            new_params = {}
+
+        params = {
+            **self._get_params(),
+            **new_params
+        }
+
+        return self.__class__(**copy.deepcopy(params))  # type: ignore
+
+    @property
+    def _tags(self) -&gt; typing.Dict[str, bool]:
+        &#34;&#34;&#34;Returns the estimator&#39;s tags.
+
+        Tags can be used to specify what kind of inputs an estimator is able to process. For
+        instance, some estimators can handle text, whilst others require positive numeric data.
+        Inheriting from `base.Estimator` will imply a set of default tags which can be overrided
+        by implementing the `base.Estimator._more_tags` method.
+
+        &#34;&#34;&#34;
+
+        tags: typing.Dict[str, bool] = {}
+
+        for base_class in inspect.getmro(self.__class__)[1:]:
+            if isinstance(base_class, Estimator):
+                _update_if_consistent(tags, base_class._more_tags)
+
+        _update_if_consistent(tags, self._more_tags)
+
+        return {**DEFAULT_TAGS, **tags}
+
+    @property
+    def _more_tags(self) -&gt; typing.Dict[str, bool]:
+        &#34;&#34;&#34;Specific tags for this estimator.&#34;&#34;&#34;
+        return {}
+
+    @property
+    def _memory_usage(self) -&gt; str:
+        &#34;&#34;&#34;Returns the memory usage in a human readable format.&#34;&#34;&#34;
+
+        def get_size(obj, seen=None):
+            &#34;&#34;&#34;Recursively finds size of objects&#34;&#34;&#34;
+            size = sys.getsizeof(obj)
+            if seen is None:
+                seen = set()
+            obj_id = id(obj)
+            if obj_id in seen:
+                return 0
+            # Important mark as seen *before* entering recursion to gracefully handle
+            # self-referential objects
+            seen.add(obj_id)
+            if isinstance(obj, dict):
+                size += sum([get_size(v, seen) for v in obj.values()])
+                size += sum([get_size(k, seen) for k in obj.keys()])
+            elif hasattr(obj, &#39;__dict__&#39;):
+                size += get_size(vars(obj), seen)
+            elif hasattr(obj, &#39;__iter__&#39;) and not isinstance(obj, (str, bytes, bytearray)):
+                size += sum([get_size(i, seen) for i in obj])
+            return size
+
+        mem_usage = get_size(self)
+        return utils.pretty.humanize_bytes(mem_usage)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="creme.base.anomaly.AnomalyDetector" href="anomaly.html#creme.base.anomaly.AnomalyDetector">AnomalyDetector</a></li>
+<li><a title="creme.base.classifier.Classifier" href="classifier.html#creme.base.classifier.Classifier">Classifier</a></li>
+<li><a title="creme.base.clusterer.Clusterer" href="clusterer.html#creme.base.clusterer.Clusterer">Clusterer</a></li>
+<li><a title="creme.base.ensemble.Ensemble" href="ensemble.html#creme.base.ensemble.Ensemble">Ensemble</a></li>
+<li><a title="creme.base.multi_output.MultiOutputEstimator" href="multi_output.html#creme.base.multi_output.MultiOutputEstimator">MultiOutputEstimator</a></li>
+<li><a title="creme.base.regressor.Regressor" href="regressor.html#creme.base.regressor.Regressor">Regressor</a></li>
+<li><a title="creme.base.transformer.Transformer" href="transformer.html#creme.base.transformer.Transformer">Transformer</a></li>
+<li><a title="creme.base.wrapper.Wrapper" href="wrapper.html#creme.base.wrapper.Wrapper">Wrapper</a></li>
+<li>creme.compose.pipeline.Pipeline</li>
+<li>creme.time_series.base.Forecaster</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="creme.base" href="index.html">creme.base</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="creme.base.estimator.Estimator" href="#creme.base.estimator.Estimator">Estimator</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
