@@ -8,10 +8,15 @@ from skmultiflow.data import SEAGenerator
 
 
 def test_half_space_trees(test_path):
-    stream = SEAGenerator(classification_function=0, noise_percentage=0.1, random_state=1)
+    stream = SEAGenerator(classification_function=0,
+                          noise_percentage=0.1,
+                          random_state=1)
 
-    learner = HalfSpaceTrees(n_features=stream.n_features, n_estimators=13, size_limit=75, anomaly_threshold=0.90,
-                             depth=10, random_state=5)
+    learner = HalfSpaceTrees(n_estimators=13,
+                             size_limit=75,
+                             anomaly_threshold=0.90,
+                             depth=10,
+                             random_state=5)
 
     cnt = 0
     max_samples = 5000

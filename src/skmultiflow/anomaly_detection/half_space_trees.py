@@ -11,18 +11,16 @@ from skmultiflow.utils import get_dimensions
 class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
     """Half--Space Trees.
 
-    Implementation of the Streaming Half--Space--Trees (HS--Trees) [1]_, a fast one-class anomaly detector
-    for evolving data streams. It requires only normal data for training and works well when anomalous
-    data are rare. The model features an ensemble of random HS--Trees, and the tree structure is
-    constructed without any data. This makes the method highly efficient because it requires no model
-    restructuring when adapting to evolving data streams.
+    Implementation of the Streaming Half--Space--Trees (HS--Trees) [1]_,
+    a fast one-class anomaly detector for evolving data streams. It requires
+    only normal data for training and works well when anomalous data are rare.
+    The model features an ensemble of random HS--Trees, and the tree structure
+    is constructed without any data. This makes the method highly efficient
+    because it requires no model restructuring when adapting to evolving data
+    streams.
 
     Parameters
     ----------
-
-    n_features: int, required
-        The dimensionality of the stream.
-
     n_estimators: int, optional (default=25)
        Number of trees in the ensemble.
        't' in the original paper.
@@ -36,13 +34,15 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         'maxDepth' in the original paper.
 
     size_limit: int, optional (default=50)
-        The minimum mass required in a node (as a fraction of the window size) to calculate the anomaly score.
+        The minimum mass required in a node (as a fraction of the window size)\
+        to calculate the anomaly score.
         'sizeLimit' in the original paper.
-        A good setting is 0.1 * window_size
+        A good setting is ``0.1 * window_size``
 
     anomaly_threshold: double, optional (default=0.5)
         The threshold for declaring anomalies.
-        Any instance prediction probability above this threshold will be declared as an anomaly.
+        Any instance prediction probability above this threshold will be
+        declared as an anomaly.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -52,9 +52,9 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
 
     References
     ----------
-    .. [1] S.C.Tan, K.M.Ting, and T.F.Liu, “Fast anomaly detection for streaming data,”
-       in IJCAI Proceedings - International Joint Conference on Artificial Intelligence,
-       2011, vol. 22, no. 1, pp. 1511–1516.
+    .. [1] S.C.Tan, K.M.Ting, and T.F.Liu, “Fast anomaly detection for
+       streaming data,” in IJCAI Proceedings - International Joint Conference
+       on Artificial Intelligence, 2011, vol. 22, no. 1, pp. 1511–1516.
 
     Examples
     --------
@@ -68,7 +68,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
        stream = SEAGenerator(random_state=1)
 
        # Setup Half-Space Trees estimator
-       half_space_trees = HalfSpaceTrees()
+       half_space_trees = HalfSpaceTrees(random_state=1)
 
        # Setup variables to control loop and track performance
        n_samples = 0
@@ -89,7 +89,6 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
     """
 
     def __init__(self,
-                 n_features,
                  window_size=250,
                  depth=15,
                  n_estimators=25,
@@ -104,7 +103,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         self.min_values = []
         self.max_values = []
         self.ensemble = []
-        self.n_features = n_features
+        self.n_features = -1
         self.size_limit = size_limit
         self.samples_seen = 0
         self.anomaly_threshold = anomaly_threshold
@@ -139,6 +138,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
 
         if self.samples_seen == 0:
             self._random_state = check_random_state(self.random_state)
+            self.n_features = get_dimensions(X)[1]
             self.build_trees()
 
         for i in range(row_cnt):
@@ -147,7 +147,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         return self
 
     def _partial_fit(self, X, y):
-        """ Trains the model on samples X and corresponding targets y.
+        """ Train the model on samples X and corresponding targets y.
 
         Private function where actual training is carried on.
 
@@ -197,8 +197,8 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
                 # Ensemble is empty, all classes equal, default to zero
                 predictions.append(0)
             else:
-                # if prediction of this instance being anomaly is greater than the threshold defined,
-                # then this instance is classified as an anomaly.
+                # if prediction of this instance is greater than the threshold
+                # defined, then this instance is classified as an anomaly.
                 if y_proba[0][1] > self.anomaly_threshold:
                     predictions.append(1)
                 else:
@@ -206,9 +206,10 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         return np.asarray(predictions)
 
     def predict_proba(self, X):
-        """ Estimates the probability of each sample in X belonging to each of the class-labels (normal and outlier).
+        """ Estimate the probability of a sample being normal or abnormal.
 
-        Class probabilities are calculated as the mean predicted class probabilities per base estimator.
+        Class probabilities are calculated as the mean predicted class
+        probabilities per base estimator.
 
         Parameters
         ----------
@@ -218,9 +219,10 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         Returns
         -------
         numpy.ndarray of shape (n_samples, n_classes)
-            Predicted class probabilities for all instances in X.
-            Class probabilities for a sample shall sum to 1 as long as at least one estimators has non-zero predictions.
-            If no estimator can predict probabilities, probabilities of 0 are returned.
+            Predicted class probabilities for all instances in X.\
+            Class probabilities for a sample shall sum to 1 as long as at\
+            least one estimators has non-zero predictions. If no estimator can\
+            predict probabilities, probabilities of 0 are returned.
         """
         y_proba_mean = None
         max_score = self.window_size * pow(2.0, self.depth)
@@ -234,9 +236,10 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         return normalize(y_proba_mean, norm='l1')
 
     def initialise_work_space(self):
-        """
-        Initialises work spaces.
-        For every dimension in the feature space, creates a minimum and a maximum work range.
+        """ Initialises work spaces.
+
+        For every dimension in the feature space, creates a minimum and a
+        maximum work range.
         """
         for i in range(self.n_features):
             sq = self._random_state.uniform(0, 1)
@@ -257,8 +260,8 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         """
         for i in range(self.n_estimators):
             self.initialise_work_space()
-            tree = HalfSpaceTree(self.depth, self.n_features, self.size_limit, self.min_values, self.max_values,
-                                 self._random_state)
+            tree = HalfSpaceTree(self.depth, self.n_features, self.size_limit, self.min_values,
+                                 self.max_values, self._random_state)
             self.ensemble.append(tree)
 
     def update_mass(self, X, boolean):
@@ -301,7 +304,8 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
 
 class HalfSpaceTree:
 
-    def __init__(self, max_depth, n_features, size_limit, min_values, max_values, random_state=None):
+    def __init__(self, max_depth, n_features, size_limit, min_values, max_values,
+                 random_state=None):
         """
         Half Space Tree
 
@@ -315,8 +319,9 @@ class HalfSpaceTree:
             'maxDepth' in the original paper.
 
         size_limit: int, optional (default=50)
-            The minimum mass required in a node (as a fraction of the window size) to calculate the anomaly score.
-            'sizeLimit' in the original paper.
+            The minimum mass required in a node (as a fraction of the window\
+            size) to calculate the anomaly score. 'sizeLimit' in the original\
+            paper.
 
         min_values: Array of floats
             Minimum work range for every dimension.
@@ -340,7 +345,7 @@ class HalfSpaceTree:
         self.root = self.build_tree(min_values, max_values)
 
     def predict_proba(self, X, max_score):
-        """ Predicts probabilities of all label of the X instance(s)
+        """ Predict probabilities of all label of the X instance(s)
 
         Parameters
         ----------
@@ -381,7 +386,7 @@ class HalfSpaceTree:
         dict (class_value, weight)
 
         """
-        if self.root is not None and self.is_learning_phase_on is not True:
+        if self.root is not None and not self.is_learning_phase_on:
             score = self.anomaly_score(X)
             anomaly_score = 1 - score / max_score
             return {0: 1 - anomaly_score, 1: anomaly_score}
@@ -421,8 +426,8 @@ class HalfSpaceTree:
             Anomaly score of the instance X.
 
         """
-        if node.internal_node is not True or node.r <= self.size_limit:
-            return node.r * pow(2.0, node.depth)
+        if not node.internal_node or node.right_mass <= self.size_limit:
+            return node.right_mass * pow(2.0, node.depth)
         else:
             if X[node.split_attribute] > node.split_value:
                 return self._anomaly_score(node.right, X)
@@ -494,9 +499,9 @@ class HalfSpaceTree:
             return
 
         if is_reference_window:
-            node.r = node.r + 1
+            node.right_mass = node.right_mass + 1
         else:
-            node.l = node.l + 1
+            node.left_mass = node.left_mass + 1
 
         if node.depth < self.max_depth:
             if X[node.split_attribute] > node.split_value:
@@ -516,11 +521,11 @@ class HalfSpaceTree:
 
         """
         if node is not None:
-            if node.r is not 0 or node.l is not 0:
-                node.r = node.l
+            if node.right_mass != 0 or node.left_mass != 0:
+                node.right_mass = node.left_mass
 
-            if node.l is not 0:
-                node.l = 0
+            if node.left_mass != 0:
+                node.left_mass = 0
 
             self.update_model(node.left)
             self.update_model(node.right)
@@ -557,17 +562,17 @@ class HalfSpaceTreeNode:
 
         Attributes
         ----------
-        l: int
+        left_mass: int
             Mass of the node in the reference window.
 
-        r: int
+        right_mass: int
             Mass of the node in the latest window.
 
         """
         self.left = left
         self.right = right
-        self.l = 0
-        self.r = 0
+        self.left_mass = 0
+        self.right_mass = 0
         self.depth = depth
         self.split_value = split_value
         self.split_attribute = split_attribute
