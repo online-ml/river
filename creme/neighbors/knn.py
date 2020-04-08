@@ -32,13 +32,17 @@ class NearestNeighbours(collections.deque):
 class KNeighborsRegressor(base.Regressor, NearestNeighbours):
     """K-Nearest Neighbors (KNN) for regression.
 
+    This works by storing a buffer with the `window_size` most recent observations. A brute-force
+    search is used to find the `n_neighbors` nearest observations in the buffer to make a
+    prediction.
+
     Parameters:
-        n_neighbors (int): Number of neighbors to use.
-        window_size (int): Size of the sliding window use to search neighbors with.
-        p (int): Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
+        n_neighbors: Number of neighbors to use.
+        window_size: Size of the sliding window use to search neighbors with.
+        p: Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
             Manhattan distance, while ``p=2`` corresponds to the Euclidean distance.
-        weighted (bool): Whether to weight the contribution of each neighbor by it's inverse
-            distance or not.
+        weighted: Whether to weight the contribution of each neighbor by it's inverse distance or
+            not.
 
     Example:
 
@@ -95,12 +99,16 @@ class KNeighborsRegressor(base.Regressor, NearestNeighbours):
 class KNeighborsClassifier(base.MultiClassifier, NearestNeighbours):
     """K-Nearest Neighbors (KNN) for classification.
 
+    This works by storing a buffer with the `window_size` most recent observations. A brute-force
+    search is used to find the `n_neighbors` nearest observations in the buffer to make a
+    prediction.
+
     Parameters:
-        n_neighbors (int): Number of neighbors to use.
-        window_size (int): Size of the sliding window use to search neighbors with.
-        p (int): Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
+        n_neighbors: Number of neighbors to use.
+        window_size: Size of the sliding window use to search neighbors with.
+        p: Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
             Manhattan distance, while ``p=2`` corresponds to the Euclidean distance.
-        weighted (bool): Whether to weight the contribution of each neighbor by it's inverse
+        weighted: Whether to weight the contribution of each neighbor by it's inverse
             distance or not.
 
     Example:
