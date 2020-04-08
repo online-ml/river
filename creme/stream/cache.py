@@ -4,7 +4,7 @@ import os
 import pickle
 import platform
 
-from .. import utils
+from creme import utils
 
 
 class Cache:
@@ -26,50 +26,48 @@ class Cache:
 
     Example:
 
-        ::
+        >>> import time
+        >>> from creme import datasets
+        >>> from creme import stream
 
-            >>> import time
-            >>> from creme import datasets
-            >>> from creme import stream
+        >>> X_y = datasets.Phishing()
+        >>> cache = stream.Cache()
 
-            >>> X_y = datasets.Phishing()
-            >>> cache = stream.Cache()
+        The cache can be used by wrapping it around an iterable. Because this is the first time
+        are iterating over the data, nothing is cached.
 
-            The cache can be used by wrapping it around an iterable. Because this is the first time
-            are iterating over the data, nothing is cached.
+        >>> tic = time.time()
+        >>> for x, y in cache(X_y, key='phishing'):
+        ...     pass
+        >>> toc = time.time()
+        >>> print(toc - tic)  # doctest: +SKIP
+        0.012813
 
-            >>> tic = time.time()
-            >>> for x, y in cache(X_y, key='phishing'):
-            ...     pass
-            >>> toc = time.time()
-            >>> print(toc - tic)  # doctest: +SKIP
-            0.012813
+        If we do the same thing again, we can see the loop is now faster.
 
-            If we do the same thing again, we can see the loop is now faster.
+        >>> tic = time.time()
+        >>> for x, y in cache(X_y, key='phishing'):
+        ...     pass
+        >>> toc = time.time()
+        >>> print(toc - tic)  # doctest: +SKIP
+        0.001927
 
-            >>> tic = time.time()
-            >>> for x, y in cache(X_y, key='phishing'):
-            ...     pass
-            >>> toc = time.time()
-            >>> print(toc - tic)  # doctest: +SKIP
-            0.001927
+        We can see an overview of the cache. The first line indicates the location of the
+        cache.
 
-            We can see an overview of the cache. The first line indicates the location of the
-            cache.
+        >>> cache  # doctest: +SKIP
+        /tmp
+        phishing - 125.2KiB
 
-            >>> cache  # doctest: +SKIP
-            /tmp
-            phishing - 125.2KiB
+        Finally, we can clear the stream from the cache.
 
-            Finally, we can clear the stream from the cache.
+        >>> cache.clear('phishing')
+        >>> cache
+        /tmp
 
-            >>> cache.clear('phishing')
-            >>> cache
-            /tmp
+        There is also a ``clear_all`` method to remove all the items in the cache.
 
-            There is also a ``clear_all`` method to remove all the items in the cache.
-
-            >>> cache.clear_all()
+        >>> cache.clear_all()
 
     """
 
@@ -126,7 +124,7 @@ class Cache:
             while f.peek(1):
                 yield unpickler.load()
 
-    def clear(self, key):
+    def clear(self, key: str):
         """Deletes the cached stream associated with the given key."""
         os.remove(self._get_path(key))
         self.keys.remove(key)

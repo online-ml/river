@@ -34,7 +34,8 @@ compat_packages = base_packages + [
     'scikit-learn>=0.22.1',
     'scikit-surprise>=1.1.0',
     'pandas>=1.0.1',
-    'torch>=1.4.0'
+    'torch>=1.4.0',
+    'vaex>=2.6.1'
 ]
 
 dev_packages = compat_packages + [

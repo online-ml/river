@@ -1,18 +1,23 @@
-def iter_vaex(X, y=None, features=None, **kwargs):
+import typing
+
+import vaex
+from vaex.utils import _ensure_strings_from_expressions, _ensure_list
+
+from creme import base
+
+
+def iter_vaex(X: vaex.dataframe.DataFrame, y: typing.Union[str, vaex.expression.Expression] = None,
+              features: typing.Union[typing.List[str], vaex.expression.Expression] = None,
+              **kwargs) -> base.typing.Stream:
     """Yields rows from a ``vaex.DataFrame``.
 
     Parameters:
-        X (vaex.DataFrame): A vaex DataFrame housing the training featuers.
-        y (string or vaex.Expression): The column or expression containing the target variable.
-        features (list of strings or vaex.Expressions): A list of features used for training.
-        If None, all columns in ``X`` will be used. Features specifying in ``y`` are ignored.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        X: A vaex DataFrame housing the training featuers.
+        y: The column or expression containing the target variable.
+        features: A list of features used for training. If None, all columns in `X` will be used.
+            Features specifying in `y` are ignored.
 
     """
-
-    from vaex.utils import _ensure_strings_from_expressions, _ensure_list
 
     features = _ensure_strings_from_expressions(features)
     feature_names = features or X.get_column_names()
