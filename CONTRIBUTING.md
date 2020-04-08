@@ -1,6 +1,27 @@
 # Contributing
 
-## Advised development cycle
+## Installation
+
+First, create a virtual environment. You'll want to activate it every time you want to work on `creme`.
+
+```sh
+> python -m venv .venv
+> source .venv/bin/activate
+```
+
+Finally, you may fork the `master` branch of the repository, which you can do from GitHub. Once you've forked the repository, clone it to your work station. Then, navigate to the cloned directory and install the required dependencies:
+
+```sh
+> pip install -e ".[dev]"
+```
+
+Finally, install `creme` in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
+
+```sh
+> python setup.py develop
+```
+
+## Making changes
 
 ### Installation
 
@@ -91,7 +112,7 @@ Once you're happy with your changes, you can push them to your remote fork. By t
 
 ## Documentation
 
-The documentation is built with [Sphinx](http://www.sphinx-doc.org/en/master/).
+The documentation is built with [pdoc3](https://pdoc3.github.io/pdoc/).
 
 ```sh
 pip install -e ".[docs]"  # installs dependencies required for building the docs

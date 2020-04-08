@@ -1,15 +1,14 @@
-update_nb:
-	jupyter nbconvert --execute --to notebook --inplace docs/notebooks/*.ipynb --ExecutePreprocessor.timeout=-1
+make pytest:
+	python -m pytest
 
-clean:
-	rm -f **/*.c **/*.so **/*.pyc
-	rm -rf **/*/__pycache__ build .ipynb_checkpoints docs/notebooks/.ipynb_checkpoints .pytest_cache .empty .eggs creme.egg-info dist
+make flake8:
+	python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
-cython:
-	python setup.py build_ext --inplace --force
+make mypy:
+	python mypy
 
-doc:
-	cd docs && $(MAKE) clean && rm -rf content/generated && python scripts/make_api.py && $(MAKE) html -j 4
+make doc:
+	pdoc3 -c show_type_annotations=True -c show_inherited_members=True --template-dir pdocs/templates --html -o pdocs -f creme
 
-livedoc:
-	sphinx-autobuild docs docs/_build/html --port 0 --open-browser --delay 0
+make livedoc:
+	pdoc3 -c show_type_annotations=True -c show_inherited_members=True --template-dir pdocs/templates --http : creme

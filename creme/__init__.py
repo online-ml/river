@@ -8,6 +8,37 @@ scikit-learn, enough so that users who are familiar with scikit-learn should fee
 """
 from .__version__ import __version__
 
+from . import anomaly
+from . import base
+from . import cluster
+from . import compat
+from . import compose
+from . import datasets
+from . import dummy
+from . import decomposition
+from . import ensemble
+from . import facto
+from . import feature_extraction
+from . import feature_selection
+from . import impute
+from . import linear_model
+from . import meta
+from . import metrics
+from . import model_selection
+from . import multiclass
+from . import multioutput
+from . import naive_bayes
+from . import neighbors
+from . import optim
+from . import preprocessing
+from . import proba
+from . import reco
+from . import sampling
+from . import stats
+from . import stream
+from . import time_series
+from . import tree
+from . import utils
 
 __all__ = [
     'anomaly',
@@ -42,3 +73,37 @@ __all__ = [
     'tree',
     'utils'
 ]
+
+__pdoc__ = {
+    'anomaly': False,
+    'cluster': False,
+    'compat': False,
+    'compose': False,
+    'datasets': False,
+    'dummy': False,
+    'decomposition': False,
+    'ensemble': False,
+    'facto': False,
+    'feature_extraction': False,
+    'feature_selection': False,
+    'impute': False,
+    'linear_model': False,
+    'meta': False,
+    'metrics': False,
+    'model_selection': False,
+    'multiclass': False,
+    'multioutput': False,
+    'naive_bayes': False,
+    'optim': False,
+    'preprocessing': False,
+    'proba': False,
+    'reco': False,
+    'sampling': False,
+    'stats': False,
+    'stream': False,
+    'time_series': False,
+    'tree': False,
+    'utils': False,
+
+    'conftest': False
+}
