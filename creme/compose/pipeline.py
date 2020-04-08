@@ -161,8 +161,10 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
     @property
     def is_supervised(self):
-        """Only works if all the steps of the pipelines are transformers."""
-        return any(transformer.is_supervised for transformer in self.values())
+        return (
+            not isinstance(self.final_estimator, base.Transformer) or
+            any(transformer.is_supervised for transformer in self.values())
+        )
 
     def add_step(self, estimator: typing.Union[base.Estimator, typing.Tuple[typing.Hashable, base.Estimator]],
                  at_start: bool):

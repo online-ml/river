@@ -11,8 +11,12 @@ try:
 except ImportError:
     collect_ignore.append('reco/surprise.py')
 
-
 try:
     import torch
 except ImportError:
     collect_ignore.append('compat/pytorch.py')
+
+try:
+    import vaex
+except ImportError:
+    collect_ignore.append('stream/iter_vaex.py')
