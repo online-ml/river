@@ -8,7 +8,7 @@ mypy:
 	python mypy
 
 doc:
-	pdoc3 -c show_type_annotations=True -c show_inherited_members=True --template-dir pdocs/templates --html -o pdocs -f creme
+	pdoc3 -c show_type_annotations=True -c show_inherited_members=True -c latex_math=True --template-dir pdocs/templates --html -o pdocs -f creme
 
 livedoc:
-	pdoc3 -c show_type_annotations=True -c show_inherited_members=True --template-dir pdocs/templates --http : creme
+	pdoc3 -c show_type_annotations=True -c show_inherited_members=True -c latex_math=True --template-dir pdocs/templates --http : creme

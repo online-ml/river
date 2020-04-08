@@ -106,7 +106,7 @@ def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = Non
 
             >>> import os; os.remove('tv_shows.csv')
 
-        .. note::
+        .. tip::
             Reading CSV can be quite slow. If, for whatever reason, you're going to loop through
             the same file multiple times, then we recommend you to use the
             `creme.stream.Cache` utility.

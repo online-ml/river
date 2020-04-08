@@ -1,22 +1,21 @@
 import abc
 
-from . import estimator
+from creme import base
 
 
-class Transformer(estimator.Estimator):
+class Transformer(base.Estimator):
     """A transformer."""
 
-    def fit_one(self, x: dict, y=None) -> 'Transformer':
-        """Fits to a set of features ``x`` and an optional target ``y``.
+    def fit_one(self, x: dict) -> 'Transformer':
+        """Fits to a set of features `x` and an optional target `y`.
 
-        A lot of transformers don't actually have to do anything during the ``fit_one`` step
+        A lot of transformers don't actually have to do anything during the `fit_one` step
         because they are stateless. For this reason the default behavior of this function is to do
-        nothing. Transformers that however do something during the ``fit_one`` can override this
+        nothing. Transformers that however do something during the `fit_one` can override this
         method.
 
         Parameters:
-            x (dict)
-            y (optional)
+            x: A dictionary of features.
 
         Returns:
             self
@@ -26,10 +25,10 @@ class Transformer(estimator.Estimator):
 
     @abc.abstractmethod
     def transform_one(self, x: dict) -> dict:
-        """Transforms a set of features ``x``.
+        """Transforms a set of features `x`.
 
         Parameters:
-            x (dict)
+            x: A dictionary of features.
 
         Returns:
             dict
@@ -38,11 +37,11 @@ class Transformer(estimator.Estimator):
 
     @property
     def is_supervised(self) -> bool:
-        """Indicates if the transformer uses the target ``y`` or not.
+        """Indicates if the transformer uses the target `y` or not.
 
         Supervised transformers have to be handled differently from unsupervised transformers in an
         online setting. This is especially true for target encoding where leakage can easily occur.
-        Most transformers are unsupervised and so this property returns by default ``False``.
+        Most transformers are unsupervised and so this property returns by default `False`.
         Transformers that are supervised must override this property in their definition.
 
         """
@@ -75,3 +74,25 @@ class Transformer(estimator.Estimator):
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
         return compose.TransformerUnion(other, self)
+
+
+class SupervisedTransformer(Transformer):
+    """A supervised transformer.
+
+    Supervised transformers have to be handled differently from unsupervised transformers in an
+    online setting. This is especially true for target encoding where leakage can easily occur.
+
+    """
+
+    def fit_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':
+        """Fits to a set of features `x` and an optional target `y`.
+
+        Parameters:
+            x: A dictionary of features.
+            y: A target label.
+
+        Returns:
+            self
+
+        """
+        return self
