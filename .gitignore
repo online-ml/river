@@ -3,6 +3,7 @@ docs/_build/
 docs/content/generated/
 docs/notebooks/.ipynb_checkpoints/
 docs/*.csv
+*.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

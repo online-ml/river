@@ -1,7 +1,9 @@
-from .. import utils
+from creme import base
+
+from . import utils
 
 
-def iter_libsvm(filepath_or_buffer, target_type=float, compression='infer'):
+def iter_libsvm(filepath_or_buffer: str, target_type=float, compression='infer') -> base.typing.Stream:
     """Iterates over a dataset in LIBSVM format.
 
     The LIBSVM format is a popular way in the machine learning community to store sparse datasets.
@@ -9,33 +11,30 @@ def iter_libsvm(filepath_or_buffer, target_type=float, compression='infer'):
 
     Parameters:
         filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer
-            object that has a ``read`` method.
-        target_type (type): Type of the target value.
-        compression (str): For on-the-fly decompression of on-disk data. If 'infer' and
-            ``filepath_or_buffer`` is path-like, then the decompression method is inferred for the
+            object that has a `read` method.
+        target_type: The type of the target value.
+        compression: For on-the-fly decompression of on-disk data. If this is set to 'infer' and
+            `filepath_or_buffer` is a path, then the decompression method is inferred for the
             following extensions: '.gz', '.zip'.
-
 
     Example:
 
-        ::
+        >>> import io
+        >>> from creme import stream
 
-            >>> import io
-            >>> from creme import stream
+        >>> data = io.StringIO('''+1 x:-134.26 y:0.2563
+        ... 1 x:-12 z:0.3
+        ... -1 y:.25
+        ... ''')
 
-            >>> data = io.StringIO('''+1 x:-134.26 y:0.2563
-            ... 1 x:-12 z:0.3
-            ... -1 y:.25
-            ... ''')
-
-            >>> for x, y in stream.iter_libsvm(data, target_type=int):
-            ...     print(y, x)
-            1 {'x': -134.26, 'y': 0.2563}
-            1 {'x': -12.0, 'z': 0.3}
-            -1 {'y': 0.25}
+        >>> for x, y in stream.iter_libsvm(data, target_type=int):
+        ...     print(y, x)
+        1 {'x': -134.26, 'y': 0.2563}
+        1 {'x': -12.0, 'z': 0.3}
+        -1 {'y': 0.25}
 
     References:
-        1. `LIBSVM documentation <https://www.csie.ntu.edu.tw/~cjlin/libsvm/>`_
+        1. [LIBSVM documentation](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)
 
     """
 

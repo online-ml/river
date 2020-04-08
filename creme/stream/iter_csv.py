@@ -2,8 +2,14 @@ import csv
 import datetime as dt
 import os
 import random
+import typing
+
+from .. import base
 
 from . import utils
+
+
+__all__ = ['iter_csv']
 
 
 class DictReader(csv.DictReader):
@@ -28,39 +34,36 @@ class DictReader(csv.DictReader):
         return dict(zip(self.fieldnames, row))
 
 
-def iter_csv(filepath_or_buffer, target_name=None, converters=None, parse_dates=None, drop=None,
-             fraction=1., compression='infer', seed=None, field_size_limit=None, **kwargs):
-    """Yields rows from a CSV file.
+def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = None,
+             parse_dates: dict = None, drop: typing.List[str] = None, fraction=1.,
+             compression='infer', seed: int = None, field_size_limit: int = None,
+             **kwargs) -> base.typing.Stream:
+    """Iterates over rows from a CSV file.
 
     Parameters:
         filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer
             object that has a ``read`` method.
-        target_name (str): The name of the target.
-        converters (dict): A `dict` mapping feature names to callables used to parse their
+        target_name: The name of the target.
+        converters: A `dict` mapping feature names to callables used to parse their
             associated values.
-        parse_dates (dict): A `dict` mapping feature names to a format passed to the
+        parse_dates: A `dict` mapping feature names to a format passed to the
             `datetime.datetime.strptime` method.
-        drop (list): Fields to ignore.
-        fraction (float): Sampling fraction.
-        compression (str): For on-the-fly decompression of on-disk data. If 'infer' and
-            ``filepath_or_buffer`` is path-like, then the decompression method is inferred for the
+        drop: Fields to ignore.
+        fraction: Sampling fraction.
+        compression: For on-the-fly decompression of on-disk data. If this is set to 'infer' and
+            `filepath_or_buffer` is a path, then the decompression method is inferred for the
             following extensions: '.gz', '.zip'.
-        seed (int): If specified, the sampling will be deterministic.
-        field_size_limit (int): If not `None`, this will passed to the `csv.field_size_limit`
+        seed: If specified, the sampling will be deterministic.
+        field_size_limit: If not `None`, this will be passed to the `csv.field_size_limit`
             function.
 
-    All other arguments are passed to the underlying `csv.DictReader`.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+    All other keyword arguments are passed to the underlying `csv.DictReader`.
 
     Example:
 
-        ::
-
-            Although this function is designed to handle different kinds of inputs, the most common
-            use case is to read a file on the disk. We'll first create a little CSV file to
-            illustrate.
+        Although this function is designed to handle different kinds of inputs, the most common
+        use case is to read a file on the disk. We'll first create a little CSV file to
+        illustrate.
 
             >>> tv_shows = '''name,year,rating
             ... Planet Earth II,2016,9.5
@@ -72,7 +75,7 @@ def iter_csv(filepath_or_buffer, target_name=None, converters=None, parse_dates=
             >>> with open('tv_shows.csv', mode='w') as f:
             ...     _ = f.write(tv_shows)
 
-            We can now go through the rows one by one.
+        We can now go through the rows one by one.
 
             >>> from creme import stream
 
@@ -88,8 +91,8 @@ def iter_csv(filepath_or_buffer, target_name=None, converters=None, parse_dates=
             {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0), 'rating': 9.4} None
             {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0), 'rating': 9.4} None
 
-            The value ``y`` is always ``None`` because we haven't provided a value for the
-            ``target_name`` parameter. Here is an example where a ``target_name`` is provided:
+        The value of ``y`` is always ``None`` because we haven't provided a value for the
+        ``target_name`` parameter. Here is an example where a ``target_name`` is provided:
 
             >>> for x, y in stream.iter_csv('tv_shows.csv', target_name='rating', **params):
             ...     print(x, y)
@@ -99,7 +102,14 @@ def iter_csv(filepath_or_buffer, target_name=None, converters=None, parse_dates=
             {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0)} 9.4
             {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0)} 9.4
 
+        Finally, let's delete the example file.
+
             >>> import os; os.remove('tv_shows.csv')
+
+        .. note::
+            Reading CSV can be quite slow. If, for whatever reason, you're going to loop through
+            the same file multiple times, then we recommend you to use the
+            `creme.stream.Cache` utility.
 
     """
 
