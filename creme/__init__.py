@@ -89,7 +89,6 @@ __pdoc__ = {
     'impute': False,
     'linear_model': False,
     'meta': False,
-    'metrics': False,
     'multiclass': False,
     'multioutput': False,
     'naive_bayes': False,

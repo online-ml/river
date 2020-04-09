@@ -10,30 +10,39 @@ __all__ = ['Rolling']
 class Rolling(base.WrapperMetric, utils.Window):
     """Wrapper for computing metrics over a window.
 
+    This wrapper metric allows you to apply a metric over a window of observations. Under the hood,
+    a buffer with the `window_size` most recent pairs of `(y_true, y_pred)` is memorised. When the
+    buffer is full, the oldest pair is removed and the `revert` method of the metric is called with
+    said pair.
+
     Parameters:
-        metric (metrics.Metric)
+        metric: A metric.
+        window_size: The number of most recent `(y_true, y_pred)` pairs on which to evaluate the
+            metric.
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [3, -0.5, 2, 7]
+        >>> y_pred = [2.5, 0.0, 2, 8]
 
-            >>> y_true = [3, -0.5, 2, 7]
-            >>> y_pred = [2.5, 0.0, 2, 8]
+        >>> metric = metrics.Rolling(metrics.MSE(), window_size=2)
 
-            >>> metric = metrics.Rolling(metrics.MSE(), window_size=2)
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        Rolling of size 2 MSE: 0.25
+        Rolling of size 2 MSE: 0.25
+        Rolling of size 2 MSE: 0.125
+        Rolling of size 2 MSE: 0.5
 
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(metric.update(y_t, y_p))
-            Rolling of size 2 MSE: 0.25
-            Rolling of size 2 MSE: 0.25
-            Rolling of size 2 MSE: 0.125
-            Rolling of size 2 MSE: 0.5
+    .. tip::
+        You should use `Rolling` to evaluate a metric over a window of fixed sized. You can use
+        `creme.metrics.TimeRolling` to instead evaluate a metric over a period of time.
 
     """
 
-    def __init__(self, metric, window_size):
+    def __init__(self, metric: base.Metric, window_size: int):
         super().__init__(size=window_size)
         self.window_size = window_size
         self._metric = metric

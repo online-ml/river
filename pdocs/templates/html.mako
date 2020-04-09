@@ -120,7 +120,7 @@
   </section>
   <section>
     % if module.name == 'creme' and submodules:
-    <h2 class="section-title" id="header-submodules">Sub-modules</h2>
+    <h2 class="section-title" id="header-submodules">API reference</h2>
     <dl>
     % for m in submodules:
       <dt><code class="name">${link(m)}</code></dt>
@@ -194,7 +194,7 @@
           </dl>
       % endif
       % if inst_vars:
-          <h3>Instance variables</h3>
+          <h3>Attributes</h3>
           <dl>
           % for v in inst_vars:
               <%
@@ -265,7 +265,7 @@
     </li>
     % endif
     % if module.name == 'creme' and submodules:
-    <li><h3><a href="#header-submodules">Sub-modules</a></h3>
+    <li><h3><a href="#header-submodules">API reference</a></h3>
       <ul>
       % for m in submodules:
         <li><code>${link(m)}</code></li>

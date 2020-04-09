@@ -1,4 +1,4 @@
-"""General tests for all estimators."""
+"""General tests that all estimators need to pass."""
 import copy
 import importlib
 import inspect
