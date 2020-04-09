@@ -9,19 +9,17 @@ class SMAPE(base.MeanMetric, base.RegressionMetric):
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [0, 0.07533, 0.07533, 0.07533, 0.07533, 0.07533, 0.07533, 0.0672, 0.0672]
+        >>> y_pred = [0, 0.102, 0.107, 0.047, 0.1, 0.032, 0.047, 0.108, 0.089]
 
-            >>> y_true = [0, 0.07533, 0.07533, 0.07533, 0.07533, 0.07533, 0.07533, 0.0672, 0.0672]
-            >>> y_pred = [0, 0.102, 0.107, 0.047, 0.1, 0.032, 0.047, 0.108, 0.089]
+        >>> metric = metrics.SMAPE()
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(y_t, y_p)
 
-            >>> metric = metrics.SMAPE()
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     metric = metric.update(y_t, y_p)
-
-            >>> metric
-            SMAPE: 37.869392
+        >>> metric
+        SMAPE: 37.869392
 
     """
 

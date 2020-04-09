@@ -30,22 +30,20 @@ class Recall(BaseRecall, base.BinaryMetric):
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [True, False, True, True, True]
+        >>> y_pred = [True, True, False, True, True]
 
-            >>> y_true = [True, False, True, True, True]
-            >>> y_pred = [True, True, False, True, True]
+        >>> metric = metrics.Recall()
 
-            >>> metric = metrics.Recall()
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            Recall: 1.
-            Recall: 1.
-            Recall: 0.5
-            Recall: 0.666667
-            Recall: 0.75
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        Recall: 1.
+        Recall: 1.
+        Recall: 0.5
+        Recall: 0.666667
+        Recall: 0.75
 
     """
 
@@ -71,22 +69,20 @@ class MacroRecall(BaseRecall, base.MultiClassMetric):
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [0, 1, 2, 2, 2]
+        >>> y_pred = [0, 0, 2, 2, 1]
 
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
+        >>> metric = metrics.MacroRecall()
 
-            >>> metric = metrics.MacroRecall()
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            MacroRecall: 1.
-            MacroRecall: 0.5
-            MacroRecall: 0.666667
-            MacroRecall: 0.666667
-            MacroRecall: 0.555556
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        MacroRecall: 1.
+        MacroRecall: 0.5
+        MacroRecall: 0.666667
+        MacroRecall: 0.666667
+        MacroRecall: 0.555556
 
     """
 
@@ -120,25 +116,23 @@ class MicroRecall(precision.MicroPrecision):
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [0, 1, 2, 2, 2]
+        >>> y_pred = [0, 0, 2, 2, 1]
 
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
+        >>> metric = metrics.MicroRecall()
 
-            >>> metric = metrics.MicroRecall()
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            MicroRecall: 1.
-            MicroRecall: 0.5
-            MicroRecall: 0.666667
-            MicroRecall: 0.75
-            MicroRecall: 0.6
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        MicroRecall: 1.
+        MicroRecall: 0.5
+        MicroRecall: 0.666667
+        MicroRecall: 0.75
+        MicroRecall: 0.6
 
     References:
-        1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
+        1. [Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem?](https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/)
 
     """
 
@@ -146,27 +140,25 @@ class MicroRecall(precision.MicroPrecision):
 class WeightedRecall(BaseRecall, base.MultiClassMetric):
     """Weighted-average recall score.
 
-    This uses the support of each label to compute an average score, whereas `metrics.MacroRecall`
+    This uses the support of each label to compute an average score, whereas `MacroRecall`
     ignores the support.
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [0, 1, 2, 2, 2]
+        >>> y_pred = [0, 0, 2, 2, 1]
 
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
+        >>> metric = metrics.WeightedRecall()
 
-            >>> metric = metrics.WeightedRecall()
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            WeightedRecall: 1.
-            WeightedRecall: 0.5
-            WeightedRecall: 0.666667
-            WeightedRecall: 0.75
-            WeightedRecall: 0.6
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        WeightedRecall: 1.
+        WeightedRecall: 0.5
+        WeightedRecall: 0.666667
+        WeightedRecall: 0.75
+        WeightedRecall: 0.6
 
     """
 

@@ -41,7 +41,7 @@ class ConfusionMatrix(base.MultiClassMetric):
 
     """
 
-    fmt = '0.0f'
+    _fmt = '0.0f'
 
     @property
     def bigger_is_better(self):
