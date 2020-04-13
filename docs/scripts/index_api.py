@@ -4,6 +4,7 @@ import os
 import pathlib
 import re
 import shutil
+import textwrap
 import typing
 
 
@@ -227,10 +228,10 @@ def extract_doc(obj) -> str:
     if inspect.isclass(obj):
         md += h2('Methods')
         md += paragraph('???- note "Click to expand"')
-        tab = ' ' * 4
+        smd = ''
 
         for i, meth in enumerate(extract_methods(klass=obj)):
-            md += tab + h3(meth.__name__)
+            smd += h3(meth.__name__)
 
             # Parse method docstring
             if type(meth).__name__ == 'cython_function_or_method':
@@ -238,21 +239,26 @@ def extract_doc(obj) -> str:
             else:
                 doc = inspect.getdoc(meth)
 
+            if not doc:
+                continue
+
             meth_sections = split_sections(doc)
 
             # Method description
             desc = meth_sections.get('Description')
             if desc:
-                md += tab +paragraph(desc)
+                smd += paragraph(desc)
 
             signature = inspect.signature(meth)
 
             # Parameters
             if list(signature.parameters) != ['self']:
 
-                md += tab + h4('Parameters')
-                print(meth)
-                params_desc = parse_params_section(meth_sections['Parameters'])
+                smd += h4('Parameters')
+                try:
+                    params_desc = parse_params_section(meth_sections['Parameters'])
+                except KeyError:
+                    params_desc = {}
                 for param in signature.parameters.values():
 
                     if param.name == 'self':
@@ -270,18 +276,21 @@ def extract_doc(obj) -> str:
                         li += f' – defaults to `{param.default}`'
 
                     # Parameter description
-                    md += tab + line(li)
+                    smd += line(li)
                     desc = params_desc.get(param.name)
                     if desc:
-                        md += tab + line(f'\n    {desc}\n')
+                        smd += line(f'\n    {desc}\n')
 
             # Returns
             if not signature.return_annotation is signature.empty:
-                md += tab + h4('Returns')
-                md += tab + paragraph(f'*{inspect.formatannotation(signature.return_annotation)}*')
+                smd += h4('Returns')
+                smd += paragraph(f'*{inspect.formatannotation(signature.return_annotation)}*')
                 return_comment = meth_sections.get('Returns')
                 if return_comment:
-                    md += tab + paragraph(return_comment)
+                    smd += paragraph(return_comment)
+
+        # Indent the methods content so that it falls into the section
+        md += textwrap.indent(smd, ' ' * 4)
 
     # Example
     example = sections.get('Example') or sections.get('Examples')
@@ -328,6 +337,10 @@ def extract_doc(obj) -> str:
 def write_module(mod, where):
 
     mod_name = mod.__name__.split('.')[-1]
+
+    if mod_name in MODULE_BLACKLIST:
+        return
+
     mod_header = inspect.getdoc(mod).partition('\n')[0].rstrip('.')
     mod_path = where.joinpath(snake_to_kebab(mod_name))
 
@@ -338,7 +351,6 @@ def write_module(mod, where):
 
     # Go through the functions
     for name, func in inspect.getmembers(mod, inspect.isfunction):
-        print(name)
         path = mod_path.joinpath(snake_to_kebab(name))
         with open(path.with_suffix('.md'), 'w') as f:
             doc = extract_doc(obj=func)
@@ -346,7 +358,6 @@ def write_module(mod, where):
 
     # Go through the classes
     for name, klass in inspect.getmembers(mod, inspect.isclass):
-        print(name)
         path = mod_path.joinpath(pascal_to_kebab(name))
         with open(path.with_suffix('.md'), 'w') as f:
             doc = extract_doc(obj=klass)
@@ -359,6 +370,10 @@ def write_module(mod, where):
             continue
         write_module(mod=submod, where=mod_path)  # we're recursing
 
+
+MODULE_BLACKLIST = set([
+    'typing'
+])
 
 
 if __name__ == '__main__':
@@ -375,6 +390,7 @@ if __name__ == '__main__':
     print('Loading modules...', end=' ', flush=True)
     modules = dict(inspect.getmembers(importlib.import_module('creme'), inspect.ismodule))
     modules = {
+        'base': modules['base'],
         'linear_model': modules['linear_model'],
         'stream': modules['stream'],
         'optim': modules['optim']
