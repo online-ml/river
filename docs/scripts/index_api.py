@@ -389,12 +389,6 @@ if __name__ == '__main__':
     # Load all of creme's modules
     print('Loading modules...', end=' ', flush=True)
     modules = dict(inspect.getmembers(importlib.import_module('creme'), inspect.ismodule))
-    modules = {
-        'base': modules['base'],
-        'linear_model': modules['linear_model'],
-        'stream': modules['stream'],
-        'optim': modules['optim']
-    }
     print('done')
 
     for name, mod in modules.items():
@@ -402,7 +396,6 @@ if __name__ == '__main__':
         write_module(mod=mod, where=api_path)
         print('done')
 
-# TODO: link to classes in type annotations (maybe using https://facelessuser.github.io/pymdown-extensions/extensions/pathconverter/)
 # TODO: display children and parents inheritance (maybe using inspect.getclasstree and inspect.mro,
 # possibly with mermaid as is done in the superfences section here: https://facelessuser.github.io/pymdown-extensions/)
 # TODO: type hinting for Cython classes

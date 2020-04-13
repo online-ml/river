@@ -91,16 +91,25 @@ Accuracy: 89.28%
 
 ## 🛠 Installation
 
-`creme` is intended to work with **Python 3.6 or above**. Installation can be done by using `pip`:
+`creme` is intended to work with **Python 3.6 or above**. Installation can be done with `pip`:
 
-    pip install creme
+```sh
+pip install creme
+```
 
-There are [wheels available](https://pypi.org/project/creme/#files) for Linux, MacOS, and Windows. You can also install the latest development version as so:
+There are [wheels available](https://pypi.org/project/creme/#files) for Linux, MacOS, and Windows, which means that in most cases you won't have to build `creme` from source.
 
-    pip install git+https://github.com/creme-ml/creme --upgrade
+You can install the latest development version from GitHub as so:
 
-    # Or, through SSH:
-    pip install git+ssh://git@github.com/creme-ml/creme.git --upgrade
+```sh
+pip install git+https://github.com/creme-ml/creme --upgrade
+```
+
+Or, through SSH:
+
+```sh
+pip install git+ssh://git@github.com/creme-ml/creme.git --upgrade
+```
 
 ## 🧠 Philosophy
 
