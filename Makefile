@@ -20,3 +20,4 @@ api-reference:
 	python docs/scripts/index_api.py
 
 docs: user-guide api-reference
+	python docs/scripts/prepare_docs.py
