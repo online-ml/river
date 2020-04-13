@@ -1,9 +1,9 @@
 # Documentation
-docs/_build/
-docs/content/generated/
-docs/notebooks/.ipynb_checkpoints/
-docs/*.csv
-*.html
+docs/**/*.md
+docs/**/*.svg
+docs/**/*.png
+docs/notebooks/.ipynb_checkpoints
+!docs/img/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

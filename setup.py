@@ -25,7 +25,6 @@ URL = 'https://github.com/creme-ml/creme'
 EMAIL = 'maxhalford25@gmail.com'
 AUTHOR = 'Max Halford'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = None
 
 # Package requirements.
 base_packages = ['mmh3==2.5.1', 'numpy>=1.18.1', 'scipy>=1.4.1']
@@ -54,28 +53,21 @@ dev_packages = list(set(dev_packages))  # remove duplicates
 docs_packages = dev_packages + [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
-    'pdoc3>=0.7.5'
+    'mkdocs==1.1',
+    'mkdocs-awesome-pages-plugin>=2.2.1',
+    'mkdocs-material>=5.0.1'
 ]
-
-# The rest you shouldn't have to touch too much :)
-# ------------------------------------------------
-# Except, perhaps the License and Trove Classifiers!
-# If you do change the License, remember to change the Trove Classifier for that!
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
-# Note: this will only work if 'README.rst' is present in your MANIFEST.in file!
 with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = '\n' + f.read()
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
-if not VERSION:
-    with open(os.path.join(here, NAME, '__version__.py')) as f:
-        exec(f.read(), about)
-else:
-    about['__version__'] = VERSION
+with open(os.path.join(here, NAME, '__version__.py')) as f:
+    exec(f.read(), about)
 
 # Where the magic happens:
 setuptools.setup(
@@ -105,6 +97,7 @@ setuptools.setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
@@ -116,6 +109,10 @@ setuptools.setup(
                 libraries=[] if platform.system() == 'Windows' else ['m']
             )
         ],
-        compiler_directives={'language_level': 3}
+        compiler_directives={
+            'language_level': 3,
+            'binding': True,
+            #'embedsignature': True
+        }
     )
 )

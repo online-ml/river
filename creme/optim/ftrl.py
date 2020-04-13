@@ -11,31 +11,39 @@ __all__ = ['FTRLProximal']
 class FTRLProximal(base.Optimizer):
     """FTRL-Proximal optimizer.
 
+    Parameters:
+        alpha
+        beta
+        l1
+        l2
+
+    Attributes:
+        z (collections.defaultdict)
+        n (collections.defaultdict)
+
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
+        >>> optimizer = optim.FTRLProximal()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer)
+        ... )
+        >>> metric = metrics.F1()
 
-            >>> X_y = datasets.Phishing()
-            >>> optimizer = optim.FTRLProximal()
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer)
-            ... )
-            >>> metric = metrics.F1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.87942
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.87942
 
     References:
-        1. `McMahan, H.B., Holt, G., Sculley, D., Young, M., Ebner, D., Grady, J., Nie, L., Phillips, T., Davydov, E., Golovin, D. and Chikkerur, S., 2013, August. Ad click prediction: a view from the trenches. In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 1222-1230). <https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf>`_
-        2. Tensorflow's ``FtrlOptimizer`` <https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer>`_
+        1. [McMahan, H.B., Holt, G., Sculley, D., Young, M., Ebner, D., Grady, J., Nie, L., Phillips, T., Davydov, E., Golovin, D. and Chikkerur, S., 2013, August. Ad click prediction: a view from the trenches. In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 1222-1230)](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41159.pdf)
+        2. [Tensorflow's `FtrlOptimizer`](https://www.tensorflow.org/api_docs/python/tf/train/FtrlOptimizer)
 
     """
 
@@ -46,7 +54,6 @@ class FTRLProximal(base.Optimizer):
         self.l2 = l2
         self.z = collections.defaultdict(float)
         self.n = collections.defaultdict(float)
-        self.n_iterations = 0
 
     def _update_after_pred(self, w, g):
 

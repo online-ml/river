@@ -11,7 +11,7 @@ __all__ = ['expand_param_grid']
 def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
     """Expands a grid of possible parameters into a sequence of single parametrizations.
 
-    Parameter:
+    Parameters:
         grid: The grid of parameters to expand. The provided dictionary can be nested. The only
             requirement is that the values at the leaves need to be lists.
 

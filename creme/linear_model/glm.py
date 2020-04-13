@@ -1,12 +1,13 @@
 import collections
 import math
 import numbers
+import typing
 
 import numpy as np
 
-from .. import base
-from .. import optim
-from .. import utils
+from creme import base
+from creme import optim
+from creme import utils
 
 
 __all__ = [
@@ -104,55 +105,91 @@ class LinearRegression(GLM, base.Regressor):
     """Linear regression.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
-            that the intercept is handled separately. Defaults to ``optim.SGD(.01)``.
-        loss (optim.RegressionLoss): The loss function to optimize for. Defaults to
-            ``optim.losses.SquaredLoss``.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
-        intercept (float): Initial intercept value.
+        optimizer: The sequential optimizer used for updating the weights. Note
+            that the intercept is handled separately. Defaults to `optim.SGD(.01)`.
+        loss: The loss function to optimize for. Defaults to `optim.losses.SquaredLoss`.
+        l2: Amount of L2 regularization used to push weights towards 0.
+        intercept: Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
             updating the intercept. If a `float` is passed, then an instance of
             `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
             will be not be updated.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        initializer (optim.initializers.Initializer): Weights initialization scheme.
+        l2: Amount of L2 regularization used to push weights towards 0.
+        clip_gradient: Clips the absolute value of each gradient value.
+        initializer: Weights initialization scheme.
 
     Attributes:
         weights (collections.defaultdict): The current weights.
 
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import preprocessing
+        >>> X_y = datasets.TrumpApproval()
 
-            >>> X_y = datasets.TrumpApproval()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LinearRegression(intercept_lr=.1)
+        ... )
+        >>> metric = metrics.MAE()
 
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LinearRegression(intercept_lr=.1)
-            ... )
-            >>> metric = metrics.MAE()
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        MAE: 0.616405
 
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 0.616405
+        >>> model['LinearRegression'].intercept
+        38.000439
 
-            >>> model['LinearRegression'].intercept
-            38.000439
+        You can call the `debug_one` method to break down a prediction. This works even if the
+        linear regression is part of a pipeline.
 
-    Note:
-        Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
-        to converge.
+        >>> x, y = next(iter(X_y))
+        >>> report = model.debug_one(x)
+        >>> print(report)
+        0. Input
+        --------
+        gallup: 43.84321 (float)
+        ipsos: 46.19925 (float)
+        morning_consult: 48.31875 (float)
+        ordinal_date: 736389 (int)
+        rasmussen: 44.10469 (float)
+        you_gov: 43.63691 (float)
+        <BLANKLINE>
+        1. StandardScaler
+        -----------------
+        gallup: 1.18751 (float)
+        ipsos: 2.10243 (float)
+        morning_consult: 2.73409 (float)
+        ordinal_date: -1.72946 (float)
+        rasmussen: 1.26809 (float)
+        you_gov: 1.48317 (float)
+        <BLANKLINE>
+        2. LinearRegression
+        -------------------
+        Name              Value      Weight      Contribution
+              Intercept    1.00000    38.00044       38.00044
+                  ipsos    2.10243     1.01815        2.14059
+        morning_consult    2.73409     0.35181        0.96188
+              rasmussen    1.26809     0.45099        0.57189
+                 gallup    1.18751     0.28647        0.34019
+                you_gov    1.48317    -0.01270       -0.01883
+           ordinal_date   -1.72946     2.23125       -3.85885
+        <BLANKLINE>
+        Prediction: 38.13731
+
+    .. tip::
+        It is generally a good idea to use a `preprocessing.StandardScaler` to help the optimizer
+        converge by scaling the input features.
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=.0, intercept=0., intercept_lr=.01,
-                 clip_gradient=1e12, initializer=None):
+    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.RegressionLoss = None,
+                 l2=.0, intercept=0.,
+                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
+                 clip_gradient=1e+12, initializer: optim.initializers.Initializer = None):
         super().__init__(
             optimizer=(
                 optim.SGD(optim.schedulers.InverseScaling(.01, .25))
@@ -170,61 +207,15 @@ class LinearRegression(GLM, base.Regressor):
     def predict_one(self, x):
         return self.loss.mean_func(self._raw_dot(x))
 
-    def debug_one(self, x, decimals=5, **print_params):
-        """
+    def debug_one(self, x: dict, decimals=5) -> str:
+        """Debugs the output of the linear regression.
 
-        Example:
+        Parameters:
+            x: A dictionary of features.
+            decimals: Number of decimals to use for each numeric output.
 
-            ::
-
-                >>> from creme import datasets
-                >>> from creme import linear_model
-                >>> from creme import metrics
-                >>> from creme import model_selection
-                >>> from creme import preprocessing
-
-                >>> X_y = datasets.TrumpApproval()
-
-                >>> model = (
-                ...     preprocessing.StandardScaler() |
-                ...     linear_model.LinearRegression(intercept_lr=.1)
-                ... )
-
-                >>> for x, y in X_y:
-                ...     y_pred = model.predict_one(x)
-                ...     model = model.fit_one(x, y)
-
-                >>> model.debug_one(x)
-                0. Input
-                --------
-                gallup: 43.84321 (float)
-                ipsos: 40.57068 (float)
-                morning_consult: 37.81875 (float)
-                ordinal_date: 737389 (int)
-                rasmussen: 40.10469 (float)
-                you_gov: 41.63691 (float)
-                <BLANKLINE>
-                1. StandardScaler
-                -----------------
-                gallup: 1.18751 (float)
-                ipsos: -0.04683 (float)
-                morning_consult: -1.22583 (float)
-                ordinal_date: 1.72946 (float)
-                rasmussen: -0.23857 (float)
-                you_gov: 0.44131 (float)
-                <BLANKLINE>
-                2. LinearRegression
-                -------------------
-                Name              Value      Weight      Contribution
-                      Intercept    1.00000    38.00044       38.00044
-                   ordinal_date    1.72946     2.23125        3.85885
-                         gallup    1.18751     0.28647        0.34019
-                        you_gov    0.44131    -0.01270       -0.00560
-                          ipsos   -0.04683     1.01815       -0.04768
-                      rasmussen   -0.23857     0.45099       -0.10759
-                morning_consult   -1.22583     0.35181       -0.43126
-                <BLANKLINE>
-                Prediction: 41.60735
+        Returns:
+            A table which explains the output.
 
         """
 
@@ -244,7 +235,7 @@ class LinearRegression(GLM, base.Regressor):
             order=order
         )
 
-        print(table, **print_params)
+        return table
 
 
 class LogisticRegression(GLM, base.BinaryClassifier):
@@ -252,9 +243,9 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     Parameters:
         optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
-            that the intercept is handled separately. Defaults to ``optim.SGD(.05)``.
+            that the intercept is handled separately. Defaults to `optim.SGD(.05)`.
         loss (optim.BinaryLoss): The loss function to optimize for. Defaults to
-            ``optim.losses.Log``.
+            `optim.losses.Log`.
         l2 (float): Amount of L2 regularization used to push weights towards 0.
         intercept (float): Initial intercept value.
         intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
@@ -270,30 +261,28 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
 
-            >>> X_y = datasets.Phishing()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer=optim.SGD(.1))
+        ... )
 
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer=optim.SGD(.1))
-            ... )
+        >>> metric = metrics.Accuracy()
 
-            >>> metric = metrics.Accuracy()
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        Accuracy: 88.96%
 
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            Accuracy: 88.96%
-
-    Note:
-        Using a feature scaler such as `preprocessing.StandardScaler` upstream helps the optimizer
-        to converge.
+    .. tip::
+        It is generally a good idea to use a `preprocessing.StandardScaler` to help the optimizer
+        converge by scaling the input features.
 
     """
 

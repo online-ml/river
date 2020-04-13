@@ -26,7 +26,7 @@ jobs:
       - CIBW_BUILD="cp36-* cp37-* cp38-*"
       - CIBW_BEFORE_BUILD="pip install cython"
     install: &pypi-install
-      - pip install cibuildwheel==1.0.0 cython twine
+      - pip install cibuildwheel cython twine
     script: &pypi-script
       - cibuildwheel --output-dir dist
       - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python setup.py sdist ; fi

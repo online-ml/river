@@ -1,19 +1,23 @@
 """Loss functions."""
 from libc cimport math
+
 from .. import utils
 
 
 __all__ = [
     'Absolute',
+    'BinaryLoss',
     'BinaryFocalLoss',
     'Cauchy',
     'CrossEntropy',
     'Hinge',
     'EpsilonInsensitiveHinge',
     'Log',
+    'MultiClassLoss',
     'Perceptron',
     'Poisson',
     'Quantile',
+    'RegressioLoss',
     'Squared'
 ]
 
@@ -23,6 +27,7 @@ cdef double clamp_proba(double x):
 
 
 cdef class Loss:
+    """Mother class for all loss functions."""
 
     def __str__(self):
         return self.__class__.__name__
@@ -32,37 +37,75 @@ cdef class Loss:
 
         This is the inverse of the link function.
 
+        Parameters:
+            y_pred: A raw prediction.
+
+        Returns:
+            The adjusted prediction.
+
         References:
-            1. `Wikipedia section on link and mean function <https://www.wikiwand.com/en/Generalized_linear_model#/Link_function>`_
+            1. [Wikipedia section on link and mean function](https://www.wikiwand.com/en/Generalized_linear_model#/Link_function)
 
         """
 
 
-cdef class ClassificationLoss(Loss):
-    pass
-
-
-cdef class BinaryLoss(ClassificationLoss):
+cdef class BinaryLoss(Loss):
     """A loss appropriate for binary classification tasks."""
 
     cpdef double eval(self, bint y_true, double y_pred):
-        """Returns the loss."""
+        """Returns the loss.
+
+        Parameters:
+            y_true: A boolean ground truth.
+            y_pred: A prediction for the `True` class.
+
+        Returns:
+            The loss.
+
+        """
 
     cpdef double gradient(self, bint y_true, double y_pred):
-        """Returns the gradient with respect to ``y_pred``."""
+        """Returns the gradient with respect to `y_pred`.
+
+        Parameters:
+            y_true: A boolean ground truth.
+            y_pred: A prediction for the `True` class.
+
+        Returns:
+            The gradient.
+
+        """
 
     cpdef double mean_func(self, double y_pred):
         return utils.math.sigmoid(y_pred)
 
 
-cdef class MultiClassLoss(ClassificationLoss):
+cdef class MultiClassLoss(Loss):
     """A loss appropriate for multi-class classification tasks."""
 
     cpdef double eval(self, object y_true, dict y_pred):
-        """Returns the loss."""
+        """Returns the loss.
+
+        Parameters:
+            y_true: A ground truth.
+            y_pred: A dictionary of predicted probabilities for each class.
+
+        Returns:
+            The loss.
+
+        """
 
     cpdef dict gradient(self, object y_true, dict y_pred):
-        """Returns the gradient with respect to ``y_pred``."""
+        """Returns the gradient with respect to `y_pred`.
+
+        Parameters:
+            y_true: A ground truth.
+            y_pred: A dictionary of predicted probabilities for each class.
+
+        Returns:
+            The gradient.
+
+        """
 
     cpdef dict mean_func(self, dict y_pred):
         return utils.math.softmax(y_pred)
@@ -72,10 +115,28 @@ cdef class RegressionLoss(Loss):
     """A loss appropriate for regression tasks."""
 
     cpdef double eval(self, double y_true, double y_pred):
-        """Returns the loss."""
+        """Returns the loss.
+
+        Parameters:
+            y_true: A numeric ground truth.
+            y_pred: A numeric prediction.
+
+        Returns:
+            The loss.
+
+        """
 
     cpdef double gradient(self, double y_true, double y_pred):
-        """Returns the gradient with respect to ``y_pred``."""
+        """Returns the gradient with respect to `y_pred`.
+
+        Parameters:
+            y_true: A numeric ground truth.
+            y_pred: A numeric prediction.
+
+        Returns:
+            The gradient.
+
+        """
 
     cpdef double mean_func(self, double y_pred):
         return y_pred
@@ -86,25 +147,23 @@ cdef class Absolute(RegressionLoss):
 
     Mathematically, it is defined as
 
-    .. math:: L = |p_i - y_i|
+    $$L = |p_i - y_i|$$
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math:: \\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i)
+    $$\\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i)$$
 
     Example:
 
-        ::
+        >>> from creme import optim
 
-            >>> from creme import optim
-
-            >>> loss = optim.losses.Absolute()
-            >>> loss.eval(-42, 42)
-            84.0
-            >>> loss.gradient(1, 2)
-            1.0
-            >>> loss.gradient(2, 1)
-            -1.0
+        >>> loss = optim.losses.Absolute()
+        >>> loss.eval(-42, 42)
+        84.0
+        >>> loss.gradient(1, 2)
+        1.0
+        >>> loss.gradient(2, 1)
+        -1.0
 
     """
 
@@ -120,11 +179,16 @@ cdef class Absolute(RegressionLoss):
 cdef class Cauchy(RegressionLoss):
     """Cauchy loss function.
 
+    Parameters:
+        C
+
     References:
-        1. `"Effect of MAE" Kaggle discussion <https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163>`_
-        2. `Paris Madness Kaggle kernel <https://www.kaggle.com/raddar/paris-madness>`_
+        1. ["Effect of MAE" Kaggle discussion](https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163)
+        2. [Paris Madness Kaggle kernel](https://www.kaggle.com/raddar/paris-madness)
 
     """
+
+    cdef readonly double C
 
     def __init__(self, C=80):
         self.C = C
@@ -144,36 +208,34 @@ cdef class CrossEntropy(MultiClassLoss):
 
     Example:
 
-        ::
+        >>> from creme import optim
 
-            >>> from creme import optim
+        >>> y_true = [0, 1, 2, 2]
+        >>> y_pred = [
+        ...     {0: 0.29450637, 1: 0.34216758, 2: 0.36332605},
+        ...     {0: 0.21290077, 1: 0.32728332, 2: 0.45981591},
+        ...     {0: 0.42860913, 1: 0.33380113, 2: 0.23758974},
+        ...     {0: 0.44941979, 1: 0.32962558, 2: 0.22095463}
+        ... ]
 
-            >>> y_true = [0, 1, 2, 2]
-            >>> y_pred = [
-            ...     {0: 0.29450637, 1: 0.34216758, 2: 0.36332605},
-            ...     {0: 0.21290077, 1: 0.32728332, 2: 0.45981591},
-            ...     {0: 0.42860913, 1: 0.33380113, 2: 0.23758974},
-            ...     {0: 0.44941979, 1: 0.32962558, 2: 0.22095463}
-            ... ]
+        >>> loss = optim.losses.CrossEntropy()
 
-            >>> loss = optim.losses.CrossEntropy()
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(loss.eval(yt, yp))
+        1.222454
+        1.116929
+        1.437209
+        1.509797
 
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(loss.eval(y_t, y_p))
-            1.222454
-            1.116929
-            1.437209
-            1.509797
-
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(loss.gradient(y_t, y_p))
-            {0: -0.70549363, 1: 0.34216758, 2: 0.36332605}
-            {0: 0.21290077, 1: -0.67271668, 2: 0.45981591}
-            {0: 0.42860913, 1: 0.33380113, 2: -0.76241026}
-            {0: 0.44941979, 1: 0.32962558, 2: -0.77904537}
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(loss.gradient(yt, yp))
+        {0: -0.70549363, 1: 0.34216758, 2: 0.36332605}
+        {0: 0.21290077, 1: -0.67271668, 2: 0.45981591}
+        {0: 0.42860913, 1: 0.33380113, 2: -0.76241026}
+        {0: 0.44941979, 1: 0.32962558, 2: -0.77904537}
 
     References:
-        1. `What is Softmax regression and how is it related to Logistic regression? <https://github.com/rasbt/python-machine-learning-book/blob/master/faq/softmax_regression.md>`_
+        1. [What is Softmax regression and how is it related to Logistic regression?](https://github.com/rasbt/python-machine-learning-book/blob/master/faq/softmax_regression.md)
 
     """
 
@@ -208,34 +270,33 @@ cdef class Hinge(BinaryLoss):
 
     Mathematically, it is defined as
 
-    .. math:: L = max(0, 1 - p_i * y_i)
+    $$L = max(0, 1 - p_i * y_i)$$
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math::
-        \\frac{\\partial L}{\\partial y_i} = \\left\{
-        \\begin{array}{ll}
-            \\ 0  &   p_iy_i \geqslant 1  \\\\
-            \\ - y_i & p_iy_i < 1
-        \\end{array}
-        \\right.
+    $$
+    \\frac{\\partial L}{\\partial y_i} = \\left\{
+    \\begin{array}{ll}
+        \\ 0  &   p_iy_i \geqslant 1  \\\\
+        \\ - y_i & p_iy_i < 1
+    \\end{array}
+    \\right.
+    $$
 
     Parameters:
-        threshold (float): Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to
+        threshold: Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to
             the loss used in the Perceptron algorithm.
 
     Example:
 
-        ::
+        >>> from creme import optim
 
-            >>> from creme import optim
+        >>> loss = optim.losses.Hinge(threshold=1)
+        >>> loss.eval(1, .2)
+        0.8
 
-            >>> loss = optim.losses.Hinge(threshold=1)
-            >>> loss.eval(1, .2)
-            0.8
-
-            >>> loss.gradient(1, .2)
-            -0.2
+        >>> loss.gradient(1, .2)
+        -0.2
 
     """
 
@@ -250,12 +311,6 @@ cdef class Hinge(BinaryLoss):
         return math.fmax(0, self.threshold - y_true * y_pred)
 
     cpdef double gradient(self, bint y_true, double y_pred):
-        """Returns the gradient with respect to ``y_pred``.
-
-        References:
-            1. `WolframAlpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+1+-+p+*+y)+wrt+p>`_
-
-        """
         y_true = y_true or -1
         if y_true * y_pred < self.threshold:
             return -y_pred
@@ -263,10 +318,16 @@ cdef class Hinge(BinaryLoss):
 
 
 cdef class EpsilonInsensitiveHinge(RegressionLoss):
+    """Epsilon-insensitive hinge loss.
+
+    Parameters:
+        eps
+
+    """
 
     cdef readonly double eps
 
-    def __init__(self, eps=0.1):
+    def __init__(self, eps=.1):
         self.eps = eps
 
     cpdef double eval(self, double y_true, double y_pred):
@@ -275,12 +336,6 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
         return math.fmax(0, math.fabs(y_pred - y_true) - self.eps)
 
     cpdef double gradient(self, double y_true, double y_pred):
-        """Returns the gradient with respect to ``y_pred``.
-
-        References:
-            1. `WolframAlpha derivation <https://www.wolframalpha.com/input/?i=derivative+max(0,+abs(p+-+y)+-+eps)+wrt+p>`_
-
-        """
         y_true = y_true or -1
         if y_pred > y_true + self.eps:
             return 1
@@ -292,11 +347,15 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
 cdef class Log(BinaryLoss):
     """Logarithmic loss.
 
-    This loss function expects each provided ``y_pred`` to be a logit. In other words if must be
+    This loss function expects each provided `y_pred` to be a logit. In other words if must be
     the raw output of a linear model or a neural network.
 
+    Parameters:
+        weight_pos
+        weight_neg
+
     References:
-        1. `Logit Wikipedia page <https://www.wikiwand.com/en/Logit>`_
+        1. [Logit Wikipedia page](https://www.wikiwand.com/en/Logit>)
 
     """
 
@@ -338,27 +397,25 @@ cdef class Quantile(RegressionLoss):
     """Quantile loss.
 
     Parameters:
-        alpha (float): Desired quantile to attain.
+        alpha: Desired quantile to attain.
 
     Example:
 
-        ::
+        >>> from creme import optim
 
-            >>> from creme import optim
+        >>> loss = optim.losses.Quantile(0.5)
+        >>> loss.eval(1, 3)
+        1.0
 
-            >>> loss = optim.losses.Quantile(0.5)
-            >>> loss.eval(1, 3)
-            1.0
+        >>> loss.gradient(1, 3)
+        0.5
 
-            >>> loss.gradient(1, 3)
-            0.5
-
-            >>> loss.gradient(3, 1)
-            -0.5
+        >>> loss.gradient(3, 1)
+        -0.5
 
     References:
-        1. `Wikipedia article on quantile regression <https://www.wikiwand.com/en/Quantile_regression>`_
-        2. `Derivative from WolframAlpha <https://www.wolframalpha.com/input/?i=derivative+(y+-+p)+*+(alpha+-+Boole(y+-+p))+wrt+p>`_
+        1. [Wikipedia article on quantile regression](https://www.wikiwand.com/en/Quantile_regression)
+        2. [Derivative from WolframAlpha](https://www.wolframalpha.com/input/?i=derivative+(y+-+p)+*+(alpha+-+Boole(y+-+p))+wrt+p)
 
     """
 
@@ -380,11 +437,11 @@ cdef class Squared(RegressionLoss):
 
     Mathematically, it is defined as
 
-    .. math:: L = (p_i - y_i) ^ 2
+    $$L = (p_i - y_i) ^ 2$$
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math:: \\frac{\\partial L}{\\partial p_i} = 2 \times (p_i - y_i)
+    $$\\frac{\\partial L}{\\partial p_i} = 2 \times (p_i - y_i)$$
 
     One thing to note is that this convention is consistent with Vowpal Wabbit and PyTorch, but
     not with scikit-learn. Indeed scikit-learn divides the loss by 2, making the 2 dissapear in
@@ -392,17 +449,15 @@ cdef class Squared(RegressionLoss):
 
     Example:
 
-        ::
+        >>> from creme import optim
 
-            >>> from creme import optim
-
-            >>> loss = optim.losses.Squared()
-            >>> loss.eval(-4, 5)
-            81.0
-            >>> loss.gradient(-4, 5)
-            18.0
-            >>> loss.gradient(5, -4)
-            -18.0
+        >>> loss = optim.losses.Squared()
+        >>> loss.eval(-4, 5)
+        81.0
+        >>> loss.gradient(-4, 5)
+        18.0
+        >>> loss.gradient(5, -4)
+        -18.0
 
     """
 
@@ -419,11 +474,11 @@ class BinaryFocalLoss(BinaryLoss):
     This implements the "star" algorithm from the appendix of the focal loss paper.
 
     Parameters:
-        gamma (float)
-        beta (float)
+        gamma
+        beta
 
     Refenrences:
-        1. `Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988). <https://arxiv.org/pdf/1708.02002.pdf>`_
+        1. [Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988)](https://arxiv.org/pdf/1708.02002.pdf)
 
     """
 
@@ -459,11 +514,11 @@ cdef class Poisson(RegressionLoss):
 
     Mathematically, it is defined as
 
-    .. math:: L = exp(p_i) - y_i \\times p_i
+    $$L = exp(p_i) - y_i \\times p_i$$
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math:: \\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i
+    $$\\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i$$
 
     """
 
@@ -485,14 +540,14 @@ cdef class Perceptron(Hinge):
 
     Mathematically, it is defined as
 
-    .. math:: L = exp(p_i) - y_i \\times p_i
+    $$L = exp(p_i) - y_i \\times p_i$$
 
     It's gradient w.r.t. to $p_i$ is
 
-    .. math:: \\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i
+    $$\\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i$$
 
     References:
-        1. `Wikipedia page on the Perceptron algorithm <https://www.wikiwand.com/en/Perceptron>`_
+        1. [Wikipedia page on the Perceptron algorithm](https://www.wikiwand.com/en/Perceptron)
 
     """
 
