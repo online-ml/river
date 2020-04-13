@@ -9,30 +9,35 @@ __all__ = ['AdaGrad']
 class AdaGrad(base.Optimizer):
     """AdaGrad optimizer.
 
+    Parameters:
+        lr
+        eps
+
+    Attributes:
+        g2 (collections.defaultdict)
+
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
+        >>> optimizer = optim.AdaGrad()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer)
+        ... )
+        >>> metric = metrics.F1()
 
-            >>> X_y = datasets.Phishing()
-            >>> optimizer = optim.AdaGrad()
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer)
-            ... )
-            >>> metric = metrics.F1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.879357
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.879357
 
     References:
-        1. `Duchi, J., Hazan, E. and Singer, Y., 2011. Adaptive subgradient methods for online learning and stochastic optimization. Journal of machine learning research, 12(Jul), pp.2121-2159. <http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf>`_
+        1. [Duchi, J., Hazan, E. and Singer, Y., 2011. Adaptive subgradient methods for online learning and stochastic optimization. Journal of machine learning research, 12(Jul), pp.2121-2159.](http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf)
 
     """
 

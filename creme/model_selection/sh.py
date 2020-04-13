@@ -104,24 +104,26 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     Successive halving is a method for performing model selection without having to train each
     model on all the dataset. At certain points in time (called "rungs"), the worst performing will
     be discarded and the best ones will keep competing between each other. The rung values are
-    designed so that at most ``budget`` model updates will be performed in total.
+    designed so that at most `budget` model updates will be performed in total.
 
-    If you have ``k`` combinations of hyperparameters and that your dataset contains ``n``
+    If you have `k` combinations of hyperparameters and that your dataset contains `n`
     observations, then the maximal budget you can allocate is:
 
-    .. math::
-        \\frac{2kn}{eta}
+    $$
+    \\frac{2kn}{eta}
+    $$
 
     It is recommended that you check this beforehand. This bound can't be checked by the function
     because the size of the dataset is not known. In fact it is potentially infinite, in which case
     the algorithm will terminate once all the budget has been spent.
 
-    If you have a budget of ``B``, and that your dataset contains ``n`` observations, then the
+    If you have a budget of `B`, and that your dataset contains `n` observations, then the
     number of hyperparameter combinations that will spend all the budget and go through all the
     data is:
 
-    .. math::
-        \\ceil(\\floor(\\frac{B}{2n}) \\times eta)
+    $$
+    \\ceil(\\floor(\\frac{B}{2n}) \\times eta)
+    $$
 
     Parameters:
         models: The models to compare.
@@ -133,7 +135,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
             focus on less models but will allocate more iterations to the best models.
         verbose: Whether to display progress or not.
 
-    Examples:
+    Example:
 
         >>> from creme import datasets
         >>> from creme import linear_model
@@ -264,15 +266,14 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     .. math:: \\ceil(\\floor(\\frac{B}{(2n)}) \times eta)
 
     Parameters:
-        model (models.Classifier)
-        param_grid (dict): Parameter grid.
-        X_y (generator): A stream of (features, target) tuples.
-        metric (metrics.ClassificationMetric): Metric used for comparing models with.
-        budget (int): Total number of model updates you wish to allocate.
-        eta (int): Rate of elimination. At every rung, ``math.ceil(k / eta)`` models are kept,
-            where ``k`` is the number of models that have reached the rung. A higher ``eta`` value
-            will focus on less models but will allocate more iterations to the best models.
-        verbose (bool): Whether to display progress or not.
+        models: The models to compare.
+        X_y: A stream of (features, target) tuples.
+        metric: Metric used for comparing models with.
+        budget: Total number of model updates you wish to allocate.
+        eta: Rate of elimination. At every rung, `math.ceil(k / eta)` models are kept, where
+            `k` is the number of models that have reached the rung. A higher `eta` value will
+            focus on less models but will allocate more iterations to the best models.
+        verbose: Whether to display progress or not.
 
     Examples:
 

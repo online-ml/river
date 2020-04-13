@@ -5,10 +5,18 @@ flake8:
 	python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
 mypy:
-	python mypy
+	python mypy creme
 
-doc:
-	pdoc3 -c show_type_annotations=True -c show_inherited_members=True -c latex_math=True --template-dir pdocs/templates --html -o pdocs -f creme
+cython:
+	python setup.py build_ext --inplace --force -X boundscheck=True
 
-livedoc:
-	pdoc3 -c show_type_annotations=True -c show_inherited_members=True -c latex_math=True --template-dir pdocs/templates --http : creme
+execute-notebooks:
+	jupyter nbconvert --execute --to notebook --inplace docs/notebooks/*.ipynb --ExecutePreprocessor.timeout=-1
+
+user-guide:
+	jupyter nbconvert --to markdown docs/notebooks/*.ipynb --output-dir docs/user-guide
+
+api-reference:
+	python docs/scripts/index_api.py
+
+docs: user-guide api-reference

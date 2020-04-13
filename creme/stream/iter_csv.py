@@ -56,8 +56,11 @@ def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = Non
         seed: If specified, the sampling will be deterministic.
         field_size_limit: If not `None`, this will be passed to the `csv.field_size_limit`
             function.
+        kwargs: All other keyword arguments are passed to the underlying `csv.DictReader`.
 
-    All other keyword arguments are passed to the underlying `csv.DictReader`.
+    Returns:
+        By default each feature value will be of type `str`. You can use the `converters` and
+        `parse_dates` parameters to convert them as you see fit.
 
     Example:
 
@@ -65,51 +68,54 @@ def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = Non
         use case is to read a file on the disk. We'll first create a little CSV file to
         illustrate.
 
-            >>> tv_shows = '''name,year,rating
-            ... Planet Earth II,2016,9.5
-            ... Planet Earth,2006,9.4
-            ... Band of Brothers,2001,9.4
-            ... Breaking Bad,2008,9.4
-            ... Chernobyl,2019,9.4
-            ... '''
-            >>> with open('tv_shows.csv', mode='w') as f:
-            ...     _ = f.write(tv_shows)
+        >>> tv_shows = '''name,year,rating
+        ... Planet Earth II,2016,9.5
+        ... Planet Earth,2006,9.4
+        ... Band of Brothers,2001,9.4
+        ... Breaking Bad,2008,9.4
+        ... Chernobyl,2019,9.4
+        ... '''
+        >>> with open('tv_shows.csv', mode='w') as f:
+        ...     _ = f.write(tv_shows)
 
-        We can now go through the rows one by one.
+        We can now go through the rows one by one. We can use the `converters` parameter to cast
+        the `rating` field value as a `float`. We can also convert the `year` to a `datetime` via
+        the `parse_dates` parameter.
 
-            >>> from creme import stream
+        >>> from creme import stream
 
-            >>> params = {
-            ...     'converters': {'rating': float},
-            ...     'parse_dates': {'year': '%Y'}
-            ... }
-            >>> for x, y in stream.iter_csv('tv_shows.csv', **params):
-            ...     print(x, y)
-            {'name': 'Planet Earth II', 'year': datetime.datetime(2016, 1, 1, 0, 0), 'rating': 9.5} None
-            {'name': 'Planet Earth', 'year': datetime.datetime(2006, 1, 1, 0, 0), 'rating': 9.4} None
-            {'name': 'Band of Brothers', 'year': datetime.datetime(2001, 1, 1, 0, 0), 'rating': 9.4} None
-            {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0), 'rating': 9.4} None
-            {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0), 'rating': 9.4} None
+        >>> params = {
+        ...     'converters': {'rating': float},
+        ...     'parse_dates': {'year': '%Y'}
+        ... }
+        >>> for x, y in stream.iter_csv('tv_shows.csv', **params):
+        ...     print(x, y)
+        {'name': 'Planet Earth II', 'year': datetime.datetime(2016, 1, 1, 0, 0), 'rating': 9.5} None
+        {'name': 'Planet Earth', 'year': datetime.datetime(2006, 1, 1, 0, 0), 'rating': 9.4} None
+        {'name': 'Band of Brothers', 'year': datetime.datetime(2001, 1, 1, 0, 0), 'rating': 9.4} None
+        {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0), 'rating': 9.4} None
+        {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0), 'rating': 9.4} None
 
         The value of ``y`` is always ``None`` because we haven't provided a value for the
         ``target_name`` parameter. Here is an example where a ``target_name`` is provided:
 
-            >>> for x, y in stream.iter_csv('tv_shows.csv', target_name='rating', **params):
-            ...     print(x, y)
-            {'name': 'Planet Earth II', 'year': datetime.datetime(2016, 1, 1, 0, 0)} 9.5
-            {'name': 'Planet Earth', 'year': datetime.datetime(2006, 1, 1, 0, 0)} 9.4
-            {'name': 'Band of Brothers', 'year': datetime.datetime(2001, 1, 1, 0, 0)} 9.4
-            {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0)} 9.4
-            {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0)} 9.4
+        >>> X_y = stream.iter_csv('tv_shows.csv', target_name='rating', **params)
+        >>> for x, y in X_y:
+        ...     print(x, y)
+        {'name': 'Planet Earth II', 'year': datetime.datetime(2016, 1, 1, 0, 0)} 9.5
+        {'name': 'Planet Earth', 'year': datetime.datetime(2006, 1, 1, 0, 0)} 9.4
+        {'name': 'Band of Brothers', 'year': datetime.datetime(2001, 1, 1, 0, 0)} 9.4
+        {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0)} 9.4
+        {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0)} 9.4
 
         Finally, let's delete the example file.
 
-            >>> import os; os.remove('tv_shows.csv')
+        >>> import os; os.remove('tv_shows.csv')
 
-        .. tip::
-            Reading CSV can be quite slow. If, for whatever reason, you're going to loop through
-            the same file multiple times, then we recommend you to use the
-            `creme.stream.Cache` utility.
+    .. tip::
+        Reading CSV files can be quite slow. If, for whatever reason, you're going to loop through
+        the same file multiple times, then we recommend that you to use the
+        `creme.stream.Cache` utility.
 
     """
 

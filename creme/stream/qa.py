@@ -4,6 +4,8 @@ from copy import deepcopy
 import datetime as dt
 import typing
 
+from creme import base
+
 
 __all__ = ['simulate_qa']
 
@@ -14,8 +16,8 @@ class Memento(collections.namedtuple('Memento', 'i x y t_expire')):
         return self.t_expire < other.t_expire
 
 
-def simulate_qa(X_y: typing.Iterator, moment: typing.Union[str, typing.Callable],
-                delay: typing.Union[str, int, dt.timedelta, typing.Callable], copy=True):
+def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callable],
+                delay: typing.Union[str, int, dt.timedelta, typing.Callable], copy: bool = True):
     """Simulate a time-ordered question and answer session.
 
     Parameters:
@@ -24,15 +26,14 @@ def simulate_qa(X_y: typing.Iterator, moment: typing.Union[str, typing.Callable]
             to take as input a `dict` of features. If `None`, then the observations are implicitely
             timestamped in the order in which they arrive. If a `str` is passed, then it will be
             used to obtain the time from the input features.
-        delay: The amount to wait before revealing
-            the target associated with each observation to the model. This value is expected to be
-            able to sum with the `moment` value. For instance, if `moment` is a `datetime.date`,
-            then `delay` is expected to be a `datetime.timedelta`. If a callable is passed, then it
-            is expected to take as input a `dict` of features and the target. If a `str` is passed,
-            then it will be used to access the relevant field from the features. If `None` is
-            passed, then no delay will be used, which leads to doing standard online validation. If
-            a scalar is passed, such an `int` or a `datetime.timedelta`, then the delay is
-            constant.
+        delay: The amount of time to wait before revealing the target associated with each
+            observation to the model. This value is expected to be able to sum with the `moment`
+            value. For instance, if `moment` is a `datetime.date`, then `delay` is expected to be a
+            `datetime.timedelta`. If a callable is passed, then it is expected to take as input a
+            `dict` of features and the target. If a `str` is passed, then it will be used to access
+            the relevant field from the features. If `None` is passed, then no delay will be used,
+            which leads to doing standard online validation. If a scalar is passed, such an `int`
+            or a `datetime.timedelta`, then the delay is constant.
         copy: If `True`, then a separate copy of the features are yielded the second time
             around. This ensures that inadvertent modifications in downstream code don't have any
             effect.
@@ -87,7 +88,7 @@ def simulate_qa(X_y: typing.Iterator, moment: typing.Union[str, typing.Callable]
 
         This function is extremely practical because it provides a reliable way to evaluate the
         performance of a model in a real scenario. For instance, it is used in
-        `creme.model_selection.progressive_val_score`.
+        `model_selection.progressive_val_score`.
 
     """
 

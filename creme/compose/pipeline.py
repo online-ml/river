@@ -1,5 +1,6 @@
 import collections
 import functools
+import io
 import itertools
 import types
 import typing
@@ -33,79 +34,79 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
     Example:
 
-        ::
+        >>> from creme import compose
+        >>> from creme import feature_extraction
+        >>> from creme import linear_model
+        >>> from creme import preprocessing
 
-            >>> from creme import compose
-            >>> from creme import feature_extraction
-            >>> from creme import linear_model
-            >>> from creme import preprocessing
+        >>> tfidf = feature_extraction.TFIDF('text')
+        >>> counts = feature_extraction.BagOfWords('text')
+        >>> text_part = compose.Select('text') | (tfidf + counts)
 
-            >>> tfidf = feature_extraction.TFIDF('text')
-            >>> counts = feature_extraction.BagOfWords('text')
-            >>> text_part = compose.Select('text') | (tfidf + counts)
+        >>> num_part = compose.Select('a', 'b') | preprocessing.PolynomialExtender()
 
-            >>> num_part = compose.Select('a', 'b') | preprocessing.PolynomialExtender()
+        >>> model = text_part + num_part
+        >>> model |= preprocessing.StandardScaler()
+        >>> model |= linear_model.LinearRegression()
 
-            >>> model = text_part + num_part
-            >>> model |= preprocessing.StandardScaler()
-            >>> model |= linear_model.LinearRegression()
+        You can obtain a visual representation of the pipeline by calling it's `draw` method.
 
-            >>> dot = model.draw()
+        >>> dot = model.draw()
 
         .. image:: ../../_static/pipeline_docstring.svg
             :align: center
 
-        The following shows an example of using ``debug_one`` to visualize how the information
+        The following shows an example of using `debug_one` to visualize how the information
         flows and changes throughout the pipeline.
 
-        ::
+        >>> from creme import compose
+        >>> from creme import feature_extraction
+        >>> from creme import naive_bayes
 
-            >>> from creme import compose
-            >>> from creme import feature_extraction
-            >>> from creme import naive_bayes
+        >>> X_y = [
+        ...     ('A positive comment', True),
+        ...     ('A negative comment', False),
+        ...     ('A happy comment', True),
+        ...     ('A lovely comment', True),
+        ...     ('A harsh comment', False)
+        ... ]
 
-            >>> X_y = [
-            ...     ('A positive comment', True),
-            ...     ('A negative comment', False),
-            ...     ('A happy comment', True),
-            ...     ('A lovely comment', True),
-            ...     ('A harsh comment', False)
-            ... ]
+        >>> tfidf = feature_extraction.TFIDF() | compose.Renamer(prefix='tfidf_')
+        >>> counts = feature_extraction.BagOfWords() | compose.Renamer(prefix='count_')
+        >>> mnb = naive_bayes.MultinomialNB()
+        >>> model = (tfidf + counts) | mnb
 
-            >>> tfidf = feature_extraction.TFIDF() | compose.Renamer(prefix='tfidf_')
-            >>> counts = feature_extraction.BagOfWords() | compose.Renamer(prefix='count_')
-            >>> mnb = naive_bayes.MultinomialNB()
-            >>> model = (tfidf + counts) | mnb
+        >>> for x, y in X_y:
+        ...     model = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     model = model.fit_one(x, y)
-
-            >>> model.debug_one(X_y[0][0])
-            0. Input
-            --------
-            A positive comment
-            <BLANKLINE>
-            1. Transformer union
-            --------------------
-                1.0 TFIDF | Renamer
-                -------------------
-                tfidf_comment: 0.47606 (float)
-                tfidf_positive: 0.87942 (float)
-            <BLANKLINE>
-                1.1 BagOfWords | Renamer
-                ------------------------
-                count_comment: 1 (int)
-                count_positive: 1 (int)
-            <BLANKLINE>
+        >>> x = X_y[0][0]
+        >>> report = model.debug_one(X_y[0][0])
+        >>> print(report)
+        0. Input
+        --------
+        A positive comment
+        <BLANKLINE>
+        1. Transformer union
+        --------------------
+            1.0 TFIDF | Renamer
+            -------------------
+            tfidf_comment: 0.47606 (float)
+            tfidf_positive: 0.87942 (float)
+        <BLANKLINE>
+            1.1 BagOfWords | Renamer
+            ------------------------
             count_comment: 1 (int)
             count_positive: 1 (int)
-            tfidf_comment: 0.50854 (float)
-            tfidf_positive: 0.86104 (float)
-            <BLANKLINE>
-            2. MultinomialNB
-            ----------------
-            False: 0.19313
-            True: 0.80687
+        <BLANKLINE>
+        count_comment: 1 (int)
+        count_positive: 1 (int)
+        tfidf_comment: 0.50854 (float)
+        tfidf_positive: 0.86104 (float)
+        <BLANKLINE>
+        2. MultinomialNB
+        ----------------
+        False: 0.19313
+        True: 0.80687
 
     """
 
@@ -214,7 +215,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         return next(reversed(self.values()))
 
     def fit_one(self, x, y=None, **fit_params):
-        """Fits each step with ``x``."""
+        """Fits each step with `x`."""
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(self.values(), len(self) - 1):
@@ -238,8 +239,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     def fit_predict_one(self, x, y, **fit_params):
         """Updates the pipeline and returns a the out-of-fold prediction.
 
-        Only works if each estimator has a ``transform_one`` method and the final estimator has a
-        ``fit_predict_one`` method.
+        Only works if each estimator has a `transform_one` method and the final estimator has a
+        `fit_predict_one` method.
 
         """
         x = self.transform_one(x=x)
@@ -248,8 +249,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     def fit_predict_proba_one(self, x, y, **fit_params):
         """Updates the pipeline and returns a the out-of-fold prediction.
 
-        Only works if each estimator has a ``transform_one`` method and the final estimator has a
-        ``fit_predict_one`` method.
+        Only works if each estimator has a `transform_one` method and the final estimator has a
+        `fit_predict_one` method.
 
         """
         x = self.transform_one(x=x)
@@ -258,7 +259,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     def transform_one(self, x):
         """Transform an input.
 
-        Only works if each estimator has a ``transform_one`` method.
+        Only works if each estimator has a `transform_one` method.
 
         """
         for transformer in self.transformers:
@@ -280,8 +281,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     def predict_one(self, x):
         """Returns a prediction.
 
-        Only works if each estimator has a ``transform_one`` method and the final estimator has a
-        ``predict_one`` method.
+        Only works if each estimator has a `transform_one` method and the final estimator has a
+        `predict_one` method.
 
         """
         x = self.transform_one(x=x)
@@ -290,8 +291,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     def predict_proba_one(self, x):
         """Returns prediction probabilities.
 
-        Only works if each estimator has a ``transform_one`` method and the final estimator has a
-        ``predict_proba_one`` method.
+        Only works if each estimator has a `transform_one` method and the final estimator has a
+        `predict_proba_one` method.
 
         """
         x = self.transform_one(x=x)
@@ -300,27 +301,30 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     def forecast(self, horizon, xs=None):
         """Returns a forecast.
 
-        Only works if each estimator has a ``transform_one`` method and the final estimator has a
-        ``forecast`` method.
+        Only works if each estimator has a `transform_one` method and the final estimator has a
+        `forecast` method.
 
         """
         if xs is not None:
             xs = [self.transform_one(x) for x in xs]
         return self.final_estimator.forecast(horizon=horizon, xs=xs)
 
-    def debug_one(self, x, show_types=True, n_decimals=5, **print_params):
+    def debug_one(self, x, show_types=True, n_decimals=5) -> str:
         """Displays the state of a set of features as it goes through the pipeline.
 
         Parameters:
             x (dict) A set of features.
             show_types (bool): Whether or not to display the type of feature along with it's value.
             n_decimals (int): Number of decimals to display for each floating point value.
-            **print_params (dict): Parameters passed to the `print` function.
 
         """
 
         tab = ' ' * 4
-        _print = functools.partial(print, **print_params)
+
+        # We'll redirect all the print statement to a buffer, we'll return the content of the
+        # buffer at the end
+        buffer = io.StringIO()
+        _print = functools.partial(print, file=buffer)
 
         def format_value(x):
             if isinstance(x, float):
@@ -372,17 +376,19 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
             # If the last estimator has a debug_one method then call it
             if hasattr(final, 'debug_one'):
-                final.debug_one(x, **print_params)
+                _print(final.debug_one(x))
 
             # Display the prediction
-                _print()
+            _print()
             if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
                 _print(f'Prediction: {format_value(final.predict_one(x))}')
 
+        return buffer.getvalue().rstrip()
+
     def draw(self):
-        """Draws the pipeline using the ``graphviz`` library."""
+        """Draws the pipeline using the `graphviz` library."""
 
         def networkify(step):
 

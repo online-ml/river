@@ -1,4 +1,4 @@
-"""Utilities for working with streaming datasets."""
+"""Streaming utilities."""
 from .cache import Cache
 from .iter_array import iter_array
 from .iter_csv import iter_csv

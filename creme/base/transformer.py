@@ -74,25 +74,3 @@ class Transformer(base.Estimator):
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
         return compose.TransformerUnion(other, self)
-
-
-class SupervisedTransformer(Transformer):
-    """A supervised transformer.
-
-    Supervised transformers have to be handled differently from unsupervised transformers in an
-    online setting. This is especially true for target encoding where leakage can easily occur.
-
-    """
-
-    def fit_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':
-        """Fits to a set of features `x` and an optional target `y`.
-
-        Parameters:
-            x: A dictionary of features.
-            y: A target label.
-
-        Returns:
-            self
-
-        """
-        return self

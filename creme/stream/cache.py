@@ -125,7 +125,12 @@ class Cache:
                 yield unpickler.load()
 
     def clear(self, key: str):
-        """Deletes the cached stream associated with the given key."""
+        """Deletes the cached stream associated with the given key.
+
+        Parameters:
+            key
+
+        """
         os.remove(self._get_path(key))
         self.keys.remove(key)
 
