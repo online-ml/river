@@ -3,7 +3,8 @@ import math
 
 import numpy as np
 
-from skmultiflow.core import BaseSKMObject, RegressorMixin, MetaEstimatorMixin
+from skmultiflow.core import BaseSKMObject, RegressorMixin
+from skmultiflow.meta import AdaptiveRandomForestClassifier
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.trees.hoeffding_tree_regressor import HoeffdingTreeRegressor
@@ -11,18 +12,15 @@ from skmultiflow.metrics.measure_collection import RegressionMeasurements
 from skmultiflow.utils import get_dimensions, check_random_state
 
 
-class AdaptiveRandomForestRegressor(BaseSKMObject,
-                                    RegressorMixin,
-                                    MetaEstimatorMixin):
-    """Adaptive Random Forest estimator.
+class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifier):
+    """Adaptive Random Forest regressor.
 
     Parameters
     ----------
     n_estimators: int, optional (default=10)
         Number of trees in the ensemble.
 
-    max_features : int, float, string or None,\
-                   optional (default="auto")
+    max_features : int, float, string or None, optional (default="auto")
         Max number of attributes for each node split.
         - If int, then consider ``max_features`` features at each split.
         - If float, then ``max_features`` is a percentage and
@@ -34,24 +32,24 @@ class AdaptiveRandomForestRegressor(BaseSKMObject,
         - If "log2", then ``max_features=log2(n_features)``.
         - If None, then ``max_features=n_features``.
 
+    disable_weighted_vote: bool, optional (default=False)
+        Weighted vote option.
+
     lambda_value: int, optional (default=6)
         The lambda value for bagging (lambda=6 corresponds to Leverage
         Bagging).
 
-    drift_detection_method: BaseDriftDetector or None,
-                            optional (default=ADWIN(0.001))
+    drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
         Drift Detection method. Set to None to disable Drift detection.
 
-    warning_detection_method: BaseDriftDetector or None,
-                              default(ADWIN(0.01))
-        Warning Detection method. Set to None to disable warning
-        detection.
+    warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
+        Warning Detection method. Set to None to disable warning detection.
 
     max_byte_size: int, optional (default=33554432)
         (`HoeffdingTreeRegressor` parameter)
         Maximum memory consumed by the tree.
 
-    memory_estimate_period: int, optional (default=2000000)
+    memory_estimate_period: int, optional (default=1000000)
         (`HoeffdingTreeRegressor` parameter)
         Number of instances between memory consumption checks.
 
@@ -111,37 +109,29 @@ class AdaptiveRandomForestRegressor(BaseSKMObject,
 
     random_state: int, RandomState instance or None,
                        optional (default=None)
-        If int, random_state is the seed used by the random number
-        generator;
-        If RandomState instance, random_state is the random number
-        generator;
-        If None, the random number generator is the RandomState
-        instance used by `np.random`. Used when leaf_prediction is
-        'perceptron'.
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
+        Used when leaf_prediction is 'perceptron'.
 
     Notes
     -----
     The 3 most important aspects of Adaptive Random Forest [1]_ are:
     (1) inducing diversity through re-sampling;
-    (2) inducing diversity through randomly selecting subsets of
-        features for node splits
-        (see skmultiflow.classification.trees.arf_hoeffding_tree);
-    (3) drift detectors per base tree, which cause selective resets
-        in response to drifts.
-    It also allows training background trees, which start training if
-    a warning is detected and replace the active tree if the warning
-    escalates to a drift.
+    (2) inducing diversity through randomly selecting subsets of features for node splits
+        (see skmultiflow.trees.arf_hoeffding_tree);
+    (3) drift detectors per base tree, which cause selective resets in response to drifts.
+    It also allows training background trees, which start training if a warning is detected and
+    replace the active tree if the warning escalates to a drift.
 
     References
     ----------
-    .. [1] Gomes, H.M., Bifet, A., Read, J., Barddal, J.P.,
-       Enembreck, F., Pfharinger, B., Holmes, G. and Abdessalem,
-       T., 2017.
-       Adaptive random forests for evolving data stream classification.
-       Machine Learning, 106(9-10), pp.1469-1495.
-       [2] Gomes, H.M., Barddal, J.P., Boiko, L.E., Bifet, A., 2018
-       Adaptive random forests for data stream regression.
-       ESANN 2018.
+    .. [1] Gomes, H.M., Bifet, A., Read, J., Barddal, J.P., Enembreck, F., Pfharinger, B.,
+        Holmes, G. and Abdessalem, T., 2017. Adaptive random forests for evolving data stream
+        classification. Machine Learning, 106(9-10), pp.1469-1495.
+
+    .. [2] Gomes, H.M., Barddal, J.P., Boiko, L.E., Bifet, A., 2018. Adaptive random forests for
+        data stream regression. ESANN 2018.
     """
 
     def __init__(self,
@@ -149,13 +139,13 @@ class AdaptiveRandomForestRegressor(BaseSKMObject,
                  n_estimators=10,
                  max_features='auto',
                  lambda_value=6,
-                 drift_detection_method: BaseDriftDetector=ADWIN(0.001),
-                 warning_detection_method: BaseDriftDetector=ADWIN(0.01),
+                 drift_detection_method: BaseDriftDetector = ADWIN(0.001),
+                 warning_detection_method: BaseDriftDetector = ADWIN(0.01),
                  # Tree parameters
                  max_byte_size=33554432,
                  memory_estimate_period=1000000,
                  grace_period=200,
-                 split_confidence=0.0000001,
+                 split_confidence=0.01,
                  tie_threshold=0.05,
                  binary_split=False,
                  stop_mem_management=False,
@@ -309,7 +299,7 @@ class AdaptiveRandomForestRegressor(BaseSKMObject,
         elif isinstance(self.max_features, float):
             # Consider 'max_features' as a percentage
             if self.max_feature <= 0 or self.max_feature > 1:
-                raise ValueError('Invalid max_feature: {}'.format(max_feature))
+                raise ValueError('Invalid max_feature: {}'.format(self.max_feature))
             self.max_features = int(self.max_features * n)
         elif self.max_features is None:
             self.max_features = n
