@@ -20,17 +20,20 @@ from . import union
 __all__ = ['Pipeline']
 
 
-class Pipeline(base.Estimator, collections.OrderedDict):
+class Pipeline(base.Estimator):
     """Chains a sequence of estimators.
 
     Sequentially apply a list of estimators. Pipelines helps to define machine learning systems in a
     declarative style, which makes a lot of sense when we think in a stream manner. For further
     information and practical examples, take a look at the
-    `user guide <../notebooks/the-art-of-using-pipelines.html>`_.
+    [user guide](/user-guide/the-art-of-using-pipelines.md).
 
     Parameters:
-        steps (list): Ideally a list of (name, estimator) tuples. If an estimator is given without
-            a name then a name is automatically inferred from the estimator.
+        steps: Ideally a list of (name, estimator) tuples. If an estimator is given without a name
+            then a name is automatically inferred from the estimator.
+
+    Attributes:
+        steps (collections.OrderedDict)
 
     Example:
 
@@ -53,8 +56,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         >>> dot = model.draw()
 
-        .. image:: ../../_static/pipeline_docstring.svg
-            :align: center
+        ![pipeline_example](/img/pipeline_docstring.svg)
 
         The following shows an example of using `debug_one` to visualize how the information
         flows and changes throughout the pipeline.
@@ -111,8 +113,17 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     """
 
     def __init__(self, *steps):
+        self.steps = collections.OrderedDict()
         for step in steps:
             self |= step
+
+    def __getitem__(self, key):
+        """Just for convenience."""
+        return self.steps[key]
+
+    def __len__(self):
+        """Just for convenience."""
+        return len(self.steps)
 
     def __or__(self, other):
         """Inserts a step at the end of the pipeline."""
@@ -131,12 +142,12 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         return union.TransformerUnion(self, other)
 
     def __str__(self):
-        return ' | '.join(map(str, self.values()))
+        return ' | '.join(map(str, self.steps.values()))
 
     def __repr__(self):
         return (
             'Pipeline (\n\t' +
-            '\t'.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
+            '\t'.join(',\n'.join(map(repr, self.steps.values())).splitlines(True)) +
             '\n)'
         ).expandtabs(2)
 
@@ -150,21 +161,21 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             (name, new_params[name])
             if isinstance(new_params.get(name), base.Estimator) else
             (name, step._set_params(new_params.get(name, {})))
-            for name, step in self.items()
+            for name, step in self.steps.items()
         ])
 
     @property
     def transformers(self):
         """If a pipeline has $n$ steps, then the first $n-1$ are necessarily transformers."""
         if isinstance(self.final_estimator, base.Transformer):
-            return self.values()
-        return itertools.islice(self.values(), len(self) - 1)
+            return self.steps.values()
+        return itertools.islice(self.steps.values(), len(self) - 1)
 
     @property
     def is_supervised(self):
         return (
             not isinstance(self.final_estimator, base.Transformer) or
-            any(transformer.is_supervised for transformer in self.values())
+            any(t.is_supervised for t in self.transformers)
         )
 
     def add_step(self, estimator: typing.Union[base.Estimator, typing.Tuple[typing.Hashable, base.Estimator]],
@@ -192,7 +203,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         if name is None:
             name = infer_name(estimator)
 
-        if name in self:
+        if name in self.steps:
             counter = 1
             while f'{name}{counter}' in self:
                 counter += 1
@@ -203,22 +214,21 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             estimator = estimator()
 
         # Store the step
-        self[name] = estimator
+        self.steps[name] = estimator
 
         # Move the step to the start of the pipeline if so instructed
         if at_start:
-            self.move_to_end(name, last=False)
+            self.steps.move_to_end(name, last=False)
 
     @property
     def final_estimator(self):
         """The final estimator."""
-        return next(reversed(self.values()))
+        return next(reversed(self.steps.values()))
 
     def fit_one(self, x, y=None, **fit_params):
-        """Fits each step with `x`."""
 
         # Loop over the first n - 1 steps, which should all be transformers
-        for t in itertools.islice(self.values(), len(self) - 1):
+        for t in itertools.islice(self.steps.values(), len(self) - 1):
             x_pre = x
             x = t.transform_one(x=x)
 
@@ -236,86 +246,53 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         self.final_estimator.fit_one(x=x, y=y, **fit_params)
         return self
 
-    def fit_predict_one(self, x, y, **fit_params):
-        """Updates the pipeline and returns a the out-of-fold prediction.
+    def transform_one(self, x: dict):
+        for t in self.transformers:
 
-        Only works if each estimator has a `transform_one` method and the final estimator has a
-        `fit_predict_one` method.
-
-        """
-        x = self.transform_one(x=x)
-        return self.final_estimator.fit_predict_one(x=x, y=y, **fit_params)
-
-    def fit_predict_proba_one(self, x, y, **fit_params):
-        """Updates the pipeline and returns a the out-of-fold prediction.
-
-        Only works if each estimator has a `transform_one` method and the final estimator has a
-        `fit_predict_one` method.
-
-        """
-        x = self.transform_one(x=x)
-        return self.final_estimator.fit_predict_proba_one(x=x, y=y, **fit_params)
-
-    def transform_one(self, x):
-        """Transform an input.
-
-        Only works if each estimator has a `transform_one` method.
-
-        """
-        for transformer in self.transformers:
-
-            if isinstance(transformer, union.TransformerUnion):
+            if isinstance(t, union.TransformerUnion):
 
                 # Fit the unsupervised part of the union
-                for sub_transformer in transformer.values():
+                for sub_transformer in t.transformers.values():
                     if not sub_transformer.is_supervised:
                         sub_transformer.fit_one(x=x)
 
-            elif not transformer.is_supervised:
-                transformer.fit_one(x=x)
+            elif not t.is_supervised:
+                t.fit_one(x=x)
 
-            x = transformer.transform_one(x=x)
+            x = t.transform_one(x=x)
 
         return x
 
-    def predict_one(self, x):
-        """Returns a prediction.
-
-        Only works if each estimator has a `transform_one` method and the final estimator has a
-        `predict_one` method.
-
-        """
+    def predict_one(self, x: dict):
         x = self.transform_one(x=x)
         return self.final_estimator.predict_one(x=x)
 
-    def predict_proba_one(self, x):
-        """Returns prediction probabilities.
-
-        Only works if each estimator has a `transform_one` method and the final estimator has a
-        `predict_proba_one` method.
-
-        """
+    def predict_proba_one(self, x: dict):
         x = self.transform_one(x=x)
         return self.final_estimator.predict_proba_one(x=x)
 
-    def forecast(self, horizon, xs=None):
+    def forecast(self, horizon: int, xs: typing.List[dict] = None):
         """Returns a forecast.
 
         Only works if each estimator has a `transform_one` method and the final estimator has a
         `forecast` method.
+
+        Parameters:
+            horizon: The forecast horizon.
+            xs: A list of features for each step in the horizon.
 
         """
         if xs is not None:
             xs = [self.transform_one(x) for x in xs]
         return self.final_estimator.forecast(horizon=horizon, xs=xs)
 
-    def debug_one(self, x, show_types=True, n_decimals=5) -> str:
+    def debug_one(self, x: dict, show_types=True, n_decimals=5) -> str:
         """Displays the state of a set of features as it goes through the pipeline.
 
         Parameters:
-            x (dict) A set of features.
-            show_types (bool): Whether or not to display the type of feature along with it's value.
-            n_decimals (int): Number of decimals to display for each floating point value.
+            x A set of features.
+            show_types: Whether or not to display the type of feature along with it's value.
+            n_decimals: Number of decimals to display for each floating point value.
 
         """
 
@@ -356,7 +333,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
             if isinstance(t, union.TransformerUnion):
                 print_title(f'{i+1}. Transformer union')
-                for j, (name, sub_t) in enumerate(t.items()):
+                for j, (name, sub_t) in enumerate(t.transformers.items()):
                     if isinstance(sub_t, Pipeline):
                         name = str(sub_t)
                     print_title(f'{i+1}.{j} {name}', indent=True)
@@ -394,15 +371,19 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
             # Unions are converted to an undirected network
             if isinstance(step, union.TransformerUnion):
-                return Network(nodes=map(networkify, step.values()), links=[], directed=False)
+                return Network(
+                    nodes=map(networkify, step.transformers.values()),
+                    links=[],
+                    directed=False
+                )
 
             # Pipelines are converted to a directed network
             if isinstance(step, Pipeline):
                 return Network(
                     nodes=[],
                     links=zip(
-                        map(networkify, list(step.values())[:-1]),
-                        map(networkify, list(step.values())[1:])
+                        map(networkify, list(step.steps.values())[:-1]),
+                        map(networkify, list(step.steps.values())[1:])
                     ),
                     directed=True
                 )
@@ -425,7 +406,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         previous = 'x'
 
         # Draw each step
-        for step in self.values():
+        for step in self.steps.values():
             current = networkify(step)
             net.link(previous, current)
             previous = current

@@ -170,6 +170,11 @@ def extract_doc(obj) -> str:
     if desc:
         md += paragraph(desc)
 
+    # Admonitions
+    for kind, content in sections.get('Admonitions', []):
+        md += line(f'!!! {kind}')
+        md += paragraph(f'    {content}')
+
     # Parameters
     try:
         signature = inspect.signature(obj)
@@ -320,11 +325,6 @@ def extract_doc(obj) -> str:
         if in_code:
             md += line('```')
 
-    # Admonitions
-    for (kind, content) in sections.get('Admonitions', []):
-        md += line(f'!!! {kind}')
-        md += paragraph(f'    {content}')
-
     # References
     references = sections.get('References')
     if references:
@@ -351,6 +351,7 @@ def write_module(mod, where):
 
     # Go through the functions
     for name, func in inspect.getmembers(mod, inspect.isfunction):
+        print(name)
         path = mod_path.joinpath(snake_to_kebab(name))
         with open(path.with_suffix('.md'), 'w') as f:
             doc = extract_doc(obj=func)
@@ -358,6 +359,7 @@ def write_module(mod, where):
 
     # Go through the classes
     for name, klass in inspect.getmembers(mod, inspect.isclass):
+        print(name)
         path = mod_path.joinpath(pascal_to_kebab(name))
         with open(path.with_suffix('.md'), 'w') as f:
             doc = extract_doc(obj=klass)

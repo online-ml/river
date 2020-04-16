@@ -46,6 +46,7 @@ class MiniBatcher(base.Optimizer):
         self.batch_size = batch_size
         self.gradient = collections.defaultdict(float)
         self.current_size = 0
+        self.n_iterations = 0
 
     def update_before_pred(self, w):
         return self.optimizer.update_before_pred(w)

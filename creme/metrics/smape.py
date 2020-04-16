@@ -16,7 +16,7 @@ class SMAPE(base.MeanMetric, base.RegressionMetric):
 
         >>> metric = metrics.SMAPE()
         >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(y_t, y_p)
+        ...     metric = metric.update(yt, yp)
 
         >>> metric
         SMAPE: 37.869392

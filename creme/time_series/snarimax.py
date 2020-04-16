@@ -58,7 +58,7 @@ class Differencer:
         7
 
     References:
-        1. `Stationarity and differencing <https://otexts.com/fpp2/stationarity.html>`_
+        1. [Stationarity and differencing](https://otexts.com/fpp2/stationarity.html)
 
     """
 
@@ -89,7 +89,7 @@ class Differencer:
             8 1
 
         References:
-            1. `Backshift notation <https://otexts.com/fpp2/backshift.html>`_
+            1. [Backshift notation](https://otexts.com/fpp2/backshift.html)
 
         """
         coeffs = collections.Counter()
@@ -237,11 +237,12 @@ class SNARIMAX(base.Forecaster):
             >>> metric = metrics.Rolling(metrics.MAE(), 12)
 
             >>> for x, y in datasets.Airline():
-            ...     y_pred = model.fit_predict_one(x=x, y=y)
-            ...     metric = metric.update(y, y_pred)
+            ...     y_pred = model.forecast(horizon=1, xs=[x])
+            ...     model = model.fit_one(x, y)
+            ...     metric = metric.update(y, y_pred[0])
 
             >>> metric
-            Rolling of size 12 MAE: 11.770681
+            Rolling of size 12 MAE: 11.763462
 
             >>> horizon = 12
             >>> future = [
@@ -251,28 +252,28 @@ class SNARIMAX(base.Forecaster):
             >>> forecast = model.forecast(horizon=horizon, xs=future)
             >>> for x, y_pred in zip(future, forecast):
             ...     print(x['month'], f'{y_pred:.3f}')
-            1961-01-01 441.663
-            1961-02-01 426.288
-            1961-03-01 470.272
-            1961-04-01 481.677
-            1961-05-01 487.235
-            1961-06-01 538.953
-            1961-07-01 625.014
-            1961-08-01 622.069
-            1961-09-01 521.439
-            1961-10-01 449.184
-            1961-11-01 398.737
-            1961-12-01 431.324
+            1961-01-01 442.226
+            1961-02-01 427.003
+            1961-03-01 471.740
+            1961-04-01 483.905
+            1961-05-01 489.971
+            1961-06-01 543.717
+            1961-07-01 632.889
+            1961-08-01 632.709
+            1961-09-01 530.855
+            1961-10-01 457.391
+            1961-11-01 405.880
+            1961-12-01 439.532
 
-    Note:
+    .. tip::
         This model is tailored for time series that are homoskedastic. In other words, it might not
         work well if the variance of the time series varies widely along time.
 
     References:
-        1. `Wikipedia page on ARMA <https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model>`_
-        2. `Wikipedia page on NARX <https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model>`_
-        3. `ARIMA models <https://otexts.com/fpp2/arima.html>`_
-        4. `Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184). <https://arxiv.org/pdf/1302.6927.pdf>`_
+        1. [Wikipedia page on ARMA](https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model)
+        2. [Wikipedia page on NARX](https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model)
+        3. [ARIMA models](https://otexts.com/fpp2/arima.html)
+        4. [Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184)](https://arxiv.org/pdf/1302.6927.pdf)
 
     """
 
