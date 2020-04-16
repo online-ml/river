@@ -7,7 +7,7 @@ from skmultiflow.core import BaseSKMObject, RegressorMixin
 from skmultiflow.meta import AdaptiveRandomForestClassifier
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.drift_detection import ADWIN
-from skmultiflow.trees.hoeffding_tree_regressor import HoeffdingTreeRegressor
+from skmultiflow.trees import ARFHoeffdingTreeRegressor
 from skmultiflow.metrics.measure_collection import RegressionMeasurements
 from skmultiflow.utils import get_dimensions, check_random_state
 
@@ -32,12 +32,22 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         - If "log2", then ``max_features=log2(n_features)``.
         - If None, then ``max_features=n_features``.
 
-    disable_weighted_vote: bool, optional (default=False)
+    disable_weighted_vote: bool, optional (default=True)
         Weighted vote option.
 
     lambda_value: int, optional (default=6)
         The lambda value for bagging (lambda=6 corresponds to Leverage
         Bagging).
+
+    performance_metric: string, optional (default='mse')
+        Metric used to track trees performance within the ensemble.
+        - 'mse' - Mean Square Error
+        - 'mae' - Mean Absolute Error
+
+    aggregation_method: string (default='mean')
+        The method to use to aggregate predictions in the ensemble.
+        - 'mean'
+        - 'median'
 
     drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
         Drift Detection method. Set to None to disable Drift detection.
@@ -45,65 +55,71 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
     warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
         Warning Detection method. Set to None to disable warning detection.
 
+    drift_detection_criteria: str (default='mse')
+        The criteria used to track drifts.
+            - 'mse' - Mean Square Error
+            - 'mae' - Mean Absolute Error
+            - 'predictions' - predicted target values
+
     max_byte_size: int, optional (default=33554432)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         Maximum memory consumed by the tree.
 
-    memory_estimate_period: int, optional (default=1000000)
-        (`HoeffdingTreeRegressor` parameter)
+    memory_estimate_period: int, optional (default=2000000)
+        (`ARFHoeffdingTreeRegressor` parameter)
         Number of instances between memory consumption checks.
 
     grace_period: int, optional (default=50)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         Number of instances a leaf should observe between split
         attempts.
 
     split_confidence: float, optional (default=0.01)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         Allowed error in split decision, a value closer to 0 takes
         longer to decide.
 
     tie_threshold: float, optional (default=0.05)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         Threshold below which a split will be forced to break ties.
 
     binary_split: bool, optional (default=False)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         If True, only allow binary splits.
 
     stop_mem_management: bool, optional (default=False)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         If True, stop growing as soon as memory limit is hit.
 
     remove_poor_atts: bool, optional (default=False)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         If True, disable poor attributes.
 
     no_preprune: bool, optional (default=False)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         If True, disable pre-pruning.
 
     leaf_prediction: string, optional (default='perceptron')
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         Prediction mechanism used at leafs.
         - 'mean' - Target mean
         - 'perceptron' - Perceptron
 
     nominal_attributes: list, optional (default=None)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         List of Nominal attributes. If emtpy, then assume that all
         attributes are numerical.
 
     learning_ratio_perceptron: float (default=0.02)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         The learning rate of the perceptron.
 
     learning_ratio_decay: float (default=0.001)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         Decay multiplier for the learning rate of the perceptron
 
     learning_ratio_const: Bool (default=True)
-        (`HoeffdingTreeRegressor` parameter)
+        (`ARFHoeffdingTreeRegressor` parameter)
         If False the learning ratio will decay with the number of
         examples seen.
 
@@ -134,63 +150,78 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         data stream regression. ESANN 2018.
     """
 
+    _MEAN = 'mean'
+    _MEDIAN = 'median'
+    _MAE = 'mae'
+    _MSE = 'mse'
+    _PREDICTIONS = 'predictions'
+
     def __init__(self,
                  # Forest parameters
-                 n_estimators=10,
+                 n_estimators: int = 10,
                  max_features='auto',
-                 lambda_value=6,
+                 disable_weighted_vote: bool = True,
+                 performance_metric: str = 'mse',
+                 aggregation_method: str = 'mean',
+                 lambda_value: int = 6,
                  drift_detection_method: BaseDriftDetector = ADWIN(0.001),
                  warning_detection_method: BaseDriftDetector = ADWIN(0.01),
+                 drift_detection_criteria: str = 'mse',
                  # Tree parameters
-                 max_byte_size=33554432,
-                 memory_estimate_period=1000000,
-                 grace_period=200,
-                 split_confidence=0.01,
-                 tie_threshold=0.05,
-                 binary_split=False,
-                 stop_mem_management=False,
-                 remove_poor_atts=False,
-                 no_preprune=False,
-                 leaf_prediction='perceptron',
-                 nominal_attributes=None,
-                 learning_ratio_perceptron=0.02,
-                 learning_ratio_decay=0.001,
-                 learning_ratio_const=True,
+                 max_byte_size: int = 33554432,
+                 memory_estimate_period: int = 2000000,
+                 grace_period: int = 200,
+                 split_confidence: float = 0.01,
+                 tie_threshold: float = 0.05,
+                 binary_split: bool = False,
+                 stop_mem_management: bool = False,
+                 remove_poor_atts: bool = False,
+                 no_preprune: bool = False,
+                 leaf_prediction: str = 'perceptron',
+                 nominal_attributes: list = None,
+                 learning_ratio_perceptron: float = 0.02,
+                 learning_ratio_decay: float = 0.001,
+                 learning_ratio_const: bool = True,
                  random_state=None):
-        """ AdaptiveRandomForestRegressor class constructor. """
-        super().__init__()
-        self.n_estimators = n_estimators
-        self.max_features = max_features
-        self.lambda_value = lambda_value
-        if isinstance(drift_detection_method, BaseDriftDetector):
-            self.drift_detection_method = drift_detection_method
-        else:
-            self.drift_detection_method = None
-        if isinstance(warning_detection_method, BaseDriftDetector):
-            self.warning_detection_method = warning_detection_method
-        else:
-            self.warning_detection_method = None
-        self.instances_seen = 0
-        self.ensemble = None
-        self.random_state = random_state
-        # This is the actual random_state object used
-        self._random_state = check_random_state(self.random_state)
+        super().__init__(n_estimators=n_estimators,
+                         max_features=max_features,
+                         disable_weighted_vote=disable_weighted_vote,
+                         lambda_value=lambda_value,
+                         drift_detection_method=drift_detection_method,
+                         warning_detection_method=warning_detection_method,
+                         # Tree parameters
+                         max_byte_size=max_byte_size,
+                         memory_estimate_period=memory_estimate_period,
+                         grace_period=grace_period,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         binary_split=binary_split,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_atts=remove_poor_atts,
+                         no_preprune=no_preprune,
+                         leaf_prediction=leaf_prediction,
+                         nominal_attributes=nominal_attributes,
+                         random_state=random_state)
 
-        # Hoeffding Tree Regressor configuration
-        self.max_byte_size = max_byte_size
-        self.memory_estimate_period = memory_estimate_period
-        self.grace_period = grace_period
-        self.split_confidence = split_confidence
-        self.tie_threshold = tie_threshold
-        self.binary_split = binary_split
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_atts = remove_poor_atts
-        self.no_preprune = no_preprune
-        self.leaf_prediction = leaf_prediction
-        self.nominal_attributes = nominal_attributes
         self.learning_ratio_perceptron = learning_ratio_perceptron
         self.learning_ratio_decay = learning_ratio_decay
         self.learning_ratio_const = learning_ratio_const
+
+        if performance_metric in [self._MSE, self._MAE]:
+            self.performance_metric = performance_metric
+        else:
+            raise ValueError('Invalid performance metric: {}'.format(performance_metric))
+
+        if aggregation_method in [self._MEAN, self._MEDIAN]:
+            self.aggregation_method = aggregation_method
+        else:
+            raise ValueError('Invalid aggregation method: {}'.format(aggregation_method))
+
+        if drift_detection_criteria in [self._MSE, self._MAE, self._PREDICTIONS]:
+            self.drift_detection_criteria = drift_detection_criteria
+        else:
+            raise ValueError('Invalid drift detection criteria: {}'.
+                             format(drift_detection_criteria))
 
     def partial_fit(self, X, y):
         """ Partially (incrementally) fit the model.
@@ -217,12 +248,11 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
             self.instances_seen += 1
 
             for learner in self.ensemble:
-                y_predicted = learner.predict(X[i:i+1])
+                y_predicted = learner.predict(X[i])
                 learner.evaluator.add_result(y_predicted, y)
                 k = self._random_state.poisson(self.lambda_value)
                 if k > 0:
-                    learner.partial_fit(X[i:i+1], y[i:i+1],
-                                        sample_weight=np.asarray([k]),
+                    learner.partial_fit(X[i], y[i], sample_weight=np.asarray([k]),
                                         instances_seen=self.instances_seen)
 
         return self
@@ -241,20 +271,29 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         A numpy.ndarray with all the predictions for the samples in X.
 
         """
-        predictions = np.zeros(get_dimensions(X)[0])
+        predictions = np.zeros((self.n_estimators, get_dimensions(X)[0]))
         if self.ensemble is None:
             self.init_ensemble(X)
-        for learner in self.ensemble:
-            predictions += learner.predict(X)
-        predictions /= self.n_estimators
-        return predictions
+
+        for i, learner in enumerate(self.ensemble):
+            predictions[i, :] = learner.predict(X)
+
+        if self.aggregation_method == self._MEAN:
+            return np.mean(predictions, axis=0)
+        elif self.aggregation_method == self._MEDIAN:
+            return np.median(predictions, axis=0)
+        else:
+            np.zeros(get_dimensions(X)[0])
 
     def predict_proba(self, X):
         """Not implemented for this method."""
         raise NotImplementedError
 
     def reset(self):
-        """Reset ARF."""
+        """Reset ARFR."""
+
+        # TODO: check whether this is enough
+
         self.ensemble = None
         self.max_features = 0
         self.instances_seen = 0
@@ -263,10 +302,10 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
     def init_ensemble(self, X):
         self._set_max_features(get_dimensions(X)[1])
 
-        self.ensemble = \
-            [ARFBaseLearner(
+        self.ensemble = [
+            ARFBaseLearner(
                 index_original=i,
-                estimator=HoeffdingTreeRegressor(
+                estimator=ARFHoeffdingTreeRegressor(
                     max_byte_size=self.max_byte_size,
                     memory_estimate_period=self.memory_estimate_period,
                     grace_period=self.grace_period,
@@ -281,12 +320,16 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                     learning_ratio_perceptron=self.learning_ratio_perceptron,
                     learning_ratio_decay=self.learning_ratio_decay,
                     learning_ratio_const=self.learning_ratio_const,
-                    random_state=self.random_state),
+                    random_state=self.random_state
+                ),
                 instances_seen=self.instances_seen,
                 drift_detection_method=self.drift_detection_method,
                 warning_detection_method=self.warning_detection_method,
-                is_background_learner=False)
-            for i in range(self.n_estimators)]
+                performance_metric=self.performance_metric,
+                drift_detection_criteria=self.drift_detection_criteria,
+                is_background_learner=False
+            ) for i in range(self.n_estimators)
+        ]
 
     def _set_max_features(self, n):
         if self.max_features == 'auto' or self.max_features == 'sqrt':
@@ -298,8 +341,9 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
             pass
         elif isinstance(self.max_features, float):
             # Consider 'max_features' as a percentage
-            if self.max_feature <= 0 or self.max_feature > 1:
-                raise ValueError('Invalid max_feature: {}'.format(self.max_feature))
+            if self.max_features <= 0 or self.max_features > 1:
+                raise ValueError('Invalid max_features value: {}'.format(self.max_features))
+
             self.max_features = int(self.max_features * n)
         elif self.max_features is None:
             self.max_features = n
@@ -355,13 +399,14 @@ class ARFBaseLearner(BaseSKMObject):
 
     """
 
+    # TODO: check the posssibility of using HATR as base learner
     def __init__(self,
                  index_original,
                  estimator: HoeffdingTreeRegressor,
                  instances_seen,
                  drift_detection_method: BaseDriftDetector,
                  warning_detection_method: BaseDriftDetector,
-                 is_background_learner):
+                 is_background_learner):  # TODO: check necessity of this parameter
         self.index_original = index_original
         self.estimator = estimator
         self.created_on = instances_seen
@@ -394,6 +439,7 @@ class ARFBaseLearner(BaseSKMObject):
             self._use_background_learner = True
             self.warning_detection = deepcopy(warning_detection_method)
 
+    # TODO: verify the posssibility of renaming to 'swap' of something similar
     def reset(self, instances_seen):
         if self._use_background_learner and self.background_learner is not None:
             self.estimator = self.background_learner.estimator
@@ -412,11 +458,13 @@ class ARFBaseLearner(BaseSKMObject):
         self.estimator.partial_fit(X, y, sample_weight=sample_weight)
 
         if self.background_learner:
-            self.background_learner.estimator.partial_fit(X, y,
-                sample_weight=sample_weight)
+            self.background_learner.estimator.partial_fit(X, y, sample_weight=sample_weight)
 
         if self._use_drift_detector and not self.is_background_learner:
             predicted_value = self.estimator.predict(X)
+
+            # TODO: add here option to monitor errors
+
             # Check for warning only if use_background_learner is active
             if self._use_background_learner:
                 self.warning_detection.add_element(predicted_value)
@@ -424,6 +472,9 @@ class ARFBaseLearner(BaseSKMObject):
                 if self.warning_detection.detected_change():
                     self.last_warning_on = instances_seen
                     self.n_warnings_detected += 1
+
+                    # TODO: posssibility of using HATR as base leaner
+
                     # Create a new background tree estimator
                     background_learner = self.estimator.new_instance()
                     # Create a new background learner
@@ -439,6 +490,8 @@ class ARFBaseLearner(BaseSKMObject):
                     # while it was still a bkg learner).
                     self.warning_detection.reset()
 
+            # TODO: options to monitor error
+
             # Update the drift detection
             self.drift_detection.add_element(predicted_value)
 
@@ -452,4 +505,4 @@ class ARFBaseLearner(BaseSKMObject):
         return self.estimator.predict(X)
 
     def predict_proba(self, X):
-        return self.estimator.predict_proba(X)
+        raise NotImplementedError
