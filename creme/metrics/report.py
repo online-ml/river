@@ -91,7 +91,7 @@ class ClassificationReport(base.MultiClassMetric):
                   self._weighted_precision, self._weighted_recall, self._weighted_f1]:
             m.update(y_true, y_pred, sample_weight)
 
-        self.accuracy_.update(y_true, y_pred)
+        self._accuracy.update(y_true, y_pred)
 
         return self
 
@@ -108,7 +108,7 @@ class ClassificationReport(base.MultiClassMetric):
                   self._micro_precision, self._micro_recall, self._micro_f1,
                   self._weighted_precision, self._weighted_recall, self._weighted_f1]:
             m.revert(y_true, y_pred, sample_weight)
-        self.accuracy_.revert(y_true, y_pred)
+        self._accuracy.revert(y_true, y_pred)
 
         return self
 
@@ -158,7 +158,7 @@ class ClassificationReport(base.MultiClassMetric):
 
         # Write down the accuracy
         width = len(table.splitlines()[0])
-        accuracy = f'{self.accuracy_.get():.{self.decimals - 2}%}' + ' accuracy'
+        accuracy = f'{self._accuracy.get():.{self.decimals - 2}%}' + ' accuracy'
         table += '\n\n' + f'{accuracy:^{width}}'
 
         return table

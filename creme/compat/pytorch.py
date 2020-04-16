@@ -48,54 +48,50 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
     """PyTorch to ``creme`` regressor adapter.
 
     Parameters:
-        net (torch.nn.Sequential)
-        loss_fn (torch.nn.modules.loss._Loss)
-        optimizer (torch.optim.Optimizer)
-        batch_size (int)
+        net
+        loss_fn
+        optimizer
+        batch_size
 
     Example:
 
-        ::
+        >>> from creme import compat
+        >>> from creme import datasets
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import preprocessing
+        >>> import torch
+        >>> from torch import nn
+        >>> from torch import optim
 
-            >>> import pytest
-            >>> pytest.importorskip('torch')
+        >>> _ = torch.manual_seed(0)
 
-            >>> from creme import compat
-            >>> from creme import datasets
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import preprocessing
-            >>> import torch
-            >>> from torch import nn
-            >>> from torch import optim
+        >>> X_y = datasets.TrumpApproval()
 
-            >>> _ = torch.manual_seed(0)
+        >>> n_features = 6
+        >>> net = nn.Sequential(
+        ...     nn.Linear(n_features, 3),
+        ...     nn.Linear(3, 1)
+        ... )
 
-            >>> X_y = datasets.TrumpApproval()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     compat.PyTorch2CremeRegressor(
+        ...         net=net,
+        ...         loss_fn=nn.MSELoss(),
+        ...         optimizer=optim.SGD(net.parameters(), lr=1e-3),
+        ...         batch_size=2
+        ...     )
+        ... )
+        >>> metric = metrics.MAE()
 
-            >>> n_features = 6
-            >>> net = nn.Sequential(
-            ...     nn.Linear(n_features, 3),
-            ...     nn.Linear(3, 1)
-            ... )
-
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     compat.PyTorch2CremeRegressor(
-            ...         net=net,
-            ...         loss_fn=nn.MSELoss(),
-            ...         optimizer=optim.SGD(net.parameters(), lr=1e-3),
-            ...         batch_size=2
-            ...     )
-            ... )
-            >>> metric = metrics.MAE()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric).get()
-            2.80563...
+        >>> model_selection.progressive_val_score(X_y, model, metric).get()
+        2.80563
 
     """
 
-    def __init__(self, net, loss_fn, optimizer, batch_size=1):
+    def __init__(self, net: torch.nn.Sequential, loss_fn: torch.nn.modules.loss._Loss,
+                 optimizer: torch.optim.Optimizer, batch_size=1):
         super().__init__(
             net=net,
             loss_fn=loss_fn,

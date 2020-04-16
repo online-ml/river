@@ -15,76 +15,84 @@ from . import func
 __all__ = ['TransformerUnion']
 
 
-class TransformerUnion(collections.UserDict, base.Transformer):
+class TransformerUnion(base.Transformer):
     """Packs multiple transformers into a single one.
 
-    Calling ``transform_one`` will concatenate each transformer's output using a
-    `collections.ChainMap`.
+    Calling `transform_one` will concatenate each transformer's output.
 
     Parameters:
-        transformers (list): transformers to pack together.
+        transformers: A list of transformers to pack together.
+
+    Attributes:
+        transformers (dict)
 
     Example:
 
-        ::
+        >>> from pprint import pprint
+        >>> import creme.compose
+        >>> import creme.feature_extraction
+        >>> import creme.stats
 
-            >>> from pprint import pprint
-            >>> import creme.compose
-            >>> import creme.feature_extraction
-            >>> import creme.stats
+        >>> X = [
+        ...     {'place': 'Taco Bell', 'revenue': 42},
+        ...     {'place': 'Burger King', 'revenue': 16},
+        ...     {'place': 'Burger King', 'revenue': 24},
+        ...     {'place': 'Taco Bell', 'revenue': 58},
+        ...     {'place': 'Burger King', 'revenue': 20},
+        ...     {'place': 'Taco Bell', 'revenue': 50}
+        ... ]
 
-            >>> X = [
-            ...     {'place': 'Taco Bell', 'revenue': 42},
-            ...     {'place': 'Burger King', 'revenue': 16},
-            ...     {'place': 'Burger King', 'revenue': 24},
-            ...     {'place': 'Taco Bell', 'revenue': 58},
-            ...     {'place': 'Burger King', 'revenue': 20},
-            ...     {'place': 'Taco Bell', 'revenue': 50}
-            ... ]
+        >>> mean = creme.feature_extraction.Agg(
+        ...     on='revenue',
+        ...     by='place',
+        ...     how=creme.stats.Mean()
+        ... )
+        >>> count = creme.feature_extraction.Agg(
+        ...     on='revenue',
+        ...     by='place',
+        ...     how=creme.stats.Count()
+        ... )
+        >>> agg = creme.compose.TransformerUnion(mean)
+        >>> agg += count
 
-            >>> mean = creme.feature_extraction.Agg(
-            ...     on='revenue',
-            ...     by='place',
-            ...     how=creme.stats.Mean()
-            ... )
-            >>> count = creme.feature_extraction.Agg(
-            ...     on='revenue',
-            ...     by='place',
-            ...     how=creme.stats.Count()
-            ... )
-            >>> agg = creme.compose.TransformerUnion(mean)
-            >>> agg += count
+        >>> for x in X:
+        ...     pprint(agg.fit_one(x).transform_one(x))
+        {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
+        {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
+        {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
+        {'revenue_count_by_place': 2, 'revenue_mean_by_place': 50.0}
+        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 20.0}
+        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
 
-            >>> for x in X:
-            ...     pprint(agg.fit_one(x).transform_one(x))
-            {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
-            {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
-            {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
-            {'revenue_count_by_place': 2, 'revenue_mean_by_place': 50.0}
-            {'revenue_count_by_place': 3, 'revenue_mean_by_place': 20.0}
-            {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
-
-            >>> pprint(agg.transform_one({'place': 'Taco Bell'}))
-            {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
+        >>> pprint(agg.transform_one({'place': 'Taco Bell'}))
+        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
 
     """
 
     def __init__(self, *transformers):
-        super().__init__()
+        self.transformers = {}
         for transformer in transformers:
             self += transformer
 
+    def __getitem__(self, key):
+        """Just for convenience."""
+        return self.transformers[key]
+
+    def __len__(self):
+        """Just for convenience."""
+        return len(self.transformers)
+
     @property
     def is_supervised(self):
-        return any(transformer.is_supervised for transformer in self.values())
+        return any(t.is_supervised for t in self.transformers.values())
 
     def __str__(self):
-        return ' + '.join(map(str, self.values()))
+        return ' + '.join(map(str, self.transformers.values()))
 
     def __repr__(self):
         return (
             'TransformerUnion (\n\t' +
-            '\t'.join(',\n'.join(map(repr, self.values())).splitlines(True)) +
+            '\t'.join(',\n'.join(map(repr, self.transformers.values())).splitlines(True)) +
             '\n)'
         ).expandtabs(2)
 
@@ -98,7 +106,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
             (name, new_params[name])
             if isinstance(new_params.get(name), base.Estimator) else
             (name, step._set_params(new_params.get(name, {})))
-            for name, step in self.items()
+            for name, step in self.transformers.items()
         ])
 
     def add_step(self, transformer):
@@ -125,14 +133,14 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         if name is None:
             name = infer_name(transformer)
 
-        if name in self:
+        if name in self.transformers:
             counter = 1
-            while f'{name}{counter}' in self:
+            while f'{name}{counter}' in self.transformers:
                 counter += 1
             name = f'{name}{counter}'
 
         # Store the transformer
-        self[name] = transformer
+        self.transformers[name] = transformer
 
         return self
 
@@ -140,7 +148,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         return self.add_step(other)
 
     def fit_one(self, x, y=None):
-        for transformer in self.values():
+        for transformer in self.transformers.values():
             transformer.fit_one(x, y)
         return self
 
@@ -148,7 +156,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
         """Passes the data through each transformer and packs the results together."""
         return dict(collections.ChainMap(*(
             transformer.transform_one(x)
-            for transformer in self.values()
+            for transformer in self.transformers.values()
         )))
 
     def draw(self):
@@ -158,7 +166,7 @@ class TransformerUnion(collections.UserDict, base.Transformer):
 
         g = graphviz.Digraph(engine='fdp')
 
-        for part in self.values():
+        for part in self.transformers.values():
             if hasattr(part, 'draw'):
                 g.subgraph(part.draw())
             else:

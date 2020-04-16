@@ -19,7 +19,6 @@ class RMSLE(rmse.RMSE):
         >>> metric = metrics.RMSLE()
         >>> for yt, yp in zip(y_true, y_pred):
         ...     metric = metric.update(yt, yp)
-        0.133531
 
         >>> metric
         RMSLE: 0.357826
