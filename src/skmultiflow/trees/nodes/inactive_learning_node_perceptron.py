@@ -4,7 +4,6 @@ import numpy as np
 
 from skmultiflow.utils import check_random_state
 from skmultiflow.trees.nodes import InactiveLearningNode
-from skmultiflow.trees.nodes.active_learning_node_perceptron import compute_sd
 
 
 class InactiveLearningNodePerceptron(InactiveLearningNode):

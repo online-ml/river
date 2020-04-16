@@ -13,20 +13,18 @@ class InactiveLearningNodeAdaptiveMultiTarget(InactiveLearningNodePerceptronMult
         online variance calculation. They refer to the number of observations
         (key '0'), the sum of the target values (key '1'), and the sum of the
         squared target values (key '2').
-    perceptron_weight: np.ndarray(n_targets, n_features) or None, optinal
-        (default=None)
-        The weights for the linear models that predict the targets values. If
-        not passed, uniform values in the range [-1, 1] are used.
+    parent_node: ActiveLearningNodeAdaptiveMultiTarget (default=None)
+        A node containing statistics about observed data.
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_class_observations, perceptron_weight=None,
+    def __init__(self, initial_class_observations, parent_node=None,
                  random_state=None):
         """InactiveLearningNodeAdaptiveMultiTarget class constructor."""
-        super().__init__(initial_class_observations, perceptron_weight,
+        super().__init__(initial_class_observations, parent_node,
                          random_state)
 
         # Faded errors for the perceptron and mean predictors

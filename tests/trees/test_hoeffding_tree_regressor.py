@@ -4,10 +4,11 @@ from array import array
 from sklearn.metrics import mean_absolute_error
 from skmultiflow.data import RegressionGenerator
 from skmultiflow.trees import HoeffdingTreeRegressor
+from skmultiflow.utils import calculate_object_size
 from difflib import SequenceMatcher
 
 
-def test_hoeffding_tree_regressor():
+def test_hoeffding_tree_regressor_mean():
     stream = RegressionGenerator(n_samples=500, n_features=20, n_informative=15, random_state=1)
 
     learner = HoeffdingTreeRegressor(leaf_prediction='mean')
@@ -78,27 +79,27 @@ def test_hoeffding_tree_regressor_perceptron():
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('d', [525.7553636732247, 352.8160300365902, 224.80744320456478,
-                                       193.72837054292074, 132.6059603765031, 117.06974933197759,
-                                       114.53342429855932, 89.37195405567235, 57.85335051891305,
-                                       60.00883955911155, 47.263185779784266, 25.17616431074491,
-                                       17.43259526890146, 47.33468996498019, 22.83975208548138,
-                                       -7.659282840823236, 8.564101665071064, 14.61585289361161,
-                                       11.560941733770441, 13.70120291865976, 1.1938438210799651,
-                                       19.01970713481836, 21.23459424444584, -5.667473522309328,
-                                       -5.203149619381393, 28.726275200889173, 41.03406433337882,
-                                       27.950322712127267, 21.267116786963925, 5.53344652490152,
-                                       6.753264259267268, -2.3288137435962213, -10.492766334689875,
-                                       -11.19641058176631, -20.134685945295644, -19.36581990084085,
-                                       -38.26894947177957, -34.90246284430353, -11.019543212232008,
-                                       -22.016714766708127, -18.710456277443544, -20.5568019328217,
-                                       -2.636583876625667, 24.787714491718187, 29.325261678088406,
-                                       45.31267371823666, -48.271054430207776, -59.7649172085901,
-                                       48.22724814037523])
-    # assert np.allclose(y_pred, expected_predictions)
+    expected_predictions = array('d', [-106.84237763060068, -10.965517384802226,
+                                       -180.90711470797237, -218.20896751607663, -96.4271589961865,
+                                       110.51551963099622, 108.34616947202511, 30.1720109214627,
+                                       57.92205878998479, 77.82418885914053, 49.972060923364765,
+                                       68.56117081695875, 15.996949915551697, -34.22744443808294,
+                                       -19.762696110319702, -28.447329394752995,
+                                       -50.62864370485592, -47.37357781048561, -99.82613515424342,
+                                       13.985531117918336, 41.41709671929987, -34.679807275938174,
+                                       62.75626094547859, 30.925078688018893, 12.130320819235365,
+                                       119.3648998377624, 82.96422756064737, -6.920397563039609,
+                                       -12.701774870569059, 24.883730398016034, -74.22855883237567,
+                                       -0.8012436194087567, -83.03683748750394, 46.737839617687854,
+                                       0.537404558240671, 48.53591837633138, -86.2259777783834,
+                                       -24.985514024179967, 6.396035456152859, -90.19454995571908,
+                                       32.05821807667601, -83.08553684151566, -28.32223999320023,
+                                       113.28916673506842, 68.10498750807977, 173.9146410394573,
+                                       -150.2067507947196, -74.10346402222962, 54.39153137687993])
+    assert np.allclose(y_pred, expected_predictions)
 
     error = mean_absolute_error(y_true, y_pred)
-    expected_error = 152.12931270533377
+    expected_error = 115.78916175164417
     assert np.isclose(error, expected_error)
 
     expected_info = "HoeffdingTreeRegressor(binary_split=False, grace_period=200, leaf_prediction='perceptron', " \
@@ -113,23 +114,39 @@ def test_hoeffding_tree_regressor_perceptron():
     assert type(learner.predict(X)) == np.ndarray
 
 
-def test_hoeffding_tree_regressor_coverage(test_path):
-    # Cover nominal attribute observer
-    test_file = os.path.join(test_path, 'regression_data.npz')
-    data = np.load(test_file)
-    X = data['X']
-    y = data['y']
+def test_hoeffding_tree_regressor_coverage():
+    max_samples = 1000
+    max_size_mb = 2
+
+    stream = RegressionGenerator(
+        n_samples=max_samples, n_features=10, n_informative=7, n_targets=1,
+        random_state=42
+    )
+    X, y = stream.next_sample(max_samples)
+
+    # Cover memory management
+    tree = HoeffdingTreeRegressor(
+        leaf_prediction='mean', grace_period=100,
+        memory_estimate_period=100, max_byte_size=max_size_mb*2**20
+    )
+    tree.partial_fit(X, y)
+
+    # A tree without memory management enabled reaches over 3 MB in size
+    assert calculate_object_size(tree, 'MB') <= max_size_mb
 
     # Typo in leaf prediction
-    learner = HoeffdingTreeRegressor(
-        leaf_prediction='percptron', nominal_attributes=[i for i in range(3)]
+    tree = HoeffdingTreeRegressor(
+        leaf_prediction='percptron', grace_period=100,
+        memory_estimate_period=100, max_byte_size=max_size_mb*2**20
     )
-    print(learner.split_criterion)
     # Invalid split_criterion
-    learner.split_criterion = 'VR'
-    learner.partial_fit(X, y)
+    tree.split_criterion = 'VR'
 
-    assert learner._estimator_type == 'regressor'
+    tree.partial_fit(X, y)
+    assert calculate_object_size(tree, 'MB') <= max_size_mb
+
+    tree.reset()
+    assert tree._estimator_type == 'regressor'
 
 
 def test_hoeffding_tree_regressor_model_description():

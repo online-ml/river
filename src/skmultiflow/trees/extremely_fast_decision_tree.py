@@ -9,7 +9,7 @@ from skmultiflow.trees.nodes import AnyTimeActiveLearningNode
 from skmultiflow.trees.nodes import AnyTimeInactiveLearningNode
 from skmultiflow.trees.nodes import AnyTimeLearningNodeNB
 from skmultiflow.trees.nodes import AnyTimeLearningNodeNBAdaptive
-from skmultiflow.utils import get_dimensions, calculate_object_size
+from skmultiflow.utils import get_dimensions
 
 import warnings
 
@@ -31,12 +31,6 @@ def HATT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=20
                                                leaf_prediction=leaf_prediction,
                                                nb_threshold=nb_threshold,
                                                nominal_attributes=nominal_attributes)
-
-GINI_SPLIT = 'gini'
-INFO_GAIN_SPLIT = 'info_gain'
-MAJORITY_CLASS = 'mc'
-NAIVE_BAYES = 'nb'
-NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
@@ -122,16 +116,20 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     """
 
     # Override _new_learning_node
-    def _new_learning_node(self, initial_class_observations=None):
+    def _new_learning_node(self, initial_class_observations=None, is_active_node=True):
         """ Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
-        if self._leaf_prediction == MAJORITY_CLASS:
-            return AnyTimeActiveLearningNode(initial_class_observations)
-        elif self._leaf_prediction == NAIVE_BAYES:
-            return AnyTimeLearningNodeNB(initial_class_observations)
-        else:  # NAIVE BAYES ADAPTIVE (default)
-            return AnyTimeLearningNodeNBAdaptive(initial_class_observations)
+
+        if is_active_node:
+            if self._leaf_prediction == self._MAJORITY_CLASS:
+                return AnyTimeActiveLearningNode(initial_class_observations)
+            elif self._leaf_prediction == self._NAIVE_BAYES:
+                return AnyTimeLearningNodeNB(initial_class_observations)
+            else:  # NAIVE BAYES ADAPTIVE (default)
+                return AnyTimeLearningNodeNBAdaptive(initial_class_observations)
+        else:
+            return AnyTimeInactiveLearningNode(initial_class_observations)
 
     # Override new_split_node
     def new_split_node(self, split_test, class_observations, attribute_observers):
@@ -386,9 +384,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         stop_flag = False
         if not node.observed_class_distribution_is_pure():
-            if self._split_criterion == GINI_SPLIT:
+            if self._split_criterion == self._GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
-            elif self._split_criterion == INFO_GAIN_SPLIT:
+            elif self._split_criterion == self._INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
@@ -507,9 +505,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         """
 
         if not node.observed_class_distribution_is_pure():
-            if self._split_criterion == GINI_SPLIT:
+            if self._split_criterion == self._GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
-            elif self._split_criterion == INFO_GAIN_SPLIT:
+            elif self._split_criterion == self._INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
@@ -580,131 +578,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         return leaf
 
-    # Override enforce_tracker_limit
-    def enforce_tracker_limit(self):
-        """ Track the size of the tree and disable/enable nodes if required."""
-        byte_size = (self._active_leaf_byte_size_estimate
-                     + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate) \
-                    * self._byte_size_estimate_overhead_fraction
-
-        if self._inactive_leaf_node_cnt > 0 or byte_size > self.max_byte_size:
-            if self.stop_mem_management:
-                self._growth_allowed = False
-                return
-        learning_nodes = self._find_learning_nodes()
-        learning_nodes.sort(key=lambda n: n.node.calculate_promise())
-        max_active = 0
-        while max_active < len(learning_nodes):
-            max_active += 1
-            if ((max_active * self._active_leaf_byte_size_estimate + (len(learning_nodes) - max_active)
-                 * self._inactive_leaf_byte_size_estimate) * self._byte_size_estimate_overhead_fraction) \
-                    > self.max_byte_size:
-                max_active -= 1
-                break
-        cutoff = len(learning_nodes) - max_active
-        for i in range(cutoff):
-            if isinstance(learning_nodes[i].node, AnyTimeActiveLearningNode):
-                self._deactivate_learning_node(learning_nodes[i].node,
-                                               learning_nodes[i].parent,
-                                               learning_nodes[i].parent_branch)
-        for i in range(cutoff, len(learning_nodes)):
-            if isinstance(learning_nodes[i].node, AnyTimeInactiveLearningNode):
-                self._activate_learning_node(learning_nodes[i].node,
-                                             learning_nodes[i].parent,
-                                             learning_nodes[i].parent_branch)
-
-    # Override _estimate_model_byte_size
-    def estimate_model_byte_size(self):
-        """ Calculate the size of the model and trigger tracker function if the actual model size exceeds the max size
-        in the configuration."""
-        learning_nodes = self._find_learning_nodes()
-        total_active_size = 0
-        total_inactive_size = 0
-        for found_node in learning_nodes:
-            if isinstance(found_node.node, AnyTimeActiveLearningNode):
-                total_active_size += calculate_object_size(found_node.node)
-            else:
-                total_inactive_size += calculate_object_size(found_node.node)
-        if total_active_size > 0:
-            self._active_leaf_byte_size_estimate = total_active_size / self._active_leaf_node_cnt
-        if total_inactive_size > 0:
-            self._inactive_leaf_byte_size_estimate = total_inactive_size / self._inactive_leaf_node_cnt
-        actual_model_size = calculate_object_size(self)
-        estimated_model_size = (self._active_leaf_node_cnt * self._active_leaf_byte_size_estimate
-                                + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate)
-        self._byte_size_estimate_overhead_fraction = actual_model_size / estimated_model_size
-        if actual_model_size > self.max_byte_size:
-            self.enforce_tracker_limit()
-
-    #  Override deactivate_all_leaves
-    def deactivate_all_leaves(self):
-        """ Deactivate all leaves. """
-        learning_nodes = self._find_learning_nodes()
-        for i in range(len(learning_nodes)):
-            if isinstance(learning_nodes[i], AnyTimeActiveLearningNode):
-                self._deactivate_learning_node(learning_nodes[i].node,
-                                               learning_nodes[i].parent,
-                                               learning_nodes[i].parent_branch)
-
-    # Override _deactivate_learning_node
-    def _deactivate_learning_node(self, to_deactivate: AnyTimeActiveLearningNode, parent: AnyTimeSplitNode,
-                                  parent_branch: int):
-        """ Deactivate a learning node.
-
-        Parameters
-        ----------
-        to_deactivate: AnyTimeActiveLearningNode
-            The node to deactivate.
-        parent:  AnyTimeSplitNode
-            The node's parent.
-        parent_branch: int
-            Parent node's branch index.
-
-        """
-        new_leaf = AnyTimeInactiveLearningNode(to_deactivate.get_observed_class_distribution())
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            parent.set_child(parent_branch, new_leaf)
-        self._active_leaf_node_cnt -= 1
-        self._inactive_leaf_node_cnt += 1
-
-    # Override _activate_learning_node
-    def _activate_learning_node(self, to_activate: AnyTimeInactiveLearningNode, parent: AnyTimeSplitNode,
-                                parent_branch: int):
-        """ Activate a learning node.
-
-        Parameters
-        ----------
-        to_activate: AnyTimeInactiveLearningNode
-            The node to activate.
-        parent: AnyTimeSplitNode
-            The node's parent.
-        parent_branch: int
-            Parent node's branch index.
-
-        """
-        new_leaf = self._new_learning_node(to_activate.get_observed_class_distribution())
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            parent.set_child(parent_branch, new_leaf)
-        self._active_leaf_node_cnt += 1
-        self._inactive_leaf_node_cnt -= 1
-
-    # Override measure_byte_size
-    def measure_byte_size(self):
-        """ Calculate the size of the tree.
-
-        Returns
-        -------
-        int
-            Size of the tree in bytes.
-
-        """
-        return calculate_object_size(self)
-
-    # Override rest
+    # Override reset
     def reset(self):
         """ Reset the Hoeffding Anytime Tree to default values."""
         self._tree_root = None
@@ -716,20 +590,3 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         self._byte_size_estimate_overhead_fraction = 1.0
         self._growth_allowed = True
         self._train_weight_seen_by_model = 0.0
-
-    def get_model_description(self):
-        """ Walk the tree and return its structure in a buffer.
-
-        Returns
-        -------
-        string
-            The description of the model.
-
-        """
-        if self._tree_root is not None:
-            buffer = ['']
-            description = ''
-            self._tree_root.describe_subtree(self, buffer, 0)
-            for line in range(len(buffer)):
-                description += buffer[line]
-            return description

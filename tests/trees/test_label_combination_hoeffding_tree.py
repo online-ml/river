@@ -1,6 +1,7 @@
 import numpy as np
 from skmultiflow.trees import LabelCombinationHoeffdingTreeClassifier
 from skmultiflow.data import MultilabelGenerator
+from skmultiflow.utils import calculate_object_size
 
 
 def test_label_combination_hoeffding_tree_mc(test_path):
@@ -23,7 +24,6 @@ def test_label_combination_hoeffding_tree_mc(test_path):
             proba_predictions.append(learner.predict_proba(X)[0])
         cnt += 1
 
-    print(predictions)
     expected_predictions = [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1],
                             [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1],
                             [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1],
@@ -68,7 +68,6 @@ def test_label_combination_hoeffding_tree_nb(test_path):
             proba_predictions.append(learner.predict_proba(X)[0])
         cnt += 1
 
-    print(predictions)
     expected_predictions = [[0, 0, 1], [1, 1, 1], [0, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 1],
                             [1, 1, 0], [1, 1, 1], [1, 1, 1], [1, 1, 1], [0, 0, 0], [0, 1, 0],
                             [1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 1], [0, 1, 1], [1, 1, 1],
@@ -112,14 +111,13 @@ def test_label_combination_hoeffding_tree_nba(test_path):
             proba_predictions.append(learner.predict_proba(X)[0])
         cnt += 1
 
-    print(predictions)
     expected_predictions = [[0, 0, 1], [1, 1, 1], [0, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 1], [1, 1, 0], [1, 1, 1],
-                           [1, 1, 1], [1, 1, 1], [0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 1],
-                           [0, 1, 1], [1, 1, 1], [0, 0, 0], [1, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1], [0, 0, 1],
-                           [1, 0, 1], [1, 1, 1], [1, 0, 0], [1, 1, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1], [0, 0, 0],
-                           [0, 1, 0], [1, 1, 1], [0, 1, 1], [1, 1, 0], [0, 0, 1], [0, 0, 0], [1, 1, 1], [1, 1, 1],
-                           [1, 0, 1], [0, 1, 1], [1, 1, 1], [1, 1, 1], [0, 1, 0], [0, 1, 0], [1, 1, 1], [1, 1, 1],
-                           [1, 1, 1]]
+                            [1, 1, 1], [1, 1, 1], [0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 1],
+                            [0, 1, 1], [1, 1, 1], [0, 0, 0], [1, 1, 0], [1, 0, 0], [1, 0, 1], [1, 1, 1], [0, 0, 1],
+                            [1, 0, 1], [1, 1, 1], [1, 0, 0], [1, 1, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1], [0, 0, 0],
+                            [0, 1, 0], [1, 1, 1], [0, 1, 1], [1, 1, 0], [0, 0, 1], [0, 0, 0], [1, 1, 1], [1, 1, 1],
+                            [1, 0, 1], [0, 1, 1], [1, 1, 1], [1, 1, 1], [0, 1, 0], [0, 1, 0], [1, 1, 1], [1, 1, 1],
+                            [1, 1, 1]]
 
     assert np.alltrue(predictions == expected_predictions)
     assert type(learner.predict(X)) == np.ndarray
@@ -132,3 +130,23 @@ def test_label_combination_hoeffding_tree_nba(test_path):
                     "tie_threshold=0.05)"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
+
+
+def test_label_combination_hoeffding_tree_coverage():
+    # Cover memory management
+    max_samples = 10000
+    max_size_kb = 50
+    stream = MultilabelGenerator(
+        n_samples=10000, n_features=15, n_targets=3, n_labels=4, random_state=112
+    )
+
+    # Unconstrained model has over 62 kB
+    learner = LabelCombinationHoeffdingTreeClassifier(
+        n_labels=3, leaf_prediction='mc', memory_estimate_period=200,
+        max_byte_size=max_size_kb*2**10
+    )
+
+    X, y = stream.next_sample(max_samples)
+    learner.partial_fit(X, y)
+
+    assert calculate_object_size(learner, 'kB') <= max_size_kb
