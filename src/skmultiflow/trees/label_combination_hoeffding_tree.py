@@ -1,9 +1,8 @@
 import numpy as np
 from skmultiflow.core import MultiOutputMixin
 from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
-from skmultiflow.utils import *
+from skmultiflow.utils import get_dimensions
 
-from skmultiflow.trees.nodes import SplitNode
 from skmultiflow.trees.nodes import LCActiveLearningNode
 from skmultiflow.trees.nodes import LCInactiveLearningNode
 from skmultiflow.trees.nodes import LCLearningNodeNB
@@ -32,11 +31,6 @@ def LCHT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=20
                                                    nb_threshold=nb_threshold,
                                                    nominal_attributes=nominal_attributes,
                                                    n_labels=n_labels)
-
-
-MAJORITY_CLASS = 'mc'
-NAIVE_BAYES = 'nb'
-NAIVE_BAYES_ADAPTIVE = 'nba'
 
 
 class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutputMixin):
@@ -210,37 +204,21 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
 
         return np.array(predictions)
 
-    def _new_learning_node(self, initial_class_observations=None):
-        """Create a new learning node. The type of learning node depends on the tree configuration."""
+    def _new_learning_node(self, initial_class_observations=None, is_active_node=True):
+        """Create a new learning node. The type of learning node depends on the tree
+        configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
-        if self._leaf_prediction == MAJORITY_CLASS:
-            return LCActiveLearningNode(initial_class_observations)
-        elif self._leaf_prediction == NAIVE_BAYES:
-            return LCLearningNodeNB(initial_class_observations)
-        else:  # NAIVE BAYES ADAPTIVE (default)
-            return LCLearningNodeNBA(initial_class_observations)
 
-    def _deactivate_learning_node(self, to_deactivate: LCActiveLearningNode, parent: SplitNode, parent_branch: int):
-        """Deactivate a learning node.
-
-        Parameters
-        ----------
-        to_deactivate: LCActiveLearningNode
-            The node to deactivate.
-        parent: SplitNode
-            The node's parent.
-        parent_branch: int
-            Parent node's branch index.
-
-        """
-        new_leaf = LCInactiveLearningNode(to_deactivate.get_observed_class_distribution())
-        if parent is None:
-            self._tree_root = new_leaf
+        if is_active_node:
+            if self._leaf_prediction == self._MAJORITY_CLASS:
+                return LCActiveLearningNode(initial_class_observations)
+            elif self._leaf_prediction == self._NAIVE_BAYES:
+                return LCLearningNodeNB(initial_class_observations)
+            else:  # NAIVE BAYES ADAPTIVE (default)
+                return LCLearningNodeNBA(initial_class_observations)
         else:
-            parent.set_child(parent_branch, new_leaf)
-        self._active_leaf_node_cnt -= 1
-        self._inactive_leaf_node_cnt += 1
+            return LCInactiveLearningNode(initial_class_observations)
 
     @staticmethod
     def _more_tags():

@@ -12,7 +12,7 @@ import warnings
 def HAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, split_criterion='info_gain',
         split_confidence=0.0000001, tie_threshold=0.05, binary_split=False, stop_mem_management=False,
         remove_poor_atts=False, no_preprune=False, leaf_prediction='nba', nb_threshold=0, nominal_attributes=None,
-        bootstrap_sampling=True):     # pragma: no cover
+        bootstrap_sampling=True, random_state=None):     # pragma: no cover
     warnings.warn("'HAT' has been renamed to 'HoeffdingAdaptiveTreeClassifier' in v0.5.0.\n"
                   "The old name will be removed in v0.7.0", category=FutureWarning)
     return HoeffdingAdaptiveTreeClassifier(max_byte_size=max_byte_size,
@@ -28,13 +28,8 @@ def HAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200
                                            leaf_prediction=leaf_prediction,
                                            nb_threshold=nb_threshold,
                                            nominal_attributes=nominal_attributes,
-                                           bootstrap_sampling=bootstrap_sampling)
-
-
-MAJORITY_CLASS = 'mc'
-NAIVE_BAYES = 'nb'
-NAIVE_BAYES_ADAPTIVE = 'nba'
-ERROR_WIDTH_THRESHOLD = 300
+                                           bootstrap_sampling=bootstrap_sampling,
+                                           random_state=random_state)
 
 
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
@@ -91,6 +86,12 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     bootstrap_sampling: bool, optional (default=True)
         If True, perform bootstrap sampling in the leaf nodes.
 
+    random_state: int, RandomState instance or None, optional (default=None)
+       If int, random_state is the seed used by the random number generator;
+       If RandomState instance, random_state is the random number generator;
+       If None, the random number generator is the RandomState instance used
+       by `np.random`. Only used when ``bootstrap_sampling=True`` to direct the bootstrap sampling.
+
     Notes
     -----
     The Hoeffding Adaptive Tree [1]_ uses ADWIN [2]_ to monitor performance of branches on the tree and to replace them
@@ -125,6 +126,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     # =============================================
     # == Hoeffding Adaptive Tree implementation ===
     # =============================================
+    _ERROR_WIDTH_THRESHOLD = 300
 
     def __init__(self,
                  max_byte_size=33554432,
@@ -140,7 +142,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                  leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None,
-                 bootstrap_sampling=True):
+                 bootstrap_sampling=True,
+                 random_state=None):
 
         super(HoeffdingAdaptiveTreeClassifier, self).__init__(max_byte_size=max_byte_size,
                                                               memory_estimate_period=memory_estimate_period,
@@ -159,6 +162,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.pruned_alternate_trees_cnt = 0
         self.switch_alternate_trees_cnt = 0
         self.bootstrap_sampling = bootstrap_sampling
+        self.random_state = random_state
         self._tree_root = None
 
     def reset(self):
@@ -203,8 +207,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     # Override HoeffdingTreeClassifier
     def _new_learning_node(self, initial_class_observations=None):
-        return AdaLearningNode(initial_class_observations)
+        return AdaLearningNode(initial_class_observations, self.random_state)
 
     # Override HoeffdingTreeClassifier
     def new_split_node(self, split_test, class_observations):
-        return AdaSplitNode(split_test, class_observations)
+        return AdaSplitNode(split_test, class_observations, self.random_state)
