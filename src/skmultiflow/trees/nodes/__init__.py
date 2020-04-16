@@ -30,12 +30,16 @@ from .active_learning_node_for_regression import ActiveLearningNodeForRegression
 from .active_learning_node_perceptron import ActiveLearningNodePerceptron
 from .inactive_learning_node_for_regression import InactiveLearningNodeForRegression
 from .inactive_learning_node_perceptron import InactiveLearningNodePerceptron
+from .random_learning_node_for_regression import RandomLearningNodeForRegression
+from .random_learning_node_perceptron import RandomLearningNodePerceptron
 from .ada_split_node_for_regression import AdaSplitNodeForRegression
 from .ada_learning_node_for_regression import AdaLearningNodeForRegression
-from .active_learning_node_for_regression_multi_target import ActiveLearningNodeForRegressionMultiTarget
+from .active_learning_node_for_regression_multi_target import \
+    ActiveLearningNodeForRegressionMultiTarget
 from .active_learning_node_perceptron_multi_target import ActiveLearningNodePerceptronMultiTarget
 from .active_learning_node_adaptive_multi_target import ActiveLearningNodeAdaptiveMultiTarget
-from .inactive_learning_node_perceptron_multi_target import InactiveLearningNodePerceptronMultiTarget
+from .inactive_learning_node_perceptron_multi_target import \
+    InactiveLearningNodePerceptronMultiTarget
 from .inactive_learning_node_adaptive_multi_target import InactiveLearningNodeAdaptiveMultiTarget
 from .sst_active_learning_node import SSTActiveLearningNode
 from .sst_active_learning_node_adaptive import SSTActiveLearningNodeAdaptive
@@ -45,13 +49,14 @@ from .sst_inactive_learning_node_adaptive import SSTInactiveLearningNodeAdaptive
 
 __all__ = ["FoundNode", "Node", "SplitNode", "LearningNode", "ActiveLearningNode",
            "InactiveLearningNode", "LearningNodeNB", "LearningNodeNBAdaptive",
-           "RandomLearningNodeClassification", "RandomLearningNodeNB", "RandomLearningNodeNBAdaptive",
-           "AdaNode", "AdaSplitNode", "AdaLearningNode", "AnyTimeSplitNode",
-           "AnyTimeActiveLearningNode", "AnyTimeInactiveLearningNode",
+           "RandomLearningNodeClassification", "RandomLearningNodeNB",
+           "RandomLearningNodeNBAdaptive", "AdaNode", "AdaSplitNode", "AdaLearningNode",
+           "AnyTimeSplitNode", "AnyTimeActiveLearningNode", "AnyTimeInactiveLearningNode",
            "AnyTimeLearningNodeNB", "AnyTimeLearningNodeNBAdaptive",
            "LCActiveLearningNode", "LCInactiveLearningNode", "LCLearningNodeNB",
            "LCLearningNodeNBA", "ActiveLearningNodeForRegression", "ActiveLearningNodePerceptron",
            "InactiveLearningNodeForRegression", "InactiveLearningNodePerceptron",
+           "RandomLearningNodeForRegression", "RandomLearningNodePerceptron",
            "AdaSplitNodeForRegression", "AdaLearningNodeForRegression",
            "ActiveLearningNodeForRegressionMultiTarget", "ActiveLearningNodePerceptronMultiTarget",
            "ActiveLearningNodeAdaptiveMultiTarget", "InactiveLearningNodePerceptronMultiTarget",
