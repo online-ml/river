@@ -7,7 +7,7 @@ from skmultiflow.core import BaseSKMObject, RegressorMixin
 from skmultiflow.meta import AdaptiveRandomForestClassifier
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.drift_detection import ADWIN
-from skmultiflow.trees import ARFHoeffdingTreeRegressor
+from skmultiflow.trees.arf_hoeffding_tree_regressor import ARFHoeffdingTreeRegressor
 from skmultiflow.metrics.measure_collection import RegressionMeasurements
 from skmultiflow.utils import get_dimensions, check_random_state
 
@@ -247,12 +247,12 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
             self.instances_seen += 1
 
             for learner in self.ensemble:
-                y_predicted = learner.predict(X[i])
-                learner.evaluator.add_result(y_predicted, y)
                 k = self._random_state.poisson(self.lambda_value)
                 if k > 0:
-                    learner.partial_fit(X[i], y[i], sample_weight=np.asarray([k]),
-                                        instances_seen=self.instances_seen)
+                    learner.partial_fit(
+                        np.asarray([X[i]]), np.asarray([y[i]]), sample_weight=np.asarray([k]),
+                        instances_seen=self.instances_seen
+                    )
 
         return self
 
@@ -457,8 +457,7 @@ class ARFRegBaseLearner(BaseSKMObject):
         self._use_drift_detector = False
         self._use_background_learner = False
 
-        if self.performance_metric is not None:
-            self.evaluator = self.evaluator_method()
+        self.evaluator = self.evaluator_method()
 
         # Initialize drift and warning detectors
         if drift_detection_method is not None:
@@ -474,6 +473,7 @@ class ARFRegBaseLearner(BaseSKMObject):
         self._max_drift_data = float('-Inf')
 
     def _normalize_drift_input(self, drift_input):
+        drift_input = drift_input[0]
         if drift_input < self._min_drift_data:
             self._min_drift_data = drift_input
         if drift_input > self._max_drift_data:
@@ -498,31 +498,23 @@ class ARFRegBaseLearner(BaseSKMObject):
             self.estimator.reset()
             self.created_on = instances_seen
             self.drift_detection.reset()
-
-            if self.performance_metric is not None:
-                self.evaluator = self.evaluator_method()
+            self.evaluator = self.evaluator_method()
 
         # Reset normalization auxiliary variables
         self._min_drift_data = float('Inf')
         self._max_drift_data = float('-Inf')
 
     def partial_fit(self, X, y, sample_weight, instances_seen):
-        if self._use_drift_detector and not self.is_background_learner or \
-                self.performance_metric is not None:
-            predicted_value = self.estimator.predict(X)
-
-            # Keep track of learner's performance to weigth responses
-            if self.performance_metric is not None:
-                self.evaluator.add_result(y, predicted_value)
-
+        predicted_value = self.estimator.predict(X)
+        # Monitor base learner performance
+        self.evaluator.add_result(y, predicted_value)
         # Update learning model
+
         self.estimator.partial_fit(X, y, sample_weight=sample_weight)
 
         if self.background_learner:
-            # Track performance of the background learner
-            if self.performance_metric is not None:
-                prediction_background = self.background_learner.estimator.predict(X)
-                self.background_learner.evaluator.add_result(y, prediction_background)
+            prediction_background = self.background_learner.estimator.predict(X)
+            self.background_learner.evaluator.add_result(y, prediction_background)
 
             # Update background learner
             self.background_learner.estimator.partial_fit(X, y, sample_weight=sample_weight)
