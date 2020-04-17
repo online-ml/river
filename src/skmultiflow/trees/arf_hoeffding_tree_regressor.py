@@ -103,7 +103,8 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
         if is_active_node:
             if self.leaf_prediction == self._TARGET_MEAN:
                 return RandomLearningNodeForRegression(
-                    initial_class_observations, max_features=self.max_features
+                    initial_class_observations, max_features=self.max_features,
+                    random_state=self.random_state
                 )
             elif self.leaf_prediction == self._PERCEPTRON:
                 return RandomLearningNodePerceptron(
