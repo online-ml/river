@@ -330,6 +330,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                     learning_ratio_perceptron=self.learning_ratio_perceptron,
                     learning_ratio_decay=self.learning_ratio_decay,
                     learning_ratio_const=self.learning_ratio_const,
+                    max_features=self.max_features,
                     random_state=self.random_state
                 ),
                 instances_seen=self.instances_seen,
