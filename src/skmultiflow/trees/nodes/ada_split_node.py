@@ -10,8 +10,6 @@ from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.utils import check_random_state, get_max_value_key
 
-ERROR_WIDTH_THRESHOLD = 300
-
 
 class AdaSplitNode(SplitNode, AdaNode):
     """ Node that splits the data in a Hoeffding Adaptive Tree.
@@ -23,13 +21,13 @@ class AdaSplitNode(SplitNode, AdaNode):
     class_observations: dict (class_value, weight) or None
         Class observations
     """
-    def __init__(self, split_test, class_observations):
+    def __init__(self, split_test, class_observations, random_state=None):
         super().__init__(split_test, class_observations)
         self._estimation_error_weight = ADWIN()
         self._alternate_tree = None
         self.error_change = False
-        self._random_seed = 1
-        self._classifier_random = check_random_state(self._random_seed)
+
+        self._random_state = check_random_state(random_state)
 
     # Override AdaNode
     def number_leaves(self):
@@ -89,8 +87,8 @@ class AdaSplitNode(SplitNode, AdaNode):
 
         # Condition to replace alternate tree
         elif self._alternate_tree is not None and not self._alternate_tree.is_null_error():
-            if self.get_error_width() > ERROR_WIDTH_THRESHOLD \
-                    and self._alternate_tree.get_error_width() > ERROR_WIDTH_THRESHOLD:
+            if self.get_error_width() > hat._ERROR_WIDTH_THRESHOLD \
+                    and self._alternate_tree.get_error_width() > hat._ERROR_WIDTH_THRESHOLD:
                 old_error_rate = self.get_error_estimation()
                 alt_error_rate = self._alternate_tree.get_error_estimation()
                 fDelta = .05

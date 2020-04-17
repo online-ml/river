@@ -3,6 +3,7 @@ from array import array
 import os
 from skmultiflow.data import RandomTreeGenerator, SEAGenerator
 from skmultiflow.trees import HoeffdingTreeClassifier
+from skmultiflow.utils import calculate_object_size
 
 
 def test_hoeffding_tree_nb(test_path):
@@ -117,21 +118,27 @@ def test_hoeffding_tree_nba(test_path):
 
 def test_hoeffding_tree_coverage():
     # Cover memory management
-    stream = SEAGenerator(random_state=1, noise_percentage=0.05)
-    X, y = stream.next_sample(5000)
+    max_samples = 5000
+    max_size_kb = 50
+    stream = RandomTreeGenerator(
+        tree_random_state=23, sample_random_state=12, n_classes=10,
+        n_cat_features=2, n_num_features=5, n_categories_per_cat_feature=5,
+        max_tree_depth=15, min_leaf_depth=3, fraction_leaves_per_level=0.15
+    )
 
-    learner = HoeffdingTreeClassifier(max_byte_size=30, memory_estimate_period=100, grace_period=10, leaf_prediction='mc')
+    nominal_attr_idx = [x for x in range(5, stream.n_features)]
+    # Unconstrained model has over 72 kB
+    learner = HoeffdingTreeClassifier(
+        nominal_attributes=nominal_attr_idx, leaf_prediction='mc', memory_estimate_period=100,
+        max_byte_size=max_size_kb*2**10
+    )
 
-    learner.partial_fit(X, y, classes=stream.target_values)
+    X, y = stream.next_sample(max_samples)
+    learner.partial_fit(X, y)
+
+    assert calculate_object_size(learner, 'kB') <= max_size_kb
 
     learner.reset()
-
-    # Cover nominal attribute observer
-    stream = RandomTreeGenerator(tree_random_state=1, sample_random_state=1, n_num_features=0,
-                                 n_categories_per_cat_feature=2)
-    X, y = stream.next_sample(1000)
-    learner = HoeffdingTreeClassifier(leaf_prediction='mc', nominal_attributes=[i for i in range(10)])
-    learner.partial_fit(X, y, classes=stream.target_values)
 
 
 def test_hoeffding_tree_model_information():

@@ -1,4 +1,7 @@
+from copy import deepcopy
+
 import numpy as np
+
 from skmultiflow.trees.nodes import ActiveLearningNodePerceptron
 from skmultiflow.trees.attribute_observer import NumericAttributeRegressionObserverMultiTarget
 from skmultiflow.trees.attribute_observer import NominalAttributeRegressionObserver
@@ -17,21 +20,22 @@ class ActiveLearningNodePerceptronMultiTarget(ActiveLearningNodePerceptron):
         online variance calculation. They refer to the number of observations
         (key '0'), the sum of the targets values (key '1'), and the sum of the
         squared targets values (key '2').
-    perceptron_weight: np.ndarray(n_targets, n_features) or None, optional
-        (default=None)
-        The weights for the linear models that predict the targets values. If
-        not passed, uniform values in the range [-1, 1] are used.
+    parent_node: ActiveLearningNodePerceptronMultiTarget (default=None)
+        A node containing statistics about observed data.
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_class_observations, perceptron_weight=None,
+    def __init__(self, initial_class_observations, parent_node=None,
                  random_state=None):
         """ActiveLearningNodePerceptronMultiTarget class constructor."""
         super().__init__(initial_class_observations)
-        self.perceptron_weight = perceptron_weight
+        if parent_node is None:
+            self.perceptron_weight = None
+        else:
+            self.perceptron_weight = deepcopy(parent_node.perceptron_weight)
         self.random_state = check_random_state(random_state)
 
     def learn_from_instance(self, X, y, weight, rht):
@@ -53,10 +57,7 @@ class ActiveLearningNodePerceptronMultiTarget(ActiveLearningNodePerceptron):
             _, rows = get_dimensions(y)
             _, cols = get_dimensions(X)
 
-            self.perceptron_weight = self.random_state.uniform(-1.0, 1.0,
-                                                               (rows,
-                                                                cols + 1)
-                                                               )
+            self.perceptron_weight = self.random_state.uniform(-1.0, 1.0, (rows, cols + 1))
             self.normalize_perceptron_weights()
 
         try:

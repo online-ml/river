@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics import mean_absolute_error
 from skmultiflow.data import RegressionGenerator
 from skmultiflow.trees import StackedSingleTargetHoeffdingTreeRegressor
+from skmultiflow.utils import calculate_object_size
 from difflib import SequenceMatcher
 
 
@@ -38,7 +39,8 @@ def test_stacked_single_target_hoeffding_tree_regressor_perceptron(test_path):
     expected_predictions = np.load(test_file)
     assert np.allclose(y_pred, expected_predictions)
     error = mean_absolute_error(y_true, y_pred)
-    expected_error = 151.52171404209466
+
+    expected_error = 154.59132974633712
     assert np.isclose(error, expected_error)
 
     expected_info = "StackedSingleTargetHoeffdingTreeRegressor(binary_split=False, grace_period=200,\n" \
@@ -92,7 +94,8 @@ def test_stacked_single_target_hoeffding_tree_regressor_adaptive(test_path):
 
     assert np.allclose(y_pred, expected_predictions)
     error = mean_absolute_error(y_true, y_pred)
-    expected_error = 150.7836894811965
+
+    expected_error = 152.8716829154756
     assert np.isclose(error, expected_error)
 
     expected_info = "StackedSingleTargetHoeffdingTreeRegressor(binary_split=False, grace_period=200,\n" \
@@ -114,24 +117,37 @@ def test_stacked_single_target_hoeffding_tree_regressor_adaptive(test_path):
     assert isinstance(learner.get_model_description(), type(''))
 
 
-def test_hoeffding_tree_coverage(test_path):
-    # Cover nominal attribute observer
-    test_file = os.path.join(test_path, 'multi_target_regression_data.npz')
-    data = np.load(test_file)
-    X = data['X']
-    Y = data['Y']
+def test_hoeffding_tree_coverage():
+    max_samples = 1000
+    max_size_mb = 2
+
+    stream = RegressionGenerator(
+        n_samples=max_samples, n_features=10, n_informative=7, n_targets=3,
+        random_state=42
+    )
+    X, y = stream.next_sample(max_samples)
 
     # Will generate a warning concerning the invalid leaf prediction option
-    learner = StackedSingleTargetHoeffdingTreeRegressor(
-        leaf_prediction='mean',
-        nominal_attributes=[i for i in range(3)],
-        learning_ratio_const=False
+    tree = StackedSingleTargetHoeffdingTreeRegressor(
+        leaf_prediction='mean', grace_period=200,
+        memory_estimate_period=100, max_byte_size=max_size_mb*2**20
     )
 
     # Trying to predict without fitting
-    learner.predict(X[0])
+    tree.predict(X[0])
 
-    learner.partial_fit(X, Y)
+    tree.partial_fit(X, y)
+
+    # A tree without memory management enabled reaches over 3 MB in size
+    assert calculate_object_size(tree, 'MB') <= max_size_mb
+
+    tree = StackedSingleTargetHoeffdingTreeRegressor(
+        leaf_prediction='adaptive', grace_period=200,
+        memory_estimate_period=100, max_byte_size=max_size_mb*2**20,
+        learning_ratio_const=False
+    )
+    tree.partial_fit(X, y)
+    assert calculate_object_size(tree, 'MB') <= max_size_mb
 
 
 def test_stacked_single_target_hoeffding_tree_categorical_features(test_path):
