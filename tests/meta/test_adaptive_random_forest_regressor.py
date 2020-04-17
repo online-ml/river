@@ -13,7 +13,7 @@ def test_adaptive_random_forest_regressor_mean():
         weighted_vote_strategy=None, drift_detection_criteria='mse', random_state=1
     )
     learner2 = AdaptiveRandomForestRegressor(
-        n_estimators=3, max_features='auto', leaf_prediction='mean', aggregation_method='median',
+        n_estimators=3, max_features=0.2, leaf_prediction='mean', aggregation_method='median',
         weighted_vote_strategy=None, drift_detection_criteria='mae', random_state=1
     )
     learner3 = AdaptiveRandomForestRegressor(
@@ -72,7 +72,7 @@ def test_adaptive_random_forest_regressor_perceptron():
     stream = RegressionGenerator(n_samples=500, n_features=20, n_informative=15, random_state=1)
 
     learner1 = AdaptiveRandomForestRegressor(
-        n_estimators=3, max_features='log', leaf_prediction='perceptron',
+        n_estimators=3, max_features='log2', leaf_prediction='perceptron',
         aggregation_method='mean', weighted_vote_strategy='mae', random_state=1
     )
     learner2 = AdaptiveRandomForestRegressor(
@@ -80,7 +80,7 @@ def test_adaptive_random_forest_regressor_perceptron():
         aggregation_method='median', weighted_vote_strategy=None, random_state=1
     )
     learner3 = AdaptiveRandomForestRegressor(
-        n_estimators=3, max_features='auto', leaf_prediction='perceptron',
+        n_estimators=3, max_features=4, leaf_prediction='perceptron',
         aggregation_method='mean', weighted_vote_strategy='mse', random_state=1,
         learning_ratio_const=False
     )
@@ -116,6 +116,8 @@ def test_adaptive_random_forest_regressor_perceptron():
     assert np.isclose(error1, expected_error1)
     assert np.isclose(error2, expected_error2)
     assert np.isclose(error3, expected_error3)
+
+    learner1.reset()
 
     expected_info = "AdaptiveRandomForestRegressor(aggregation_method='median', " \
                     "binary_split=False, drift_detection_criteria='mse', " \
