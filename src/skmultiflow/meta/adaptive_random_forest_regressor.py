@@ -20,7 +20,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
     n_estimators: int, optional (default=10)
         Number of trees in the ensemble.
 
-    max_features : int, float, string or None, optional (default="auto")
+    max_features : int, float, str or None, optional (default="auto")
         Max number of attributes for each node split.
         - If int, then consider ``max_features`` features at each split.
         - If float, then ``max_features`` is a percentage and
@@ -32,22 +32,23 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         - If "log2", then ``max_features=log2(n_features)``.
         - If None, then ``max_features=n_features``.
 
-    disable_weighted_vote: bool, optional (default=True)
-        Weighted vote option.
-
     lambda_value: int, optional (default=6)
         The lambda value for bagging (lambda=6 corresponds to Leverage
         Bagging).
 
-    performance_metric: string, optional (default='mse')
-        Metric used to track trees performance within the ensemble.
-        - 'mse' - Mean Square Error
-        - 'mae' - Mean Absolute Error
-
-    aggregation_method: string (default='mean')
+    aggregation_method: str, optional (default='mean')
         The method to use to aggregate predictions in the ensemble.
         - 'mean'
         - 'median'
+
+    weighted_vote_strategy: str or None, optional (default=None)
+        Metric used to weight individual tree's responses when aggregating them. Only used when
+        ``aggregation_method='mean'``. Possible values are:
+            - None: Do not assign weights to individual tree's predictions. Use the arithmetic mean
+                instead.
+            - 'mse': Weight predictions using trees' Mean Square Error
+            - 'mae': Weight predictions using trees' Mean Absolute Error
+
 
     drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
         Drift Detection method. Set to None to disable Drift detection.
@@ -55,7 +56,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
     warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
         Warning Detection method. Set to None to disable warning detection.
 
-    drift_detection_criteria: str (default='mse')
+    drift_detection_criteria: str, optional (default='mse')
         The criteria used to track drifts.
             - 'mse' - Mean Square Error
             - 'mae' - Mean Absolute Error
@@ -99,7 +100,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         (`ARFHoeffdingTreeRegressor` parameter)
         If True, disable pre-pruning.
 
-    leaf_prediction: string, optional (default='perceptron')
+    leaf_prediction: str, optional (default='perceptron')
         (`ARFHoeffdingTreeRegressor` parameter)
         Prediction mechanism used at leafs.
         - 'mean' - Target mean
@@ -160,9 +161,8 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                  # Forest parameters
                  n_estimators: int = 10,
                  max_features='auto',
-                 disable_weighted_vote: bool = True,
-                 performance_metric: str = 'mse',
                  aggregation_method: str = 'mean',
+                 weighted_vote_strategy: str = None,
                  lambda_value: int = 6,
                  drift_detection_method: BaseDriftDetector = ADWIN(0.001),
                  warning_detection_method: BaseDriftDetector = ADWIN(0.01),
@@ -185,7 +185,6 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                  random_state=None):
         super().__init__(n_estimators=n_estimators,
                          max_features=max_features,
-                         disable_weighted_vote=disable_weighted_vote,
                          lambda_value=lambda_value,
                          drift_detection_method=drift_detection_method,
                          warning_detection_method=warning_detection_method,
@@ -207,10 +206,10 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         self.learning_ratio_decay = learning_ratio_decay
         self.learning_ratio_const = learning_ratio_const
 
-        if performance_metric in [self._MSE, self._MAE]:
-            self.performance_metric = performance_metric
+        if weighted_vote_strategy in [self._MSE, self._MAE, None]:
+            self.weighted_vote_strategy = weighted_vote_strategy
         else:
-            raise ValueError('Invalid performance metric: {}'.format(performance_metric))
+            raise ValueError('Invalid weighted vote strategy: {}'.format(weighted_vote_strategy))
 
         if aggregation_method in [self._MEAN, self._MEDIAN]:
             self.aggregation_method = aggregation_method
@@ -279,6 +278,17 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
             predictions[i, :] = learner.predict(X)
 
         if self.aggregation_method == self._MEAN:
+            if self.weighted_vote_strategy is not None:
+                weights = np.array([learner.get_performance() for learner in self.ensemble])
+                sum_weights = np.sum(weights)
+
+                if sum_weights != 0:
+                    # The higher the error, the worse is the tree
+                    weights = sum_weights - weights
+                    # Normalize weights to sum up to 1
+                    weights = weights / np.sum(weights)
+                    return np.average(predictions, weights=weights, axis=0)
+
             return np.mean(predictions, axis=0)
         elif self.aggregation_method == self._MEDIAN:
             return np.median(predictions, axis=0)
@@ -303,7 +313,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         self._set_max_features(get_dimensions(X)[1])
 
         self.ensemble = [
-            ARFBaseLearner(
+            ARFRegBaseLearner(
                 index_original=i,
                 estimator=ARFHoeffdingTreeRegressor(
                     max_byte_size=self.max_byte_size,
@@ -325,7 +335,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                 instances_seen=self.instances_seen,
                 drift_detection_method=self.drift_detection_method,
                 warning_detection_method=self.warning_detection_method,
-                performance_metric=self.performance_metric,
+                performance_metric=self.weighted_vote_strategy,
                 drift_detection_criteria=self.drift_detection_criteria,
                 is_background_learner=False
             ) for i in range(self.n_estimators)
@@ -369,7 +379,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         return True
 
 
-class ARFBaseLearner(BaseSKMObject):
+class ARFRegBaseLearner(BaseSKMObject):
     """ARF Base Learner class.
 
     Parameters
@@ -377,7 +387,7 @@ class ARFBaseLearner(BaseSKMObject):
     index_original: int
         Tree index within the ensemble.
 
-    estimator: HoeffdingTreeRegressor
+    estimator: ARFHoeffdingTreeRegressor
         Tree estimator.
 
     instances_seen: int
@@ -389,24 +399,40 @@ class ARFBaseLearner(BaseSKMObject):
     warning_detection_method: BaseDriftDetector
         Warning Detection method.
 
+    performance_metric: str
+        Metric used to track trees performance within the ensemble.
+        - 'mse': Mean Square Error
+        - 'mae': Mean Absolute Error
+        - None: Do not track tree's performance
+
+    drift_detection_criteria: str
+        The criteria used to track drifts.
+            - 'mse' - Mean Square Error
+            - 'mae' - Mean Absolute Error
+            - 'predictions' - predicted target values
+
     is_background_learner: bool
         True if the tree is a background learner.
 
     Notes
     -----
     Inner class that represents a single tree member of the forest.
-    Contains analysis information, such as the numberOfDriftsDetected.
+    Contains analysis information, such as the number of drifts detected.
 
     """
 
-    # TODO: check the posssibility of using HATR as base learner
+    _MAE = 'mae'
+    _MSE = 'mse'
+
     def __init__(self,
-                 index_original,
-                 estimator: HoeffdingTreeRegressor,
-                 instances_seen,
+                 index_original: int,
+                 estimator: ARFHoeffdingTreeRegressor,
+                 instances_seen: int,
                  drift_detection_method: BaseDriftDetector,
                  warning_detection_method: BaseDriftDetector,
-                 is_background_learner):  # TODO: check necessity of this parameter
+                 performance_metric: str,
+                 drift_detection_criteria: str,
+                 is_background_learner):
         self.index_original = index_original
         self.estimator = estimator
         self.created_on = instances_seen
@@ -416,6 +442,9 @@ class ARFBaseLearner(BaseSKMObject):
         # Drift and warning
         self.drift_detection_method = drift_detection_method
         self.warning_detection_method = warning_detection_method
+
+        self.performance_metric = performance_metric
+        self.drift_detection_criteria = drift_detection_criteria
 
         self.last_drift_on = 0
         self.last_warning_on = 0
@@ -428,7 +457,8 @@ class ARFBaseLearner(BaseSKMObject):
         self._use_drift_detector = False
         self._use_background_learner = False
 
-        self.evaluator = self.evaluator_method()
+        if self.performance_metric is not None:
+            self.evaluator = self.evaluator_method()
 
         # Initialize drift and warning detectors
         if drift_detection_method is not None:
@@ -439,10 +469,26 @@ class ARFBaseLearner(BaseSKMObject):
             self._use_background_learner = True
             self.warning_detection = deepcopy(warning_detection_method)
 
-    # TODO: verify the posssibility of renaming to 'swap' of something similar
+        # Normalization of info monitored by drift detectors
+        self._min_drift_data = float('Inf')
+        self._max_drift_data = float('-Inf')
+
+    def _normalize_drift_input(self, drift_input):
+        if drift_input < self._min_drift_data:
+            self._min_drift_data = drift_input
+        if drift_input > self._max_drift_data:
+            self._max_drift_data = drift_input
+
+        if self._min_drift_data != self._max_drift_data:
+            return (drift_input - self._min_drift_data) / \
+                (self._max_drift_data - self._min_drift_data)
+        else:
+            return 0.0
+
     def reset(self, instances_seen):
         if self._use_background_learner and self.background_learner is not None:
             self.estimator = self.background_learner.estimator
+            self.evaluator = self.background_learner.evaluator
             self.warning_detection = self.background_learner.warning_detection
             self.drift_detection = self.background_learner.drift_detection
             self.evaluator_method = self.background_learner.evaluator_method
@@ -452,54 +498,88 @@ class ARFBaseLearner(BaseSKMObject):
             self.estimator.reset()
             self.created_on = instances_seen
             self.drift_detection.reset()
-        self.evaluator = self.evaluator_method()
+
+            if self.performance_metric is not None:
+                self.evaluator = self.evaluator_method()
+
+        # Reset normalization auxiliary variables
+        self._min_drift_data = float('Inf')
+        self._max_drift_data = float('-Inf')
 
     def partial_fit(self, X, y, sample_weight, instances_seen):
+        if self._use_drift_detector and not self.is_background_learner or \
+                self.performance_metric is not None:
+            predicted_value = self.estimator.predict(X)
+
+            # Keep track of learner's performance to weigth responses
+            if self.performance_metric is not None:
+                self.evaluator.add_result(y, predicted_value)
+
+        # Update learning model
         self.estimator.partial_fit(X, y, sample_weight=sample_weight)
 
         if self.background_learner:
+            # Track performance of the background learner
+            if self.performance_metric is not None:
+                prediction_background = self.background_learner.estimator.predict(X)
+                self.background_learner.evaluator.add_result(y, prediction_background)
+
+            # Update background learner
             self.background_learner.estimator.partial_fit(X, y, sample_weight=sample_weight)
 
         if self._use_drift_detector and not self.is_background_learner:
-            predicted_value = self.estimator.predict(X)
+            # Select which kind of data is going to be monitored
+            if self.drift_detection_criteria == self._MSE:
+                drift_input = (y - predicted_value) * (y - predicted_value)
+            elif self.drift_detection_criteria == self._MAE:
+                drift_input = np.abs(y - predicted_value)
+            else:  # predictions
+                drift_input = predicted_value
 
-            # TODO: add here option to monitor errors
+            drift_input = self._normalize_drift_input(drift_input)
 
             # Check for warning only if use_background_learner is active
             if self._use_background_learner:
-                self.warning_detection.add_element(predicted_value)
+                self.warning_detection.add_element(drift_input)
                 # Check if there was a change
                 if self.warning_detection.detected_change():
                     self.last_warning_on = instances_seen
                     self.n_warnings_detected += 1
 
-                    # TODO: posssibility of using HATR as base leaner
-
                     # Create a new background tree estimator
                     background_learner = self.estimator.new_instance()
                     # Create a new background learner
-                    self.background_learner = \
-                        ARFBaseLearner(self.index_original,
-                                       background_learner,
-                                       instances_seen,
-                                       self.drift_detection_method,
-                                       self.warning_detection_method,
-                                       True)
+                    self.background_learner = ARFRegBaseLearner(
+                        index_original=self.index_original,
+                        estimator=background_learner,
+                        instances_seen=instances_seen,
+                        drift_detection_method=self.drift_detection_method,
+                        warning_detection_method=self.warning_detection_method,
+                        performance_metric=self.performance_metric,
+                        drift_detection_criteria=self.drift_detection_criteria,
+                        is_background_learner=True
+                    )
                     # Update the warning detection object for the current object
                     # (this effectively resets changes made to the object
                     # while it was still a bkg learner).
                     self.warning_detection.reset()
 
-            # TODO: options to monitor error
-
             # Update the drift detection
-            self.drift_detection.add_element(predicted_value)
+            self.drift_detection.add_element(drift_input)
 
             # Check if there was a change
             if self.drift_detection.detected_change():
                 self.last_drift_on = instances_seen
                 self.n_drifts_detected += 1
+                # Reset tree or swap it by its background leaner when applicable
                 self.reset(instances_seen)
+
+    def get_performance(self):
+        if self.performance_metric == self._MSE:
+            return self.evaluator.get_mean_square_error()
+        elif self.performance_metric == self._MAE:
+            return self.evaluator.get_average_error()
+        return None
 
     def predict(self, X):
         return self.estimator.predict(X)
