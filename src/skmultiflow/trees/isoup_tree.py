@@ -22,11 +22,6 @@ from skmultiflow.trees.nodes import InactiveLearningNodeAdaptiveMultiTarget
 import warnings
 
 
-_TARGET_MEAN = 'mean'
-_PERCEPTRON = 'perceptron'
-_ADAPTIVE = 'adaptive'
-
-
 def MultiTargetRegressionHoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
                                        split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
                                        stop_mem_management=False, remove_poor_atts=False, leaf_prediction='perceptron',
@@ -142,6 +137,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
        print('iSOUP Tree Regressor mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
     """
 
+    _TARGET_MEAN = 'mean'
+    _PERCEPTRON = 'perceptron'
+    _ADAPTIVE = 'adaptive'
     # ============================================================
     # == Multi-target Regression Hoeffding Tree implementation ===
     # ============================================================
@@ -206,9 +204,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
 
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in {_TARGET_MEAN, _PERCEPTRON, _ADAPTIVE}:
-            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction, _PERCEPTRON))
-            self._leaf_prediction = _PERCEPTRON
+        if leaf_prediction not in {self._TARGET_MEAN, self._PERCEPTRON, self._ADAPTIVE}:
+            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction, self._PERCEPTRON))
+            self._leaf_prediction = self._PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
 
@@ -293,29 +291,55 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
 
         return normalized_targets
 
-    def _new_learning_node(self, initial_class_observations=None,
-                           perceptron_weight=None):
+    def _new_learning_node(self, initial_class_observations=None, parent_node=None,
+                           is_active_node=True):
         """Create a new learning node. The type of learning node depends on
         the tree configuration.
         """
         if initial_class_observations is None:
             initial_class_observations = {}
-        if self.leaf_prediction == _TARGET_MEAN:
-            return ActiveLearningNodeForRegressionMultiTarget(
-                initial_class_observations
-            )
-        elif self.leaf_prediction == _PERCEPTRON:
-            return ActiveLearningNodePerceptronMultiTarget(
-                initial_class_observations,
-                perceptron_weight,
-                self.random_state
-            )
-        elif self.leaf_prediction == _ADAPTIVE:
-            return ActiveLearningNodeAdaptiveMultiTarget(
-                initial_class_observations,
-                perceptron_weight,
-                random_state=self.random_state
-            )
+
+        if is_active_node:
+            if self.leaf_prediction == self._TARGET_MEAN:
+                return ActiveLearningNodeForRegressionMultiTarget(
+                    initial_class_observations
+                )
+            elif self.leaf_prediction == self._PERCEPTRON:
+                return ActiveLearningNodePerceptronMultiTarget(
+                    initial_class_observations,
+                    parent_node,
+                    random_state=self.random_state
+                )
+            elif self.leaf_prediction == self._ADAPTIVE:
+                new_node = ActiveLearningNodeAdaptiveMultiTarget(
+                    initial_class_observations,
+                    parent_node,
+                    random_state=self.random_state
+                )
+                # Resets faded errors
+                new_node.fMAE_M = np.zeros(self._n_targets, dtype=np.float64)
+                new_node.fMAE_P = np.zeros(self._n_targets, dtype=np.float64)
+                return new_node
+        else:
+            if self.leaf_prediction == self._TARGET_MEAN:
+                return InactiveLearningNodeForRegression(
+                    initial_class_observations
+                )
+            elif self.leaf_prediction == self._PERCEPTRON:
+                return InactiveLearningNodePerceptronMultiTarget(
+                    initial_class_observations,
+                    parent_node,
+                    random_state=parent_node.random_state
+                )
+            elif self.leaf_prediction == self._ADAPTIVE:
+                new_node = InactiveLearningNodeAdaptiveMultiTarget(
+                    initial_class_observations,
+                    parent_node,
+                    random_state=parent_node.random_state
+                )
+                new_node.fMAE_M = parent_node.fMAE_M
+                new_node.fMAE_P = parent_node.fMAE_P
+                return new_node
 
     def _get_predictors_faded_error(self, X):
         """Get the faded error of the leaf corresponding to the instance.
@@ -515,7 +539,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
         except AttributeError:
             return [0.0]
         for i in range(r):
-            if self.leaf_prediction == _TARGET_MEAN:
+            if self.leaf_prediction == self._TARGET_MEAN:
                 votes = self.get_votes_for_instance(X[i]).copy()
                 # Tree is not empty, otherwise, all target_values are set
                 # equally, default to zero
@@ -523,7 +547,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     number_of_examples_seen = votes[0]
                     sum_of_values = votes[1]
                     predictions[i] = sum_of_values / number_of_examples_seen
-            elif self.leaf_prediction == _PERCEPTRON:
+            elif self.leaf_prediction == self._PERCEPTRON:
                 if self.examples_seen > 1:
                     perceptron_weights = self.get_weights_for_instance(X[i])
                     if perceptron_weights is None:
@@ -549,7 +573,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     # Samples are normalized using just one sd, as proposed in
                     # the iSoup-Tree method
                     predictions[i] = normalized_prediction * sd + mean
-            elif self.leaf_prediction == _ADAPTIVE:
+            elif self.leaf_prediction == self._ADAPTIVE:
                 if self.examples_seen > 1:
                     # Mean predictor
                     votes = self.get_votes_for_instance(X[i]).copy()
@@ -588,10 +612,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
         return predictions
 
     def predict_proba(self, X):
-        pass
-
-    def enforce_tracker_limit(self):
-        pass
+        """Not implemented for this method
+        """
+        raise NotImplementedError
 
     def _attempt_to_split(self, node, parent, parent_idx: int):
         """Attempt to split a node.
@@ -672,28 +695,10 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     node.get_observed_class_distribution()
                 )
                 for i in range(split_decision.num_splits()):
-                    if self.leaf_prediction == _PERCEPTRON:
-                        new_child = self._new_learning_node(
-                            split_decision.
-                            resulting_class_distribution_from_split(i),
-                            node.perceptron_weight
-                        )
-                    elif self.leaf_prediction == _TARGET_MEAN:
-                        new_child = self._new_learning_node(
-                            split_decision.
-                            resulting_class_distribution_from_split(i),
-                            None)
-                    elif self.leaf_prediction == _ADAPTIVE:
-                        new_child = self._new_learning_node(
-                            split_decision.
-                            resulting_class_distribution_from_split(i),
-                            node.perceptron_weight
-                        )
-                        # Resets faded errors
-                        new_child.fMAE_M = np.zeros(self._n_targets,
-                                                    dtype=np.float64)
-                        new_child.fMAE_P = np.zeros(self._n_targets,
-                                                    dtype=np.float64)
+                    new_child = self._new_learning_node(
+                        split_decision.resulting_class_distribution_from_split(i), node
+                    )
+
                     new_split.set_child(i, new_child)
 
                 self._active_leaf_node_cnt -= 1
@@ -705,46 +710,6 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     parent.set_child(parent_idx, new_split)
             # Manage memory
             self.enforce_tracker_limit()
-
-    def _deactivate_learning_node(self,
-                                  to_deactivate: ActiveLearningNode,
-                                  parent: SplitNode,
-                                  parent_branch: int):
-        """Deactivate a learning node.
-
-        Parameters
-        ----------
-        to_deactivate: ActiveLearningNode
-            The node to deactivate.
-        parent: SplitNode
-            The node's parent.
-        parent_branch: int
-            Parent node's branch index.
-        """
-        if self.leaf_prediction == _TARGET_MEAN:
-            new_leaf = InactiveLearningNodeForRegression(
-                to_deactivate.get_observed_class_distribution()
-            )
-        elif self.leaf_prediction == _PERCEPTRON:
-            new_leaf = InactiveLearningNodePerceptronMultiTarget(
-                to_deactivate.get_observed_class_distribution(),
-                to_deactivate.perceptron_weight,
-                to_deactivate.random_state
-            )
-        elif self.leaf_prediction == _ADAPTIVE:
-            new_leaf = InactiveLearningNodeAdaptiveMultiTarget(
-                to_deactivate.get_observed_class_distribution(),
-                to_deactivate.perceptron_weight,
-                to_deactivate.random_state
-            )
-            new_leaf.fMAE_M = to_deactivate.fMAE_M
-            new_leaf.fMAE_P = to_deactivate.fMAE_P
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            parent.set_child(parent_branch, new_leaf)
-        self._active_leaf_node_cnt -= 1
-        self._inactive_leaf_node_cnt += 1
 
     def _more_tags(self):
         return {'multioutput': True,

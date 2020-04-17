@@ -6,14 +6,10 @@ from skmultiflow.trees.nodes import AdaLearningNodeForRegression
 
 import warnings
 
-_TARGET_MEAN = 'mean'
-_PERCEPTRON = 'perceptron'
-ERROR_WIDTH_THRESHOLD = 300
-
 
 def RegressionHAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, split_confidence=0.0000001,
                   tie_threshold=0.05, binary_split=False, stop_mem_management=False, remove_poor_atts=False,
-                  leaf_prediction="perceptron", no_preprune=False, nb_threshold=0, nominal_attributes=None,
+                  leaf_prediction="perceptron", no_preprune=False, nominal_attributes=None,
                   learning_ratio_perceptron=0.02, learning_ratio_decay=0.001, learning_ratio_const=True,
                   random_state=None):     # pragma: no cover
     warnings.warn("'RegressionHAT' has been renamed to 'HoeffdingAdaptiveTreeRegressor' in v0.5.0.\n"
@@ -28,7 +24,6 @@ def RegressionHAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_
                                           remove_poor_atts=remove_poor_atts,
                                           leaf_prediction=leaf_prediction,
                                           no_preprune=no_preprune,
-                                          nb_threshold=nb_threshold,
                                           nominal_attributes=nominal_attributes,
                                           learning_ratio_perceptron=learning_ratio_perceptron,
                                           learning_ratio_decay=learning_ratio_decay,
@@ -61,12 +56,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         If True, disable poor attributes.
     no_preprune: boolean (default=False)
         If True, disable pre-pruning.
-    leaf_prediction: string (default='nba')
+    leaf_prediction: string (default='perceptron')
         | Prediction mechanism used at leafs.
         | 'mean' - Target mean
         | 'perceptron' - Perceptron
-    nb_threshold: int (default=0)
-        Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes: list, optional
         List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
     learning_ratio_perceptron: float
@@ -117,6 +110,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
        print('Hoeffding Adaptive Tree regressor mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
     """
 
+    _TARGET_MEAN = 'mean'
+    _PERCEPTRON = 'perceptron'
+    _ERROR_WIDTH_THRESHOLD = 300
     # ======================================================
     # == Hoeffding Adaptive Tree Regressor implementation ==
     # ======================================================
@@ -132,7 +128,6 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  remove_poor_atts=False,
                  leaf_prediction="perceptron",
                  no_preprune=False,
-                 nb_threshold=0,
                  nominal_attributes=None,
                  learning_ratio_perceptron=0.02,
                  learning_ratio_decay=0.001,
@@ -148,7 +143,6 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                                                              stop_mem_management=stop_mem_management,
                                                              remove_poor_atts=remove_poor_atts,
                                                              no_preprune=no_preprune,
-                                                             nb_threshold=nb_threshold,
                                                              nominal_attributes=nominal_attributes,
                                                              learning_ratio_perceptron=learning_ratio_perceptron,
                                                              learning_ratio_decay=learning_ratio_decay,
@@ -165,18 +159,18 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in {_TARGET_MEAN, _PERCEPTRON}:
-            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction, _PERCEPTRON))
-            self._leaf_prediction = _PERCEPTRON
+        if leaf_prediction not in {self._TARGET_MEAN, self._PERCEPTRON}:
+            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction, self._PERCEPTRON))
+            self._leaf_prediction = self._PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
 
-    def _new_learning_node(self, initial_class_observations=None, perceptron_weight=None):
+    def _new_learning_node(self, initial_class_observations=None, parent_node=None):
         """Create a new learning node. The type of learning node depends on the tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
 
-        return AdaLearningNodeForRegression(initial_class_observations, perceptron_weight,
+        return AdaLearningNodeForRegression(initial_class_observations, parent_node,
                                             random_state=self.random_state)
 
     def _partial_fit(self, X, y, weight):
@@ -223,4 +217,4 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         return nodes
 
     def new_split_node(self, split_test, class_observations):
-        return AdaSplitNodeForRegression(split_test, class_observations)
+        return AdaSplitNodeForRegression(split_test, class_observations, self.random_state)
