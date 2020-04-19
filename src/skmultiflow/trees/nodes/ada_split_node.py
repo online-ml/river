@@ -92,9 +92,10 @@ class AdaSplitNode(SplitNode, AdaNode):
                 old_error_rate = self.get_error_estimation()
                 alt_error_rate = self._alternate_tree.get_error_estimation()
                 fDelta = .05
-                fN = 1.0 / self._alternate_tree.get_error_width() + 1.0 / (self.get_error_width())
+                fN = 1.0 / self._alternate_tree.get_error_width() + 1.0 / self.get_error_width()
 
-                bound = math.sqrt(2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / fDelta) * fN)
+                bound = math.sqrt(2.0 * old_error_rate * (1.0 - old_error_rate) *
+                                  math.log(2.0 / fDelta) * fN)
                 # To check, bound never less than (old_error_rate - alt_error_rate)
                 if bound < (old_error_rate - alt_error_rate):
                     hat._active_leaf_node_cnt -= self.number_leaves()
@@ -139,12 +140,12 @@ class AdaSplitNode(SplitNode, AdaNode):
 
     # Override AdaNode
     def kill_tree_children(self, hat):
-        for child in self._children:
+        for child in self._children.values():
             if child is not None:
                 # Delete alternate tree if it exists
                 if isinstance(child, SplitNode) and child._alternate_tree is not None:
                     child._alternate_tree.kill_tree_children(hat)
-                    self._pruned_alternate_trees += 1
+                    hat.pruned_alternate_trees_cnt += 1
                 # Recursive delete of SplitNodes
                 if isinstance(child, SplitNode):
                     child.kill_tree_children(hat)

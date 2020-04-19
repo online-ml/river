@@ -137,8 +137,6 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
        print('iSOUP Tree Regressor mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
     """
 
-    _TARGET_MEAN = 'mean'
-    _PERCEPTRON = 'perceptron'
     _ADAPTIVE = 'adaptive'
     # ============================================================
     # == Multi-target Regression Hoeffding Tree implementation ===
