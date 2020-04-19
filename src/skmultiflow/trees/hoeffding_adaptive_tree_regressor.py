@@ -3,6 +3,8 @@ import numpy as np
 from skmultiflow.trees import HoeffdingTreeRegressor
 from skmultiflow.trees.nodes import AdaSplitNodeForRegression
 from skmultiflow.trees.nodes import AdaLearningNodeForRegression
+from skmultiflow.trees.nodes import InactiveLearningNodeForRegression
+from skmultiflow.utils import add_dict_values
 
 import warnings
 
@@ -107,11 +109,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
        # Display results
        print('{} samples analyzed.'.format(n_samples))
-       print('Hoeffding Adaptive Tree regressor mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
+       print('Hoeffding Adaptive Tree regressor mean absolute error: {}'.
+             format(np.mean(np.abs(y_true - y_pred))))
     """
 
-    _TARGET_MEAN = 'mean'
-    _PERCEPTRON = 'perceptron'
     _ERROR_WIDTH_THRESHOLD = 300
     # ======================================================
     # == Hoeffding Adaptive Tree Regressor implementation ==
@@ -134,21 +135,21 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  learning_ratio_const=True,
                  random_state=None):
 
-        super(HoeffdingAdaptiveTreeRegressor, self).__init__(max_byte_size=max_byte_size,
-                                                             memory_estimate_period=memory_estimate_period,
-                                                             grace_period=grace_period,
-                                                             split_confidence=split_confidence,
-                                                             tie_threshold=tie_threshold,
-                                                             binary_split=binary_split,
-                                                             stop_mem_management=stop_mem_management,
-                                                             remove_poor_atts=remove_poor_atts,
-                                                             no_preprune=no_preprune,
-                                                             nominal_attributes=nominal_attributes,
-                                                             learning_ratio_perceptron=learning_ratio_perceptron,
-                                                             learning_ratio_decay=learning_ratio_decay,
-                                                             learning_ratio_const=learning_ratio_const,
-                                                             leaf_prediction=leaf_prediction,
-                                                             random_state=random_state)
+        super().__init__(max_byte_size=max_byte_size,
+                         memory_estimate_period=memory_estimate_period,
+                         grace_period=grace_period,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         binary_split=binary_split,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_atts=remove_poor_atts,
+                         no_preprune=no_preprune,
+                         nominal_attributes=nominal_attributes,
+                         learning_ratio_perceptron=learning_ratio_perceptron,
+                         learning_ratio_decay=learning_ratio_decay,
+                         learning_ratio_const=learning_ratio_const,
+                         leaf_prediction=leaf_prediction,
+                         random_state=random_state)
         self.alternate_trees_cnt = 0
         self.switch_alternate_trees_cnt = 0
         self.pruned_alternate_trees_cnt = 0
@@ -160,13 +161,15 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._PERCEPTRON}:
-            print("Invalid leaf_prediction option {}', will use default '{}'".format(leaf_prediction, self._PERCEPTRON))
+            print("Invalid leaf_prediction option {}', will use default '{}'".
+                  format(leaf_prediction, self._PERCEPTRON))
             self._leaf_prediction = self._PERCEPTRON
         else:
             self._leaf_prediction = leaf_prediction
 
     def _new_learning_node(self, initial_class_observations=None, parent_node=None):
-        """Create a new learning node. The type of learning node depends on the tree configuration."""
+        """Create a new learning node. The type of learning node depends on the tree
+        configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
 
@@ -194,8 +197,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self.sum_of_squares += weight * y * y
 
         try:
-            self.sum_of_attribute_values = np.add(self.sum_of_attribute_values, np.multiply(weight, X))
-            self.sum_of_attribute_squares = np.add(self.sum_of_attribute_squares, np.multiply(weight, np.power(X, 2)))
+            self.sum_of_attribute_values = np.add(self.sum_of_attribute_values,
+                                                  np.multiply(weight, X))
+            self.sum_of_attribute_squares = np.add(self.sum_of_attribute_squares,
+                                                   np.multiply(weight, np.power(X, 2)))
         except ValueError:
             self.sum_of_attribute_values = np.multiply(weight, X)
             self.sum_of_attribute_squares = np.multiply(weight, np.power(X, 2))
@@ -205,16 +210,29 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             self._active_leaf_node_cnt = 1
         self._tree_root.learn_from_instance(X, y, weight, self, None, -1)
 
-    def get_normalized_error(self, prediction, y):
-        normal_prediction = self.normalize_target_value(prediction)
-        normal_value = self.normalize_target_value(y)
-        return np.abs(normal_value-normal_prediction)
-
-    def filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch, update_splitter_counts):
+    def filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch,
+                                  update_splitter_counts):
         nodes = []
         self._tree_root.filter_instance_to_leaves(X, y, weight, split_parent, parent_branch,
                                                   update_splitter_counts, nodes)
         return nodes
+
+    def get_votes_for_instance(self, X):
+        result = {}
+        if self._tree_root is not None:
+            if isinstance(self._tree_root, InactiveLearningNodeForRegression):
+                found_node = [self._tree_root.filter_instance_to_leaf(X, None, -1)]
+            else:
+                found_node = self.filter_instance_to_leaves(X, -np.inf, -np.inf, None, -1, False)
+            for fn in found_node:
+                if fn.parent_branch != -999:
+                    leaf_node = fn.node
+                    if leaf_node is None:
+                        leaf_node = fn.parent
+                    dist = leaf_node.get_class_votes(X, self)
+                    # add elements to dictionary
+                    result = add_dict_values(result, dist, inplace=True)
+        return result
 
     def new_split_node(self, split_test, class_observations):
         return AdaSplitNodeForRegression(split_test, class_observations, self.random_state)
