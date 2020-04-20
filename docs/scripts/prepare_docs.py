@@ -24,9 +24,10 @@ def pascal_to_kebab(string):
 
 if __name__ == '__main__':
 
-    shutil.rmtree('docs_build', ignore_errors=True)
+    shutil.rmtree('docs/build/', ignore_errors=True)
+    shutil.copytree('docs', 'docs/build/')
 
-    api_path = pathlib.Path('docs/api-reference')
+    api_path = pathlib.Path('docs/build/api-reference')
     index = {}
 
     print('Loading modules...', end=' ', flush=True)
@@ -46,7 +47,7 @@ if __name__ == '__main__':
             index[f'{mod_name}.{func_name}'] = os.path.join(path, snake_to_kebab(func_name))
             index[f'{path}.{func_name}'.replace('/', '.')] = index[f'{mod_name}.{func_name}']
 
-        for klass_name, klass in inspect.getmembers(mod, inspect.isclass):
+        for klass_name, _ in inspect.getmembers(mod, inspect.isclass):
             index[f'{mod_name}.{klass_name}'] = os.path.join(path, pascal_to_kebab(klass_name))
             index[f'{path}.{klass_name}'.replace('/', '.')] = index[f'{mod_name}.{klass_name}']
 
@@ -75,20 +76,15 @@ if __name__ == '__main__':
 
     fence_pattern = re.compile('`(.+?)`')
 
-    for path in pathlib.Path('docs').rglob('*.md'):
+    for path in pathlib.Path('docs/build').rglob('*.md'):
+
         print(f'Preparing {path}...', end=' ', flush=True)
 
         with open(path) as f:
             md = f.read()
             md = fence_pattern.sub(get_link, md)
 
-        # Output in docs/build
-        out_path = pathlib.Path(os.path.join('docs_build', *str(path).split('/')[1:]))
-
-        # Create the directory if it doesn't exist
-        out_path.parents[0].mkdir(parents=True, exist_ok=True)
-
-        with open(out_path, 'w') as f:
+        with open(path, 'w') as f:
             f.write(md)
 
         print('done')
