@@ -11,7 +11,8 @@ api-reference:
 	python docs/scripts/index_api.py
 
 doc: user-guide api-reference
-	python docs/scripts/prepare_docs.py
+	#python docs/scripts/prepare_docs.py
+	mkdocs build --site-dir docs/build
 
 livedoc: user-guide api-reference
 	mkdocs serve
