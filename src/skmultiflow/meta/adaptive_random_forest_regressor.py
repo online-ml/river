@@ -279,7 +279,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
 
         if self.aggregation_method == self._MEAN:
             if self.weighted_vote_strategy is not None:
-                weights = np.array([learner.get_performance() for learner in self.ensemble])
+                weights = np.array([learner.get_error() for learner in self.ensemble])
                 sum_weights = np.sum(weights)
 
                 if sum_weights != 0:
@@ -507,6 +507,8 @@ class ARFRegBaseLearner(BaseSKMObject):
 
     def partial_fit(self, X, y, sample_weight, instances_seen):
         predicted_value = self.estimator.predict(X)
+        # To check for performance drops before switching learners in case of a drift
+        old_error = self.get_error()
         # Monitor base learner performance
         self.evaluator.add_result(y, predicted_value)
         # Update learning model
@@ -564,15 +566,18 @@ class ARFRegBaseLearner(BaseSKMObject):
             if self.drift_detection.detected_change():
                 self.last_drift_on = instances_seen
                 self.n_drifts_detected += 1
-                # Reset tree or swap it by its background leaner when applicable
-                self.reset(instances_seen)
 
-    def get_performance(self):
+                # Only swap/reset the learner(s) if the error is increasing
+                if self.get_error() > old_error:
+                    # Reset tree or swap it by its background leaner when applicable
+                    self.reset(instances_seen)
+
+    def get_error(self):
         if self.performance_metric == self._MSE:
             return self.evaluator.get_mean_square_error()
         elif self.performance_metric == self._MAE:
             return self.evaluator.get_average_error()
-        return None
+        return self.evaluator.get_mean_square_error()  # Defaults to MSE
 
     def predict(self, X):
         return self.estimator.predict(X)
