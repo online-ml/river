@@ -132,3 +132,58 @@ def test_adaptive_random_forest_regressor_perceptron():
 
     info = " ".join([line.strip() for line in learner2.get_info().split()])
     assert info == expected_info
+
+
+def test_adaptive_random_forest_regressor_drift_detection_coverage():
+    max_samples = 1000
+    X = np.random.uniform(size=(max_samples, 10))
+    threshold = np.mean(np.sum(X, axis=1))
+
+    # ARFReg with background learner enabled
+    learner1 = AdaptiveRandomForestRegressor(
+        n_estimators=3, max_features='auto', leaf_prediction='perceptron',
+        aggregation_method='mean', weighted_vote_strategy=None, drift_detection_criteria='mse',
+        random_state=1
+    )
+    # ARFReg without background learner
+    learner2 = AdaptiveRandomForestRegressor(
+        n_estimators=3, max_features='auto', leaf_prediction='perceptron',
+        aggregation_method='mean', weighted_vote_strategy=None, warning_detection_method=None,
+        drift_detection_criteria='mse', random_state=1
+    )
+
+    cnt = 0
+    y_pred1 = array('d')
+    y_pred2 = array('d')
+    y_true = array('d')
+    wait_samples = 10
+
+    while cnt < max_samples:
+        x = X[cnt].reshape(1, -1)
+        if cnt < 250:
+            if np.sum(x) > threshold:
+                y = np.asarray([np.random.normal(loc=5, scale=1.0)])
+            else:
+                y = np.asarray([np.random.normal(loc=-5, scale=1.0)])
+        elif cnt < 500:  # First abrupt drift
+            if np.sum(x) > threshold:
+                y = np.asarray([np.random.normal(loc=10, scale=1.0)])
+            else:
+                y = np.asarray([np.random.normal(loc=-10, scale=1.0)])
+        else:  # Second abrupt drift
+            if np.sum(x) > threshold:
+                y = np.asarray([np.random.normal(loc=20, scale=2.0)])
+            else:
+                y = np.asarray([np.random.normal(loc=-20, scale=2.0)])
+
+        # Test every n samples
+        if (cnt % wait_samples == 0) and (cnt != 0):
+            y_pred1.append(learner1.predict(x)[0])
+            y_pred2.append(learner2.predict(x)[0])
+            y_true.append(y)
+        learner1.partial_fit(x, y)
+        learner2.partial_fit(x, y)
+
+        cnt += 1
+
+    # TODO: add assert statements
