@@ -36,7 +36,7 @@ class Bin:
         return f'[{self.left:.5f}, {self.right:.5f}]: {self.count}'
 
 
-def coverage_ratio(x, y):
+def coverage_ratio(x: Bin, y: Bin) -> float:
     """Returns the amount of y covered by x.
 
     Examples:
@@ -72,43 +72,41 @@ class Histogram(collections.UserList):
     """Streaming histogram.
 
     Parameters:
-        max_bins (int): Maximal number of bins.
+        max_bins: Maximal number of bins.
 
     Attributes:
         n (int): Total number of seen values.
 
     Example:
 
-        ::
+        >>> from creme import utils
+        >>> import matplotlib.pyplot as plt
+        >>> import numpy as np
 
-            >>> from creme import utils
-            >>> import matplotlib.pyplot as plt
-            >>> import numpy as np
+        >>> np.random.seed(42)
 
-            >>> np.random.seed(42)
+        >>> values = np.hstack((
+        ...     np.random.normal(-3, 1, 1000),
+        ...     np.random.normal(3, 1, 1000),
+        ... ))
 
-            >>> values = np.hstack((
-            ...     np.random.normal(-3, 1, 1000),
-            ...     np.random.normal(3, 1, 1000),
-            ... ))
+        >>> hist = utils.Histogram(max_bins=60)
 
-            >>> hist = utils.Histogram(max_bins=60)
+        >>> for x in values:
+        ...     hist = hist.update(x)
 
-            >>> for x in values:
-            ...     hist = hist.update(x)
+        >>> ax = plt.bar(
+        ...     x=[(b.left + b.right) / 2 for b in hist],
+        ...     height=[b.count for b in hist],
+        ...     width=[(b.right - b.left) / 2 for b in hist]
+        ... )
 
-            >>> ax = plt.bar(
-            ...     x=[(b.left + b.right) / 2 for b in hist],
-            ...     height=[b.count for b in hist],
-            ...     width=[(b.right - b.left) / 2 for b in hist]
-            ... )
-
-        .. image:: ../../_static/histogram_docstring.svg
-            :align: center
+    .. image:: ../../docs/img/histogram_docstring.svg
+        :align: center
 
     References:
-        1. `Ben-Haim, Y. and Tom-Tov, E., 2010. A streaming parallel decision tree algorithm. Journal of Machine Learning Research, 11(Feb), pp.849-872. <http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf>`_
-        2. `Go implementation <https://github.com/VividCortex/gohistogram>`_
+        1. [Ben-Haim, Y. and Tom-Tov, E., 2010. A streaming parallel decision tree algorithm. Journal of Machine Learning Research, 11(Feb), pp.849-872.](http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf)
+        2. [Go implementation](https://github.com/VividCortex/gohistogram)
 
     """
 
@@ -189,29 +187,27 @@ class Histogram(collections.UserList):
 
         Example:
 
-            ::
+            >>> from creme import utils
 
-                >>> from creme import utils
+            >>> hist = utils.Histogram()
+            >>> for x in range(4):
+            ...     hist = hist.update(x)
 
-                >>> hist = utils.Histogram()
-                >>> for x in range(4):
-                ...     hist = hist.update(x)
+            >>> print(hist)
+            [0.00000, 0.00000]: 1
+            [1.00000, 1.00000]: 1
+            [2.00000, 2.00000]: 1
+            [3.00000, 3.00000]: 1
 
-                >>> print(hist)
-                [0.00000, 0.00000]: 1
-                [1.00000, 1.00000]: 1
-                [2.00000, 2.00000]: 1
-                [3.00000, 3.00000]: 1
-
-                >>> X = [-1, 0, .5, 1, 2.5, 3.5]
-                >>> for x, cdf in zip(X, hist.iter_cdf(X)):
-                ...     print(x, cdf)
-                -1 0.0
-                0 0.25
-                0.5 0.25
-                1 0.5
-                2.5 0.75
-                3.5 1.0
+            >>> X = [-1, 0, .5, 1, 2.5, 3.5]
+            >>> for x, cdf in zip(X, hist.iter_cdf(X)):
+            ...     print(x, cdf)
+            -1 0.0
+            0 0.25
+            0.5 0.25
+            1 0.5
+            2.5 0.75
+            3.5 1.0
 
         """
 
@@ -238,37 +234,35 @@ class Histogram(collections.UserList):
 
         Example:
 
-            ::
+            >>> from creme import utils
 
-                >>> from creme import utils
+            >>> hist = utils.Histogram()
+            >>> for x in range(4):
+            ...     hist = hist.update(x)
 
-                >>> hist = utils.Histogram()
-                >>> for x in range(4):
-                ...     hist = hist.update(x)
+            >>> print(hist)
+            [0.00000, 0.00000]: 1
+            [1.00000, 1.00000]: 1
+            [2.00000, 2.00000]: 1
+            [3.00000, 3.00000]: 1
 
-                >>> print(hist)
-                [0.00000, 0.00000]: 1
-                [1.00000, 1.00000]: 1
-                [2.00000, 2.00000]: 1
-                [3.00000, 3.00000]: 1
+            >>> hist.cdf(-1)
+            0.0
 
-                >>> hist.cdf(-1)
-                0.0
+            >>> hist.cdf(0)
+            0.25
 
-                >>> hist.cdf(0)
-                0.25
+            >>> hist.cdf(.5)
+            0.25
 
-                >>> hist.cdf(.5)
-                0.25
+            >>> hist.cdf(1)
+            0.5
 
-                >>> hist.cdf(1)
-                0.5
+            >>> hist.cdf(2.5)
+            0.75
 
-                >>> hist.cdf(2.5)
-                0.75
-
-                >>> hist.cdf(3.5)
-                1.0
+            >>> hist.cdf(3.5)
+            1.0
 
         """
         return next(self.iter_cdf([x]))

@@ -73,26 +73,24 @@ class Branch(Node):
 
         Example:
 
-            ::
+            >>> tree = Branch(
+            ...     Split('x', LT, 17.42),
+            ...     Branch(
+            ...         Split('y', LT, -4.38),
+            ...         Leaf(no=2),
+            ...         Leaf(no=3),
+            ...         no=1
+            ...     ),
+            ...     Leaf(no=4),
+            ...     no=0
+            ... )
 
-                >>> tree = Branch(
-                ...     Split('x', LT, 17.42),
-                ...     Branch(
-                ...         Split('y', LT, -4.38),
-                ...         Leaf(no=2),
-                ...         Leaf(no=3),
-                ...         no=1
-                ...     ),
-                ...     Leaf(no=4),
-                ...     no=0
-                ... )
-
-                >>> tree
-                x < 17.42000 {'no': 0}
-                  y < -4.38000 {'no': 1}
-                    {'no': 2}
-                    {'no': 3}
-                  {'no': 4}
+            >>> tree
+            x < 17.42000 {'no': 0}
+                y < -4.38000 {'no': 1}
+                {'no': 2}
+                {'no': 3}
+                {'no': 4}
 
         """
         return (
@@ -116,27 +114,25 @@ class Branch(Node):
 
         Example:
 
-            ::
+            >>> tree = Branch(
+            ...     None,
+            ...     Branch(
+            ...         None,
+            ...         Leaf(no=2),
+            ...         Leaf(no=3),
+            ...         no=1
+            ...     ),
+            ...     Leaf(no=4),
+            ...     no=0
+            ... )
 
-                >>> tree = Branch(
-                ...     None,
-                ...     Branch(
-                ...         None,
-                ...         Leaf(no=2),
-                ...         Leaf(no=3),
-                ...         no=1
-                ...     ),
-                ...     Leaf(no=4),
-                ...     no=0
-                ... )
-
-                >>> for node, depth in tree.iter_dfs():
-                ...     print(f'#{node.no}, depth {depth}')
-                #0, depth 0
-                #1, depth 1
-                #2, depth 2
-                #3, depth 2
-                #4, depth 1
+            >>> for node, depth in tree.iter_dfs():
+            ...     print(f'#{node.no}, depth {depth}')
+            #0, depth 0
+            #1, depth 1
+            #2, depth 2
+            #3, depth 2
+            #4, depth 1
 
         """
         yield self, depth

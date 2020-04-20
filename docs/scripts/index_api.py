@@ -69,13 +69,13 @@ def split_sections(docstring: str) -> typing.Dict[str, str]:
             continue
 
         if not l.startswith(' ') and l.endswith(':') and ' ' not in l:
-            sections[section] = inspect.cleandoc('\n'.join(content))
+            sections[section] = '\n'.join(content)
             section = l.split(':')[0]
             content = []
             continue
         content.append(l)
 
-    sections[section] = inspect.cleandoc('\n'.join(content))
+    sections[section] = '\n'.join(content)
     sections['Admonitions'] = admonitions
 
     return sections
@@ -84,7 +84,7 @@ def split_sections(docstring: str) -> typing.Dict[str, str]:
 def parse_params_section(params_doc: str) -> typing.Dict[str, str]:
     """Parses params documentation and returns a dict with one element per parameter."""
     descs = {}
-    lines = iter(params_doc.splitlines())
+    lines = iter((l[4:] for l in params_doc.splitlines()))
     content = next(lines)
     for l in lines:
         if not l.startswith(' '):
@@ -126,7 +126,10 @@ def extract_methods(klass):
                 ancestor_meth = getattr(ancestor, name)
             except AttributeError:
                 continue
-            sig = inspect.signature(ancestor_meth)
+            try:
+                sig = inspect.signature(ancestor_meth)
+            except ValueError:
+                continue
             if any(p.annotation is not p.empty for p in sig.parameters.values()):
                 methods[name] = ancestor_meth
                 break
@@ -168,12 +171,12 @@ def extract_doc(obj) -> str:
     # Description
     desc = sections.get('Description')
     if desc:
-        md += paragraph(desc)
+        md += paragraph(inspect.cleandoc(desc))
 
     # Admonitions
     for kind, content in sections.get('Admonitions', []):
         md += line(f'!!! {kind}')
-        md += paragraph(f'    {content}')
+        md += paragraph(f'    {inspect.cleandoc(content)}')
 
     # Parameters
     try:
@@ -210,7 +213,7 @@ def extract_doc(obj) -> str:
             md += paragraph(f'*{inspect.formatannotation(returns)}*')
             return_comment = sections.get('Returns')
             if return_comment:
-                md += paragraph(return_comment)
+                md += paragraph(inspect.cleandoc(return_comment))
 
     # Attributes
     attrs = sections.get('Attributes')
@@ -252,7 +255,7 @@ def extract_doc(obj) -> str:
             # Method description
             desc = meth_sections.get('Description')
             if desc:
-                smd += paragraph(desc)
+                smd += paragraph(inspect.cleandoc(desc))
 
             signature = inspect.signature(meth)
 
@@ -292,7 +295,7 @@ def extract_doc(obj) -> str:
                 smd += paragraph(f'*{inspect.formatannotation(signature.return_annotation)}*')
                 return_comment = meth_sections.get('Returns')
                 if return_comment:
-                    smd += paragraph(return_comment)
+                    smd += paragraph(inspect.cleandoc(return_comment))
 
         # Indent the methods content so that it falls into the section
         md += textwrap.indent(smd, ' ' * 4)
@@ -305,7 +308,7 @@ def extract_doc(obj) -> str:
         in_code = False
         after_space = False
 
-        for l in example.splitlines():
+        for l in inspect.cleandoc(example).splitlines():
 
             if in_code and after_space and l and not l.startswith('>>>') and not l.startswith('...'):
                 md += line('```')
@@ -329,7 +332,7 @@ def extract_doc(obj) -> str:
     references = sections.get('References')
     if references:
         md += h2('References')
-        md += paragraph(references)
+        md += paragraph(inspect.cleandoc(references))
 
     return md
 
@@ -350,16 +353,16 @@ def write_module(mod, where):
         f.write(f'title: {mod_header}')
 
     # Go through the functions
-    for name, func in inspect.getmembers(mod, inspect.isfunction):
-        print(name)
+    is_pub_func = lambda x: inspect.isfunction(x) and x.__name__ in mod.__all__
+    for name, func in inspect.getmembers(mod, is_pub_func):
         path = mod_path.joinpath(snake_to_kebab(name))
         with open(path.with_suffix('.md'), 'w') as f:
             doc = extract_doc(obj=func)
             f.write(doc)
 
     # Go through the classes
-    for name, klass in inspect.getmembers(mod, inspect.isclass):
-        print(name)
+    is_pub_class = lambda x: inspect.isclass(x) and x.__name__ in mod.__all__
+    for name, klass in inspect.getmembers(mod, is_pub_class):
         path = mod_path.joinpath(pascal_to_kebab(name))
         with open(path.with_suffix('.md'), 'w') as f:
             doc = extract_doc(obj=klass)

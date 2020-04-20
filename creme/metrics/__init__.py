@@ -1,4 +1,4 @@
-"""Streaming metrics.
+"""Evaluation metrics.
 
 .. warning::
     The binary classification metrics in `creme` expect the ground truths you provide them with

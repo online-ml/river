@@ -1,25 +1,25 @@
 import collections
 import functools
 
-from .. import base
-from .. import stats
+from creme import base
+from creme import stats
 
 
 class Detrender(base.Regressor, base.Wrapper):
     """A linear detrender which centers the target in zero.
 
-    At each ``fit_one`` step, the current mean of ``y`` is substracted from ``y`` before being fed
-    to the provided regression model. During the ``predict_one`` step, the current mean is added
+    At each `fit_one` step, the current mean of `y` is substracted from `y` before being fed
+    to the provided regression model. During the `predict_one` step, the current mean is added
     to the prediction of the regression model.
 
     Parameters:
-        regressor (base.Regressor)
-        window_size (int): Window size used for calculating the rolling mean. If ``None``, then a
-            mean over the whole target data will instead be used.
+        regressor
+        window_size: Window size used for calculating the rolling mean. If `None`, then a mean over
+            the whole target data will instead be used.
 
     """
 
-    def __init__(self, regressor, window_size=None):
+    def __init__(self, regressor: base.Regressor, window_size: int = None):
         self.regressor = regressor
         self.mean = stats.Mean() if window_size is None else stats.RollingMean(window_size)
 
@@ -40,14 +40,14 @@ class GroupDetrender(base.Regressor, base.Wrapper):
     """Removes the trend of the target inside each group.
 
     Parameters:
-        regressor (base.Regressor)
-        by (str)
-        window_size (int): Window size used for calculating each rolling mean. If ``None``, then a
+        regressor
+        by
+        window_size: Window size used for calculating each rolling mean. If `None`, then a
             mean over the whole target data will instead be used.
 
     """
 
-    def __init__(self, regressor, by, window_size=None):
+    def __init__(self, regressor: base.Regressor, by: str, window_size: int = None):
         self.regressor = regressor
         self.by = by
         self.means = collections.defaultdict(

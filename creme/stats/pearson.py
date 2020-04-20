@@ -7,7 +7,7 @@ class PearsonCorrelation(base.Bivariate):
     """Online Pearson correlation.
 
     Parameters:
-        ddof (int): Delta Degrees of Freedom. Defaults to ``1``.
+        ddof: Delta Degrees of Freedom. Defaults to ``1``.
 
     Attributes:
         var_x (stats.Var): Running variance of `x`.
@@ -16,24 +16,22 @@ class PearsonCorrelation(base.Bivariate):
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
+        >>> x = [0, 0, 0, 1, 1, 1, 1]
+        >>> y = [0, 1, 2, 3, 4, 5, 6]
 
-            >>> x = [0, 0, 0, 1, 1, 1, 1]
-            >>> y = [0, 1, 2, 3, 4, 5, 6]
+        >>> pearson = stats.PearsonCorrelation()
 
-            >>> pearson = stats.PearsonCorrelation()
-
-            >>> for xi, yi in zip(x, y):
-            ...     print(pearson.update(xi, yi).get())
-            0
-            0
-            0
-            0.774596
-            0.866025
-            0.878310
-            0.866025
+        >>> for xi, yi in zip(x, y):
+        ...     print(pearson.update(xi, yi).get())
+        0
+        0
+        0
+        0.774596
+        0.866025
+        0.878310
+        0.866025
 
     """
 

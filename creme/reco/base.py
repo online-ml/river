@@ -1,6 +1,7 @@
 import abc
+import typing
 
-from .. import base
+from creme import base
 
 
 class Recommender(base.Regressor):
@@ -13,28 +14,26 @@ class Recommender(base.Regressor):
         return self._predict_one(x['user'], x['item'])
 
     @abc.abstractmethod
-    def _fit_one(self, user, item, y):
-        """Fits a ``user``-``item`` pair and a real-valued target ``y``.
+    def _fit_one(self, user: typing.Union[str, int], item: typing.Union[str, int],
+                 y: float) -> 'Recommender':
+        """Fits a `user`-`item` pair and a real-valued target `y`.
 
         Parameters:
-            user (int or str)
-            item (int or str)
-            y (float)
-
-        Returns:
-            self: object
+            user: A user ID.
+            item: An item ID.
+            y: A rating.
 
         """
 
     @abc.abstractmethod
-    def _predict_one(self, user, item):
-        """Predicts the target value of a set of features ``x``.
+    def _predict_one(self, user: typing.Union[str, int], item: typing.Union[str, int]) -> float:
+        """Predicts the target value of a set of features `x`.
 
         Parameters:
-            user (int or str)
-            item (int or str)
+            user: A user ID.
+            item: An item ID.
 
         Returns:
-            float: The prediction.
+            The predicted rating.
 
         """

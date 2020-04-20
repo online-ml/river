@@ -7,7 +7,7 @@ import re
 import typing
 import unicodedata
 
-from .. import base
+from creme import base
 
 
 __all__ = ['BagOfWords', 'TFIDF']
@@ -83,25 +83,29 @@ class VectorizerMixin:
     """Contains common processing steps used by each vectorizer.
 
     Parameters:
-        on (str): The name of the feature that contains the text to vectorize. If `None`, then each
-            ``fit_one`` and ``transform_one`` should treat ``x`` as a `str` and not as a ``dict``.
-        strip_accents (bool): Whether or not to strip accent characters.
-        lowercase (bool): Whether or not to convert all characters to lowercase.
-        preprocessor (callable): Override the preprocessing step while preserving the tokenizing
+        on: The name of the feature that contains the text to vectorize. If `None`, then each
+            `fit_one` and `transform_one` should treat `x` as a `str` and not as a `dict`.
+        strip_accents: Whether or not to strip accent characters.
+        lowercase: Whether or not to convert all characters to lowercase.
+        preprocessor: Override the preprocessing step while preserving the tokenizing
             and n-grams generation steps.
-        tokenizer (callable): A function used to convert preprocessed text into a `dict` of tokens.
-            A default tokenizer is used if ``None`` is passed. Set to ``False`` to disable
+        tokenizer: A function used to convert preprocessed text into a `dict` of tokens.
+            A default tokenizer is used if `None` is passed. Set to `False` to disable
             tokenization.
-        ngram_range (tuple (min_n, max_n)): The lower and upper boundary of the range n-grams to be
-            extracted. All values of n such that ``min_n <= n <= max_n`` will be used. For example
-            an ``ngram_range`` of ``(1, 1)`` means only unigrams, ``(1, 2)`` means unigrams and
-            bigrams, and ``(2, 2)`` means only bigrams. Only works if ``tokenizer`` is not set to
-            ``False``.
+        ngram_range: The lower and upper boundary of the range n-grams to be
+            extracted. All values of n such that `min_n <= n <= max_n` will be used. For example
+            an `ngram_range` of `(1, 1)` means only unigrams, `(1, 2)` means unigrams and
+            bigrams, and `(2, 2)` means only bigrams. Only works if `tokenizer` is not set to
+            `False`.
+
+    Attributes:
+        processing_steps (list): A list of preprocessing steps that are applied to each text.
 
     """
 
-    def __init__(self, on=None, strip_accents=True, lowercase=True, preprocessor=None,
-                 tokenizer=None, ngram_range=(1, 1)):
+    def __init__(self, on: str = None, strip_accents=True, lowercase=True,
+                 preprocessor: typing.Callable = None,
+                 tokenizer: typing.Callable = None, ngram_range=(1, 1)):
         self.on = on
         self.strip_accents = strip_accents
         self.lowercase = lowercase
@@ -152,70 +156,69 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     This returns exactly the same results as `sklearn.feature_extraction.text.CountVectorizer`.
 
     Parameters:
-        on (str): The name of the feature that contains the text to vectorize. If ``None``, then
-            the input is treated as a document instead of a set of features.
-        strip_accents (bool): Whether or not to strip accent characters.
-        lowercase (bool): Whether or not to convert all characters to lowercase.
-        preprocessor (callable): Override the preprocessing step while preserving the tokenizing
+        on: The name of the feature that contains the text to vectorize. If `None`, then each
+            `fit_one` and `transform_one` should treat `x` as a `str` and not as a `dict`.
+        strip_accents: Whether or not to strip accent characters.
+        lowercase: Whether or not to convert all characters to lowercase.
+        preprocessor: Override the preprocessing step while preserving the tokenizing
             and n-grams generation steps.
-        tokenizer (callable): The function used to convert preprocessed text into a `dict` of
-            tokens. A default one is used if it is not provided by the user.
-        ngram_range (tuple (min_n, max_n)): The lower and upper boundary of the range n-grams to be
-            extracted. All values of n such that ``min_n <= n <= max_n`` will be used. For example
-            an ``ngram_range`` of ``(1, 1)`` means only unigrams, ``(1, 2)`` means unigrams and
-            bigrams, and ``(2, 2)`` means only bigrams. Only works if ``tokenizer`` is not set to
-            ``False``.
+        tokenizer: A function used to convert preprocessed text into a `dict` of tokens.
+            A default tokenizer is used if `None` is passed. Set to `False` to disable
+            tokenization.
+        ngram_range: The lower and upper boundary of the range n-grams to be
+            extracted. All values of n such that `min_n <= n <= max_n` will be used. For example
+            an `ngram_range` of `(1, 1)` means only unigrams, `(1, 2)` means unigrams and
+            bigrams, and `(2, 2)` means only bigrams. Only works if `tokenizer` is not set to
+            `False`.
 
     Example:
 
-        ::
+        By default, `BagOfWords` will take as input a sentence, preprocess it, tokenize the
+        preprocessed text, and then return a `collections.Counter` containing the number of
+        occurrences of each token.
 
-            By default, ``BagOfWords`` will take as input a sentence, preprocess it, tokenize the
-            preprocessed text, and then return a ``collections.Counter`` containing the number of
-            occurrences of each token.
+        >>> import creme
 
-            >>> import creme
+        >>> corpus = [
+        ...     'This is the first document.',
+        ...     'This document is the second document.',
+        ...     'And this is the third one.',
+        ...     'Is this the first document?',
+        ... ]
 
-            >>> corpus = [
-            ...     'This is the first document.',
-            ...     'This document is the second document.',
-            ...     'And this is the third one.',
-            ...     'Is this the first document?',
-            ... ]
+        >>> bow = creme.feature_extraction.BagOfWords()
 
-            >>> bow = creme.feature_extraction.BagOfWords()
+        >>> for sentence in corpus:
+        ...     print(bow.transform_one(sentence))
+        Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
+        Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
+        Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
+        Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
 
-            >>> for sentence in corpus:
-            ...     print(bow.transform_one(sentence))
-            Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
-            Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
-            Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
-            Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
+        Note that `fit_one` does not have to be called because `BagOfWords` is stateless.
+        You can call it but it won't do anything.
 
-            Note that ``fit_one`` does not have to be called because ``BagOfWords`` is stateless.
-            You can call it but it won't do anything.
+        The `ngram_range` parameter can be used to extract n-grams instead of just unigrams.
 
-            The ``ngram_range`` parameter can be used to extract n-grams instead of just unigrams.
+        >>> ngrammer = creme.feature_extraction.BagOfWords(ngram_range=(1, 2))
 
-            >>> ngrammer = creme.feature_extraction.BagOfWords(ngram_range=(1, 2))
-
-            >>> ngrams = ngrammer.transform_one('I love the smell of napalm in the morning')
-            >>> for ngram, count in ngrams.items():
-            ...     print(ngram, count)
-            love 1
-            the 2
-            smell 1
-            of 1
-            napalm 1
-            in 1
-            morning 1
-            ('love', 'the') 1
-            ('the', 'smell') 1
-            ('smell', 'of') 1
-            ('of', 'napalm') 1
-            ('napalm', 'in') 1
-            ('in', 'the') 1
-            ('the', 'morning') 1
+        >>> ngrams = ngrammer.transform_one('I love the smell of napalm in the morning')
+        >>> for ngram, count in ngrams.items():
+        ...     print(ngram, count)
+        love 1
+        the 2
+        smell 1
+        of 1
+        napalm 1
+        in 1
+        morning 1
+        ('love', 'the') 1
+        ('the', 'smell') 1
+        ('smell', 'of') 1
+        ('of', 'napalm') 1
+        ('napalm', 'in') 1
+        ('in', 'the') 1
+        ('the', 'morning') 1
 
     """
 
@@ -230,20 +233,20 @@ class TFIDF(BagOfWords):
     fact that the document frequencies have to be computed online.
 
     Parameters:
-        normalize (bool): Whether or not the TF-IDF values by their L2 norm.
-        on (str): The name of the feature that contains the text to vectorize. If ``None``, then
+        normalize: Whether or not the TF-IDF values by their L2 norm.
+        on: The name of the feature that contains the text to vectorize. If `None`, then
             the input is treated as a document instead of a set of features.
-        strip_accents (bool): Whether or not to strip accent characters.
-        lowercase (bool): Whether or not to convert all characters to lowercase.
-        preprocessor (callable): Override the preprocessing step while preserving the tokenizing
+        strip_accents: Whether or not to strip accent characters.
+        lowercase: Whether or not to convert all characters to lowercase.
+        preprocessor: Override the preprocessing step while preserving the tokenizing
             and n-grams generation steps.
-        tokenizer (callable): The function used to convert preprocessed text into a `dict` of
+        tokenizer: The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
-        ngram_range (tuple (min_n, max_n)): The lower and upper boundary of the range n-grams to be
-            extracted. All values of n such that ``min_n <= n <= max_n`` will be used. For example
-            an ``ngram_range`` of ``(1, 1)`` means only unigrams, ``(1, 2)`` means unigrams and
-            bigrams, and ``(2, 2)`` means only bigrams. Only works if ``tokenizer`` is not set to
-            ``False``.
+        ngram_range: The lower and upper boundary of the range n-grams to be
+            extracted. All values of n such that `min_n <= n <= max_n` will be used. For example
+            an `ngram_range` of `(1, 1)` means only unigrams, `(1, 2)` means unigrams and
+            bigrams, and `(2, 2)` means only bigrams. Only works if `tokenizer` is not set to
+            `False`.
 
     Attributes:
         dfs (collections.defaultdict): Document counts.
@@ -251,31 +254,30 @@ class TFIDF(BagOfWords):
 
     Example:
 
-        ::
+        >>> import creme
 
-            >>> import creme
+        >>> corpus = [
+        ...     'This is the first document.',
+        ...     'This document is the second document.',
+        ...     'And this is the third one.',
+        ...     'Is this the first document?',
+        ... ]
 
-            >>> corpus = [
-            ...     'This is the first document.',
-            ...     'This document is the second document.',
-            ...     'And this is the third one.',
-            ...     'Is this the first document?',
-            ... ]
+        >>> tfidf = creme.feature_extraction.TFIDF()
 
-            >>> tfidf = creme.feature_extraction.TFIDF()
-
-            >>> for sentence in corpus:
-            ...     tfidf = tfidf.fit_one(sentence)
-            ...     print(tfidf.transform_one(sentence))
-            {'this': 0.447, 'is': 0.447, 'the': 0.447, 'first': 0.447, 'document': 0.447}
-            {'this': 0.333, 'document': 0.667, 'is': 0.333, 'the': 0.333, 'second': 0.469}
-            {'and': 0.497, 'this': 0.293, 'is': 0.293, 'the': 0.293, 'third': 0.497, 'one': 0.497}
-            {'is': 0.384, 'this': 0.384, 'the': 0.384, 'first': 0.580, 'document': 0.469}
+        >>> for sentence in corpus:
+        ...     tfidf = tfidf.fit_one(sentence)
+        ...     print(tfidf.transform_one(sentence))
+        {'this': 0.447, 'is': 0.447, 'the': 0.447, 'first': 0.447, 'document': 0.447}
+        {'this': 0.333, 'document': 0.667, 'is': 0.333, 'the': 0.333, 'second': 0.469}
+        {'and': 0.497, 'this': 0.293, 'is': 0.293, 'the': 0.293, 'third': 0.497, 'one': 0.497}
+        {'is': 0.384, 'this': 0.384, 'the': 0.384, 'first': 0.580, 'document': 0.469}
 
     """
 
-    def __init__(self, normalize=True, on=None, strip_accents=True, lowercase=True,
-                 preprocessor=None, tokenizer=None, ngram_range=(1, 1)):
+    def __init__(self, normalize=True, on: str = None, strip_accents=True, lowercase=True,
+                 preprocessor: typing.Callable = None, tokenizer: typing.Callable = None,
+                 ngram_range=(1, 1)):
         super().__init__(
             on=on,
             strip_accents=strip_accents,

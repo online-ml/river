@@ -1,4 +1,4 @@
-"""Compatibility with other libraries.
+"""Compatibility tools.
 
 This module contains adapters for making ``creme`` estimators compatible with other libraries, and
 vice-versa whenever possible. The relevant adapters will only be usable if you have installed the

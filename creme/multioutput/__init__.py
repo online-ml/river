@@ -1,4 +1,4 @@
-"""Multi-output classification and regression."""
+"""Multi-output models."""
 from .chain import ClassifierChain
 from .chain import RegressorChain
 

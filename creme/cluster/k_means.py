@@ -1,8 +1,9 @@
 import collections
+import functools
 import random
 
-from .. import base
-from .. import utils
+from creme import base
+from creme import utils
 
 
 __all__ = ['KMeans']
@@ -85,13 +86,9 @@ class KMeans(base.Clusterer):
         self.seed = seed
         self._rng = random.Random(seed)
         self.centers = {
-            i: collections.defaultdict(self.random_normal)
+            i: collections.defaultdict(functools.partial(self._rng.gauss, self.mu, self.sigma))
             for i in range(n_clusters)
         }
-
-    def random_normal(self):
-        """Returns a random value sampled from a normal distribution."""
-        return self._rng.gauss(self.mu, self.sigma)
 
     def fit_predict_one(self, x):
         """Equivalent to `k_means.fit_one(x).predict_one(x)`, but faster."""

@@ -1,5 +1,9 @@
 title: Welcome
 
+<div align="center">
+    <img src="img/creme.svg" width="60%">
+</div>
+
 #
 
 `creme` is a Python library for [online machine learning](https://www.wikiwand.com/en/Online_machine_learning). All the tools in the library can be updated with a single observation at a time, and can therefore be used to learn from streaming data.

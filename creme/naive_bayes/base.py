@@ -3,21 +3,17 @@ import math
 
 from scipy import special
 
-from .. import base
+from creme import base
 
 
 class BaseNB(base.MultiClassifier, abc.ABC):
-    """Base Naive Bayes class.
-
-    This class inherits ``predict_one`` from ``base.MultiClassifier``.
-
-    """
+    """Base Naive Bayes class."""
 
     @abc.abstractmethod
-    def joint_log_likelihood(self, x):
+    def joint_log_likelihood(self, x: dict) -> float:
         """Compute the unnormalized posterior log-likelihood of x.
 
-        The log-likelihood is ``log P(c) + log P(x|c)``
+        The log-likelihood is `log P(c) + log P(x|c)`.
 
         """
 
