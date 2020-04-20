@@ -91,13 +91,15 @@ class AdaLearningNode(LearningNodeNBAdaptive, AdaNode):
             dist = self.get_observed_class_distribution()
         # NB
         elif prediction_option == ht._NAIVE_BAYES:
-            dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
+            dist = do_naive_bayes_prediction(X, self._observed_class_distribution,
+                                             self._attribute_observers)
         # NBAdaptive (default)
         else:
             if self._mc_correct_weight > self._nb_correct_weight:
                 dist = self.get_observed_class_distribution()
             else:
-                dist = do_naive_bayes_prediction(X, self._observed_class_distribution, self._attribute_observers)
+                dist = do_naive_bayes_prediction(X, self._observed_class_distribution,
+                                                 self._attribute_observers)
 
         dist_sum = sum(dist.values())  # sum all values in dictionary
         normalization_factor = dist_sum * self.get_error_estimation() * self.get_error_estimation()
