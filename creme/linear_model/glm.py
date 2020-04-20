@@ -242,19 +242,17 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     """Logistic regression.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights. Note
-            that the intercept is handled separately. Defaults to `optim.SGD(.05)`.
-        loss (optim.BinaryLoss): The loss function to optimize for. Defaults to
-            `optim.losses.Log`.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
-        intercept (float): Initial intercept value.
-        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
-            updating the intercept. If a `float` is passed, then an instance of
-            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        initializer (optim.initializers.Initializer): Weights initialization scheme.
+        optimizer: The sequential optimizer used for updating the weights. Note that the intercept
+            is handled separately. Defaults to `optim.SGD(.05)`.
+        loss: The loss function to optimize for. Defaults to `optim.losses.Log`.
+        l2: Amount of L2 regularization used to push weights towards 0.
+        intercept: Initial intercept value.
+        intercept_lr: Learning rate scheduler used for updating the intercept. If a `float` is
+            passed, then an instance of `optim.schedulers.Constant` will be used. Setting this to 0
+            implies that the intercept will be not be updated.
+        l2: Amount of L2 regularization used to push weights towards 0.
+        clip_gradient: Clips the absolute value of each gradient value.
+        initializer: Weights initialization scheme.
 
     Attributes:
         weights (collections.defaultdict): The current weights.
@@ -286,8 +284,10 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=.0, intercept=0., intercept_lr=.01,
-                 clip_gradient=1e12, initializer=None):
+    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.BinaryLoss = None,
+                 l2=.0, intercept=0.,
+                 intercept_lr: typing.Union[float, optim.schedulers.Scheduler] = .01,
+                 clip_gradient=1e12, initializer: optim.initializers.Initializer = None):
         super().__init__(
             optimizer=optim.SGD(.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,

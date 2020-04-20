@@ -161,7 +161,7 @@ class PAClassifier(BasePA, base.BinaryClassifier):
 
     """
 
-    def __init__(self, C=1.0, mode=1, fit_intercept=True):
+    def __init__(self, C=1., mode=1, fit_intercept=True):
         super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
         self.loss = optim.losses.Hinge()
 

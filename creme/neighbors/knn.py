@@ -1,35 +1,35 @@
 import collections
 import operator
 
-from .. import base
-from .. import utils
+from creme import base
+from creme import utils
 
 
 __all__ = ['KNeighborsRegressor', 'KNeighborsClassifier']
 
 
-class NearestNeighbours(collections.deque):
+class NearestNeighbours:
 
     def __init__(self, window_size, p):
-        super().__init__(self, maxlen=window_size)
         self.window_size = window_size
         self.p = p
+        self.window = collections.deque(maxlen=window_size)
 
     def update(self, x, y):
-        super().append((x, y))
+        self.window.append((x, y))
         return self
 
     def find_nearest(self, x, k):
-        """Returns the ``k`` closest points, along with their distances."""
+        """Returns the `k` closest points to `x`, along with their distances."""
 
         # Compute the distances to each point in the window
-        points = ((*p, utils.math.minkowski_distance(a=x, b=p[0], p=self.p)) for p in self)
+        points = ((*p, utils.math.minkowski_distance(a=x, b=p[0], p=self.p)) for p in self.window)
 
         # Return the k closest points
         return sorted(points, key=operator.itemgetter(2))[:k]
 
 
-class KNeighborsRegressor(base.Regressor, NearestNeighbours):
+class KNeighborsRegressor(base.Regressor):
     """K-Nearest Neighbors (KNN) for regression.
 
     This works by storing a buffer with the `window_size` most recent observations. A brute-force
@@ -39,8 +39,8 @@ class KNeighborsRegressor(base.Regressor, NearestNeighbours):
     Parameters:
         n_neighbors: Number of neighbors to use.
         window_size: Size of the sliding window use to search neighbors with.
-        p: Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
-            Manhattan distance, while ``p=2`` corresponds to the Euclidean distance.
+        p: Power parameter for the Minkowski metric. When `p=1`, this corresponds to the
+            Manhattan distance, while `p=2` corresponds to the Euclidean distance.
         weighted: Whether to weight the contribution of each neighbor by it's inverse distance or
             not.
 
@@ -67,16 +67,19 @@ class KNeighborsRegressor(base.Regressor, NearestNeighbours):
     """
 
     def __init__(self, n_neighbors=5, window_size=50, p=2, weighted=True):
-        super().__init__(window_size=window_size, p=p)
         self.n_neighbors = n_neighbors
+        self.window_size = window_size
         self.weighted = weighted
+        self.p = p
+        self._nn = NearestNeighbours(window_size=window_size, p=p)
 
     def fit_one(self, x, y):
-        return super().update(x, y)
+        self._nn.update(x, y)
+        return self
 
     def predict_one(self, x):
 
-        nearest = self.find_nearest(x=x, k=self.n_neighbors)
+        nearest = self._nn.find_nearest(x=x, k=self.n_neighbors)
 
         if not nearest:
             return 0.
@@ -96,7 +99,7 @@ class KNeighborsRegressor(base.Regressor, NearestNeighbours):
         return sum(y for _, y, _ in nearest) / self.n_neighbors
 
 
-class KNeighborsClassifier(base.MultiClassifier, NearestNeighbours):
+class KNeighborsClassifier(base.MultiClassifier):
     """K-Nearest Neighbors (KNN) for classification.
 
     This works by storing a buffer with the `window_size` most recent observations. A brute-force
@@ -106,8 +109,8 @@ class KNeighborsClassifier(base.MultiClassifier, NearestNeighbours):
     Parameters:
         n_neighbors: Number of neighbors to use.
         window_size: Size of the sliding window use to search neighbors with.
-        p: Power parameter for the Minkowski metric. When ``p=1``, this corresponds to the
-            Manhattan distance, while ``p=2`` corresponds to the Euclidean distance.
+        p: Power parameter for the Minkowski metric. When `p=1`, this corresponds to the
+            Manhattan distance, while `p=2` corresponds to the Euclidean distance.
         weighted: Whether to weight the contribution of each neighbor by it's inverse
             distance or not.
 
@@ -134,18 +137,21 @@ class KNeighborsClassifier(base.MultiClassifier, NearestNeighbours):
     """
 
     def __init__(self, n_neighbors=5, window_size=50, p=2, weighted=True):
-        super().__init__(window_size=window_size, p=p)
         self.n_neighbors = n_neighbors
+        self.window_size = window_size
         self.weighted = weighted
+        self.p = p
         self.classes = set()
+        self._nn = NearestNeighbours(window_size=window_size, p=p)
 
     def fit_one(self, x, y):
         self.classes.add(y)
-        return super().update(x, y)
+        self._nn.update(x, y)
+        return self
 
     def predict_proba_one(self, x):
 
-        nearest = self.find_nearest(x=x, k=self.n_neighbors)
+        nearest = self._nn.find_nearest(x=x, k=self.n_neighbors)
 
         y_pred = {c: 0. for c in self.classes}
 

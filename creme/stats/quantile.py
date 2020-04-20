@@ -1,6 +1,6 @@
 import math
 
-from .. import utils
+from creme import utils
 
 from . import base
 
@@ -8,66 +8,61 @@ from . import base
 class Quantile(base.Univariate):
     """Running quantile.
 
-    Uses the P-square algorithm to calculate the quantile. The code is inspired by LiveStat's
-    implementation [2].
+    Uses the P-square algorithm. The code is inspired by LiveStat's implementation [2].
 
-    Attributes:
-        quantile (float): quantile you want compute the value
-        must be between 0 and 1 excluded.
+    Parameters:
+        q: Determines which quantile to compute, must be comprised between 0 and 1.
 
     Example:
 
-        ::
+        >>> from creme import stats
+        >>> import numpy as np
 
-            >>> from creme import stats
-            >>> import numpy as np
+        >>> np.random.seed(42 * 1337)
+        >>> mu, sigma = 0, 1
+        >>> s = np.random.normal(mu, sigma, 500)
 
-            >>> np.random.seed(42*1337)
-            >>> mu, sigma = 0, 1
-            >>> s = np.random.normal(mu, sigma, 500)
+        >>> median = stats.Quantile(0.5)
+        >>> for x in s:
+        ...    _ = median.update(x)
 
-            >>> median = stats.Quantile(0.5)
-            >>> for x in s:
-            ...    _ = median.update(x)
+        >>> print(f'The estimated value of the 50th (median) quantile is {median.get():.4f}')
+        The estimated value of the 50th (median) quantile is -0.0275
+        >>> print(f'The real value of the 50th (median) quantile is {np.median(s):.4f}')
+        The real value of the 50th (median) quantile is -0.0135
 
-            >>> print(f'The estimated value of the 50th (median) quantile is {median.get():.4f}')
-            The estimated value of the 50th (median) quantile is -0.0275
-            >>> print(f'The real value of the 50th (median) quantile is {np.median(s):.4f}')
-            The real value of the 50th (median) quantile is -0.0135
+        >>> percentile_17 = stats.Quantile(0.17)
+        >>> for x in s:
+        ...    _ = percentile_17.update(x)
 
-            >>> percentile_17 = stats.Quantile(0.17)
-            >>> for x in s:
-            ...    _ = percentile_17.update(x)
-
-            >>> print(f'The estimated value of the 17th quantile is {percentile_17.get():.4f}')
-            The estimated value of the 17th quantile is -0.8652
-            >>> print(f'The real value of the 17th quantile is {np.percentile(s,17):.4f}')
-            The real value of the 17th quantile is -0.9072
+        >>> print(f'The estimated value of the 17th quantile is {percentile_17.get():.4f}')
+        The estimated value of the 17th quantile is -0.8652
+        >>> print(f'The real value of the 17th quantile is {np.percentile(s,17):.4f}')
+        The real value of the 17th quantile is -0.9072
 
     References:
-        1. `The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations <https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf>`_
+        1. [The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations](https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf)
 
     """
 
-    def __init__(self, quantile=0.5):
+    def __init__(self, q=.5):
 
-        if 0 < quantile < 1:
-            self.quantile = quantile
-        else:
-            raise ValueError('quantile must be between 0 and 1 excluded')
+        if not 0 < q < 1:
+            raise ValueError('q is not comprised between 0 and 1')
+        self.q = q
 
         self.desired_marker_position = [
             0,
-            self.quantile / 2,
-            self.quantile,
-            (1 + self.quantile) / 2,
+            self.q / 2,
+            self.q,
+            (1 + self.q) / 2,
             1
         ]
         self.marker_position = [
             1,
-            1 + 2 * self.quantile,
-            1 + 4 * self.quantile,
-            3 + 2 * self.quantile,
+            1 + 2 * self.q,
+            1 + 4 * self.q,
+            3 + 2 * self.q,
             5
         ]
         self.position = list(range(1, 6))
@@ -167,7 +162,7 @@ class Quantile(base.Univariate):
         if self.heights:
             self.heights.sort()
             length = len(self.heights)
-            return self.heights[int(min(max(length - 1, 0), length * self.quantile))]
+            return self.heights[int(min(max(length - 1, 0), length * self.q))]
 
         return 0
 
@@ -176,48 +171,43 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
     """Running quantile over a window.
 
     Parameters:
-        window_size (int): Size of the window.
-        quantile (float): Desired quantile, must be between 0 and 1.
-
-    Attributes:
-        idx (int): Index of the desired quantile in the rolling observation list.
+        q: Determines which quantile to compute, must be comprised between 0 and 1.
+        window_size: Size of the window.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
+        >>> rolling_quantile = stats.RollingQuantile(
+        ...     q=.5,
+        ...     window_size=100,
+        ... )
 
-            >>> rolling_quantile = stats.RollingQuantile(
-            ...     window_size=100,
-            ...     quantile=0.5
-            ... )
-
-            >>> for i in range(0, 1001):
-            ...     rolling_quantile = rolling_quantile.update(i)
-            ...     if i % 100 == 0:
-            ...         print(rolling_quantile.get())
-            0
-            50
-            150
-            250
-            350
-            450
-            550
-            650
-            750
-            850
-            950
+        >>> for i in range(0, 1001):
+        ...     rolling_quantile = rolling_quantile.update(i)
+        ...     if i % 100 == 0:
+        ...         print(rolling_quantile.get())
+        0
+        50
+        150
+        250
+        350
+        450
+        550
+        650
+        750
+        850
+        950
 
     References:
-        1. `Left sorted <https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python>`_
+        1. [Left sorted](https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python)
 
     """
 
-    def __init__(self, window_size, quantile=0.5):
+    def __init__(self, q, window_size):
         super().__init__(size=window_size)
-        self.quantile = quantile
-        self.idx = int(round(self.quantile * self.size + 0.5)) - 1
+        self.q = q
+        self.idx = int(round(self.q * self.size + .5)) - 1
 
     @property
     def window_size(self):
@@ -229,6 +219,6 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
 
     def get(self):
         if len(self) < self.size:
-            idx = int(round(self.quantile * len(self) + 0.5)) - 1
+            idx = int(round(self.q * len(self) + .5)) - 1
             return self[idx]
         return self[self.idx]

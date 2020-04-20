@@ -1,11 +1,11 @@
-from .. import base
+from creme import base
 
 
 __all__ = ['Discard', 'Select']
 
 
 class Discard(base.Transformer):
-    """Subsets a set of features by applying a blacklist.
+    """Removes features according to a blacklist.
 
     Parameters:
         blacklist: Key(s) to discard.
@@ -41,7 +41,7 @@ class Discard(base.Transformer):
 
 
 class Select(base.Transformer):
-    """Subsets a set of features by applying a whitelist.
+    """Selects features according to a whitelist.
 
     Parameters:
         whitelist: Key(s) to keep.

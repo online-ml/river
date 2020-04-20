@@ -1,4 +1,6 @@
-from .. import base
+import typing
+
+from creme import base
 
 
 __all__ = ['FuncTransformer']
@@ -11,7 +13,7 @@ class FuncTransformer(base.Transformer):
     transformed features.
 
     Parameters:
-        func: a function transforming a dict of features into a new dict of features.
+        func: A function transforming a dict of features into a new dict of features.
 
     Example:
 
@@ -31,7 +33,7 @@ class FuncTransformer(base.Transformer):
 
     """
 
-    def __init__(self, func: callable):
+    def __init__(self, func: typing.Callable[[dict], dict]):
         self.func = func
 
     def transform_one(self, x):

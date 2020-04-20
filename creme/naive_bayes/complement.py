@@ -12,11 +12,11 @@ class ComplementNB(base.BaseNB):
 
     The input vector has to contain positive values, such as counts or TF-IDF values.
 
-    This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
-    ``predict_one`` from `base.MultiClassifier`.
+    This class inherits `predict_proba_one` from `naive_bayes.BaseNB` which itself inherits
+    `predict_one` from `base.MultiClassifier`.
 
     Parameters:
-        alpha (float): Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+        alpha: Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
 
     Attributes:
         class_dist (proba.Multinomial): Class prior probability distribution.
@@ -50,8 +50,8 @@ class ComplementNB(base.BaseNB):
             {'health': 0.779191, 'butcher': 0.220808}
 
     References:
-        1. `Rennie, J.D., Shih, L., Teevan, J. and Karger, D.R., 2003. Tackling the poor assumptions of naive bayes text classifiers. In Proceedings of the 20th international conference on machine learning (ICML-03) (pp. 616-623). <https://people.csail.mit.edu/jrennie/papers/icml03-nb.pdf>`_
-        2. `StackExchange discussion <https://stats.stackexchange.com/questions/126009/complement-naive-bayes>`_
+        1. [Rennie, J.D., Shih, L., Teevan, J. and Karger, D.R., 2003. Tackling the poor assumptions of naive bayes text classifiers. In Proceedings of the 20th international conference on machine learning (ICML-03) (pp. 616-623)](https://people.csail.mit.edu/jrennie/papers/icml03-nb.pdf)
+        2. [StackExchange discussion](https://stats.stackexchange.com/questions/126009/complement-naive-bayes)
 
     """
 

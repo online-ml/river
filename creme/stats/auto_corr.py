@@ -7,44 +7,45 @@ from . import pearson
 class AutoCorrelation(base.Univariate):
     """Measures the serial correlation.
 
-    This method computes the Pearson correlation between the current value and the value seen ``n``
+    This method computes the Pearson correlation between the current value and the value seen `n`
     steps before.
+
+    Parameters:
+        lag
 
     Example:
 
-        The following examples are taken from the `pandas documentation <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.autocorr.html>`_.
+        The following examples are taken from the [pandas documentation](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.autocorr.html).
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
+        >>> auto_corr = stats.AutoCorrelation(lag=1)
+        >>> for x in [0.25, 0.5, 0.2, -0.05]:
+        ...     print(auto_corr.update(x).get())
+        0
+        0
+        -1.0
+        0.103552
 
-            >>> auto_corr = stats.AutoCorrelation(lag=1)
-            >>> for x in [0.25, 0.5, 0.2, -0.05]:
-            ...     print(auto_corr.update(x).get())
-            0
-            0
-            -1.0
-            0.103552
+        >>> auto_corr = stats.AutoCorrelation(lag=2)
+        >>> for x in [0.25, 0.5, 0.2, -0.05]:
+        ...     print(auto_corr.update(x).get())
+        0
+        0
+        0
+        -1.0
 
-            >>> auto_corr = stats.AutoCorrelation(lag=2)
-            >>> for x in [0.25, 0.5, 0.2, -0.05]:
-            ...     print(auto_corr.update(x).get())
-            0
-            0
-            0
-            -1.0
-
-            >>> auto_corr = stats.AutoCorrelation(lag=1)
-            >>> for x in [1, 0, 0, 0]:
-            ...     print(auto_corr.update(x).get())
-            0
-            0
-            0
-            0
+        >>> auto_corr = stats.AutoCorrelation(lag=1)
+        >>> for x in [1, 0, 0, 0]:
+        ...     print(auto_corr.update(x).get())
+        0
+        0
+        0
+        0
 
     """
 
-    def __init__(self, lag):
+    def __init__(self, lag: int):
         self.window = collections.deque(maxlen=lag)
         self.lag = lag
         self.pearson = pearson.PearsonCorrelation(ddof=1)

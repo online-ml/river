@@ -12,8 +12,6 @@ from .window import SortedWindow
 __all__ = [
     'estimator_checks',
     'Histogram',
-    'math',
-    'pretty',
     'SDFT',
     'Skyline',
     'SortedWindow',

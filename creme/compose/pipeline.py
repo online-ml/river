@@ -23,13 +23,12 @@ __all__ = ['Pipeline']
 class Pipeline(base.Estimator):
     """Chains a sequence of estimators.
 
-    Sequentially apply a list of estimators. Pipelines helps to define machine learning systems in a
-    declarative style, which makes a lot of sense when we think in a stream manner. For further
-    information and practical examples, take a look at the
-    [user guide](/user-guide/the-art-of-using-pipelines.md).
+    Sequentially apply a list of estimators. Take a look at the
+    [user guide](/user-guide/the-art-of-using-pipeline) for further information and practical
+    examples.
 
     Parameters:
-        steps: Ideally a list of (name, estimator) tuples. If an estimator is given without a name
+        steps: Ideally a list of (name, estimator) tuples. If an estimator is given without a name,
             then a name is automatically inferred from the estimator.
 
     Attributes:
@@ -127,12 +126,12 @@ class Pipeline(base.Estimator):
 
     def __or__(self, other):
         """Inserts a step at the end of the pipeline."""
-        self.add_step(other, at_start=False)
+        self._add_step(other, at_start=False)
         return self
 
     def __ror__(self, other):
         """Inserts a step at the start of the pipeline."""
-        self.add_step(other, at_start=True)
+        self._add_step(other, at_start=True)
         return self
 
     def __add__(self, other):
@@ -178,7 +177,7 @@ class Pipeline(base.Estimator):
             any(t.is_supervised for t in self.transformers)
         )
 
-    def add_step(self, estimator: typing.Union[base.Estimator, typing.Tuple[typing.Hashable, base.Estimator]],
+    def _add_step(self, estimator: typing.Union[base.Estimator, typing.Tuple[typing.Hashable, base.Estimator]],
                  at_start: bool):
         """Adds a step to either end of the pipeline while taking care of the input type."""
 

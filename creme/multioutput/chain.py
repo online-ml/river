@@ -1,7 +1,7 @@
 import collections
 import copy
 
-from .. import base
+from creme import base
 
 
 __all__ = ['ClassifierChain', 'RegressorChain']
@@ -29,49 +29,60 @@ class BaseChain(base.Wrapper, collections.UserDict):
 
 
 class ClassifierChain(BaseChain, base.MultiOutputClassifier):
-    """A multi-label model that arranges classifiers into a chain.
+    """A multi-output model that arranges classifiers into a chain.
+
+    This will create one model per output. The prediction of the first output will be used as a
+    feature in the second output. The prediction for the second output will be used as a feature
+    for the third, etc. This "chain model" is therefore capable of capturing dependencies between
+    outputs.
+
+    Parameters:
+        model
+        order: The order in which to construct the chain. If it not provided then it will be
+            inferred from the order of the keys in the first provided target dictionary.
 
     Example:
 
-        ::
+        >>> from creme import feature_selection
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import multioutput
+        >>> from creme import preprocessing
+        >>> from creme import stream
+        >>> from sklearn import datasets
 
-            >>> from creme import feature_selection
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import multioutput
-            >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
+        >>> X_y = stream.iter_sklearn_dataset(
+        ...     dataset=datasets.fetch_openml('yeast', version=4),
+        ...     shuffle=True,
+        ...     seed=42
+        ... )
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.fetch_openml('yeast', version=4),
-            ...     shuffle=True,
-            ...     seed=42
-            ... )
+        >>> model = feature_selection.VarianceThreshold(threshold=0.01)
+        >>> model |= preprocessing.StandardScaler()
+        >>> model |= multioutput.ClassifierChain(
+        ...     model=linear_model.LogisticRegression(),
+        ...     order=list(range(14))
+        ... )
 
-            >>> model = feature_selection.VarianceThreshold(threshold=0.01)
-            >>> model |= preprocessing.StandardScaler()
-            >>> model |= multioutput.ClassifierChain(
-            ...     model=linear_model.LogisticRegression(),
-            ...     order=list(range(14))
-            ... )
+        >>> metric = metrics.Jaccard()
 
-            >>> metric = metrics.Jaccard()
+        >>> for x, y in X_y:
+        ...     # Convert y values to booleans
+        ...     y = {i: yi == 'TRUE' for i, yi in y.items()}
+        ...     y_pred = model.predict_one(x)
+        ...     metric = metric.update(y, y_pred)
+        ...     model = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     # Convert y values to booleans
-            ...     y = {i: yi == 'TRUE' for i, yi in y.items()}
-            ...     y_pred = model.predict_one(x)
-            ...     metric = metric.update(y, y_pred)
-            ...     model = model.fit_one(x, y)
-
-            >>> metric
-            Jaccard: 0.451234
+        >>> metric
+        Jaccard: 0.451234
 
     References:
-        1. `Multi-Output Chain Models and their Application in Data Streams <https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf>`_
+        1. [Multi-Output Chain Models and their Application in Data Streams](https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf)
 
     """
+
+    def __init__(self, model: base.Classifier, order: list = None):
+        super().__init__(model, order)
 
     def fit_one(self, x, y):
 
@@ -119,40 +130,51 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
 
 
 class RegressorChain(BaseChain, base.MultiOutputRegressor):
-    """A multi-label model that arranges regressor into a chain.
+    """A multi-output model that arranges regressor into a chain.
+
+    This will create one model per output. The prediction of the first output will be used as a
+    feature in the second output. The prediction for the second output will be used as a feature
+    for the third, etc. This "chain model" is therefore capable of capturing dependencies between
+    outputs.
+
+    Parameters:
+        model
+        order: The order in which to construct the chain. If it not provided then it will be
+            inferred from the order of the keys in the first provided target dictionary.
 
     Example:
 
-        ::
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import multioutput
+        >>> from creme import preprocessing
+        >>> from creme import stream
+        >>> from sklearn import datasets
 
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import multioutput
-            >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
+        >>> X_y = stream.iter_sklearn_dataset(
+        ...     dataset=datasets.load_linnerud(),
+        ...     shuffle=True,
+        ...     seed=42
+        ... )
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_linnerud(),
-            ...     shuffle=True,
-            ...     seed=42
-            ... )
+        >>> model = multioutput.RegressorChain(
+        ...     model=(
+        ...         preprocessing.StandardScaler() |
+        ...         linear_model.LinearRegression(intercept_lr=0.3)
+        ...     ),
+        ...     order=[0, 1, 2]
+        ... )
 
-            >>> model = multioutput.RegressorChain(
-            ...     model=(
-            ...         preprocessing.StandardScaler() |
-            ...         linear_model.LinearRegression(intercept_lr=0.3)
-            ...     ),
-            ...     order=[0, 1, 2]
-            ... )
+        >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
-            >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 16.495095
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        MAE: 16.495095
 
     """
+
+    def __init__(self, model: base.Regressor, order: list = None):
+        super().__init__(model, order)
 
     def fit_one(self, x, y):
 

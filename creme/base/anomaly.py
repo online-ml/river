@@ -12,6 +12,9 @@ class AnomalyDetector(estimator.Estimator):
         Parameters:
             x: A dictionary of features.
 
+        Returns:
+            self
+
         """
 
     @abc.abstractmethod
