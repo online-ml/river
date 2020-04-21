@@ -36,7 +36,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         The lambda value for bagging (lambda=6 corresponds to Leverage
         Bagging).
 
-    aggregation_method: str, optional (default='mean')
+    aggregation_method: str, optional (default='median')
         The method to use to aggregate predictions in the ensemble.
         - 'mean'
         - 'median'
@@ -48,7 +48,6 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                 instead.
             - 'mse': Weight predictions using trees' Mean Square Error
             - 'mae': Weight predictions using trees' Mean Absolute Error
-
 
     drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
         Drift Detection method. Set to None to disable Drift detection.
@@ -161,7 +160,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                  # Forest parameters
                  n_estimators: int = 10,
                  max_features='auto',
-                 aggregation_method: str = 'mean',
+                 aggregation_method: str = 'median',
                  weighted_vote_strategy: str = None,
                  lambda_value: int = 6,
                  drift_detection_method: BaseDriftDetector = ADWIN(0.001),
