@@ -5,9 +5,7 @@ from .nominal_attribute_regression_observer import NominalAttributeRegressionObs
 from .numeric_attribute_class_observer_binary_tree import NumericAttributeClassObserverBinaryTree
 from .numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from .numeric_attribute_regression_observer import NumericAttributeRegressionObserver
-from .numeric_attribute_regression_observer_multi_target import NumericAttributeRegressionObserverMultiTarget
 
 __all__ = ["AttributeClassObserver", "AttributeClassObserverNull", "NominalAttributeClassObserver",
            "NominalAttributeRegressionObserver", "NumericAttributeClassObserverBinaryTree",
-           "NumericAttributeClassObserverGaussian", "NumericAttributeRegressionObserver",
-           "NumericAttributeRegressionObserverMultiTarget"]
+           "NumericAttributeClassObserverGaussian", "NumericAttributeRegressionObserver"]
