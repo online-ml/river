@@ -1,5 +1,5 @@
 from skmultiflow.trees.nodes import ActiveLearningNodeForRegression
-from skmultiflow.trees.attribute_observer import NumericAttributeRegressionObserverMultiTarget
+from skmultiflow.trees.attribute_observer import NumericAttributeRegressionObserver
 from skmultiflow.trees.attribute_observer import NominalAttributeRegressionObserver
 
 
@@ -50,6 +50,6 @@ class ActiveLearningNodeForRegressionMultiTarget(ActiveLearningNodeForRegression
                 if ht.nominal_attributes is not None and i in ht.nominal_attributes:
                     obs = NominalAttributeRegressionObserver()
                 else:
-                    obs = NumericAttributeRegressionObserverMultiTarget()
+                    obs = NumericAttributeRegressionObserver()
                 self._attribute_observers[i] = obs
             obs.observe_attribute_class(x, y, weight)
