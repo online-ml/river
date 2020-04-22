@@ -46,9 +46,10 @@ def test_adaptive_random_forest_regressor_mean():
     error2 = mean_absolute_error(y_true, y_pred2)
     error3 = mean_absolute_error(y_true, y_pred3)
 
-    expected_error1 = 137.96879312181113
-    expected_error2 = 141.07333987006018
-    expected_error3 = 138.0064069056026
+    expected_error1 = 145.28765775718037
+    expected_error2 = 151.1530453414198
+    expected_error3 = 145.41008074163318
+
     assert np.isclose(error1, expected_error1)
     assert np.isclose(error2, expected_error2)
     assert np.isclose(error3, expected_error3)
@@ -110,9 +111,9 @@ def test_adaptive_random_forest_regressor_perceptron():
     error2 = mean_absolute_error(y_true, y_pred2)
     error3 = mean_absolute_error(y_true, y_pred3)
 
-    expected_error1 = 112.70239337636369
-    expected_error2 = 111.75976199439144
-    expected_error3 = 113.09546750256585
+    expected_error1 = 108.36873697601933
+    expected_error2 = 113.13949581703123
+    expected_error3 = 109.23728808467669
     assert np.isclose(error1, expected_error1)
     assert np.isclose(error2, expected_error2)
     assert np.isclose(error3, expected_error3)
