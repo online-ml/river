@@ -127,7 +127,7 @@ def test_hoeffding_tree_regressor_coverage():
     # Cover memory management
     tree = HoeffdingTreeRegressor(
         leaf_prediction='mean', grace_period=100,
-        memory_estimate_period=100, max_byte_size=max_size_mb*2**20
+        memory_estimate_period=50, max_byte_size=max_size_mb*2**20
     )
     tree.partial_fit(X, y)
 
@@ -137,7 +137,7 @@ def test_hoeffding_tree_regressor_coverage():
     # Typo in leaf prediction
     tree = HoeffdingTreeRegressor(
         leaf_prediction='percptron', grace_period=100,
-        memory_estimate_period=100, max_byte_size=max_size_mb*2**20
+        memory_estimate_period=50, max_byte_size=max_size_mb*2**20
     )
     # Invalid split_criterion
     tree.split_criterion = 'VR'
