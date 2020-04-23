@@ -117,6 +117,7 @@ def test_hoeffding_tree_regressor_perceptron():
 def test_hoeffding_tree_regressor_coverage():
     max_samples = 1000
     max_size_mb = 2
+    mem_delta = 0.03
 
     stream = RegressionGenerator(
         n_samples=max_samples, n_features=10, n_informative=7, n_targets=1,
@@ -127,23 +128,23 @@ def test_hoeffding_tree_regressor_coverage():
     # Cover memory management
     tree = HoeffdingTreeRegressor(
         leaf_prediction='mean', grace_period=100,
-        memory_estimate_period=50, max_byte_size=max_size_mb*2**20
+        memory_estimate_period=100, max_byte_size=max_size_mb*2**20
     )
     tree.partial_fit(X, y)
 
     # A tree without memory management enabled reaches over 3 MB in size
-    assert calculate_object_size(tree, 'MB') <= max_size_mb
+    assert calculate_object_size(tree, 'MB') <= max_size_mb + mem_delta
 
     # Typo in leaf prediction
     tree = HoeffdingTreeRegressor(
         leaf_prediction='percptron', grace_period=100,
-        memory_estimate_period=50, max_byte_size=max_size_mb*2**20
+        memory_estimate_period=100, max_byte_size=max_size_mb*2**20
     )
     # Invalid split_criterion
     tree.split_criterion = 'VR'
 
     tree.partial_fit(X, y)
-    assert calculate_object_size(tree, 'MB') <= max_size_mb
+    assert calculate_object_size(tree, 'MB') <= max_size_mb + mem_delta
 
     tree.reset()
     assert tree._estimator_type == 'regressor'
