@@ -100,23 +100,25 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
         if initial_class_observations is None:
             initial_class_observations = {}
 
+        # Generate a random seed for the new learning node
+        random_state = self._random_state.choice(4294967295)
         if is_active_node:
             if self.leaf_prediction == self._TARGET_MEAN:
                 return RandomLearningNodeForRegression(
                     initial_class_observations, max_features=self.max_features,
-                    random_state=self.random_state
+                    random_state=random_state
                 )
             elif self.leaf_prediction == self._PERCEPTRON:
                 return RandomLearningNodePerceptron(
                     initial_class_observations, max_features=self.max_features,
-                    parent_node=parent_node, random_state=self.random_state
+                    parent_node=parent_node, random_state=random_state
                 )
         else:
             if self.leaf_prediction == self._TARGET_MEAN:
                 return InactiveLearningNodeForRegression(initial_class_observations)
             elif self.leaf_prediction == self._PERCEPTRON:
                 return InactiveLearningNodePerceptron(initial_class_observations, parent_node,
-                                                      random_state=self.random_state)
+                                                      random_state=random_state)
 
     @staticmethod
     def is_randomizable():

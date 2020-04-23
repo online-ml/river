@@ -110,7 +110,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         List of Nominal attributes. If emtpy, then assume that all
         attributes are numerical.
 
-    learning_ratio_perceptron: float (default=0.02)
+    learning_ratio_perceptron: float (default=0.1)
         (`ARFHoeffdingTreeRegressor` parameter)
         The learning rate of the perceptron.
 
@@ -178,7 +178,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                  no_preprune: bool = False,
                  leaf_prediction: str = 'perceptron',
                  nominal_attributes: list = None,
-                 learning_ratio_perceptron: float = 0.02,
+                 learning_ratio_perceptron: float = 0.1,
                  learning_ratio_decay: float = 0.001,
                  learning_ratio_const: bool = True,
                  random_state=None):
@@ -310,7 +310,8 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
 
     def init_ensemble(self, X):
         self._set_max_features(get_dimensions(X)[1])
-
+        # Generate a different random seed per tree
+        random_states = self._random_state.choice(4294967295, size=self.n_estimators)
         self.ensemble = [
             ARFRegBaseLearner(
                 index_original=i,
@@ -330,7 +331,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                     learning_ratio_decay=self.learning_ratio_decay,
                     learning_ratio_const=self.learning_ratio_const,
                     max_features=self.max_features,
-                    random_state=self.random_state
+                    random_state=random_states[i]
                 ),
                 instances_seen=self.instances_seen,
                 drift_detection_method=self.drift_detection_method,
