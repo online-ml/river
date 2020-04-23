@@ -169,7 +169,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                  # Tree parameters
                  max_byte_size: int = 33554432,
                  memory_estimate_period: int = 2000000,
-                 grace_period: int = 200,
+                 grace_period: int = 50,
                  split_confidence: float = 0.01,
                  tie_threshold: float = 0.05,
                  binary_split: bool = False,
