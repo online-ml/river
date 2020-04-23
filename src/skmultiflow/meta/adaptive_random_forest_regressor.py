@@ -509,14 +509,14 @@ class ARFRegBaseLearner(BaseSKMObject):
         # To check for performance drops before switching learners in case of a drift
         old_error = self.get_error()
         # Monitor base learner performance
-        self.evaluator.add_result(y, predicted_value)
+        self.evaluator.add_result(y[0], predicted_value[0])
         # Update learning model
 
         self.estimator.partial_fit(X, y, sample_weight=sample_weight)
 
         if self.background_learner:
             prediction_background = self.background_learner.estimator.predict(X)
-            self.background_learner.evaluator.add_result(y, prediction_background)
+            self.background_learner.evaluator.add_result(y[0], prediction_background[0])
 
             # Update background learner
             self.background_learner.estimator.partial_fit(X, y, sample_weight=sample_weight)
