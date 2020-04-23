@@ -46,9 +46,9 @@ def test_adaptive_random_forest_regressor_mean():
     error2 = mean_absolute_error(y_true, y_pred2)
     error3 = mean_absolute_error(y_true, y_pred3)
 
-    expected_error1 = 145.28765775718037
-    expected_error2 = 151.1530453414198
-    expected_error3 = 145.41008074163318
+    expected_error1 = 147.23143780794317
+    expected_error2 = 145.10263299599734
+    expected_error3 = 147.2553808800811
 
     assert np.isclose(error1, expected_error1)
     assert np.isclose(error2, expected_error2)
@@ -56,9 +56,9 @@ def test_adaptive_random_forest_regressor_mean():
 
     expected_info = "AdaptiveRandomForestRegressor(aggregation_method='mean', " \
                     "binary_split=False, drift_detection_criteria='mse', " \
-                    "drift_detection_method=ADWIN(delta=0.001), grace_period=200, " \
+                    "drift_detection_method=ADWIN(delta=0.001), grace_period=50, " \
                     "lambda_value=6, leaf_prediction='mean', learning_ratio_const=True, " \
-                    "learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
+                    "learning_ratio_decay=0.001, learning_ratio_perceptron=0.1, " \
                     "max_byte_size=33554432, max_features=4, memory_estimate_period=2000000, " \
                     "n_estimators=3, no_preprune=False, nominal_attributes=None, " \
                     "random_state=1, remove_poor_atts=False, split_confidence=0.01, " \
@@ -111,9 +111,10 @@ def test_adaptive_random_forest_regressor_perceptron():
     error2 = mean_absolute_error(y_true, y_pred2)
     error3 = mean_absolute_error(y_true, y_pred3)
 
-    expected_error1 = 108.36873697601933
-    expected_error2 = 113.13949581703123
-    expected_error3 = 109.23728808467669
+    expected_error1 = 98.39875363287658
+    expected_error2 = 104.57333449514134
+    expected_error3 = 110.35063697771159
+
     assert np.isclose(error1, expected_error1)
     assert np.isclose(error2, expected_error2)
     assert np.isclose(error3, expected_error3)
@@ -122,9 +123,9 @@ def test_adaptive_random_forest_regressor_perceptron():
 
     expected_info = "AdaptiveRandomForestRegressor(aggregation_method='median', " \
                     "binary_split=False, drift_detection_criteria='mse', " \
-                    "drift_detection_method=ADWIN(delta=0.001), grace_period=200, " \
+                    "drift_detection_method=ADWIN(delta=0.001), grace_period=50, " \
                     "lambda_value=6, leaf_prediction='perceptron', learning_ratio_const=True, " \
-                    "learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
+                    "learning_ratio_decay=0.001, learning_ratio_perceptron=0.1, " \
                     "max_byte_size=33554432, max_features=4, memory_estimate_period=2000000, " \
                     "n_estimators=3, no_preprune=False, nominal_attributes=None, " \
                     "random_state=1, remove_poor_atts=False, split_confidence=0.01, " \
