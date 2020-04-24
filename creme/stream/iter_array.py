@@ -7,8 +7,9 @@ import numpy as np
 from creme import base
 
 
-def iter_array(X: np.ndarray, y: np.ndarray = None, feature_names: typing.List[str] = None,
-               target_names: typing.List[str] = None, shuffle: bool = False,
+def iter_array(X: np.ndarray, y: np.ndarray = None,
+               feature_names: typing.List[base.typing.FeatureName] = None,
+               target_names: typing.List[base.typing.FeatureName] = None, shuffle: bool = False,
                seed: int = None) -> base.typing.Stream:
     """Iterates over the rows from an array of features and an array of targets.
 

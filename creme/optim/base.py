@@ -18,7 +18,7 @@ class Optimizer(abc.ABC):
 
     """
 
-    def __init__(self, lr: typing.Union[schedulers.Scheduler, numbers.Number]):
+    def __init__(self, lr: typing.Union[schedulers.Scheduler, float]):
         if isinstance(lr, numbers.Number):
             lr = schedulers.Constant(lr)
         self.lr = lr

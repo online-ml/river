@@ -92,7 +92,9 @@ class BaggingClassifier(BaseBagging, base.Classifier):
             y_pred.update(classifier.predict_proba_one(x))
 
         total = sum(y_pred.values())
-        return {label: proba / total for label, proba in y_pred.items()}
+        if total > 0:
+            return {label: proba / total for label, proba in y_pred.items()}
+        return y_pred
 
 
 class BaggingRegressor(BaseBagging, base.Regressor):

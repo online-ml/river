@@ -28,8 +28,12 @@ class Metric(abc.ABC):
     _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
+    def update(self, y_true, y_pred) -> 'Metric':
+        """Update the metric."""
+
+    @abc.abstractmethod
     def get(self) -> float:
-        """Returns the current value of the metric."""
+        """Return the current value of the metric."""
 
     @abc.abstractproperty
     def bigger_is_better(self) -> bool:

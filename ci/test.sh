@@ -32,6 +32,6 @@ pip install -e ".[dev]" codecov
 
 # Run linting, type checking, unit tests, and coverage
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-mypy creme
+#mypy creme
 pytest --cov=creme -m "not web"
 codecov
