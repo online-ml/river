@@ -18,36 +18,36 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
     Latent Dirichlet allocation (LDA) is a probabilistic approach for exploring topics in document
     collections. The key advantage of this variant is that it assumes an infinite vocabulary,
     meaning that the set of tokens does not have to known in advance, as opposed to the
-    `implementation from sklearn <https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html>`_.
-    The results produced by this implementation are identical to those from `the original
-    implementation <https://github.com/kzhai/PyInfVoc>`_ proposed by the method's authors.
+    [implementation from sklearn](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html)
+    The results produced by this implementation are identical to those from [the original
+    implementation](https://github.com/kzhai/PyInfVoc) proposed by the method's authors.
 
     Parameters:
-        n_components (int): Number of topics of the latent Drichlet allocation.
-        number_of_documents (int): Estimated number of documents.
-        on (str): The name of the feature that contains the text to vectorize. If ``None``, then
+        n_components: Number of topics of the latent Drichlet allocation.
+        number_of_documents: Estimated number of documents.
+        on: The name of the feature that contains the text to vectorize. If `sNone`s, then
             the input is treated as a document instead of a set of features.
-        strip_accents (bool): Whether or not to strip accent characters.
-        lowercase (bool): Whether or not to convert all characters to lowercase.
-        preprocessor (callable): Override the preprocessing step while preserving the tokenizing
+        strip_accents: Whether or not to strip accent characters.
+        lowercase: Whether or not to convert all characters to lowercase.
+        preprocessor: Override the preprocessing step while preserving the tokenizing
             and n-grams generation steps.
-        tokenizer (callable): The function used to convert preprocessed text into a `dict` of
+        tokenizer: The function used to convert preprocessed text into a `dict` of
             tokens. A default one is used if it is not provided by the user.
-        ngram_range (tuple (min_n, max_n)): The lower and upper boundary of the range n-grams to be
-            extracted. All values of n such that ``min_n <= n <= max_n`` will be used. For example
-            an ``ngram_range`` of ``(1, 1)`` means only unigrams, ``(1, 2)`` means unigrams and
-            bigrams, and ``(2, 2)`` means only bigrams. Only works if ``tokenizer`` is not set to
-            ``False``.
-        alpha_theta (float): Hyper-parameter of the Dirichlet distribution of topics.
-        alpha_beta (float): Hyper-parameter of the Dirichlet process of distribution over words.
-        tau (float): Learning inertia to prevent premature convergence.
-        kappa (float): The learning rate kappa controls how quickly new parameters estimates
+        ngram_range: The lower and upper boundary of the range n-grams to be
+            extracted. All values of n such that `smin_n <= n <= max_n`s will be used. For example
+            an `sngram_range`s of `s(1, 1)`s means only unigrams, `s(1, 2)`s means unigrams and
+            bigrams, and `s(2, 2)`s means only bigrams. Only works if `stokenizer`s is not set to
+            `sFalse`s.
+        alpha_theta: Hyper-parameter of the Dirichlet distribution of topics.
+        alpha_beta: Hyper-parameter of the Dirichlet process of distribution over words.
+        tau: Learning inertia to prevent premature convergence.
+        kappa: The learning rate kappa controls how quickly new parameters estimates
             replace the old ones. kappa ∈ (0.5, 1] is required for convergence.
-        vocab_prune_interval (int): Interval at which to refresh the words topics distribution.
-        number_of_samples (int): Number of iteration to computes documents topics distribution.
-        burn_in_sweeps (int): Number of iteration necessaries while analyzing a document
+        vocab_prune_interval: Interval at which to refresh the words topics distribution.
+        number_of_samples: Number of iteration to computes documents topics distribution.
+        burn_in_sweeps: Number of iteration necessaries while analyzing a document
             before updating document topics distribution.
-        maximum_size_vocabulary (int): Maximum size of the stored vocabulary.
+        maximum_size_vocabulary: Maximum size of the stored vocabulary.
 
     Attributes:
         counter (int): The current number of observed documents.
@@ -62,33 +62,31 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
 
     Example:
 
-        ::
+        >>> from creme import decomposition
+        >>> import numpy as np
 
-            >>> from creme import decomposition
-            >>> import numpy as np
+        >>> np.random.seed(42)
 
-            >>> np.random.seed(42)
+        >>> X = [
+        ...    'weather cold',
+        ...    'weather hot dry',
+        ...    'weather cold rainy',
+        ...    'weather hot',
+        ...    'weather cold humid',
+        ... ]
 
-            >>> X = [
-            ...    'weather cold',
-            ...    'weather hot dry',
-            ...    'weather cold rainy',
-            ...    'weather hot',
-            ...    'weather cold humid',
-            ... ]
-
-            >>> online_lda = decomposition.LDA(n_components=2, number_of_documents=60)
-            >>> for x in X:
-            ...     print(online_lda.fit_transform_one(x))
-            {0: 0.5, 1: 2.5}
-            {0: 3.5, 1: 0.5}
-            {0: 0.5, 1: 3.5}
-            {0: 1.5, 1: 1.5}
-            {0: 2.5, 1: 1.5}
+        >>> online_lda = decomposition.LDA(n_components=2, number_of_documents=60)
+        >>> for x in X:
+        ...     print(online_lda.fit_transform_one(x))
+        {0: 0.5, 1: 2.5}
+        {0: 3.5, 1: 0.5}
+        {0: 0.5, 1: 3.5}
+        {0: 1.5, 1: 1.5}
+        {0: 2.5, 1: 1.5}
 
     References:
-        1. `Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569). <http://proceedings.mlr.press/v28/zhai13.pdf>`_
-        2. `PyInfVoc on GitHub <https://github.com/kzhai/PyInfVoc>`_
+        1. [Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569).](http://proceedings.mlr.press/v28/zhai13.pdf)
+        2. [PyInfVoc on GitHub](https://github.com/kzhai/PyInfVoc)
 
     """
 
@@ -135,7 +133,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
             self.nu_2[topic] = np.array([self.alpha_beta])
 
     def fit_transform_one(self, x):
-        """Equivalent to ``lda.fit_one(x).transform_one(x)``, but faster.
+        """Equivalent to `slda.fit_one(x).transform_one(x)`s, but faster.
 
         Parameters:
             x (`dict` or `str`): Input features containing a text document, or text document.
@@ -212,7 +210,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         Tokenizes the document, then updates the word indexes, and then assigns topics to the
         document.
 
-        Args:
+        Parameters:
             x (`dict` or `str`): Input features containing a text document, or text document.
 
         Returns

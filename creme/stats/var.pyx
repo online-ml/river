@@ -9,8 +9,8 @@ cdef class Var(creme.stats.base.Univariate):
     """Running variance using Welford's algorithm.
 
     Parameters:
-        ddof (int): Delta Degrees of Freedom. The divisor used in calculations is $n$ - ddof,
-            where $n$ represents the number of seen elements.
+        ddof: Delta Degrees of Freedom. The divisor used in calculations is `n - ddof`, where `n`
+            represents the number of seen elements.
 
     Attributes:
         mean (stats.Mean): The running mean.
@@ -18,24 +18,22 @@ cdef class Var(creme.stats.base.Univariate):
 
     Example:
 
-        ::
+        >>> import creme.stats
 
-            >>> import creme.stats
+        >>> X = [3, 5, 4, 7, 10, 12]
 
-            >>> X = [3, 5, 4, 7, 10, 12]
-
-            >>> var = creme.stats.Var()
-            >>> for x in X:
-            ...     print(var.update(x).get())
-            0.0
-            2.0
-            1.0
-            2.916666
-            7.7
-            12.56666
+        >>> var = creme.stats.Var()
+        >>> for x in X:
+        ...     print(var.update(x).get())
+        0.0
+        2.0
+        1.0
+        2.916666
+        7.7
+        12.56666
 
     References:
-        1. `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
+        1. [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
 
     """
 

@@ -1,5 +1,6 @@
 import itertools
 import types
+import typing
 
 import numpy as np
 
@@ -7,11 +8,12 @@ import numpy as np
 __all__ = ['expand_param_grid']
 
 
-def expand_param_grid(grid):
-    """Expands a grid of possible parameters into a list of single parametrizations.
+def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
+    """Expands a grid of possible parameters into a sequence of single parametrizations.
 
-    Parameter:
-        grid (dict or list of dicts)
+    Parameters:
+        grid: The grid of parameters to expand. The provided dictionary can be nested. The only
+            requirement is that the values at the leaves need to be lists.
 
     Example:
 

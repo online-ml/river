@@ -10,13 +10,12 @@ class NUnique(base.Univariate):
     """Approximate number of unique values counter.
 
     This is basically an implementation of the HyperLogLog algorithm. Adapted from
-    `here <https://github.com/clarkduvall/hypy>`_. The code is a bit too terse but it will do for
+    [`hypy`](https://github.com/clarkduvall/hypy). The code is a bit too terse but it will do for
     now.
 
     Parameters:
-        error_rate (float): Desired error rate. Memory usage is inversely proportional to this
-            value.
-        seed (int): Set the seed to produce identical results.
+        error_rate: Desired error rate. Memory usage is inversely proportional to this value.
+        seed: Set the seed to produce identical results.
 
     Attributes:
         n_bits (int)
@@ -25,42 +24,40 @@ class NUnique(base.Univariate):
 
     Example:
 
-        ::
+        >>> import string
+        >>> from creme import stats
 
-            >>> import string
-            >>> from creme import stats
+        >>> alphabet = string.ascii_lowercase
+        >>> n_unique = stats.NUnique(error_rate=0.1, seed=42)
 
-            >>> alphabet = string.ascii_lowercase
-            >>> n_unique = stats.NUnique(error_rate=0.1, seed=42)
+        >>> n_unique.update('a').get()
+        1
 
-            >>> n_unique.update('a').get()
-            1
+        >>> n_unique.update('b').get()
+        2
 
-            >>> n_unique.update('b').get()
-            2
+        >>> for letter in alphabet:
+        ...     n_unique = n_unique.update(letter)
+        >>> n_unique.get()
+        27
 
-            >>> for letter in alphabet:
-            ...     n_unique = n_unique.update(letter)
-            >>> n_unique.get()
-            27
+        We can increase the precision by lowering the ``error_rate`` parameter.
 
-            We can increase the precision by lowering the ``error_rate`` parameter.
-
-            >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
-            >>> for letter in alphabet:
-            ...     n_unique = n_unique.update(letter)
-            >>> n_unique.get()
-            26
+        >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
+        >>> for letter in alphabet:
+        ...     n_unique = n_unique.update(letter)
+        >>> n_unique.get()
+        26
 
     References:
-        1. `My favorite algorithm (and data structure): HyperLogLog <https://odino.org/my-favorite-data-structure-hyperloglog/>`_
-        2. `Flajolet, P., Fusy, É., Gandouet, O. and Meunier, F., 2007, June. Hyperloglog: the analysis of a near-optimal cardinality estimation algorithm. <http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf>`_
+        1. [My favorite algorithm (and data structure): HyperLogLog](https://odino.org/my-favorite-data-structure-hyperloglog/)
+        2. [Flajolet, P., Fusy, É., Gandouet, O. and Meunier, F., 2007, June. Hyperloglog: the analysis of a near-optimal cardinality estimation algorithm.](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf)
 
     """
 
     P32 = 2 ** 32
 
-    def __init__(self, error_rate=0.01, seed=None):
+    def __init__(self, error_rate=.01, seed=None):
         self.n_bits = int(math.ceil(math.log((1.04 / error_rate) ** 2, 2)))
         self.n_buckets = 1 << self.n_bits
         self.buckets = [0] * self.n_buckets

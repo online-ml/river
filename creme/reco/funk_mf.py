@@ -18,20 +18,19 @@ class FunkMF(base.Recommender):
 
     The model equation is defined as:
 
-    .. math::
-        \\hat{y}(x) = \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}
+    $$\\hat{y}(x) = \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}$$
 
     Where :math:`k` is the number of latent factors. The model expect dict inputs containing both a
-    ``user`` and an ``item`` entries.
+    `user` and an `item` entries.
 
     Parameters:
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        optimizer (optim.Optimizer): The sequential optimizer used for updating the latent factors.
-        loss (optim.Loss): The loss function to optimize for.
-        l2 (float): Amount of L2 regularization used to push weights towards 0.
-        initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        seed (int): Randomization seed used for reproducibility.
+        n_factors: Dimensionality of the factorization or number of latent factors.
+        optimizer: The sequential optimizer used for updating the latent factors.
+        loss: The loss function to optimize for.
+        l2: Amount of L2 regularization used to push weights towards 0.
+        initializer: Latent factors initialization scheme.
+        clip_gradient: Clips the absolute value of each gradient value.
+        seed: Randomization seed used for reproducibility.
 
     Attributes:
         u_latents (collections.defaultdict): The user latent vectors randomly initialized.
@@ -43,48 +42,48 @@ class FunkMF(base.Recommender):
 
     Example:
 
-        ::
+        >>> from creme import optim
+        >>> from creme import reco
 
-            >>> from creme import optim
-            >>> from creme import reco
+        >>> X_y = (
+        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+        ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
+        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+        ... )
 
-            >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
-            ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-            ... )
+        >>> model = reco.FunkMF(
+        ...     n_factors=10,
+        ...     optimizer=optim.SGD(0.1),
+        ...     initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=11),
+        ... )
 
-            >>> model = reco.FunkMF(
-            ...     n_factors=10,
-            ...     optimizer=optim.SGD(0.1),
-            ...     initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=11),
-            ... )
+        >>> for x, y in X_y:
+        ...     _ = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     _ = model.fit_one(x, y)
-
-            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-            1.866272
+        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+        1.866272
 
     Note:
-        `reco.FunkMF` model expect a dict input with a ``user`` and an ``item`` entries without any
-        type constraint on their values (i.e. can be strings or numbers). Other entries are
-        ignored.
+        This model expects a dict input with a `user` and an `item` entries without any type
+        constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
     References:
-        1. `Netflix update: Try this at home <https://sifter.org/simon/journal/20061211.html>`_
-        2. `Matrix factorization techniques for recommender systems <https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf>`_
+        1. [Netflix update: Try this at home](https://sifter.org/simon/journal/20061211.html)
+        2. [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
 
     """
 
-    def __init__(self, n_factors=10, optimizer=None, loss=None, l2=0., initializer=None,
-                 clip_gradient=1e12, seed=None):
+    def __init__(self, n_factors=10, optimizer: optim.Optimizer = None,
+                 loss: optim.losses.Loss = None, l2=0.,
+                 initializer: optim.initializers.Initializer = None,
+                 clip_gradient=1e12, seed: int = None):
+
         self.n_factors = n_factors
         self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)

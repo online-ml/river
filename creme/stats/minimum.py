@@ -9,7 +9,7 @@ class Min(base.Univariate):
     """Running min.
 
     Attributes:
-        min (float): The running min.
+        min (float): The current min.
 
     """
 
@@ -29,28 +29,26 @@ class RollingMin(base.RollingUnivariate, utils.SortedWindow):
     """Running min over a window.
 
     Parameters:
-        window_size (int): Size of the rolling window.
+        window_size: Size of the rolling window.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [1, -4, 3, -2, 2, 1]
-            >>> rolling_min = stats.RollingMin(2)
-            >>> for x in X:
-            ...     print(rolling_min.update(x).get())
-            1
-            -4
-            -4
-            -2
-            -2
-            1
+        >>> X = [1, -4, 3, -2, 2, 1]
+        >>> rolling_min = stats.RollingMin(2)
+        >>> for x in X:
+        ...     print(rolling_min.update(x).get())
+        1
+        -4
+        -4
+        -2
+        -2
+        1
 
     """
 
-    def __init__(self, window_size):
+    def __init__(self, window_size: int):
         super().__init__(size=window_size)
 
     @property

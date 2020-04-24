@@ -13,17 +13,15 @@ class Gaussian(base.ContinuousDistribution):
 
     Example:
 
-        ::
+        >>> from creme import proba
 
-            >>> from creme import proba
+        >>> p = proba.Gaussian().update(6).update(7)
 
-            >>> p = proba.Gaussian().update(6).update(7)
+        >>> p
+        𝒩(μ=6.500, σ=0.707)
 
-            >>> p
-            𝒩(μ=6.500, σ=0.707)
-
-            >>> p.pdf(6.5)
-            0.564189
+        >>> p.pdf(6.5)
+        0.564189
 
     """
 
@@ -33,10 +31,6 @@ class Gaussian(base.ContinuousDistribution):
     @property
     def n_samples(self):
         return self._var.mean.n
-
-    @property
-    def n(self):
-        return self.variance.mean.n
 
     @property
     def mu(self):

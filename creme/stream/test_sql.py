@@ -74,7 +74,7 @@ def test_iter_sql(pokedb):
     x, y = next(X_y)
     assert x['name'] == 'Ivysaur'
 
-    # The Pokedex from generation 1 contains 151 pokemons, and we've already seen 2
+    # The Pokedex from generation 1 contains 151 pokemons, and we've already seen 2 of them
     assert sum(1 for _ in X_y) == 149
 
     # Check that the stream is depleted

@@ -13,30 +13,40 @@ __all__ = ['AdaBound']
 class AdaBound(base.Optimizer):
     """AdaBound optimizer.
 
+    Parameters:
+        lr: The learning rate.
+        beta_1
+        beta_2
+        eps
+        gamma
+        final_lr
+
+    Attributes:
+        m (collections.defaultdict)
+        s (collections.defaultdict)
+
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
+        >>> optimizer = optim.AdaBound()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer)
+        ... )
+        >>> metric = metrics.F1()
 
-            >>> X_y = datasets.Phishing()
-            >>> optimizer = optim.AdaBound()
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer)
-            ... )
-            >>> metric = metrics.F1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.879004
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.879004
 
     References:
-        1. `Luo, L., Xiong, Y., Liu, Y. and Sun, X., 2019. Adaptive gradient methods with dynamic bound of learning rate. arXiv preprint arXiv:1902.09843. <https://arxiv.org/abs/1902.09843>`_
+        1. [Luo, L., Xiong, Y., Liu, Y. and Sun, X., 2019. Adaptive gradient methods with dynamic bound of learning rate. arXiv preprint arXiv:1902.09843](https://arxiv.org/abs/1902.09843)
 
     """
 

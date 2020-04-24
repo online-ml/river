@@ -10,57 +10,53 @@ __all__ = ['ROCAUC']
 class ROCAUC(base.BinaryMetric):
     """Receiving Operating Characteristic Area Under the Curve.
 
-    Parameters:
-        num_thresholds (int): The number of thresholds to use to discretize the ROC curve. The
-            higher this is, the closer the output will be to the true ROC AUC value, at the cost of
-            more time and memory.
+    This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would
+    require storing all the predictions and true outputs, which isn't an option. The approximation
+    error is not significant as long as the predicted probabilities are well calibrated. In any
+    case, this metric can still be used to reliably compare models, even though it is an
+    approximation.
 
-    Attributes:
-        thresholds (list)
-        cms (list): Contains a `metrics.ConfusionMatrix` for each threshold.
+    Parameters:
+        n_thresholds: The number of thresholds to use to discretize the ROC curve. The higher this
+            is, the closer the output will be to the true ROC AUC value, at the cost of more time
+            and memory.
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [ 0,  0,   1,  1]
+        >>> y_pred = [.1, .4, .35, .8]
 
-            >>> y_true = [ 0,  0,   1,  1]
-            >>> y_pred = [.1, .4, .35, .8]
+        >>> metric = metrics.ROCAUC()
 
-            >>> metric = metrics.ROCAUC()
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
 
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     metric = metric.update(yt, yp)
+        >>> metric
+        ROCAUC: 0.875
 
-            >>> metric
-            ROCAUC: 0.875
+        The true ROC AUC is in fact 0.75. We can improve the accuracy by increasing the amount
+        of thresholds. This comes at the cost more computation time and more memory usage.
 
-            The true ROC AUC is in fact 0.75. We can improve the accuracy by increasing the amount
-            of thresholds. This comes at the cost more computation time and more memory usage.
+        >>> metric = metrics.ROCAUC(n_thresholds=20)
 
-            >>> metric = metrics.ROCAUC(num_thresholds=20)
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
 
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     metric = metric.update(yt, yp)
-
-            >>> metric
-            ROCAUC: 0.75
-
-    .. warning::
-        This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would
-        require storing all the predictions and true outputs, which isn't an option. The
-        approximation error is not significant as long as the predicted probabilities are well
-        calibrated.
+        >>> metric
+        ROCAUC: 0.75
 
     """
 
-    def __init__(self, num_thresholds=10):
-        self.num_thresholds = num_thresholds
-        self.thresholds = [i / (num_thresholds - 1) for i in range(num_thresholds)]
+    def __init__(self, n_thresholds=10):
+        self.n_thresholds = n_thresholds
+        self.thresholds = [i / (n_thresholds - 1) for i in range(n_thresholds)]
+        """The equidistant thresholds."""
         self.thresholds[0] -= 1e-7
         self.thresholds[-1] += 1e-7
-        self.cms = [confusion.ConfusionMatrix() for _ in range(num_thresholds)]
+        self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
+        """Contains a `metrics.ConfusionMatrix` for each threshold."""
 
     def update(self, y_true, y_pred, sample_weight=1.):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
@@ -84,8 +80,8 @@ class ROCAUC(base.BinaryMetric):
 
     def get(self):
 
-        tprs = [0] * self.num_thresholds
-        fprs = [0] * self.num_thresholds
+        tprs = [0] * self.n_thresholds
+        fprs = [0] * self.n_thresholds
 
         def safe_div(a, b):
             try:
