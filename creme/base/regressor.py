@@ -1,33 +1,34 @@
 import abc
+import numbers
 import typing
 
-from . import estimator
+from creme import base
 
 
-class Regressor(estimator.Estimator):
+class Regressor(base.Estimator):
     """A regressor."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: typing.Union[float, int]) -> 'Regressor':
+    def fit_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
         """Fits to a set of features ``x`` and a real-valued target ``y``.
 
         Parameters:
-            x (dict)
-            y (float)
+            x: A dictionary of features.
+            y: A numeric target.
 
         Returns:
-            self: object
+            self
 
         """
 
     @abc.abstractmethod
-    def predict_one(self, x: dict) -> float:
+    def predict_one(self, x: dict) -> base.typing.RegTarget:
         """Predicts the target value of a set of features ``x``.
 
         Parameters:
-            x (dict)
+            x: A dictionary of features.
 
         Returns:
-            float: The prediction.
+            The prediction.
 
         """

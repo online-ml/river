@@ -3,8 +3,9 @@ import collections
 import functools
 import operator
 
-from ... import proba
-from ... import utils
+from creme import base
+from creme import proba
+from creme import utils
 
 
 def decimal_range(start, stop, num):
@@ -64,24 +65,11 @@ class HistSplitEnum(SplitEnum):
         self.hists = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
         self.n_splits = n_splits
 
-    def update(self, x, y):
-        """
-
-        Parameters:
-            x (float)
-            y (base.Label)
-
-        """
+    def update(self, x: float, y: base.typing.ClfTarget):
         self.hists[y].update(x)
         return self
 
-    def enumerate_splits(self, target_dist):
-        """
-
-        Parameters:
-            target_dist (proba.Multinomial)
-
-        """
+    def enumerate_splits(self, target_dist: proba.Multinomial):
 
         low = min(h[0].right for h in self.hists.values())
         high = min(h[-1].right for h in self.hists.values())
@@ -89,7 +77,7 @@ class HistSplitEnum(SplitEnum):
         # If only one single value has been observed, then no split can be proposed
         if low >= high:
             return
-            yield
+            yield  # not a typo
 
         n_thresholds = min(
             self.n_splits,
@@ -122,31 +110,18 @@ class CategoricalSplitEnum(SplitEnum):
     def __init__(self):
         self.P_xy = collections.defaultdict(proba.Multinomial)
 
-    def update(self, x, y):
-        """
-
-        Parameters:
-            x (str)
-            y (base.Label)
-
-        """
+    def update(self, x: float, y: base.typing.ClfTarget):
         self.P_xy[y].update(x)
         return self
 
-    def enumerate_splits(self, target_dist):
-        """
-
-        Parameters:
-            target_dist (proba.Multinomial)
-
-        """
+    def enumerate_splits(self, target_dist: proba.Multinomial):
 
         categories = set(*(p_x.keys() for p_x in self.P_xy.values()))
 
         # There has to be at least two categories for a split to be possible
         if len(categories) < 2:
             return
-            yield
+            yield  # not a typo
 
         for cat in categories:
 

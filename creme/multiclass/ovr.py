@@ -1,14 +1,14 @@
 import collections
 import copy
 
-from .. import base
-from .. import utils
+from creme import base
+from creme import utils
 
 
 __all__ = ['OneVsRestClassifier']
 
 
-class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
+class OneVsRestClassifier(base.MultiClassifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
@@ -17,42 +17,40 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
     seen up to a given point in time.
 
     Parameters:
-        binary_classifier (base.BinaryClassifier)
+        binary_classifier
 
     Attributes:
         classifiers (dict): A mapping between classes and classifiers.
 
     Example:
 
-        ::
+        >>> from creme import compose
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import multiclass
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import compose
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import multiclass
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.ImageSegments()
 
-            >>> X_y = datasets.ImageSegments()
+        >>> model = compose.Pipeline(
+        ...     ('scale', preprocessing.StandardScaler()),
+        ...     ('learn', multiclass.OneVsRestClassifier(
+        ...         binary_classifier=linear_model.LogisticRegression())
+        ...     )
+        ... )
 
-            >>> model = compose.Pipeline(
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('learn', multiclass.OneVsRestClassifier(
-            ...         binary_classifier=linear_model.LogisticRegression())
-            ...     )
-            ... )
+        >>> metric = metrics.MacroF1()
 
-            >>> metric = metrics.MacroF1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            MacroF1: 0.774148
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        MacroF1: 0.774148
 
     """
 
     def __init__(self, binary_classifier: base.BinaryClassifier):
-        super().__init__()
+        self.models = {}
         self.binary_classifier = binary_classifier
 
     def __str__(self):
@@ -61,11 +59,11 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
     def fit_one(self, x, y):
 
         # Instantiate a new binary classifier if the class is new
-        if y not in self:
-            self[y] = copy.deepcopy(self.binary_classifier)
+        if y not in self.models:
+            self.models[y] = copy.deepcopy(self.binary_classifier)
 
         # Train each label's associated classifier
-        for label, model in self.items():
+        for label, model in self.models.items():
             model.fit_one(x, y == label)
 
         return self
@@ -73,6 +71,6 @@ class OneVsRestClassifier(collections.UserDict, base.MultiClassifier):
     def predict_proba_one(self, x):
         y_pred = {
             label: model.predict_proba_one(x)[True]
-            for label, model in self.items()
+            for label, model in self.models.items()
         }
         return utils.math.softmax(y_pred)

@@ -2,10 +2,11 @@ import collections
 import functools
 import operator
 import random
+import typing
 
-from .. import base
-from .. import preprocessing
-from ..tree.base import Leaf, Branch, Split
+from creme import base
+from creme import preprocessing
+from creme.tree.base import Leaf, Branch, Split
 
 
 __all__ = ['HalfSpaceTrees']
@@ -52,50 +53,51 @@ class HalfSpaceTrees(base.AnomalyDetector):
     such as in the KDD'99 HTTP and SMTP datasets.
 
     Parameters:
-        n_trees (int): Number of trees to use.
-        height (int): Height of each tree. Note that a tree of height ``h`` is made up of ``h + 1``
-            levels and therefore contains ``2 ** (h + 1) - 1`` nodes.
-        window_size (int): Number of observations to use for calculating the mass at each node in
+        n_trees: Number of trees to use.
+        height: Height of each tree. Note that a tree of height `h` is made up of `h + 1`
+            levels and therefore contains `2 ** (h + 1) - 1` nodes.
+        window_size: Number of observations to use for calculating the mass at each node in
             each tree.
-        limits (dict): Specifies the range of each feature. By default each feature is assumed to
-            be in range ``[0, 1]``.
-        seed (int): Random number seed.
+        limits: Specifies the range of each feature. By default each feature is assumed to
+            be in range `[0, 1]`.
+        seed: Random number seed.
 
     Example:
 
-        ::
+        >>> from creme import anomaly
 
-            >>> from creme import anomaly
+        >>> X = [0.5, 0.45, 0.43, 0.44, 0.445, 0.45, 0.0]
+        >>> hst = anomaly.HalfSpaceTrees(
+        ...     n_trees=5,
+        ...     height=3,
+        ...     window_size=3,
+        ...     seed=42
+        ... )
 
-            >>> X = [0.5, 0.45, 0.43, 0.44, 0.445, 0.45, 0.0]
-            >>> hst = anomaly.HalfSpaceTrees(
-            ...     n_trees=5,
-            ...     height=3,
-            ...     window_size=3,
-            ...     seed=42
-            ... )
+        >>> for x in X[:3]:
+        ...     hst = hst.fit_one({'x': x})  # Warming up
 
-            >>> for x in X[:3]:
-            ...     hst = hst.fit_one({'x': x})  # Warming up
-
-            >>> for x in X:
-            ...     features = {'x': x}
-            ...     hst = hst.fit_one(features)
-            ...     print(f'Anomaly score for x={x:.3f}: {hst.score_one(features):.3f}')
-            Anomaly score for x=0.500: 0.107
-            Anomaly score for x=0.450: 0.071
-            Anomaly score for x=0.430: 0.107
-            Anomaly score for x=0.440: 0.107
-            Anomaly score for x=0.445: 0.107
-            Anomaly score for x=0.450: 0.071
-            Anomaly score for x=0.000: 0.853
+        >>> for x in X:
+        ...     features = {'x': x}
+        ...     hst = hst.fit_one(features)
+        ...     print(f'Anomaly score for x={x:.3f}: {hst.score_one(features):.3f}')
+        Anomaly score for x=0.500: 0.107
+        Anomaly score for x=0.450: 0.071
+        Anomaly score for x=0.430: 0.107
+        Anomaly score for x=0.440: 0.107
+        Anomaly score for x=0.445: 0.107
+        Anomaly score for x=0.450: 0.071
+        Anomaly score for x=0.000: 0.853
 
     References:
-        1. `Tan, S.C., Ting, K.M. and Liu, T.F., 2011, June. Fast anomaly detection for streaming data. In Twenty-Second International Joint Conference on Artificial Intelligence. <https://www.ijcai.org/Proceedings/11/Papers/254.pdf>`_
+        1. [Tan, S.C., Ting, K.M. and Liu, T.F., 2011, June. Fast anomaly detection for streaming data. In Twenty-Second International Joint Conference on Artificial Intelligence.](https://www.ijcai.org/Proceedings/11/Papers/254.pdf)
 
     """
 
-    def __init__(self, n_trees=25, height=15, window_size=250, limits=None, seed=None):
+    def __init__(self, n_trees=25, height=15, window_size=250,
+                 limits: typing.Dict[base.typing.FeatureName, typing.Tuple[float, float]] = None,
+                 seed: int = None):
+
         self.n_trees = n_trees
         self.window_size = window_size
         self.height = height

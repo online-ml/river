@@ -8,8 +8,8 @@ cdef class Mean(creme.stats.base.Univariate):
     """Running mean.
 
     Parameters:
-        mean (float): Initial mean.
-        n (float): Initial sum of weights.
+        mean: Initial mean.
+        n: Initial sum of weights.
 
     Attributes:
         mean (float): The current value of the mean.
@@ -18,24 +18,22 @@ cdef class Mean(creme.stats.base.Univariate):
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [-5, -3, -1, 1, 3, 5]
-            >>> mean = stats.Mean()
-            >>> for x in X:
-            ...     print(mean.update(x).get())
-            -5.0
-            -4.0
-            -3.0
-            -2.0
-            -1.0
-            0.0
+        >>> X = [-5, -3, -1, 1, 3, 5]
+        >>> mean = stats.Mean()
+        >>> for x in X:
+        ...     print(mean.update(x).get())
+        -5.0
+        -4.0
+        -3.0
+        -2.0
+        -1.0
+        0.0
 
     References:
-        1. `West, D. H. D. (1979). Updating mean and variance estimates: An improved method. Communications of the ACM, 22(9), 532-535. <https://people.xiph.org/~tterribe/tmp/homs/West79-_Updating_Mean_and_Variance_Estimates-_An_Improved_Method.pdf>`_
-        2. `Finch, T., 2009. Incremental calculation of weighted mean and variance. University of Cambridge, 4(11-5), pp.41-42. <https://fanf2.user.srcf.net/hermes/doc/antiforgery/stats.pdf>`_
+        1. [West, D. H. D. (1979). Updating mean and variance estimates: An improved method. Communications of the ACM, 22(9), 532-535.](https://people.xiph.org/~tterribe/tmp/homs/West79-_Updating_Mean_and_Variance_Estimates-_An_Improved_Method.pdf)
+        2. [Finch, T., 2009. Incremental calculation of weighted mean and variance. University of Cambridge, 4(11-5), pp.41-42.](https://fanf2.user.srcf.net/hermes/doc/antiforgery/stats.pdf)
 
     """
 
@@ -62,35 +60,35 @@ class RollingMean(summing.RollingSum):
     """Running average over a window.
 
     Parameters:
-        window_size (int): Size of the rolling window.
+        window_size: Size of the rolling window.
 
     Example:
 
         ::
 
-            >>> import creme
+        >>> import creme
 
-            >>> X = [1, 2, 3, 4, 5, 6]
+        >>> X = [1, 2, 3, 4, 5, 6]
 
-            >>> rolling_mean = creme.stats.RollingMean(window_size=2)
-            >>> for x in X:
-            ...     print(rolling_mean.update(x).get())
-            1.0
-            1.5
-            2.5
-            3.5
-            4.5
-            5.5
+        >>> rolling_mean = creme.stats.RollingMean(window_size=2)
+        >>> for x in X:
+        ...     print(rolling_mean.update(x).get())
+        1.0
+        1.5
+        2.5
+        3.5
+        4.5
+        5.5
 
-            >>> rolling_mean = creme.stats.RollingMean(window_size=3)
-            >>> for x in X:
-            ...     print(rolling_mean.update(x).get())
-            1.0
-            1.5
-            2.0
-            3.0
-            4.0
-            5.0
+        >>> rolling_mean = creme.stats.RollingMean(window_size=3)
+        >>> for x in X:
+        ...     print(rolling_mean.update(x).get())
+        1.0
+        1.5
+        2.0
+        3.0
+        4.0
+        5.0
 
     """
 
@@ -101,15 +99,19 @@ class RollingMean(summing.RollingSum):
 class BayesianMean(base.Univariate):
     """Estimates a mean using outside information.
 
+    Parameters:
+        prior
+        prior_weight
+
     References:
 
-        1. `Additive smoothing <https://www.wikiwand.com/en/Additive_smoothing>`_
-        2. `Bayesian average <https://www.wikiwand.com/en/Bayesian_average>`_
-        3. `Practical example of Bayes estimators <https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators>`_
+        1. [Additive smoothing](https://www.wikiwand.com/en/Additive_smoothing)
+        2. [Bayesian average](https://www.wikiwand.com/en/Bayesian_average)
+        3. [Practical example of Bayes estimators](https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators)
 
     """
 
-    def __init__(self, prior, prior_weight):
+    def __init__(self, prior: float, prior_weight: float):
         self.prior = prior
         self.prior_weight = prior_weight
         self.mean = Mean()

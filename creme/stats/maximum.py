@@ -1,6 +1,6 @@
 import math
 
-from .. import utils
+from creme import utils
 
 from . import base
 
@@ -9,24 +9,22 @@ class Max(base.Univariate):
     """Running max.
 
     Attributes:
-        max (float): The running max.
+        max (float): The current max.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [1, -4, 3, -2, 5, -6]
-            >>> _max = stats.Max()
-            >>> for x in X:
-            ...     print(_max.update(x).get())
-            1
-            1
-            3
-            3
-            5
-            5
+        >>> X = [1, -4, 3, -2, 5, -6]
+        >>> _max = stats.Max()
+        >>> for x in X:
+        ...     print(_max.update(x).get())
+        1
+        1
+        3
+        3
+        5
+        5
 
     """
 
@@ -46,28 +44,26 @@ class RollingMax(base.RollingUnivariate, utils.SortedWindow):
     """Running max over a window.
 
     Parameters:
-        window_size (int): Size of the rolling window.
+        window_size: Size of the rolling window.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [1, -4, 3, -2, 2, 1]
-            >>> rolling_max = stats.RollingMax(window_size=2)
-            >>> for x in X:
-            ...     print(rolling_max.update(x).get())
-            1
-            1
-            3
-            3
-            2
-            2
+        >>> X = [1, -4, 3, -2, 2, 1]
+        >>> rolling_max = stats.RollingMax(window_size=2)
+        >>> for x in X:
+        ...     print(rolling_max.update(x).get())
+        1
+        1
+        3
+        3
+        2
+        2
 
     """
 
-    def __init__(self, window_size):
+    def __init__(self, window_size: int):
         super().__init__(size=window_size)
 
     @property
@@ -86,24 +82,22 @@ class AbsMax(base.Univariate):
     """Running absolute max.
 
     Attributes:
-        abs_max (float): The running absolute max.
+        abs_max (float): The current absolute max.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [1, -4, 3, -2, 5, -6]
-            >>> abs_max = stats.AbsMax()
-            >>> for x in X:
-            ...     print(abs_max.update(x).get())
-            1
-            4
-            4
-            4
-            5
-            6
+        >>> X = [1, -4, 3, -2, 5, -6]
+        >>> abs_max = stats.AbsMax()
+        >>> for x in X:
+        ...     print(abs_max.update(x).get())
+        1
+        4
+        4
+        4
+        5
+        6
 
     """
 
@@ -123,28 +117,26 @@ class RollingAbsMax(base.RollingUnivariate, utils.SortedWindow):
     """Running absolute max over a window.
 
     Parameters:
-        window_size (int): Size of the rolling window.
+        window_size: Size of the rolling window.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [1, -4, 3, -2, 2, 1]
-            >>> rolling_absmax = stats.RollingAbsMax(window_size=2)
-            >>> for x in X:
-            ...     print(rolling_absmax.update(x).get())
-            1
-            4
-            4
-            3
-            2
-            2
+        >>> X = [1, -4, 3, -2, 2, 1]
+        >>> rolling_absmax = stats.RollingAbsMax(window_size=2)
+        >>> for x in X:
+        ...     print(rolling_absmax.update(x).get())
+        1
+        4
+        4
+        3
+        2
+        2
 
     """
 
-    def __init__(self, window_size):
+    def __init__(self, window_size: int):
         super().__init__(size=window_size)
 
     @property

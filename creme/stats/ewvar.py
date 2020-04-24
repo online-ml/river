@@ -9,35 +9,32 @@ class EWVar(base.Univariate):
     we use the exponentially weighted mean of x/x^2 to calculate this.
 
     Parameters:
-        alpha (float): The closer ``alpha`` is to 1 the more the statistic will adapt to recent
-            values.
+        alpha: The closer `alpha` is to 1 the more the statistic will adapt to recent values.
 
     Attributes:
-        variance (float) : The running exponentially weighted variance.
+        variance (float): The running exponentially weighted variance.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
-            >>> ewv = stats.EWVar(alpha=0.5)
-            >>> for x in X:
-            ...     print(ewv.update(x).get())
-            0
-            1.0
-            2.75
-            1.4375
-            1.984375
-            3.43359375
-            1.7958984375
-            2.198974609375
-            3.56536865234375
+        >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
+        >>> ewv = stats.EWVar(alpha=0.5)
+        >>> for x in X:
+        ...     print(ewv.update(x).get())
+        0
+        1.0
+        2.75
+        1.4375
+        1.984375
+        3.43359375
+        1.7958984375
+        2.198974609375
+        3.56536865234375
 
     References:
-        1. `Finch, T., 2009. Incremental calculation of weighted mean and variance. University of Cambridge, 4(11-5), pp.41-42. <http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf>`_
-        2. `Exponential Moving Average on Streaming Data <https://dev.to/nestedsoftware/exponential-moving-average-on-streaming-data-4hhl>`_
+        1. [Finch, T., 2009. Incremental calculation of weighted mean and variance. University of Cambridge, 4(11-5), pp.41-42.](http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf)
+        2. [Exponential Moving Average on Streaming Data](https://dev.to/nestedsoftware/exponential-moving-average-on-streaming-data-4hhl)
 
     """
 

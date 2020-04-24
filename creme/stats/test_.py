@@ -15,7 +15,7 @@ from scipy import stats as sp_stats
 
 
 def load_stats():
-    for name, obj in inspect.getmembers(importlib.import_module('creme.stats'), inspect.isclass):
+    for _, obj in inspect.getmembers(importlib.import_module('creme.stats'), inspect.isclass):
         try:
             sig = inspect.signature(obj)
             yield obj(**{
