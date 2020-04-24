@@ -10,6 +10,7 @@ from .rename import Renamer
 from .union import TransformerUnion
 from .select import Discard
 from .select import Select
+from .select import SelectType
 
 
 __all__ = [
@@ -18,5 +19,6 @@ __all__ = [
     'Pipeline',
     'Renamer',
     'TransformerUnion',
-    'Select'
+    'Select',
+    'SelectType'
 ]
