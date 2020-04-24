@@ -145,7 +145,8 @@ class StatImputer(base.Transformer):
         self.on = on
         self.by = by
         self.stat = stat if isinstance(stat, stats.Univariate) else Constant(stat)
-        self.imputers = collections.defaultdict(functools.partial(copy.deepcopy, self.stat))
+        new_stat = functools.partial(copy.deepcopy, self.stat)
+        self.imputers = collections.defaultdict(new_stat)  # type: ignore
 
     def fit_one(self, x, y=None):
         if self.on in x:
