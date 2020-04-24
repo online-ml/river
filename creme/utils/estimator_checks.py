@@ -179,7 +179,7 @@ def yield_checks(model):
             yield with_dataset(check_predict_proba_one_binary)
 
 
-def check_estimator(model: 'base.Estimator'):
+def check_estimator(model):
     """Check if a model adheres to `creme`'s conventions.
 
     Parameters:
