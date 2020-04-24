@@ -1,7 +1,9 @@
+import typing
+
 from creme import base
 
 
-__all__ = ['Discard', 'Select']
+__all__ = ['Discard', 'Select', 'SelectType']
 
 
 class Discard(base.Transformer):
@@ -77,3 +79,38 @@ class Select(base.Transformer):
         if not whitelist:
             whitelist = self.whitelist
         return Select(*whitelist)
+
+
+class SelectType(base.Transformer):
+    """Selects features based on their type.
+
+    This is practical when you want to apply different preprocessing steps to different kinds of
+    features. For instance, a common usecase is to apply a `preprocessing.StandardScaler` to
+    numeric features and a `preprocessing.OneHotEncoder` to categorical features.
+
+    Example:
+
+        >>> import numbers
+        >>> from creme import compose
+        >>> from creme import linear_model
+        >>> from creme import preprocessing
+
+        >>> num = compose.SelectType(numbers.Number) | preprocessing.StandardScaler()
+        >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder()
+        >>> model = (num + cat) | linear_model.LogisticRegression()
+
+    """
+
+    def __init__(self, *types: typing.Tuple[typing.Type]):
+        self.types = types
+
+    def transform_one(self, x):
+        return {i: xi for i, xi in x.items() if isinstance(xi, self.types)}
+
+    def _get_params(self):
+        return self.types
+
+    def _set_params(self, types=None):
+        if not types:
+            types = self.types
+        return SelectType(*types)
