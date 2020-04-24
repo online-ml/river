@@ -1,10 +1,11 @@
 """Base interfaces.
 
-Every estimator in ``creme`` is a class, and as such inherits from at least one base interface.
-These are used to categorize, organize, and standardize the many estimators that ``creme``
+Every estimator in `creme` is a class, and as such inherits from at least one base interface.
+These are used to categorize, organize, and standardize the many estimators that `creme`
 contains.
 
 """
+from . import typing
 from .anomaly import AnomalyDetector
 from .classifier import Classifier
 from .classifier import BinaryClassifier
@@ -31,5 +32,10 @@ __all__ = [
     'MultiOutputRegressor',
     'Regressor',
     'Transformer',
+    'typing',
     'Wrapper'
 ]
+
+__pdoc__ = {
+    'typing': False
+}

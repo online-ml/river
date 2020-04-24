@@ -13,20 +13,18 @@ class PeakToPeak(base.Univariate):
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [1, -4, 3, -2, 2, 4]
-            >>> ptp = stats.PeakToPeak()
-            >>> for x in X:
-            ...     print(ptp.update(x).get())
-            0
-            5
-            7
-            7
-            7
-            8
+        >>> X = [1, -4, 3, -2, 2, 4]
+        >>> ptp = stats.PeakToPeak()
+        >>> for x in X:
+        ...     print(ptp.update(x).get())
+        0
+        5
+        7
+        7
+        7
+        8
 
     """
 
@@ -51,7 +49,7 @@ class RollingPeakToPeak(base.RollingUnivariate):
     """Running peak to peak (max - min) over a window.
 
     Parameters:
-        window_size (int): Size of the rolling window.
+        window_size: Size of the rolling window.
 
     Attributes:
         max (stars.RollingMax): The running rolling max.
@@ -59,24 +57,22 @@ class RollingPeakToPeak(base.RollingUnivariate):
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
-
-            >>> X = [1, -4, 3, -2, 2, 1]
-            >>> ptp = stats.RollingPeakToPeak(window_size=2)
-            >>> for x in X:
-            ...     print(ptp.update(x).get())
-            0
-            5
-            7
-            5
-            4
-            1
+        >>> X = [1, -4, 3, -2, 2, 1]
+        >>> ptp = stats.RollingPeakToPeak(window_size=2)
+        >>> for x in X:
+        ...     print(ptp.update(x).get())
+        0
+        5
+        7
+        5
+        4
+        1
 
     """
 
-    def __init__(self, window_size):
+    def __init__(self, window_size: int):
         self.max = maximum.RollingMax(window_size)
         self.min = minimum.RollingMin(window_size)
 

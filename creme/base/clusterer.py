@@ -4,14 +4,14 @@ from . import estimator
 
 
 class Clusterer(estimator.Estimator):
-    """A clusterer."""
+    """A clustering model."""
 
     @abc.abstractmethod
     def fit_one(self, x: dict) -> 'Clusterer':
-        """Fits to a set of features ``x``.
+        """Update the model with a set of features `x`.
 
         Parameters:
-            x (dict)
+            x: A dictionary of features.
 
         Returns:
             self
@@ -20,12 +20,12 @@ class Clusterer(estimator.Estimator):
 
     @abc.abstractmethod
     def predict_one(self, x: dict) -> int:
-        """Predicts the cluster number of a set of features ``x``.
+        """Predicts the cluster number for a set of features `x`.
 
         Parameters:
-            x (dict)
+            x: A dictionary of features.
 
         Returns:
-            int
+            A cluster number.
 
         """

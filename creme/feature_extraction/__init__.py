@@ -1,4 +1,4 @@
-"""Feature extraction from a stream."""
+"""Feature extraction."""
 from .agg import Agg
 from .agg import TargetAgg
 from .differ import Differ

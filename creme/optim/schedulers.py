@@ -2,6 +2,8 @@
 import abc
 import math
 
+from creme import optim
+
 
 __all__ = [
     'Constant',
@@ -15,7 +17,12 @@ class Scheduler(abc.ABC):
 
     @abc.abstractmethod
     def get(self, t: int) -> float:
-        """Returns the learning rate at a given iteration."""
+        """Returns the learning rate at a given iteration.
+
+        Parameters:
+            t: The iteration number.
+
+        """
 
     def __str__(self):
         return self.__class__.__name__
@@ -25,9 +32,14 @@ class Scheduler(abc.ABC):
 
 
 class Constant(Scheduler):
-    """Always uses the same learning rate."""
+    """Always uses the same learning rate.
 
-    def __init__(self, learning_rate):
+    Parameters:
+        learning_rate
+
+    """
+
+    def __init__(self, learning_rate: float):
         self.learning_rate = learning_rate
 
     def get(self, t):
@@ -37,15 +49,19 @@ class Constant(Scheduler):
 class InverseScaling(Scheduler):
     """Reduces the learning rate using a power schedule.
 
-    Assuming an iteration counter $t$ starting from 0, the learning rate will be:
+    Assuming an initial learning rate $\eta$, the learning rate at step $t$ is:
 
-    .. math:: \\frac{1}{(t+1)^p}
+    $$\\frac{eta}{(t + 1) ^ p}$$
 
     where $p$ is a user-defined parameter.
 
+    Parameters:
+        learning_rate
+        power
+
     """
 
-    def __init__(self, learning_rate, power=0.5):
+    def __init__(self, learning_rate: float, power=0.5):
         self.learning_rate = learning_rate
         self.power = power
 
@@ -57,15 +73,15 @@ class Optimal(Scheduler):
     """Optimal learning schedule as proposed by Léon Bottou.
 
     Parameters:
-        loss (optim.losses.Loss)
-        alpha (float)
+        loss
+        alpha
 
     References:
-        1. `Bottou, L., 2012. Stochastic gradient descent tricks. In Neural networks: Tricks of the trade (pp. 421-436). Springer, Berlin, Heidelberg. <https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf>`_
+        1. [Bottou, L., 2012. Stochastic gradient descent tricks. In Neural networks: Tricks of the trade (pp. 421-436). Springer, Berlin, Heidelberg.](https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf)
 
     """
 
-    def __init__(self, loss, alpha=1e-4):
+    def __init__(self, loss: optim.losses.Loss, alpha=1e-4):
         self.loss = loss
         self.alpha = alpha
 

@@ -1,4 +1,4 @@
-"""General tests for all estimators."""
+"""General tests that all estimators need to pass."""
 import copy
 import importlib
 import inspect
@@ -139,7 +139,7 @@ def get_all_estimators():
 
 @pytest.mark.parametrize('estimator, check', [
     pytest.param(
-        copy.deepcopy(estimator),
+        estimator,
         check,
         id=f'{estimator}:{check.__name__}'
     )
@@ -162,4 +162,4 @@ def get_all_estimators():
     for check in utils.estimator_checks.yield_checks(estimator)
 ])
 def test_check_estimator(estimator, check):
-    check(estimator)
+    check(copy.deepcopy(estimator))

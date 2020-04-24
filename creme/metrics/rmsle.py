@@ -11,23 +11,17 @@ class RMSLE(rmse.RMSE):
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [3, -0.5, 2, 7]
+        >>> y_pred = [2.5, 0.0, 2, 8]
 
-            >>> y_true = [3, -0.5, 2, 7]
-            >>> y_pred = [2.5, 0.0, 2, 8]
+        >>> metric = metrics.RMSLE()
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
 
-            >>> metric = metrics.RMSLE()
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     print(metric.update(y_t, y_p).get())
-            0.133531
-            0.499141
-            0.407546
-            0.357825
-
-            >>> metric
-            RMSLE: 0.357826
+        >>> metric
+        RMSLE: 0.357826
 
     """
 

@@ -1,6 +1,7 @@
 import abc
 import collections
 import functools
+import io
 import itertools
 import math
 import numbers
@@ -12,8 +13,8 @@ try:
 except ImportError:
     GRAPHVIZ_INSTALLED = False
 
-from ... import base
-from ... import proba
+from creme import base
+from creme import proba
 
 from . import criteria
 from . import node
@@ -64,37 +65,34 @@ class BaseDecisionTree(abc.ABC):
     def _get_split_enum(self, value):
         """Returns the appropriate split enumerator for a given value based on it's type."""
 
-    def draw(self, max_depth=None):
-        """Draws the tree using the ``graphviz`` library.
+    def draw(self, max_depth: int = None):
+        """Draws the tree using the `graphviz` library.
 
         Parameters:
-            max_depth (int): Only the root will be drawn when set to ``0``. Every node will be
-                drawn when set to ``None``.
+            max_depth: Only the root will be drawn when set to `0`. Every node will be drawn when
+                set to `None`.
 
         Example:
 
-            ::
+            >>> from creme import datasets
+            >>> from creme import tree
 
-                >>> from creme import datasets
-                >>> from creme import tree
+            >>> model = tree.DecisionTreeClassifier(
+            ...    patience=10,
+            ...    confidence=1e-5,
+            ...    criterion='gini',
+            ...    max_depth=10,
+            ...    tie_threshold=0.05,
+            ...    min_child_samples=0,
+            ... )
 
+            >>> for x, y in datasets.Phishing():
+            ...    model = model.fit_one(x, y)
 
-                >>> model = tree.DecisionTreeClassifier(
-                ...    patience=10,
-                ...    confidence=1e-5,
-                ...    criterion='gini',
-                ...    max_depth=10,
-                ...    tie_threshold=0.05,
-                ...    min_child_samples=0,
-                ... )
+            >>> dot = model.draw()
 
-                >>> for x, y in datasets.Phishing():
-                ...    model = model.fit_one(x, y)
-
-                >>> dot = model.draw()
-
-            .. image:: ../../../_static/dtree_draw.svg
-                :align: center
+        .. image:: /img/dtree_draw.svg
+            :align: center
 
         """
 
@@ -112,7 +110,7 @@ class BaseDecisionTree(abc.ABC):
 
         # Do a first pass to guess the number of classes
         n_classes = len(set(itertools.chain(*[
-            list(node.target_dist.keys())
+            list(node.target_dist)
             for node, _ in self.root.iter_dfs()])
         ))
 
@@ -146,16 +144,20 @@ class BaseDecisionTree(abc.ABC):
 
         return dot
 
-    def debug_one(self, x, **print_params):
-        """Prints an explanation of how ``x`` is predicted.
+    def debug_one(self, x: dict) -> str:
+        """Prints an explanation of how `x` is predicted.
 
         Parameters:
-            x (dict)
-            **print_params (dict): Parameters passed to the `print` function.
+            x: A dictionary of features.
 
         """
+
+        # We'll redirect all the print statement to a buffer, we'll return the content of the
+        # buffer at the end
+        buffer = io.StringIO()
+        _print = functools.partial(print, file=buffer)
+
         node = self.root
-        _print = functools.partial(print, **print_params)
 
         for node in self.root.path(x):
             if isinstance(node, node.Leaf):
@@ -166,6 +168,8 @@ class BaseDecisionTree(abc.ABC):
             else:
                 _print(node.split)
 
+        return buffer.getvalue()
+
 
 class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
     """Decision tree classifier.
@@ -174,54 +178,52 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
     order to treat it as a categorical feature.
 
     Parameters:
-        criterion (str): The function to measure the quality of a split. Set to ``'gini'`` in order
-            to use Gini impurity and ``'entropy'`` for information gain.
-        patience (int): Time to wait between split attempts.
-        max_depth (int): Maximum tree depth.
-        min_split_gain (float): Minimum impurity gain required to make a split eligible.
-        min_child_samples (int): Minimum number of data needed in a leaf.
-        confidence (float): Threshold used to compare with the Hoeffding bound.
-        tie_threshold (float): Threshold to handle ties between equally performing attributes.
-        n_split_points (int): Number of split points considered for splitting numerical variables.
-        max_bins (int): Number of histogram bins used for approximating the distribution of
+        criterion: The function to measure the quality of a split. Set to `'gini'` in order
+            to use Gini impurity and `'entropy'` for information gain.
+        patience: Time to wait between split attempts.
+        max_depth: Maximum tree depth.
+        min_split_gain: Minimum impurity gain required to make a split eligible.
+        min_child_samples: Minimum number of data needed in a leaf.
+        confidence: Threshold used to compare with the Hoeffding bound.
+        tie_threshold: Threshold to handle ties between equally performing attributes.
+        n_split_points: Number of split points considered for splitting numerical variables.
+        max_bins: Number of histogram bins used for approximating the distribution of
             numerical variables.
-        curtail_under (int): Determines the minimum amount of samples for a node to be eligible to
-            make predictions. For instance, if a leaf doesn't contain at least ``curtail_under``
+        curtail_under: Determines the minimum amount of samples for a node to be eligible to
+            make predictions. For instance, if a leaf doesn't contain at least `curtail_under`
             samples, then it's parent will be used instead. If said parent also doesn't contain at
-            leaf ``curtail_under`` samples, then it's parent is used, etc. This helps to counter
+            leaf `curtail_under` samples, then it's parent is used, etc. This helps to counter
             the fact that new leaves start with no samples at all, therefore their predictions
-            might be unreliable. No curtailment will be applied if you set this to ``0``. However,
+            might be unreliable. No curtailment will be applied if you set this to `0`. However,
             note that using even a small amount of curtailment almost always results in better
             performance.
 
     Attributes:
-        root (Leaf)
+        root
 
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import tree
 
-            >>> from creme import datasets
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import tree
+        >>> X_y = datasets.Phishing()
 
-            >>> X_y = datasets.Phishing()
+        >>> model = tree.DecisionTreeClassifier(
+        ...     patience=100,
+        ...     confidence=1e-5,
+        ...     criterion='gini'
+        ... )
 
-            >>> model = tree.DecisionTreeClassifier(
-            ...     patience=100,
-            ...     confidence=1e-5,
-            ...     criterion='gini'
-            ... )
+        >>> metric = metrics.LogLoss()
 
-            >>> metric = metrics.LogLoss()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.51755
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        LogLoss: 0.51755
 
     References:
-        1. `Domingos, P. and Hulten, G., 2000, August. Mining high-speed data streams. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 71-80). <https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf>`_
-        2. `Article by The Morning Paper <https://blog.acolyer.org/2015/08/26/mining-high-speed-data-streams/>`_
+        1. [Domingos, P. and Hulten, G., 2000, August. Mining high-speed data streams. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 71-80).](https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf)
+        2. [Article by The Morning Paper](https://blog.acolyer.org/2015/08/26/mining-high-speed-data-streams/)
 
     """
 
@@ -252,10 +254,10 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
     """Generate n colors with equally spaced hues.
 
     Parameters:
-        n (int): The number of colors required.
+        n: The number of colors required.
 
     Returns:
-        list, length n: List of n tuples of form (R, G, B) being the components of each color.
+        List of n tuples of form (R, G, B) being the components of each color.
 
     References:
         https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py

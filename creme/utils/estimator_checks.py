@@ -1,6 +1,7 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
+import inspect
 import itertools
 import math
 import pickle
@@ -13,9 +14,21 @@ __all__ = [
 
 
 def guess_model(model):
+    """Extracts the relevant part model.
 
-    from .. import base
-    from .. import compose
+    Sometimes we need to check if a model can perform regression, classification, etc. When the
+    model is a pipeline, then this can be checked by looking at the final step of the pipeline.
+
+    This function is highly succeptible to be modified or disappear altogether. The only reason it
+    exists is that we can't do `isinstance(pipeline, base.Regressor)`.
+
+    Parameters:
+        model
+
+    """
+
+    from creme import base
+    from creme import compose
 
     if isinstance(model, (base.MultiOutputRegressor, base.MultiOutputClassifier)):
         return model
@@ -28,9 +41,9 @@ def guess_model(model):
 
 def yield_datasets(model):
 
-    from .. import base
-    from .. import datasets
-    from .. import stream
+    from creme import base
+    from creme import datasets
+    from creme import stream
     from sklearn import datasets as sk_datasets
 
     model = guess_model(model)
@@ -122,7 +135,7 @@ def check_str_works(model):
 
 
 def check_tags(model):
-    """Checks that the ``_tags`` property works."""
+    """Checks that the `_tags` property works."""
     assert isinstance(model._tags, dict)
 
 
@@ -138,7 +151,7 @@ def yield_checks(model):
 
     """
 
-    from .. import base
+    from creme import base
 
     yield check_repr_works
     yield check_str_works
@@ -167,10 +180,10 @@ def yield_checks(model):
 
 
 def check_estimator(model):
-    """Check if a model adheres to ``creme``'s conventions.
+    """Check if a model adheres to `creme`'s conventions.
 
     Parameters:
-        model (base.Estimator)
+        model
 
     """
     for check in yield_checks(model):

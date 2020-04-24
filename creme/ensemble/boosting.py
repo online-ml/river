@@ -25,10 +25,10 @@ class BaseBoosting(base.Wrapper, base.Ensemble):
 
 
 class AdaBoostClassifier(base.Classifier, BaseBoosting):
-    '''Boosting for classification
+    """Boosting for classification
 
-    For each incoming observation, each model's ``fit_one`` method is called ``k`` times where
-    ``k`` is sampled from a Poisson distribution of parameter lambda. The lambda parameter is
+    For each incoming observation, each model's `fit_one` method is called `k` times where
+    `k` is sampled from a Poisson distribution of parameter lambda. The lambda parameter is
     updated when the weaks learners fit successively the same observation.
 
     Parameters:
@@ -42,48 +42,45 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
         correct_weight (collections.defaultdict): Number of times a model has predicted the right
             label when making predictions.
 
-
     Example:
 
         In the following example three tree classifiers are boosted together. The performance is
         slightly better than when using a single tree.
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import ensemble
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import tree
 
-            >>> from creme import datasets
-            >>> from creme import ensemble
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import tree
+        >>> X_y = datasets.Phishing()
 
-            >>> X_y = datasets.Phishing()
+        >>> metric = metrics.LogLoss()
 
-            >>> metric = metrics.LogLoss()
+        >>> model = ensemble.AdaBoostClassifier(
+        ...     model=(
+        ...         tree.DecisionTreeClassifier(
+        ...             criterion='gini',
+        ...             confidence=1e-5,
+        ...             patience=2000
+        ...         )
+        ...     ),
+        ...     n_models=5,
+        ...     seed=42
+        ... )
 
-            >>> model = ensemble.AdaBoostClassifier(
-            ...     model=(
-            ...         tree.DecisionTreeClassifier(
-            ...             criterion='gini',
-            ...             confidence=1e-5,
-            ...             patience=2000
-            ...         )
-            ...     ),
-            ...     n_models=5,
-            ...     seed=42
-            ... )
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        LogLoss: 0.741097
 
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            LogLoss: 0.741097
-
-            >>> print(model)
-            AdaBoostClassifier(DecisionTreeClassifier)
+        >>> print(model)
+        AdaBoostClassifier(DecisionTreeClassifier)
 
     References:
-        1. `Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee. <https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf>`_
+        1. [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
 
-    '''
+    """
 
-    def __init__(self, model, n_models=10, seed=None):
+    def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
         super().__init__(model, n_models, seed)
         self.wrong_weight = collections.defaultdict(int)
         self.correct_weight = collections.defaultdict(int)
@@ -109,10 +106,6 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
         return self
 
     def predict_proba_one(self, x):
-        """
-        Store the predicted probabilities with the corresponding weights for each weak learner and
-        return the probabilities associated to the model which has maximum weight.
-        """
         model_weights = collections.defaultdict(int)
         predictions = {}
 

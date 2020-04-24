@@ -5,27 +5,25 @@ class Covariance(base.Bivariate):
     """Running covariance.
 
     Parameters:
-        ddof (int): Delta Degrees of Freedom.
+        ddof: Delta Degrees of Freedom.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
+        >>> x = [-2.1,  -1,  4.3]
+        >>> y = [   3, 1.1, 0.12]
 
-            >>> x = [-2.1,  -1,  4.3]
-            >>> y = [   3, 1.1, 0.12]
+        >>> cov = stats.Covariance()
 
-            >>> cov = stats.Covariance()
-
-            >>> for xi, yi in zip(x, y):
-            ...     print(cov.update(xi, yi).get())
-            0.0
-            -1.044999
-            -4.286
+        >>> for xi, yi in zip(x, y):
+        ...     print(cov.update(xi, yi).get())
+        0.0
+        -1.044999
+        -4.286
 
     References:
-        1. `Wikipedia article on algorithms for calculating variance <https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance>`_
+        1. [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
 
     """
 

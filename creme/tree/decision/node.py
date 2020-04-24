@@ -1,7 +1,7 @@
 import math
 
-from ... import proba
-from ...proba.base import ContinuousDistribution
+from creme import proba
+from creme.proba.base import ContinuousDistribution
 
 from .. import base
 

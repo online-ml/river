@@ -10,38 +10,36 @@ class ConfusionMatrix(base.MultiClassMetric):
     """Confusion matrix.
 
     This class is different from the rest of the classes from the `metrics` module in that it
-    doesn't have a ``get`` method.
+    doesn't have a `get` method.
 
     Attributes:
-        classes (set): The entire set of seen classes, whether they are part of the predictions or
-            the true values.
+        classes: The entire set of seen classes, whether they are part of the predictions or the
+            true values.
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
+        >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
 
-            >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
-            >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
+        >>> cm = metrics.ConfusionMatrix()
 
-            >>> cm = metrics.ConfusionMatrix()
+        >>> for y_t, y_p in zip(y_true, y_pred):
+        ...     cm = cm.update(y_t, y_p)
 
-            >>> for y_t, y_p in zip(y_true, y_pred):
-            ...     cm = cm.update(y_t, y_p)
+        >>> cm
+                    ant  bird   cat
+            ant     2     0     0
+            bird     0     0     1
+            cat     1     0     2
 
-            >>> cm
-                     ant  bird   cat
-               ant     2     0     0
-              bird     0     0     1
-               cat     1     0     2
-
-            >>> cm['bird']['cat']
-            1.0
+        >>> cm['bird']['cat']
+        1.0
 
     """
 
-    fmt = '0.0f'
+    _fmt = '0.0f'
 
     @property
     def bigger_is_better(self):
@@ -99,7 +97,7 @@ class ConfusionMatrix(base.MultiClassMetric):
         table += '\n'.join((
             row_format.format(
                 str(y_true),
-                *[f'{self.counts[y_true][y_pred]:{self.fmt}}' for y_pred in classes],
+                *[f'{self.counts[y_true][y_pred]:{self._fmt}}' for y_pred in classes],
                 width=width
             )
             for y_true in sorted(self.counts)
