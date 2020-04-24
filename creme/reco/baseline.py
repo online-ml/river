@@ -1,5 +1,6 @@
 import collections
 import copy
+import typing
 
 from creme import stats
 from creme import optim
@@ -85,8 +86,8 @@ class Baseline(base.Recommender):
 
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
-        self.u_biases = collections.defaultdict(initializer)
-        self.i_biases = collections.defaultdict(initializer)
+        self.u_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(initializer)
+        self.i_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(initializer)
 
     def _predict_one(self, user, item):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]

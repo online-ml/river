@@ -228,10 +228,9 @@ class WeightedFBeta(BaseFBeta, base.MultiClassMetric):
     """
 
     def __init__(self, beta: float):
-        self.fbetas = collections.defaultdict(functools.partial(FBeta, beta=beta))
-        """The F-Beta score of each label."""
-        self._support = collections.Counter()
-        self._class_counts = collections.Counter()
+        self.fbetas: typing.DefaultDict[creme.base.typing.ClfTarget, FBeta] = collections.defaultdict(functools.partial(FBeta, beta=beta))
+        self._support: typing.Counter[creme.base.typing.ClfTarget] = collections.Counter()
+        self._class_counts: typing.Counter[creme.base.typing.ClfTarget] = collections.Counter()
 
     def update(self, y_true, y_pred, sample_weight=1.):
         self._class_counts.update([y_true, y_pred])
@@ -298,9 +297,8 @@ class MultiFBeta(BaseFBeta, base.MultiClassMetric):
     def __init__(self, betas: typing.Dict[creme.base.typing.ClfTarget, float],
                  weights: typing.Dict[creme.base.typing.ClfTarget, float] = None):
         self.betas = betas
-        self.fbetas = dict()
-        """The F-Beta score of each label."""
-        self._class_counts = collections.Counter()
+        self.fbetas: typing.Dict[creme.base.typing.ClfTarget, FBeta] = dict()
+        self._class_counts: typing.Counter[creme.base.typing.ClfTarget] = collections.Counter()
         self.weights = (
             weights
             if weights is not None

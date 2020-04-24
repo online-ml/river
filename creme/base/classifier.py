@@ -3,15 +3,17 @@ import typing
 
 from creme import base
 
-from . import estimator
 
-
-class Classifier(estimator.Estimator):
+class Classifier(base.Predictor):
     """A classifier."""
 
+
+class MultiClassifier(Classifier):
+    """A multi-class classifier."""
+
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
-        """Fits to a set of features `x` and a label `y`.
+    def fit_one(self, x: dict, y: base.typing.ClfTarget) -> 'MultiClassifier':
+        """Update the model with a set of features `x` and a label `y`.
 
         Parameters:
             x: A dictionary of features.
@@ -34,7 +36,7 @@ class Classifier(estimator.Estimator):
 
         """
 
-    def predict_one(self, x: dict) -> base.typing.ClfTarget:
+    def predict_one(self, x: dict) -> typing.Optional[base.typing.ClfTarget]:
         """Predict the label of a set of features `x`.
 
         Parameters:
@@ -49,22 +51,6 @@ class Classifier(estimator.Estimator):
             return max(y_pred, key=y_pred.get)
         return None
 
-
-class MultiClassifier(Classifier):
-    """A multi-class classifier."""
-
-    @abc.abstractmethod
-    def fit_one(self, x: dict, y: base.typing.ClfTarget) -> 'MultiClassifier':
-        """Update the model with a set of features `x` and a label `y`.
-
-        Parameters:
-            x: A dictionary of features.
-            y: A label.
-
-        Returns:
-            self
-
-        """
 
 
 class BinaryClassifier(Classifier):

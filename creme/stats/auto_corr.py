@@ -1,4 +1,5 @@
 import collections
+import typing
 
 from . import base
 from . import pearson
@@ -46,7 +47,7 @@ class AutoCorrelation(base.Univariate):
     """
 
     def __init__(self, lag: int):
-        self.window = collections.deque(maxlen=lag)
+        self.window: typing.Deque[float] = collections.deque(maxlen=lag)
         self.lag = lag
         self.pearson = pearson.PearsonCorrelation(ddof=1)
 

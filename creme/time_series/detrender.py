@@ -1,5 +1,6 @@
 import collections
 import functools
+import typing
 
 from creme import base
 from creme import stats
@@ -50,7 +51,7 @@ class GroupDetrender(base.Regressor, base.Wrapper):
     def __init__(self, regressor: base.Regressor, by: str, window_size: int = None):
         self.regressor = regressor
         self.by = by
-        self.means = collections.defaultdict(
+        self.means: typing.DefaultDict[typing.Any, stats.Univariate] = collections.defaultdict(
             stats.Mean if window_size is None else
             functools.partial(stats.RollingMean, window_size)
         )

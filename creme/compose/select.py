@@ -101,7 +101,7 @@ class SelectType(base.Transformer):
 
     """
 
-    def __init__(self, *types: typing.Tuple[typing.Type]):
+    def __init__(self, *types: typing.Tuple[type]):
         self.types = types
 
     def transform_one(self, x):

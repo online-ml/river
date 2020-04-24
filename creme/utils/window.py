@@ -1,5 +1,6 @@
 import bisect
 import collections
+import typing
 
 
 class Window:
@@ -30,7 +31,7 @@ class Window:
     """
 
     def __init__(self, size: int):
-        self.values = collections.deque(maxlen=size)
+        self.values: typing.Deque[typing.Any] = collections.deque(maxlen=size)
 
     @property
     def size(self):

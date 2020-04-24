@@ -1,5 +1,6 @@
 import bisect
 import datetime as dt
+import typing
 
 from . import base
 
@@ -38,7 +39,7 @@ class TimeRolling(base.WrapperMetric):
     def __init__(self, metric: base.Metric, period: dt.timedelta):
         self._metric = metric
         self.period = period
-        self._events = []
+        self._events: typing.List[typing.Tuple[dt.datetime, typing.Any, typing.Any]] = []
         self._latest = dt.datetime(1, 1, 1)
 
     @property

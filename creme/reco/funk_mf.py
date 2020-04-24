@@ -1,11 +1,12 @@
 import collections
 import copy
 import functools
+import typing
 
 import numpy as np
 
-from .. import optim
-from .. import utils
+from creme import optim
+from creme import utils
 
 from . import base
 
@@ -69,7 +70,7 @@ class FunkMF(base.Recommender):
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
         1.866272
 
-    Note:
+    .. note::
         This model expects a dict input with a `user` and an `item` entries without any type
         constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
@@ -101,8 +102,8 @@ class FunkMF(base.Recommender):
             self.initializer,
             shape=self.n_factors
         )
-        self.u_latents = collections.defaultdict(random_latents)
-        self.i_latents = collections.defaultdict(random_latents)
+        self.u_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
+        self.i_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
 
     def _predict_one(self, user, item):
         return np.dot(self.u_latents[user], self.i_latents[item])

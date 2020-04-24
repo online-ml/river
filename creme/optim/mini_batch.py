@@ -1,4 +1,7 @@
 import collections
+import typing
+
+import creme.base
 
 from . import base
 
@@ -44,7 +47,7 @@ class MiniBatcher(base.Optimizer):
     def __init__(self, optimizer: base.Optimizer, batch_size: int):
         self.optimizer = optimizer
         self.batch_size = batch_size
-        self.gradient = collections.defaultdict(float)
+        self.gradient: typing.DefaultDict[creme.base.typing.FeatureName, float] = collections.defaultdict(float)
         self.current_size = 0
         self.n_iterations = 0
 

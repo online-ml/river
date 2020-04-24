@@ -13,7 +13,7 @@ __all__ = ['SuccessiveHalvingClassifier', 'SuccessiveHalvingRegressor']
 
 class SuccessiveHalving:
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, budget: int,
+    def __init__(self, models: typing.List[base.Predictor], metric: metrics.Metric, budget: int,
                  eta=2, verbose=False):
 
         # Check that the model and the metric are in accordance
@@ -109,9 +109,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     If you have `k` combinations of hyperparameters and that your dataset contains `n`
     observations, then the maximal budget you can allocate is:
 
-    $$
-    \\frac{2kn}{eta}
-    $$
+    $$\\frac{2kn}{eta}$$
 
     It is recommended that you check this beforehand. This bound can't be checked by the function
     because the size of the dataset is not known. In fact it is potentially infinite, in which case
@@ -121,9 +119,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     number of hyperparameter combinations that will spend all the budget and go through all the
     data is:
 
-    $$
-    \\ceil(\\floor(\\frac{B}{2n}) \\times eta)
-    $$
+    $$\\ceil(\\floor(\\frac{B}{2n}) \\times eta)$$
 
     Parameters:
         models: The models to compare.

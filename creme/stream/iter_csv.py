@@ -150,7 +150,7 @@ def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = Non
                 x[i] = dt.datetime.strptime(x[i], fmt)
 
         # Separate the target from the features
-        y = x.pop(target_name, None)
+        y = x.pop(target_name) if target_name else None
 
         yield x, y
 

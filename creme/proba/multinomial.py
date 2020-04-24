@@ -1,4 +1,5 @@
 import collections
+import typing
 
 from . import base
 
@@ -27,8 +28,8 @@ class Multinomial(base.DiscreteDistribution):
 
     """
 
-    def __init__(self, events: list = None):
-        self.counts = collections.Counter(events)
+    def __init__(self, events: typing.Union[dict, list] = None):
+        self.counts: typing.Counter[typing.Any] = collections.Counter(events)
         self._n = sum(self.counts.values())
 
     @property

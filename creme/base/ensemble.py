@@ -1,10 +1,10 @@
 import collections
 import typing
 
-from . import estimator
+from creme import base
 
 
-class Ensemble(estimator.Estimator):
+class Ensemble(base.Predictor):
     """An ensemble model.
 
     Parameters:
@@ -12,7 +12,7 @@ class Ensemble(estimator.Estimator):
 
     """
 
-    def __init__(self, models: typing.List[estimator.Estimator]):
+    def __init__(self, models: typing.List[base.Predictor]):
         self.models = list(models)
 
     def __len__(self):
