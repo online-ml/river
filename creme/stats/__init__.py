@@ -29,6 +29,7 @@ from .quantile import Quantile
 from .quantile import RollingQuantile
 from .sem import SEM
 from .sem import RollingSEM
+from .shift import Shift
 from .skew import Skew
 from .summing import Sum
 from .summing import RollingSum
@@ -68,6 +69,7 @@ __all__ = [
     'RollingSum',
     'RollingVar',
     'SEM',
+    'Shift',
     'Skew',
     'Sum',
     'Univariate',

@@ -235,7 +235,7 @@ class Pipeline(base.Estimator):
             if t.is_supervised:
 
                 if isinstance(t, union.TransformerUnion):
-                    for sub_t in t.values():
+                    for sub_t in t.transformers.values():
                         if sub_t.is_supervised:
                             sub_t.fit_one(x=x_pre, y=y)
 

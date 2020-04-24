@@ -14,6 +14,20 @@ cdef class Statistic:
     def __repr__(self):
         return f'{self.__class__.__name__}: {self.get():{self._fmt}}'.rstrip('0')
 
+    def __or__(self, other):
+        """Merges with another statistic into a StatChain."""
+        from .. import compose
+        if isinstance(other, compose.StatChain):
+            return other.__ror__(self)
+        return compose.StatChain(self, other)
+
+    def __ror__(self, other):
+        """Merges with another statistic into a StatChain."""
+        from .. import compose
+        if isinstance(other, compose.StatChain):
+            return other.__or__(self)
+        return compose.StatChain(other, self)
+
 
 cdef class Univariate(Statistic):
     """A univariate statistic measures a property of a variable."""
