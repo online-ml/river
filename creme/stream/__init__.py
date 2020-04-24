@@ -28,6 +28,12 @@ except ImportError:
     pass
 
 try:
+    from .iter_sql import iter_sql
+    __all__ += ['iter_sql']
+except ImportError:
+    pass
+
+try:
     from .iter_vaex import iter_vaex
     __all__ += ['iter_vaex']
 except ImportError:
