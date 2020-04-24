@@ -64,14 +64,10 @@ class Shift(base.Univariate):
             ...    ({'store_id': 'ikea', 'open': 1}, 10.),
             ... ]
 
-            >>> pipeline = creme.feature_extraction.Agg(
-            ...         by=['store_id'],
-            ...         on='open',
-            ...         how=creme.stats.Shift(1) | creme.stats.Sum()
-            ...     ) + creme.feature_extraction.TargetAgg(
-            ...             by=['store_id'],
-            ...             how=creme.stats.Shift(1) | creme.stats.RollingMean(1)
-            ... )
+            >>> pipeline = creme.feature_extraction.Agg(by=['store_id'], on='open',
+            ...     how=creme.stats.Shift(1) | creme.stats.Sum()
+            ... ) + creme.feature_extraction.TargetAgg(by=['store_id'],
+            ...     how=creme.stats.Shift(1) | creme.stats.RollingMean(1))
 
             >>> for x, y in X_y:
             ...  print(pipeline.fit_one(x, y).transform_one(x))
@@ -87,10 +83,8 @@ class Shift(base.Univariate):
         self.period = period
         self.missing = missing
         self.period_logic = period
-
         if fit_before_transform:
             self.period += 1
-
         self.buffer = collections.deque(maxlen=self.period)
 
     @property
