@@ -7,3 +7,7 @@
 ## multioutput
 
 - Fixed a bug where `multioutput.ClassifierChain` and `multioutput.RegressorChain` could not be pickled.
+
+## stream
+
+- Added a `iter_sql` utility method to work with SQLAlchemy.
