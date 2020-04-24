@@ -45,7 +45,7 @@ class PyTorch2CremeBase:
 
 
 class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
-    """PyTorch to ``creme`` regressor adapter.
+    """PyTorch to `creme` regressor adapter.
 
     Parameters:
         net

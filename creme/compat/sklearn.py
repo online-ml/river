@@ -70,7 +70,7 @@ def convert_creme_to_sklearn(estimator: base.Estimator):
     if isinstance(estimator, compose.Pipeline):
         return pipeline.Pipeline([
             (name, convert_creme_to_sklearn(step))
-            for name, step in estimator.items()
+            for name, step in estimator.steps.items()
         ])
 
     wrappers = [

@@ -53,13 +53,13 @@ class SoftmaxRegression(base.MultiClassifier):
 
     def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.MultiClassLoss = None,
                  l2=0):
-        self.optimizers = collections.defaultdict(functools.partial(
-            copy.deepcopy,
-            optim.SGD(0.01) if optimizer is None else optimizer
-        ))
+        if optimizer is None:
+            optimizer = optim.SGD(0.01)
+        new_optimizer = functools.partial(copy.deepcopy, optimizer)
+        self.optimizers = collections.defaultdict(new_optimizer)  # type: ignore
         self.loss = optim.losses.CrossEntropy() if loss is None else loss
         self.l2 = l2
-        self.weights = collections.defaultdict(functools.partial(collections.defaultdict, float))
+        self.weights = collections.defaultdict(functools.partial(collections.defaultdict, float))  # type: ignore
 
     def fit_one(self, x, y):
 

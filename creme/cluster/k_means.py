@@ -85,10 +85,8 @@ class KMeans(base.Clusterer):
         self.p = p
         self.seed = seed
         self._rng = random.Random(seed)
-        self.centers = {
-            i: collections.defaultdict(functools.partial(self._rng.gauss, self.mu, self.sigma))
-            for i in range(n_clusters)
-        }
+        rand_gauss = functools.partial(self._rng.gauss, self.mu, self.sigma)
+        self.centers = {i: collections.defaultdict(rand_gauss) for i in range(n_clusters)}  # type: ignore
 
     def fit_predict_one(self, x):
         """Equivalent to `k_means.fit_one(x).predict_one(x)`, but faster."""
