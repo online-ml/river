@@ -54,7 +54,7 @@ class SplitEnum(abc.ABC):
         """Updates the sufficient statistics used for evaluting splits."""
 
     @abc.abstractmethod
-    def enumerate_splits(self):
+    def enumerate_splits(self, target_dist):
         """Yields candidate split points and associated operators."""
 
 
@@ -98,10 +98,7 @@ class HistSplitEnum(SplitEnum):
                 l_dist[y] = target_dist.n_samples * p_y * p_xy  # P(y | x < t)
                 r_dist[y] = target_dist.n_samples * p_y * (1 - p_xy)  # P(y | x >= t)
 
-            l_dist = proba.Multinomial(l_dist)
-            r_dist = proba.Multinomial(r_dist)
-
-            yield LT, at, l_dist, r_dist
+            yield LT, at, proba.Multinomial(l_dist), proba.Multinomial(r_dist)
 
 
 class CategoricalSplitEnum(SplitEnum):
@@ -110,7 +107,7 @@ class CategoricalSplitEnum(SplitEnum):
     def __init__(self):
         self.P_xy = collections.defaultdict(proba.Multinomial)
 
-    def update(self, x: float, y: base.typing.ClfTarget):
+    def update(self, x: str, y: base.typing.ClfTarget):
         self.P_xy[y].update(x)
         return self
 
@@ -134,7 +131,4 @@ class CategoricalSplitEnum(SplitEnum):
                 l_dist[y] = target_dist.n_samples * p_y * p_xy  # P(y | cat)
                 r_dist[y] = target_dist.n_samples * p_y * (1. - p_xy)  # P(y | !cat)
 
-            l_dist = proba.Multinomial(l_dist)
-            r_dist = proba.Multinomial(r_dist)
-
-            yield EQ, cat, l_dist, r_dist
+            yield EQ, cat, proba.Multinomial(l_dist), proba.Multinomial(r_dist)

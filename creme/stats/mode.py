@@ -1,6 +1,7 @@
 import collections
+import typing
 
-from .. import utils
+from creme import utils
 
 from . import base
 
@@ -17,9 +18,6 @@ class Mode(base.Univariate):
     Parameters:
         k: Only the first `k` unique values will be included. If `k` equals -1, the exact mode is
             computed.
-
-    Attributes:
-        counts (collections.defaultdict): Counts the number of occurrences of the different keys.
 
     Example:
 
@@ -107,7 +105,7 @@ class RollingMode(base.RollingUnivariate, utils.Window):
 
     def __init__(self, window_size: int):
         super().__init__(size=window_size)
-        self.counts = collections.defaultdict(int)
+        self.counts: typing.DefaultDict[typing.Any, int] = collections.defaultdict(int)
 
     @property
     def window_size(self):

@@ -115,7 +115,7 @@ def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callab
     else:
         get_delay = delay
 
-    mementos = []
+    mementos: typing.List[Memento] = []
 
     for i, (x, y) in enumerate(X_y):
 

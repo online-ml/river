@@ -1,6 +1,7 @@
 import collections
 import copy
 import functools
+import typing
 
 import numpy as np
 
@@ -30,18 +31,17 @@ class BiasedMF(base.Recommender):
     `user` and an `item` entries.
 
     Parameters:
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        bias_optimizer (optim.Optimizer): The sequential optimizer used for updating the bias
+        n_factors: Dimensionality of the factorization or number of latent factors.
+        bias_optimizer: The sequential optimizer used for updating the bias
             weights.
-        latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
-            weights.
-        loss (optim.Loss): The loss function to optimize for.
-        l2_bias (float): Amount of L2 regularization used to push bias weights towards 0.
-        l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme.
-        latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        seed (int): Randomization seed used for reproducibility.
+        latent_optimizer: The sequential optimizer used for updating the latent weights.
+        loss: The loss function to optimize for.
+        l2_bias: Amount of L2 regularization used to push bias weights towards 0.
+        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
+        weight_initializer: Weights initialization scheme.
+        latent_initializer: Latent factors initialization scheme.
+        clip_gradient: Clips the absolute value of each gradient value.
+        seed: Randomization seed used for reproducibility.
 
     Attributes:
         global_mean (stats.Mean): The target arithmetic mean.
@@ -88,7 +88,7 @@ class BiasedMF(base.Recommender):
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
         6.489025
 
-    Note:
+    .. note::
         This model expects a dict input with a `user` and an `item` entries without any type
         constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
@@ -126,15 +126,15 @@ class BiasedMF(base.Recommender):
         self.seed = seed
         self.global_mean = stats.Mean()
 
-        self.u_biases = collections.defaultdict(weight_initializer)
-        self.i_biases = collections.defaultdict(weight_initializer)
+        self.u_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(weight_initializer)
+        self.i_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(weight_initializer)
 
         random_latents = functools.partial(
             self.latent_initializer,
             shape=self.n_factors
         )
-        self.u_latents = collections.defaultdict(random_latents)
-        self.i_latents = collections.defaultdict(random_latents)
+        self.u_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
+        self.i_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
 
     def _predict_one(self, user, item):
 

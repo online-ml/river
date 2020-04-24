@@ -38,7 +38,7 @@ class MultiOutputClassifier(MultiOutputEstimator):
 
         """
 
-    def predict_one(self, x: dict) -> typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]]:
+    def predict_one(self, x: dict) -> typing.Dict[typing.Union[str, int], base.typing.ClfTarget]:
         """Given a set of features `x`, predicts a label for each output.
 
         Parameters:

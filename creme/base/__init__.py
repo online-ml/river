@@ -15,6 +15,7 @@ from .ensemble import Ensemble
 from .estimator import Estimator
 from .multi_output import MultiOutputClassifier
 from .multi_output import MultiOutputRegressor
+from .predictor import Predictor
 from .regressor import Regressor
 from .transformer import Transformer
 from .wrapper import Wrapper
@@ -30,6 +31,7 @@ __all__ = [
     'MultiClassifier',
     'MultiOutputClassifier',
     'MultiOutputRegressor',
+    'Predictor',
     'Regressor',
     'Transformer',
     'typing',

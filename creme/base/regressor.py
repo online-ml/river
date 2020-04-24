@@ -5,7 +5,7 @@ import typing
 from creme import base
 
 
-class Regressor(base.Estimator):
+class Regressor(base.Predictor):
     """A regressor."""
 
     @abc.abstractmethod

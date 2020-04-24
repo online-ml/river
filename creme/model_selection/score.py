@@ -15,16 +15,15 @@ from creme import stream
 __all__ = ['progressive_val_score']
 
 
-def progressive_val_score(X_y: base.typing.Stream, model: base.Estimator, metric: metrics.Metric,
+def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric: metrics.Metric,
                           moment: typing.Union[str, typing.Callable] = None,
                           delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
-                          print_every: int = math.inf, show_time=False,
-                          show_memory=False) -> metrics.Metric:
+                          print_every=0, show_time=False, show_memory=False) -> metrics.Metric:
     """A variant of online scoring where the targets are revealed with a delay.
 
-    `X_y` is converted into a question and answer where the model is asked to predict an
-    observation. The target is only revealed to the model after a certain amount given by
-    `delay`.
+    `X_y` is converted into a stream of questions and answers. At each step the model is either
+    asked to predict an observation, or is either updated. The target is only revealed to the model
+    after a certain amount of time, which is determined by `delay` the parameter.
 
     Parameters:
         X_y: The stream of observations against which the model will be evaluated.
@@ -82,7 +81,7 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Estimator, metric
 
             # Update the answer counter
             n_total_answers += 1
-            if not n_total_answers % print_every:
+            if print_every and not n_total_answers % print_every:
                 msg = f'[{n_total_answers:,d}] {metric}'
                 if show_time:
                     now = time.perf_counter()
