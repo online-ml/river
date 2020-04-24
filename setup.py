@@ -37,25 +37,24 @@ compat_packages = base_packages + [
     'vaex>=2.6.1'
 ]
 
-dev_packages = compat_packages + [
+dev_packages = base_packages + [
     'flake8>=3.7.9',
     'graphviz>=0.10.1',
     'matplotlib>=3.0.2',
     'mypy>=0.761',
-    'nbval>=0.9.1',
     'pytest>=4.5.0',
     'pytest-cov>=2.6.1',
     'pytest-cython>=0.1.0',
     'scikit-learn>=0.22.1'
 ]
-dev_packages = list(set(dev_packages))  # remove duplicates
 
 docs_packages = dev_packages + [
     'ipykernel>=4.8.2',
     'jupyter-client>=5.2.3',
     'mkdocs==1.1',
     'mkdocs-awesome-pages-plugin>=2.2.1',
-    'mkdocs-material>=5.0.1'
+    'mkdocs-material>=5.0.1',
+    'nbval>=0.9.1'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
