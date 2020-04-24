@@ -1,0 +1,5 @@
+.md-typeset h2, h3 {
+    margin: 1.5em 0;
+    padding-bottom: .4rem;
+    border-bottom: .04rem solid var(--md-default-fg-color--lighter);
+}

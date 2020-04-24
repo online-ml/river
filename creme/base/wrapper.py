@@ -1,9 +1,9 @@
 import abc
 
-from . import estimator
+from creme import base
 
 
-class Wrapper(estimator.Estimator):
+class Wrapper(base.Estimator):
     """A wrapper model."""
 
     @abc.abstractproperty

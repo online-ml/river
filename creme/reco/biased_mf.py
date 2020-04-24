@@ -4,9 +4,9 @@ import functools
 
 import numpy as np
 
-from .. import stats
-from .. import optim
-from .. import utils
+from creme import stats
+from creme import optim
+from creme import utils
 
 from . import base
 
@@ -19,17 +19,15 @@ class BiasedMF(base.Recommender):
 
     The model equation is defined as:
 
-    .. math::
-        \\hat{y}(x) = \\bar{y} + bu_{u} + bi_{i} + \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle
+    $$\\hat{y}(x) = \\bar{y} + bu_{u} + bi_{i} + \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle$$
 
     Where :math:`bu_{u}` and :math:`bi_{i}` are respectively the user and item biases. The last term
     being simply the dot product between the latent vectors of the given user-item pair:
 
-    .. math::
-        \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}
+    $$\\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}$$
 
     Where :math:`k` is the number of latent factors. The model expect dict inputs containing both a
-    ``user`` and an ``item`` entries.
+    `user` and an `item` entries.
 
     Parameters:
         n_factors (int): Dimensionality of the factorization or number of latent factors.
@@ -62,50 +60,51 @@ class BiasedMF(base.Recommender):
 
     Example:
 
-        ::
+        >>> from creme import optim
+        >>> from creme import reco
 
-            >>> from creme import optim
-            >>> from creme import reco
+        >>> X_y = (
+        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+        ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
+        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+        ... )
 
-            >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
-            ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-            ... )
+        >>> model = reco.BiasedMF(
+        ...     n_factors=10,
+        ...     bias_optimizer=optim.SGD(0.025),
+        ...     latent_optimizer=optim.SGD(0.025),
+        ...     latent_initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=71)
+        ... )
 
-            >>> model = reco.BiasedMF(
-            ...     n_factors=10,
-            ...     bias_optimizer=optim.SGD(0.025),
-            ...     latent_optimizer=optim.SGD(0.025),
-            ...     latent_initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=71)
-            ... )
+        >>> for x, y in X_y:
+        ...     _ = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     _ = model.fit_one(x, y)
-
-            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-            6.489025
+        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+        6.489025
 
     Note:
-        `reco.BiasedMF` model expect a dict input with a ``user`` and an ``item`` entries without
-        any type constraint on their values (i.e. can be strings or numbers). Other entries are
-        ignored.
+        This model expects a dict input with a `user` and an `item` entries without any type
+        constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
     References:
-        1. `Paterek, A., 2007, August. Improving regularized singular value decomposition for collaborative filtering. In Proceedings of KDD cup and workshop (Vol. 2007, pp. 5-8). <https://www.cs.uic.edu/~liub/KDD-cup-2007/proceedings/Regular-Paterek.pdf>`_
-        2. `Matrix factorization techniques for recommender systems <https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf>`_
+        1. [Paterek, A., 2007, August. Improving regularized singular value decomposition for collaborative filtering. In Proceedings of KDD cup and workshop (Vol. 2007, pp. 5-8)](https://www.cs.uic.edu/~liub/KDD-cup-2007/proceedings/Regular-Paterek.pdf)
+        2. [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
 
     """
 
-    def __init__(self, n_factors=10, bias_optimizer=None, latent_optimizer=None, loss=None,
-                 l2_bias=0., l2_latent=0., weight_initializer=None, latent_initializer=None,
-                 clip_gradient=1e12, seed=None):
+    def __init__(self, n_factors=10, bias_optimizer: optim.Optimizer = None,
+                 latent_optimizer: optim.Optimizer = None, loss: optim.losses.Loss = None,
+                 l2_bias=0., l2_latent=0.,
+                 weight_initializer: optim.initializers.Initializer = None,
+                 latent_initializer: optim.initializers.Initializer = None,
+                 clip_gradient=1e12, seed: int = None):
+
         self.n_factors = n_factors
         self.u_bias_optimizer = optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
         self.i_bias_optimizer = optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)

@@ -9,6 +9,6 @@ __all__ = ['Baseline', 'BiasedMF', 'FunkMF', 'RandomNormal']
 
 try:
     from .surprise import SurpriseWrapper
-    __all__ += ['sup']
+    __all__ += ['SurpriseWrapper']
 except ImportError:
     pass

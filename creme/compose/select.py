@@ -1,24 +1,22 @@
-from .. import base
+from creme import base
 
 
 __all__ = ['Discard', 'Select']
 
 
 class Discard(base.Transformer):
-    """Subsets a set of features by applying a blacklist.
+    """Removes features according to a blacklist.
 
     Parameters:
-        blacklist (strs): Key(s) to discard.
+        blacklist: Key(s) to discard.
 
     Example:
 
-        ::
+        >>> from creme import compose
 
-            >>> from creme import compose
-
-            >>> x = {'a': 42, 'b': 12, 'c': 13}
-            >>> compose.Discard('a', 'b').transform_one(x)
-            {'c': 13}
+        >>> x = {'a': 42, 'b': 12, 'c': 13}
+        >>> compose.Discard('a', 'b').transform_one(x)
+        {'c': 13}
 
     """
 
@@ -43,20 +41,18 @@ class Discard(base.Transformer):
 
 
 class Select(base.Transformer):
-    """Subsets a set of features by applying a whitelist.
+    """Selects features according to a whitelist.
 
     Parameters:
-        whitelist (strs): Key(s) to keep.
+        whitelist: Key(s) to keep.
 
     Example:
 
-        ::
+        >>> from creme import compose
 
-            >>> from creme import compose
-
-            >>> x = {'a': 42, 'b': 12, 'c': 13}
-            >>> compose.Select('c').transform_one(x)
-            {'c': 13}
+        >>> x = {'a': 42, 'b': 12, 'c': 13}
+        >>> compose.Select('c').transform_one(x)
+        {'c': 13}
 
     """
 

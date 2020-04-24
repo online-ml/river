@@ -2,8 +2,10 @@ import copy
 import functools
 import math
 import operator
+import typing
 
-from .. import base
+from creme import base
+from creme import metrics
 
 
 __all__ = ['SuccessiveHalvingClassifier', 'SuccessiveHalvingRegressor']
@@ -11,7 +13,8 @@ __all__ = ['SuccessiveHalvingClassifier', 'SuccessiveHalvingRegressor']
 
 class SuccessiveHalving:
 
-    def __init__(self, models, metric, budget, eta=2, verbose=False):
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, budget: int,
+                 eta=2, verbose=False):
 
         # Check that the model and the metric are in accordance
         for model in models:
@@ -101,111 +104,137 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     Successive halving is a method for performing model selection without having to train each
     model on all the dataset. At certain points in time (called "rungs"), the worst performing will
     be discarded and the best ones will keep competing between each other. The rung values are
-    designed so that at most ``budget`` model updates will be performed in total.
+    designed so that at most `budget` model updates will be performed in total.
 
-    If you have ``k`` combinations of hyperparameters and that your dataset contains ``n``
+    If you have `k` combinations of hyperparameters and that your dataset contains `n`
     observations, then the maximal budget you can allocate is:
 
-    .. math:: \\frac{2kn}{eta}
+    $$
+    \\frac{2kn}{eta}
+    $$
 
     It is recommended that you check this beforehand. This bound can't be checked by the function
     because the size of the dataset is not known. In fact it is potentially infinite, in which case
     the algorithm will terminate once all the budget has been spent.
 
-    If you have a budget of ``B``, and that your dataset contains ``n`` observations, then the
+    If you have a budget of `B`, and that your dataset contains `n` observations, then the
     number of hyperparameter combinations that will spend all the budget and go through all the
     data is:
 
-    .. math:: \\ceil(\\floor(\\frac{B}{(2n)}) \times eta)
+    $$
+    \\ceil(\\floor(\\frac{B}{2n}) \\times eta)
+    $$
 
     Parameters:
-        model (models.Regressor)
-        param_grid (dict): Parameter grid.
-        X_y (generator): A stream of (features, target) tuples.
-        metric (metrics.RegressionMetric): Metric used for comparing models with.
-        budget (int): Total number of model updates you wish to allocate.
-        eta (int): Rate of elimination. At every rung, ``math.ceil(k / eta)`` models are kept,
-            where ``k`` is the number of models that have reached the rung. A higher ``eta`` value
-            will focus on less models but will allocate more iterations to the best models.
-        verbose (bool): Whether to display progress or not.
+        models: The models to compare.
+        X_y: A stream of (features, target) tuples.
+        metric: Metric used for comparing models with.
+        budget: Total number of model updates you wish to allocate.
+        eta: Rate of elimination. At every rung, `math.ceil(k / eta)` models are kept, where
+            `k` is the number of models that have reached the rung. A higher `eta` value will
+            focus on less models but will allocate more iterations to the best models.
+        verbose: Whether to display progress or not.
 
-    Examples:
+    Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import preprocessing
+        >>> from creme import model_selection
+        >>> from creme import optim
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import preprocessing
-            >>> from creme import model_selection
-            >>> from creme import optim
+        As an example, let's use successive halving to tune the learning rate of a linear
+        regression. We'll first define the model.
 
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LinearRegression(intercept_lr=.1)
-            ... )
+        >>> from creme import linear_model
+        >>> from creme import preprocessing
 
-            >>> param_grid = model_selection.expand_param_grid({
-            ...     'LinearRegression': {
-            ...         'optimizer': [
-            ...             (optim.SGD, {'lr': [0.1, 0.01, 0.005]}),
-            ...             (optim.Adam, {'beta_1': [0.01, 0.001], 'lr': [0.1, 0.01, 0.001]}),
-            ...             (optim.Adam, {'beta_1': [0.1], 'lr': [0.001]}),
-            ...         ]
-            ...     }
-            ... })
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LinearRegression(intercept_lr=.1)
+        ... )
 
-            >>> models = [model._set_params(params) for params in param_grid]
+        Let's now define a grid of parameters which we would like to compare. We'll try
+        different optimizers with various learning rates.
 
-            >>> sh = model_selection.SuccessiveHalvingRegressor(
-            ...     models=models,
-            ...     metric=metrics.MAE(),
-            ...     budget=2000,
-            ...     eta=2,
-            ...     verbose=True
-            ... )
+        >>> param_grid = model_selection.expand_param_grid({
+        ...     'LinearRegression': {
+        ...         'optimizer': [
+        ...             (optim.SGD, {'lr': [0.1, 0.01, 0.005]}),
+        ...             (optim.Adam, {'beta_1': [0.01, 0.001], 'lr': [0.1, 0.01, 0.001]}),
+        ...             (optim.Adam, {'beta_1': [0.1], 'lr': [0.001]}),
+        ...         ]
+        ...     }
+        ... })
 
-            >>> model_selection.progressive_val_score(
-            ...     X_y=datasets.TrumpApproval(),
-            ...     model=sh,
-            ...     metric=metrics.MAE()
-            ... )
-            [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best MAE: 4.541564
-            [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best MAE: 2.453893
-            [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best MAE: 1.579851
-            [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	    best MAE: 1.146581
-            MAE: 0.472907
+        Let's now instantiate multiple copies of the model with each parameter configuration.
 
-            >>> sh.best_model
-            Pipeline (
-              StandardScaler (
-                with_mean=True
-                with_std=True
-              ),
-              LinearRegression (
-                optimizer=Adam (
-                  lr=Constant (
-                    learning_rate=0.1
-                  )
-                  beta_1=0.001
-                  beta_2=0.999
-                  eps=1e-08
-                )
-                loss=Squared ()
-                l2=0.
-                intercept=39.838695
-                intercept_lr=Constant (
-                  learning_rate=0.1
-                )
-                clip_gradient=1e+12
-                initializer=Zeros ()
+        >>> models = [model._set_params(params) for params in param_grid]
+
+        We can check how many models this created.
+
+        >>> len(models)
+        10
+
+        We can now pass these models to a `SuccessiveHalvingRegressor`. We also need to pick a
+        metric to compare the models, and a budget which indicates how many iterations to run
+        before picking the best model and discarding the rest.
+
+        >>> sh = model_selection.SuccessiveHalvingRegressor(
+        ...     models=models,
+        ...     metric=metrics.MAE(),
+        ...     budget=2000,
+        ...     eta=2,
+        ...     verbose=True
+        ... )
+
+        A `SuccessiveHalvingRegressor` is also a regressor with a `fit_one` and a `predict_one`
+        method, therefore we can use `creme.model_selection.progressive_val_score` to evaluate it.
+
+        >>> model_selection.progressive_val_score(
+        ...     X_y=datasets.TrumpApproval(),
+        ...     model=sh,
+        ...     metric=metrics.MAE()
+        ... )
+        [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best MAE: 4.541564
+        [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best MAE: 2.453893
+        [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best MAE: 1.579851
+        [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	    best MAE: 1.146581
+        MAE: 0.472907
+
+        We can now view the best model.
+
+        >>> sh.best_model
+        Pipeline (
+          StandardScaler (
+            with_mean=True
+            with_std=True
+          ),
+          LinearRegression (
+            optimizer=Adam (
+              lr=Constant (
+                learning_rate=0.1
               )
+              beta_1=0.001
+              beta_2=0.999
+              eps=1e-08
             )
+            loss=Squared ()
+            l2=0.
+            intercept=39.838695
+            intercept_lr=Constant (
+              learning_rate=0.1
+            )
+            clip_gradient=1e+12
+            initializer=Zeros ()
+          )
+        )
 
     References:
-        1. `Jamieson, K. and Talwalkar, A., 2016, May. Non-stochastic best arm identification and hyperparameter optimization. In Artificial Intelligence and Statistics (pp. 240-248). <http://proceedings.mlr.press/v51/jamieson16.pdf>`_
-        2. `Li, L., Jamieson, K., Rostamizadeh, A., Gonina, E., Hardt, M., Recht, B. and Talwalkar, A., 2018. Massively parallel hyperparameter tuning. arXiv preprint arXiv:1810.05934. <https://arxiv.org/pdf/1810.05934.pdf>`_
-        3. `Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. Hyperband: A novel bandit-based approach to hyperparameter optimization. The Journal of Machine Learning Research, 18(1), pp.6765-6816. <https://arxiv.org/pdf/1603.06560.pdf>`_
+        1. [Jamieson, K. and Talwalkar, A., 2016, May. Non-stochastic best arm identification and hyperparameter optimization. In Artificial Intelligence and Statistics (pp. 240-248).](http://proceedings.mlr.press/v51/jamieson16.pdf)
+        2. [Li, L., Jamieson, K., Rostamizadeh, A., Gonina, E., Hardt, M., Recht, B. and Talwalkar, A., 2018. Massively parallel hyperparameter tuning. arXiv preprint arXiv:1810.05934.](https://arxiv.org/pdf/1810.05934.pdf)
+        3. [Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. Hyperband: A novel bandit-based approach to hyperparameter optimization. The Journal of Machine Learning Research, 18(1), pp.6765-6816.](https://arxiv.org/pdf/1603.06560.pdf)
 
     """
 
@@ -219,9 +248,9 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     Successive halving is a method for performing model selection without having to train each
     model on all the dataset. At certain points in time (called "rungs"), the worst performing will
     be discarded and the best ones will keep competing between each other. The rung values are
-    designed so that at most ``budget`` model updates will be performed in total.
+    designed so that at most `budget` model updates will be performed in total.
 
-    If you have ``k`` combinations of hyperparameters and that your dataset contains ``n``
+    If you have `k` combinations of hyperparameters and that your dataset contains `n`
     observations, then the maximal budget you can allocate is:
 
     .. math:: \\frac{2kn}{eta}
@@ -230,100 +259,97 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     because the size of the dataset is not known. In fact it is potentially infinite, in which case
     the algorithm will terminate once all the budget has been spent.
 
-    If you have a budget of ``B``, and that your dataset contains ``n`` observations, then the
+    If you have a budget of `B`, and that your dataset contains `n` observations, then the
     number of hyperparameter combinations that will spend all the budget and go through all the
     data is:
 
     .. math:: \\ceil(\\floor(\\frac{B}{(2n)}) \times eta)
 
     Parameters:
-        model (models.Classifier)
-        param_grid (dict): Parameter grid.
-        X_y (generator): A stream of (features, target) tuples.
-        metric (metrics.ClassificationMetric): Metric used for comparing models with.
-        budget (int): Total number of model updates you wish to allocate.
-        eta (int): Rate of elimination. At every rung, ``math.ceil(k / eta)`` models are kept,
-            where ``k`` is the number of models that have reached the rung. A higher ``eta`` value
-            will focus on less models but will allocate more iterations to the best models.
-        verbose (bool): Whether to display progress or not.
+        models: The models to compare.
+        X_y: A stream of (features, target) tuples.
+        metric: Metric used for comparing models with.
+        budget: Total number of model updates you wish to allocate.
+        eta: Rate of elimination. At every rung, `math.ceil(k / eta)` models are kept, where
+            `k` is the number of models that have reached the rung. A higher `eta` value will
+            focus on less models but will allocate more iterations to the best models.
+        verbose: Whether to display progress or not.
 
     Examples:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression()
+        ... )
 
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression()
-            ... )
+        >>> param_grid = model_selection.expand_param_grid({
+        ...     'LogisticRegression': {
+        ...         'optimizer': [
+        ...             (optim.SGD, {'lr': [0.1, 0.01, 0.005]}),
+        ...             (optim.Adam, {'beta_1': [0.01, 0.001], 'lr': [0.1, 0.01, 0.001]}),
+        ...             (optim.Adam, {'beta_1': [0.1], 'lr': [0.001]}),
+        ...         ]
+        ...     }
+        ... })
 
-            >>> param_grid = model_selection.expand_param_grid({
-            ...     'LogisticRegression': {
-            ...         'optimizer': [
-            ...             (optim.SGD, {'lr': [0.1, 0.01, 0.005]}),
-            ...             (optim.Adam, {'beta_1': [0.01, 0.001], 'lr': [0.1, 0.01, 0.001]}),
-            ...             (optim.Adam, {'beta_1': [0.1], 'lr': [0.001]}),
-            ...         ]
-            ...     }
-            ... })
+        >>> models = [model._set_params(params) for params in param_grid]
 
-            >>> models = [model._set_params(params) for params in param_grid]
+        >>> sh = model_selection.SuccessiveHalvingClassifier(
+        ...     models=models,
+        ...     metric=metrics.Accuracy(),
+        ...     budget=2000,
+        ...     eta=2,
+        ...     verbose=True
+        ... )
 
-            >>> sh = model_selection.SuccessiveHalvingClassifier(
-            ...     models=models,
-            ...     metric=metrics.Accuracy(),
-            ...     budget=2000,
-            ...     eta=2,
-            ...     verbose=True
-            ... )
+        >>> model_selection.progressive_val_score(
+        ...     X_y=datasets.Phishing(),
+        ...     model=sh,
+        ...     metric=metrics.ROCAUC()
+        ... )
+        [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best Accuracy: 80.00%
+        [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best Accuracy: 84.00%
+        [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best Accuracy: 86.75%
+        [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	    best Accuracy: 85.20%
+        ROCAUC: 0.949693
 
-            >>> model_selection.progressive_val_score(
-            ...     X_y=datasets.Phishing(),
-            ...     model=sh,
-            ...     metric=metrics.ROCAUC()
-            ... )
-            [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best Accuracy: 80.00%
-            [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best Accuracy: 84.00%
-            [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best Accuracy: 86.75%
-            [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	    best Accuracy: 85.20%
-            ROCAUC: 0.949693
-
-            >>> sh.best_model
-            Pipeline (
-              StandardScaler (
-                with_mean=True
-                with_std=True
-              ),
-              LogisticRegression (
-                optimizer=Adam (
-                  lr=Constant (
-                    learning_rate=0.01
-                  )
-                  beta_1=0.01
-                  beta_2=0.999
-                  eps=1e-08
-                )
-                loss=Log ()
-                l2=0.
-                intercept=-0.394786
-                intercept_lr=Constant (
-                  learning_rate=0.01
-                )
-                clip_gradient=1e+12
-                initializer=Zeros ()
+        >>> sh.best_model
+        Pipeline (
+          StandardScaler (
+            with_mean=True
+            with_std=True
+          ),
+          LogisticRegression (
+            optimizer=Adam (
+              lr=Constant (
+                learning_rate=0.01
               )
+              beta_1=0.01
+              beta_2=0.999
+              eps=1e-08
             )
+            loss=Log ()
+            l2=0.
+            intercept=-0.394786
+            intercept_lr=Constant (
+              learning_rate=0.01
+            )
+            clip_gradient=1e+12
+            initializer=Zeros ()
+          )
+        )
 
     References:
-        1. `Jamieson, K. and Talwalkar, A., 2016, May. Non-stochastic best arm identification and hyperparameter optimization. In Artificial Intelligence and Statistics (pp. 240-248). <http://proceedings.mlr.press/v51/jamieson16.pdf>`_
-        2. `Li, L., Jamieson, K., Rostamizadeh, A., Gonina, E., Hardt, M., Recht, B. and Talwalkar, A., 2018. Massively parallel hyperparameter tuning. arXiv preprint arXiv:1810.05934. <https://arxiv.org/pdf/1810.05934.pdf>`_
-        3. `Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. Hyperband: A novel bandit-based approach to hyperparameter optimization. The Journal of Machine Learning Research, 18(1), pp.6765-6816. <https://arxiv.org/pdf/1603.06560.pdf>`_
+        1. [Jamieson, K. and Talwalkar, A., 2016, May. Non-stochastic best arm identification and hyperparameter optimization. In Artificial Intelligence and Statistics (pp. 240-248).](http://proceedings.mlr.press/v51/jamieson16.pdf)
+        2. [Li, L., Jamieson, K., Rostamizadeh, A., Gonina, E., Hardt, M., Recht, B. and Talwalkar, A., 2018. Massively parallel hyperparameter tuning. arXiv preprint arXiv:1810.05934.](https://arxiv.org/pdf/1810.05934.pdf)
+        3. [Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. Hyperband: A novel bandit-based approach to hyperparameter optimization. The Journal of Machine Learning Research, 18(1), pp.6765-6816.](https://arxiv.org/pdf/1603.06560.pdf)
 
     """
 

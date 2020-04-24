@@ -1,6 +1,6 @@
 import random
 
-from .. import stats
+from creme import stats
 
 from . import base
 
@@ -13,13 +13,10 @@ class RandomNormal(base.Recommender):
 
     The parameters of the normal distribution are fitted with running statistics. This is
     equivalent to using `surprise.prediction_algorithms.random_pred.NormalPredictor`. The model
-    expect dict inputs containing both a ``user`` and an ``item`` entries.
+    expect dict inputs containing both a `user` and an `item` entries.
 
     Parameters:
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        seed: Randomization seed used for reproducibility.
 
     Attributes:
         mean (stats.Mean)
@@ -27,34 +24,31 @@ class RandomNormal(base.Recommender):
 
     Example:
 
-        ::
+        >>> from creme import reco
 
-            >>> from creme import reco
+        >>> X_y = (
+        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+        ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
+        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+        ... )
 
-            >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
-            ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-            ... )
+        >>> model = reco.RandomNormal(seed=42)
 
-            >>> model = reco.RandomNormal(seed=42)
+        >>> for x, y in X_y:
+        ...     _ = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     _ = model.fit_one(x, y)
-
-            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-            6.883895
+        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+        6.883895
 
     Note:
-        `reco.RandomNormal` model expect a dict input with a ``user`` and an ``item`` entries
-        without any type constraint on their values (i.e. can be strings or numbers). Other entries
-        are ignored.
+        This model expects a dict input with a `user` and an `item` entries without any type
+        constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
     """
 

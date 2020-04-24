@@ -12,35 +12,37 @@ class ALMAClassifier(base.BinaryClassifier):
     """Approximate Large Margin Algorithm (ALMA).
 
     Parameters:
-        p (float)
-        alpha (float)
-        B (float)
-        C (float)
+        p
+        alpha
+        B
+        C
+
+    Attributes:
+        w (collections.defaultdict): The current weights.
+        k (int): The number of instances seen during training.
 
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
 
-            >>> X_y = datasets.Phishing()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.ALMAClassifier()
+        ... )
 
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.ALMAClassifier()
-            ... )
+        >>> metric = metrics.Accuracy()
 
-            >>> metric = metrics.Accuracy()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            Accuracy: 82.56%
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        Accuracy: 82.56%
 
     References:
-        1. `Gentile, Claudio. "A new approximate maximal margin classification algorithm." Journal of Machine Learning Research 2.Dec (2001): 213-242. <http://www.jmlr.org/papers/volume2/gentile01a/gentile01a.pdf>`_
+        1. [Gentile, Claudio. "A new approximate maximal margin classification algorithm." Journal of Machine Learning Research 2.Dec (2001): 213-242](http://www.jmlr.org/papers/volume2/gentile01a/gentile01a.pdf)
 
     """
 

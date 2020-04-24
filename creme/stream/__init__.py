@@ -1,30 +1,34 @@
-"""Utilities for handling streaming datasets."""
+"""Streaming utilities."""
 from .cache import Cache
-from .array import iter_array
-from .array import iter_pandas
-from .array import iter_sklearn_dataset
-from .csv import iter_csv
-from .libsvm import iter_libsvm
+from .iter_array import iter_array
+from .iter_csv import iter_csv
+from .iter_libsvm import iter_libsvm
 from .qa import simulate_qa
-from .shuffle import shuffle
-from .vaex import iter_vaex
+from .shuffling import shuffle
 
 __all__ = [
     'Cache',
     'iter_array',
     'iter_csv',
     'iter_libsvm',
-    'iter_pandas',
-    'iter_sklearn_dataset',
-    'iter_sql',
-    'iter_vaex',
     'simulate_qa',
     'shuffle'
 ]
 
 try:
-    from .sql import iter_sql
+    from .iter_pandas import iter_pandas
+    __all__ += ['iter_pandas']
+except ImportError:
+    pass
 
-    __all__ += ['iter_sql']
+try:
+    from .iter_sklearn import iter_sklearn_dataset
+    __all__ += ['iter_sklearn_dataset']
+except ImportError:
+    pass
+
+try:
+    from .iter_vaex import iter_vaex
+    __all__ += ['iter_vaex']
 except ImportError:
     pass

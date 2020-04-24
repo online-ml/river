@@ -10,34 +10,38 @@ __all__ = ['Nadam']
 class Nadam(base.Optimizer):
     """Nadam optimizer.
 
+    Parameters:
+        lr
+        beta_1
+        beta_2
+        eps
+
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
+        >>> optimizer = optim.Nadam()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer)
+        ... )
+        >>> metric = metrics.F1()
 
-            >>> X_y = datasets.Phishing()
-            >>> optimizer = optim.Nadam()
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer)
-            ... )
-            >>> metric = metrics.F1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.865961
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.865961
 
     References:
-        1. `Nadam: A combination of adam and nesterov <https://ruder.io/optimizing-gradient-descent/index.html#nadam>`_
+        1. [Nadam: A combination of adam and nesterov](https://ruder.io/optimizing-gradient-descent/index.html#nadam)
 
     """
 
-    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8):
+    def __init__(self, lr=.1, beta_1=.9, beta_2=.999, eps=1e-8):
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2

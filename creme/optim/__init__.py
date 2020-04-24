@@ -1,4 +1,4 @@
-"""Online optimization."""
+"""Stochastic optimization."""
 from . import initializers
 from . import losses  # type: ignore
 from . import schedulers
