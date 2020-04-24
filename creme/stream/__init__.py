@@ -6,7 +6,6 @@ from .iter_libsvm import iter_libsvm
 from .qa import simulate_qa
 from .shuffling import shuffle
 
-
 __all__ = [
     'Cache',
     'iter_array',
@@ -25,6 +24,12 @@ except ImportError:
 try:
     from .iter_sklearn import iter_sklearn_dataset
     __all__ += ['iter_sklearn_dataset']
+except ImportError:
+    pass
+
+try:
+    from .iter_sql import iter_sql
+    __all__ += ['iter_sql']
 except ImportError:
     pass
 
