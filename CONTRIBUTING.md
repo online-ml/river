@@ -92,4 +92,4 @@ Once you're happy with your changes, you can push them to your remote fork. By t
 ## Adding contributors
 
 - Install the [allcontributors CLI](https://allcontributors.org/docs/en/cli/installation)
-- Run `yarn all-contributors add <GitHub username> code`
+- Run `yarn all-contributors add <GitHub username$ code`
