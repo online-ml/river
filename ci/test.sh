@@ -28,10 +28,12 @@ conda create --yes --name testenv python=$PYTHON_VERSION
 source activate testenv
 
 # Install the development dependencies
-if [ $TRAVIS_TAG == "" ]
+if [ $TRAVIS_TAG = "" ]
 then
+  echo "Installing dev dependencies"
   pip install -e ".[dev]" codecov
 else
+  echo "Installing dev and compat dependencies"
   pip install -e ".[compat,dev]" codecov
 fi
 
