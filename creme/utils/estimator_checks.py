@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-def guess_model(model: 'base.Estimator'):
+def guess_model(model):
     """Extracts the relevant part model.
 
     Sometimes we need to check if a model can perform regression, classification, etc. When the

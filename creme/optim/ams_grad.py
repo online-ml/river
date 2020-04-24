@@ -2,7 +2,7 @@ import collections
 import typing
 
 from . import base
-from . import initializers
+from . import schedulers
 
 
 __all__ = ['AMSGrad']
@@ -48,7 +48,7 @@ class AMSGrad(base.Optimizer):
 
     """
 
-    def __init__(self, lr: typing.Union[float, initializers.Initializer] = .1,
+    def __init__(self, lr: typing.Union[float, schedulers.Scheduler] = .1,
                  beta_1=.9, beta_2=.999, eps=1e-8, correct_bias=True):
         super().__init__(lr)
         self.beta_1 = beta_1
