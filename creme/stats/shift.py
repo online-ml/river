@@ -84,6 +84,7 @@ class Shift(base.Univariate):
             {'target_shift_1_mean_by_place': 33.5}
 
     """
+
     def __init__(self, period: int, missing: float=0., fit_before_transform: bool=True):
         self.period = period
         self.missing = missing
