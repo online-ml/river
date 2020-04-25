@@ -41,8 +41,8 @@ class StatChain:
         >>> statistics = creme.stats.Shift(2) | creme.stats.RollingMean(2)
 
         >>> statistics
-        Shift: 0.
-        RollingMean: 0.
+        Shift: 0.,
+            RollingMean: 0.
 
         >>> for x in X:
         ...     pprint(statistics.update(x).get())
@@ -79,8 +79,8 @@ class StatChain:
         return '_'.join(self.statistics.keys())
 
     def __repr__(self):
-        return (''.join('\n'.join(map(repr, self.statistics.values())).splitlines(True))
-            ).expandtabs(2)
+        return ('\t'.join(',\n'.join(map(repr, self.statistics.values())).splitlines(True))
+        ).expandtabs(2)
 
     def _get_params(self):
         return dict(self.items())

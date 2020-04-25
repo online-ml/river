@@ -9,8 +9,9 @@ __all__ = ['Shift']
 class Shift(base.Univariate):
     """Shift the observations with the selected period.
 
-    Shift class allows to store and recall at regular intervals values observed in a stream.
-    The method `get()` returns the n-th - period observed entry.
+    Create a lag of `period` observations in the data stream. The `update` method allows
+    to get the input of the shift statistic observed `period` ago. The Shift class
+    can be combined with other statistics to create features with lag.
 
     Parameters:
         period: Number of periods to shift. Must be positive.
@@ -24,7 +25,7 @@ class Shift(base.Univariate):
 
             >>> import creme
 
-            >>> shift = creme.stats.Shift(period=2, missing=-1)
+            >>> shift = creme.stats.Shift(period=2)
 
             >>> X = [
             ...    1,
@@ -34,49 +35,53 @@ class Shift(base.Univariate):
             ...    5,
             ... ]
 
+            Shift a serie of values:
             >>> for x in X:
             ...    print(shift.update(x).get())
-            -1
-            -1
+            0.
+            0.
             1
             2
             3
 
-            It is possible to compute shifted statistics with operator |.
-
+            Compute shifted statistics:
             >>> statistics = creme.stats.Shift(2) | creme.stats.RollingMean(1)
+
             >>> for x in X:
             ...    print(statistics.update(x).get())
-            0.0
-            0.0
-            1.0
-            2.0
-            3.0
+            0.
+            0.
+            1.
+            2.
+            3.
 
             You can include Shift into a pipeline such as:
+            >>> import creme
 
-            >>> X_y = [
-            ...    ({'store_id': 'darty', 'open': 1}, 1.),
-            ...    ({'store_id': 'fnac', 'open': 0}, 2.),
-            ...    ({'store_id': 'darty', 'open': 3}, 3.),
-            ...    ({'store_id': 'darty', 'open': 1}, 4.),
-            ...    ({'store_id': 'ikea', 'open': 1}, 5.),
-            ...    ({'store_id': 'ikea', 'open': 1}, 10.),
+            >>> X = [
+            ...     {'place': 'Taco Bell', 'revenue': 42},
+            ...     {'place': 'Burger King', 'revenue': 16},
+            ...     {'place': 'Burger King', 'revenue': 24},
+            ...     {'place': 'Taco Bell', 'revenue': 58},
+            ...     {'place': 'Burger King', 'revenue': 20},
+            ...     {'place': 'Taco Bell', 'revenue': 50}
             ... ]
 
-            >>> pipeline = creme.feature_extraction.Agg(by=['store_id'], on='open',
-            ...     how=creme.stats.Shift(1) | creme.stats.Sum()
-            ... ) + creme.feature_extraction.TargetAgg(by=['store_id'],
-            ...     how=creme.stats.Shift(1) | creme.stats.RollingMean(1))
+            >>> agg = creme.feature_extraction.TargetAgg(
+            ...     by='place',
+            ...     how=creme.stats.Shift(1, missing=25) | creme.stats.Mean()
+            ... )
 
-            >>> for x, y in X_y:
-            ...  print(pipeline.fit_one(x, y).transform_one(x))
-            {'target_shift_1_rolling_rollingmean_1_by_store_id': 0.0, 'open_shift_1_sum_by_store_id': 0.0}
-            {'target_shift_1_rolling_rollingmean_1_by_store_id': 0.0, 'open_shift_1_sum_by_store_id': 0.0}
-            {'target_shift_1_rolling_rollingmean_1_by_store_id': 1.0, 'open_shift_1_sum_by_store_id': 1.0}
-            {'target_shift_1_rolling_rollingmean_1_by_store_id': 3.0, 'open_shift_1_sum_by_store_id': 4.0}
-            {'target_shift_1_rolling_rollingmean_1_by_store_id': 0.0, 'open_shift_1_sum_by_store_id': 0.0}
-            {'target_shift_1_rolling_rollingmean_1_by_store_id': 5.0, 'open_shift_1_sum_by_store_id': 1.0}
+            >>> for x in X:
+            ...     print(agg.transform_one(x))
+            ...     y = x.pop('revenue')
+            ...     agg = agg.fit_one(x, y)
+            {'target_shift_1_mean_by_place': 0.0}
+            {'target_shift_1_mean_by_place': 0.0}
+            {'target_shift_1_mean_by_place': 25.0}
+            {'target_shift_1_mean_by_place': 25.0}
+            {'target_shift_1_mean_by_place': 20.5}
+            {'target_shift_1_mean_by_place': 33.5}
 
     """
     def __init__(self, period: int, missing: float=0., fit_before_transform: bool=True):
