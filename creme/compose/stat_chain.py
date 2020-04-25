@@ -18,15 +18,13 @@ class StatChain:
     Sequentially apply a list of statistics.
 
     Parameters:
-        statistics: Ideally a list of (name, statistic) tuples. If a statistic is given without a name,
-            then a name is automatically inferred from the statistics.
+        statistics: Ideally a list of (name, statistic) tuples. If a statistic is given without a
+            name, then a name is automatically inferred from the statistics.
 
     Attributes:
         statistics (collections.OrderedDict)
 
         >>> from pprint import pprint
-        >>> import creme.compose
-        >>> import creme.feature_extraction
         >>> import creme.stats
 
         >>> X = [
