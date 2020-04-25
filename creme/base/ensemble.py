@@ -3,8 +3,10 @@ import typing
 
 from creme import base
 
+from .predictor import Predictor
 
-class Ensemble(base.Predictor):
+
+class Ensemble(Predictor):
     """An ensemble model.
 
     Parameters:
@@ -12,7 +14,7 @@ class Ensemble(base.Predictor):
 
     """
 
-    def __init__(self, models: typing.List[base.Predictor]):
+    def __init__(self, models: typing.List[Predictor]):
         self.models = list(models)
 
     def __len__(self):

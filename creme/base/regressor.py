@@ -4,8 +4,10 @@ import typing
 
 from creme import base
 
+from .predictor import Predictor
 
-class Regressor(base.Predictor):
+
+class Regressor(Predictor):
     """A regressor."""
 
     @abc.abstractmethod

@@ -30,6 +30,10 @@ cdef class Univariate(Statistic):
     def name(self):
         return self.__class__.__name__.lower()
 
+    def __or__(self, other):
+        from .link import Link
+        return Link(left=self, right=other)
+
 
 class RollingUnivariate(Univariate):
     """A rolling univariate statistic measures a property of a variable over a window."""
@@ -40,7 +44,7 @@ class RollingUnivariate(Univariate):
 
     @property
     def name(self):
-        return f'rolling_{super().name}_{self.window_size}'
+        return f'{super().name}_{self.window_size}'
 
 
 cdef class Bivariate(Statistic):

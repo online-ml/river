@@ -151,7 +151,7 @@ class Pipeline(base.Estimator):
         ).expandtabs(2)
 
     def _get_params(self):
-        return dict(self.items())
+        return dict(self.steps.items())
 
     def _set_params(self, new_params=None):
         if new_params is None:
@@ -235,7 +235,7 @@ class Pipeline(base.Estimator):
             if t.is_supervised:
 
                 if isinstance(t, union.TransformerUnion):
-                    for sub_t in t.values():
+                    for sub_t in t.transformers.values():
                         if sub_t.is_supervised:
                             sub_t.fit_one(x=x_pre, y=y)
 
@@ -251,9 +251,9 @@ class Pipeline(base.Estimator):
             if isinstance(t, union.TransformerUnion):
 
                 # Fit the unsupervised part of the union
-                for sub_transformer in t.transformers.values():
-                    if not sub_transformer.is_supervised:
-                        sub_transformer.fit_one(x=x)
+                for sub_t in t.transformers.values():
+                    if not sub_t.is_supervised:
+                        sub_t.fit_one(x=x)
 
             elif not t.is_supervised:
                 t.fit_one(x=x)

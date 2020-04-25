@@ -3,8 +3,10 @@ import typing
 
 from creme import base
 
+from .predictor import Predictor
 
-class Classifier(base.Predictor):
+
+class Classifier(Predictor):
     """A classifier."""
 
 

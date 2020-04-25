@@ -64,8 +64,6 @@ class RollingMean(summing.RollingSum):
 
     Example:
 
-        ::
-
         >>> import creme
 
         >>> X = [1, 2, 3, 4, 5, 6]

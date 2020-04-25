@@ -12,6 +12,11 @@
 
 - Fixed a bug where `multioutput.ClassifierChain` and `multioutput.RegressorChain` could not be pickled.
 
+## stats
+
+- Added `stats.Shift`, which can be used to compute statistics over a shifted version of a variable.
+- Added `stats.Link`, which can be used to compose univariate statistics. Univariate statistics can now be composed via the `|` operator.
+
 ## stream
 
 - Added a `stream.iter_sql` utility method to work with SQLAlchemy.
