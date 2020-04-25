@@ -9,6 +9,7 @@ from .ewmean import EWMean
 from .ewvar import EWVar
 from .iqr import IQR
 from .iqr import RollingIQR
+from .link import Link
 from .kurtosis import Kurtosis
 from .maximum import Max
 from .maximum import RollingMax
@@ -27,6 +28,7 @@ from .ptp import PeakToPeak
 from .ptp import RollingPeakToPeak
 from .quantile import Quantile
 from .quantile import RollingQuantile
+from .shift import Shift
 from .sem import SEM
 from .sem import RollingSEM
 from .skew import Skew
@@ -48,6 +50,7 @@ __all__ = [
     'EWVar',
     'IQR',
     'Kurtosis',
+    'Link',
     'Max',
     'Mean',
     'Min',
@@ -68,6 +71,7 @@ __all__ = [
     'RollingSum',
     'RollingVar',
     'SEM',
+    'Shift',
     'Skew',
     'Sum',
     'Univariate',

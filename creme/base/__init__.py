@@ -37,7 +37,3 @@ __all__ = [
     'typing',
     'Wrapper'
 ]
-
-__pdoc__ = {
-    'typing': False
-}

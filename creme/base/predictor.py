@@ -1,9 +1,9 @@
 import abc
 
-from creme import base
+from .estimator import Estimator
 
 
-class Predictor(base.Estimator):
+class Predictor(Estimator):
 
     @abc.abstractmethod
     def predict_one(self, x):
