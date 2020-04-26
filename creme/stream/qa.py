@@ -87,8 +87,10 @@ def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callab
         2020-01-01 21:02:30 - trip #5 arrives after 450 seconds
 
         This function is extremely practical because it provides a reliable way to evaluate the
-        performance of a model in a real scenario. For instance, it is used in
-        `model_selection.progressive_val_score`.
+        performance of a model in a real scenario. Indeed, it allows to make predictions and
+        perform model updates in exactly the same manner that would happen live. For instance, it
+        is used in `model_selection.progressive_val_score`, which is a higher level function for
+        evaluating models in an online manner.
 
     """
 

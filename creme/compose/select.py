@@ -9,6 +9,10 @@ __all__ = ['Discard', 'Select', 'SelectType']
 class Discard(base.Transformer):
     """Removes features according to a blacklist.
 
+    This can be used in a pipeline when you want to remove certain features. The `transform_one`
+    method is pure, and therefore returns a fresh new dictionary instead of removing the specified
+    keys from the input.
+
     Parameters:
         blacklist: Key(s) to discard.
 
@@ -20,9 +24,23 @@ class Discard(base.Transformer):
         >>> compose.Discard('a', 'b').transform_one(x)
         {'c': 13}
 
+        You can chain a discarder with any estimator in order to apply said estimator to the
+        desired features.
+
+        >>> from creme import preprocessing
+
+        >>> x = {'sales': 10, 'shop': 'Ikea', 'country': 'Sweden'}
+
+        >>> pipeline = (
+        ...     compose.Discard('shop', 'country') |
+        ...     preprocessing.PolynomialExtender()
+        ... )
+        >>> pipeline.transform_one(x)
+        {'sales': 10, 'sales*sales': 100}
+
     """
 
-    def __init__(self, *blacklist):
+    def __init__(self, *blacklist: typing.Tuple[base.typing.FeatureName]):
         self.blacklist = set(blacklist)
 
     def transform_one(self, x):
@@ -45,6 +63,10 @@ class Discard(base.Transformer):
 class Select(base.Transformer):
     """Selects features according to a whitelist.
 
+    This can be used in a pipeline when you want to remove certain features. The `transform_one`
+    method is pure, and therefore returns a fresh new dictionary instead of removing the specified
+    keys from the input.
+
     Parameters:
         whitelist: Key(s) to keep.
 
@@ -53,12 +75,26 @@ class Select(base.Transformer):
         >>> from creme import compose
 
         >>> x = {'a': 42, 'b': 12, 'c': 13}
-        >>> compose.Select('c').transform_one(x)
-        {'c': 13}
+        >>> compose.Select('c', 'b').transform_one(x)
+        {'c': 13, 'b': 12}
+
+        You can chain a selector with any estimator in order to apply said estimator to the
+        desired features.
+
+        >>> from creme import preprocessing
+
+        >>> x = {'sales': 10, 'shop': 'Ikea', 'country': 'Sweden'}
+
+        >>> pipeline = (
+        ...     compose.Select('sales') |
+        ...     preprocessing.PolynomialExtender()
+        ... )
+        >>> pipeline.transform_one(x)
+        {'sales': 10, 'sales*sales': 100}
 
     """
 
-    def __init__(self, *whitelist):
+    def __init__(self, *whitelist: typing.Tuple[base.typing.FeatureName]):
         self.whitelist = set(whitelist)
 
     def transform_one(self, x):
@@ -106,6 +142,14 @@ class SelectType(base.Transformer):
 
     def transform_one(self, x):
         return {i: xi for i, xi in x.items() if isinstance(xi, self.types)}
+
+    def __str__(self):
+        return str(sorted(self.types))
+
+    def __repr__(self):
+        if self.types:
+            return 'Select (\n  ' + '\n  '.join(map(str, sorted(self.types))) + '\n)'
+        return 'Select ()'
 
     def _get_params(self):
         return self.types

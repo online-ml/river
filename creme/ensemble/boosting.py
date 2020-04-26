@@ -32,9 +32,9 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
     updated when the weaks learners fit successively the same observation.
 
     Parameters:
-        model (BinaryClassifier or MultiClassifier): The classifier to boost.
-        n_models (int): The number of models in the ensemble.
-        seed (int): Random number generator seed for reproducibility.
+        model: The classifier to boost.
+        n_models: The number of models in the ensemble.
+        seed: Random number generator seed for reproducibility.
 
     Attributes:
         wrong_weight (collections.defaultdict): Number of times a model has made a mistake
