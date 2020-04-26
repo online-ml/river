@@ -17,6 +17,11 @@ from scipy import stats as sp_stats
 def load_stats():
     for _, obj in inspect.getmembers(importlib.import_module('creme.stats'), inspect.isclass):
         try:
+
+            if issubclass(obj, stats.Link):
+                yield obj(stats.Shift(1), stats.Mean())
+                continue
+
             sig = inspect.signature(obj)
             yield obj(**{
                 param.name: param.default if param.default != param.empty else 1
