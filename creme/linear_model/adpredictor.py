@@ -19,7 +19,7 @@ __all__ = [
 class NormalPrior(optim.initializers.Initializer):
     """Initializer which simulate a normal prior distribution on weight.
     The mean of the normal distribution (mean) is calculated through the predictive posterior closed form.
-    
+
     Parameters:
         prior_probability (float): prior probability on the feature weights prior_probability = P(y=1 | x, weights)
         beta (float): scale of the inverse link function (cumulative distribution function of standard normal distribution)
@@ -30,7 +30,7 @@ class NormalPrior(optim.initializers.Initializer):
         self.beta = beta
         self.n_features = n_features
         self.mean = 0 if prior_probability is None else sp.stats.norm.ppf(prior_probability) * (beta ** 2 + n_features)
-        self.variance = 1.
+        self.variance = 1.0
 
     def __str__(self):
         return f'Unbiased normal prior on weights 𝒩(μ={self.mean:.3f}, σ2={self.variance:.3f})' if prior_probability is None else f'Biased normal prior on weights 𝒩(μ={self.mean:.3f}, σ2={self.variance:.3f})'
@@ -46,7 +46,7 @@ class BOPR:
         self.prior_probability = initializer.prior_probability
         self.initializer = initializer
         self.weights = collections.defaultdict(initializer)
-       
+
     def _active_mean_variance(self, x):
 
         means = [self.weights[i].mean for i, xi in x.items()]
@@ -60,7 +60,7 @@ class BOPR:
         v = sp.stats.norm.pdf(t)/sp.stats.norm.cdf(t)
         w = v * (v + t)
         return (v, w)
-    
+
     def _apply_dynamics(self, weight):
         prior = self.initializer
         adjusted_variance = weight.variance * prior.variance / ((1.0 - self.epsilon) * prior.variance + self.epsilon * weight.variance)
@@ -68,16 +68,32 @@ class BOPR:
         prior.variance = adjusted_variance
         prior.mean = adjusted_mean
         return prior
-     
+
+
 class AdPredictor(BOPR, base.Regressor):
     """AdPredictor.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, initializer, surprise, epsilon):
+        super().__init__(
+            initializer=initializer,
+            surprise=surprise,
+            epsilon=epsilon
+        )
 
     def fit_one(self, x, y):
-        pass
+        total_mean, total_variance = self._active_mean_variance(x)
+        v, w = self._gaussian_correction(y*total_mean/total_variance)
+
+        for i, xi in x.items():
+            weight = self.weights[i]
+            mean_delta = y * weight.variance / np.sqrt(total_variance) * v
+            variance_multiplier = 1.0 - weight.variance / total_variance * w
+            weight.mean += mean_delta
+            weight.variance *= variance_multiplier
+            self.weights[i] = weight
 
     def predict_one(self, x):
-        pass
+        total_mean, total_variance = self._active_mean_variance(x)
+        return sp.stats.norm.cdf(total_mean / total_variance)
+        
