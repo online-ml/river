@@ -75,8 +75,8 @@ class Select(base.Transformer):
         >>> from creme import compose
 
         >>> x = {'a': 42, 'b': 12, 'c': 13}
-        >>> compose.Select('c', 'b').transform_one(x)
-        {'c': 13, 'b': 12}
+        >>> compose.Select('c').transform_one(x)
+        {'c': 13}
 
         You can chain a selector with any estimator in order to apply said estimator to the
         desired features.
