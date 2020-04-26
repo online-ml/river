@@ -9,6 +9,21 @@ from .predictor import Predictor
 class Classifier(Predictor):
     """A classifier."""
 
+    def predict_one(self, x: dict) -> typing.Optional[base.typing.ClfTarget]:
+        """Predict the label of a set of features `x`.
+
+        Parameters:
+            x: A dictionary of features.
+
+        Returns:
+            The predicted label.
+
+        """
+        y_pred = self.predict_proba_one(x)
+        if y_pred:
+            return max(y_pred, key=y_pred.get)
+        return None
+
 
 class MultiClassifier(Classifier):
     """A multi-class classifier."""
@@ -37,21 +52,6 @@ class MultiClassifier(Classifier):
             A dictionary which associates a probability which each label.
 
         """
-
-    def predict_one(self, x: dict) -> typing.Optional[base.typing.ClfTarget]:
-        """Predict the label of a set of features `x`.
-
-        Parameters:
-            x: A dictionary of features.
-
-        Returns:
-            The predicted label.
-
-        """
-        y_pred = self.predict_proba_one(x)
-        if y_pred:
-            return max(y_pred, key=y_pred.get)
-        return None
 
 
 
@@ -82,16 +82,3 @@ class BinaryClassifier(Classifier):
             A dictionary with the probabilities of `True` and `False`.
 
         """
-
-    def predict_one(self, x: dict) -> bool:
-        """Predict the outcome of a set of features `x`.
-
-        Parameters:
-            x: A dictionary of features.
-
-        Returns:
-            The predicted outcome.
-
-        """
-        y_pred = self.predict_proba_one(x)
-        return y_pred[True] > y_pred[False]

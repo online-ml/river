@@ -13,8 +13,8 @@ class RBFSampler(base.Transformer):
 
     Parameters:
         gamma: RBF kernel parameter in `(-gamma * x^2)`.
-        n_components Number of Monte Carlo samples per original feature. Equals the
-            dimensionality of the computed feature space.
+        n_components: Number of samples per original feature. Equals the dimensionality of the
+            computed feature space.
         seed: Random number seed.
 
     Example:
