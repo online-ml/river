@@ -469,22 +469,38 @@ class ARFRegBaseLearner(BaseSKMObject):
             self._use_background_learner = True
             self.warning_detection = deepcopy(warning_detection_method)
 
-        # Normalization of info monitored by drift detectors
-        self._min_drift_data = float('Inf')
-        self._max_drift_data = float('-Inf')
+        # Normalization of info monitored by drift detectors (using Welford's algorithm)
+        self._k = 0
 
     def _normalize_drift_input(self, drift_input):
         drift_input = drift_input[0]
-        if drift_input < self._min_drift_data:
-            self._min_drift_data = drift_input
-        if drift_input > self._max_drift_data:
-            self._max_drift_data = drift_input
 
-        if self._min_drift_data != self._max_drift_data:
-            return (drift_input - self._min_drift_data) / \
-                (self._max_drift_data - self._min_drift_data)
-        else:
+        self._k += 1
+        # Welford's algorithm update step
+        if self._k == 1:
+            self._pM = self._M = drift_input
+            self._pS = 0
+
             return 0.0
+        else:
+            self._M = self._pM + (drift_input - self._pM) / self._k
+            self._S = self._pS + (drift_input - self._pM) * (drift_input - self._M)
+
+            # Save previously calculated values for the next iteration
+            self._pM = self._M
+            self._pS = self._S
+
+            sd = np.sqrt(self._S / (self._k - 1))
+
+            # Apply z-score normalization to drift input
+            norm_input = (drift_input - self._M) / sd
+
+            # Data with zero mean and unit variance -> (empirical rule) 99.73% of the values lie
+            # between [mean - 3*sd, mean + 3*sd] (in a normal distribution): we assume this range
+            # for the norm variable.
+            # Hence, the values are assumed to be between [-3, 3] and we can apply the min-max norm
+            # to cope with ADWIN's requeriments
+            return (norm_input + 3) / 6
 
     def reset(self, instances_seen):
         if self._use_background_learner and self.background_learner is not None:
@@ -502,13 +518,10 @@ class ARFRegBaseLearner(BaseSKMObject):
             self.evaluator = self.evaluator_method()
 
         # Reset normalization auxiliary variables
-        self._min_drift_data = float('Inf')
-        self._max_drift_data = float('-Inf')
+        self._k = 0
 
     def partial_fit(self, X, y, sample_weight, instances_seen):
         predicted_value = self.estimator.predict(X)
-        # To check for performance drops before switching learners in case of a drift
-        old_error = self.get_error()
         # Monitor base learner performance
         self.evaluator.add_result(y[0], predicted_value[0])
         # Update learning model
@@ -567,10 +580,7 @@ class ARFRegBaseLearner(BaseSKMObject):
                 self.last_drift_on = instances_seen
                 self.n_drifts_detected += 1
 
-                # Only swap/reset the learner(s) if the error is increasing
-                if self.get_error() > old_error:
-                    # Reset tree or swap it by its background leaner when applicable
-                    self.reset(instances_seen)
+                self.reset(instances_seen)
 
     def get_error(self):
         if self.performance_metric == self._MSE:
