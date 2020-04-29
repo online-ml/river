@@ -249,7 +249,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                 k = self._random_state.poisson(self.lambda_value)
                 if k > 0:
                     learner.partial_fit(
-                        np.asarray([X[i]]), np.asarray([y[i]]), sample_weight=np.asarray([k]),
+                        X[i].reshape(1, -1), [y[i]], sample_weight=[k],
                         instances_seen=self.instances_seen
                     )
 
@@ -278,17 +278,17 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
 
         if self.aggregation_method == self._MEAN:
             if self.weighted_vote_strategy is not None:
-                weights = np.array([learner.get_error() for learner in self.ensemble])
-                sum_weights = np.sum(weights)
+                weights = np.asarray([learner.get_error() for learner in self.ensemble])
+                sum_weights = weights.sum()
 
                 if sum_weights != 0:
                     # The higher the error, the worse is the tree
                     weights = sum_weights - weights
                     # Normalize weights to sum up to 1
-                    weights = weights / np.sum(weights)
+                    weights = weights / weights.sum()
                     return np.average(predictions, weights=weights, axis=0)
 
-            return np.mean(predictions, axis=0)
+            return predictions.mean(axis=0)
         elif self.aggregation_method == self._MEDIAN:
             return np.median(predictions, axis=0)
         else:
@@ -490,10 +490,10 @@ class ARFRegBaseLearner(BaseSKMObject):
             self._pM = self._M
             self._pS = self._S
 
-            sd = np.sqrt(self._S / (self._k - 1))
+            sd = math.sqrt(self._S / (self._k - 1))
 
             # Apply z-score normalization to drift input
-            norm_input = (drift_input - self._M) / sd
+            norm_input = (drift_input - self._M) / sd if sd > 0 else 0.0
 
             # Data with zero mean and unit variance -> (empirical rule) 99.73% of the values lie
             # between [mean - 3*sd, mean + 3*sd] (in a normal distribution): we assume this range
@@ -540,7 +540,7 @@ class ARFRegBaseLearner(BaseSKMObject):
             if self.drift_detection_criteria == self._MSE:
                 drift_input = (y - predicted_value) * (y - predicted_value)
             elif self.drift_detection_criteria == self._MAE:
-                drift_input = np.abs(y - predicted_value)
+                drift_input = abs(y[0] - predicted_value)
             else:  # predictions
                 drift_input = predicted_value
 
