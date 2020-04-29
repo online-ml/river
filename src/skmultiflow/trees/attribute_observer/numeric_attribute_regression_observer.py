@@ -1,4 +1,3 @@
-import math
 import numpy as np
 from skmultiflow.trees.attribute_observer import AttributeClassObserver
 from skmultiflow.trees.attribute_test import NumericAttributeBinaryTest
@@ -41,7 +40,7 @@ class NumericAttributeRegressionObserver(AttributeClassObserver):
 
             while current is not None:
                 antecedent = current
-                if math.isclose(att_val, current.att_val):
+                if att_val == current.att_val:
                     current.sum_weight += weight
                     current.sum_target += weight * target
                     current.sum_sq_target += weight * target * target

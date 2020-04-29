@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+import math
 import numpy as np
 
 from skmultiflow.trees.nodes import ActiveLearningNodeForRegression
@@ -124,5 +125,5 @@ def compute_sd(square_val: float, val: float, size: float):
     if size > 1:
         a = square_val - ((val * val) / size)
         if a > 0:
-            return np.sqrt(a / size)
+            return math.sqrt(a / size)
     return 0.0

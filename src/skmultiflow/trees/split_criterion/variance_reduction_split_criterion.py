@@ -1,5 +1,5 @@
+import math
 from skmultiflow.trees.split_criterion import SplitCriterion
-import numpy as np
 
 
 class VarianceReductionSplitCriterion(SplitCriterion):
@@ -40,7 +40,7 @@ class VarianceReductionSplitCriterion(SplitCriterion):
         sum_sq = dist[2]
 
         var = (sum_sq - (sum_ * sum_)/N)/N
-        return np.sqrt(var) if var > 0.0 else 0.0
+        return math.sqrt(var) if var > 0.0 else 0.0
 
     @staticmethod
     def get_range_of_merit(pre_split_dist):
