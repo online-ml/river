@@ -46,13 +46,13 @@ def test_adaptive_random_forest_regressor_mean():
     error2 = mean_absolute_error(y_true, y_pred2)
     error3 = mean_absolute_error(y_true, y_pred3)
 
-    expected_error1 = 147.23143780794317
-    expected_error2 = 145.10263299599734
-    expected_error3 = 147.2553808800811
+    expected_error1 = 147.23
+    expected_error2 = 145.10
+    expected_error3 = 147.26
 
-    assert np.isclose(error1, expected_error1)
-    assert np.isclose(error2, expected_error2)
-    assert np.isclose(error3, expected_error3)
+    assert np.isclose(round(error1, 2), expected_error1)
+    assert np.isclose(round(error2, 2), expected_error2)
+    assert np.isclose(round(error3, 2), expected_error3)
 
     expected_info = "AdaptiveRandomForestRegressor(aggregation_method='mean', " \
                     "binary_split=False, drift_detection_criteria='mse', " \
@@ -111,13 +111,13 @@ def test_adaptive_random_forest_regressor_perceptron():
     error2 = mean_absolute_error(y_true, y_pred2)
     error3 = mean_absolute_error(y_true, y_pred3)
 
-    expected_error1 = 98.39875363287658
-    expected_error2 = 104.57333449514134
-    expected_error3 = 110.35063697771159
+    expected_error1 = 98.40
+    expected_error2 = 104.57
+    expected_error3 = 110.35
 
-    assert np.isclose(error1, expected_error1)
-    assert np.isclose(error2, expected_error2)
-    assert np.isclose(error3, expected_error3)
+    assert np.isclose(round(error1, 2), expected_error1)
+    assert np.isclose(round(error2, 2), expected_error2)
+    assert np.isclose(round(error3, 2), expected_error3)
 
     learner1.reset()
 
@@ -138,7 +138,8 @@ def test_adaptive_random_forest_regressor_perceptron():
 
 def test_adaptive_random_forest_regressor_drift_detection_coverage():
     max_samples = 1000
-    X = np.random.uniform(size=(max_samples, 10))
+    random_state = np.random.RandomState(7)
+    X = random_state.uniform(size=(max_samples, 10))
     threshold = np.mean(np.sum(X, axis=1))
 
     # ARFReg with background learner enabled
@@ -164,19 +165,19 @@ def test_adaptive_random_forest_regressor_drift_detection_coverage():
         x = X[cnt].reshape(1, -1)
         if cnt < 250:
             if np.sum(x) > threshold:
-                y = np.asarray([np.random.normal(loc=5, scale=1.0)])
+                y = np.asarray([random_state.normal(loc=5, scale=1.0)])
             else:
-                y = np.asarray([np.random.normal(loc=-5, scale=1.0)])
+                y = np.asarray([random_state.normal(loc=-5, scale=1.0)])
         elif cnt < 500:  # First abrupt drift
             if np.sum(x) > threshold:
-                y = np.asarray([np.random.normal(loc=10, scale=1.0)])
+                y = np.asarray([random_state.normal(loc=10, scale=1.0)])
             else:
-                y = np.asarray([np.random.normal(loc=-10, scale=1.0)])
+                y = np.asarray([random_state.normal(loc=-10, scale=1.0)])
         else:  # Second abrupt drift
             if np.sum(x) > threshold:
-                y = np.asarray([np.random.normal(loc=20, scale=2.0)])
+                y = np.asarray([random_state.normal(loc=20, scale=2.0)])
             else:
-                y = np.asarray([np.random.normal(loc=-20, scale=2.0)])
+                y = np.asarray([random_state.normal(loc=-20, scale=2.0)])
 
         # Test every n samples
         if (cnt % wait_samples == 0) and (cnt != 0):
@@ -188,4 +189,11 @@ def test_adaptive_random_forest_regressor_drift_detection_coverage():
 
         cnt += 1
 
-    # TODO: add assert statements
+    expected_error1 = 11.23
+    expected_error2 = 11.48
+
+    error1 = mean_absolute_error(y_true, y_pred1)
+    error2 = mean_absolute_error(y_true, y_pred2)
+
+    assert np.isclose(round(error1, 2), expected_error1)
+    assert np.isclose(round(error2, 2), expected_error2)
