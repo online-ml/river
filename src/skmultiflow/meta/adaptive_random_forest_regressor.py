@@ -311,7 +311,8 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
     def init_ensemble(self, X):
         self._set_max_features(get_dimensions(X)[1])
         # Generate a different random seed per tree
-        random_states = self._random_state.choice(4294967295, size=self.n_estimators)
+        random_states = self._random_state.randint(0, 4294967295, size=self.n_estimators,
+                                                   dtype='u8')
         self.ensemble = [
             ARFRegBaseLearner(
                 index_original=i,

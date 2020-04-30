@@ -101,7 +101,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
             initial_class_observations = {}
 
         # Generate a random seed for the new learning node
-        random_state = self._random_state.choice(4294967295)
+        random_state = self._random_state.randint(0, 4294967295, dtype='u8')
         if is_active_node:
             if self.leaf_prediction == self._TARGET_MEAN:
                 return RandomLearningNodeForRegression(
