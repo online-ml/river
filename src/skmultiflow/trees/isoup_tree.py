@@ -708,6 +708,11 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     parent.set_child(parent_idx, new_split)
             # Manage memory
             self.enforce_tracker_limit()
+        elif len(best_split_suggestions) >= 2:
+            last_check_ratio = best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
+            last_check_sdr = best_split_suggestions[-1].merit
+
+            node.manage_memory(split_criterion, last_check_ratio, last_check_sdr, hoeffding_bound)
 
     def _more_tags(self):
         return {'multioutput': True,
