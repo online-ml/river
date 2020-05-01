@@ -116,7 +116,7 @@ def test_hoeffding_tree_regressor_perceptron():
 
 def test_hoeffding_tree_regressor_coverage():
     max_samples = 1000
-    max_size_mb = 2
+    max_size_mb = 0.5
     mem_delta = 0.03
 
     stream = RegressionGenerator(
@@ -132,7 +132,8 @@ def test_hoeffding_tree_regressor_coverage():
     )
     tree.partial_fit(X, y)
 
-    # A tree without memory management enabled reaches over 3 MB in size
+    print(calculate_object_size(tree, 'MB'))
+    # A tree without memory management enabled reaches almost 1 MB in size
     assert calculate_object_size(tree, 'MB') <= max_size_mb + mem_delta
 
     # Typo in leaf prediction
