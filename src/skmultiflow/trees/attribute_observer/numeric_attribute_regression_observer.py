@@ -188,23 +188,27 @@ class NumericAttributeRegressionObserver(AttributeClassObserver):
         self._aux_sum = None
         self._aux_sum_sq = None
 
-    def _remove_bad_split_nodes(self, current_node):
+    def _remove_bad_split_nodes(self, current_node, parent=None, is_left_child=True):
         is_bad = False
 
-        if current_node is None:
-            return True
-
         if current_node._left is not None:
-            is_bad = self._remove_bad_split_nodes(current_node._left)
+            is_bad = self._remove_bad_split_nodes(current_node._left, current_node, True)
+        else:  # Every leaf node is potentially a bad candidate
+            is_bad = True
 
-            if is_bad:
-                current_node._left = None
+        if is_bad:
+            if current_node._right is not None:
+                self._aux_sum_weight += current_node.sum_weight
+                self._aux_sum += current_node.sum_target
+                self._aux_sum_sq += current_node.sum_sq_target
 
-        if current_node._right is not None and is_bad:
-            is_bad = self._remove_bad_split_nodes(current_node._right)
+                is_bad = self._remove_bad_split_nodes(current_node._right, current_node, False)
 
-            if is_bad:
-                current_node._right = None
+                self._aux_sum_weight -= current_node.sum_weight
+                self._aux_sum -= current_node.sum_target
+                self._aux_sum_sq -= current_node.sum_sq_target
+            else:  # Every leaf node is potentially a bad candidate
+                is_bad = True
 
         if is_bad:
             # Left post split distribution
@@ -213,9 +217,8 @@ class NumericAttributeRegressionObserver(AttributeClassObserver):
             left_dist[1] = current_node.sum_target + self._aux_sum
             left_dist[2] = current_node.sum_sq_target + self._aux_sum_sq
 
-            # The right split distribution is calculated as the difference
-            # between the total distribution (pre split distribution) and
-            # the left distribution
+            # The right split distribution is calculated as the difference between the total
+            # distribution (pre split distribution) and the left distribution
             right_dist = {}
             right_dist[0] = self._pre_split_dist[0] - left_dist[0]
             right_dist[1] = self._pre_split_dist[1] - left_dist[1]
@@ -223,8 +226,20 @@ class NumericAttributeRegressionObserver(AttributeClassObserver):
 
             post_split_dists = [left_dist, right_dist]
             merit = self._criterion.get_merit_of_split(self._pre_split_dist, post_split_dists)
-            if (merit / self._last_check_sdr) < (self._last_check_ratio -
-                                                 (2 * self._last_check_e)):
+            if (merit / self._last_check_sdr) < (self._last_check_ratio - 2 * self._last_check_e):
+                # Remove children nodes
+                current_node._left = None
+                current_node._right = None
+
+                # Root node
+                if parent is None:
+                    self._root = None
+                else:  # Root node
+                    # Remove bad candidate
+                    if is_left_child:
+                        parent._left = None
+                    else:
+                        parent._right = None
                 return True
 
         return False
