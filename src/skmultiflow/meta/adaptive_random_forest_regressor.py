@@ -345,9 +345,9 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
 
     def _set_max_features(self, n):
         if self.max_features == 'auto' or self.max_features == 'sqrt':
-            self.max_features = round(math.sqrt(n))
+            self.max_features = int(round(math.sqrt(n)))
         elif self.max_features == 'log2':
-            self.max_features = round(math.log2(n))
+            self.max_features = int(round(math.log2(n)))
         elif isinstance(self.max_features, int):
             # Consider 'max_features' features at each split.
             pass
@@ -361,7 +361,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
             self.max_features = n
         else:
             # Default to "auto"
-            self.max_features = round(math.sqrt(n))
+            self.max_features = int(round(math.sqrt(n)))
         # Sanity checks
         # max_features is negative, use max_features + n
         if self.max_features < 0:
