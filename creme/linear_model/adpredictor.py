@@ -1,12 +1,8 @@
 import collections
-import math 
-import numbers
-
 import numpy as np 
-import scipy as sp 
+from scipy import stats
 from .. import base 
 from .. import optim
-from .. import proba
 from .. import utils
 
 
@@ -29,11 +25,14 @@ class NormalPrior(optim.initializers.Initializer):
         self.prior_probability = prior_probability
         self.beta = beta
         self.n_features = n_features
-        self.mean = 0 if prior_probability is None else sp.stats.norm.ppf(prior_probability) * (beta ** 2 + n_features)
+        self.mean = 0 if prior_probability is None else stats.norm.ppf(prior_probability) * (beta ** 2 + n_features)
         self.variance = 1.0
 
     def __str__(self):
-        return f'Unbiased normal prior on weights 𝒩(μ={self.mean:.3f}, σ2={self.variance:.3f})' if prior_probability is None else f'Biased normal prior on weights 𝒩(μ={self.mean:.3f}, σ2={self.variance:.3f})'
+        return f'Unbiased normal prior on weights 𝒩(μ={self.mean:.3f}, σ2={self.variance:.3f})' if self.prior_probability is None else f'Biased normal prior on weights 𝒩(μ={self.mean:.3f}, σ2={self.variance:.3f})'
+
+    def __call__(self):
+        return self
 
 
 class BOPR:
@@ -57,7 +56,7 @@ class BOPR:
     def _gaussian_correction(self, t):
 
         t = utils.math.clamp(t, minimum=-self.surprise, maximum=self.surprise)
-        v = sp.stats.norm.pdf(t)/sp.stats.norm.cdf(t)
+        v = stats.norm.pdf(t)/stats.norm.cdf(t)
         w = v * (v + t)
         return (v, w)
 
@@ -70,7 +69,7 @@ class BOPR:
         return prior
 
 
-class AdPredictor(BOPR, base.Regressor):
+class AdPredictor(BOPR, base.BinaryClassifier):
     """AdPredictor.
     """
 
@@ -93,7 +92,7 @@ class AdPredictor(BOPR, base.Regressor):
             weight.variance *= variance_multiplier
             self.weights[i] = weight
 
-    def predict_one(self, x):
+    def predict_proba_one(self, x):
         total_mean, total_variance = self._active_mean_variance(x)
-        return sp.stats.norm.cdf(total_mean / total_variance)
-        
+        p = stats.norm.cdf(total_mean / total_variance)
+        return {False: 1. - p, True: p}
