@@ -10,15 +10,18 @@ def test_adaptive_random_forest_regressor_mean():
 
     learner1 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features='auto', leaf_prediction='mean', aggregation_method='mean',
-        weighted_vote_strategy=None, drift_detection_criteria='mse', random_state=1
+        weighted_vote_strategy=None, drift_detection_criteria='mse', max_byte_size=float('Inf'),
+        random_state=1
     )
     learner2 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features=0.2, leaf_prediction='mean', aggregation_method='median',
-        weighted_vote_strategy=None, drift_detection_criteria='mae', random_state=1
+        weighted_vote_strategy=None, drift_detection_criteria='mae', max_byte_size=float('Inf'),
+        random_state=1
     )
     learner3 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features='auto', leaf_prediction='mean', aggregation_method='mean',
-        weighted_vote_strategy='mse', drift_detection_criteria='predictions', random_state=1
+        weighted_vote_strategy='mse', drift_detection_criteria='predictions',
+        max_byte_size=float('Inf'), random_state=1
     )
 
     cnt = 0
@@ -59,7 +62,7 @@ def test_adaptive_random_forest_regressor_mean():
                     "drift_detection_method=ADWIN(delta=0.001), grace_period=50, " \
                     "lambda_value=6, leaf_prediction='mean', learning_ratio_const=True, " \
                     "learning_ratio_decay=0.001, learning_ratio_perceptron=0.1, " \
-                    "max_byte_size=33554432, max_features=4, memory_estimate_period=2000000, " \
+                    "max_byte_size=inf, max_features=4, memory_estimate_period=2000000, " \
                     "n_estimators=3, no_preprune=False, nominal_attributes=None, " \
                     "random_state=1, remove_poor_atts=False, split_confidence=0.01, " \
                     "stop_mem_management=False, tie_threshold=0.05, " \
@@ -74,16 +77,18 @@ def test_adaptive_random_forest_regressor_perceptron():
 
     learner1 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features='log2', leaf_prediction='perceptron',
-        aggregation_method='mean', weighted_vote_strategy='mae', random_state=1
+        aggregation_method='mean', weighted_vote_strategy='mae', max_byte_size=float('Inf'),
+        random_state=1
     )
     learner2 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features='auto', leaf_prediction='perceptron',
-        aggregation_method='median', weighted_vote_strategy=None, random_state=1
+        aggregation_method='median', weighted_vote_strategy=None, max_byte_size=float('Inf'),
+        random_state=1
     )
     learner3 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features=4, leaf_prediction='perceptron',
-        aggregation_method='mean', weighted_vote_strategy='mse', random_state=1,
-        learning_ratio_const=False
+        aggregation_method='mean', weighted_vote_strategy='mse',  learning_ratio_const=False,
+        max_byte_size=float('Inf'), random_state=1
     )
 
     cnt = 0
@@ -126,7 +131,7 @@ def test_adaptive_random_forest_regressor_perceptron():
                     "drift_detection_method=ADWIN(delta=0.001), grace_period=50, " \
                     "lambda_value=6, leaf_prediction='perceptron', learning_ratio_const=True, " \
                     "learning_ratio_decay=0.001, learning_ratio_perceptron=0.1, " \
-                    "max_byte_size=33554432, max_features=4, memory_estimate_period=2000000, " \
+                    "max_byte_size=inf, max_features=4, memory_estimate_period=2000000, " \
                     "n_estimators=3, no_preprune=False, nominal_attributes=None, " \
                     "random_state=1, remove_poor_atts=False, split_confidence=0.01, " \
                     "stop_mem_management=False, tie_threshold=0.05, " \
@@ -146,13 +151,13 @@ def test_adaptive_random_forest_regressor_drift_detection_coverage():
     learner1 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features='auto', leaf_prediction='perceptron',
         aggregation_method='mean', weighted_vote_strategy=None, drift_detection_criteria='mse',
-        random_state=1
+        max_byte_size=float('Inf'), random_state=1
     )
     # ARFReg without background learner
     learner2 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features='auto', leaf_prediction='perceptron',
         aggregation_method='mean', weighted_vote_strategy=None, warning_detection_method=None,
-        drift_detection_criteria='mse', random_state=1
+        drift_detection_criteria='mse', max_byte_size=float('Inf'), random_state=1
     )
 
     cnt = 0
