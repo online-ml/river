@@ -77,7 +77,7 @@ def test_adaptive_random_forest_regressor_perceptron():
 
     learner1 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features='log2', leaf_prediction='perceptron',
-        aggregation_method='mean', weighted_vote_strategy='mae', max_byte_size=float('Inf'),
+        aggregation_method='mean', weighted_vote_strategy=None, max_byte_size=float('Inf'),
         random_state=1
     )
     learner2 = AdaptiveRandomForestRegressor(
@@ -87,7 +87,7 @@ def test_adaptive_random_forest_regressor_perceptron():
     )
     learner3 = AdaptiveRandomForestRegressor(
         n_estimators=3, max_features=4, leaf_prediction='perceptron',
-        aggregation_method='mean', weighted_vote_strategy='mse',  learning_ratio_const=False,
+        aggregation_method='mean', weighted_vote_strategy=None,  learning_ratio_const=False,
         max_byte_size=float('Inf'), random_state=1
     )
 
@@ -116,9 +116,9 @@ def test_adaptive_random_forest_regressor_perceptron():
     error2 = mean_absolute_error(y_true, y_pred2)
     error3 = mean_absolute_error(y_true, y_pred3)
 
-    expected_error1 = 94.93
+    expected_error1 = 102.52
     expected_error2 = 101.56
-    expected_error3 = 107.97
+    expected_error3 = 104.12
 
     assert np.isclose(round(error1, 2), expected_error1)
     assert np.isclose(round(error2, 2), expected_error2)
