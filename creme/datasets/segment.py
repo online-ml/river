@@ -11,11 +11,8 @@ class ImageSegments(base.FileDataset):
     This dataset contains features that describe image segments into 7 classes: brickface, sky,
     foliage, cement, window, path, and grass.
 
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
-
     References:
-        1. `UCI page <https://archive.ics.uci.edu/ml/datasets/Statlog+(Image+Segmentation)>`_
+        1. [UCI page](https://archive.ics.uci.edu/ml/datasets/Statlog+(Image+Segmentation))
 
     """
 
@@ -29,7 +26,7 @@ class ImageSegments(base.FileDataset):
     def _stream_X_y(self, directory):
         return stream.iter_csv(
             os.path.join(directory, 'segment.csv.zip'),
-            target_name='category',
+            target='category',
             converters={
                 'region-centroid-col': int,
                 'region-centroid-row': int,

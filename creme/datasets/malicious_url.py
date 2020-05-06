@@ -10,19 +10,16 @@ class MaliciousURL(base.FileDataset):
     This dataset contains features about URLs that are classified as malicious or not.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
-        1. `Detecting Malicious URLs <http://www.sysnet.ucsd.edu/projects/url/>`_
-        2. `Identifying Suspicious URLs: An Application of Large-Scale Online Learning <http://cseweb.ucsd.edu/~jtma/papers/url-icml2009.pdf>`_
+        1. [Detecting Malicious URLs](http://www.sysnet.ucsd.edu/projects/url/)
+        2. [Identifying Suspicious URLs: An Application of Large-Scale Online Learning](http://cseweb.ucsd.edu/~jtma/papers/url-icml2009.pdf)
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home: str = None, verbose=True):
         super().__init__(
             n_samples=2_396_130,
             n_features=3_231_961,

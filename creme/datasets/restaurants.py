@@ -12,18 +12,15 @@ class Restaurants(base.FileDataset):
     of roughly 16 weeks. The data is ordered by date and then by restaurant ID.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
-        1. `Recruit Restaurant Visitor Forecasting <https://www.kaggle.com/c/recruit-restaurant-visitor-forecasting>`_
+        1. [Recruit Restaurant Visitor Forecasting](https://www.kaggle.com/c/recruit-restaurant-visitor-forecasting)
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home: str = None, verbose=True):
         super().__init__(
             n_samples=252_108,
             n_features=7,
@@ -36,7 +33,7 @@ class Restaurants(base.FileDataset):
     def _stream_X_y(self, directory):
         return stream.iter_csv(
             f'{directory}/kaggle_recruit_restaurants.csv',
-            target_name='visitors',
+            target='visitors',
             converters={
                 'latitude': float,
                 'longitude': float,

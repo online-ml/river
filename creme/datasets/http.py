@@ -10,18 +10,15 @@ class HTTP(base.FileDataset):
     contains 2,211 (0.4%) positive labels.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
-        1. `HTTP (KDDCUP99) dataset <http://odds.cs.stonybrook.edu/http-kddcup99-dataset/>`_
+        1. [HTTP (KDDCUP99) dataset](http://odds.cs.stonybrook.edu/http-kddcup99-dataset/)
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home: str = None, verbose=True):
         super().__init__(
             n_samples=567_498,
             n_features=3,
@@ -34,7 +31,7 @@ class HTTP(base.FileDataset):
     def _stream_X_y(self, directory):
         return stream.iter_csv(
             f'{directory}/kdd99_http.csv',
-            target_name='service',
+            target='service',
             converters={
                 'duration': float,
                 'src_bytes': float,

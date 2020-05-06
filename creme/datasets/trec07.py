@@ -1,4 +1,4 @@
-from .. import stream
+from creme import stream
 
 from . import base
 
@@ -13,11 +13,8 @@ class TREC07(base.FileDataset):
     The available raw features are: sender, recipients, date, subject, body.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
         1. `TREC 2007 Spam Track Overview <https://trec.nist.gov/pubs/trec16/papers/SPAM.OVERVIEW16.pdf>`_
@@ -25,7 +22,7 @@ class TREC07(base.FileDataset):
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home: str = None, verbose=True):
         super().__init__(
             n_samples=75_419,
             n_features=5,
@@ -38,7 +35,7 @@ class TREC07(base.FileDataset):
     def _stream_X_y(self, directory):
         return stream.iter_csv(
             f'{directory}/trec07p.csv',
-            target_name='y',
+            target='y',
             delimiter=',',
             quotechar='"',
             field_size_limit=1_000_000,

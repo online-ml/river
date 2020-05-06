@@ -34,18 +34,20 @@ class DictReader(csv.DictReader):
         return dict(zip(self.fieldnames, row))
 
 
-def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = None,
-             parse_dates: dict = None, drop: typing.List[str] = None, fraction=1.,
-             compression='infer', seed: int = None, field_size_limit: int = None,
+def iter_csv(filepath_or_buffer, target: typing.Union[str, typing.List[str]] = None,
+             converters: dict = None, parse_dates: dict = None, drop: typing.List[str] = None,
+             fraction=1., compression='infer', seed: int = None, field_size_limit: int = None,
              **kwargs) -> base.typing.Stream:
     """Iterates over rows from a CSV file.
 
     Parameters:
         filepath_or_buffer: Either a string indicating the location of a CSV file, or a buffer
-            object that has a ``read`` method.
-        target_name: The name of the target.
-        converters: A `dict` mapping feature names to callables used to parse their
-            associated values.
+            object that has a `read` method.
+        target: A single target column is assumed if a string is passed. A multiple output scenario
+            is assumed if a list of strings is passed. A `None` value will be assigned to each `y`
+            if this parameter is omitted.
+        converters: A `dict` mapping feature names to callables used to parse their associated
+            values.
         parse_dates: A `dict` mapping feature names to a format passed to the
             `datetime.datetime.strptime` method.
         drop: Fields to ignore.
@@ -65,8 +67,7 @@ def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = Non
     Example:
 
         Although this function is designed to handle different kinds of inputs, the most common
-        use case is to read a file on the disk. We'll first create a little CSV file to
-        illustrate.
+        use case is to read a file on the disk. We'll first create a little CSV file to illustrate.
 
         >>> tv_shows = '''name,year,rating
         ... Planet Earth II,2016,9.5
@@ -96,10 +97,10 @@ def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = Non
         {'name': 'Breaking Bad', 'year': datetime.datetime(2008, 1, 1, 0, 0), 'rating': 9.4} None
         {'name': 'Chernobyl', 'year': datetime.datetime(2019, 1, 1, 0, 0), 'rating': 9.4} None
 
-        The value of ``y`` is always ``None`` because we haven't provided a value for the
-        ``target_name`` parameter. Here is an example where a ``target_name`` is provided:
+        The value of `y` is always `None` because we haven't provided a value for the `target`
+        parameter. Here is an example where a `target` is provided:
 
-        >>> X_y = stream.iter_csv('tv_shows.csv', target_name='rating', **params)
+        >>> X_y = stream.iter_csv('tv_shows.csv', target='rating', **params)
         >>> for x, y in X_y:
         ...     print(x, y)
         {'name': 'Planet Earth II', 'year': datetime.datetime(2016, 1, 1, 0, 0)} 9.5
@@ -114,8 +115,7 @@ def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = Non
 
     .. tip::
         Reading CSV files can be quite slow. If, for whatever reason, you're going to loop through
-        the same file multiple times, then we recommend that you to use the
-        `creme.stream.Cache` utility.
+        the same file multiple times, then we recommend that you to use the `stream.Cache` utility.
 
     """
 
@@ -150,7 +150,11 @@ def iter_csv(filepath_or_buffer, target_name: str = None, converters: dict = Non
                 x[i] = dt.datetime.strptime(x[i], fmt)
 
         # Separate the target from the features
-        y = x.pop(target_name) if target_name else None
+        y = None
+        if isinstance(target, list):
+            y = {name: x.pop(name) for name in target}
+        elif target is not None:
+            y = x.pop(target)
 
         yield x, y
 
