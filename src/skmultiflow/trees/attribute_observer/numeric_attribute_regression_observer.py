@@ -158,6 +158,43 @@ class NumericAttributeRegressionObserver(AttributeClassObserver):
 
     def remove_bad_splits(self, criterion, last_check_ratio, last_check_sdr, last_check_e,
                           pre_split_dist):
+        """ FIMT-DD's_[1] procedure to remove bad split candidates from the E-BST.
+
+        This mechanism is triggered every time a split attempt fails. The rationale is to remove
+        points whose split merit is much worse than the best candidate overall (for which the
+        growth decision already failed).
+
+        Let :math:`m_1` be the merit of the best split point and :math:`m_2` be the merit of the
+        second best split candidate. The ratio :math:`r = m_2/m_1` along with the Hoeffding bound
+        (:math:`\\epsilon`) are used to decide upon creating a split. A split occurs when
+        :math:`r < 1 - \\epsilon`. A split candidate, with merit :math:`m_i`, is considered bad
+        if :math:`m_i / m_1 < r - 2\\epsilon`. The rationale is the following: if the merit ratio
+        for this point is smaller than the lower bound of :math:`r`, then the true merit of that
+        split relative to the best one is small. Hence, this candidate can be safely removed.
+
+        To avoid excessive and costly manipulations of the E-BST to update the stored statistics,
+        only the nodes whose children are all bad split points are pruned, as defined in
+        FIMT-DD_[1].
+
+        Parameters
+        ----------
+            criterion: SplitCriterion
+                The split criterion used by the regression tree.
+            last_check_ratio: float
+                The ratio between the merit of the second best split candidate and the merit of the
+                best split candidate observed in the last failed split attempt.
+            last_check_sdr: float
+                The merit of the best split candidate observed in the last failed split attempt.
+            last_check_e: float
+                The Hoeffding bound value calculated in the last failed split attempt.
+            pre_split_dist: dict
+                The complete statistics of the target observed in the leaf node.
+
+        References
+        ----------
+        .. [1] Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving
+        data streams. Data mining and knowledge discovery, 23(1), 128-168.
+        """
 
         # Auxiliary variables
         self._criterion = criterion
