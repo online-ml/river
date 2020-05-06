@@ -12,18 +12,15 @@ class Higgs(base.FileDataset):
     physicists to help discriminate between the two classes.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
-        1. `UCI page <https://archive.ics.uci.edu/ml/datasets/HIGGS>`_
+        1. [UCI page](https://archive.ics.uci.edu/ml/datasets/HIGGS)
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home: str = None, verbose=True):
         super().__init__(
             n_samples=11_000_000,
             n_features=28,
@@ -49,6 +46,6 @@ class Higgs(base.FileDataset):
         return stream.iter_csv(
             path,
             fieldnames=['is_signal', *features],
-            target_name='is_signal',
+            target='is_signal',
             converters={'is_signal': lambda x: x.startswith('1'), **{f: float for f in features}}
         )

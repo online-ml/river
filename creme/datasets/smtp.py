@@ -1,4 +1,4 @@
-from .. import stream
+from creme import stream
 
 from . import base
 
@@ -10,14 +10,11 @@ class SMTP(base.FileDataset):
     The dataset only contains 2,211 (0.4%) positive labels.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
-        1. `SMTP (KDDCUP99) dataset <http://odds.cs.stonybrook.edu/smtp-kddcup99-dataset/>`_
+        1. [SMTP (KDDCUP99) dataset](http://odds.cs.stonybrook.edu/smtp-kddcup99-dataset/)
 
     """
 
@@ -34,7 +31,7 @@ class SMTP(base.FileDataset):
     def _stream_X_y(self, directory):
         return stream.iter_csv(
             f'{directory}/smtp.csv',
-            target_name='service',
+            target='service',
             converters={
                 'duration': float,
                 'src_bytes': float,

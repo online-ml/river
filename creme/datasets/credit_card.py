@@ -21,11 +21,8 @@ class CreditCard(base.FileDataset):
     it takes value 1 in case of fraud and 0 otherwise.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
         1. Andrea Dal Pozzolo, Olivier Caelen, Reid A. Johnson and Gianluca Bontempi. Calibrating Probability with Undersampling for Unbalanced Classification. In Symposium on Computational Intelligence and Data Mining (CIDM), IEEE, 2015
@@ -39,7 +36,7 @@ class CreditCard(base.FileDataset):
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self, data_home: str = None, verbose=True):
         super().__init__(
             n_samples=284_807,
             n_features=30,
@@ -58,6 +55,6 @@ class CreditCard(base.FileDataset):
 
         return stream.iter_csv(
             f'{directory}/creditcard.csv',
-            target_name='Class',
+            target='Class',
             converters=converters
         )

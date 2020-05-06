@@ -13,18 +13,15 @@ class MovieLens100K(base.FileDataset):
     September 19th, 1997 through April 22nd, 1998.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
-        1. `The MovieLens Datasets: History and Context <http://dx.doi.org/10.1145/2827872>`_
+        1. [The MovieLens Datasets: History and Context](http://dx.doi.org/10.1145/2827872)
 
     """
 
-    def __init__(self, data_home=None, verbose=False):
+    def __init__(self, data_home: str = None, verbose=False):
         super().__init__(
             n_samples=100_000,
             n_features=10,
@@ -37,18 +34,11 @@ class MovieLens100K(base.FileDataset):
     def _stream_X_y(self, directory):
         return stream.iter_csv(
             f'{directory}/ml_100k.csv',
-            target_name='rating',
+            target='rating',
             converters={
-                'user': str,
-                'item': str,
                 'timestamp': int,
-                'title': str,
                 'release_date': int,
-                'genres': str,
                 'age': float,
-                'gender': str,
-                'occupation': str,
-                'zip_code': str,
                 'rating': float
             },
             delimiter='\t'

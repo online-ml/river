@@ -9,14 +9,15 @@ import zipfile
 REG = 'Regression'
 BINARY_CLF = 'Binary'
 MULTI_CLF = 'Multiclass'
+MO_BINARY_CLF = 'Multi-output binary'
 
-
-def get_data_home(data_home=None):
+def get_data_home(data_home: str = None):
     """Return the path of the creme data directory.
 
     By default this will expand the relative path '~/creme_data'.
 
     """
+
     if data_home is None:
         data_home = os.environ.get('CREME_DATA', os.path.join('~', 'creme_data'))
         data_home = os.path.expanduser(data_home)
@@ -25,17 +26,17 @@ def get_data_home(data_home=None):
     return data_home
 
 
-def download_dataset(url, data_home, uncompress=True, verbose=True):
+def download_dataset(url: str, data_home: str, uncompress=True, verbose=True) -> str:
     """Downloads/decompresses a dataset locally if does not exist.
 
     Parameters:
-        url (str): From where to download the dataset.
-        data_home (str): The directory where you wish to store the data.
-        uncompress (bool): Whether to uncompress the file or not.
-        verbose (bool): Whether to indicate download progress or not.
+        url: From where to download the dataset.
+        data_home: The directory where you wish to store the data.
+        uncompress: Whether to uncompress the file or not.
+        verbose: Whether to indicate download progress or not.
 
     Returns:
-        data_dir_path (str): Where the dataset is stored.
+        data_dir_path: The dataset's storage location?
 
     """
 
@@ -95,8 +96,8 @@ class Dataset:
     def __iter__(self):
         raise NotImplementedError
 
-    def take(self, k):
-        """Yields the k first (``x``, ``y``) pairs."""
+    def take(self, k: int):
+        """Yields the k first (`x`, `y`) pairs."""
         return itertools.islice(self, k)
 
 

@@ -12,19 +12,16 @@ class Elec2(base.FileDataset):
     alleviate fluctuations.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
-        1. `SPLICE-2 Comparative Evaluation: Electricity Pricing <http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.12.9405>`_
-        2. `DataHub description <https://datahub.io/machine-learning/electricity#readme>`_
+        1. [SPLICE-2 Comparative Evaluation: Electricity Pricing](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.12.9405)
+        2. [DataHub description](https://datahub.io/machine-learning/electricity#readme)
 
     """
 
-    def __init__(self, data_home=None, verbose=False):
+    def __init__(self, data_home: str = None, verbose=False):
         super().__init__(
             n_samples=45_312,
             n_features=8,
@@ -37,7 +34,7 @@ class Elec2(base.FileDataset):
     def _stream_X_y(self, directory):
         return stream.iter_csv(
             f'{directory}/electricity.csv',
-            target_name='class',
+            target='class',
             converters={
                 'date': float,
                 'day': int,

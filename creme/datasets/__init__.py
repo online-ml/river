@@ -7,6 +7,7 @@ from .credit_card import CreditCard
 from .elec2 import Elec2
 from .higgs import Higgs
 from .http import HTTP
+from .music import Music
 from .phishing import Phishing
 from .movielens100k import MovieLens100K
 from .restaurants import Restaurants
@@ -31,6 +32,7 @@ __all__ = [
     'Higgs',
     'HTTP',
     'MaliciousURL',
+    'Music',
     'Phishing',
     'MovieLens100K',
     'Restaurants',

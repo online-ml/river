@@ -8,18 +8,15 @@ class SMSSpam(base.FileDataset):
     13.4% of the dataset. The goal is to predict whether an SMS is a spam or not.
 
     Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+        data_home: The directory where you wish to store the data.
+        verbose: Whether to indicate download progress or not.
 
     References:
-        1. `Almeida, T.A., Hidalgo, J.M.G. and Yamakami, A., 2011, September. Contributions to the study of SMS spam filtering: new collection and results. In Proceedings of the 11th ACM symposium on Document engineering (pp. 259-262). <http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/doceng11.pdf>`_
+        1. [Almeida, T.A., Hidalgo, J.M.G. and Yamakami, A., 2011, September. Contributions to the study of SMS spam filtering: new collection and results. In Proceedings of the 11th ACM symposium on Document engineering (pp. 259-262).](http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/doceng11.pdf)
 
     """
 
-    def __init__(self, data_home=None, verbose=False):
+    def __init__(self, data_home: str = None, verbose=False):
         super().__init__(
             n_samples=5_574,
             n_features=1,
@@ -31,6 +28,6 @@ class SMSSpam(base.FileDataset):
 
     def _stream_X_y(self, directory):
         with open(f'{directory}/SMSSpamCollection') as f:
-            for ix, row in enumerate(f):
+            for row in f:
                 label, body = row.split('\t')
                 yield ({'body': body}, label == 'spam')
