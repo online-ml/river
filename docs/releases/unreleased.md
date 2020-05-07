@@ -6,7 +6,8 @@
 
 ## datasets
 
-- Added the `datasets.Music`, which is a dataset for multi-output binary classification.
+- Added `datasets.Music`, which is a dataset for multi-output binary classification.
+- Added `datasets.gen.Friedman`, which is synthetic regression dataset.
 
 ## metrics
 
