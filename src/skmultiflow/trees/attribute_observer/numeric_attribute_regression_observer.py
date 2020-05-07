@@ -158,9 +158,10 @@ class NumericAttributeRegressionObserver(AttributeClassObserver):
 
     def remove_bad_splits(self, criterion, last_check_ratio, last_check_sdr, last_check_e,
                           pre_split_dist):
-        """ FIMT-DD's_[1] procedure to remove bad split candidates from the E-BST.
+        """ Remove bad splits.
 
-        This mechanism is triggered every time a split attempt fails. The rationale is to remove
+        Based on FIMT-DD's_[1] procedure to remove bad split candidates from the E-BST. This
+        mechanism is triggered every time a split attempt fails. The rationale is to remove
         points whose split merit is much worse than the best candidate overall (for which the
         growth decision already failed).
 
@@ -178,17 +179,17 @@ class NumericAttributeRegressionObserver(AttributeClassObserver):
 
         Parameters
         ----------
-            criterion: SplitCriterion
-                The split criterion used by the regression tree.
-            last_check_ratio: float
-                The ratio between the merit of the second best split candidate and the merit of the
-                best split candidate observed in the last failed split attempt.
-            last_check_sdr: float
-                The merit of the best split candidate observed in the last failed split attempt.
-            last_check_e: float
-                The Hoeffding bound value calculated in the last failed split attempt.
-            pre_split_dist: dict
-                The complete statistics of the target observed in the leaf node.
+        criterion: SplitCriterion
+            The split criterion used by the regression tree.
+        last_check_ratio: float
+            The ratio between the merit of the second best split candidate and the merit of the
+            best split candidate observed in the last failed split attempt.
+        last_check_sdr: float
+            The merit of the best split candidate observed in the last failed split attempt.
+        last_check_e: float
+            The Hoeffding bound value calculated in the last failed split attempt.
+        pre_split_dist: dict
+            The complete statistics of the target observed in the leaf node.
 
         References
         ----------
