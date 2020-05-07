@@ -418,7 +418,7 @@ class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
 
                 y_pred, p = self.mean_eval_measurements[0].get_last()  # Only track one model (first) by default
 
-                X, _ = self.stream.last_sample()
+                X = self.stream.current_sample_x
                 idx_1 = 0  # TODO let the user choose the feature indices of interest
                 idx_2 = 1
                 features[idx_1] = X[0][idx_1]
