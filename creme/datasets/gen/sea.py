@@ -4,7 +4,7 @@ from .. import base
 
 
 class SEA(base.Dataset):
-    """SEA generator.
+    """SEA data generator.
 
     Each observation is composed of 3 features. Only the first two features are relevant. The
     target is binary, and is positive if the sum of the features exceeds a certain threshold. There
@@ -12,47 +12,40 @@ class SEA(base.Dataset):
     anytime during the stream.
 
     Parameters:
-        no (int): Determines the classification function to use. Possible choices are 0, 1, 2, 3.
-        noise (float): Determines the amount of observations for which the target sign will be
-            flipped.
+        variant: Determines the classification function to use. Possible choices are 0, 1, 2, 3.
+        noise: Determines the amount of observations for which the target sign will be flipped.
+        seed: Random seed number used for reproducibility.
 
     Example:
 
-        ::
+        >>> from creme import datasets
 
-            >>> from creme import datasets
+        >>> gen = datasets.gen.SEA(variant=0, seed=42)
 
-            >>> gen = datasets.gen.SEA(no=0, seed=42)
-
-            >>> for x, y in gen.take(5):
-            ...     print(x, y)
-            {0: 6.394267984578837, 1: 0.25010755222666936, 2: 2.7502931836911926} False
-            {0: 2.2321073814882277, 1: 7.364712141640124, 2: 6.766994874229113} True
-            {0: 8.921795677048454, 1: 0.8693883262941615, 2: 4.2192181968527045} True
-            {0: 0.29797219438070344, 1: 2.1863797480360336, 2: 5.053552881033624} False
-            {0: 0.26535969683863625, 1: 1.988376506866485, 2: 6.498844377795232} False
+        >>> for x, y in gen.take(5):
+        ...     print(x, y)
+        {0: 6.39426, 1: 0.25010, 2: 2.75029} False
+        {0: 2.23210, 1: 7.36471, 2: 6.76699} True
+        {0: 8.92179, 1: 0.86938, 2: 4.21921} True
+        {0: 0.29797, 1: 2.18637, 2: 5.05355} False
+        {0: 0.26535, 1: 1.98837, 2: 6.49884} False
 
     References:
-        1. `A Streaming Ensemble Algorithm (SEA) for Large-Scale Classification <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.482.3991&rep=rep1&type=pdf>`_
+        1. [A Streaming Ensemble Algorithm (SEA) for Large-Scale Classification](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.482.3991&rep=rep1&type=pdf)
 
     """
 
-    def __init__(self, no, noise=0., seed=None):
+    def __init__(self, variant: int, noise=0., seed: int = None):
 
         super().__init__(n_features=3, category=base.BINARY_CLF)
 
-        if no not in (0, 1, 2, 3):
-            raise ValueError('no must be one of (0, 1, 2, 3)')
+        if variant not in (0, 1, 2, 3):
+            raise ValueError('Invalid variant, must be one of (0, 1, 2, 3)')
 
-        self.no = no
+        self.variant = variant
         self.noise = noise
         self.seed = seed
-        self._threshold = {
-            0: 8,
-            1: 9,
-            2: 7,
-            3: 9.5
-        }[no]
+        self._threshold = {0: 8, 1: 9, 2: 7, 3: 9.5}[variant]
         self._rng = random.Random(seed)
 
     def __iter__(self):
