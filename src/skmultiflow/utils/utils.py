@@ -213,3 +213,26 @@ def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
         except KeyError:
             result[k] = v
     return result
+
+
+def add_delay_to_timestamps(timestamps, delay):
+    """ Add a given delay to a list of timestamps.
+
+    This function iterates over the timestamps, adding a time delay to them.
+
+    Parameters
+    ----------
+    timestamps: np.ndarray(dtype=datetime64).
+    delay: np.timedelta64.
+
+    Returns
+    -------
+        np.ndarray(dtype=datetime64)
+            A list of timestamps with a delay added to all timestamp..
+    """
+
+    delay_timestamps = []
+    for t in timestamps:
+        delay_timestamps.append(t + delay)
+    return np.array(delay_timestamps, dtype="datetime64")
+
