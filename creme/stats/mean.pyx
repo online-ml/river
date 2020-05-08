@@ -68,9 +68,9 @@ class RollingMean(summing.RollingSum):
 
         >>> X = [1, 2, 3, 4, 5, 6]
 
-        >>> rolling_mean = creme.stats.RollingMean(window_size=2)
+        >>> rmean = creme.stats.RollingMean(window_size=2)
         >>> for x in X:
-        ...     print(rolling_mean.update(x).get())
+        ...     print(rmean.update(x).get())
         1.0
         1.5
         2.5
@@ -78,9 +78,9 @@ class RollingMean(summing.RollingSum):
         4.5
         5.5
 
-        >>> rolling_mean = creme.stats.RollingMean(window_size=3)
+        >>> rmean = creme.stats.RollingMean(window_size=3)
         >>> for x in X:
-        ...     print(rolling_mean.update(x).get())
+        ...     print(rmean.update(x).get())
         1.0
         1.5
         2.0
@@ -102,7 +102,6 @@ class BayesianMean(base.Univariate):
         prior_weight
 
     References:
-
         1. [Additive smoothing](https://www.wikiwand.com/en/Additive_smoothing)
         2. [Bayesian average](https://www.wikiwand.com/en/Bayesian_average)
         3. [Practical example of Bayes estimators](https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators)

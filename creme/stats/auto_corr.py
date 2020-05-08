@@ -5,7 +5,7 @@ from . import base
 from . import pearson
 
 
-class AutoCorrelation(base.Univariate):
+class AutoCorr(base.Univariate):
     """Measures the serial correlation.
 
     This method computes the Pearson correlation between the current value and the value seen `n`
@@ -20,7 +20,7 @@ class AutoCorrelation(base.Univariate):
 
         >>> from creme import stats
 
-        >>> auto_corr = stats.AutoCorrelation(lag=1)
+        >>> auto_corr = stats.AutoCorr(lag=1)
         >>> for x in [0.25, 0.5, 0.2, -0.05]:
         ...     print(auto_corr.update(x).get())
         0
@@ -28,7 +28,7 @@ class AutoCorrelation(base.Univariate):
         -1.0
         0.103552
 
-        >>> auto_corr = stats.AutoCorrelation(lag=2)
+        >>> auto_corr = stats.AutoCorr(lag=2)
         >>> for x in [0.25, 0.5, 0.2, -0.05]:
         ...     print(auto_corr.update(x).get())
         0
@@ -36,7 +36,7 @@ class AutoCorrelation(base.Univariate):
         0
         -1.0
 
-        >>> auto_corr = stats.AutoCorrelation(lag=1)
+        >>> auto_corr = stats.AutoCorr(lag=1)
         >>> for x in [1, 0, 0, 0]:
         ...     print(auto_corr.update(x).get())
         0
@@ -49,7 +49,7 @@ class AutoCorrelation(base.Univariate):
     def __init__(self, lag: int):
         self.window: typing.Deque[float] = collections.deque(maxlen=lag)
         self.lag = lag
-        self.pearson = pearson.PearsonCorrelation(ddof=1)
+        self.pearson = pearson.PearsonCorr(ddof=1)
 
     @property
     def name(self):

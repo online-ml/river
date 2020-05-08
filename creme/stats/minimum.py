@@ -1,6 +1,6 @@
 import math
 
-from .. import utils
+from creme import utils
 
 from . import base
 

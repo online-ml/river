@@ -33,7 +33,7 @@ class SelectKBest(base.Transformer):
         ... )
 
         >>> selector = feature_selection.SelectKBest(
-        ...     similarity=stats.PearsonCorrelation(),
+        ...     similarity=stats.PearsonCorr(),
         ...     k=2
         ... )
 
