@@ -5,6 +5,7 @@ from .glm import LogisticRegression
 from .pa import PAClassifier
 from .pa import PARegressor
 from .softmax import SoftmaxRegression
+from .adpredictor import AdPredictor
 
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     'LogisticRegression',
     'PAClassifier',
     'PARegressor',
-    'SoftmaxRegression'
+    'SoftmaxRegression',
+    'AdPredictor'
 ]
