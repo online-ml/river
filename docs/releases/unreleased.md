@@ -21,6 +21,11 @@
 
 - Added `stats.Shift`, which can be used to compute statistics over a shifted version of a variable.
 - Added `stats.Link`, which can be used to compose univariate statistics. Univariate statistics can now be composed via the `|` operator.
+- Renamed `stats.Covariance` to `stats.Cov`.
+- Renamed `stats.PearsonCorrelation` to `stats.PearsonCorr`.
+- Renamed `stats.AutoCorrelation` to `stats.AutoCorr`.
+- Added `stats.RollingCov`, which computes covariance between two variables over a window.
+- Added `stats.RollingPearsonCorr`, which computes the Pearson correlation over a window.
 
 ## stream
 

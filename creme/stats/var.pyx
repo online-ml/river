@@ -64,66 +64,64 @@ class RollingVar(base.RollingUnivariate):
         ddof (int): Delta Degrees of Freedom for the variance.
 
     Attributes:
-        sos (float): Sum of squares.
-        rolling_mean (stats.RollingMean): The running rolling mean.
+        sos (float): Sum of squares over the current window.
+        rmean (stats.RollingMean)
 
     Example:
 
-        ::
+        >>> import creme
 
-            >>> import creme
+        >>> X = [1, 4, 2, -4, -8, 0]
 
-            >>> X = [1, 4, 2, -4, -8, 0]
+        >>> rvar = creme.stats.RollingVar(ddof=1, window_size=2)
+        >>> for x in X:
+        ...     print(rvar.update(x).get())
+        0.0
+        4.5
+        2.0
+        18.0
+        8.0
+        32.0
 
-            >>> rolling_variance = creme.stats.RollingVar(ddof=1, window_size=2)
-            >>> for x in X:
-            ...     print(rolling_variance.update(x).get())
-            0.0
-            4.5
-            2.0
-            18.0
-            8.0
-            32.0
-
-            >>> rolling_variance = creme.stats.RollingVar(ddof=1, window_size=3)
-            >>> for x in X:
-            ...     print(rolling_variance.update(x).get())
-            0.0
-            4.5
-            2.333333
-            17.333333
-            25.333333
-            16.0
+        >>> rvar = creme.stats.RollingVar(ddof=1, window_size=3)
+        >>> for x in X:
+        ...     print(rvar.update(x).get())
+        0.0
+        4.5
+        2.333333
+        17.333333
+        25.333333
+        16.0
 
     """
 
     def __init__(self, window_size, ddof=1):
         self.ddof = ddof
         self.sos = 0
-        self.rolling_mean = mean.RollingMean(window_size=window_size)
+        self.rmean = mean.RollingMean(window_size=window_size)
 
     @property
     def window_size(self):
-        return self.rolling_mean.window_size
+        return self.rmean.window_size
 
     def update(self, x):
-        if len(self.rolling_mean) >= self.rolling_mean.size:
-            self.sos -= self.rolling_mean[0] ** 2
+        if len(self.rmean) >= self.rmean.size:
+            self.sos -= self.rmean[0] ** 2
 
         self.sos += x * x
-        self.rolling_mean.update(x)
+        self.rmean.update(x)
         return self
 
     @property
     def correction_factor(self):
-        n = len(self.rolling_mean)
+        n = len(self.rmean)
         if n > self.ddof:
             return n / (n - self.ddof)
         return 1
 
     def get(self):
         try:
-            variance = (self.sos / len(self.rolling_mean)) - self.rolling_mean.get() ** 2
-            return self.correction_factor * variance
+            var = (self.sos / len(self.rmean)) - self.rmean.get() ** 2
+            return self.correction_factor * var
         except ZeroDivisionError:
             return 0.

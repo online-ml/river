@@ -64,19 +64,17 @@ def test_univariate(stat, func):
 
     for i, x in enumerate(X):
         stat.update(x)
-        try:
+        if i >= 1:
             assert math.isclose(stat.get(), func(X[:i + 1]), abs_tol=1e-10)
-        except AssertionError:
-            # Errors for the first value are acceptable
-            if i == 0:
-                continue
 
 
 @pytest.mark.parametrize(
     'stat, func',
     [
         (stats.RollingMean(3), statistics.mean),
-        (stats.RollingVar(3, ddof=0), np.var)
+        (stats.RollingMean(10), statistics.mean),
+        (stats.RollingVar(3, ddof=0), np.var),
+        (stats.RollingVar(10, ddof=0), np.var)
     ]
 )
 def test_rolling_univariate(stat, func):
@@ -92,18 +90,15 @@ def test_rolling_univariate(stat, func):
 
     for i, x in enumerate(X):
         stat.update(x)
-        try:
+        if i >= 1:
             assert math.isclose(stat.get(), func(tail(X[:i + 1], n)), abs_tol=1e-10)
-        except AssertionError:
-            # Errors for the first value are acceptable
-            if i == 0:
-                continue
 
 
 @pytest.mark.parametrize(
     'stat, func',
     [
-        (stats.PearsonCorrelation(), lambda x, y: sp_stats.pearsonr(x, y)[0]),
+        (stats.Cov(), lambda x, y: np.cov(x, y)[0, 1]),
+        (stats.PearsonCorr(), lambda x, y: sp_stats.pearsonr(x, y)[0])
     ]
 )
 def test_bivariate(stat, func):
@@ -118,3 +113,32 @@ def test_bivariate(stat, func):
         stat.update(x, y)
         if i >= 1:
             assert math.isclose(stat.get(), func(X[:i + 1], Y[:i + 1]), abs_tol=1e-10)
+
+
+@pytest.mark.parametrize(
+    'stat, func',
+    [
+        (stats.RollingPearsonCorr(3), lambda x, y: sp_stats.pearsonr(x, y)[0]),
+        (stats.RollingPearsonCorr(10), lambda x, y: sp_stats.pearsonr(x, y)[0]),
+        (stats.RollingCov(3), lambda x, y: np.cov(x, y)[0, 1]),
+        (stats.RollingCov(10), lambda x, y: np.cov(x, y)[0, 1])
+    ]
+)
+def test_rolling_bivariate(stat, func):
+
+    # Enough already
+    np.warnings.filterwarnings('ignore')
+
+    def tail(iterable, n):
+        return collections.deque(iterable, maxlen=n)
+
+    n = stat.window_size
+    X = [random.random() for _ in range(30)]
+    Y = [random.random() * x for x in X]
+
+    for i, (x, y) in enumerate(zip(X, Y)):
+        stat.update(x, y)
+        if i >= 1:
+            x_tail = tail(X[:i + 1], n)
+            y_tail = tail(Y[:i + 1], n)
+            assert math.isclose(stat.get(), func(x_tail, y_tail), abs_tol=1e-10)

@@ -120,7 +120,7 @@ def get_all_estimators():
                 ])
 
             elif issubclass(obj, feature_selection.SelectKBest):
-                inst = obj(similarity=stats.PearsonCorrelation())
+                inst = obj(similarity=stats.PearsonCorr())
 
             elif issubclass(obj, linear_model.LinearRegression):
                 inst = preprocessing.StandardScaler() | obj(intercept_lr=.1)
@@ -157,7 +157,7 @@ def get_all_estimators():
         preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
         preprocessing.PolynomialExtender(),
         feature_selection.VarianceThreshold(),
-        feature_selection.SelectKBest(similarity=stats.PearsonCorrelation())
+        feature_selection.SelectKBest(similarity=stats.PearsonCorr())
     ]
     for check in utils.estimator_checks.yield_checks(estimator)
 ])
