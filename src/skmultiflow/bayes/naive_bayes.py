@@ -164,12 +164,11 @@ class NaiveBayes(BaseSKMObject, ClassifierMixin):
 
         """
         predictions = deque()
+        r, _ = get_dimensions(X)
         if self._observed_class_distribution == {}:
             # Model is empty, all classes equal, default to zero
-            r, _ = get_dimensions(X)
-            return np.zeros(r)
+            return np.zeros((r, 1))
         else:
-            r, _ = get_dimensions(X)
             for i in range(r):
                 votes = do_naive_bayes_prediction(X[i], self._observed_class_distribution, self._attribute_observers)
                 sum_values = sum(votes.values())
