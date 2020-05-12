@@ -96,7 +96,7 @@ class TemporalDataStream(DataStream):
             self.time = np.array(time, dtype="datetime64")
         elif time is None and not isinstance(sample_delay, int):
             raise TypeError("'time' is None, 'sample_delay' must be int but {} was passed".
-                             format(type(sample_delay)))
+                            format(type(sample_delay)))
         elif time is None:
             self.time = None
         else:
@@ -121,8 +121,8 @@ class TemporalDataStream(DataStream):
             self.sample_delay = np.arange(0 + sample_delay, data.shape[0] + sample_delay)
         else:
             raise TypeError("Invalid 'sample_delay' type: {}. Valid types are: "
-                             "np.ndarray(np.datetime64), pd.Series, np.timedelta64 or int".
-                             format(type(sample_delay)))
+                            "np.ndarray(np.datetime64), pd.Series, np.timedelta64 or int".
+                            format(type(sample_delay)))
 
         # save sample weights if available
         if sample_weight is not None:
@@ -193,11 +193,8 @@ class TemporalDataStream(DataStream):
             self.current_sample_delay = None
             self.current_sample_weight = None
 
-        return self.current_sample_x, \
-               self.current_sample_y, \
-               self.current_sample_time,\
-               self.current_sample_delay,\
-               self.current_sample_weight
+        return self.current_sample_x, self.current_sample_y, self.current_sample_time,\
+            self.current_sample_delay, self.current_sample_weight
 
     def last_sample(self):
         """ Retrieves last `batch_size` samples in the stream.
@@ -209,8 +206,5 @@ class TemporalDataStream(DataStream):
             (batch_size, n_targets), representing the next batch_size samples.
 
         """
-        return self.current_sample_x, \
-               self.current_sample_y, \
-               self.current_sample_time, \
-               self.current_sample_delay, \
-               self.current_sample_weight
+        return self.current_sample_x, self.current_sample_y, self.current_sample_time,\
+            self.current_sample_delay, self.current_sample_weight

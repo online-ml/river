@@ -60,8 +60,8 @@ class SineGenerator(Stream):
     >>> # Imports
     >>> from skmultiflow.data.sine_generator import SineGenerator
     >>> # Setting up the stream
-    >>> stream = SineGenerator(classification_function = 2, random_state = 112, balance_classes = False,
-    ... has_noise = True)
+    >>> stream = SineGenerator(classification_function = 2, random_state = 112,
+    ...  balance_classes = False, has_noise = True)
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[0.37505713, 0.64030462, 0.95001658, 0.0756772 ]]), array([1.]))
@@ -75,7 +75,8 @@ class SineGenerator(Stream):
        [0.73653322, 0.83921149, 0.70936161, 0.18840112],
        [0.98566856, 0.38800331, 0.50315448, 0.76353033],
        [0.68373245, 0.72195738, 0.21415209, 0.76309258],
-       [0.07521616, 0.6108907 , 0.42563042, 0.23435109]]), array([1., 0., 1., 0., 1., 1., 1., 0., 0., 1.]))
+       [0.07521616, 0.6108907 , 0.42563042, 0.23435109]]),
+       array([1., 0., 1., 0., 1., 1., 1., 0., 0., 1.]))
     >>> stream.n_remaining_samples()
     -1
     >>> stream.has_more_samples()
@@ -85,12 +86,15 @@ class SineGenerator(Stream):
     _NUM_BASE_ATTRIBUTES = 2
     _TOTAL_ATTRIBUTES_INCLUDING_NOISE = 4
 
-    def __init__(self, classification_function=0, random_state=None, balance_classes=False, has_noise=False):
+    def __init__(self, classification_function=0, random_state=None, balance_classes=False,
+                 has_noise=False):
         super().__init__()
 
         # Classification functions to use
-        self._classification_functions = [self._classification_function_zero, self._classification_function_one,
-                                          self._classification_function_two, self._classification_function_three]
+        self._classification_functions = [self._classification_function_zero,
+                                          self._classification_function_one,
+                                          self._classification_function_two,
+                                          self._classification_function_three]
         self.classification_function = classification_function
         self.random_state = random_state
         self.has_noise = has_noise
@@ -98,7 +102,7 @@ class SineGenerator(Stream):
         self.n_num_features = self._NUM_BASE_ATTRIBUTES
         self.n_classes = 2
         self.n_targets = 1
-        self._random_state = None   # This is the actual random_state object used internally
+        self._random_state = None  # This is the actual random_state object used internally
         self.next_class_should_be_zero = False
         self.name = "Sine Generator"
 

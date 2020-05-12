@@ -2,6 +2,16 @@
 
 jobs:
 
+- job: PEP8
+  steps:
+    - script: |
+        python3 -m pip install flake8
+        chmod +x ./dev/linter.sh
+        ./dev/linter.sh
+      displayName: 'Checking PEP8 style'
+  pool:
+    vmImage: 'ubuntu-latest'
+
 - job: Linux
   
   strategy:

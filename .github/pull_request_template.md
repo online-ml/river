@@ -17,7 +17,7 @@ Changes proposed in this pull request:
 ### Checklist
 #### Implementation
 - [ ] Implementation is correct (it performs its intended function).
-- [ ] Code complies with PEP-8 and is consistent with the framework.
+- [ ] Code is consistent with the framework.
 - [ ] Code is properly documented.
 - [ ] PR description covers ALL the changes performed.
 - [ ] Files changed (update, add, delete) are in the PR's scope (no extra files are included).
