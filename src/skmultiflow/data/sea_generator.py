@@ -5,17 +5,17 @@ from skmultiflow.utils import check_random_state
 
 class SEAGenerator(Stream):
     r""" SEA stream generator.
-    
-    This generator is an implementation of the data stream with abrupt 
-    concept drift, first described in Street and Kim's 'A streaming 
+
+    This generator is an implementation of the data stream with abrupt
+    concept drift, first described in Street and Kim's 'A streaming
     ensemble algorithm (SEA) for large-scale classification' [1]_.
-    
-    It generates 3 numerical attributes, that vary from 0 to 10, where 
-    only 2 of them are relevant to the classification task. A classification 
-    function is chosen, among four possible ones. These functions compare 
-    the sum of the two relevant attributes with a threshold value, unique 
-    for each of the classification functions. Depending on the comparison 
-    the generator will classify an instance as one of the two possible 
+
+    It generates 3 numerical attributes, that vary from 0 to 10, where
+    only 2 of them are relevant to the classification task. A classification
+    function is chosen, among four possible ones. These functions compare
+    the sum of the two relevant attributes with a threshold value, unique
+    for each of the classification functions. Depending on the comparison
+    the generator will classify an instance as one of the two possible
     labels.
 
     The functions are:
@@ -26,48 +26,48 @@ class SEAGenerator(Stream):
 
     Concept drift can be introduced by changing the classification function.
     This can be done manually or using ``ConceptDriftStream``.
-    
+
     This data stream has two additional parameters, the first is to balance classes, which
-    means the class distribution will tend to a uniform one, and the possibility 
-    to add noise, which will, according to some probability, change the chosen 
+    means the class distribution will tend to a uniform one, and the possibility
+    to add noise, which will, according to some probability, change the chosen
     label for an instance.
-    
+
     Parameters
     ----------
     classification_function: int (Default: 0)
-        Which of the four classification functions to use for the generation. 
+        Which of the four classification functions to use for the generation.
         This value can vary from 0 to 3, and the thresholds are, 8, 9, 7 and 9.5.
-         
+
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
-        
+
     balance_classes: bool (Default: False)
         Whether to balance classes or not. If balanced, the class
         distribution will converge to a uniform distribution.
 
     noise_percentage: float (Default: 0.0)
-        The probability that noise will happen in the generation. At each 
-        new sample generated, a random probability is generated, and if that 
-        probability is higher than the noise_percentage, the chosen label will 
+        The probability that noise will happen in the generation. At each
+        new sample generated, a random probability is generated, and if that
+        probability is higher than the noise_percentage, the chosen label will
         be switched. From 0.0 to 1.0.
 
     References
     ----------
     .. [1]  W. Nick Street and YongSeog Kim. 2001. A streaming ensemble algorithm (SEA)
        for large-scale classification. In Proceedings of the seventh ACM SIGKDD international
-       conference on Knowledge discovery and data mining (KDD '01). ACM, New York, NY, USA, 377-382.
-       DOI=http://dx.doi.org/10.1145/502512.502568
-    
+       conference on Knowledge discovery and data mining (KDD '01). ACM, New York, NY, USA,
+       377-382. DOI=http://dx.doi.org/10.1145/502512.502568
+
     Examples
     --------
     >>> # Imports
     >>> from skmultiflow.data.sea_generator import SEAGenerator
     >>> # Setting up the stream
-    >>> stream = SEAGenerator(classification_function = 2, random_state = 112, balance_classes = False,
-    ... noise_percentage = 0.28)
+    >>> stream = SEAGenerator(classification_function = 2, random_state = 112,
+    ...  balance_classes = False, noise_percentage = 0.28)
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[ 3.75057129,  6.4030462 ,  9.50016579]]), array([ 0.]))
@@ -82,20 +82,25 @@ class SEAGenerator(Stream):
        [ 7.36533216,  8.39211485,  7.09361615],
        [ 9.8566856 ,  3.88003308,  5.03154482],
        [ 6.8373245 ,  7.21957381,  2.14152091],
-       [ 0.75216155,  6.10890702,  4.25630425]]), array([ 1.,  1.,  1.,  1.,  1.,  0.,  0.,  1.,  1.,  1.]))
+       [ 0.75216155,  6.10890702,  4.25630425]]),
+       array([ 1.,  1.,  1.,  1.,  1.,  0.,  0.,  1.,  1.,  1.]))
     >>> # Generators will have infinite remaining instances, so it returns -1
     >>> stream.n_remaining_samples()
     -1
     >>> stream.has_more_samples()
     True
-    
+
     """
-    def __init__(self, classification_function=0, random_state=None, balance_classes=False, noise_percentage=0.0):
+
+    def __init__(self, classification_function=0, random_state=None, balance_classes=False,
+                 noise_percentage=0.0):
         super().__init__()
 
         # Classification functions to use
-        self._classification_functions = [self._classification_function_zero, self._classification_function_one,
-                                          self._classification_function_two, self._classification_function_three]
+        self._classification_functions = [self._classification_function_zero,
+                                          self._classification_function_one,
+                                          self._classification_function_two,
+                                          self._classification_function_three]
 
         self.classification_function = classification_function
         self.random_state = random_state
@@ -105,7 +110,7 @@ class SEAGenerator(Stream):
         self.n_features = self.n_num_features
         self.n_classes = 2
         self.n_targets = 1
-        self._random_state = None   # This is the actual random_state object used internally
+        self._random_state = None  # This is the actual random_state object used internally
         self.next_class_should_be_zero = False
         self.name = "SEA Generator"
 
@@ -163,7 +168,8 @@ class SEAGenerator(Stream):
         if isinstance(balance_classes, bool):
             self._balance_classes = balance_classes
         else:
-            raise ValueError("balance_classes should be boolean, {} was passed".format(balance_classes))
+            raise ValueError(
+                "balance_classes should be boolean, {} was passed".format(balance_classes))
 
     @property
     def noise_percentage(self):
@@ -188,7 +194,8 @@ class SEAGenerator(Stream):
         if (0.0 <= noise_percentage) and (noise_percentage <= 1.0):
             self._noise_percentage = noise_percentage
         else:
-            raise ValueError("noise percentage should be in [0.0..1.0], {} was passed".format(noise_percentage))
+            raise ValueError(
+                "noise percentage should be in [0.0..1.0], {} was passed".format(noise_percentage))
 
     def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
@@ -196,29 +203,29 @@ class SEAGenerator(Stream):
 
     def next_sample(self, batch_size=1):
         """ Returns next sample from the stream.
-        
-        The sample generation works as follows: The three attributes are 
-        generated with the random generator, initialized with the seed passed 
-        by the user. Then, the classification function decides, as a function 
-        of the two relevant attributes, whether to classify the instance as 
+
+        The sample generation works as follows: The three attributes are
+        generated with the random generator, initialized with the seed passed
+        by the user. Then, the classification function decides, as a function
+        of the two relevant attributes, whether to classify the instance as
         class 0 or class 1. The next step is to verify if the classes should
         be balanced, and if so, balance the classes. The last step is to add
         noise, if the noise percentage is higher than 0.0.
-        
-        The generated sample will have 3 features, where only the two first 
+
+        The generated sample will have 3 features, where only the two first
         are relevant, and 1 label (it has one classification task).
-        
+
         Parameters
         ----------
         batch_size: int (optional, default=1)
             The number of samples to return.
-        
+
         Returns
         -------
         tuple or tuple list
-            Return a tuple with the features matrix and the labels matrix for 
+            Return a tuple with the features matrix and the labels matrix for
             the batch_size samples that were requested.
-         
+
         """
         data = np.zeros([batch_size, self.n_features + 1])
 
@@ -231,7 +238,8 @@ class SEAGenerator(Stream):
                 att1 = 10 * self._random_state.rand()
                 att2 = 10 * self._random_state.rand()
                 att3 = 10 * self._random_state.rand()
-                group = self._classification_functions[self.classification_function](att1, att2, att3)
+                group = self._classification_functions[self.classification_function](att1, att2,
+                                                                                     att3)
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -267,26 +275,26 @@ class SEAGenerator(Stream):
     @staticmethod
     def _classification_function_zero(att1, att2, att3):
         """ classification_function_zero
-        
-        Decides the sample class label based on the sum of att1 and att2, 
+
+        Decides the sample class label based on the sum of att1 and att2,
         and the threshold value of 8.
-        
+
         Parameters
         ----------
         att1: float
             First numeric attribute.
-            
+
         att2: float
             Second numeric attribute.
-            
+
         att3: float
             Third numeric attribute.
-        
+
         Returns
         -------
         int
             Returns the sample class label, either 0 or 1.
-        
+
         """
         return 0 if (att1 + att2 <= 8) else 1
 
@@ -294,7 +302,7 @@ class SEAGenerator(Stream):
     def _classification_function_one(att1, att2, att3):
         """ classification_function_one
 
-        Decides the sample class label based on the sum of att1 and att2, 
+        Decides the sample class label based on the sum of att1 and att2,
         and the threshold value of 9.
 
         Parameters
@@ -320,7 +328,7 @@ class SEAGenerator(Stream):
     def _classification_function_two(att1, att2, att3):
         """ classification_function_two
 
-        Decides the sample class label based on the sum of att1 and att2, 
+        Decides the sample class label based on the sum of att1 and att2,
         and the threshold value of 7.
 
         Parameters
@@ -346,7 +354,7 @@ class SEAGenerator(Stream):
     def _classification_function_three(att1, att2, att3):
         """ classification_function_three
 
-        Decides the sample class label based on the sum of att1 and att2, 
+        Decides the sample class label based on the sum of att1 and att2,
         and the threshold value of 9.5.
 
         Parameters

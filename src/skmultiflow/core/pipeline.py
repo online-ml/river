@@ -3,7 +3,8 @@ from sklearn.utils import tosequence
 
 
 class Pipeline(BaseSKMObject):
-    """ [Experimental] Holds a set of sequential operation (transforms), followed by a single estimator.
+    """ [Experimental] Holds a set of sequential operation (transforms),
+    followed by a single estimator.
 
     It allows for easy manipulation of datasets that may
     require several transformation processes before being used by a learner.
@@ -259,7 +260,8 @@ class Pipeline(BaseSKMObject):
             if t is None:
                 continue
             else:
-                if not (hasattr(t, "fit") or hasattr(t, "fit_transform")) or not hasattr(t, "transform"):
+                if not (hasattr(t, "fit") or hasattr(t, "fit_transform")) \
+                        or not hasattr(t, "transform"):
                     self.active = False
                     raise TypeError("All intermediate steps, including an evaluator, "
                                     "should implement fit and transform.")

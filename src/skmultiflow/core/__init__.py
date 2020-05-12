@@ -12,5 +12,5 @@ from .base import is_classifier
 from .base import is_regressor
 from .pipeline import Pipeline
 
-__all__ = ["BaseSKMObject", "ClassifierMixin", "RegressorMixin", "MetaEstimatorMixin", "MultiOutputMixin",
-           "Pipeline", "clone", "is_classifier", "is_regressor"]
+__all__ = ["BaseSKMObject", "ClassifierMixin", "RegressorMixin", "MetaEstimatorMixin",
+           "MultiOutputMixin", "Pipeline", "clone", "is_classifier", "is_regressor"]

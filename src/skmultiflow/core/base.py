@@ -1,8 +1,9 @@
 """ Base class for all estimators in scikit-multiflow """
 
-# Some code has been copied from sklearn for compatibility. Following is the commit information to track the last
-# matching version with sklearn's base.py:
-# https://github.com/scikit-learn/scikit-learn/blob/1fe00b58949a6b9bce45e9e15eb8b9c138bd6a2e/sklearn/base.py
+# Some code has been copied from sklearn for compatibility.
+# Following is the commit information to track the last matching version with sklearn's base.py:
+# https://github.com/scikit-learn/scikit-learn/
+# blob/1fe00b58949a6b9bce45e9e15eb8b9c138bd6a2e/sklearn/base.py
 
 from abc import ABCMeta, abstractmethod
 
@@ -320,8 +321,7 @@ class BaseEstimator:
     def _get_tags(self):
         collected_tags = {}
         for base_class in inspect.getmro(self.__class__):
-            if (hasattr(base_class, '_more_tags')
-                    and base_class != self.__class__):
+            if (hasattr(base_class, '_more_tags') and base_class != self.__class__):
                 more_tags = base_class._more_tags(self)
                 collected_tags = _update_if_consistent(collected_tags,
                                                        more_tags)
@@ -338,7 +338,8 @@ class BaseSKMObject(BaseEstimator):
 
         Notes
         -----
-        This class provides additional functionality not available in the base estimator from scikit-learn
+        This class provides additional functionality not available in the base estimator
+        from scikit-learn
     """
     def reset(self):
         """ Resets the estimator to its initial state.
@@ -381,10 +382,12 @@ class ClassifierMixin(metaclass=ABCMeta):
             An array-like with the class labels of all samples in X.
 
         classes: numpy.ndarray, optional (default=None)
-            Contains all possible/known class labels. Usage varies depending on the learning method.
+            Contains all possible/known class labels. Usage varies depending
+            on the learning method.
 
         sample_weight: numpy.ndarray, optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+            Samples weight. If not provided, uniform weights are assumed.
+            Usage varies depending on the learning method.
 
         Returns
         -------
@@ -410,10 +413,12 @@ class ClassifierMixin(metaclass=ABCMeta):
             An array-like with the class labels of all samples in X.
 
         classes: numpy.ndarray, optional (default=None)
-            Array with all possible/known class labels. Usage varies depending on the learning method.
+            Array with all possible/known class labels. Usage varies depending
+            on the learning method.
 
         sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+            Samples weight. If not provided, uniform weights are assumed.
+            Usage varies depending on the learning method.
 
         Returns
         -------
@@ -449,9 +454,10 @@ class ClassifierMixin(metaclass=ABCMeta):
 
         Returns
         -------
-        A numpy.ndarray of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the
-        same index. And where the list in index [i] contains len(self.target_values) elements, each of which represents
-        the probability that the i-th sample of X belongs to a certain class-label.
+        A numpy.ndarray of shape (n_samples, n_labels), in which each outer entry is associated
+        with the X entry of the same index. And where the list in index [i] contains
+        len(self.target_values) elements, each of which represents the probability that
+        the i-th sample of X belongs to a certain class-label.
 
         """
         raise NotImplementedError
@@ -500,7 +506,8 @@ class RegressorMixin(metaclass=ABCMeta):
             An array-like with the target values of all samples in X.
 
         sample_weight: numpy.ndarray, optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+            Samples weight. If not provided, uniform weights are assumed. Usage varies
+            depending on the learning method.
 
         Returns
         -------
@@ -526,7 +533,8 @@ class RegressorMixin(metaclass=ABCMeta):
             An array-like with the target values of all samples in X.
 
         sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+            Samples weight. If not provided, uniform weights are assumed. Usage varies
+            depending on the learning method.
 
         Returns
         -------
