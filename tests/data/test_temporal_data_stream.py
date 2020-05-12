@@ -8,12 +8,12 @@ import pytest
 from skmultiflow.data.temporal_data_stream import TemporalDataStream
 
 
-def test_temporal_data_stream(test_path, package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
+def test_temporal_data_stream(test_path):
+    test_file = os.path.join(test_path, 'sea_stream_file.csv')
     raw_data = pd.read_csv(test_file)
     stream = TemporalDataStream(raw_data, name='Test')
 
-    assert stream.n_remaining_samples() == 40000
+    assert stream.n_remaining_samples() == 40
 
     expected_names = ['attrib1', 'attrib2', 'attrib3']
     assert stream.feature_names == expected_names
@@ -66,8 +66,8 @@ def test_temporal_data_stream(test_path, package_path):
     assert stream.get_info() == expected_info
 
 
-def test_temporal_data_stream_X_y(test_path, package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
+def test_temporal_data_stream_X_y(test_path):
+    test_file = os.path.join(test_path, 'sea_stream_file.csv')
     raw_data = pd.read_csv(test_file)
     y = raw_data.iloc[:, -1:]
     X = raw_data.iloc[:, :-1]
@@ -75,7 +75,7 @@ def test_temporal_data_stream_X_y(test_path, package_path):
 
     assert stream._Y_is_defined
 
-    assert stream.n_remaining_samples() == 40000
+    assert stream.n_remaining_samples() == 40
 
     expected_names = ['attrib1', 'attrib2', 'attrib3']
     assert stream.feature_names == expected_names
@@ -146,8 +146,8 @@ def test_check_data():
         TemporalDataStream(data=data, allow_nan=True)
 
 
-def test_temporal_data_stream_time_ordered(package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
+def test_temporal_data_stream_time_ordered(test_path):
+    test_file = os.path.join(test_path, 'sea_stream_file.csv')
     raw_data = pd.read_csv(test_file)
     X = raw_data[["attrib1", "attrib2", "attrib3"]].values
     y = raw_data["class"].values
@@ -156,8 +156,8 @@ def test_temporal_data_stream_time_ordered(package_path):
     stream = TemporalDataStream(X, y, time=time, ordered=True)
 
 
-def test_temporal_data_stream_time_not_ordered(package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
+def test_temporal_data_stream_time_not_ordered(test_path):
+    test_file = os.path.join(test_path, 'sea_stream_file.csv')
     raw_data = pd.read_csv(test_file)
     X = raw_data[["attrib1", "attrib2", "attrib3"]].values
     y = raw_data["class"].values
@@ -170,8 +170,8 @@ def test_temporal_data_stream_time_not_ordered(package_path):
     assert ordered == True
 
 
-def test_temporal_data_stream_time_with_delay(package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
+def test_temporal_data_stream_time_with_delay(test_path):
+    test_file = os.path.join(test_path, 'sea_stream_file.csv')
     raw_data = pd.read_csv(test_file)
     X = raw_data[["attrib1", "attrib2", "attrib3"]].values
     y = raw_data["class"].values
@@ -181,8 +181,8 @@ def test_temporal_data_stream_time_with_delay(package_path):
     stream = TemporalDataStream(X, y, time=time, sample_delay=delay, ordered=False)
 
 
-def test_temporal_data_stream_time_with_weight(package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
+def test_temporal_data_stream_time_with_weight(test_path):
+    test_file = os.path.join(test_path, 'sea_stream_file.csv')
     raw_data = pd.read_csv(test_file)
     X = raw_data[["attrib1", "attrib2", "attrib3"]].values
     y = raw_data["class"].values

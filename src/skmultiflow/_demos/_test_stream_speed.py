@@ -9,7 +9,8 @@ def demo():
     
     """
     # Setup the stream
-    # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
+    # stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+    #                     "master/covtype.csv")
     stream = RandomRBFGeneratorDrift()
 
     # Test with RandomTreeGenerator

@@ -172,7 +172,8 @@ And data related to performance during the evaluation:
    from skmultiflow.evaluation import EvaluatePrequential
 
    # 1. Create a stream
-   stream = FileStream("../datasets/elec.csv")
+   stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/"
+    ...                "streaming-datasets/master/elec.csv")
 
    # 2. Instantiate the HoeffdingTreeClassifier
    ht = HoeffdingTreeClassifier()
@@ -185,3 +186,8 @@ And data related to performance during the evaluation:
    # 4. Run evaluation
    evaluator.evaluate(stream=stream, model=ht)
 
+**Note:** The ``elec.csv`` file is available in the following repository:
+https://github.com/scikit-multiflow/streaming-datasets
+
+To avoid downloading the data multiple times, you can keep a local copy and
+replace the path accordingly.

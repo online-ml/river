@@ -50,8 +50,10 @@ if __name__ == '__main__':
     #               'use_ltm': False}
 
     logging.info('loading dataset')
-    # stream = FileStream("../data/datasets/weather.csv")
-    stream = FileStream("../data/datasets/moving_squares.csv")
+    # stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+    #                     "master/weather.csv")
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/moving_squares.csv")
 
     X, y = stream.next_sample(stream.n_samples)
 

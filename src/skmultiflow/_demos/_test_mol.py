@@ -23,7 +23,8 @@ def demo():
     logging.basicConfig(format='%(message)s', level=logging.INFO)
 
     # Setup the file stream
-    stream = FileStream("../data/datasets/music.csv", 0, 6)
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/music.csv", 0, 6)
 
     # Setup the classifier, by default it uses Logistic Regression
     # classifier = MultiOutputLearner()

@@ -10,8 +10,7 @@ def demo(output_file=None, instances=40000):
     This demo shows how to produce a prequential evaluation.
     
     The first thing needed is a stream. For this case we use a file stream 
-    which gets its samples from the sea_big.csv file, inside the datasets 
-    folder.
+    which gets its samples from the sea_big.csv file.
     
     Then we need to setup a classifier, which in this case is an instance 
     of sklearn's PassiveAggressiveClassifier. Then, optionally we create a 
@@ -29,7 +28,8 @@ def demo(output_file=None, instances=40000):
     
     """
     # Setup the File Stream
-    stream = FileStream("../data/datasets/sea_big.csv", -1, 1)
+    # stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+    #                     "master/sea_big.csv")
     # stream = WaveformGenerator()
 
     # Setup the classifier

@@ -1,4 +1,4 @@
-from skmultiflow.demos import _test_prequential
+from skmultiflow._demos import _test_prequential
 from skmultiflow.utils.file_scripts import clean_header
 import logging
 

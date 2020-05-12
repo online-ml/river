@@ -19,7 +19,8 @@ def demo(instances=2000):
      
     """
     # Stream setup
-    stream = FileStream("../data/datasets/covtype.csv", -1, 1)
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/covtype.csv")
     # stream = SEAGenerator(classification_function=2, sample_seed=53432, balance_classes=False)
     # Setup the classifier
     clf = SGDClassifier()

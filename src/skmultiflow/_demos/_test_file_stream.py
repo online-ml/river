@@ -10,7 +10,8 @@ def demo():
     h = HoeffdingTreeClassifier()
 
     # Setup Stream
-    stream = FileStream("../data/datasets/sea_stream.csv")
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/sea_stream.csv")
 
     pretrain = 100
     evaluator = EvaluatePrequential(pretrain_size=pretrain, output_file='test_filestream.csv', max_samples=10000,

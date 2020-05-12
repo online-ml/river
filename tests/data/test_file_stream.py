@@ -3,11 +3,11 @@ import numpy as np
 from skmultiflow.data.file_stream import FileStream
 
 
-def test_file_stream(test_path, package_path):
-    test_file = os.path.join(package_path, 'src/skmultiflow/data/datasets/sea_stream.csv')
+def test_file_stream(test_path):
+    test_file = os.path.join(test_path, 'sea_stream_file.csv')
     stream = FileStream(test_file)
 
-    assert stream.n_remaining_samples() == 40000
+    assert stream.n_remaining_samples() == 40
 
     expected_names = ['attrib1', 'attrib2', 'attrib3']
     assert stream.feature_names == expected_names
@@ -25,7 +25,7 @@ def test_file_stream(test_path, package_path):
 
     assert stream.n_targets == 1
 
-    assert stream.get_data_info() == 'sea_stream.csv - 1 target(s), 2 classes'
+    assert stream.get_data_info() == 'sea_stream_file.csv - 1 target(s), 2 classes'
 
     assert stream.has_more_samples() is True
 
@@ -56,5 +56,6 @@ def test_file_stream(test_path, package_path):
 
     assert 'stream' == stream._estimator_type
 
-    expected_info = "FileStream(filename='sea_stream.csv', target_idx=-1, n_targets=1, cat_features=None)"
+    expected_info = "FileStream(filename='sea_stream_file.csv', " \
+                    "target_idx=-1, n_targets=1, cat_features=None)"
     assert stream.get_info() == expected_info
