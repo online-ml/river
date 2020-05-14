@@ -244,6 +244,8 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                     normalized_sample.append(float(X[i] - mean) / (3 * sd))
                 else:
                     normalized_sample.append(0.0)
+            elif self._nominal_attributes is not None and i in self._nominal_attributes:
+                normalized_sample.append(X[i])  # keep nominal inputs unaltered
             else:
                 normalized_sample.append(0.0)
         if self.samples_seen > 1:
@@ -311,7 +313,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
             leaf_node = found_node.node
             if leaf_node is None:
                 leaf_node = found_node.parent
-            if isinstance(leaf_node, ActiveLearningNodePerceptron):
+            if isinstance(leaf_node, LearningNode):
                 return leaf_node.perceptron_weight
             else:
                 return None

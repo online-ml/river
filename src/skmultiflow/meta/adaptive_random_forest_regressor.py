@@ -61,7 +61,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
             - 'mae' - Mean Absolute Error
             - 'predictions' - predicted target values
 
-    max_byte_size: int, optional (default=33554432)
+    max_byte_size: int, optional (default=1048576000)
         (`ARFHoeffdingTreeRegressor` parameter)
         Maximum memory consumed by the tree.
 
@@ -167,7 +167,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                  warning_detection_method: BaseDriftDetector = ADWIN(0.01),
                  drift_detection_criteria: str = 'mse',
                  # Tree parameters
-                 max_byte_size: int = 33554432,
+                 max_byte_size: int = 1048576000,
                  memory_estimate_period: int = 2000000,
                  grace_period: int = 50,
                  split_confidence: float = 0.01,
