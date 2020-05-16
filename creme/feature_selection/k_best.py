@@ -6,7 +6,7 @@ from creme import base
 from creme import stats
 
 
-class SelectKBest(base.Transformer):
+class SelectKBest(base.SupervisedTransformer):
     """Removes all but the $k$ highest scoring features.
 
     Parameters:
@@ -62,10 +62,6 @@ class SelectKBest(base.Transformer):
         self.similarity = similarity
         self.similarities = collections.defaultdict(functools.partial(copy.deepcopy, similarity))
         self.leaderboard = collections.Counter()
-
-    @property
-    def is_supervised(self):
-        return True
 
     def fit_one(self, x, y):
 

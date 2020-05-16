@@ -71,7 +71,7 @@ class Agg(base.Transformer):
     def _get_key(self, x):
         return '_'.join(str(x[k]) for k in self.by)
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
         self.groups[self._get_key(x)].update(x[self.on])
         return self
 
@@ -82,7 +82,7 @@ class Agg(base.Transformer):
         return self.feature_name
 
 
-class TargetAgg(base.Transformer):
+class TargetAgg(base.SupervisedTransformer):
     """Computes a streaming group by on the target.
 
     At each step, the running statistic `how` of group `by` is updated with the target.
@@ -140,14 +140,10 @@ class TargetAgg(base.Transformer):
         self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
         self.feature_name = f'{target_name}_{how.name}_by_{"_and_".join(self.by)}'
 
-    @property
-    def is_supervised(self):
-        return True
-
     def _get_key(self, x):
         return '_'.join(str(x[k]) for k in self.by)
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x, y):
         self.groups[self._get_key(x)].update(y)
         return self
 

@@ -516,8 +516,12 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         self.instance_ = copy.deepcopy(self.estimator)
 
         # Call fit_one for each observation
-        for x, yi in STREAM_METHODS[type(X)](X, y):
-            self.instance_.fit_one(x, yi)
+        if isinstance(self.instance_, base.SupervisedTransformer):
+            for x, yi in STREAM_METHODS[type(X)](X, y):
+                self.instance_.fit_one(x, yi)
+        else:
+            for x, _ in STREAM_METHODS[type(X)](X):
+                self.instance_.fit_one(x)
 
         # Store the number of features so that future inputs can be checked
         self.n_features_ = X.shape[1]

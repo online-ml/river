@@ -290,7 +290,7 @@ class TFIDF(BagOfWords):
         self.dfs = collections.Counter()
         self.n = 0
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
 
         # Update the document counts
         terms = self.process_text(x)

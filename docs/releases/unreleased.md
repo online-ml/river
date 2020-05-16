@@ -1,5 +1,9 @@
 # Unreleased
 
+## base
+
+- Added a new base class called `SupervisedTransformer` from which supervised transformers inherit from. Before this, supervised transformers has a `is_supervised` property.
+
 ## compose
 
 - Added `compose.SelectType`, which allows selecting feature subsets based on their type.

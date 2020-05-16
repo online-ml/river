@@ -148,7 +148,7 @@ class StatImputer(base.Transformer):
         new_stat = functools.partial(copy.deepcopy, self.stat)
         self.imputers = collections.defaultdict(new_stat)  # type: ignore
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
         if self.on in x:
             key = x[self.by] if self.by else None
             self.imputers[key].update(x[self.on])

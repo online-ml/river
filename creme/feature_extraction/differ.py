@@ -77,7 +77,7 @@ class Differ(base.Transformer):
         if by is not None:
             self.feature_name += f'_by_{self.by}'
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
 
         if self.when(x):
             self.last_moments[x[self.by]] = x[self.on]

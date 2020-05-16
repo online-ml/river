@@ -17,6 +17,7 @@ from .multi_output import MultiOutputClassifier
 from .multi_output import MultiOutputRegressor
 from .predictor import Predictor
 from .regressor import Regressor
+from .transformer import SupervisedTransformer
 from .transformer import Transformer
 from .wrapper import Wrapper
 
@@ -33,6 +34,7 @@ __all__ = [
     'MultiOutputRegressor',
     'Predictor',
     'Regressor',
+    'SupervisedTransformer',
     'Transformer',
     'typing',
     'Wrapper'

@@ -82,10 +82,6 @@ class TransformerUnion(base.Transformer):
         """Just for convenience."""
         return len(self.transformers)
 
-    @property
-    def is_supervised(self):
-        return any(t.is_supervised for t in self.transformers.values())
-
     def __str__(self):
         return ' + '.join(map(str, self.transformers.values()))
 
@@ -97,7 +93,7 @@ class TransformerUnion(base.Transformer):
         ).expandtabs(2)
 
     def _get_params(self):
-        return dict(self.items())
+        return dict(self.transformers.items())
 
     def _set_params(self, new_params=None):
         if new_params is None:
@@ -148,27 +144,24 @@ class TransformerUnion(base.Transformer):
         return self.add_step(other)
 
     def fit_one(self, x, y=None):
-        for transformer in self.transformers.values():
-            transformer.fit_one(x, y)
+        """Update each transformer.
+
+        Parameters:
+            x: Features.
+            y: An optional target, this is expected to be provided if at least one of the
+                transformers is supervised (i.e. it inherits from `base.SupervisedTransformer`).
+
+        """
+        for t in self.transformers.values():
+            if isinstance(t, base.SupervisedTransformer):
+                t.fit_one(x, y)
+            else:
+                t.fit_one(x)
         return self
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
         return dict(collections.ChainMap(*(
-            transformer.transform_one(x)
-            for transformer in self.transformers.values()
+            t.transform_one(x)
+            for t in self.transformers.values()
         )))
-
-    def draw(self):
-
-        if not GRAPHVIZ_INSTALLED:
-            raise ImportError('graphviz is not installed')
-
-        g = graphviz.Digraph(engine='fdp')
-
-        for part in self.transformers.values():
-            if hasattr(part, 'draw'):
-                g.subgraph(part.draw())
-            else:
-                g.node(str(part))
-        return g

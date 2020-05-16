@@ -7,7 +7,7 @@ class Transformer(base.Estimator):
     """A transformer."""
 
     def fit_one(self, x: dict) -> 'Transformer':
-        """Fits to a set of features `x` and an optional target `y`.
+        """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `fit_one` step
         because they are stateless. For this reason the default behavior of this function is to do
@@ -25,7 +25,7 @@ class Transformer(base.Estimator):
 
     @abc.abstractmethod
     def transform_one(self, x: dict) -> dict:
-        """Transforms a set of features `x`.
+        """Transform a set of features `x`.
 
         Parameters:
             x: A dictionary of features.
@@ -34,18 +34,6 @@ class Transformer(base.Estimator):
             dict
 
         """
-
-    @property
-    def is_supervised(self) -> bool:
-        """Indicates if the transformer uses the target `y` or not.
-
-        Supervised transformers have to be handled differently from unsupervised transformers in an
-        online setting. This is especially true for target encoding where leakage can easily occur.
-        Most transformers are unsupervised and so this property returns by default `False`.
-        Transformers that are supervised must override this property in their definition.
-
-        """
-        return False
 
     def __or__(self, other):
         """Merges with another Transformer into a Pipeline."""
@@ -74,3 +62,18 @@ class Transformer(base.Estimator):
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
         return compose.TransformerUnion(other, self)
+
+
+class SupervisedTransformer(Transformer):
+
+    def fit_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':
+        """Update with a set of features `x` and a target `y`.
+
+        Parameters:
+            x: A dictionary of features.
+
+        Returns:
+            self
+
+        """
+        return self

@@ -40,7 +40,7 @@ class VarianceThreshold(base.Transformer):
         self.min_samples = min_samples
         self.variances = collections.defaultdict(stats.Var)
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
 
         for i, xi in x.items():
             self.variances[i].update(xi)
