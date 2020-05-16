@@ -83,7 +83,7 @@ class OneHotEncoder(base.Transformer):
         self.sparse = sparse
         self.values = collections.defaultdict(set)
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
         for i, xi in x.items():
             self.values[i].add(xi)
         return self

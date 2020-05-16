@@ -240,17 +240,10 @@ class Pipeline(base.Estimator):
 
     @property
     def transformers(self):
-        """If a pipeline has $n$ steps, then the first $n-1$ are necessarily transformers."""
+        """If a pipeline has `n` steps, then the first `n - 1` are necessarily transformers."""
         if isinstance(self.final_estimator, base.Transformer):
             return self.steps.values()
         return itertools.islice(self.steps.values(), len(self) - 1)
-
-    @property
-    def is_supervised(self):
-        return (
-            not isinstance(self.final_estimator, base.Transformer) or
-            any(t.is_supervised for t in self.transformers)
-        )
 
     def _add_step(self, estimator: typing.Union[base.Estimator, typing.Tuple[typing.Hashable, base.Estimator]],
                  at_start: bool):
@@ -302,35 +295,39 @@ class Pipeline(base.Estimator):
     def fit_one(self, x, y=None, **fit_params):
 
         # Loop over the first n - 1 steps, which should all be transformers
-        for t in itertools.islice(self.steps.values(), len(self) - 1):
+        for t in self.transformers:
             x_pre = x
             x = t.transform_one(x=x)
 
-            # If a transformer is supervised then it has to be updated
-            if t.is_supervised:
+            # The supervised transformers have to be updated.
+            # Note that this is done after transforming in order to avoid target leakage.
+            if isinstance(t, union.TransformerUnion):
+                for sub_t in t.transformers.values():
+                    if isinstance(sub_t, base.SupervisedTransformer):
+                        sub_t.fit_one(x=x_pre, y=y)
 
-                if isinstance(t, union.TransformerUnion):
-                    for sub_t in t.transformers.values():
-                        if sub_t.is_supervised:
-                            sub_t.fit_one(x=x_pre, y=y)
+            elif isinstance(t, base.SupervisedTransformer):
+                t.fit_one(x=x_pre, y=y)
 
-                else:
-                    t.fit_one(x=x_pre, y=y)
+        final = self.final_estimator
+        if not isinstance(final, base.Transformer):
+            final.fit_one(x=x, y=y, **fit_params)
 
-        self.final_estimator.fit_one(x=x, y=y, **fit_params)
         return self
 
     def transform_one(self, x: dict):
         for t in self.transformers:
 
+            # The unsupervised transformers are updated during transform. We do this because
+            # typically transform_one is called before fit_one, and therefore we might as well use
+            # the available information as soon as possible. Note that way of proceeding is very
+            # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
-
-                # Fit the unsupervised part of the union
                 for sub_t in t.transformers.values():
-                    if not sub_t.is_supervised:
+                    if not isinstance(t, base.SupervisedTransformer):
                         sub_t.fit_one(x=x)
 
-            elif not t.is_supervised:
+            elif not isinstance(t, base.SupervisedTransformer):
                 t.fit_one(x=x)
 
             x = t.transform_one(x=x)
@@ -515,19 +512,14 @@ class Network(collections.UserList):
         self.links.add((self.index(a), self.index(b)))
 
     def draw(self):
-        dot = graphviz.Digraph(
-            graph_attr={'splines': 'ortho'},
-            node_attr={'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
-                       'fontsize': '11', 'margin': '0.1,0.0'},
-            edge_attr={'penwidth': '0.6'}
-        )
+        G = graphviz.Digraph()
 
         def draw_node(a):
             if isinstance(a, Network):
                 for part in a:
                     draw_node(part)
             else:
-                dot.node(a)
+                G.node(a)
 
         for a in self:
             draw_node(a)
@@ -552,9 +544,9 @@ class Network(collections.UserList):
                         c = b.draw()
                         c.attr(label=b.name, labelloc=b.labelloc)
                         c.name = f'cluster_{b.name}'
-                        dot.subgraph(c)
+                        G.subgraph(c)
                     else:
-                        dot.subgraph(b.draw())
+                        G.subgraph(b.draw())
 
                     draw_link(a, b[0])
                 # Connect each part of b with a
@@ -563,9 +555,9 @@ class Network(collections.UserList):
                         draw_link(a, part)
 
             else:
-                dot.edge(a, b)
+                G.edge(a, b)
 
         for a, b in self.links:
             draw_link(self[a], self[b])
 
-        return dot
+        return G

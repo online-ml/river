@@ -111,7 +111,7 @@ class StandardScaler(base.Transformer):
         self.with_std = with_std
         self.variances = collections.defaultdict(stats.Var)
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
 
         for i, xi in x.items():
             self.variances[i].update(xi)
@@ -171,7 +171,7 @@ class MinMaxScaler(base.Transformer):
         self.min = collections.defaultdict(stats.Min)
         self.max = collections.defaultdict(stats.Max)
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
 
         for i, xi in x.items():
             self.min[i].update(xi)
@@ -227,7 +227,7 @@ class MaxAbsScaler(base.Transformer):
     def __init__(self):
         self.abs_max = collections.defaultdict(stats.AbsMax)
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
 
         for i, xi in x.items():
             self.abs_max[i].update(xi)
@@ -292,7 +292,7 @@ class RobustScaler(base.Transformer):
         self.median = collections.defaultdict(functools.partial(stats.Quantile, 0.5))
         self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
 
-    def fit_one(self, x, y=None):
+    def fit_one(self, x):
 
         for i, xi in x.items():
             if self.with_centering:
