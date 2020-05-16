@@ -41,7 +41,6 @@ class MultiClassifier(Classifier):
 
         """
 
-    @abc.abstractmethod
     def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
         """Predict the probability of each label for a dictionary of features `x`.
 
@@ -52,6 +51,7 @@ class MultiClassifier(Classifier):
             A dictionary which associates a probability which each label.
 
         """
+        raise NotImplementedError
 
 
 
@@ -82,3 +82,4 @@ class BinaryClassifier(Classifier):
             A dictionary with the probabilities of `True` and `False`.
 
         """
+        raise NotImplementedError

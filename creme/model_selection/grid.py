@@ -1,5 +1,4 @@
 import itertools
-import types
 import typing
 
 import numpy as np
@@ -57,7 +56,6 @@ def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
         {'BagOfWords': {'strip_accents': True},
          'LinearRegression': {'intercept_lr': 0.001,
                               'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}}
-        <BLANKLINE>
 
     """
 

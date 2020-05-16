@@ -129,7 +129,10 @@ def get_all_estimators():
                 inst = preprocessing.StandardScaler() | obj()
 
             elif issubclass(obj, multiclass.OneVsRestClassifier):
-                inst = obj(binary_classifier=linear_model.LogisticRegression())
+                inst = obj(classifier=linear_model.LogisticRegression())
+
+            elif issubclass(obj, multiclass.OutputCodeClassifier):
+                inst = obj(classifier=linear_model.LogisticRegression(), code_size=10)
 
             else:
                 inst = obj()

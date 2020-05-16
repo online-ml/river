@@ -13,7 +13,7 @@ class ClassificationSampler(base.Wrapper, base.Classifier):
         self._rng = np.random.RandomState(seed)
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.classifier
 
     def predict_proba_one(self, x):

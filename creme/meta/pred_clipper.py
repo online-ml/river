@@ -47,7 +47,7 @@ class PredClipper(base.Regressor, base.Wrapper):
         self.y_max = y_max
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.regressor
 
     @property

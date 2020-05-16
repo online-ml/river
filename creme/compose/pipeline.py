@@ -462,7 +462,7 @@ class Pipeline(base.Estimator):
             # Wrapper models are handled recursively
             if isinstance(step, base.Wrapper):
                 return Network(
-                    nodes=[networkify(step._model)],
+                    nodes=[networkify(step._wrapper_model)],
                     links=[],
                     directed=True,
                     name=type(step).__name__,

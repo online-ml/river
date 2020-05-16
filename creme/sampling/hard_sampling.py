@@ -34,7 +34,7 @@ class HardSampling(base.Wrapper):
         self._rng = random.Random(seed)
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.model
 
     def predict_one(self, x):

@@ -8,7 +8,7 @@ from creme import utils
 __all__ = ['OneVsRestClassifier']
 
 
-class OneVsRestClassifier(base.MultiClassifier):
+class OneVsRestClassifier(base.Wrapper, base.MultiClassifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
@@ -17,30 +17,25 @@ class OneVsRestClassifier(base.MultiClassifier):
     seen up to a given point in time.
 
     Parameters:
-        binary_classifier
+        classifier: A binary classifier, although a multi-class classifier will work too.
 
     Attributes:
         classifiers (dict): A mapping between classes and classifiers.
 
     Example:
 
-        >>> from creme import compose
         >>> from creme import datasets
         >>> from creme import linear_model
         >>> from creme import metrics
         >>> from creme import model_selection
         >>> from creme import multiclass
-        >>> from creme import optim
         >>> from creme import preprocessing
 
         >>> X_y = datasets.ImageSegments()
 
-        >>> model = compose.Pipeline(
-        ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('learn', multiclass.OneVsRestClassifier(
-        ...         binary_classifier=linear_model.LogisticRegression())
-        ...     )
-        ... )
+        >>> scaler = preprocessing.StandardScaler()
+        >>> ovr = multiclass.OneVsRestClassifier(linear_model.LogisticRegression())
+        >>> model = scaler | ovr
 
         >>> metric = metrics.MacroF1()
 
@@ -49,21 +44,22 @@ class OneVsRestClassifier(base.MultiClassifier):
 
     """
 
-    def __init__(self, binary_classifier: base.BinaryClassifier):
-        self.models = {}
-        self.binary_classifier = binary_classifier
+    def __init__(self, classifier: base.BinaryClassifier):
+        self.classifier = classifier
+        self.classifiers = {}
 
-    def __str__(self):
-        return f'OneVsRestClassifier({self.binary_classifier})'
+    @property
+    def _wrapped_model(self):
+        return self.classifier
 
     def fit_one(self, x, y):
 
         # Instantiate a new binary classifier if the class is new
-        if y not in self.models:
-            self.models[y] = copy.deepcopy(self.binary_classifier)
+        if y not in self.classifiers:
+            self.classifiers[y] = copy.deepcopy(self.classifier)
 
         # Train each label's associated classifier
-        for label, model in self.models.items():
+        for label, model in self.classifiers.items():
             model.fit_one(x, y == label)
 
         return self
@@ -71,6 +67,6 @@ class OneVsRestClassifier(base.MultiClassifier):
     def predict_proba_one(self, x):
         y_pred = {
             label: model.predict_proba_one(x)[True]
-            for label, model in self.models.items()
+            for label, model in self.classifiers.items()
         }
         return utils.math.softmax(y_pred)

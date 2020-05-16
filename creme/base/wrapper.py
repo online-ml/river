@@ -7,7 +7,7 @@ class Wrapper(base.Estimator):
     """A wrapper model."""
 
     @abc.abstractproperty
-    def _model(self):
+    def _wrapped_model(self):
         """Provides access to the wrapped model."""
 
     @property
@@ -16,4 +16,4 @@ class Wrapper(base.Estimator):
         return 't'  # for top
 
     def __str__(self):
-        return f'{type(self).__name__}({self._model})'
+        return f'{type(self).__name__}({self._wrapped_model})'
