@@ -2,7 +2,7 @@
 
 **Do all classifiers support multi-class classification?**
 
-No, they don't. Although binary classification can be seen as a special case of multi-class classification, there are many optimizations that can be performed if we know that there are only two classes. It would be annoying to have to check whether this is the case in an online setting. All in all we find that separating both cases leads to much cleaner code.
+No, they don't. Although binary classification can be seen as a special case of multi-class classification, there are many optimizations that can be performed if we know that there are only two classes. It would be annoying to have to check whether this is the case in an online setting. All in all we find that separating both cases leads to much cleaner code. Note that the `multiclass` module contains wrapper models that enable you to perform multi-class classification with binary classifiers.
 
 **How do I know if a classifier supports multi-class classification?**
 

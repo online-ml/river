@@ -131,6 +131,9 @@ def get_all_estimators():
             elif issubclass(obj, multiclass.OneVsRestClassifier):
                 inst = obj(classifier=linear_model.LogisticRegression())
 
+            elif issubclass(obj, multiclass.OneVsOneClassifier):
+                inst = obj(classifier=linear_model.LogisticRegression())
+
             elif issubclass(obj, multiclass.OutputCodeClassifier):
                 inst = obj(classifier=linear_model.LogisticRegression(), code_size=10)
 

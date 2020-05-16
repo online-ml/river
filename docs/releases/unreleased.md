@@ -19,7 +19,8 @@
 
 ## multiclass
 
-- Added `OutputCodeClassifier`.
+- Added `multiclass.OutputCodeClassifier`.
+- Added `multiclass.OneVsOneClassifier`.
 
 ## multioutput
 
