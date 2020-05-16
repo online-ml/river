@@ -65,7 +65,7 @@ def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
 
         klass, params = t
 
-        if not isinstance(klass, types.ClassType):
+        if not isinstance(klass, type):
             raise ValueError(f'Expected first element to be a class, got {klass}')
 
         if not isinstance(params, dict):
