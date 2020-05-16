@@ -64,7 +64,7 @@ class HardSampling(base.Wrapper):
 
             self.buffer.append(Triplet(x=triplet.x, y=triplet.y, loss=loss))
 
-        # Probability (1 - p).
+        # Probability (1 - p)
         else:
             self.model.fit_one(x, y)
 
@@ -76,8 +76,8 @@ class HardSamplingRegressor(HardSampling):
 
     This wrapper enables a model to retrain on past samples who's output was hard to predict.
     This works by storing the hardest samples in a buffer of a fixed size. When a new sample
-    arrives, the wrapped model is either trained on one of the buffered samples with a probability p
-    or on the new sample with a probability (1 - p).
+    arrives, the wrapped model is either trained on one of the buffered samples with a probability
+    p or on the new sample with a probability (1 - p).
 
     The hardness of an observation is evaluated with a loss function that compares the sample's
     ground truth with the wrapped model's prediction. If the buffer is not full, then the sample
@@ -87,8 +87,8 @@ class HardSamplingRegressor(HardSampling):
     Parameters:
         regressor
         size: Size of the buffer.
-        p: Probability of updating the model with a sample from the buffer instead of a
-            new incoming sample.
+        p: Probability of updating the model with a sample from the buffer instead of a new
+            incoming sample.
         loss: Criterion used to evaluate the hardness of a sample.
         seed: Random seed.
 
@@ -118,7 +118,7 @@ class HardSamplingRegressor(HardSampling):
         ...     datasets.TrumpApproval(),
         ...     model,
         ...     metrics.MAE(),
-        ...     print_every = 500
+        ...     print_every=500
         ... )
         [500] MAE: 3.240558
         [1,000] MAE: 1.949106
@@ -138,8 +138,8 @@ class HardSamplingClassifier(HardSampling):
 
     This wrapper enables a model to retrain on past samples who's output was hard to predict.
     This works by storing the hardest samples in a buffer of a fixed size. When a new sample
-    arrives, the wrapped model is either trained on one of the buffered samples with a probability p
-    or on the new sample with a probability (1 - p).
+    arrives, the wrapped model is either trained on one of the buffered samples with a probability
+    p or on the new sample with a probability (1 - p).
 
     The hardness of an observation is evaluated with a loss function that compares the sample's
     ground truth with the wrapped model's prediction. If the buffer is not full, then the sample
@@ -169,18 +169,18 @@ class HardSamplingClassifier(HardSampling):
         >>> model = (
         ...     preprocessing.StandardScaler() |
         ...     sampling.HardSamplingClassifier(
-        ...         classifier = linear_model.LogisticRegression(),
-        ...          p = 0.1,
-        ...          size = 40,
-        ...         seed = 42,
+        ...         classifier=linear_model.LogisticRegression(),
+        ...         p=0.1,
+        ...         size=40,
+        ...         seed=42,
         ...     )
         ... )
 
         >>> model_selection.progressive_val_score(
-        ...     X_y = datasets.Phishing(),
-        ...     model = model,
-        ...     metric = metrics.ROCAUC(),
-        ...     print_every = 500,
+        ...     X_y=datasets.Phishing(),
+        ...     model=model,
+        ...     metric=metrics.ROCAUC(),
+        ...     print_every=500,
         ... )
         [500] ROCAUC: 0.928271
         [1,000] ROCAUC: 0.948547
