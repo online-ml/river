@@ -21,11 +21,18 @@ __all__ = ['Pipeline']
 
 
 class Pipeline(base.Estimator):
-    """Chains a sequence of estimators.
+    """A pipeline of estimators.
 
-    Sequentially apply a list of estimators. Take a look at the
-    [user guide](/user-guide/the-art-of-using-pipeline) for further information and practical
-    examples.
+    Pipelines provide to organize different processing steps into a sequence of steps. Typically,
+    when doing supervised learning, a pipeline contains one ore more transformation steps, whilst
+    it's is a regressor or a classifier.
+
+    It is highly recommended to use pipelines with `creme`. Indeed, in an online learning setting,
+    it is very practical to have a model defined as a single object. On the contrary, in batch
+    learning, this isn't as important.
+
+    Take a look at the[user guide](/user-guide/the-art-of-using-pipeline) for further information
+    and practical examples.
 
     Parameters:
         steps: Ideally a list of (name, estimator) tuples. If an estimator is given without a name,
@@ -37,9 +44,77 @@ class Pipeline(base.Estimator):
     Example:
 
         >>> from creme import compose
-        >>> from creme import feature_extraction
         >>> from creme import linear_model
         >>> from creme import preprocessing
+
+        The recommended way to declare a pipeline is to use the `|` operator. The latter allows you
+        to chain estimators in a very terse manner:
+
+        >>> from creme import linear_model
+        >>> from creme import preprocessing
+
+        >>> scaler = preprocessing.StandardScaler()
+        >>> log_reg = linear_model.LinearRegression()
+        >>> model = scaler | log_reg
+
+        This results in a pipeline that stores each step inside a dictionary.
+
+        >>> model
+        Pipeline (
+          StandardScaler (
+            with_mean=True
+            with_std=True
+          ),
+          LinearRegression (
+            optimizer=SGD (
+              lr=InverseScaling (
+                learning_rate=0.01
+                power=0.25
+              )
+            )
+            loss=Squared ()
+            l2=0.
+            intercept=0.
+            intercept_lr=Constant (
+            learning_rate=0.01
+            )
+            clip_gradient=1e+12
+            initializer=Zeros ()
+          )
+        )
+
+        You can access parts of a pipeline in the same manner as a dictionary:
+
+        >>> model['LinearRegression']
+        LinearRegression (
+          optimizer=SGD (
+            lr=InverseScaling (
+            learning_rate=0.01
+              power=0.25
+            )
+          )
+          loss=Squared ()
+          l2=0.
+          intercept=0.
+          intercept_lr=Constant (
+            learning_rate=0.01
+          )
+          clip_gradient=1e+12
+          initializer=Zeros ()
+        )
+
+        Note that you can also declare a pipeline by using the `compose.Pipeline` constructor
+        method, which is slighly more verbose:
+
+        >>> from creme import compose
+
+        >>> model = compose.Pipeline(scaler, log_reg)
+
+        By using a `compose.TransformerUnion`, you can define complex pipelines that apply
+        different steps to different parts of the data. For instance, we can extract word counts
+        from text data, and extract polynomial features from numeric data.
+
+        >>> from creme import feature_extraction
 
         >>> tfidf = feature_extraction.TFIDF('text')
         >>> counts = feature_extraction.BagOfWords('text')
