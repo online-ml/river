@@ -13,7 +13,7 @@ class OneVsRestClassifier(base.Wrapper, base.MultiClassifier):
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
     streaming context, the number of classes isn't known from the start, hence new classifiers are
-    instantiated on the fly. Likewise the predicted probabilities will only include the classes
+    instantiated on the fly. Likewise, the predicted probabilities will only include the classes
     seen up to a given point in time.
 
     Parameters:
