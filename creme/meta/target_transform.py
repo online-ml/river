@@ -48,7 +48,7 @@ class TransformedTargetRegressor(base.Regressor, base.Wrapper):
         self.inverse_func = inverse_func
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.regressor
 
     def fit_one(self, x, y):

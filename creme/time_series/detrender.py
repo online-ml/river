@@ -25,7 +25,7 @@ class Detrender(base.Regressor, base.Wrapper):
         self.mean = stats.Mean() if window_size is None else stats.RollingMean(window_size)
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.regressor
 
     def fit_one(self, x, y):
@@ -57,7 +57,7 @@ class GroupDetrender(base.Regressor, base.Wrapper):
         )
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.regressor
 
     def fit_one(self, x, y):

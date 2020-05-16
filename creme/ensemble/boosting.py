@@ -20,7 +20,7 @@ class BaseBoosting(base.Wrapper, base.Ensemble):
         self._rng = np.random.RandomState(seed)
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.model
 
 

@@ -35,7 +35,7 @@ def guess_model(model):
     elif isinstance(model, compose.Pipeline):
         return guess_model(model.final_estimator)
     elif isinstance(model, base.Wrapper):
-        return guess_model(model._model)
+        return guess_model(model._wrapped_model)
     return model
 
 

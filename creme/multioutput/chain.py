@@ -20,7 +20,7 @@ class BaseChain(base.Wrapper, collections.UserDict):
             self._init_models()
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.model
 
     def _init_models(self):
