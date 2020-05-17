@@ -1,14 +1,20 @@
 from skmultiflow.data import RandomTreeGenerator
 from skmultiflow.meta.learn_pp import LearnPPClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import set_config
 import numpy as np
+
+# Force sklearn to show only the parameters whose default value have been changed when
+# printing an estimator (backwards compatibility with versions prior to sklearn==0.23)
+set_config(print_changed_only=True)
 
 
 def test_learn_pp():
     stream = RandomTreeGenerator(tree_random_state=2212, sample_random_state=2212)
 
     estimator = DecisionTreeClassifier(random_state=2212)
-    classifier = LearnPPClassifier(base_estimator=estimator, n_estimators=5, n_ensembles=5, random_state=2212)
+    classifier = LearnPPClassifier(base_estimator=estimator, n_estimators=5, n_ensembles=5,
+                                   random_state=2212)
 
     m = 200
 
@@ -42,11 +48,8 @@ def test_learn_pp():
     assert corrects == expected_correct_predictions
     assert type(classifier.predict(X)) == np.ndarray
 
-    expected_info = "LearnPPClassifier(base_estimator=DecisionTreeClassifier(ccp_alpha=0.0, " \
-                    "class_weight=None, criterion='gini', max_depth=None, max_features=None, max_leaf_nodes=None, " \
-                    "min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=1, " \
-                    "min_samples_split=2, min_weight_fraction_leaf=0.0, presort='deprecated', " \
-                    "random_state=2212, splitter='best'), error_threshold=0.5, n_ensembles=5, " \
+    expected_info = "LearnPPClassifier(base_estimator=DecisionTreeClassifier(" \
+                    "random_state=2212), error_threshold=0.5, n_ensembles=5, " \
                     "n_estimators=5, random_state=2212, window_size=100)"
     info = " ".join([line.strip() for line in classifier.get_info().split()])
     assert info == expected_info
