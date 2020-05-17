@@ -45,11 +45,11 @@ cdef class Var(creme.stats.base.Univariate):
         self.ddof = ddof
         self.mean = mean.Mean()
 
-    cpdef Var update(self, double x):
+    cpdef Var update(self, double x, double w=1.):
         mean = self.mean.get()
-        self.mean.update(x)
+        self.mean.update(x, w)
         if self.mean.n > self.ddof:
-            self.sigma += ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
+            self.sigma += w * ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
         return self
 
     cpdef double get(self):

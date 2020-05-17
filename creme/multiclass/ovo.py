@@ -15,12 +15,17 @@ class OneVsOneClassifier(base.Wrapper, base.MultiClassifier):
     are in a streaming context, the number of classes isn't known from the start, hence new
     classifiers are instantiated on the fly.
 
+    The number of classifiers is `k * (k - 1) / 2`, where `k` is the number of classes. However,
+    each call to `fit_one` only requires training `k - 1` models. Indeed, only the models that
+    pertain to the given label have to be trained. Meanwhile, making a prediction requires going
+    through each and every model.
+
     Parameters:
         classifier: A binary classifier, although a multi-class classifier will work too.
 
     Attributes:
-        classifiers (dict): A mapping between pairs of classes and classifiers. Each pair is sorted
-            in lexicographical order.
+        classifiers (dict): A mapping between pairs of classes and classifiers. The keys are tuples
+            which contain a pair of classes. Each pair is sorted in lexicographical order.
 
     Example:
 
