@@ -39,7 +39,8 @@ cdef class Mean(creme.stats.base.Univariate):
 
     cpdef Mean update(self, double x, double w=1.):
         self.n += w
-        self.mean += w * (x - self.mean) / self.n
+        if self.n > 0:
+            self.mean += w * (x - self.mean) / self.n
         return self
 
     cpdef Mean revert(self, double x, double w=1.):
