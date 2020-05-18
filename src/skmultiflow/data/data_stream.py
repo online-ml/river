@@ -403,7 +403,7 @@ class DataStream(Stream):
         if self.task_type == self._CLASSIFICATION:
             return "{}{} target(s), {} classes".format(name, self.n_targets, self.n_classes)
         elif self.task_type == self._REGRESSION:
-            return "{} target(s)".format(name, self.n_targets)
+            return "{}{} target(s)".format(name, self.n_targets)
 
     def _get_target_values(self):
         if self.task_type == 'classification':
