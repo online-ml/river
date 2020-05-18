@@ -70,7 +70,7 @@ class HyperplaneGenerator(Stream):
         self.sigma_percentage = sigma_percentage
         self.noise_percentage = noise_percentage
         self.n_targets = 1
-        self._random_state = None   # This is the actual random_state object used internally
+        self._random_state = None  # This is the actual random_state object used internally
         self._next_class_should_be_zero = False
         self._weights = np.zeros(self.n_features)
         self._sigma = np.zeros(self.n_features)
@@ -124,7 +124,8 @@ class HyperplaneGenerator(Stream):
         if (0.0 <= noise_percentage) and (noise_percentage <= 1.0):
             self._noise_percentage = noise_percentage
         else:
-            raise ValueError("noise percentage should be in [0.0..1.0], {} was passed".format(noise_percentage))
+            raise ValueError(
+                "noise percentage should be in [0.0..1.0], {} was passed".format(noise_percentage))
 
     @property
     def mag_change(self):
@@ -149,7 +150,8 @@ class HyperplaneGenerator(Stream):
         if (0.0 <= mag_change) and (mag_change <= 1.0):
             self._mag_change = mag_change
         else:
-            raise ValueError("noise percentage should be in [0.0..1.0], {} was passed".format(mag_change))
+            raise ValueError(
+                "noise percentage should be in [0.0..1.0], {} was passed".format(mag_change))
 
     @property
     def sigma_percentage(self):
@@ -174,7 +176,8 @@ class HyperplaneGenerator(Stream):
         if (0.0 <= sigma_percentage) and (sigma_percentage <= 1.0):
             self._sigma_percentage = sigma_percentage
         else:
-            raise ValueError("sigma percentage should be in [0.0..1.0], {} was passed".format(sigma_percentage))
+            raise ValueError(
+                "sigma percentage should be in [0.0..1.0], {} was passed".format(sigma_percentage))
 
     def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)

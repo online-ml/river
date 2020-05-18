@@ -3,7 +3,8 @@ from sklearn.utils import tosequence
 
 
 class Pipeline(BaseSKMObject):
-    """ [Experimental] Holds a set of sequential operation (transforms), followed by a single estimator.
+    """ [Experimental] Holds a set of sequential operation (transforms),
+    followed by a single estimator.
 
     It allows for easy manipulation of datasets that may
     require several transformation processes before being used by a learner.
@@ -48,7 +49,8 @@ class Pipeline(BaseSKMObject):
     >>> from skmultiflow.evaluation import EvaluatePrequential
     >>> from skmultiflow.transform import OneHotToCategorical
     >>> # Setting up the stream
-    >>> stream = FileStream("skmultiflow/data/datasets/covtype.csv")
+    >>> stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/"
+    ...                     "streaming-datasets/master/covtype.csv")
     >>> transform = OneHotToCategorical([[10, 11, 12, 13],
     ... [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
     ... 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]])
@@ -258,7 +260,8 @@ class Pipeline(BaseSKMObject):
             if t is None:
                 continue
             else:
-                if not (hasattr(t, "fit") or hasattr(t, "fit_transform")) or not hasattr(t, "transform"):
+                if not (hasattr(t, "fit") or hasattr(t, "fit_transform")) \
+                        or not hasattr(t, "transform"):
                     self.active = False
                     raise TypeError("All intermediate steps, including an evaluator, "
                                     "should implement fit and transform.")

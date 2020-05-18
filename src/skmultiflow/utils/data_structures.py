@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from skmultiflow.utils import get_dimensions
 
@@ -34,8 +35,8 @@ class FastBuffer(object):
     >>> # and true labels
     >>> from skmultiflow.utils.data_structures import FastBuffer
     >>> from skmultiflow.lazy import KNNClassifier
-    >>> from skmultiflow.data import FileStream
-    >>> file_stream = FileStream("skmultiflow/data/datasets/covtype.csv")
+    >>> from skmultiflow.data import SEAGenerator
+    >>> file_stream = SEAGenerator(random_state=123456)
     >>> clf = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)
     >>> # Initially we need to partial_fit at least n_neighbors=8 samples
     >>> X, y = file_stream.next_sample(8)
@@ -85,7 +86,7 @@ class FastBuffer(object):
             removed, they are added to an auxiliary list, and that list is returned.
 
         """
-        if (self.current_size+len(element_list)) <= self.max_size:
+        if (self.current_size + len(element_list)) <= self.max_size:
             for i in range(len(element_list)):
                 self.buffer.append(element_list[i])
             self.current_size += len(element_list)
@@ -262,7 +263,7 @@ class FastComplexBuffer(object):
             else:
                 items = element_list
 
-        if (self.current_size+size) <= self.max_size:
+        if (self.current_size + size) <= self.max_size:
             for i in range(size):
                 self.buffer.append(items[i])
             self.current_size += size
@@ -334,8 +335,8 @@ class FastComplexBuffer(object):
         return self.buffer
 
     def get_info(self):
-        return 'FastBuffer: max_size: ' + str(self.max_size)\
-               + ' - current_size: ' + str(self.current_size)\
+        return 'FastBuffer: max_size: ' + str(self.max_size) \
+               + ' - current_size: ' + str(self.current_size) \
                + ' - width: ' + str(self.width)
 
 
@@ -684,7 +685,7 @@ class MOLConfusionMatrix(object):
                 if target > m:
                     return False
                 else:
-                    self.reshape(target+1, 2, 2)
+                    self.reshape(target + 1, 2, 2)
                     return self._update(target, true, pred, weight)
 
     def remove(self, target=None, true=None, pred=None):
@@ -725,7 +726,7 @@ class MOLConfusionMatrix(object):
 
     def reshape(self, target, m, n):
         t, i, j = self.confusion_matrix.shape
-        if (target > t+1) or (m != n) or (m != 2) or (m < i) or (n < j):
+        if (target > t + 1) or (m != n) or (m != 2) or (m < i) or (n < j):
             return False
         aux = self.confusion_matrix.copy()
         self.confusion_matrix = np.zeros((target, m, n), self.dtype)
@@ -774,7 +775,7 @@ class MOLConfusionMatrix(object):
             The complete row indexed by r.
 
         """
-        return self.confusion_matrix[r:r+1, :]
+        return self.confusion_matrix[r:r + 1, :]
 
     def column(self, c):
         """ column
@@ -790,7 +791,7 @@ class MOLConfusionMatrix(object):
             The complete column indexed by c.
 
         """
-        return self.confusion_matrix[:, c:c+1]
+        return self.confusion_matrix[:, c:c + 1]
 
     def target(self, t):
         """ target

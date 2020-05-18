@@ -1,9 +1,10 @@
 """
-The :mod:`skmultiflow.data` module contains data stream methods including methods for batch-to-stream
-conversion and generators.
+The :mod:`skmultiflow.data` module contains data stream methods including methods for
+batch-to-stream conversion and generators.
 """
 
 from .data_stream import DataStream
+from .temporal_data_stream import TemporalDataStream
 from .file_stream import FileStream
 from .agrawal_generator import AGRAWALGenerator
 from .concept_drift_stream import ConceptDriftStream
@@ -21,8 +22,10 @@ from .sine_generator import SineGenerator
 from .stagger_generator import STAGGERGenerator
 from .synth import make_logical
 from .waveform_generator import WaveformGenerator
+from .time_manager import TimeManager
 
-__all__ = ["DataStream", "FileStream", "AGRAWALGenerator", "ConceptDriftStream", "HyperplaneGenerator", "LEDGenerator",
-           "LEDGeneratorDrift", "MIXEDGenerator", "MultilabelGenerator", "RandomRBFGenerator",
-           "RandomRBFGeneratorDrift", "RandomTreeGenerator", "RegressionGenerator", "SEAGenerator", "SineGenerator",
-           "STAGGERGenerator", "make_logical", "WaveformGenerator"]
+__all__ = ["DataStream", "TemporalDataStream", "FileStream", "AGRAWALGenerator",
+           "ConceptDriftStream", "HyperplaneGenerator", "LEDGenerator", "LEDGeneratorDrift",
+           "MIXEDGenerator", "MultilabelGenerator", "RandomRBFGenerator",
+           "RandomRBFGeneratorDrift", "RandomTreeGenerator", "RegressionGenerator", "SEAGenerator",
+           "SineGenerator", "STAGGERGenerator", "make_logical", "WaveformGenerator", "TimeManager"]

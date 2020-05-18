@@ -12,10 +12,10 @@ from skmultiflow.bayes import do_naive_bayes_prediction
 class NaiveBayes(BaseSKMObject, ClassifierMixin):
     """ Naive Bayes classifier.
 
-    Performs classic bayesian prediction while making naive assumption that all inputs are independent.
-    Naive Bayes is a classifier algorithm known for its simplicity and low computational cost. Given `n` different
-    classes, the trained Naive Bayes classifier predicts for every unlabelled instance the class to which it
-    belongs with high accuracy.
+    Performs classic bayesian prediction while making naive assumption that all inputs are
+    independent. Naive Bayes is a classifier algorithm known for its simplicity
+    and low computational cost. Given `n` different classes, the trained Naive Bayes classifier
+    predicts for every unlabelled instance the class to which it belongs with high accuracy.
 
     Parameters
     ----------
@@ -24,9 +24,9 @@ class NaiveBayes(BaseSKMObject, ClassifierMixin):
 
     Notes
     -----
-    The `scikit-learn` implementations of NaiveBayes are compatible with `scikit-multiflow` with the caveat that
-    they must be partially fitted before use. In the `scikit-multiflow` evaluators this is done by setting
-    `pretrain_size>0`.
+    The `scikit-learn` implementations of NaiveBayes are compatible with `scikit-multiflow`
+    with the caveat that they must be partially fitted before use. In the `scikit-multiflow`
+    evaluators this is done by setting `pretrain_size>0`.
 
     Examples
     --------
@@ -88,7 +88,8 @@ class NaiveBayes(BaseSKMObject, ClassifierMixin):
             Array with all possible/known classes. Usage varies depending on the learning method.
 
         sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the learning method.
+            Samples weight. If not provided, uniform weights are assumed.
+            Usage varies depending on the learning method.
 
         Returns
         -------
@@ -104,8 +105,9 @@ class NaiveBayes(BaseSKMObject, ClassifierMixin):
             if sample_weight is None:
                 sample_weight = np.ones(row_cnt)
             if row_cnt != len(sample_weight):
-                raise ValueError('Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt,
-                                                                                                  len(sample_weight)))
+                raise ValueError(
+                    'Inconsistent number of instances ({}) and weights ({}).'.format(row_cnt, len(
+                        sample_weight)))
             for i in range(row_cnt):
                 if sample_weight[i] != 0.0:
                     self._partial_fit(X[i], y[i], sample_weight[i])
@@ -158,20 +160,21 @@ class NaiveBayes(BaseSKMObject, ClassifierMixin):
 
         Returns
         -------
-        A numpy.ndarray of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the
-        same index. And where the list in index [i] contains len(self.target_values) elements, each of which represents
-        the probability that the i-th sample of X belongs to a certain class-label.
+        A numpy.ndarray of shape (n_samples, n_labels), in which each outer entry is associated
+        with the X entry of the same index. And where the list in index [i] contains
+        len(self.target_values) elements, each of which represents the probability that
+        the i-th sample of X belongs to a certain class-label.
 
         """
         predictions = deque()
+        r, _ = get_dimensions(X)
         if self._observed_class_distribution == {}:
             # Model is empty, all classes equal, default to zero
-            r, _ = get_dimensions(X)
-            return np.zeros(r)
+            return np.zeros((r, 1))
         else:
-            r, _ = get_dimensions(X)
             for i in range(r):
-                votes = do_naive_bayes_prediction(X[i], self._observed_class_distribution, self._attribute_observers)
+                votes = do_naive_bayes_prediction(X[i], self._observed_class_distribution,
+                                                  self._attribute_observers)
                 sum_values = sum(votes.values())
                 if self._classes is not None:
                     y_proba = np.zeros(int(max(self._classes)) + 1)

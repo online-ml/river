@@ -3,10 +3,16 @@ import numpy as np
 
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import set_config
+
 
 from skmultiflow.data import SEAGenerator, RandomTreeGenerator
 from skmultiflow.meta import LearnPPNSEClassifier
 from skmultiflow.trees import HoeffdingTreeClassifier
+
+# Force sklearn to show only the parameters whose default value have been changed when
+# printing an estimator (backwards compatibility with versions prior to sklearn==0.23)
+set_config(print_changed_only=True)
 
 
 def run_classifier(estimator, stream, pruning=None, ensemble_size=15, m=200):
@@ -63,10 +69,10 @@ def test_learn_nse():
     assert len(classifier.X_batch) == 0
     assert len(classifier.y_batch) == 0
 
-    expected_info = 'LearnPPNSEClassifier(base_estimator=GaussianNB(priors=None, var_smoothing=1e-09),\n' \
-                    '                     crossing_point=10, n_estimators=15, pruning=None,\n' \
-                    '                     slope=0.5, window_size=250)'
-    assert classifier.get_info() == expected_info
+    expected_info = 'LearnPPNSEClassifier(base_estimator=GaussianNB(), crossing_point=10, ' \
+                    'n_estimators=15, pruning=None, slope=0.5, window_size=250)'
+    info = " ".join([line.strip() for line in classifier.get_info().split()])
+    assert info == expected_info
     # test pruning error
     corrects, acc, classifier = run_classifier(estimator, stream, pruning="error", ensemble_size=5)
 

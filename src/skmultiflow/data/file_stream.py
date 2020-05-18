@@ -9,8 +9,9 @@ from skmultiflow.data.data_stream import check_data_consistency
 class FileStream(Stream):
     """ Creates a stream from a file source.
 
-    For the moment only csv files are supported, but the goal is to support different formats, as long as there is a
-    function that correctly reads, interprets, and returns a pandas' DataFrame or numpy.ndarray with the data.
+    For the moment only csv files are supported, but the goal is to support different formats,
+    as long as there is a function that correctly reads, interprets, and returns
+    a pandas' DataFrame or numpy.ndarray with the data.
 
     Parameters
     ----------
@@ -31,15 +32,16 @@ class FileStream(Stream):
 
     Notes
     -----
-    The stream object provides upon request a number of samples, in a way such that old samples cannot be accessed
-    at a later time. This is done to correctly simulate the stream context.
+    The stream object provides upon request a number of samples, in a way such that old samples
+    cannot be accessed at a later time. This is done to correctly simulate the stream context.
 
     Examples
     --------
     >>> # Imports
     >>> from skmultiflow.data.file_stream import FileStream
     >>> # Setup the stream
-    >>> stream = FileStream('skmultiflow/data/datasets/sea_stream.csv')
+    >>> stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/"
+    ...                     "streaming-datasets/master/sea_stream.csv")
     >>> # Retrieving one sample
     >>> stream.next_sample()
     (array([[0.080429, 8.397187, 7.074928]]), array([0]))
@@ -186,7 +188,8 @@ class FileStream(Stream):
             self.n_samples = rows
             labels = raw_data.columns.values.tolist()
 
-            if (self.target_idx + self.n_targets) == cols or (self.target_idx + self.n_targets) == 0:
+            if (self.target_idx + self.n_targets) == cols or (
+                    self.target_idx + self.n_targets) == 0:
                 # Take everything to the right of target_idx
                 self.y = raw_data.iloc[:, self.target_idx:].values
                 self.target_names = raw_data.iloc[:, self.target_idx:].columns.values.tolist()
@@ -204,7 +207,8 @@ class FileStream(Stream):
                     self.n_cat_features = len(self.cat_features_idx)
                 else:
                     raise IndexError('Categorical feature index in {} '
-                                     'exceeds n_features {}'.format(self.cat_features_idx, self.n_features))
+                                     'exceeds n_features {}'.format(self.cat_features_idx,
+                                                                    self.n_features))
             self.n_num_features = self.n_features - self.n_cat_features
 
             if np.issubdtype(self.y.dtype, np.integer):
@@ -296,7 +300,8 @@ class FileStream(Stream):
 
     def get_data_info(self):
         if self.task_type == self._CLASSIFICATION:
-            return "{} - {} target(s), {} classes".format(self.basename, self.n_targets, self.n_classes)
+            return "{} - {} target(s), {} classes".format(self.basename, self.n_targets,
+                                                          self.n_classes)
         elif self.task_type == self._REGRESSION:
             return "{} - {} target(s)".format(self.basename, self.n_targets)
 
@@ -310,5 +315,5 @@ class FileStream(Stream):
             return [float] * self.n_targets
 
     def get_info(self):
-        return 'FileStream(filename={}, target_idx={}, n_targets={}, cat_features={})'\
-            .format("'" + self.basename + "'", self.target_idx, self. n_targets, self.cat_features)
+        return 'FileStream(filename={}, target_idx={}, n_targets={}, cat_features={})' \
+            .format("'" + self.basename + "'", self.target_idx, self.n_targets, self.cat_features)

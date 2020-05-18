@@ -79,15 +79,22 @@ class AGRAWALGenerator(Stream):
        Data Engineering, 5(6), December 1993.
 
     """
-    def __init__(self, classification_function=0, random_state=None, balance_classes=False, perturbation=0.0):
+
+    def __init__(self, classification_function=0, random_state=None, balance_classes=False,
+                 perturbation=0.0):
         super().__init__()
 
         # Classification functions to use
-        self._classification_functions = [self._classification_function_zero, self._classification_function_one,
-                                          self._classification_function_two, self._classification_function_three,
-                                          self._classification_function_four, self._classification_function_five,
-                                          self._classification_function_six, self._classification_function_seven,
-                                          self._classification_function_eight, self._classification_function_nine]
+        self._classification_functions = [self._classification_function_zero,
+                                          self._classification_function_one,
+                                          self._classification_function_two,
+                                          self._classification_function_three,
+                                          self._classification_function_four,
+                                          self._classification_function_five,
+                                          self._classification_function_six,
+                                          self._classification_function_seven,
+                                          self._classification_function_eight,
+                                          self._classification_function_nine]
         self.classification_function = classification_function
         self.random_state = random_state
         self.balance_classes = balance_classes
@@ -97,12 +104,13 @@ class AGRAWALGenerator(Stream):
         self.n_features = self.n_num_features + self.n_cat_features
         self.n_classes = 2
         self.n_targets = 1
-        self._random_state = None   # This is the actual random_state object used internally
+        self._random_state = None  # This is the actual random_state object used internally
         self._next_class_should_be_zero = False
         self.name = "AGRAWAL Generator"
 
         self.target_names = ["target"]
-        self.feature_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue", "hyears", "loan"]
+        self.feature_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue",
+                              "hyears", "loan"]
         self.target_values = [i for i in range(self.n_classes)]
 
         self._prepare_for_use()
@@ -156,7 +164,8 @@ class AGRAWALGenerator(Stream):
         if isinstance(balance_classes, bool):
             self._balance_classes = balance_classes
         else:
-            raise ValueError("balance_classes should be boolean, and {} was passed".format(balance_classes))
+            raise ValueError(
+                "balance_classes should be boolean, and {} was passed".format(balance_classes))
 
     @property
     def perturbation(self):
@@ -182,7 +191,8 @@ class AGRAWALGenerator(Stream):
         if (0.0 <= perturbation) and (perturbation <= 1.0):
             self._perturbation = perturbation
         else:
-            raise ValueError("noise percentage should be in [0.0..1.0], and {} was passed".format(perturbation))
+            raise ValueError(
+                "noise percentage should be in [0.0..1.0], and {} was passed".format(perturbation))
 
     def _prepare_for_use(self):
         self._random_state = check_random_state(self.random_state)
@@ -222,7 +232,8 @@ class AGRAWALGenerator(Stream):
             desired_class_found = False
             while not desired_class_found:
                 salary = 20000 + 130000 * self._random_state.rand()
-                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._random_state.rand())
+                commission = 0 if (salary >= 75000) else (
+                    10000 + 75000 * self._random_state.rand())
                 age = 20 + self._random_state.randint(61)
                 elevel = self._random_state.randint(5)
                 car = self._random_state.randint(20)
@@ -230,9 +241,12 @@ class AGRAWALGenerator(Stream):
                 hvalue = (9 - zipcode) * 100000 * (0.5 + self._random_state.rand())
                 hyears = 1 + self._random_state.randint(30)
                 loan = self._random_state.rand() * 500000
-                group = self._classification_functions[self.classification_function](salary, commission,
-                                                                                     age, elevel, car,
-                                                                                     zipcode, hvalue,
+                group = self._classification_functions[self.classification_function](salary,
+                                                                                     commission,
+                                                                                     age, elevel,
+                                                                                     car,
+                                                                                     zipcode,
+                                                                                     hvalue,
                                                                                      hyears, loan)
                 if not self.balance_classes:
                     desired_class_found = True
@@ -301,7 +315,8 @@ class AGRAWALGenerator(Stream):
         self.classification_function = new_function
 
     @staticmethod
-    def _classification_function_zero(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_zero(salary, commission, age, elevel, car, zipcode, hvalue,
+                                      hyears, loan):
         """ classification_function_zero
 
         Parameters
@@ -343,7 +358,8 @@ class AGRAWALGenerator(Stream):
         return 0 if ((age < 40) or (60 <= age)) else 1
 
     @staticmethod
-    def _classification_function_one(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_one(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
+                                     loan):
         """ classification_function_one
 
         Parameters
@@ -390,7 +406,8 @@ class AGRAWALGenerator(Stream):
             return 0 if ((25000 <= salary) and (salary <= 75000)) else 1
 
     @staticmethod
-    def _classification_function_two(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_two(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
+                                     loan):
         """ classification_function_two
 
         Parameters
@@ -437,7 +454,8 @@ class AGRAWALGenerator(Stream):
             return 0 if ((elevel == 2) or (elevel == 3)) or (elevel == 4) else 1
 
     @staticmethod
-    def _classification_function_three(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_three(salary, commission, age, elevel, car, zipcode, hvalue,
+                                       hyears, loan):
         """ classification_function_three
 
         Parameters
@@ -493,7 +511,8 @@ class AGRAWALGenerator(Stream):
                 return 0 if ((25000 <= salary) and (salary <= 75000)) else 1
 
     @staticmethod
-    def _classification_function_four(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_four(salary, commission, age, elevel, car, zipcode, hvalue,
+                                      hyears, loan):
         """ classification_function_four
 
         Parameters
@@ -549,7 +568,8 @@ class AGRAWALGenerator(Stream):
                 return 0 if ((75000 <= loan) and (loan <= 300000)) else 1
 
     @staticmethod
-    def _classification_function_five(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_five(salary, commission, age, elevel, car, zipcode, hvalue,
+                                      hyears, loan):
         """ classification_function_five
 
         Parameters
@@ -598,7 +618,8 @@ class AGRAWALGenerator(Stream):
             return 0 if ((25000 <= totalsalary) and (totalsalary <= 75000)) else 1
 
     @staticmethod
-    def _classification_function_six(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_six(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
+                                     loan):
         """ classification_function_six
 
         Parameters
@@ -640,7 +661,8 @@ class AGRAWALGenerator(Stream):
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def _classification_function_seven(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_seven(salary, commission, age, elevel, car, zipcode, hvalue,
+                                       hyears, loan):
         """ classification_function_seven
 
         Parameters
@@ -682,7 +704,8 @@ class AGRAWALGenerator(Stream):
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def _classification_function_eight(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_eight(salary, commission, age, elevel, car, zipcode, hvalue,
+                                       hyears, loan):
         """ classification_function_eight
 
         Parameters
@@ -724,7 +747,8 @@ class AGRAWALGenerator(Stream):
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def _classification_function_nine(salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan):
+    def _classification_function_nine(salary, commission, age, elevel, car, zipcode, hvalue,
+                                      hyears, loan):
         """ classification_function_nine
 
         Parameters
