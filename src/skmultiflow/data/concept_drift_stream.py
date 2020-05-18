@@ -35,8 +35,8 @@ class ConceptDriftStream(Stream):
         by `np.random`.
 
     alpha: float (optional, default: 0.0)
-        Angle of change to estimate the width of concept drift change. If set will override the width parameter.
-        Valid values are in the range (0.0, 90.0].
+        Angle of change to estimate the width of concept drift change. If set will override
+        the width parameter. Valid values are in the range (0.0, 90.0].
 
     position: int (default: 5000)
         Central position of concept drift change.
@@ -46,10 +46,11 @@ class ConceptDriftStream(Stream):
 
     Notes
     -----
-    An optional way to estimate the width of the transition :math:`w` is based on the angle :math:`\\alpha`:
-    :math:`w = 1/ tan(\\alpha)`. Since width corresponds to the number of samples for the transition, the width
-    is round-down to the nearest smaller integer. Notice that larger values of :math:`\\alpha` result in smaller
-    widths. For :math:`\\alpha>45.0`, the width is smaller than 1 so values are round-up to 1 to avoid
+    An optional way to estimate the width of the transition :math:`w` is based on
+    the angle :math:`\\alpha`: :math:`w = 1/ tan(\\alpha)`. Since width corresponds to
+    the number of samples for the transition, the width is round-down to the nearest
+    smaller integer. Notice that larger values of :math:`\\alpha` result in smaller widths.
+    For :math:`\\alpha>45.0`, the width is smaller than 1 so values are round-up to 1 to avoid
     division by zero errors.
 
     """
@@ -76,7 +77,7 @@ class ConceptDriftStream(Stream):
         self.name = 'Drifting' + stream.name
 
         self.random_state = random_state
-        self._random_state = None   # This is the actual random_state object used internally
+        self._random_state = None  # This is the actual random_state object used internally
         self.alpha = alpha
         if self.alpha != 0.0:
             if 0 < self.alpha <= 90.0:

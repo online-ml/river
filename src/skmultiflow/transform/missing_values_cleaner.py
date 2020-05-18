@@ -34,7 +34,8 @@ class MissingValuesCleaner(StreamTransform):
     >>> from skmultiflow.data.file_stream import FileStream
     >>> from skmultiflow.transform.missing_values_cleaner import MissingValuesCleaner
     >>> # Setting up a stream
-    >>> stream = FileStream('skmultiflow/data/datasets/covtype.csv', -1, 1)
+    >>> stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/"
+    ...                     "streaming-datasets/master/covtype.csv")
     >>> # Setting up the filter to substitute values -47 by the median of the
     >>> # last 10 samples
     >>> cleaner = MissingValuesCleaner(-47, 'median', 10)

@@ -15,7 +15,8 @@ def demo():
     by the median of the 9 first samples.
     
     """
-    stream = FileStream('../data/datasets/covtype.csv', -1, 1)
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/covtype.csv")
 
     filter = MissingValuesCleaner(-47, 'median', 10)
 

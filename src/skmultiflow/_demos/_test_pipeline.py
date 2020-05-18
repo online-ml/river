@@ -13,7 +13,8 @@ def demo():
      
     """
     # # Setup the stream
-    # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
+    # stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+    #                     "master/covtype.csv")
     # # If used for Hoeffding Trees then need to pass indices for Nominal attributes
 
     # Test with RandomTreeGenerator

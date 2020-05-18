@@ -20,7 +20,8 @@ def demo():
     start = timer()
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     # warnings.filterwarnings("ignore", ".*Passing 1d.*")
-    stream = FileStream('../data/datasets/sea_big.csv', -1, 1)
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/sea_big.csv", -1, 1)
     # stream = RandomRBFGeneratorDrift(change_speed=41.00, n_centroids=50, model_random_state=32523423,
     #                                  sample_seed=5435, n_classes=2, num_att=10, num_drift_centroids=50)
 

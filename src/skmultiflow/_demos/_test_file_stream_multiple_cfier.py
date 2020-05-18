@@ -8,7 +8,8 @@ from skmultiflow.data import FileStream
 
 def demo_parameterized(h, filename="covtype.csv", show_plot=True, model_names=None):
     # Setup Stream
-    stream = FileStream("../data/datasets/" + filename)
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/" + filename)
 
     # For each classifier, e...
     pretrain = 100

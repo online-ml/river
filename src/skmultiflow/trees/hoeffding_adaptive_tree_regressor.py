@@ -197,13 +197,12 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self.sum_of_squares += weight * y * y
 
         try:
-            self.sum_of_attribute_values = np.add(self.sum_of_attribute_values,
-                                                  np.multiply(weight, X))
-            self.sum_of_attribute_squares = np.add(self.sum_of_attribute_squares,
-                                                   np.multiply(weight, np.power(X, 2)))
+            self.sum_of_attribute_values += weight * X
+            self.sum_of_attribute_squares += weight * X * X
         except ValueError:
-            self.sum_of_attribute_values = np.multiply(weight, X)
-            self.sum_of_attribute_squares = np.multiply(weight, np.power(X, 2))
+            
+            self.sum_of_attribute_values = weight * X
+            self.sum_of_attribute_squares = weight * X * X
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()

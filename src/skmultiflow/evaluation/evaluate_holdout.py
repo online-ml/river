@@ -71,7 +71,7 @@ class EvaluateHoldout(StreamEvaluator):
         | 'average_mean_squared_error'
         | 'average_mean_absolute_error'
         | 'average_root_mean_square_error'
-        | **Experimental** (no plot generated)
+        | **General purpose** (no plot generated)
         | 'running_time'
         | 'model_size'
 
@@ -243,7 +243,7 @@ class EvaluateHoldout(StreamEvaluator):
 
         performance_sampling_cnt = 0
         print('Evaluating...')
-        while ((self.global_sample_count < self.max_samples) & (self._end_time - self._start_time < self.max_time)
+        while ((self.global_sample_count < actual_max_samples) & (self._end_time - self._start_time < self.max_time)
                & (self.stream.has_more_samples())):
             try:
                 X, y = self.stream.next_sample(self.batch_size)
@@ -285,7 +285,7 @@ class EvaluateHoldout(StreamEvaluator):
                     else:
                         perform_test = (self.global_sample_count - self.test_size) % self.n_wait == 0
 
-                    if perform_test | (self.global_sample_count >= self.max_samples):
+                    if perform_test | (self.global_sample_count >= actual_max_samples):
 
                         if self.dynamic_test_set:
                             print('Separating {} holdout samples.'.format(self.test_size))

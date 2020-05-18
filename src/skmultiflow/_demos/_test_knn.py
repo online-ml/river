@@ -14,7 +14,8 @@ def demo():
     default) instances.
     
     """
-    stream = FileStream('../data/datasets/sea_big.csv', -1, 1)
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/sea_big.csv")
 
     train = 200
     X, y = stream.next_sample(train)

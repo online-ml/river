@@ -69,7 +69,7 @@ class EvaluatePrequential(StreamEvaluator):
         | 'average_mean_squared_error'
         | 'average_mean_absolute_error'
         | 'average_root_mean_square_error'
-        | **Experimental** (no plot generated)
+        | **General purpose** (no plot generated)
         | 'running_time'
         | 'model_size'
 
@@ -355,7 +355,7 @@ class EvaluatePrequential(StreamEvaluator):
                             self.running_time_measurements[i].update_time_measurements(self.batch_size)
 
                     if ((self.global_sample_count % self.n_wait) == 0 or
-                            (self.global_sample_count >= self.max_samples) or
+                            (self.global_sample_count >= actual_max_samples) or
                             (self.global_sample_count / self.n_wait > update_count + 1)):
                         if prediction is not None:
                             self._update_metrics()

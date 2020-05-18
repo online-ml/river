@@ -8,9 +8,8 @@ def demo(output_file=None, instances=50000):
 
     This demo shows how to produce a prequential evaluation.
 
-    The first thing needed is a stream. For this case we use a file stream 
-    which gets its samples from the moving_squares.csv file, inside the datasets 
-    folder.
+    The first thing needed is a stream. For this case we use the
+    moving_squares.csv dataset.
 
     Then we need to setup a classifier, which in this case is an instance 
     of scikit-multiflow's SAMKNNClassifier. Then, optionally we create a
@@ -28,7 +27,8 @@ def demo(output_file=None, instances=50000):
 
     """
     # Setup the File Stream
-    stream = FileStream("../data/datasets/moving_squares.csv")
+    stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+                        "master/moving_squares.csv")
     # stream = WaveformGenerator()
 
     # Setup the classifier

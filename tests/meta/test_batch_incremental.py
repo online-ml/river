@@ -2,7 +2,11 @@ from skmultiflow.data import RandomTreeGenerator
 from skmultiflow.meta.batch_incremental import BatchIncrementalClassifier
 
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import set_config
 import numpy as np
+# Force sklearn to show only the parameters whose default value have been changed when
+# printing an estimator (backwards compatibility with versions prior to sklearn==0.23)
+set_config(print_changed_only=True)
 
 
 def test_batch_incremental():
@@ -49,10 +53,7 @@ def test_batch_incremental():
 
     assert type(learner.predict(X)) == np.ndarray
 
-    expected_info = "BatchIncrementalClassifier(base_estimator=DecisionTreeClassifier(ccp_alpha=0.0, " \
-                    "class_weight=None, criterion='gini', max_depth=None, max_features=None, max_leaf_nodes=None, " \
-                    "min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=1, min_samples_split=2, " \
-                    "min_weight_fraction_leaf=0.0, presort='deprecated', random_state=112, splitter='best'), " \
-                    "n_estimators=10, window_size=100)"
+    expected_info = "BatchIncrementalClassifier(base_estimator=DecisionTreeClassifier("\
+                    "random_state=112), n_estimators=10, window_size=100)"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info

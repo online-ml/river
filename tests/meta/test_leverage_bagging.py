@@ -1,9 +1,10 @@
 from skmultiflow.meta import LeveragingBaggingClassifier
 from skmultiflow.lazy import KNNClassifier
-from skmultiflow.data import SEAGenerator, RandomTreeGenerator
+from skmultiflow.data import SEAGenerator, RandomTreeGenerator, ConceptDriftStream
 from skmultiflow.bayes import NaiveBayes
 
 import numpy as np
+import pytest
 
 
 def test_leverage_bagging():
@@ -61,24 +62,22 @@ def test_leverage_bagging():
 
 
 def test_leverage_bagging_me():
-    stream = SEAGenerator(classification_function=1,
-                          noise_percentage=0.067,
-                          random_state=112)
-    knn = KNNClassifier(n_neighbors=8,
-                        leaf_size=40,
-                        max_window_size=2000)
+    stream = ConceptDriftStream(position=500,
+                                width=100,
+                                random_state=112)
+    nb = NaiveBayes()
 
     # leveraging_bag_me
-    learner = LeveragingBaggingClassifier(base_estimator=knn,
-                                          n_estimators=3,
+    learner = LeveragingBaggingClassifier(base_estimator=nb,
+                                          n_estimators=5,
                                           random_state=112,
                                           leverage_algorithm='leveraging_bag_me')
 
-    y_expected = np.asarray([0, 0, 0, 0, 1, 0, 1, 0, 1, 0,
-                             1, 0, 0, 0, 1, 0, 1, 1, 1, 1,
-                             1, 1, 1, 1, 0, 1, 0, 1, 1, 0,
-                             0, 0, 1, 1, 1, 0, 1, 1, 0, 0,
-                             1, 0, 0, 1, 0, 0, 0, 1, 1, 0], dtype=np.int)
+    y_expected = np.asarray([0, 0, 0, 1, 0, 1, 0, 0, 1, 0,
+                             0, 0, 0, 1, 0, 0, 1, 1, 0, 0,
+                             1, 0, 0, 0, 1, 1, 0, 1, 0, 1,
+                             0, 0, 0, 1, 1, 0, 1, 1, 1, 0,
+                             1, 0, 1, 0, 0, 1, 1, 0, 1, 0], dtype=np.int)
 
     run_prequential_supervised(stream, learner, max_samples=2000, n_wait=40,
                                y_expected=y_expected)
@@ -175,6 +174,32 @@ def test_leverage_bagging_code_matrix():
 
     run_prequential_supervised(stream, learner, max_samples=2000, n_wait=40,
                                y_expected=y_expected)
+
+
+def test_leverage_bagging_coverage():
+    # Invalid leverage_algorithm
+    with pytest.raises(ValueError):
+        LeveragingBaggingClassifier(leverage_algorithm='invalid')
+
+    estimator = LeveragingBaggingClassifier(random_state=4321)
+    stream = SEAGenerator(random_state=4321)
+    X, y = stream.next_sample()
+
+    # classes not passed in partial_fit
+    with pytest.raises(ValueError):
+        estimator.partial_fit(X, y, classes=None)
+    estimator.partial_fit(X, y, classes=stream.target_values)
+    # different observed classes
+    with pytest.raises(ValueError):
+        estimator.partial_fit(X, y, classes=stream.target_values + [-1])
+    # Invalid leverage_algorithm, changed after initialization
+    with pytest.raises(RuntimeError):
+        estimator.leverage_algorithm = 'invalid'
+        estimator.partial_fit(X, y, classes=stream.target_values)
+
+    # Reset ensemble
+    estimator.reset()
+    assert estimator.classes is None
 
 
 def run_prequential_supervised(stream, learner, max_samples, n_wait, y_expected=None):

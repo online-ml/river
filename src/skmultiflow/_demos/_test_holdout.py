@@ -22,7 +22,8 @@ def demo(output_file=None, instances=40000):
          
     """
     # Setup the File Stream
-    # stream = FileStream("../data/datasets/covtype.csv", -1, 1)
+    # stream = FileStream("https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/"
+    #                     "master/covtype.csv")
     stream = WaveformGenerator()
 
     # Setup the classifier

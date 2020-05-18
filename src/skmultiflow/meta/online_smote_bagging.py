@@ -262,7 +262,7 @@ class OnlineSMOTEBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimator
                 k = len(neighbors)
             i = self._random_state.randint(0, k)
             gamma = self._random_state.rand()
-            x_smote = np.add(x, np.multiply(gamma, np.subtract(x, self.pos_samples[neighbors[i]])))
+            x_smote = x + gamma * (x - self.pos_samples[neighbors[i]])
             return x_smote
         return self.pos_samples[-1]
 
