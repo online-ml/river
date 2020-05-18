@@ -121,6 +121,15 @@ def test_data_stream_X_y(test_path):
 
     assert stream.n_features == X.shape[1]
 
+    # Ensure that the regression case is also covered
+    y = raw_data.iloc[:, -1:]
+    X = raw_data.iloc[:, :-1]
+    y = y.astype('float64')
+    stream = DataStream(X, y, name='Test')
+
+    assert stream.task_type == 'regression'
+    assert stream.get_data_info() == 'Test: 1 target(s)'
+
 
 def test_check_data():
     # Test if data contains non-numeric values

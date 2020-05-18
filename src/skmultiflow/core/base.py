@@ -130,7 +130,7 @@ def _pprint(params, offset=0, printer=repr):
     np.set_printoptions(**options)
     lines = ''.join(params_list)
     # Strip trailing space to avoid nightmare in doctests
-    lines = '\n'.join(l.rstrip(' ') for l in lines.split('\n'))
+    lines = '\n'.join(line.rstrip(' ') for line in lines.split('\n'))
     return lines
 
 
