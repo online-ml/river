@@ -272,7 +272,7 @@ class Pipeline(base.Estimator):
 
         if name in self.steps:
             counter = 1
-            while f'{name}{counter}' in self:
+            while f'{name}{counter}' in self.steps:
                 counter += 1
             name = f'{name}{counter}'
 
@@ -444,7 +444,7 @@ class Pipeline(base.Estimator):
             if isinstance(step, union.TransformerUnion):
                 return Network(
                     nodes=map(networkify, step.transformers.values()),
-                    links=[],
+                    edges=[],
                     directed=False
                 )
 
@@ -452,7 +452,7 @@ class Pipeline(base.Estimator):
             if isinstance(step, Pipeline):
                 return Network(
                     nodes=[],
-                    links=zip(
+                    edges=zip(
                         map(networkify, list(step.steps.values())[:-1]),
                         map(networkify, list(step.steps.values())[1:])
                     ),
@@ -463,7 +463,7 @@ class Pipeline(base.Estimator):
             if isinstance(step, base.Wrapper):
                 return Network(
                     nodes=[networkify(step._wrapper_model)],
-                    links=[],
+                    edges=[],
                     directed=True,
                     name=type(step).__name__,
                     labelloc=step._labelloc
@@ -473,7 +473,7 @@ class Pipeline(base.Estimator):
             return str(step)
 
         # Draw input
-        net = Network(nodes=['x'], links=[], directed=True)
+        net = Network(nodes=['x'], edges=[], directed=True)
         previous = 'x'
 
         # Draw each step
@@ -491,12 +491,12 @@ class Pipeline(base.Estimator):
 class Network(collections.UserList):
     """An abstraction to help with drawing pipelines."""
 
-    def __init__(self, nodes, links, directed, name=None, labelloc=None):
+    def __init__(self, nodes, edges, directed, name=None, labelloc=None):
         super().__init__()
         for node in nodes:
             self.append(node)
-        self.links = set()
-        for link in links:
+        self.edges = set()
+        for link in edges:
             self.link(*link)
         self.directed = directed
         self.name = name
@@ -509,10 +509,13 @@ class Network(collections.UserList):
     def link(self, a, b):
         self.append(a)
         self.append(b)
-        self.links.add((self.index(a), self.index(b)))
+        self.edges.add((self.index(a), self.index(b)))
 
     def draw(self):
+
         G = graphviz.Digraph()
+
+        drawn_subclusters = set()
 
         def draw_node(a):
             if isinstance(a, Network):
@@ -527,6 +530,7 @@ class Network(collections.UserList):
         def draw_link(a, b):
 
             if isinstance(a, Network):
+
                 # Connect the last part of a with b
                 if a.directed:
                     draw_link(a[-1], b)
@@ -536,19 +540,25 @@ class Network(collections.UserList):
                         draw_link(part, b)
 
             elif isinstance(b, Network):
+
                 # Connect the first part of b with a
                 if b.directed:
 
-                    if b.name is not None:
+                    if str(b) not in drawn_subclusters:
+
+                        sub = b.draw()
+
                         # If the graph has a name, then we treat is as a cluster
-                        c = b.draw()
-                        c.attr(label=b.name, labelloc=b.labelloc)
-                        c.name = f'cluster_{b.name}'
-                        G.subgraph(c)
-                    else:
-                        G.subgraph(b.draw())
+                        if b.name is not None:
+                            sub.attr(label=b.name, labelloc=b.labelloc)
+                            sub.name = f'cluster_{b.name}'
+
+                        G.subgraph(sub)
+
+                        drawn_subclusters.add(str(b))
 
                     draw_link(a, b[0])
+
                 # Connect each part of b with a
                 else:
                     for part in b:
@@ -557,7 +567,7 @@ class Network(collections.UserList):
             else:
                 G.edge(a, b)
 
-        for a, b in self.links:
+        for a, b in self.edges:
             draw_link(self[a], self[b])
 
         return G

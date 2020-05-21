@@ -128,7 +128,7 @@ class MultinomialNB(base.BaseNB):
         return len(self.feature_counts)
 
     def p_feature_given_class(self, f, c):
-        num = self.feature_counts.get(f, collections.Counter())[c] + self.alpha
+        num = self.feature_counts.get(f, {}).get(c, 0.) + self.alpha
         den = self.class_totals[c] + self.alpha * self.n_terms
         return num / den
 

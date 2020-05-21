@@ -157,9 +157,9 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         >>> param_grid = model_selection.expand_param_grid({
         ...     'LinearRegression': {
         ...         'optimizer': [
-        ...             (optim.SGD, {'lr': [0.1, 0.01, 0.005]}),
-        ...             (optim.Adam, {'beta_1': [0.01, 0.001], 'lr': [0.1, 0.01, 0.001]}),
-        ...             (optim.Adam, {'beta_1': [0.1], 'lr': [0.001]}),
+        ...             (optim.SGD, {'lr': [.1, .01, .005]}),
+        ...             (optim.Adam, {'beta_1': [.01, .001], 'lr': [.1, .01, .001]}),
+        ...             (optim.Adam, {'beta_1': [.1], 'lr': [.001]}),
         ...         ]
         ...     }
         ... })
@@ -288,9 +288,9 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         >>> param_grid = model_selection.expand_param_grid({
         ...     'LogisticRegression': {
         ...         'optimizer': [
-        ...             (optim.SGD, {'lr': [0.1, 0.01, 0.005]}),
-        ...             (optim.Adam, {'beta_1': [0.01, 0.001], 'lr': [0.1, 0.01, 0.001]}),
-        ...             (optim.Adam, {'beta_1': [0.1], 'lr': [0.001]}),
+        ...             (optim.SGD, {'lr': [.1, .01, .005]}),
+        ...             (optim.Adam, {'beta_1': [.01, .001], 'lr': [.1, .01, .001]}),
+        ...             (optim.Adam, {'beta_1': [.1], 'lr': [.001]}),
         ...         ]
         ...     }
         ... })

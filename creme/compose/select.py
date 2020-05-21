@@ -124,6 +124,10 @@ class SelectType(base.Transformer):
     features. For instance, a common usecase is to apply a `preprocessing.StandardScaler` to
     numeric features and a `preprocessing.OneHotEncoder` to categorical features.
 
+    Parameters:
+        types: Python types which you want to select. Under the hood, the `isinstance` method
+            will be used to check if a value is of a given type.
+
     Example:
 
         >>> import numbers
@@ -144,7 +148,7 @@ class SelectType(base.Transformer):
         return {i: xi for i, xi in x.items() if isinstance(xi, self.types)}
 
     def __str__(self):
-        return str(sorted(self.types))
+        return f'Select({", ".join(t.__name__ for t in self.types)})'
 
     def __repr__(self):
         if self.types:
