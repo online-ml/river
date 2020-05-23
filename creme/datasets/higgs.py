@@ -1,9 +1,9 @@
-from .. import stream
+from creme import stream
 
 from . import base
 
 
-class Higgs(base.FileDataset):
+class Higgs(base.RemoteDataset):
     """Higgs dataset.
 
     The data has been produced using Monte Carlo simulations. The first 21 features (columns 2-22)
@@ -11,27 +11,21 @@ class Higgs(base.FileDataset):
     features are functions of the first 21 features; these are high-level features derived by
     physicists to help discriminate between the two classes.
 
-    Parameters:
-        data_home: The directory where you wish to store the data.
-        verbose: Whether to indicate download progress or not.
-
     References:
         1. [UCI page](https://archive.ics.uci.edu/ml/datasets/HIGGS)
 
     """
 
-    def __init__(self, data_home: str = None, verbose=True):
+    def __init__(self):
         super().__init__(
             n_samples=11_000_000,
             n_features=28,
-            category=base.BINARY_CLF,
+            task=base.BINARY_CLF,
             url='https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz',
-            data_home=data_home,
-            uncompress=False,
-            verbose=verbose
+            unpack=False
         )
 
-    def _stream_X_y(self, path):
+    def _iter(self):
 
         features = [
             'lepton pT', 'lepton eta', 'lepton phi',
@@ -44,7 +38,7 @@ class Higgs(base.FileDataset):
         ]
 
         return stream.iter_csv(
-            path,
+            self.path,
             fieldnames=['is_signal', *features],
             target='is_signal',
             converters={'is_signal': lambda x: x.startswith('1'), **{f: float for f in features}}

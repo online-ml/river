@@ -1,11 +1,9 @@
-import os
-
 from creme import stream
 
 from . import base
 
 
-class Airline(base.FileDataset):
+class AirlinePassengers(base.FileDataset):
     """Monthly number of international airline passengers.
 
     The stream contains 144 items and only one single feature, which is the month. The goal is to
@@ -18,11 +16,12 @@ class Airline(base.FileDataset):
     """
 
     def __init__(self):
-        super().__init__(n_samples=144, n_features=1, category=base.REG)
+        super().__init__(filename='airline-passengers.csv', task=base.REG, n_features=1,
+                         n_samples=144)
 
-    def _stream_X_y(self, directory):
+    def __iter__(self):
         return stream.iter_csv(
-            os.path.join(directory, 'airline-passengers.csv'),
+            self.path,
             target='passengers',
             converters={'passengers': int},
             parse_dates={'month': '%Y-%m'}

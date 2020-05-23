@@ -3,34 +3,28 @@ from creme import stream
 from . import base
 
 
-class Music(base.FileDataset):
+class Music(base.RemoteDataset):
     """Bike sharing station information from the city of Toulouse.
 
     The goal is to predict to which kinds of moods a song pertains to.
-
-    Parameters:
-        data_home: The directory where you wish to store the data.
-        verbose: Whether to indicate download progress or not.
 
     References:
         1. [Read, J., Reutemann, P., Pfahringer, B. and Holmes, G., 2016. MEKA: a multi-label/multi-target extension to WEKA. The Journal of Machine Learning Research, 17(1), pp.667-671.](http://www.jmlr.org/papers/v17/12-164.html)
 
     """
 
-    def __init__(self, data_home: str = None, verbose=False):
+    def __init__(self):
         super().__init__(
             n_samples=593,
             n_features=72,
-            category=base.MO_BINARY_CLF,
+            task=base.MO_BINARY_CLF,
             url='https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/master/music.csv',
-            data_home=data_home,
-            verbose=verbose,
-            uncompress=False
+            unpack=False
         )
 
-    def _stream_X_y(self, directory):
+    def _iter(self):
         return stream.iter_csv(
-            f'{directory}',
+            self.path,
             target=[
                 'amazed-suprised',
                 'happy-pleased',

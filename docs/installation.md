@@ -1,6 +1,6 @@
 # Installation
 
-`creme` is intended to work with **Python 3.6 or above**. Installation can be done with `pip`:
+`creme` is intended to work with **Python 3.6 or above**. Installation can be done via `pip`:
 
 ```sh
 pip install creme
@@ -19,3 +19,5 @@ Or, through SSH:
 ```sh
 pip install git+ssh://git@github.com/creme-ml/creme.git --upgrade
 ```
+
+Feel welcome to [open an issue on GitHub](https://github.com/creme-ml/creme/issues/new) if you are having any trouble.

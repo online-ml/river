@@ -1,5 +1,3 @@
-import os
-
 from creme import stream
 
 from . import base
@@ -17,10 +15,7 @@ class Bananas(base.FileDataset):
     """
 
     def __init__(self):
-        super().__init__(n_samples=5300, n_features=2, category=base.BINARY_CLF)
+        super().__init__(filename='banana.zip', n_samples=5300, n_features=2, task=base.BINARY_CLF)
 
-    def _stream_X_y(self, directory):
-        return stream.iter_libsvm(
-            os.path.join(directory, 'banana.zip'),
-            target_type=lambda x: x == '1'
-        )
+    def __iter__(self):
+        return stream.iter_libsvm(self.path, target_type=lambda x: x == '1')

@@ -1,6 +1,4 @@
-import os
-
-from .. import stream
+from creme import stream
 
 from . import base
 
@@ -19,12 +17,13 @@ class Phishing(base.FileDataset):
         super().__init__(
             n_samples=1250,
             n_features=9,
-            category=base.BINARY_CLF
+            task=base.BINARY_CLF,
+            filename='phishing.csv.gz'
         )
 
-    def _stream_X_y(self, directory):
+    def __iter__(self):
         return stream.iter_csv(
-            os.path.join(directory, 'phishing.csv.gz'),
+            self.path,
             target='is_phishing',
             converters={
                 'empty_server_form_handler': float,

@@ -3,34 +3,29 @@ from creme import stream
 from . import base
 
 
-class Bikes(base.FileDataset):
+class Bikes(base.RemoteDataset):
     """Bike sharing station information from the city of Toulouse.
 
     The goal is to predict the number of bikes in 5 different bike stations from the city of
     Toulouse.
-
-    Parameters:
-        data_home: The directory where you wish to store the data.
-        verbose: Whether to indicate download progress or not.
 
     References:
         1. [A short introduction and conclusion to the OpenBikes 2016 Challenge](https://maxhalford.github.io/blog/a-short-introduction-and-conclusion-to-the-openbikes-2016-challenge/)
 
     """
 
-    def __init__(self, data_home: str = None, verbose=False):
+    def __init__(self):
         super().__init__(
             n_samples=182_470,
             n_features=8,
-            category=base.REG,
+            task=base.REG,
             url='https://maxhalford.github.io/files/datasets/toulouse_bikes.zip',
-            data_home=data_home,
-            verbose=verbose
+            filename='toulouse_bikes.csv'
         )
 
-    def _stream_X_y(self, directory):
+    def _iter(self):
         return stream.iter_csv(
-            f'{directory}/toulouse_bikes.csv',
+            self.path,
             target='bikes',
             converters={
                 'clouds': int,

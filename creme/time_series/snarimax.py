@@ -235,7 +235,7 @@ class SNARIMAX(base.Forecaster):
 
         >>> metric = metrics.Rolling(metrics.MAE(), 12)
 
-        >>> for x, y in datasets.Airline():
+        >>> for x, y in datasets.AirlinePassengers():
         ...     y_pred = model.forecast(horizon=1, xs=[x])
         ...     model = model.fit_one(x, y)
         ...     metric = metric.update(y, y_pred[0])

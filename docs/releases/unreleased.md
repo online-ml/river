@@ -11,7 +11,9 @@
 ## datasets
 
 - Added `datasets.Music`, which is a dataset for multi-output binary classification.
-- Added `datasets.gen.Friedman`, which is synthetic regression dataset.
+- Added `datasets.synth.Friedman`, which is synthetic regression dataset.
+- The `datasets.gen` module has been renamed to `datasets.synth`
+- Each dataset now has a `__repr__` method which displays some descriptive information.
 
 ## metrics
 
@@ -40,3 +42,7 @@
 
 - Added a `stream.iter_sql` utility method to work with SQLAlchemy.
 - The `target_name` parameter of `stream.iter_csv` has been renamed to `target`. It can now be passed a list of values in order to support multi-output scenarios.
+
+## tree
+
+- Cancelled the behavior where `tree.DecisionTreeRegressor` would raise an exception when no split was found.

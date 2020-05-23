@@ -1,6 +1,4 @@
-import os
-
-from .. import stream
+from creme import stream
 
 from . import base
 
@@ -20,12 +18,13 @@ class ImageSegments(base.FileDataset):
         super().__init__(
             n_samples=2310,
             n_features=18,
-            category=base.MULTI_CLF
+            task=base.MULTI_CLF,
+            filename='segment.csv.zip'
         )
 
-    def _stream_X_y(self, directory):
+    def __iter__(self):
         return stream.iter_csv(
-            os.path.join(directory, 'segment.csv.zip'),
+            self.path,
             target='category',
             converters={
                 'region-centroid-col': int,
