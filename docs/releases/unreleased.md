@@ -14,6 +14,7 @@
 - Added `datasets.synth.Friedman`, which is synthetic regression dataset.
 - The `datasets.gen` module has been renamed to `datasets.synth`
 - Each dataset now has a `__repr__` method which displays some descriptive information.
+- Added `datasets.Insects`, which has 10 variants.
 
 ## metrics
 
@@ -42,6 +43,7 @@
 
 - Added a `stream.iter_sql` utility method to work with SQLAlchemy.
 - The `target_name` parameter of `stream.iter_csv` has been renamed to `target`. It can now be passed a list of values in order to support multi-output scenarios.
+- Added `stream.iter_arff` for handling ARFF files.
 
 ## tree
 

@@ -24,6 +24,7 @@ class TREC07(base.RemoteDataset):
             n_features=5,
             task=base.BINARY_CLF,
             url='https://maxhalford.github.io/files/datasets/trec07p.zip',
+            size=144504829,
             filename='trec07p.csv'
         )
 

@@ -5,8 +5,9 @@ from .bananas import Bananas
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
 from .elec2 import Elec2
-#from .higgs import Higgs
+from .higgs import Higgs
 from .http import HTTP
+from .insects import Insects
 from .music import Music
 from .phishing import Phishing
 from .movielens100k import MovieLens100K
@@ -28,14 +29,15 @@ __all__ = [
     'ChickWeights',
     'CreditCard',
     'Elec2',
-    #'Higgs',
+    'Higgs',
     'HTTP',
+    'ImageSegments',
+    'Insects',
     'MaliciousURL',
+    'MovieLens100K',
     'Music',
     'Phishing',
-    'MovieLens100K',
     'Restaurants',
-    'ImageSegments',
     'SMSSpam',
     'SMTP',
     'synth',

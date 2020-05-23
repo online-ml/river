@@ -39,15 +39,16 @@ def iter_libsvm(filepath_or_buffer: str, target_type=float, compression='infer')
     """
 
     # If a file is not opened, then we open it
-    if not hasattr(filepath_or_buffer, 'read'):
-        filepath_or_buffer = utils.open_filepath(filepath_or_buffer, compression)
+    buffer = filepath_or_buffer
+    if not hasattr(buffer, 'read'):
+        buffer = utils.open_filepath(buffer, compression)
 
     def split_pair(pair):
         name, value = pair.split(':')
         value = float(value)
         return name, value
 
-    for line in filepath_or_buffer:
+    for line in buffer:
 
         # Remove carriage return and whitespace
         line = line.rstrip()
@@ -58,3 +59,7 @@ def iter_libsvm(filepath_or_buffer: str, target_type=float, compression='infer')
         y = target_type(y)
         x = dict([split_pair(pair) for pair in x.split(' ')])
         yield x, y
+
+    # Close the file if we opened it
+    if buffer is not filepath_or_buffer:
+        buffer.close()

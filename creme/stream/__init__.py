@@ -1,5 +1,6 @@
 """Streaming utilities."""
 from .cache import Cache
+from .iter_arff import iter_arff
 from .iter_array import iter_array
 from .iter_csv import iter_csv
 from .iter_libsvm import iter_libsvm
@@ -8,6 +9,7 @@ from .shuffling import shuffle
 
 __all__ = [
     'Cache',
+    'iter_arff',
     'iter_array',
     'iter_csv',
     'iter_libsvm',

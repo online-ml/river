@@ -16,10 +16,11 @@ class Bikes(base.RemoteDataset):
 
     def __init__(self):
         super().__init__(
+            url='https://maxhalford.github.io/files/datasets/toulouse_bikes.zip',
+            size=13125015,
             n_samples=182_470,
             n_features=8,
             task=base.REG,
-            url='https://maxhalford.github.io/files/datasets/toulouse_bikes.zip',
             filename='toulouse_bikes.csv'
         )
 
