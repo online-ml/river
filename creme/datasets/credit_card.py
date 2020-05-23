@@ -34,10 +34,11 @@ class CreditCard(base.RemoteDataset):
 
     def __init__(self):
         super().__init__(
-            n_samples=284_807,
+            n_samples=150828752,
             n_features=30,
             task=base.BINARY_CLF,
             url='https://maxhalford.github.io/files/datasets/creditcardfraud.zip',
+            size=150828752,
             filename='creditcard.csv'
         )
 

@@ -19,6 +19,7 @@ class Music(base.RemoteDataset):
             n_features=72,
             task=base.MO_BINARY_CLF,
             url='https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/master/music.csv',
+            size=378980,
             unpack=False
         )
 

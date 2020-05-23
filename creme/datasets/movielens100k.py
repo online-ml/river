@@ -23,6 +23,7 @@ class MovieLens100K(base.RemoteDataset):
             n_features=10,
             task=base.REG,
             url='https://maxhalford.github.io/files/datasets/ml_100k.zip',
+            size=11057876,
             filename='ml_100k.csv'
         )
 

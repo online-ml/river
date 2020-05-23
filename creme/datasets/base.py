@@ -12,7 +12,7 @@ from creme import utils
 
 REG = 'Regression'
 BINARY_CLF = 'Binary classification'
-MULTI_CLF = 'Multiclass classification'
+MULTI_CLF = 'Multi-class classification'
 MO_BINARY_CLF = 'Multi-output binary classification'
 
 
@@ -26,79 +26,6 @@ def get_data_home():
     if not os.path.exists(data_home):
         os.makedirs(data_home)
     return data_home
-
-
-def fetch_dataset(url: str, uncompress=True, verbose=True) -> str:
-    """High-level function for downloading a dataset.
-
-    This function will return a path, which can then be used to read the data.
-
-    Parameters:
-        url: From where to download the dataset.
-        uncompress: Whether to uncompress the file or not.
-        verbose: Whether to indicate download progress or not.
-
-    Returns:
-        The dataset's storage location.
-
-    """
-
-    def _print(msg):
-        if verbose:
-            print(msg)
-
-    name = os.path.basename(url)
-    extension = '.'.join(name.split('.')[1:])
-    data_home = get_data_home()
-    path = os.path.join(data_home, name)
-    archive_path = path
-    path = path[:-(len(extension) + 1)]  # e.g. path/to/file.tar.gz becomes path/to/file
-
-    # Download if necessary
-    if not (os.path.exists(path) or os.path.exists(archive_path)):
-
-        with request.urlopen(url) as r:
-
-            meta = r.info()
-
-            # Notify the user
-            try:
-                n_bytes = int(meta['Content-Length'])
-                msg = f'Downloading {url} ({utils.pretty.humanize_bytes(n_bytes)})'
-            except KeyError:
-                msg = f'Downloading {url}'
-            _print(msg)
-
-            # Now we dump the contents of the requests
-            with open(archive_path, 'wb') as f:
-                shutil.copyfileobj(r, f)
-
-    # If no uncompression is required then we're done
-    if not uncompress:
-        return archive_path
-
-    # Uncompress if necessary
-    if not os.path.exists(path):
-
-        _print(f'Uncompressing into {path}')
-
-        if extension.endswith('zip'):
-            with zipfile.ZipFile(archive_path, 'r') as zf:
-                zf.extractall(path)
-
-        elif extension.endswith(('gz', 'tar')):
-            mode = 'r:' if extension.endswith('tar') else 'r:gz'
-            tar = tarfile.open(archive_path, mode)
-            tar.extractall(path)
-            tar.close()
-
-        else:
-            raise RuntimeError(f'Unhandled extension type: {extension}')
-
-        # Delete the archive file now that it has been uncompressed
-        os.remove(archive_path)
-
-    return path
 
 
 class Dataset(abc.ABC):
@@ -143,7 +70,7 @@ class Dataset(abc.ABC):
             content['Number of features'] = f'{self.n_features:,}'
         if self.n_classes:
             content['Number of classes'] = f'{self.n_classes:,}'
-        content['Sparse'] = self.sparse
+        content['Sparse'] = str(self.sparse)
 
         return content
 
@@ -196,15 +123,19 @@ class RemoteDataset(FileDataset):
 
     Medium and large datasets that are not part of the creme package inherit from this class.
 
+    The filename doesn't have to be provided if unpack is False. Indeed in the latter case the
+    filename will be inferred from the URL.
+
     """
 
-    def __init__(self, url, filename=None, unpack=True, **desc):
+    def __init__(self, url, size, filename=None, unpack=True, **desc):
 
         if filename is None:
             filename = os.path.basename(url)
 
         super().__init__(filename=filename, **desc)
         self.url = url
+        self.size = size
         self.unpack = unpack
 
     @property
@@ -218,23 +149,21 @@ class RemoteDataset(FileDataset):
         directory.mkdir(parents=True, exist_ok=True)
         archive_path = directory.joinpath(os.path.basename(self.url))
 
-        with open(archive_path, 'wb') as f:
+        with request.urlopen(self.url) as r:
 
-            with request.urlopen(self.url) as r:
+            # Notify the user
+            if verbose:
+                meta = r.info()
+                try:
+                    n_bytes = int(meta['Content-Length'])
+                    msg = f'Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})'
+                except KeyError:
+                    msg = f'Downloading {self.url}'
+                print(msg)
 
-                # Notify the user
-                if verbose:
-                    meta = r.info()
-                    try:
-                        n_bytes = int(meta['Content-Length'])
-                        msg = f'Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})'
-                    except KeyError:
-                        msg = f'Downloading {self.url}'
-                    print(msg)
-
-                # Now dump the contents of the requests
-
-                    shutil.copyfileobj(r, f)
+            # Now dump the contents of the requests
+            with open(archive_path, 'wb') as f:
+                shutil.copyfileobj(r, f)
 
         if not self.unpack:
             return
@@ -262,13 +191,28 @@ class RemoteDataset(FileDataset):
     def _iter(self):
         pass
 
+    @property
+    def is_downloaded(self):
+        """Indicate whether or the data has been correctly downloaded."""
+        if self.path.exists():
+
+            if self.path.is_file():
+                return self.path.stat().st_size == self.size
+            return sum(f.stat().st_size for f in self.path.glob('**/*') if f.is_file())
+
+        return False
+
     def __iter__(self):
-        if not self.path.exists():
+        if not self.is_downloaded:
             self.download(verbose=True)
+        if not self.is_downloaded:
+            raise RuntimeError('Something went wrong during the download')
         yield from self._iter()
 
     @property
     def _repr_content(self):
         content = super()._repr_content
         content['URL'] = self.url
+        content['Size'] = utils.pretty.humanize_bytes(self.size)
+        content['Downloaded'] = str(self.is_downloaded)
         return content

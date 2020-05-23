@@ -125,15 +125,11 @@ def iter_csv(filepath_or_buffer, target: typing.Union[str, typing.List[str]] = N
         csv.field_size_limit(field_size_limit)
 
     # If a file is not opened, then we open it
-    if not hasattr(filepath_or_buffer, 'read'):
-        filepath_or_buffer = utils.open_filepath(filepath_or_buffer, compression)
+    buffer = filepath_or_buffer
+    if not hasattr(buffer, 'read'):
+        buffer = utils.open_filepath(buffer, compression)
 
-    for x in DictReader(
-        fraction=fraction,
-        rng=random.Random(seed),
-        f=filepath_or_buffer,
-        **kwargs
-    ):
+    for x in DictReader(fraction=fraction, rng=random.Random(seed), f=buffer, **kwargs):
 
         if drop:
             for i in drop:
@@ -158,8 +154,9 @@ def iter_csv(filepath_or_buffer, target: typing.Union[str, typing.List[str]] = N
 
         yield x, y
 
-    # Close the file
-    filepath_or_buffer.close()
+    # Close the file if we opened it
+    if buffer is not filepath_or_buffer:
+        buffer.close()
 
     # Reset the file size limit to it's original value
     csv.field_size_limit(limit)

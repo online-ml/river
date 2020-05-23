@@ -20,6 +20,7 @@ class SMTP(base.RemoteDataset):
             n_features=3,
             task=base.BINARY_CLF,
             url='https://maxhalford.github.io/files/datasets/smtp.zip',
+            size=5484982,
             filename='smtp.csv'
         )
 
