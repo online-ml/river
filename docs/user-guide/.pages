@@ -1,4 +1,10 @@
 title: User guide
 arrange:
-    - getting-started.md
     - ...
+title: User guide
+arrange:
+    - reading-data.md
+    - feature-extraction.md
+    - model-evaluation.md
+    - building-pipelines.md
+    - hyperparameter-tuning.md

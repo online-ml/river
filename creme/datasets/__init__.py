@@ -1,11 +1,11 @@
 """Datasets."""
-from . import gen
-from .airline import Airline
+from . import synth
+from .airline_passengers import AirlinePassengers
 from .bananas import Bananas
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
 from .elec2 import Elec2
-from .higgs import Higgs
+#from .higgs import Higgs
 from .http import HTTP
 from .music import Music
 from .phishing import Phishing
@@ -22,14 +22,13 @@ from .malicious_url import MaliciousURL
 
 
 __all__ = [
-    'Airline',
+    'AirlinePassengers',
     'Bananas',
     'Bikes',
     'ChickWeights',
     'CreditCard',
     'Elec2',
-    'gen',
-    'Higgs',
+    #'Higgs',
     'HTTP',
     'MaliciousURL',
     'Music',
@@ -39,6 +38,7 @@ __all__ = [
     'ImageSegments',
     'SMSSpam',
     'SMTP',
+    'synth',
     'Taxis',
     'TREC07',
     'TrumpApproval'

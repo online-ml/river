@@ -53,3 +53,7 @@ We also encourage you to try out [dill](https://dill.readthedocs.io/en/latest/di
 **What about neural networks?**
 
 There are many great open-source libraries for building neural network models. We don't feel that we can bring anything of value to the existing Python ecosystem. However, we are open to implementing compatibility wrappers for popular libraries such as PyTorch and Keras.
+
+**Who are the authors of this library?**
+
+Most of the development is coming from a group of friends from the city of Toulouse, in France. Some of us are doing a PhD, while the rest are research engineers.

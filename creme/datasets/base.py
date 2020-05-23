@@ -1,42 +1,45 @@
+import abc
 import itertools
+import pathlib
 import os
 import shutil
 import tarfile
 from urllib import request
 import zipfile
 
+from creme import utils
+
 
 REG = 'Regression'
-BINARY_CLF = 'Binary'
-MULTI_CLF = 'Multiclass'
-MO_BINARY_CLF = 'Multi-output binary'
+BINARY_CLF = 'Binary classification'
+MULTI_CLF = 'Multiclass classification'
+MO_BINARY_CLF = 'Multi-output binary classification'
 
-def get_data_home(data_home: str = None):
-    """Return the path of the creme data directory.
 
-    By default this will expand the relative path '~/creme_data'.
+def get_data_home():
+    """Return the location where remote datasets are to be stored.
 
     """
 
-    if data_home is None:
-        data_home = os.environ.get('CREME_DATA', os.path.join('~', 'creme_data'))
-        data_home = os.path.expanduser(data_home)
-        if not os.path.exists(data_home):
-            os.makedirs(data_home)
+    data_home = os.environ.get('CREME_DATA', os.path.join('~', 'creme_data'))
+    data_home = os.path.expanduser(data_home)
+    if not os.path.exists(data_home):
+        os.makedirs(data_home)
     return data_home
 
 
-def download_dataset(url: str, data_home: str, uncompress=True, verbose=True) -> str:
-    """Downloads/decompresses a dataset locally if does not exist.
+def fetch_dataset(url: str, uncompress=True, verbose=True) -> str:
+    """High-level function for downloading a dataset.
+
+    This function will return a path, which can then be used to read the data.
 
     Parameters:
         url: From where to download the dataset.
-        data_home: The directory where you wish to store the data.
         uncompress: Whether to uncompress the file or not.
         verbose: Whether to indicate download progress or not.
 
     Returns:
-        data_dir_path: The dataset's storage location?
+        The dataset's storage location.
 
     """
 
@@ -46,18 +49,29 @@ def download_dataset(url: str, data_home: str, uncompress=True, verbose=True) ->
 
     name = os.path.basename(url)
     extension = '.'.join(name.split('.')[1:])
-    data_home = get_data_home(data_home=data_home)
-    path = os.path.join(data_home, f'{name}')
+    data_home = get_data_home()
+    path = os.path.join(data_home, name)
     archive_path = path
-    if extension:
-        path = path[:-(len(extension) + 1)]  # e.g. path/to/file.tar.gz becomes path/to/file
+    path = path[:-(len(extension) + 1)]  # e.g. path/to/file.tar.gz becomes path/to/file
 
     # Download if necessary
     if not (os.path.exists(path) or os.path.exists(archive_path)):
 
-        _print(f'Downloading {url}')
-        with request.urlopen(url) as r, open(archive_path, 'wb') as f:
-            shutil.copyfileobj(r, f)
+        with request.urlopen(url) as r:
+
+            meta = r.info()
+
+            # Notify the user
+            try:
+                n_bytes = int(meta['Content-Length'])
+                msg = f'Downloading {url} ({utils.pretty.humanize_bytes(n_bytes)})'
+            except KeyError:
+                msg = f'Downloading {url}'
+            _print(msg)
+
+            # Now we dump the contents of the requests
+            with open(archive_path, 'wb') as f:
+                shutil.copyfileobj(r, f)
 
     # If no uncompression is required then we're done
     if not uncompress:
@@ -81,54 +95,180 @@ def download_dataset(url: str, data_home: str, uncompress=True, verbose=True) ->
         else:
             raise RuntimeError(f'Unhandled extension type: {extension}')
 
-        # Delete the archive file now that the dataset is available
+        # Delete the archive file now that it has been uncompressed
         os.remove(archive_path)
 
     return path
 
 
-class Dataset:
+class Dataset(abc.ABC):
+    """Base class for all datasets.
 
-    def __init__(self, n_features, category):
+    All datasets inherit from this class, be they stored in a file or generated on the fly.
+
+    """
+
+    def __init__(self, task, n_features, n_samples=None, n_classes=None, sparse=False):
+        self.task = task
         self.n_features = n_features
-        self.category = category
+        self.n_samples = n_samples
+        self.n_classes = n_classes
+        self.sparse = sparse
 
+    @abc.abstractmethod
     def __iter__(self):
         raise NotImplementedError
 
     def take(self, k: int):
-        """Yields the k first (`x`, `y`) pairs."""
+        """Iterate over the k samples."""
         return itertools.islice(self, k)
+
+    @property
+    def _repr_title(self):
+        return f'{self.__class__.__name__} dataset'
+
+    @property
+    def _repr_content(self):
+        """The items that are displayed in the __repr__ method.
+
+        This property can be overriden in order to modify the output of the __repr__ method.
+
+        """
+
+        content = {}
+        content['Task'] = self.task
+        if self.n_samples:
+            content['Number of samples'] = f'{self.n_samples:,}'
+        if self.n_features:
+            content['Number of features'] = f'{self.n_features:,}'
+        if self.n_classes:
+            content['Number of classes'] = f'{self.n_classes:,}'
+        content['Sparse'] = self.sparse
+
+        return content
+
+    def __repr__(self):
+
+        l_len = max(map(len, self._repr_content.keys()))
+        r_len = max(map(len, self._repr_content.values()))
+
+        return (
+            f'{self._repr_title}\n\n' +
+            '\n'.join(
+                k.rjust(l_len) + '  ' + v.ljust(r_len)
+                for k, v in self._repr_content.items()
+            )
+        )
+
+
+class SyntheticDataset(Dataset):
+
+    @property
+    def _repr_title(self):
+        return f'{self.__class__.__name__} synthetic dataset'
+
 
 
 class FileDataset(Dataset):
+    """Base class for datasets that are stored in a local file.
 
-    def __init__(self, n_samples, n_features, category, **dl_params):
-        super().__init__(n_features=n_features, category=category)
-        self.n_samples = n_samples
-        self.dl_params = dl_params
+    Small datasets that are part of the creme package inherit from this class.
 
-    def _stream_X_y(self, dir):
-        raise NotImplementedError
+    """
 
-    @property
-    def _remote(self):
-        """Whether or not the dataset needs downloading or not."""
-        return 'url' in self.dl_params
+    def __init__(self, filename, **desc):
+        super().__init__(**desc)
+        self.filename = filename
 
     @property
-    def _ready(self):
-        """Whether or not the dataset is ready to be read."""
-        if self._remote:
-            return os.path.isdir(os.path.join(
-                get_data_home(self.dl_params['data_home']),
-                self.dl_params['name']
-            ))
-        return True
+    def path(self):
+        return pathlib.Path(__file__).parent.joinpath(self.filename)
+
+    @property
+    def _repr_content(self):
+        content = super()._repr_content
+        content['Path'] = str(self.path)
+        return content
+
+
+class RemoteDataset(FileDataset):
+    """Base class for datasets that are stored in a remote file.
+
+    Medium and large datasets that are not part of the creme package inherit from this class.
+
+    """
+
+    def __init__(self, url, filename=None, unpack=True, **desc):
+
+        if filename is None:
+            filename = os.path.basename(url)
+
+        super().__init__(filename=filename, **desc)
+        self.url = url
+        self.unpack = unpack
+
+    @property
+    def path(self):
+        return pathlib.Path(get_data_home(), self.__class__.__name__, self.filename)
+
+    def download(self, verbose=True):
+
+        # Determine where to download the archive
+        directory = self.path.parent
+        directory.mkdir(parents=True, exist_ok=True)
+        archive_path = directory.joinpath(os.path.basename(self.url))
+
+        with open(archive_path, 'wb') as f:
+
+            with request.urlopen(self.url) as r:
+
+                # Notify the user
+                if verbose:
+                    meta = r.info()
+                    try:
+                        n_bytes = int(meta['Content-Length'])
+                        msg = f'Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})'
+                    except KeyError:
+                        msg = f'Downloading {self.url}'
+                    print(msg)
+
+                # Now dump the contents of the requests
+
+                    shutil.copyfileobj(r, f)
+
+        if not self.unpack:
+            return
+
+        if verbose:
+            print(f'Uncompressing into {directory}')
+
+        if archive_path.suffix.endswith('zip'):
+            with zipfile.ZipFile(archive_path, 'r') as zf:
+                zf.extractall(directory)
+
+        elif archive_path.suffix.endswith(('gz', 'tar')):
+            mode = 'r:' if archive_path.suffix.endswith('tar') else 'r:gz'
+            tar = tarfile.open(archive_path, mode)
+            tar.extractall(directory)
+            tar.close()
+
+        else:
+            raise RuntimeError(f'Unhandled extension type: {archive_path.suffix}')
+
+        # Delete the archive file now that it has been uncompressed
+        archive_path.unlink()
+
+    @abc.abstractmethod
+    def _iter(self):
+        pass
 
     def __iter__(self):
-        if self._remote:
-            data_dir_path = download_dataset(**self.dl_params)
-        else:
-            data_dir_path = os.path.dirname(__file__)
-        yield from self._stream_X_y(data_dir_path)
+        if not self.path.exists():
+            self.download(verbose=True)
+        yield from self._iter()
+
+    @property
+    def _repr_content(self):
+        content = super()._repr_content
+        content['URL'] = self.url
+        return content

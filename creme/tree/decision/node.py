@@ -71,6 +71,8 @@ class Leaf(base.Leaf):
 
         # Search for the best split given the current information
         top_2_diff, split = self.find_best_split()
+        if not split:
+            return self
 
         # Calculate the Hoeffding bound
         ε = self.hoeffding_bound
@@ -124,8 +126,5 @@ class Leaf(base.Leaf):
                     best_split = base.Split(on=feature_name, how=how, at=at)
                 elif gain > second_best_gain:
                     second_best_gain = gain
-
-        if best_split is None:
-            raise RuntimeError('No best split was found')
 
         return best_gain - second_best_gain, best_split

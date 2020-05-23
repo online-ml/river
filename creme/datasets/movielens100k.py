@@ -1,9 +1,9 @@
-from .. import stream
+from creme import stream
 
 from . import base
 
 
-class MovieLens100K(base.FileDataset):
+class MovieLens100K(base.RemoteDataset):
     """MovieLens 100K dataset.
 
     MovieLens datasets were collected by the GroupLens Research Project at the University of
@@ -12,28 +12,23 @@ class MovieLens100K(base.FileDataset):
     collected through the MovieLens web site (movielens.umn.edu) during the seven-month period from
     September 19th, 1997 through April 22nd, 1998.
 
-    Parameters:
-        data_home: The directory where you wish to store the data.
-        verbose: Whether to indicate download progress or not.
-
     References:
         1. [The MovieLens Datasets: History and Context](http://dx.doi.org/10.1145/2827872)
 
     """
 
-    def __init__(self, data_home: str = None, verbose=False):
+    def __init__(self):
         super().__init__(
             n_samples=100_000,
             n_features=10,
-            category=base.REG,
+            task=base.REG,
             url='https://maxhalford.github.io/files/datasets/ml_100k.zip',
-            data_home=data_home,
-            verbose=verbose
+            filename='ml_100k.csv'
         )
 
-    def _stream_X_y(self, directory):
+    def _iter(self):
         return stream.iter_csv(
-            f'{directory}/ml_100k.csv',
+            self.path,
             target='rating',
             converters={
                 'timestamp': int,

@@ -3,8 +3,8 @@ import random
 from .. import base
 
 
-class SEA(base.Dataset):
-    """SEA data generator.
+class SEA(base.SyntheticDataset):
+    """SEA synthetic dataset.
 
     Each observation is composed of 3 features. Only the first two features are relevant. The
     target is binary, and is positive if the sum of the features exceeds a certain threshold. There
@@ -20,9 +20,9 @@ class SEA(base.Dataset):
 
         >>> from creme import datasets
 
-        >>> gen = datasets.gen.SEA(variant=0, seed=42)
+        >>> dataset = datasets.synth.SEA(variant=0, seed=42)
 
-        >>> for x, y in gen.take(5):
+        >>> for x, y in dataset.take(5):
         ...     print(x, y)
         {0: 6.39426, 1: 0.25010, 2: 2.75029} False
         {0: 2.23210, 1: 7.36471, 2: 6.76699} True
@@ -37,7 +37,7 @@ class SEA(base.Dataset):
 
     def __init__(self, variant: int, noise=0., seed: int = None):
 
-        super().__init__(n_features=3, category=base.BINARY_CLF)
+        super().__init__(n_features=3, task=base.BINARY_CLF)
 
         if variant not in (0, 1, 2, 3):
             raise ValueError('Invalid variant, must be one of (0, 1, 2, 3)')

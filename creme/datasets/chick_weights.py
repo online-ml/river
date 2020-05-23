@@ -1,6 +1,6 @@
 import os
 
-from .. import stream
+from creme import stream
 
 from . import base
 
@@ -18,11 +18,11 @@ class ChickWeights(base.FileDataset):
     """
 
     def __init__(self):
-        super().__init__(n_samples=578, n_features=3, category=base.REG)
+        super().__init__(filename='chick-weights.csv', n_samples=578, n_features=3, task=base.REG)
 
-    def _stream_X_y(self, directory):
+    def __iter__(self):
         return stream.iter_csv(
-            os.path.join(directory, 'chick-weights.csv'),
+            self.path,
             target='weight',
             converters={'time': int, 'weight': int, 'chick': int, 'diet': int}
         )

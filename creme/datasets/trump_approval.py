@@ -1,5 +1,3 @@
-import os
-
 from creme import stream
 
 from . import base
@@ -19,11 +17,16 @@ class TrumpApproval(base.FileDataset):
     """
 
     def __init__(self):
-        super().__init__(n_samples=1001, n_features=6, category=base.REG)
+        super().__init__(
+            n_samples=1001,
+            n_features=6,
+            task=base.REG,
+            filename='trump_approval.csv.gz'
+        )
 
-    def _stream_X_y(self, directory):
+    def __iter__(self):
         return stream.iter_csv(
-            os.path.join(directory, 'trump_approval.csv.gz'),
+            self.path,
             target='five_thirty_eight',
             converters={
                 'ordinal_date': int,

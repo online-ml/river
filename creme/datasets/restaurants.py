@@ -1,38 +1,33 @@
 import ast
 
-from .. import stream
+from creme import stream
 
 from . import base
 
 
-class Restaurants(base.FileDataset):
+class Restaurants(base.RemoteDataset):
     """Data from the Kaggle Recruit Restaurants challenge.
 
     The goal is to predict the number of visitors in each of 829 Japanese restaurants over a priod
     of roughly 16 weeks. The data is ordered by date and then by restaurant ID.
-
-    Parameters:
-        data_home: The directory where you wish to store the data.
-        verbose: Whether to indicate download progress or not.
 
     References:
         1. [Recruit Restaurant Visitor Forecasting](https://www.kaggle.com/c/recruit-restaurant-visitor-forecasting)
 
     """
 
-    def __init__(self, data_home: str = None, verbose=True):
+    def __init__(self):
         super().__init__(
             n_samples=252_108,
             n_features=7,
-            category=base.REG,
+            task=base.REG,
             url='https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip',
-            data_home=data_home,
-            verbose=verbose
+            filename='kaggle_recruit_restaurants.csv'
         )
 
-    def _stream_X_y(self, directory):
+    def _iter(self):
         return stream.iter_csv(
-            f'{directory}/kaggle_recruit_restaurants.csv',
+            self.path,
             target='visitors',
             converters={
                 'latitude': float,

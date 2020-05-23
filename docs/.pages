@@ -1,6 +1,6 @@
 arrange:
     - index.md
-    - getting-started
     - user-guide
     - api-reference
+    - examples
     - releases
