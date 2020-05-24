@@ -52,6 +52,14 @@ def print_table(headers, columns, order=None):
     return table
 
 
-def humanize_bytes(n_bytes, units=[' bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB']):
+def humanize_bytes(n_bytes):
     """Returns a human-friendly byte size."""
-    return str(n_bytes) + units[0] if bytes < 1024 else humanize_bytes(n_bytes >> 10, units[1:])
+    suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    human = n_bytes
+    rank = 0
+    if n_bytes != 0:
+        rank = int((math.log10(n_bytes)) / 3)
+        rank = min(rank, len(suffixes) - 1)
+        human = n_bytes / (1024.0 ** rank)
+    f = ('%.2f' % human).rstrip('0').rstrip('.')
+    return '%s %s' % (f, suffixes[rank])
