@@ -221,7 +221,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
             raise ValueError('Invalid drift detection criteria: {}'.
                              format(drift_detection_criteria))
 
-    def partial_fit(self, X, y):
+    def partial_fit(self, X, y, sample_weight=None):
         """ Partially (incrementally) fit the model.
 
         Parameters
@@ -231,6 +231,11 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
 
         y: numpy.ndarray of shape (n_samples)
             An array-like with the target values of all samples in X.
+
+        sample_weight (default=None)
+            This parameter it is not used in AdaptiveRandomForestRegressor since the ensemble
+            algorithm internally assign different weights to the incoming instances. Kept for
+            method's signature compatibility purpose only.
 
         Returns
         -------
