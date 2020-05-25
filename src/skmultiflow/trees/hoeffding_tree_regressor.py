@@ -562,7 +562,8 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                     parent.set_child(parent_idx, new_split)
             # Manage memory
             self.enforce_tracker_limit()
-        elif len(best_split_suggestions) >= 2:
+        elif len(best_split_suggestions) >= 2 and best_split_suggestions[-1].merit > 0 and \
+                best_split_suggestions[-2].merit > 0:
             last_check_ratio = best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
             last_check_sdr = best_split_suggestions[-1].merit
 
