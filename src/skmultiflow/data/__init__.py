@@ -23,9 +23,11 @@ from .stagger_generator import STAGGERGenerator
 from .synth import make_logical
 from .waveform_generator import WaveformGenerator
 from .time_manager import TimeManager
+from .anomaly_sine_generator import AnomalySineGenerator
 
 __all__ = ["DataStream", "TemporalDataStream", "FileStream", "AGRAWALGenerator",
            "ConceptDriftStream", "HyperplaneGenerator", "LEDGenerator", "LEDGeneratorDrift",
            "MIXEDGenerator", "MultilabelGenerator", "RandomRBFGenerator",
            "RandomRBFGeneratorDrift", "RandomTreeGenerator", "RegressionGenerator", "SEAGenerator",
-           "SineGenerator", "STAGGERGenerator", "make_logical", "WaveformGenerator", "TimeManager"]
+           "SineGenerator", "STAGGERGenerator", "make_logical", "WaveformGenerator", "TimeManager",
+           "AnomalySineGenerator"]

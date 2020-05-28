@@ -31,7 +31,7 @@ def test_half_space_trees(test_path):
         if (cnt % wait_samples == 0) and (cnt != 0):
             y_pred.append(learner.predict(X)[0])
             y_proba.append(learner.predict_proba(X)[0])
-        learner.partial_fit(X, y)
+        learner.partial_fit(X)
         cnt += 1
 
     expected_predictions = array('i', [1, 0, 0, 0, 1, 0, 0, 1, 0])
