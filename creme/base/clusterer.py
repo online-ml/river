@@ -6,6 +6,10 @@ from . import estimator
 class Clusterer(estimator.Estimator):
     """A clustering model."""
 
+    @property
+    def _is_supervised(self):
+        return False
+
     @abc.abstractmethod
     def fit_one(self, x: dict) -> 'Clusterer':
         """Update the model with a set of features `x`.
