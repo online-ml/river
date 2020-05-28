@@ -61,31 +61,30 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
     .. code-block:: python
 
        # Imports
-       from skmultiflow.data import SEAGenerator
+       from skmultiflow.data import AnomalySineGenerator
        from skmultiflow.anomaly_detection import HalfSpaceTrees
-
        # Setup a data stream
-       stream = SEAGenerator(random_state=1)
-
+       stream = AnomalySineGenerator(random_state=1, n_samples=1000, n_anomalies=250)
        # Setup Half-Space Trees estimator
        half_space_trees = HalfSpaceTrees(random_state=1)
-
        # Setup variables to control loop and track performance
+       max_samples = 1000
        n_samples = 0
-       correct_cnt = 0
-
+       true_positives = 0
+       detected_anomalies = 0
        # Train the estimator(s) with the samples provided by the data stream
        while n_samples < max_samples and stream.has_more_samples():
            X, y = stream.next_sample()
-           y_pred = half_space_trees.predict(X) # Error is thrown here
-           if y[0] == y_pred[0]:
-               correct_cnt += 1
+           y_pred = half_space_trees.predict(X)
+           if y[0] == 1:
+               true_positives += 1
+               if y_pred[0] == 1:
+                   detected_anomalies += 1
            half_space_trees = half_space_trees.partial_fit(X, y)
            n_samples += 1
-
-       # Display results
        print('{} samples analyzed.'.format(n_samples))
-       print('Half-Space Trees accuracy: {}'.format(correct_cnt / n_samples))
+       print('Half-Space Trees correctly detected {} out of {} anomalies'.
+             format(detected_anomalies, true_positives))
     """
 
     def __init__(self,
@@ -111,7 +110,7 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         self.random_state = random_state
         self._random_state = None
 
-    def partial_fit(self, X, y, classes=None, sample_weight=None):
+    def partial_fit(self, X, y=None, classes=None, sample_weight=None):
         """ Partially (incrementally) fit the model.
 
         Parameters
@@ -119,8 +118,8 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         X : numpy.ndarray of shape (n_samples, n_features)
             The features to train the model.
 
-        y: numpy.ndarray of shape (n_samples)
-            An array-like with the class labels of all samples in X.
+        y: Not used
+            Kept in the signature for compatibility with parent class.
 
         classes: None
             Not used by this method.
@@ -142,11 +141,11 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
             self.build_trees()
 
         for i in range(row_cnt):
-            self._partial_fit(X[i], y[i])
+            self._partial_fit(X[i])
 
         return self
 
-    def _partial_fit(self, X, y):
+    def _partial_fit(self, X):
         """ Train the model on samples X and corresponding targets y.
 
         Private function where actual training is carried on.
@@ -155,9 +154,6 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
         ----------
         X: numpy.ndarray of shape (1, n_features)
             Instance attributes.
-
-        y: int
-            Class label for sample X.
 
         """
 
@@ -224,6 +220,9 @@ class HalfSpaceTrees(BaseSKMObject, ClassifierMixin):
             least one estimators has non-zero predictions. If no estimator can\
             predict probabilities, probabilities of 0 are returned.
         """
+        if not self.ensemble:
+            # The ensemble is empty, return default predictions (0., 0.)
+            return np.zeros((X.shape[0], 2))
         y_proba_mean = None
         max_score = self.window_size * pow(2.0, self.depth)
 
