@@ -238,16 +238,13 @@ class Pipeline(base.Estimator):
             for name, step in self.steps.items()
         ])
 
-    @property
-    def transformers(self):
-        """If a pipeline has `n` steps, then the first `n - 1` are necessarily transformers."""
-        if isinstance(self.final_estimator, base.Transformer):
-            return self.steps.values()
-        return itertools.islice(self.steps.values(), len(self) - 1)
+    def _add_step(self, estimator, at_start: bool):
+        """Adds a step to either end of the pipeline.
 
-    def _add_step(self, estimator: typing.Union[base.Estimator, typing.Tuple[typing.Hashable, base.Estimator]],
-                 at_start: bool):
-        """Adds a step to either end of the pipeline while taking care of the input type."""
+        This method takes care of sanitizing the input. For instance, if a function is passed,
+        then it will be wrapped with a `FuncTransformer`.
+
+        """
 
         name = None
         if isinstance(estimator, tuple):
@@ -287,15 +284,12 @@ class Pipeline(base.Estimator):
         if at_start:
             self.steps.move_to_end(name, last=False)
 
-    @property
-    def final_estimator(self):
-        """The final estimator."""
-        return next(reversed(self.steps.values()))
+    def fit_one(self, x, y=None, **params):
 
-    def fit_one(self, x, y=None, **fit_params):
+        steps = iter(self.steps.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
-        for t in self.transformers:
+        for t in itertools.islice(steps, len(self.steps) - 1):
             x_pre = x
             x = t.transform_one(x=x)
 
@@ -309,14 +303,26 @@ class Pipeline(base.Estimator):
             elif isinstance(t, base.SupervisedTransformer):
                 t.fit_one(x=x_pre, y=y)
 
-        final = self.final_estimator
-        if not isinstance(final, base.Transformer):
-            final.fit_one(x=x, y=y, **fit_params)
+        # At this point steps contains a single step, which is therefore the final step of the
+        # pipeline
+        final = next(steps)
+        if final._is_supervised:
+            final.fit_one(x=x, y=y, **params)
+        else:
+            final.fit_one(x=x, **params)
 
         return self
 
-    def transform_one(self, x: dict):
-        for t in self.transformers:
+    def _transform_one(self, x: dict):
+        """This methods takes care of applying the first n - 1 steps of the pipeline, which are
+        supposedly transformers. It also returns the final step so that other functions can do
+        something with it.
+
+        """
+
+        steps = iter(self.steps.values())
+
+        for t in itertools.islice(steps, len(self.steps) - 1):
 
             # The unsupervised transformers are updated during transform. We do this because
             # typically transform_one is called before fit_one, and therefore we might as well use
@@ -332,21 +338,38 @@ class Pipeline(base.Estimator):
 
             x = t.transform_one(x=x)
 
+        return x, next(steps)
+
+    def transform_one(self, x: dict):
+        """Apply each transformer in the pipeline to some features.
+
+        The final step in the pipeline will be applied if it is a transformer. If not, then it will
+        be ignored and the output from the penultimate step will be returned. Note that the steps
+        that precede the final step are assumed to all be transformers.
+
+        """
+        x, final_step = self._transform_one(x=x)
+        if isinstance(final_step, base.Transformer):
+            return final_step.transform_one(x=x)
         return x
 
     def predict_one(self, x: dict):
-        x = self.transform_one(x=x)
-        return self.final_estimator.predict_one(x=x)
+        x, final_step = self._transform_one(x=x)
+        return final_step.predict_one(x=x)
 
     def predict_proba_one(self, x: dict):
-        x = self.transform_one(x=x)
-        return self.final_estimator.predict_proba_one(x=x)
+        x, final_step = self._transform_one(x=x)
+        return final_step.predict_proba_one(x=x)
+
+    def score_one(self, x: dict):
+        x, final_step = self._transform_one(x=x)
+        return final_step.score_one(x=x)
 
     def forecast(self, horizon: int, xs: typing.List[dict] = None):
-        """Returns a forecast.
+        """Return a forecast.
 
         Only works if each estimator has a `transform_one` method and the final estimator has a
-        `forecast` method.
+        `forecast` method. This is the case of time series models from the `time_series` module.
 
         Parameters:
             horizon: The forecast horizon.
@@ -354,8 +377,9 @@ class Pipeline(base.Estimator):
 
         """
         if xs is not None:
-            xs = [self.transform_one(x) for x in xs]
-        return self.final_estimator.forecast(horizon=horizon, xs=xs)
+            xs = [self._transform_one(x)[0] for x in xs]
+        final_step = list(self.steps.values())[-1]
+        return final_step.forecast(horizon=horizon, xs=xs)
 
     def debug_one(self, x: dict, show_types=True, n_decimals=5) -> str:
         """Displays the state of a set of features as it goes through the pipeline.
@@ -400,7 +424,8 @@ class Pipeline(base.Estimator):
         print_dict(x, show_types=show_types)
 
         # Print the state of x at each step
-        for i, t in enumerate(self.transformers):
+        steps = iter(self.steps.values())
+        for i, t in enumerate(itertools.islice(steps, len(self.steps) - 1)):
 
             if isinstance(t, union.TransformerUnion):
                 print_title(f'{i+1}. Transformer union')
@@ -418,7 +443,7 @@ class Pipeline(base.Estimator):
                 print_dict(x, show_types=show_types)
 
         # Print the predicted output from the final estimator
-        final = self.final_estimator
+        final = next(steps)
         if not isinstance(final, base.Transformer):
             print_title(f'{len(self)}. {final}')
 

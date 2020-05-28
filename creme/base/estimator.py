@@ -18,6 +18,16 @@ DEFAULT_TAGS = {
 class Estimator(abc.ABC):
     """An estimator."""
 
+    def _is_supervised(self):
+        """Indicates whether or not the estimator is supervised or not.
+
+        This is useful internally for determining if an estimator expects to be provided with a `y`
+        value in it's `fit_one` method. For instance we use this in a pipeline to know whether or
+        not we should pass `y` to an estimator or not.
+
+        """
+        return True
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -98,7 +108,7 @@ class Estimator(abc.ABC):
 
         Tags can be used to specify what kind of inputs an estimator is able to process. For
         instance, some estimators can handle text, whilst others require positive numeric data.
-        Inheriting from `base.Estimator` will imply a set of default tags which can be overrided
+        Inheriting from `base.Estimator` will imply a set of default tags which can be overriden
         by implementing the `base.Estimator._more_tags` method.
 
         """

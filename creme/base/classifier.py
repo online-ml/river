@@ -9,6 +9,10 @@ from .predictor import Predictor
 class Classifier(Predictor):
     """A classifier."""
 
+    @property
+    def _is_supervised(self):
+        return True
+
     def predict_one(self, x: dict) -> typing.Optional[base.typing.ClfTarget]:
         """Predict the label of a set of features `x`.
 

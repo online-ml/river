@@ -6,6 +6,10 @@ from creme import base
 class Transformer(base.Estimator):
     """A transformer."""
 
+    @property
+    def _is_supervised(self):
+        return False
+
     def fit_one(self, x: dict) -> 'Transformer':
         """Update with a set of features `x`.
 
@@ -65,6 +69,10 @@ class Transformer(base.Estimator):
 
 
 class SupervisedTransformer(Transformer):
+
+    @property
+    def _is_supervised(self):
+        return True
 
     def fit_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':
         """Update with a set of features `x` and a target `y`.
