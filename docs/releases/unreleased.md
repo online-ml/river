@@ -19,7 +19,7 @@
 
 ## metrics
 
-- In `metrics.SMAPE`, the convention is now to use 0 when both `y_true` and `y_pred` are equal to 0, instead of raising a `ZeroDivisionError`.
+- In `metrics.SMAPE`, instead of raising a `ZeroDivisionError`, the convention is now to use 0 when both `y_true` and `y_pred` are equal to 0.
 
 ## multiclass
 
