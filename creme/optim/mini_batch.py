@@ -40,7 +40,7 @@ class MiniBatcher(base.Optimizer):
         >>> metric = metrics.F1()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        F1: 0.882511
+        F1: 0.88172
 
     """
 

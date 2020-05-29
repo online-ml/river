@@ -138,10 +138,10 @@ class LinearRegression(GLM, base.Regressor):
         >>> metric = metrics.MAE()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        MAE: 0.616405
+        MAE: 0.668261
 
         >>> model['LinearRegression'].intercept
-        38.000439
+        37.448820
 
         You can call the `debug_one` method to break down a prediction. This works even if the
         linear regression is part of a pipeline.
@@ -160,25 +160,25 @@ class LinearRegression(GLM, base.Regressor):
         <BLANKLINE>
         1. StandardScaler
         -----------------
-        gallup: 1.18751 (float)
-        ipsos: 2.10243 (float)
-        morning_consult: 2.73409 (float)
-        ordinal_date: -1.72946 (float)
-        rasmussen: 1.26809 (float)
-        you_gov: 1.48317 (float)
+        gallup: 1.18810 (float)
+        ipsos: 2.10348 (float)
+        morning_consult: 2.73545 (float)
+        ordinal_date: -1.73032 (float)
+        rasmussen: 1.26872 (float)
+        you_gov: 1.48391 (float)
         <BLANKLINE>
         2. LinearRegression
         -------------------
         Name              Value      Weight      Contribution
-              Intercept    1.00000    38.00044       38.00044
-                  ipsos    2.10243     1.01815        2.14059
-        morning_consult    2.73409     0.35181        0.96188
-              rasmussen    1.26809     0.45099        0.57189
-                 gallup    1.18751     0.28647        0.34019
-                you_gov    1.48317    -0.01270       -0.01883
-           ordinal_date   -1.72946     2.23125       -3.85885
+            Intercept    1.00000    37.44882       37.44882
+                ipsos    2.10348     1.07187        2.25466
+        morning_consult    2.73545     0.38002        1.03953
+            rasmussen    1.26872     0.54312        0.68907
+                gallup    1.18810     0.29489        0.35036
+                you_gov    1.48391    -0.04701       -0.06976
+        ordinal_date   -1.73032     2.58879       -4.47944
         <BLANKLINE>
-        Prediction: 38.13731
+        Prediction: 37.23325
 
     .. tip::
         It is generally a good idea to use a `preprocessing.StandardScaler` to help the optimizer

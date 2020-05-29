@@ -61,10 +61,7 @@ class Pipeline(base.Estimator):
 
         >>> model
         Pipeline (
-          StandardScaler (
-            with_mean=True
-            with_std=True
-          ),
+          StandardScaler (),
           LinearRegression (
             optimizer=SGD (
               lr=InverseScaling (
