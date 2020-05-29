@@ -1,11 +1,6 @@
 collect_ignore = []
 
 try:
-    import pandas
-except ImportError:
-    collect_ignore.append('stream/iter_pandas.py')
-
-try:
     import sklearn
 except ImportError:
     collect_ignore.append('compat/sklearn.py')

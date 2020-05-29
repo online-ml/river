@@ -2,6 +2,9 @@ import numbers
 import functools
 import collections
 
+import numpy as np
+import pandas as pd
+
 from creme import base
 from creme import stats
 from creme import utils
@@ -18,9 +21,16 @@ __all__ = [
 
 
 def safe_div(a, b):
-    if b == 0:
+    """Returns a if b is nil, else divides a by b.
+
+    When scaling, sometimes a denominator might be nil. For instance, during standard scaling
+    the denominator can be nil if a feature has no variance.
+
+    """
+    try:
+        return a / b
+    except ZeroDivisionError:
         return a
-    return a / b
 
 
 class Binarizer(base.Transformer):
@@ -64,7 +74,7 @@ class Binarizer(base.Transformer):
         return x_tf
 
 
-class StandardScaler(base.Transformer):
+class StandardScaler:
     """Scales the data so that it has zero mean and unit variance.
 
     Under the hood, a running mean and a running variance are maintained. The scaling is slightly
@@ -72,12 +82,10 @@ class StandardScaler(base.Transformer):
     known in advance. However, this doesn't have a detrimental impact on performance in the long
     run.
 
-    Parameters:
-        with_mean: Whether to centre the data before scaling.
-        with_std: Whether to scale the data.
-
-    Attributes:
-        variances (dict): Mapping between features and instances of `stats.Var`.
+    This transformer supports mini-batches as well as single instances. In the mini-batch case, the
+    number of columns and the ordering of the columns are allowed to change between subsequent
+    calls. In other words, this transformer will keep working even if you add and/or remove
+    features every time you call `fit_many` and `transform_many`.
 
     Example:
 
@@ -86,49 +94,134 @@ class StandardScaler(base.Transformer):
         >>> from creme import preprocessing
 
         >>> random.seed(42)
-        >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
+        >>> X = [{'x': random.uniform(8, 12), 'y': random.uniform(8, 12)} for _ in range(6)]
         >>> pprint(X)
-        [{'x': 10.557707},
-         {'x': 8.100043},
-         {'x': 9.100117},
-         {'x': 8.892842},
-         {'x': 10.945884}]
+        [{'x': 10.557, 'y': 8.100},
+         {'x': 9.100, 'y': 8.892},
+         {'x': 10.945, 'y': 10.706},
+         {'x': 11.568, 'y': 8.347},
+         {'x': 9.687, 'y': 8.119},
+         {'x': 8.874, 'y': 10.021}]
 
         >>> scaler = preprocessing.StandardScaler()
 
         >>> for x in X:
         ...     print(scaler.fit_one(x).transform_one(x))
-        {'x': 0.0}
-        {'x': -0.707106}
-        {'x': -0.123395}
-        {'x': -0.263247}
-        {'x': 1.195476}
+        {'x': 0.0, 'y': 0.0}
+        {'x': -0.999, 'y': 0.999}
+        {'x': 0.937, 'y': 1.350}
+        {'x': 1.129, 'y': -0.651}
+        {'x': -0.776, 'y': -0.729}
+        {'x': -1.274, 'y': 0.992}
+
+        This transformer also supports mini-batch updates. You can call `fit_many` and provide a
+        `pandas.DataFrame`:
+
+        >>> import pandas as pd
+        >>> X = pd.DataFrame.from_dict(X)
+
+        >>> scaler = preprocessing.StandardScaler()
+        >>> scaler = scaler.fit_many(X[:3])
+        >>> scaler = scaler.fit_many(X[3:])
+
+        You can then call `transform_many` to scale a mini-batch of features:
+
+        >>> scaler.transform_many(X)
+           x         y
+        0  0.444600 -0.933384
+        1 -1.044259 -0.138809
+        2  0.841106  1.679208
+        3  1.477301 -0.685117
+        4 -0.444084 -0.914195
+        5 -1.274664  0.992296
+
+    References:
+        1. [Welford's Method (and Friends)](https://www.embeddedrelated.com/showarticle/785.php)
+        2. [Batch updates for simple statistics](https://notmatthancock.github.io/2017/03/23/simple-batch-stat-updates.html)
 
     """
 
-    def __init__(self, with_mean=True, with_std=True):
-        self.with_mean = with_mean
-        self.with_std = with_std
-        self.variances = collections.defaultdict(stats.Var)
+    def __init__(self):
+        self.counts = collections.Counter()
+        self.means = collections.defaultdict(float)
+        self.vars = collections.defaultdict(float)
 
     def fit_one(self, x):
 
         for i, xi in x.items():
-            self.variances[i].update(xi)
+            self.counts[i] += 1
+            old_mean = self.means[i]
+            self.means[i] += (xi - old_mean) / self.counts[i]
+            self.vars[i] += ((xi - old_mean) * (xi - self.means[i]) - self.vars[i]) / self.counts[i]
 
         return self
 
     def transform_one(self, x):
-        x_tf = {}
+        return {
+            i: safe_div(xi - self.means[i], self.vars[i] ** .5)
+            for i, xi in x.items()
+        }
 
-        for i, xi in x.items():
-            x_tf[i] = xi
-            if self.with_mean:
-                x_tf[i] -= self.variances[i].mean.get()
-            if self.with_std:
-                x_tf[i] = safe_div(x_tf[i], self.variances[i].get() ** .5)
+    def fit_many(self, X: pd.DataFrame):
+        """Update with a mini-batch of features.
 
-        return x_tf
+        Note that the update formulas for mean and variance are slightly different than in the
+        single instance case, but they produce exactly the same result.
+
+        Parameters:
+            X: A dataframe where each column is a feature.
+
+        """
+
+        # Operating on X.values, which is view to the underlying numpy array, is slightly faster
+        # than operating on X
+        columns = X.columns
+        X = X.values
+
+        # In the rest of this method, old_* refers to the existing statistics, whilst new_* refers
+        # to the statistics of the current mini-batch.
+
+        new_means = np.nanmean(X, axis=0)
+        # We could call np.var, but we already have the mean so we can be smart
+        new_vars = np.einsum('ij,ij->j', X, X) / len(X) - new_means ** 2
+        new_counts = np.sum(~np.isnan(X), axis=0)
+
+        for col, new_mean, new_var, new_count in zip(columns, new_means, new_vars, new_counts):
+
+            old_mean = self.means[col]
+            old_var = self.vars[col]
+            old_count = self.counts[col]
+
+            a = old_count / (old_count + new_count)
+            b = new_count / (old_count + new_count)
+
+            self.means[col] = a * old_mean + b * new_mean
+            self.vars[col] = (
+                a * old_var +
+                b * new_var +
+                a * b * (old_mean - new_mean) ** 2
+            )
+            self.counts[col] += new_count
+
+        return self
+
+    def transform_many(self, X):
+        """Scale a mini-batch of features.
+
+        Parameters:
+            X: A dataframe where each column is a feature. An exception will be raised if any of
+                the features has not been seen during a previous call to `fit_many`.
+
+        """
+
+        means = np.array([self.means[c] for c in X.columns])
+        stds = np.array([self.vars[c] ** .5 for c in X.columns])
+
+        return pd.DataFrame(
+            np.divide((X.values - means), stds, where=stds > 0),
+            index=X.index,
+            columns=X.columns
+        )
 
 
 class MinMaxScaler(base.Transformer):
