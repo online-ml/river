@@ -43,7 +43,7 @@ class SoftmaxRegression(base.MultiClassifier):
         >>> metric = metrics.MacroF1()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        MacroF1: 0.818653
+        MacroF1: 0.818765
 
     References:
         1. [Course on classification stochastic gradient descent](https://www.inf.ed.ac.uk/teaching/courses/mlp/2016/mlp02-sln.pdf)

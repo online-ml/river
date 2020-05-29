@@ -38,7 +38,7 @@ class TransformedTargetRegressor(base.Regressor, base.Wrapper):
         >>> metric = metrics.MSE()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        MSE: 8.970517
+        MSE: 9.775814
 
     """
 
@@ -95,7 +95,7 @@ class BoxCoxRegressor(TransformedTargetRegressor):
         >>> metric = metrics.MSE()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        MSE: 6.003676
+        MSE: 6.409969
 
     """
 

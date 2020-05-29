@@ -120,9 +120,9 @@ class HardSamplingRegressor(HardSampling):
         ...     metrics.MAE(),
         ...     print_every=500
         ... )
-        [500] MAE: 3.240558
-        [1,000] MAE: 1.949106
-        MAE: 1.947374
+        [500] MAE: 3.165853
+        [1,000] MAE: 1.873059
+        MAE: 1.871435
 
     """
 
@@ -182,9 +182,9 @@ class HardSamplingClassifier(HardSampling):
         ...     metric=metrics.ROCAUC(),
         ...     print_every=500,
         ... )
-        [500] ROCAUC: 0.928271
-        [1,000] ROCAUC: 0.948547
-        ROCAUC: 0.952755
+        [500] ROCAUC: 0.928476
+        [1,000] ROCAUC: 0.948367
+        ROCAUC: 0.952511
 
     """
 

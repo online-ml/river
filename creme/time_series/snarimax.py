@@ -241,7 +241,7 @@ class SNARIMAX(base.Forecaster):
         ...     metric = metric.update(y, y_pred[0])
 
         >>> metric
-        Rolling of size 12 MAE: 11.763462
+        Rolling of size 12 MAE: 11.636563
 
         >>> horizon = 12
         >>> future = [
@@ -251,18 +251,18 @@ class SNARIMAX(base.Forecaster):
         >>> forecast = model.forecast(horizon=horizon, xs=future)
         >>> for x, y_pred in zip(future, forecast):
         ...     print(x['month'], f'{y_pred:.3f}')
-        1961-01-01 442.226
-        1961-02-01 427.003
-        1961-03-01 471.740
-        1961-04-01 483.905
-        1961-05-01 489.971
-        1961-06-01 543.717
-        1961-07-01 632.889
-        1961-08-01 632.709
-        1961-09-01 530.855
-        1961-10-01 457.391
-        1961-11-01 405.880
-        1961-12-01 439.532
+        1961-01-01 442.554
+        1961-02-01 427.305
+        1961-03-01 471.861
+        1961-04-01 483.978
+        1961-05-01 489.995
+        1961-06-01 544.270
+        1961-07-01 632.882
+        1961-08-01 633.229
+        1961-09-01 531.349
+        1961-10-01 457.258
+        1961-11-01 405.978
+        1961-12-01 439.674
 
     .. tip::
         This model is tailored for time series that are homoskedastic. In other words, it might not

@@ -52,9 +52,9 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
         ...     )
         ...
         ...     print(optimizer, model_selection.progressive_val_score(X_y, model, metric))
-        SGD MAE: 0.535662
-        RMSProp MAE: 0.527917
-        AdaGrad MAE: 0.480025
+        SGD MAE: 0.555971
+        RMSProp MAE: 0.528284
+        AdaGrad MAE: 0.481461
 
         >>> X_y = datasets.TrumpApproval()
         >>> metric = metrics.MAE()
@@ -70,7 +70,7 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
         ... )
 
         >>> model_selection.progressive_val_score(X_y, hedge, metric)
-        MAE: 0.474782
+        MAE: 0.494832
 
     References:
         1. [Online Learning from Experts: Weighed Majority and Hedge](https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf)

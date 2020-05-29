@@ -35,7 +35,7 @@ class AdaDelta(base.Optimizer):
         >>> metric = metrics.F1()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        F1: 0.811133
+        F1: 0.805611
 
     References:
         1. [Zeiler, M.D., 2012. Adadelta: an adaptive learning rate method. arXiv preprint arXiv:1212.5701.](https://arxiv.org/pdf/1212.5701.pdf)

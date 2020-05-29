@@ -83,8 +83,8 @@ def test_finite_differences(lm, X_y):
     """Checks the gradient of a linear model via finite differences.
 
     References:
-        1. `How to test gradient implementations <https://timvieira.github.io/blog/post/2017/04/21/how-to-test-gradient-implementations/>`_
-        2. `Stochastic Gradient Descent Tricks <https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf>`_
+        1. [How to test gradient implementations](https://timvieira.github.io/blog/post/2017/04/21/how-to-test-gradient-implementations/)
+        2. [Stochastic Gradient Descent Tricks](https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf)
 
     """
 
@@ -93,7 +93,11 @@ def test_finite_differences(lm, X_y):
 
     for x, y in X_y:
 
+        print(x)
+        print('---------')
         x = scaler.fit_one(x).transform_one(x)
+        print(x)
+        print('+++++++++')
 
         # Store the current gradient and weights
         gradient, _ = lm._eval_gradient(x, y, 1)
