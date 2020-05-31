@@ -98,7 +98,7 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
         for i, regressor in enumerate(self):
             y_pred = regressor.predict_one(x=x)
             y_pred_mean += self.weights[i] * (y_pred - y_pred_mean) / len(self)
-            loss = self.loss.eval(y_true=y, y_pred=y_pred)
+            loss = self.loss(y_true=y, y_pred=y_pred)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
             total += self.weights[i]
             regressor.fit_one(x, y)

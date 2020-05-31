@@ -64,9 +64,8 @@ class Pipeline(base.Estimator):
           StandardScaler (),
           LinearRegression (
             optimizer=SGD (
-              lr=InverseScaling (
+              lr=Constant (
                 learning_rate=0.01
-                power=0.25
               )
             )
             loss=Squared ()
@@ -85,9 +84,8 @@ class Pipeline(base.Estimator):
         >>> model['LinearRegression']
         LinearRegression (
           optimizer=SGD (
-            lr=InverseScaling (
-            learning_rate=0.01
-              power=0.25
+            lr=Constant (
+              learning_rate=0.01
             )
           )
           loss=Squared ()

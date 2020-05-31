@@ -217,7 +217,8 @@ class StandardScaler(base.Transformer):
         return pd.DataFrame(
             np.divide((X.values - means), stds, where=stds > 0),
             index=X.index,
-            columns=X.columns
+            columns=X.columns,
+            copy=False
         )
 
 

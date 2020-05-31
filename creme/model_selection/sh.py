@@ -325,7 +325,10 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
               beta_2=0.999
               eps=1e-08
             )
-            loss=Log ()
+            loss=Log (
+              weight_pos=1.
+              weight_neg=1.
+            )
             l2=0.
             intercept=-0.399002
             intercept_lr=Constant (

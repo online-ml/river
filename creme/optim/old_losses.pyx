@@ -158,7 +158,7 @@ cdef class Absolute(RegressionLoss):
         >>> from creme import optim
 
         >>> loss = optim.losses.Absolute()
-        >>> loss.eval(-42, 42)
+        >>> loss(-42, 42)
         84.0
         >>> loss.gradient(1, 2)
         1.0
@@ -221,7 +221,7 @@ cdef class CrossEntropy(MultiClassLoss):
         >>> loss = optim.losses.CrossEntropy()
 
         >>> for yt, yp in zip(y_true, y_pred):
-        ...     print(loss.eval(yt, yp))
+        ...     print(loss(yt, yp))
         1.222454
         1.116929
         1.437209
@@ -292,7 +292,7 @@ cdef class Hinge(BinaryLoss):
         >>> from creme import optim
 
         >>> loss = optim.losses.Hinge(threshold=1)
-        >>> loss.eval(1, .2)
+        >>> loss(1, .2)
         0.8
 
         >>> loss.gradient(1, .2)
@@ -404,7 +404,7 @@ cdef class Quantile(RegressionLoss):
         >>> from creme import optim
 
         >>> loss = optim.losses.Quantile(0.5)
-        >>> loss.eval(1, 3)
+        >>> loss(1, 3)
         1.0
 
         >>> loss.gradient(1, 3)
@@ -452,7 +452,7 @@ cdef class Squared(RegressionLoss):
         >>> from creme import optim
 
         >>> loss = optim.losses.Squared()
-        >>> loss.eval(-4, 5)
+        >>> loss(-4, 5)
         81.0
         >>> loss.gradient(-4, 5)
         18.0

@@ -42,7 +42,7 @@ class HardSampling(base.Wrapper):
 
     def fit_one(self, x, y):
 
-        loss = self.loss.eval(y_true=y, y_pred=self.pred_func(x))
+        loss = self.loss(y_true=y, y_pred=self.pred_func(x))
 
         if len(self.buffer) < self.size:
             self.buffer.append(Triplet(x=x, y=y, loss=loss))
@@ -60,7 +60,7 @@ class HardSampling(base.Wrapper):
 
             self.model.fit_one(triplet.x, triplet.y)
 
-            loss = self.loss.eval(y_true=triplet.y, y_pred=self.pred_func(triplet.x))
+            loss = self.loss(y_true=triplet.y, y_pred=self.pred_func(triplet.x))
 
             self.buffer.append(Triplet(x=triplet.x, y=triplet.y, loss=loss))
 
@@ -120,9 +120,9 @@ class HardSamplingRegressor(HardSampling):
         ...     metrics.MAE(),
         ...     print_every=500
         ... )
-        [500] MAE: 3.165853
-        [1,000] MAE: 1.873059
-        MAE: 1.871435
+        [500] MAE: 2.292501
+        [1,000] MAE: 1.395797
+        MAE: 1.394693
 
     """
 

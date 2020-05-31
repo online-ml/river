@@ -1,11 +1,14 @@
 import copy
 import functools
 import itertools
+import math
 import random
 
+import numpy as np
+import pandas as pd
 import pytest
-from sklearn import datasets
 
+from creme import datasets
 from creme import linear_model
 from creme import optim
 from creme import preprocessing
@@ -38,24 +41,8 @@ def iter_perturbations(keys, n=10):
             id=f'{lm.__name__} - {optimizer} - {initializer}'
         )
         for lm, X_y in [
-            (
-                linear_model.LinearRegression,
-                functools.partial(
-                    stream.iter_sklearn_dataset,
-                    dataset=datasets.load_boston(),
-                    shuffle=True,
-                    seed=42
-                )
-            ),
-            (
-                linear_model.LogisticRegression,
-                functools.partial(
-                    stream.iter_sklearn_dataset,
-                    dataset=datasets.load_breast_cancer(),
-                    shuffle=True,
-                    seed=42
-                )
-            )
+            (linear_model.LinearRegression, datasets.TrumpApproval),
+            (linear_model.LogisticRegression, datasets.Bananas)
         ]
         for optimizer, initializer in itertools.product(
             [
@@ -108,9 +95,9 @@ def test_finite_differences(lm, X_y):
 
             # Pertubate the weights and obtain the loss with the new weights
             lm.weights = {i: weights[i] + eps * di for i, di in d.items()}
-            forward = lm.loss.eval(y_true=y, y_pred=lm._raw_dot(x))
+            forward = lm.loss(y_true=y, y_pred=lm._raw_dot(x))
             lm.weights = {i: weights[i] - eps * di for i, di in d.items()}
-            backward = lm.loss.eval(y_true=y, y_pred=lm._raw_dot(x))
+            backward = lm.loss(y_true=y, y_pred=lm._raw_dot(x))
 
             # We expect g and h to be equal
             g = utils.math.dot(d, gradient)
@@ -128,3 +115,53 @@ def test_finite_differences(lm, X_y):
         # the training loop, even though it doesn't really matter.
         lm.weights = weights
         lm.fit_one(x, y)
+
+
+def test_one_many_consistent():
+    """Checks that using fit_one or fit_many produces the same result."""
+
+    X = pd.read_csv(datasets.TrumpApproval().path)
+    Y = X.pop('five_thirty_eight')
+
+    one = linear_model.LinearRegression()
+    for x, y in stream.iter_pandas(X, Y):
+        one.fit_one(x, y)
+
+    many = linear_model.LinearRegression()
+    for xb, yb in zip(np.array_split(X, len(X)), np.array_split(Y, len(Y))):
+        many.fit_many(xb, yb)
+
+    for i in X:
+        assert math.isclose(one.weights[i], many.weights[i])
+
+
+def test_shuffle_columns():
+    """Checks that fit_many works identically whether columns are shuffled or not."""
+
+    X = pd.read_csv(datasets.TrumpApproval().path)
+    Y = X.pop('five_thirty_eight')
+
+    normal = linear_model.LinearRegression()
+    for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
+        normal.fit_many(xb, yb)
+
+    shuffled = linear_model.LinearRegression()
+    for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
+        cols = np.random.permutation(X.columns)
+        shuffled.fit_many(xb[cols], yb)
+
+    for i in X:
+        assert math.isclose(normal.weights[i], shuffled.weights[i])
+
+
+def test_add_remove_columns():
+    """Checks that no exceptions are raised whenever columns are dropped and/or added."""
+
+    X = pd.read_csv(datasets.TrumpApproval().path)
+    Y = X.pop('five_thirty_eight')
+
+    lin_reg = linear_model.LinearRegression()
+    for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
+        # Pick half of the columns at random
+        cols = np.random.choice(X.columns, len(X.columns) // 2, replace=False)
+        lin_reg.fit_many(xb[cols], yb)

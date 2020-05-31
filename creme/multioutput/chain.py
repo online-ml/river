@@ -169,7 +169,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
         >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        MAE: 16.523191
+        MAE: 16.396347
 
     """
 
