@@ -25,7 +25,7 @@ __all__ = [
     'Perceptron',
     'Poisson',
     'Quantile',
-    'RegressioLoss',
+    'RegressionLoss',
     'Squared'
 ]
 
