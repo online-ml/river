@@ -34,6 +34,20 @@ class Estimator(abc.ABC):
     def __repr__(self):
         return _repr_obj(obj=self, params=self._get_params())
 
+    def __or__(self, other):
+        """Merges with another Transformer into a Pipeline."""
+        from .. import compose
+        if isinstance(other, compose.Pipeline):
+            return other.__ror__(self)
+        return compose.Pipeline(self, other)
+
+    def __ror__(self, other):
+        """Merges with another Transformer into a Pipeline."""
+        from .. import compose
+        if isinstance(other, compose.Pipeline):
+            return other.__or__(self)
+        return compose.Pipeline(other, self)
+
     def _get_params(self) -> typing.Dict[str, typing.Any]:
         return {
             name: getattr(self, name)
