@@ -45,4 +45,4 @@ class CrossEntropy(base.MeanMetric, base.MultiClassMetric):
         return False
 
     def _eval(self, y_true, y_pred):
-        return optim.losses.CrossEntropy().eval(y_true, y_pred)
+        return optim.losses.CrossEntropy()(y_true, y_pred)

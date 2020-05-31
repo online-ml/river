@@ -39,4 +39,4 @@ def iter_pandas(X: pd.DataFrame, y: typing.Union[pd.Series, pd.DataFrame] = None
     if isinstance(y, pd.DataFrame):
         kwargs['target_names'] = y.columns
 
-    yield from stream.iter_array(X.to_numpy(), y.to_numpy(), **kwargs)
+    yield from stream.iter_array(X=X.to_numpy(), y=y if y is None else y.to_numpy(), **kwargs)

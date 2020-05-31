@@ -329,13 +329,13 @@ class SNARIMAX(base.Forecaster):
 
         return x
 
-    def _fit_predict_one(self, y, x=None):
+    def _fit_predict_one(self, y: float, x: dict = None):
         """Updates the model and returns the prediction for the next time step.
 
         Parameters:
-            x (dict): Optional additional features to learn from. In the litterature these are called the
+            x: Optional additional features to learn from. In the litterature these are called the
                 exogenous variables.
-            y (float): In the litterature this is called the endogenous variable.
+            y: In the litterature this is called the endogenous variable.
 
         """
 
