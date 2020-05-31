@@ -39,20 +39,6 @@ class Transformer(base.Estimator):
 
         """
 
-    def __or__(self, other):
-        """Merges with another Transformer into a Pipeline."""
-        from .. import compose
-        if isinstance(other, compose.Pipeline):
-            return other.__ror__(self)
-        return compose.Pipeline(self, other)
-
-    def __ror__(self, other):
-        """Merges with another Transformer into a Pipeline."""
-        from .. import compose
-        if isinstance(other, compose.Pipeline):
-            return other.__or__(self)
-        return compose.Pipeline(other, self)
-
     def __add__(self, other):
         """Merges with another Transformer into a TransformerUnion."""
         from .. import compose
