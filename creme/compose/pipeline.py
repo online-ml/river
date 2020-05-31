@@ -4,12 +4,9 @@ import io
 import itertools
 import types
 import typing
+import warnings
 
-try:
-    import graphviz
-    GRAPHVIZ_INSTALLED = True
-except ImportError:
-    GRAPHVIZ_INSTALLED = False
+import pandas as pd
 
 from .. import base
 
@@ -279,7 +276,16 @@ class Pipeline(base.Estimator):
         if at_start:
             self.steps.move_to_end(name, last=False)
 
-    def fit_one(self, x, y=None, **params):
+    # Single instance methods
+
+    def fit_one(self, x: dict, y=None, **params):
+        """Fit to a single instance.
+
+        Parameters:
+            X: A dictionary of features.
+            y: A target value.
+
+        """
 
         steps = iter(self.steps.values())
 
@@ -455,6 +461,94 @@ class Pipeline(base.Estimator):
 
         return buffer.getvalue().rstrip()
 
+    # Mini-batch methods
+
+    def fit_many(self, X: pd.DataFrame, y: pd.Series, **params):
+        """Fit to a mini-batch.
+
+        Parameters:
+            X: A dataframe of features. Columns can be added and/or removed between successive
+                calls.
+            y: A series of target values.
+
+        """
+
+        steps = iter(self.steps.values())
+
+        # Loop over the first n - 1 steps, which should all be transformers
+        for t in itertools.islice(steps, len(self.steps) - 1):
+            X_pre = X
+            X = t.transform_many(X=X)
+
+            # The supervised transformers have to be updated.
+            # Note that this is done after transforming in order to avoid target leakage.
+            if isinstance(t, union.TransformerUnion):
+                for sub_t in t.transformers.values():
+                    if isinstance(sub_t, base.SupervisedTransformer):
+                        sub_t.fit_many(X=X)
+
+            elif isinstance(t, base.SupervisedTransformer):
+                t.fit_many(X=X)
+
+        # At this point steps contains a single step, which is therefore the final step of the
+        # pipeline
+        final = next(steps)
+
+        if final._is_supervised:
+            final.fit_many(X=X, y=y, **params)
+        else:
+            final.fit_many(X=X, y=y, **params)
+
+        return self
+
+    def _transform_many(self, X: pd.DataFrame):
+        """This methods takes care of applying the first n - 1 steps of the pipeline, which are
+        supposedly transformers. It also returns the final step so that other functions can do
+        something with it.
+
+        """
+
+        steps = iter(self.steps.values())
+
+        for t in itertools.islice(steps, len(self.steps) - 1):
+
+            # The unsupervised transformers are updated during transform. We do this because
+            # typically transform_one is called before fit_one, and therefore we might as well use
+            # the available information as soon as possible. Note that way of proceeding is very
+            # specific to online machine learning.
+            if isinstance(t, union.TransformerUnion):
+                for sub_t in t.transformers.values():
+                    if not isinstance(t, base.SupervisedTransformer):
+                        sub_t.fit_many(X=X)
+
+            elif not isinstance(t, base.SupervisedTransformer):
+                t.fit_many(X=X)
+
+            X = t.transform_many(X=X)
+
+        return X, next(steps)
+
+    def transform_many(self, X: pd.DataFrame):
+        """Apply each transformer in the pipeline to some features.
+
+        The final step in the pipeline will be applied if it is a transformer. If not, then it will
+        be ignored and the output from the penultimate step will be returned. Note that the steps
+        that precede the final step are assumed to all be transformers.
+
+        """
+        X, final_step = self._transform_many(X=X)
+        if isinstance(final_step, base.Transformer):
+            return final_step.transform_many(X=X)
+        return X
+
+    def predict_many(self, X: pd.DataFrame):
+        X, final_step = self._transform_many(X=X)
+        return final_step.predict_many(X=X)
+
+    def predict_proba_many(self, X: pd.DataFrame):
+        X, final_step = self._transform_many(X=X)
+        return final_step.predict_proba_many(X=X)
+
     def draw(self):
         """Draws the pipeline using the `graphviz` library."""
 
@@ -532,6 +626,8 @@ class Network(collections.UserList):
         self.edges.add((self.index(a), self.index(b)))
 
     def draw(self):
+
+        import graphviz
 
         G = graphviz.Digraph()
 
