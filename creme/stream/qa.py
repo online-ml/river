@@ -20,6 +20,12 @@ def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callab
                 delay: typing.Union[str, int, dt.timedelta, typing.Callable], copy: bool = True):
     """Simulate a time-ordered question and answer session.
 
+    This method allows looping through a dataset in the order in which it arrived. Indeed, it
+    usually is the case that labels arrive after features. Being able to go through a dataset in
+    arrival order enables assessing a model's performance in a reliable manner. For instance, the
+    `model_selection.progressive_val_score` is a high-level method that can be used to score a
+    model on a dataset. Under the hood it uses this method to determine the correct arrival order.
+
     Parameters:
         X_y: A stream of (features, target) tuples.
         moment: The attribute used for measuring time. If a callable is passed, then it is expected
@@ -40,9 +46,10 @@ def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callab
 
     Example:
 
-        As an example, we'll simulate the departure and arrival time of taxi trips. Let's first
-        create a time table which records the departure time and the duration of seconds of several
-        taxi trips.
+        The arrival delay isn't usually indicated in a dataset, but it might be able to be inferred
+        from the features. As an example, we'll simulate the departure and arrival time of taxi
+        trips. Let's first create a time table which records the departure time and the duration of
+        seconds of several taxi trips.
 
         >>> import datetime as dt
         >>> time_table = [

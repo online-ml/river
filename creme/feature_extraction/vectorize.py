@@ -153,18 +153,21 @@ class VectorizerMixin:
 class BagOfWords(base.Transformer, VectorizerMixin):
     """Counts tokens in sentences.
 
-    This returns exactly the same results as `sklearn.feature_extraction.text.CountVectorizer`.
+    This transformer can be used to counts tokens in a given piece of text. It takes care of
+    normalizing the text before tokenizing it.
+
+    Note that the parameters are identical to those of `feature_extraction.TFIDF`.
 
     Parameters:
         on: The name of the feature that contains the text to vectorize. If `None`, then each
-            `fit_one` and `transform_one` should treat `x` as a `str` and not as a `dict`.
+            `fit_one` and `transform_one` will assume that each `x` that is provided is a `str`,
+            andnot a `dict`.
         strip_accents: Whether or not to strip accent characters.
         lowercase: Whether or not to convert all characters to lowercase.
-        preprocessor: Override the preprocessing step while preserving the tokenizing
-            and n-grams generation steps.
-        tokenizer: A function used to convert preprocessed text into a `dict` of tokens.
-            A default tokenizer is used if `None` is passed. Set to `False` to disable
-            tokenization.
+        preprocessor: Override the preprocessing step while preserving the tokenizing and n-grams
+            generation steps.
+        tokenizer: A function used to convert preprocessed text into a `dict` of tokens. By
+            default, a regex formula that works well in most cases is used.
         ngram_range: The lower and upper boundary of the range n-grams to be
             extracted. All values of n such that `min_n <= n <= max_n` will be used. For example
             an `ngram_range` of `(1, 1)` means only unigrams, `(1, 2)` means unigrams and
@@ -195,10 +198,23 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
         Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
 
-        Note that `fit_one` does not have to be called because `BagOfWords` is stateless.
-        You can call it but it won't do anything.
+        Note that `fit_one` does not have to be called because `BagOfWords` is stateless. You can
+        call it but it won't do anything.
 
-        The `ngram_range` parameter can be used to extract n-grams instead of just unigrams.
+        In the above example, a string is passed to `transform_one`. You can also indicate which
+        field to access if the string is stored in a dictionary:
+
+        >>> bow = creme.feature_extraction.BagOfWords(on='sentence')
+
+        >>> for sentence in corpus:
+        ...     x = {'sentence': sentence}
+        ...     print(bow.transform_one(x))
+        Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
+        Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
+        Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
+        Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
+
+        The `ngram_range` parameter can be used to extract n-grams (including unigrams):
 
         >>> ngrammer = creme.feature_extraction.BagOfWords(ngram_range=(1, 2))
 
@@ -229,8 +245,11 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 class TFIDF(BagOfWords):
     """Computes TF-IDF values from sentences.
 
-    We use the same definition as scikit-learn. The only difference in the results comes from the
-    fact that the document frequencies have to be computed online.
+    The TF-IDF formula is the same one as scikit-learn. The only difference is the fact that the
+    document frequencies are determined online, whereas in a batch setting they can be determined
+    by performing an initial pass through the data.
+
+    Note that the parameters are identical to those of `feature_extraction.BagOfWords`.
 
     Parameters:
         normalize: Whether or not the TF-IDF values by their L2 norm.
@@ -238,10 +257,10 @@ class TFIDF(BagOfWords):
             the input is treated as a document instead of a set of features.
         strip_accents: Whether or not to strip accent characters.
         lowercase: Whether or not to convert all characters to lowercase.
-        preprocessor: Override the preprocessing step while preserving the tokenizing
-            and n-grams generation steps.
-        tokenizer: The function used to convert preprocessed text into a `dict` of
-            tokens. A default one is used if it is not provided by the user.
+        preprocessor: Override the preprocessing step while preserving the tokenizing and n-grams
+            generation steps.
+        tokenizer: A function used to convert preprocessed text into a `dict` of tokens. By
+            default, a regex formula that works well in most cases is used.
         ngram_range: The lower and upper boundary of the range n-grams to be
             extracted. All values of n such that `min_n <= n <= max_n` will be used. For example
             an `ngram_range` of `(1, 1)` means only unigrams, `(1, 2)` means unigrams and
@@ -254,7 +273,9 @@ class TFIDF(BagOfWords):
 
     Example:
 
-        >>> import creme
+        >>> from creme import feature_extraction
+
+        >>> tfidf = feature_extraction.TFIDF()
 
         >>> corpus = [
         ...     'This is the first document.',
@@ -263,11 +284,22 @@ class TFIDF(BagOfWords):
         ...     'Is this the first document?',
         ... ]
 
-        >>> tfidf = creme.feature_extraction.TFIDF()
-
         >>> for sentence in corpus:
         ...     tfidf = tfidf.fit_one(sentence)
         ...     print(tfidf.transform_one(sentence))
+        {'this': 0.447, 'is': 0.447, 'the': 0.447, 'first': 0.447, 'document': 0.447}
+        {'this': 0.333, 'document': 0.667, 'is': 0.333, 'the': 0.333, 'second': 0.469}
+        {'and': 0.497, 'this': 0.293, 'is': 0.293, 'the': 0.293, 'third': 0.497, 'one': 0.497}
+        {'is': 0.384, 'this': 0.384, 'the': 0.384, 'first': 0.580, 'document': 0.469}
+
+        In the above example, a string is passed to `transform_one`. You can also indicate which
+        field to access if the string is stored in a dictionary:
+
+        >>> tfidf = feature_extraction.TFIDF(on='sentence')
+
+        >>> for sentence in corpus:
+        ...     x = {'sentence': sentence}
+        ...     print(tfidf.transform_one(x))
         {'this': 0.447, 'is': 0.447, 'the': 0.447, 'first': 0.447, 'document': 0.447}
         {'this': 0.333, 'document': 0.667, 'is': 0.333, 'the': 0.333, 'second': 0.469}
         {'and': 0.497, 'this': 0.293, 'is': 0.293, 'the': 0.293, 'third': 0.497, 'one': 0.497}
