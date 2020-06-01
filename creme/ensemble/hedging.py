@@ -14,13 +14,9 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
     The Hedge Algorithm is a special case of the Weighted Majority Algorithm for arbitrary losses.
 
     Parameters:
-        regressors (list of `base.Regressor`): The set of regressor to hedge.
-        weights (list of `float`): The initial weight of each model. If `None` then a uniform set
-            of weights is assumed. This roughly translates to the prior amount of trust we have in
-            each model.
-        loss (optim.RegressionLoss): The loss function that has to be minimized. Defaults to
-            `optim.losses.Squared`.
-        learning_rate (float): The learning rate by which the model weights are multiplied at each
+        regressors: The regressors to hedge.
+        loss: The loss function that has to be minimized. Defaults to `optim.losses.Squared`.
+        learning_rate: The learning rate by which the model weights are multiplied at each
             iteration.
 
     Example:
@@ -79,7 +75,8 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
 
     """
 
-    def __init__(self, regressors: typing.List[base.Regressor], loss=None, learning_rate=.5):
+    def __init__(self, regressors: typing.List[base.Regressor],
+                 loss: optim.losses.RegressionLoss = None, learning_rate=.5):
         super().__init__(regressors)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.learning_rate = learning_rate
