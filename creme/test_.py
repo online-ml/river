@@ -50,7 +50,6 @@ def get_all_estimators():
         facto.HOFMRegressor,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
-        feature_extraction.Differ,
         feature_selection.PoissonInclusion,
         impute.PreviousImputer,
         impute.StatImputer,
