@@ -215,6 +215,14 @@ class TargetAgg(base.SupervisedTransformer):
         >>> for x, y in X_y:
         ...     print(agg.transform_one(x))
         ...     agg = agg.fit_one(x, y)
+        {'target_bayes_mean_by_place_and_country': 3.0}
+        {'target_bayes_mean_by_place_and_country': 3.0}
+        {'target_bayes_mean_by_place_and_country': 3.0}
+        {'target_bayes_mean_by_place_and_country': 3.0}
+        {'target_bayes_mean_by_place_and_country': 9.5}
+        {'target_bayes_mean_by_place_and_country': 22.5}
+        {'target_bayes_mean_by_place_and_country': 13.5}
+        {'target_bayes_mean_by_place_and_country': 30.5}
 
     References:
         1. [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)

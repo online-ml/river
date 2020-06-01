@@ -17,6 +17,10 @@
 - Each dataset now has a `__repr__` method which displays some descriptive information.
 - Added `datasets.Insects`, which has 10 variants.
 
+## feature_extraction
+
+- `feature_extraction.Differ` has been deprecated. We might put it back in a future if we find a better design.
+
 ## metrics
 
 - In `metrics.SMAPE`, instead of raising a `ZeroDivisionError`, the convention is now to use 0 when both `y_true` and `y_pred` are equal to 0.

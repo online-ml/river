@@ -19,11 +19,26 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
                           moment: typing.Union[str, typing.Callable] = None,
                           delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
                           print_every=0, show_time=False, show_memory=False) -> metrics.Metric:
-    """A variant of online scoring where the targets are revealed with a delay.
+    """Evaluates the performance of a model on a streaming dataset.
+
+    This method is the canonical way to evaluate a model's performance. When used correctly, it
+    allows you to exactly assess how a model would have performed in a production scenario.
 
     `X_y` is converted into a stream of questions and answers. At each step the model is either
     asked to predict an observation, or is either updated. The target is only revealed to the model
-    after a certain amount of time, which is determined by `delay` the parameter.
+    after a certain amount of time, which is determined by the `delay` parameter. Note that under
+    the hood this uses the `stream.simulate_qa` function to go through the data in arrival order.
+
+    By default, there is no delay, which means that the samples are processed one after the other.
+    When there is no delay, this function essentially performs progressive validation. When there
+    is a delay, then we refer to it as delayed progressive validation.
+
+    It is recommended to use this method when you want to determine a model's performance on a
+    dataset. In particular, it is advised to use the `delay` parameter in order to get a reliable
+    assessment. Indeed, in a production scenario, it is often the case that ground truths are made
+    available after a certain amount of time. By using this method, you can reproduce this scenario
+    and therefore truthfully assess what would have been the performance of a model on a given
+    dataset.
 
     Parameters:
         X_y: The stream of observations against which the model will be evaluated.
@@ -43,6 +58,49 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
             into account the predictions, and not the training steps.
         show_time (bool): Whether or not to display the elapsed time.
         show_memory (bool): Whether or not to display the memory usage of the model.
+
+    Example:
+
+        Take the following model:
+
+        >>> from creme import linear_model
+        >>> from creme import preprocessing
+
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression()
+        ... )
+
+        We can evaluate it on the `Phishing` dataset as so:
+
+        >>> from creme import datasets
+        >>> from creme import metrics
+        >>> from creme import model_selection
+
+        >>> model_selection.progressive_val_score(
+        ...     model=model,
+        ...     X_y=datasets.Phishing(),
+        ...     metric=metrics.ROCAUC()
+        ... )
+        ROCAUC: 0.950224
+
+        We haven't specified a delay, therefore this is strictly equivalent to the following piece
+        of code:
+
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression()
+        ... )
+
+        >>> metric = metrics.ROCAUC()
+
+        >>> for x, y in datasets.Phishing():
+        ...     y_pred = model.predict_proba_one(x)
+        ...     metric = metric.update(y, y_pred)
+        ...     model = model.fit_one(x, y)
+
+        >>> metric
+        ROCAUC: 0.950224
 
     References:
         1. [Beating the Hold-Out: Bounds for K-fold and Progressive Cross-Validation](http://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf)
@@ -71,23 +129,23 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
         # Question
         if y is None:
             preds[i] = pred_func(x=x)
+            continue
 
         # Answer
-        else:
-            y_pred = preds.pop(i)
-            if y_pred != {} and y_pred is not None:
-                metric.update(y_true=y, y_pred=y_pred)
-            model.fit_one(x=x, y=y)
+        y_pred = preds.pop(i)
+        if y_pred != {} and y_pred is not None:
+            metric.update(y_true=y, y_pred=y_pred)
+        model.fit_one(x=x, y=y)
 
-            # Update the answer counter
-            n_total_answers += 1
-            if print_every and not n_total_answers % print_every:
-                msg = f'[{n_total_answers:,d}] {metric}'
-                if show_time:
-                    now = time.perf_counter()
-                    msg += f' – {dt.timedelta(seconds=int(now - start))}'
-                if show_memory:
-                    msg += f' – {model._memory_usage}'
-                print(msg)
+        # Update the answer counter
+        n_total_answers += 1
+        if print_every and not n_total_answers % print_every:
+            msg = f'[{n_total_answers:,d}] {metric}'
+            if show_time:
+                now = time.perf_counter()
+                msg += f' – {dt.timedelta(seconds=int(now - start))}'
+            if show_memory:
+                msg += f' – {model._memory_usage}'
+            print(msg)
 
     return metric
