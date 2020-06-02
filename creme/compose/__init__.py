@@ -5,6 +5,7 @@ pipelines are not the only way to process a stream of data, we highly encourage 
 
 """
 from .func import FuncTransformer
+from .grouper import Grouper
 from .pipeline import Pipeline
 from .rename import Renamer
 from .union import TransformerUnion
@@ -16,6 +17,7 @@ from .select import SelectType
 __all__ = [
     'Discard',
     'FuncTransformer',
+    'Grouper',
     'Pipeline',
     'Renamer',
     'TransformerUnion',

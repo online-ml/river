@@ -2,19 +2,21 @@
 import inspect
 import math
 import types
+import typing
 
 
 __all__ = ['humanize_bytes', 'print_table']
 
 
-def print_table(headers, columns, order=None):
+def print_table(headers: typing.List[str], columns: typing.List[typing.List[str]],
+                order: typing.List[int] = None):
     """Pretty-prints a table.
 
     Parameters:
-        headers (list of str): The column names.
-        columns (list of lists of str): The column values.
-        order (list of ints): Order in which to print the column the values. Defaults to the order
-            in which the values are given.
+        headers: The column names.
+        columns: The column values.
+        order: Order in which to print the column the values. Defaults to the order in which the
+            values are given.
 
     """
 

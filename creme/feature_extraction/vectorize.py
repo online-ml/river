@@ -299,6 +299,7 @@ class TFIDF(BagOfWords):
 
         >>> for sentence in corpus:
         ...     x = {'sentence': sentence}
+        ...     tfidf = tfidf.fit_one(x)
         ...     print(tfidf.transform_one(x))
         {'this': 0.447, 'is': 0.447, 'the': 0.447, 'first': 0.447, 'document': 0.447}
         {'this': 0.333, 'document': 0.667, 'is': 0.333, 'the': 0.333, 'second': 0.469}

@@ -40,18 +40,28 @@ class Transformer(base.Estimator):
         """
 
     def __add__(self, other):
-        """Merges with another Transformer into a TransformerUnion."""
+        """Fuses with another Transformer into a TransformerUnion."""
         from .. import compose
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
         return compose.TransformerUnion(self, other)
 
     def __radd__(self, other):
-        """Merges with another Transformer into a TransformerUnion."""
+        """Fuses with another Transformer into a TransformerUnion."""
         from .. import compose
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
         return compose.TransformerUnion(other, self)
+
+    def __mul__(self, feature):
+        """Creates a Grouper."""
+        from .. import compose
+        return compose.Grouper(transformer=self, by=feature)
+
+    def __rmul__(self, feature):
+        """Creates a Grouper."""
+        from .. import compose
+        return compose.Grouper(transformer=self, by=feature)
 
 
 class SupervisedTransformer(Transformer):
