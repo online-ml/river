@@ -1,16 +1,16 @@
 from copy import deepcopy
 import math
+import itertools
 
 import numpy as np
-
-from sklearn.preprocessing import normalize
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 from skmultiflow.drift_detection import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree import ARFHoeffdingTreeClassifier
 from skmultiflow.metrics import ClassificationPerformanceEvaluator
-from skmultiflow.utils import get_dimensions, normalize_values_in_dict, check_random_state, check_weights
+from skmultiflow.utils import get_dimensions, normalize_values_in_dict, check_random_state,\
+    check_weights
 
 import warnings
 
@@ -20,8 +20,8 @@ def AdaptiveRandomForest(n_estimators=10,
                          disable_weighted_vote=False,
                          lambda_value=6,
                          performance_metric='acc',
-                         drift_detection_method: BaseDriftDetector=ADWIN(0.001),
-                         warning_detection_method: BaseDriftDetector=ADWIN(0.01),
+                         drift_detection_method: BaseDriftDetector = ADWIN(0.001),
+                         warning_detection_method: BaseDriftDetector = ADWIN(0.01),
                          max_byte_size=33554432,
                          memory_estimate_period=2000000,
                          grace_period=50,
@@ -36,8 +36,8 @@ def AdaptiveRandomForest(n_estimators=10,
                          nb_threshold=0,
                          nominal_attributes=None,
                          random_state=None):     # pragma: no cover
-    warnings.warn("’AdaptiveRandomForest’ has been renamed to ‘AdaptiveRandomForestClassifier’ in v0.5.0.\n"
-                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    warnings.warn("’AdaptiveRandomForest’ has been renamed to ‘AdaptiveRandomForestClassifier’ "
+                  "in v0.5.0.\nThe old name will be removed in v0.7.0", category=FutureWarning)
     return AdaptiveRandomForestClassifier(n_estimators=n_estimators,
                                           max_features=max_features,
                                           disable_weighted_vote=disable_weighted_vote,
@@ -73,8 +73,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
             Max number of attributes for each node split.
 
             - If int, then consider ``max_features`` features at each split.
-            - If float, then ``max_features`` is a percentage and ``int(max_features * n_features)``
-              features are considered at each split.
+            - If float, then ``max_features`` is a percentage and
+              ``int(max_features * n_features)`` features are considered at each split.
             - If "auto", then ``max_features=sqrt(n_features)``.
             - If "sqrt", then ``max_features=sqrt(n_features)`` (same as "auto").
             - If "log2", then ``max_features=log2(n_features)``.
@@ -169,13 +169,13 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         (2) inducing diversity through randomly selecting subsets of features for node splits (see
         skmultiflow.classification.trees.arf_hoeffding_tree);
         (3) drift detectors per base tree, which cause selective resets in response to drifts.
-        It also allows training background trees, which start training if a warning is detected and replace the active
-        tree if the warning escalates to a drift.
+        It also allows training background trees, which start training if a warning is detected
+        and replace the active tree if the warning escalates to a drift.
 
         References
         ----------
-        .. [1] Heitor Murilo Gomes, Albert Bifet, Jesse Read, Jean Paul Barddal, Fabricio Enembreck,
-           Bernhard Pfharinger, Geoff Holmes, Talel Abdessalem.
+        .. [1] Heitor Murilo Gomes, Albert Bifet, Jesse Read, Jean Paul Barddal,
+           Fabricio Enembreck, Bernhard Pfharinger, Geoff Holmes, Talel Abdessalem.
            Adaptive random forests for evolving data stream classification.
            In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.
 
@@ -218,8 +218,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
                  disable_weighted_vote=False,
                  lambda_value=6,
                  performance_metric='acc',
-                 drift_detection_method: BaseDriftDetector=ADWIN(0.001),
-                 warning_detection_method: BaseDriftDetector=ADWIN(0.01),
+                 drift_detection_method: BaseDriftDetector = ADWIN(0.001),
+                 warning_detection_method: BaseDriftDetector = ADWIN(0.01),
                  max_byte_size=33554432,
                  memory_estimate_period=2000000,
                  grace_period=50,
@@ -253,7 +253,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         self._train_weight_seen_by_model = 0.0
         self.ensemble = None
         self.random_state = random_state
-        self._random_state = check_random_state(self.random_state)   # This is the actual random_state object used
+        self._random_state = check_random_state(self.random_state)   # Actual random_state object
         if performance_metric in ['acc', 'kappa']:
             self.performance_metric = performance_metric
         else:
@@ -285,7 +285,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         y: numpy.ndarray of shape (n_samples)
             An array-like with the class labels of all samples in X.
 
-        classes: numpy.ndarray, optional (default=None)
+        classes: numpy.ndarray, list, optional (default=None)
             Array with all possible/known class labels. This is an optional parameter, except
             for the first partial_fit call where it is compulsory.
 
@@ -319,7 +319,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         self.instances_seen += 1
 
         if self.ensemble is None:
-            self.init_ensemble(X)
+            self._init_ensemble(X)
 
         for i in range(self.n_estimators):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
@@ -355,7 +355,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
     def predict_proba(self, X):
         """ Estimates the probability of each sample in X belonging to each of the class-labels.
 
-        Class probabilities are calculated as the mean predicted class probabilities per base estimator.
+        Class probabilities are calculated as the mean predicted class probabilities per base
+        estimator.
 
         Parameters
         ----------
@@ -366,23 +367,40 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         -------
         numpy.ndarray of shape (n_samples, n_classes)
             Predicted class probabilities for all instances in X.
-            If class labels were specified in a `partial_fit` call, the order of the columns matches `self.classes`.
+            If class labels were specified in a `partial_fit` call, the order of the columns
+            matches `self.classes`.
             If classes were not specified, they are assumed to be 0-indexed.
-            Class probabilities for a sample shall sum to 1 as long as at least one estimators has non-zero predictions.
+            Class probabilities for a sample shall sum to 1 as long as at least one estimators
+            has non-zero predictions.
             If no estimator can predict probabilities, probabilities of 0 are returned.
         """
         if self.ensemble is None:
-            self.init_ensemble(X)
+            self._init_ensemble(X)
 
-        y_proba_mean = None
-        for i in range(self.n_estimators):
-            y_proba_current = self.ensemble[i].predict_proba(X)
-            if y_proba_mean is None:
-                y_proba_mean = y_proba_current
+        r, _ = get_dimensions(X)
+        y_proba = []
+        for i in range(r):
+            votes = deepcopy(self.get_votes_for_instance(X[i]))
+            if votes == {}:
+                # Estimator is empty, all classes equal, default to zero
+                y_proba.append([0])
             else:
-                y_proba_mean = y_proba_mean + (y_proba_current - y_proba_mean) / (i + 1)
-
-        return normalize(y_proba_mean, norm='l1')
+                if sum(votes.values()) != 0:
+                    votes = normalize_values_in_dict(votes)
+                if self.classes is not None:
+                    votes_array = np.zeros(int(max(self.classes)) + 1)
+                else:
+                    votes_array = np.zeros(int(max(votes.keys())) + 1)
+                for key, value in votes.items():
+                    votes_array[int(key)] = value
+                y_proba.append(votes_array)
+        # Set result as np.array
+        if self.classes is not None:
+            y_proba = np.asarray(y_proba)
+        else:
+            # Fill missing values related to unobserved classes to ensure we get a 2D array
+            y_proba = np.asarray(list(itertools.zip_longest(*y_proba, fillvalue=0.0))).T
+        return y_proba
 
     def reset(self):
         """Reset ARF."""
@@ -393,7 +411,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
 
     def get_votes_for_instance(self, X):
         if self.ensemble is None:
-            self.init_ensemble(X)
+            self._init_ensemble(X)
         combined_votes = {}
 
         for i in range(self.n_estimators):
@@ -415,7 +433,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
                         combined_votes[k] = vote[k]
         return combined_votes
 
-    def init_ensemble(self, X):
+    def _init_ensemble(self, X):
         self._set_max_features(get_dimensions(X)[1])
 
         self.ensemble = [ARFBaseLearner(index_original=i,
@@ -438,7 +456,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
                                         instances_seen=self.instances_seen,
                                         drift_detection_method=self.drift_detection_method,
                                         warning_detection_method=self.warning_detection_method,
-                                        is_background_learner=False) for i in range(self.n_estimators)]
+                                        is_background_learner=False)
+                         for i in range(self.n_estimators)]
 
     def _set_max_features(self, n):
         if self.max_features == 'auto' or self.max_features == 'sqrt':
@@ -460,7 +479,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         # max_features is negative, use max_features + n
         if self.max_features < 0:
             self.max_features += n
-        # max_features <= 0 (m can be negative if max_features is negative and abs(max_features) > n),
+        # max_features <= 0
+        # (m can be negative if max_features is negative and abs(max_features) > n),
         # use max_features = 1
         if self.max_features <= 0:
             self.max_features = 1
@@ -554,7 +574,9 @@ class ARFBaseLearner(BaseSKMObject):
         self.classifier.partial_fit(X, y, classes=classes, sample_weight=sample_weight)
 
         if self.background_learner:
-            self.background_learner.classifier.partial_fit(X, y, classes=classes, sample_weight=sample_weight)
+            self.background_learner.classifier.partial_fit(X, y,
+                                                           classes=classes,
+                                                           sample_weight=sample_weight)
 
         if self._use_drift_detector and not self.is_background_learner:
             correctly_classifies = self.classifier.predict(X) == y
@@ -575,7 +597,8 @@ class ARFBaseLearner(BaseSKMObject):
                                                              self.warning_detection_method,
                                                              True)
                     # Update the warning detection object for the current object
-                    # (this effectively resets changes made to the object while it was still a bkg learner).
+                    # (this effectively resets changes made to the object while it
+                    # was still a background learner).
                     self.warning_detection.reset()
 
             # Update the drift detection
@@ -589,9 +612,6 @@ class ARFBaseLearner(BaseSKMObject):
 
     def predict(self, X):
         return self.classifier.predict(X)
-
-    def predict_proba(self, X):
-        return self.classifier.predict_proba(X)
 
     def get_votes_for_instance(self, X):
         return self.classifier.get_votes_for_instance(X)
