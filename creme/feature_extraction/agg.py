@@ -1,7 +1,6 @@
 import collections
 import copy
 import functools
-import typing
 
 from creme import base
 from creme import stats
@@ -78,7 +77,7 @@ class Agg(base.Transformer):
 
         >>> agg = feature_extraction.Agg(
         ...     on='revenue',
-        ...     by=('place', 'country'),
+        ...     by=['place', 'country'],
         ...     how=stats.Max()
         ... )
 
@@ -122,7 +121,7 @@ class Agg(base.Transformer):
 
     def __init__(self, on: str, by: str, how: stats.Univariate):
         self.on = on
-        self.by = by if isinstance(by, (typing.List, typing.Tuple)) else [by]
+        self.by = by if isinstance(by, list) else [by]
         self.how = how
         self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
         self.feature_name = f'{self.on}_{self.how.name}_by_{"_and_".join(self.by)}'
@@ -205,7 +204,7 @@ class TargetAgg(base.SupervisedTransformer):
         group the data:
 
         >>> agg = feature_extraction.TargetAgg(
-        ...     by=('place', 'country'),
+        ...     by=['place', 'country'],
         ...     how=stats.BayesianMean(
         ...         prior=3,
         ...         prior_weight=1
@@ -230,7 +229,7 @@ class TargetAgg(base.SupervisedTransformer):
     """
 
     def __init__(self, by: str, how: stats.Univariate, target_name='target'):
-        self.by = by if isinstance(by, (typing.List, typing.Tuple)) else [by]
+        self.by = by if isinstance(by, list) else [by]
         self.how = how
         self.target_name = target_name
         self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))

@@ -8,6 +8,7 @@
 
 - Added `compose.SelectType`, which allows selecting feature subsets based on their type.
 - Added a `score_one` method to `compose.Pipeline` so that estimators from the `anomaly` module can be pipelined.
+- Added `compose.Grouper`, which allows applying transformers within different subgroups.
 
 ## datasets
 
@@ -20,6 +21,10 @@
 ## feature_extraction
 
 - `feature_extraction.Differ` has been deprecated. We might put it back in a future if we find a better design.
+
+## impute
+
+- `impute.StatImputer` has been completely refactored.
 
 ## metrics
 

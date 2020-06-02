@@ -1,6 +1,7 @@
 import collections
 import copy
 import functools
+import numbers
 import typing
 
 from creme import base
@@ -8,6 +9,189 @@ from creme import stats
 
 
 __all__ = ['StatImputer']
+
+
+class StatImputer(base.Transformer):
+    """Replaces missing values with a statistic.
+
+    This transformer allows you to replace missing values with the value of a running statistic.
+    During a call to `fit_one`, for each feature, a statistic is updated whenever a numeric feature
+    is observed. When `transform_one` is called, each feature with a `None` value is replaced with
+    the current value of the corresponding statistic.
+
+    Parameters:
+        imputers: A list of tuples where each tuple has two elements. The first elements is a
+            feature name and the second value is an instance of `stats.Univariate`. The second
+            value can also be an arbitrary value, such as -1, in which case the missing values will
+            be replaced with it.
+
+    Example:
+
+        >>> from creme import impute
+        >>> from creme import stats
+
+        For numeric data, we can use a `stats.Mean()` to replace missing values by the running
+        average of the previously seen values:
+
+        >>> X = [
+        ...     {'temperature': 1},
+        ...     {'temperature': 8},
+        ...     {'temperature': 3},
+        ...     {'temperature': None},
+        ...     {'temperature': 4}
+        ... ]
+
+        >>> imp = impute.StatImputer(('temperature', stats.Mean()))
+
+        >>> for x in X:
+        ...     imp = imp.fit_one(x)
+        ...     print(imp.transform_one(x))
+        {'temperature': 1}
+        {'temperature': 8}
+        {'temperature': 3}
+        {'temperature': 4.0}
+        {'temperature': 4}
+
+        For discrete/categorical data, a common practice is to `stats.Mode` to replace missing
+        values by the most commonly seen value:
+
+        >>> X = [
+        ...     {'weather': 'sunny'},
+        ...     {'weather': 'rainy'},
+        ...     {'weather': 'sunny'},
+        ...     {'weather': None},
+        ...     {'weather': 'rainy'},
+        ...     {'weather': 'rainy'},
+        ...     {'weather': None}
+        ... ]
+
+        >>> imp = impute.StatImputer(('weather', stats.Mode()))
+
+        >>> for x in X:
+        ...     imp = imp.fit_one(x)
+        ...     print(imp.transform_one(x))
+        {'weather': 'sunny'}
+        {'weather': 'rainy'}
+        {'weather': 'sunny'}
+        {'weather': 'sunny'}
+        {'weather': 'rainy'}
+        {'weather': 'rainy'}
+        {'weather': 'rainy'}
+
+        You can also choose to replace missing values with a constant value, as so:
+
+        >>> imp = impute.StatImputer(('weather', 'missing'))
+
+        >>> for x in X:
+        ...     imp = imp.fit_one(x)
+        ...     print(imp.transform_one(x))
+        {'weather': 'sunny'}
+        {'weather': 'rainy'}
+        {'weather': 'sunny'}
+        {'weather': 'missing'}
+        {'weather': 'rainy'}
+        {'weather': 'rainy'}
+        {'weather': 'missing'}
+
+        Multiple imputers can be defined by providing a tuple for each feature which you want to
+        impute:
+
+        >>> X = [
+        ...     {'weather': 'sunny', 'temperature': 8},
+        ...     {'weather': 'rainy', 'temperature': 3},
+        ...     {'weather': 'sunny', 'temperature': None},
+        ...     {'weather': None, 'temperature': 4},
+        ...     {'weather': 'snowy', 'temperature': -4},
+        ...     {'weather': 'snowy', 'temperature': -3},
+        ...     {'weather': 'snowy', 'temperature': -3},
+        ...     {'weather': None, 'temperature': None}
+        ... ]
+
+        >>> imp = impute.StatImputer(
+        ...     ('temperature', stats.Mean()),
+        ...     ('weather', stats.Mode())
+        ... )
+
+        >>> for x in X:
+        ...     imp = imp.fit_one(x)
+        ...     print(imp.transform_one(x))
+        {'weather': 'sunny', 'temperature': 8}
+        {'weather': 'rainy', 'temperature': 3}
+        {'weather': 'sunny', 'temperature': 5.5}
+        {'weather': 'sunny', 'temperature': 4}
+        {'weather': 'snowy', 'temperature': -4}
+        {'weather': 'snowy', 'temperature': -3}
+        {'weather': 'snowy', 'temperature': -3}
+        {'weather': 'snowy', 'temperature': 0.8333}
+
+        A sophisticated way to go about imputation is condition the statistics on a given feature.
+        For instance, we might want to replace a missing temperature with the average temperature
+        of a particular weather condition. As an example, consider the following dataset where the
+        temperature is missing, but not the weather condition:
+
+        >>> X = [
+        ...     {'weather': 'sunny', 'temperature': 8},
+        ...     {'weather': 'rainy', 'temperature': 3},
+        ...     {'weather': 'sunny', 'temperature': None},
+        ...     {'weather': 'rainy', 'temperature': 4},
+        ...     {'weather': 'sunny', 'temperature': 10},
+        ...     {'weather': 'sunny', 'temperature': None},
+        ...     {'weather': 'sunny', 'temperature': 12},
+        ...     {'weather': 'rainy', 'temperature': None}
+        ... ]
+
+        Each missing temperature can be replaced with the average temperature of the corresponding
+        weather condition as so:
+
+        >>> from creme import compose
+
+        >>> imp = compose.Grouper(
+        ...     impute.StatImputer(('temperature', stats.Mean())),
+        ...     by='weather'
+        ... )
+
+        >>> for x in X:
+        ...     imp = imp.fit_one(x)
+        ...     print(imp.transform_one(x))
+        {'weather': 'sunny', 'temperature': 8}
+        {'weather': 'rainy', 'temperature': 3}
+        {'weather': 'sunny', 'temperature': 8.0}
+        {'weather': 'rainy', 'temperature': 4}
+        {'weather': 'sunny', 'temperature': 10}
+        {'weather': 'sunny', 'temperature': 9.0}
+        {'weather': 'sunny', 'temperature': 12}
+        {'weather': 'rainy', 'temperature': 3.5}
+
+        Note that you can also create a `Grouper` with the `*` operator:
+
+        >>> imp = impute.StatImputer(('temperature', stats.Mean())) * 'weather'
+
+    """
+
+    def __init__(self, *imputers):
+        self.stats = {
+            feature: stat if isinstance(stat, stats.Univariate) else Constant(stat)
+            for feature, stat in imputers
+        }
+
+    def fit_one(self, x):
+
+        for i in self.stats:
+            if x[i] is not None:
+                self.stats[i].update(x[i])
+
+        return self
+
+    def transform_one(self, x):
+
+        # Transformers are supposed to be pure, therefore we make a copy of the features
+        x = x.copy()
+
+        for i in self.stats:
+            if x[i] is None:
+                x[i] = self.stats[i].get()
+
+        return x
 
 
 class Constant(stats.Univariate):
@@ -30,136 +214,3 @@ class Constant(stats.Univariate):
     @property
     def name(self):
         return self.value
-
-
-class StatImputer(base.Transformer):
-    """Imputer that allows to replace missing values with a univariate statistic, or a constant.
-
-    Parameters:
-        on: Name of the field to impute.
-        by: Name of the field to impute with aggregatation.
-        stat: Univariate statistic used to fill missing values, for `stats.Mean`. If `stat` is not
-            an instance of `stats.Univariate`, then each missing value will be replaced with the
-            given constant.
-
-    Example:
-
-        >>> from creme import impute
-        >>> from creme import stats
-
-        >>> X = [
-        ...     {'x': 1.0},
-        ...     {'x': 2.0},
-        ...     {'x': 3.0},
-        ...     {}
-        ... ]
-
-        >>> const_imp = impute.StatImputer(
-        ...     on='x',
-        ...     stat=5.0
-        ... )
-
-        >>> for x in X:
-        ...     print(const_imp.fit_one(x))
-        {'x': 1.0}
-        {'x': 2.0}
-        {'x': 3.0}
-        {'x': 5.0}
-
-        >>> mean_imp = impute.StatImputer(
-        ...     on='x',
-        ...     stat=stats.Mean()
-        ... )
-
-        >>> for x in X:
-        ...     print(mean_imp.fit_one(x))
-        {'x': 1.0}
-        {'x': 2.0}
-        {'x': 3.0}
-        {'x': 2.0}
-
-        >>> X = [
-        ...     {'x': 'sunny'},
-        ...     {'x': 'rainy'},
-        ...     {'x': 'humidity'},
-        ...     {'x': 'sunny'},
-        ...     {'x': 'rainy'},
-        ...     {'x': 'rainy'},
-        ...     {},
-        ...     {},
-        ...     {},
-        ... ]
-
-        >>> mode_imp = impute.StatImputer(
-        ...     on='x',
-        ...     stat=stats.Mode(),
-        ... )
-
-        >>> for x in X:
-        ...     print(mode_imp.fit_one(x))
-        {'x': 'sunny'}
-        {'x': 'rainy'}
-        {'x': 'humidity'}
-        {'x': 'sunny'}
-        {'x': 'rainy'}
-        {'x': 'rainy'}
-        {'x': 'rainy'}
-        {'x': 'rainy'}
-        {'x': 'rainy'}
-
-        >>> X = [
-        ...   {'town': 'New York', 'weather': 'sunny'},
-        ...   {'town': 'New York', 'weather': 'sunny'},
-        ...   {'town': 'New York', 'weather': 'rainy'},
-        ...   {'town': 'Montreal', 'weather': 'rainy'},
-        ...   {'town': 'Montreal', 'weather': 'humidity'},
-        ...   {'town': 'Montreal', 'weather': 'rainy'},
-        ...   {'town': 'Pekin', 'weather': 'sunny'},
-        ...   {'town': 'New York'},
-        ...   {'town': 'Montreal'},
-        ...   {'town': 'Pekin'},
-        ... ]
-
-        >>> by_town_imp = impute.StatImputer(
-        ...     on='weather',
-        ...     by='town',
-        ...     stat=stats.Mode()
-        ... )
-
-        >>> for x in X:
-        ...     print(by_town_imp.fit_one(x))
-        {'town': 'New York', 'weather': 'sunny'}
-        {'town': 'New York', 'weather': 'sunny'}
-        {'town': 'New York', 'weather': 'rainy'}
-        {'town': 'Montreal', 'weather': 'rainy'}
-        {'town': 'Montreal', 'weather': 'humidity'}
-        {'town': 'Montreal', 'weather': 'rainy'}
-        {'town': 'Pekin', 'weather': 'sunny'}
-        {'town': 'New York', 'weather': 'sunny'}
-        {'town': 'Montreal', 'weather': 'rainy'}
-        {'town': 'Pekin', 'weather': 'sunny'}
-
-    """
-
-    def __init__(self, on: typing.Hashable, stat: stats.Univariate, by: typing.Hashable = None):
-        self.on = on
-        self.by = by
-        self.stat = stat if isinstance(stat, stats.Univariate) else Constant(stat)
-        new_stat = functools.partial(copy.deepcopy, self.stat)
-        self.imputers = collections.defaultdict(new_stat)  # type: ignore
-
-    def fit_one(self, x):
-        if self.on in x:
-            key = x[self.by] if self.by else None
-            self.imputers[key].update(x[self.on])
-            return x
-        return self.transform_one(x)
-
-    def transform_one(self, x):
-        if self.on not in x:
-            key = x[self.by] if self.by else None
-            return {
-                **x,
-                self.on: self.imputers[key].get()
-            }
-        return x
