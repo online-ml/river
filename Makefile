@@ -6,6 +6,7 @@ execute-notebooks:
 
 user-guide:
 	jupyter nbconvert --to markdown docs/getting-started.ipynb
+	jupyter nbconvert --to markdown docs/user-guide/*.ipynb --output-dir docs/user-guide
 	jupyter nbconvert --to markdown docs/examples/*.ipynb --output-dir docs/examples
 
 api-reference:

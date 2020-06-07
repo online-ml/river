@@ -95,8 +95,7 @@ class VectorizerMixin:
         ngram_range: The lower and upper boundary of the range n-grams to be
             extracted. All values of n such that `min_n <= n <= max_n` will be used. For example
             an `ngram_range` of `(1, 1)` means only unigrams, `(1, 2)` means unigrams and
-            bigrams, and `(2, 2)` means only bigrams. Only works if `tokenizer` is not set to
-            `False`.
+            bigrams, and `(2, 2)` means only bigrams.
 
     Attributes:
         processing_steps (list): A list of preprocessing steps that are applied to each text.
@@ -171,8 +170,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         ngram_range: The lower and upper boundary of the range n-grams to be
             extracted. All values of n such that `min_n <= n <= max_n` will be used. For example
             an `ngram_range` of `(1, 1)` means only unigrams, `(1, 2)` means unigrams and
-            bigrams, and `(2, 2)` means only bigrams. Only works if `tokenizer` is not set to
-            `False`.
+            bigrams, and `(2, 2)` means only bigrams.
 
     Example:
 
