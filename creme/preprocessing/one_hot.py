@@ -28,16 +28,16 @@ class OneHotEncoder(base.Transformer):
         >>> alphabet = list(string.ascii_lowercase)
         >>> X = [
         ...     {
-        ...         'letter_1': random.choice(alphabet),
-        ...         'letter_2': random.choice(alphabet),
+        ...         'c1': random.choice(alphabet),
+        ...         'c2': random.choice(alphabet),
         ...     }
         ...     for _ in range(4)
         ... ]
         >>> pprint(X)
-        [{'letter_1': 'u', 'letter_2': 'd'},
-         {'letter_1': 'a', 'letter_2': 'x'},
-         {'letter_1': 'i', 'letter_2': 'h'},
-         {'letter_1': 'h', 'letter_2': 'e'}]
+        [{'c1': 'u', 'c2': 'd'},
+         {'c1': 'a', 'c2': 'x'},
+         {'c1': 'i', 'c2': 'h'},
+         {'c1': 'h', 'c2': 'e'}]
 
         We can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
         no need to specify which features to encode.
@@ -48,10 +48,10 @@ class OneHotEncoder(base.Transformer):
         >>> for x in X:
         ...     oh = oh.fit_one(x)
         ...     pprint(oh.transform_one(x))
-        {'letter_1_u': 1, 'letter_2_d': 1}
-        {'letter_1_a': 1, 'letter_2_x': 1}
-        {'letter_1_i': 1, 'letter_2_h': 1}
-        {'letter_1_h': 1, 'letter_2_e': 1}
+        {'c1_u': 1, 'c2_d': 1}
+        {'c1_a': 1, 'c2_x': 1}
+        {'c1_i': 1, 'c2_h': 1}
+        {'c1_h': 1, 'c2_e': 1}
 
         The `sparse` parameter can be set to `False` in order to include the values that are not
         present in the output.
@@ -60,22 +60,35 @@ class OneHotEncoder(base.Transformer):
         >>> for x in X[:2]:
         ...     oh = oh.fit_one(x)
         ...     pprint(oh.transform_one(x))
-        {'letter_1_u': 1, 'letter_2_d': 1}
-        {'letter_1_a': 1, 'letter_1_u': 0, 'letter_2_d': 0, 'letter_2_x': 1}
+        {'c1_u': 1, 'c2_d': 1}
+        {'c1_a': 1, 'c1_u': 0, 'c2_d': 0, 'c2_x': 1}
 
         A subset of the features can be one-hot encoded by using an instance of `compose.Select`.
 
         >>> from creme import compose
 
-        >>> pp = compose.Select('letter_1') | creme.preprocessing.OneHotEncoder()
+        >>> pp = compose.Select('c1') | creme.preprocessing.OneHotEncoder()
 
         >>> for x in X:
         ...     pp = pp.fit_one(x)
         ...     pprint(pp.transform_one(x))
-        {'letter_1_u': 1}
-        {'letter_1_a': 1, 'letter_1_u': 0}
-        {'letter_1_a': 0, 'letter_1_i': 1, 'letter_1_u': 0}
-        {'letter_1_a': 0, 'letter_1_h': 1, 'letter_1_i': 0, 'letter_1_u': 0}
+        {'c1_u': 1}
+        {'c1_a': 1, 'c1_u': 0}
+        {'c1_a': 0, 'c1_i': 1, 'c1_u': 0}
+        {'c1_a': 0, 'c1_h': 1, 'c1_i': 0, 'c1_u': 0}
+
+        You can preserve the `c2` feature by using a union:
+
+        >>> pp = compose.Select('c1') | creme.preprocessing.OneHotEncoder()
+        >>> pp += compose.Select('c2')
+
+        >>> for x in X:
+        ...     pp = pp.fit_one(x)
+        ...     pprint(pp.transform_one(x))
+        {'c1_u': 1, 'c2': 'd'}
+        {'c1_a': 1, 'c1_u': 0, 'c2': 'x'}
+        {'c1_a': 0, 'c1_i': 1, 'c1_u': 0, 'c2': 'h'}
+        {'c1_a': 0, 'c1_h': 1, 'c1_i': 0, 'c1_u': 0, 'c2': 'e'}
 
     """
 

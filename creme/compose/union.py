@@ -7,7 +7,7 @@ try:
 except ImportError:
     GRAPHVIZ_INSTALLED = False
 
-from .. import base
+from creme import base
 
 from . import func
 
@@ -18,20 +18,23 @@ __all__ = ['TransformerUnion']
 class TransformerUnion(base.Transformer):
     """Packs multiple transformers into a single one.
 
-    Calling `transform_one` will concatenate each transformer's output.
+    Pipelines allow you to apply steps sequentially. Therefore, the output of a step becomes the
+    input of the next one. In many cases, you may want to pass the output of a step to multiple
+    steps. This simple transformer allows you to do so. In other words, it enables you to apply
+    particular steps to different parts of an input. A typical example is when you want to scale
+    numeric features and one-hot encode categorical features.
+
+    This transformer is essentially a list of transformers. Whenever it is updated, it loops
+    through each transformer and updates them. Meanwhile, calling `transform_one` collects the
+    output of each transformer and merges them into a single dictionary.
 
     Parameters:
-        transformers: A list of transformers to pack together.
-
-    Attributes:
-        transformers (dict)
+        transformers: Ideally, a list of (name, estimator) tuples. A name is automatically inferred
+            if none is provided.
 
     Example:
 
-        >>> from pprint import pprint
-        >>> import creme.compose
-        >>> import creme.feature_extraction
-        >>> import creme.stats
+        Take the following dataset:
 
         >>> X = [
         ...     {'place': 'Taco Bell', 'revenue': 42},
@@ -42,21 +45,29 @@ class TransformerUnion(base.Transformer):
         ...     {'place': 'Taco Bell', 'revenue': 50}
         ... ]
 
-        >>> mean = creme.feature_extraction.Agg(
-        ...     on='revenue',
-        ...     by='place',
-        ...     how=creme.stats.Mean()
-        ... )
-        >>> count = creme.feature_extraction.Agg(
-        ...     on='revenue',
-        ...     by='place',
-        ...     how=creme.stats.Count()
-        ... )
-        >>> agg = creme.compose.TransformerUnion(mean)
-        >>> agg += count
+        As an example, let's assume we want to compute two aggregates of a dataset. We therefore
+        define two `feature_extraction.Agg`s and initialize a `TransformerUnion` with them:
 
+        >>> from creme import compose
+        >>> from creme import feature_extraction
+        >>> from creme import stats
+
+        >>> mean = feature_extraction.Agg(
+        ...     on='revenue', by='place',
+        ...     how=stats.Mean()
+        ... )
+        >>> count = feature_extraction.Agg(
+        ...     on='revenue', by='place',
+        ...     how=stats.Count()
+        ... )
+        >>> agg = compose.TransformerUnion(mean, count)
+
+        We can now update each transformer and obtain their output with a single function call:
+
+        >>> from pprint import pprint
         >>> for x in X:
-        ...     pprint(agg.fit_one(x).transform_one(x))
+        ...     agg = agg.fit_one(x)
+        ...     print(agg.transform_one(x))
         {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
         {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
         {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
@@ -64,8 +75,52 @@ class TransformerUnion(base.Transformer):
         {'revenue_count_by_place': 3, 'revenue_mean_by_place': 20.0}
         {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
 
-        >>> pprint(agg.transform_one({'place': 'Taco Bell'}))
-        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
+        Note that you can use the `+` operator as a shorthand notation:
+
+        agg = mean + count
+
+        This allows you to build complex pipelines in a very terse manner. For instance, we can
+        create a pipeline that scales each feature and fits a logistic regression as so:
+
+        >>> from creme import linear_model as lm
+        >>> from creme import preprocessing as pp
+
+        >>> model = (
+        ...     (mean + count) |
+        ...     pp.StandardScaler() |
+        ...     lm.LogisticRegression()
+        ... )
+
+        Whice is equivalent to the following code:
+
+        >>> model = compose.Pipeline(
+        ...     compose.TransformerUnion(mean, count),
+        ...     pp.StandardScaler(),
+        ...     lm.LogisticRegression()
+        ... )
+
+        Note that you access any part of a `TransformerUnion` by name:
+
+        >>> model['TransformerUnion']['Agg']
+        Agg (
+          on="revenue"
+          by=['place']
+          how=Mean ()
+        )
+
+        >>> model['TransformerUnion']['Agg1']
+        Agg (
+          on="revenue"
+          by=['place']
+          how=Count ()
+        )
+
+        You can also manually provide a name for each step:
+
+        >>> agg = compose.TransformerUnion(
+        ...     ('Mean revenue by place', mean),
+        ...     ('# by place', count)
+        ... )
 
     """
 
