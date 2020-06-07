@@ -87,7 +87,7 @@ def test_finite_differences(lm, X_y):
         print('+++++++++')
 
         # Store the current gradient and weights
-        gradient, _ = lm._eval_gradient(x, y, 1)
+        gradient, _ = lm._eval_gradient_one(x, y, 1)
         weights = lm.weights.copy()
 
         # d is a set of weight perturbations
@@ -95,9 +95,9 @@ def test_finite_differences(lm, X_y):
 
             # Pertubate the weights and obtain the loss with the new weights
             lm.weights = {i: weights[i] + eps * di for i, di in d.items()}
-            forward = lm.loss(y_true=y, y_pred=lm._raw_dot(x))
+            forward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
             lm.weights = {i: weights[i] - eps * di for i, di in d.items()}
-            backward = lm.loss(y_true=y, y_pred=lm._raw_dot(x))
+            backward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
 
             # We expect g and h to be equal
             g = utils.math.dot(d, gradient)

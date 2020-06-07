@@ -8,7 +8,18 @@ __all__ = ['expand_param_grid']
 
 
 def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
-    """Expands a grid of possible parameters into a sequence of single parametrizations.
+    """Expands a grid of parameters.
+
+    This method can be used to generate a list of model parametrizations from a dictionary where
+    each parameter is associated with a list of possible parameters. In other words, it expands a
+    grid of parameters.
+
+    Typically, this method can be used to create copies of a given model with different parameter
+    choices. The models can then be used as part of a model selection process, such as a
+    `model_selection.SuccessiveHalvingClassifier` or a `ensemble.HedgeRegressor`.
+
+    The syntax for the parameter grid is quite flexible. It allows nesting parameters and can
+    therefore be used to generate parameters for a pipeline.
 
     Parameters:
         grid: The grid of parameters to expand. The provided dictionary can be nested. The only
@@ -16,46 +27,65 @@ def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
 
     Example:
 
+        As an initial example, we can expand a grid of parameters for a single model.
+
         >>> import pprint
         >>> from creme import model_selection
         >>> from creme import optim
 
-        >>> param_grid = {
+        >>> grid = {'optimizer': [optim.SGD(.1), optim.SGD(.01), optim.SGD(.001)]}
+
+        >>> for params in model_selection.expand_param_grid(grid):
+        ...     pprint.pprint(params)
+        {'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}
+        {'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}
+        {'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 0})}
+
+        You can parametrize a model with a given set of parameters with the `_set_params` method:
+
+        >>> from creme import linear_model
+
+        >>> model = linear_model.LinearRegression(optimizer=optim.SGD())
+        >>> model = model._set_params(params)
+        >>> model
+        LinearRegression (
+          optimizer=SGD (
+            lr=Constant (
+              learning_rate=0.001
+            )
+          )
+          loss=Squared ()
+          l2=0.
+          intercept=0.
+          intercept_lr=Constant (
+            learning_rate=0.01
+          )
+          clip_gradient=1e+12
+          initializer=Zeros ()
+        )
+
+        You can expand parameters for multiple choices like so:
+
+        >>> grid = {
+        ...     'optimizer': [
+        ...         (optim.SGD, {'lr': [.1, .01, .001]}),
+        ...         (optim.Adam, {'lr': [.1, .01, .01]})
+        ...     ]
+        ... }
+
+        You may specify a grid of parameters for a pipeline via nesting:
+
+        >>> grid = {
         ...     'BagOfWords': {
         ...         'strip_accents': [False, True]
         ...     },
         ...     'LinearRegression': {
-        ...         'intercept_lr': [0.001],
-        ...         'optimizer': (optim.SGD, {'lr': [0.001, 0.01, 0.1]}),
+        ...         'optimizer': [
+        ...             (optim.SGD, {'lr': [.1, .01]}),
+        ...             (optim.Adam, {'lr': [.1, .01]})
+        ...         ]
         ...     }
         ... }
-
-        >>> for params in model_selection.expand_param_grid(param_grid):
-        ...     pprint.pprint(params)
-        ...     print()
-        {'BagOfWords': {'strip_accents': False},
-         'LinearRegression': {'intercept_lr': 0.001,
-                              'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 0})}}
-        <BLANKLINE>
-        {'BagOfWords': {'strip_accents': False},
-         'LinearRegression': {'intercept_lr': 0.001,
-                              'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}}
-        <BLANKLINE>
-        {'BagOfWords': {'strip_accents': False},
-         'LinearRegression': {'intercept_lr': 0.001,
-                              'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}}
-        <BLANKLINE>
-        {'BagOfWords': {'strip_accents': True},
-         'LinearRegression': {'intercept_lr': 0.001,
-                              'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 0})}}
-        <BLANKLINE>
-        {'BagOfWords': {'strip_accents': True},
-         'LinearRegression': {'intercept_lr': 0.001,
-                              'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}}
-        <BLANKLINE>
-        {'BagOfWords': {'strip_accents': True},
-         'LinearRegression': {'intercept_lr': 0.001,
-                              'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}}
 
     """
 

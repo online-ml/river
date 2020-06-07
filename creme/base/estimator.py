@@ -34,6 +34,20 @@ class Estimator(abc.ABC):
     def __repr__(self):
         return _repr_obj(obj=self, params=self._get_params())
 
+    def __or__(self, other):
+        """Merges with another Transformer into a Pipeline."""
+        from .. import compose
+        if isinstance(other, compose.Pipeline):
+            return other.__ror__(self)
+        return compose.Pipeline(self, other)
+
+    def __ror__(self, other):
+        """Merges with another Transformer into a Pipeline."""
+        from .. import compose
+        if isinstance(other, compose.Pipeline):
+            return other.__or__(self)
+        return compose.Pipeline(other, self)
+
     def _get_params(self) -> typing.Dict[str, typing.Any]:
         return {
             name: getattr(self, name)
@@ -67,22 +81,22 @@ class Estimator(abc.ABC):
 
             >>> model._set_params(new_params)
             Pipeline (
-                StandardScaler (),
-                LinearRegression (
+              StandardScaler (),
+              LinearRegression (
                 optimizer=SGD (
-                    lr=Constant (
-                        learning_rate=0.042
-                    )
+                  lr=Constant (
+                    learning_rate=0.042
+                  )
                 )
                 loss=Squared ()
                 l2=0.001
                 intercept=0.
                 intercept_lr=Constant (
-                    learning_rate=0.01
+                  learning_rate=0.01
                 )
                 clip_gradient=1e+12
-                    initializer=Zeros ()
-                )
+                initializer=Zeros ()
+              )
             )
 
         """

@@ -2,6 +2,8 @@ import abc
 import numbers
 import typing
 
+from creme import utils
+
 from . import schedulers
 
 

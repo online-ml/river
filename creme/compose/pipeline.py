@@ -20,23 +20,24 @@ __all__ = ['Pipeline']
 class Pipeline(base.Estimator):
     """A pipeline of estimators.
 
-    Pipelines provide to organize different processing steps into a sequence of steps. Typically,
-    when doing supervised learning, a pipeline contains one ore more transformation steps, whilst
-    it's is a regressor or a classifier.
+    Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised
+    learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or
+    a classifier. It is highly recommended to use pipelines with `creme`. Indeed, in an online
+    learning setting, it is very practical to have a model defined as a single object. Take a look
+    at the [user guide](/user-guide/the-art-of-using-pipelines) for further information and
+    practical examples.
 
-    It is highly recommended to use pipelines with `creme`. Indeed, in an online learning setting,
-    it is very practical to have a model defined as a single object. On the contrary, in batch
-    learning, this isn't as important.
-
-    Take a look at the[user guide](/user-guide/the-art-of-using-pipeline) for further information
-    and practical examples.
+    One special thing to take notice to is the way transformers are handled. In a typical scenario,
+    it is usual to predict something for a sample and wait for the ground truth to arrive. In such
+    a case, the features are seen before the ground truth arrives. Therefore, the unsupervised
+    parts of the pipeline are updated when `predict_one` and `predict_proba_one` are called.
+    Usually the unsupervised parts of the pipeline are all the steps that precede the final step,
+    which is a supervised model. However, some transformers are supervised and are therefore
+    obtained during calls to `fit_one`.
 
     Parameters:
-        steps: Ideally a list of (name, estimator) tuples. If an estimator is given without a name,
-            then a name is automatically inferred from the estimator.
-
-    Attributes:
-        steps (collections.OrderedDict)
+        steps: Ideally, a list of (name, estimator) tuples. A name is automatically inferred
+            if none is provided.
 
     Example:
 
