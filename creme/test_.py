@@ -39,6 +39,7 @@ def get_all_estimators():
         SKL2CremeBase,
         compose.FuncTransformer,
         compose.Pipeline,
+        compose.Grouper,
         ensemble.StackingBinaryClassifier,
         facto.FFMClassifier,
         facto.FFMRegressor,
