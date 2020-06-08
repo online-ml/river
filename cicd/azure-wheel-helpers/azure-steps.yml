@@ -1,0 +1,27 @@
+# Copyright (c) 2019, Henry Schreiner.
+#
+# Distributed under the 3-clause BSD license, see accompanying file LICENSE
+# or https://github.com/scikit-hep/azure-wheel-helpers for details.
+
+steps:
+
+- script: |
+    python -m pip wheel -v . -w wheelhouse/
+  displayName: 'Build wheel'
+  condition: and(succeeded(), not(and(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['python.version'], '2.7'))))
+
+- script: |
+    ls -lh wheelhouse
+    mkdir -p dist
+    cp wheelhouse/$(package_name)* dist/.
+  displayName: 'Show wheelhouse'
+
+- script: |
+    python -m pip install $(package_name) --no-index -f wheelhouse
+  displayName: 'Install wheel'
+
+- script: |
+    python -m pip install delocate
+    /Library/Frameworks/Python.framework/Versions/$(python.version)/bin/delocate-wheel dist/$(package_name)*.whl
+  displayName: 'Delocate wheels'
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin')) 
