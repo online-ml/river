@@ -53,8 +53,8 @@ def test_kswin_initialization():
     else:
         assert False
 
+
 def test_kswin_functionality(test_path):
-    test_path = "tests/drift_detection/"
     kswin = KSWIN(alpha=0.0001,window_size=200,stat_size=100)
     test_file = os.path.join(test_path, 'drift_stream.npy')
     data_stream = np.load(test_file)
