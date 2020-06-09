@@ -50,12 +50,13 @@ dev_packages = base_packages + [
 ]
 
 docs_packages = dev_packages + [
-    'ipykernel>=4.8.2',
-    'jupyter-client>=5.2.3',
-    'mkdocs==1.1',
-    'mkdocs-awesome-pages-plugin>=2.2.1',
-    'mkdocs-material>=5.0.1',
-    'nbval>=0.9.1'
+    'ipykernel',
+    'jupyter-client',
+    'mkdocs',
+    'mkdocs-awesome-pages-plugin',
+    'mkdocs-material',
+    'nbconvert'
+    'nbval'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
