@@ -14,7 +14,7 @@ __all__ = ['SuccessiveHalvingClassifier', 'SuccessiveHalvingRegressor']
 class SuccessiveHalving:
 
     def __init__(self, models: typing.List[base.Predictor], metric: metrics.Metric, budget: int,
-                 eta=2, verbose=False):
+                 eta=2, verbose=False, **print_kwargs):
 
         # Check that the model and the metric are in accordance
         for model in models:
@@ -27,6 +27,7 @@ class SuccessiveHalving:
         self.budget = budget
         self.eta = eta
         self.verbose = verbose
+        self.print_kwargs = print_kwargs
 
         self._n = len(models)
         self._metrics = [copy.deepcopy(metric) for _ in range(self._n)]
@@ -81,15 +82,18 @@ class SuccessiveHalving:
             cutoff = math.ceil(self._s / self.eta)
 
             if self.verbose:
-                print('\t'.join((
-                    f'[{self._n_rungs}]',
-                    f'{self._s - cutoff} removed',
-                    f'{cutoff} left',
-                    f'{self._r} iterations',
-                    f'budget used: {self._budget_used}',
-                    f'budget left: {self.budget - self._budget_used}',
-                    f'best {self._metrics[self._rankings[0]]}',
-                )))
+                print(
+                    '\t'.join((
+                        f'[{self._n_rungs}]',
+                        f'{self._s - cutoff} removed',
+                        f'{cutoff} left',
+                        f'{self._r} iterations',
+                        f'budget used: {self._budget_used}',
+                        f'budget left: {self.budget - self._budget_used}',
+                        f'best {self._metrics[self._rankings[0]]}',
+                    )),
+                    **self.print_kwargs
+                )
 
             # Determine where the next rung is located
             self._s = cutoff
@@ -130,6 +134,8 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
             `k` is the number of models that have reached the rung. A higher `eta` value will
             focus on less models but will allocate more iterations to the best models.
         verbose: Whether to display progress or not.
+        print_kwargs: Extra keyword arguments are passed to the `print` function. For instance,
+            this allows providing a `file` argument, which indicates where to output progress.
 
     Example:
 
@@ -267,6 +273,8 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
             `k` is the number of models that have reached the rung. A higher `eta` value will
             focus on less models but will allocate more iterations to the best models.
         verbose: Whether to display progress or not.
+        print_kwargs: Extra keyword arguments are passed to the `print` function. For instance,
+            this allows providing a `file` argument, which indicates where to output progress.
 
     Examples:
 
