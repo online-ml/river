@@ -62,7 +62,7 @@ class KNeighborsRegressor(base.Regressor):
         >>> metric = metrics.MAE()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        MAE: 0.335012
+        MAE: 0.335753
 
     """
 
@@ -132,7 +132,7 @@ class KNeighborsClassifier(base.MultiClassifier):
         >>> metric = metrics.Accuracy()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        Accuracy: 84.39%
+        Accuracy: 84.55%
 
     """
 

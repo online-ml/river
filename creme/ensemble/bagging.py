@@ -71,7 +71,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
         >>> metric = metrics.F1()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        F1: 0.878788
+        F1: 0.877788
 
         >>> print(model)
         BaggingClassifier(StandardScaler | LogisticRegression)
@@ -134,7 +134,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
         >>> metric = metrics.MAE()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        MAE: 0.71322
+        MAE: 0.641799
 
     References:
         1. [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)

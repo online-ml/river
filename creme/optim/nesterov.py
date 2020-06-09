@@ -31,7 +31,7 @@ class NesterovMomentum(base.Optimizer):
         >>> metric = metrics.F1()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        F1: 0.843668
+        F1: 0.842932
 
     """
 

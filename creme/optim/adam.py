@@ -37,7 +37,7 @@ class Adam(base.Optimizer):
         >>> metric = metrics.F1()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        F1: 0.864198
+        F1: 0.86496
 
     References:
         1. [Kingma, D.P. and Ba, J., 2014. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980.](https://arxiv.org/pdf/1412.6980.pdf)

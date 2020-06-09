@@ -1,7 +1,15 @@
-"""Loss functions."""
-from libc cimport math
+"""Loss functions.
 
-from .. import utils
+Each loss function is intented to work with both single values as well as numpy vectors.
+
+"""
+import abc
+import math
+
+import numpy as np
+from scipy import special
+
+from creme import utils
 
 
 __all__ = [
@@ -17,31 +25,61 @@ __all__ = [
     'Perceptron',
     'Poisson',
     'Quantile',
-    'RegressioLoss',
+    'RegressionLoss',
     'Squared'
 ]
 
 
-cdef double clamp_proba(double x):
-    return math.fmax(math.fmin(x, 1 - 1e-15), 1e-15)
+def clamp_proba(p):
+    return max(min(p, 1 - 1e-15), 1e-15)
 
 
-cdef class Loss:
-    """Mother class for all loss functions."""
+class Loss(abc.ABC):
+    """Base class for all loss functions."""
 
     def __str__(self):
         return self.__class__.__name__
 
+    @abc.abstractmethod
+    def __call__(self, y_true, y_pred):
+        """Returns the loss.
+
+        Parameters:
+            y_true: Ground truth(s).
+            y_pred: Prediction(s).
+
+        Returns:
+            The losses.
+
+        """
+
+    @abc.abstractmethod
+    def gradient(self, y_true, y_pred):
+        """Returns the gradient with respect to y_pred.
+
+        Parameters:
+            y_true: Ground truth(s).
+            y_pred: Prediction(s).
+
+        Returns:
+            The gradient(s).
+
+        """
+
+    @abc.abstractmethod
     def mean_func(self, y_pred):
         """Mean function.
 
-        This is the inverse of the link function.
+        This is the inverse of the link function. Typically, a loss function takes as input the raw
+        output of a model. In the case of classification, the raw output would be logits. The mean
+        function can be used to convert the raw output into a value that makes sense to the user,
+        such as a probability.
 
         Parameters:
-            y_pred: A raw prediction.
+            y_pred: Raw prediction(s).
 
         Returns:
-            The adjusted prediction.
+            The adjusted prediction(s).
 
         References:
             1. [Wikipedia section on link and mean function](https://www.wikiwand.com/en/Generalized_linear_model#/Link_function)
@@ -49,100 +87,32 @@ cdef class Loss:
         """
 
 
-cdef class BinaryLoss(Loss):
+class BinaryLoss(Loss):
     """A loss appropriate for binary classification tasks."""
 
-    cpdef double eval(self, bint y_true, double y_pred):
-        """Returns the loss.
-
-        Parameters:
-            y_true: A boolean ground truth.
-            y_pred: A prediction for the `True` class.
-
-        Returns:
-            The loss.
-
-        """
-
-    cpdef double gradient(self, bint y_true, double y_pred):
-        """Returns the gradient with respect to `y_pred`.
-
-        Parameters:
-            y_true: A boolean ground truth.
-            y_pred: A prediction for the `True` class.
-
-        Returns:
-            The gradient.
-
-        """
-
-    cpdef double mean_func(self, double y_pred):
+    def mean_func(self, y_pred):
+        if isinstance(y_pred, np.ndarray):
+            return 1. / (1. + np.exp(-y_pred))
         return utils.math.sigmoid(y_pred)
 
 
-cdef class MultiClassLoss(Loss):
+class MultiClassLoss(Loss):
     """A loss appropriate for multi-class classification tasks."""
 
-    cpdef double eval(self, object y_true, dict y_pred):
-        """Returns the loss.
-
-        Parameters:
-            y_true: A ground truth.
-            y_pred: A dictionary of predicted probabilities for each class.
-
-        Returns:
-            The loss.
-
-        """
-
-    cpdef dict gradient(self, object y_true, dict y_pred):
-        """Returns the gradient with respect to `y_pred`.
-
-        Parameters:
-            y_true: A ground truth.
-            y_pred: A dictionary of predicted probabilities for each class.
-
-        Returns:
-            The gradient.
-
-        """
-
-    cpdef dict mean_func(self, dict y_pred):
+    def mean_func(self, y_pred):
+        if isinstance(y_pred, np.ndarray):
+            return special.softmax(y_pred)
         return utils.math.softmax(y_pred)
 
 
-cdef class RegressionLoss(Loss):
+class RegressionLoss(Loss):
     """A loss appropriate for regression tasks."""
 
-    cpdef double eval(self, double y_true, double y_pred):
-        """Returns the loss.
-
-        Parameters:
-            y_true: A numeric ground truth.
-            y_pred: A numeric prediction.
-
-        Returns:
-            The loss.
-
-        """
-
-    cpdef double gradient(self, double y_true, double y_pred):
-        """Returns the gradient with respect to `y_pred`.
-
-        Parameters:
-            y_true: A numeric ground truth.
-            y_pred: A numeric prediction.
-
-        Returns:
-            The gradient.
-
-        """
-
-    cpdef double mean_func(self, double y_pred):
+    def mean_func(self, y_pred):
         return y_pred
 
 
-cdef class Absolute(RegressionLoss):
+class Absolute(RegressionLoss):
     """Absolute loss, also known as the mean absolute error or L1 loss.
 
     Mathematically, it is defined as
@@ -158,25 +128,31 @@ cdef class Absolute(RegressionLoss):
         >>> from creme import optim
 
         >>> loss = optim.losses.Absolute()
-        >>> loss.eval(-42, 42)
-        84.0
+        >>> loss(-42, 42)
+        84
         >>> loss.gradient(1, 2)
-        1.0
+        1
         >>> loss.gradient(2, 1)
-        -1.0
+        -1
 
     """
 
-    cpdef double eval(self, double y_true, double y_pred):
+    def __call__(self, y_true, y_pred):
+        if isinstance(y_true, np.ndarray):
+            return np.abs(y_pred - y_true)
         return abs(y_pred - y_true)
 
-    cpdef double gradient(self, double y_true, double y_pred):
+    def gradient(self, y_true, y_pred):
+
+        if isinstance(y_true, np.ndarray):
+            return np.where(y_pred > y_true, 1, -1)
+
         if y_pred > y_true:
             return 1
         return -1
 
 
-cdef class Cauchy(RegressionLoss):
+class Cauchy(RegressionLoss):
     """Cauchy loss function.
 
     Parameters:
@@ -188,20 +164,20 @@ cdef class Cauchy(RegressionLoss):
 
     """
 
-    cdef readonly double C
-
     def __init__(self, C=80):
         self.C = C
 
-    cpdef double eval(self, double y_true, double y_pred):
-        return math.fabs(y_pred - y_true)
+    def __call__(self, y_true, y_pred):
+        if isinstance(y_true, np.ndarray):
+            return np.abs(y_pred - y_true)
+        return abs(y_pred - y_true)
 
-    cpdef double gradient(self, double y_true, double y_pred):
+    def gradient(self, y_true, y_pred):
         diff = y_pred - y_true
         return diff / ((diff / self.C) ** 2 + 1)
 
 
-cdef class CrossEntropy(MultiClassLoss):
+class CrossEntropy(MultiClassLoss):
     """Cross entropy loss.
 
     This is a generalization of logistic loss to multiple classes.
@@ -221,7 +197,7 @@ cdef class CrossEntropy(MultiClassLoss):
         >>> loss = optim.losses.CrossEntropy()
 
         >>> for yt, yp in zip(y_true, y_pred):
-        ...     print(loss.eval(yt, yp))
+        ...     print(loss(yt, yp))
         1.222454
         1.116929
         1.437209
@@ -239,15 +215,13 @@ cdef class CrossEntropy(MultiClassLoss):
 
     """
 
-    cdef readonly dict class_weight
-
     def __init__(self, class_weight=None):
         if class_weight is None:
             class_weight = {}
         self.class_weight = class_weight
 
-    cpdef double eval(self, object y_true, dict y_pred):
-        cdef double total = 0
+    def __call__(self, y_true, y_pred):
+        total = 0
 
         for label, proba in y_pred.items():
             if y_true == label:
@@ -255,7 +229,7 @@ cdef class CrossEntropy(MultiClassLoss):
 
         return -total
 
-    cpdef dict gradient(self, object y_true, dict y_pred):
+    def gradient(self, y_true, y_pred):
         return {
             label: (
                 self.class_weight.get(label, 1.) *
@@ -265,7 +239,7 @@ cdef class CrossEntropy(MultiClassLoss):
         }
 
 
-cdef class Hinge(BinaryLoss):
+class Hinge(BinaryLoss):
     """Computes the hinge loss.
 
     Mathematically, it is defined as
@@ -292,7 +266,7 @@ cdef class Hinge(BinaryLoss):
         >>> from creme import optim
 
         >>> loss = optim.losses.Hinge(threshold=1)
-        >>> loss.eval(1, .2)
+        >>> loss(1, .2)
         0.8
 
         >>> loss.gradient(1, .2)
@@ -300,24 +274,29 @@ cdef class Hinge(BinaryLoss):
 
     """
 
-    cdef readonly double threshold
-
-    def __init__(self, double threshold=1.):
+    def __init__(self, threshold=1.):
         self.threshold = threshold
 
-    cpdef double eval(self, bint y_true, double y_pred):
-        # Convert 0 to -1
-        y_true = y_true or -1
-        return math.fmax(0, self.threshold - y_true * y_pred)
+    def __call__(self, y_true, y_pred):
+        y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
-    cpdef double gradient(self, bint y_true, double y_pred):
-        y_true = y_true or -1
+        if isinstance(y_true, np.ndarray):
+            return np.maximum(self.threshold - y_true * y_pred, 0)
+
+        return max(self.threshold - y_true * y_pred, 0)
+
+    def gradient(self, y_true, y_pred):
+        y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
+
+        if isinstance(y_true, np.ndarray):
+            return np.where(y_true * y_pred < self.threshold, -y_pred, 0)
+
         if y_true * y_pred < self.threshold:
             return -y_pred
         return 0
 
 
-cdef class EpsilonInsensitiveHinge(RegressionLoss):
+class EpsilonInsensitiveHinge(RegressionLoss):
     """Epsilon-insensitive hinge loss.
 
     Parameters:
@@ -325,18 +304,26 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
 
     """
 
-    cdef readonly double eps
-
     def __init__(self, eps=.1):
         self.eps = eps
 
-    cpdef double eval(self, double y_true, double y_pred):
-        # Convert 0 to -1
-        y_true = y_true or -1
-        return math.fmax(0, math.fabs(y_pred - y_true) - self.eps)
+    def __call__(self, y_true, y_pred):
+        y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
-    cpdef double gradient(self, double y_true, double y_pred):
-        y_true = y_true or -1
+        if isinstance(y_true, np.ndarray):
+            return np.maximum(np.abs(y_pred - y_true) - self.eps, 0)
+
+        return max(math.fabs(y_pred - y_true) - self.eps, 0)
+
+    def gradient(self, y_true, y_pred):
+        y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
+
+        if isinstance(y_true, np.ndarray):
+            gradients = np.zeros_like(y_true)
+            gradients[y_pred > y_true + self.eps] = 1
+            gradients[y_pred + self.eps < y_true] = -1
+            return gradients
+
         if y_pred > y_true + self.eps:
             return 1
         elif y_pred + self.eps < y_true:
@@ -344,7 +331,7 @@ cdef class EpsilonInsensitiveHinge(RegressionLoss):
         return 0
 
 
-cdef class Log(BinaryLoss):
+class Log(BinaryLoss):
     """Logarithmic loss.
 
     This loss function expects each provided `y_pred` to be a logit. In other words if must be
@@ -359,14 +346,17 @@ cdef class Log(BinaryLoss):
 
     """
 
-    cdef readonly double weight_pos
-    cdef readonly double weight_neg
-
     def __init__(self, weight_pos=1., weight_neg=1.):
         self.weight_pos = weight_pos
         self.weight_neg = weight_neg
 
-    cpdef double eval(self, bint y_true, double y_pred):
+    def __call__(self, y_true, y_pred):
+
+        if isinstance(y_true, np.ndarray):
+            weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
+            z = y_pred * y_true
+            return weights * np.log(1. + np.exp(-z))
+
         weight = self.weight_pos
         if y_true == 0:
             y_true = -1
@@ -379,7 +369,13 @@ cdef class Log(BinaryLoss):
             return weight * -z
         return weight * math.log(1. + math.exp(-z))
 
-    cpdef double gradient(self, bint y_true, double y_pred):
+    def gradient(self, y_true, y_pred):
+
+        if isinstance(y_true, np.ndarray):
+            weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
+            z = y_pred * y_true
+            return weights * -y_true / (np.exp(z) + 1.)
+
         weight = self.weight_pos
         if y_true == 0:
             y_true = -1
@@ -393,7 +389,7 @@ cdef class Log(BinaryLoss):
         return weight * -y_true / (math.exp(z) + 1.)
 
 
-cdef class Quantile(RegressionLoss):
+class Quantile(RegressionLoss):
     """Quantile loss.
 
     Parameters:
@@ -404,7 +400,7 @@ cdef class Quantile(RegressionLoss):
         >>> from creme import optim
 
         >>> loss = optim.losses.Quantile(0.5)
-        >>> loss.eval(1, 3)
+        >>> loss(1, 3)
         1.0
 
         >>> loss.gradient(1, 3)
@@ -419,20 +415,18 @@ cdef class Quantile(RegressionLoss):
 
     """
 
-    cdef readonly double alpha
-
-    def __init__(self, alpha):
+    def __init__(self, alpha=.5):
         self.alpha = alpha
 
-    cpdef double eval(self, double y_true, double y_pred):
+    def __call__(self, y_true, y_pred):
         diff = y_pred - y_true
         return (self.alpha - (diff < 0)) * diff
 
-    cpdef double gradient(self, double y_true, double y_pred):
+    def gradient(self, y_true, y_pred):
         return (y_true < y_pred) - self.alpha
 
 
-cdef class Squared(RegressionLoss):
+class Squared(RegressionLoss):
     """Squared loss, also known as the L2 loss.
 
     Mathematically, it is defined as
@@ -452,20 +446,20 @@ cdef class Squared(RegressionLoss):
         >>> from creme import optim
 
         >>> loss = optim.losses.Squared()
-        >>> loss.eval(-4, 5)
-        81.0
+        >>> loss(-4, 5)
+        81
         >>> loss.gradient(-4, 5)
-        18.0
+        18
         >>> loss.gradient(5, -4)
-        -18.0
+        -18
 
     """
 
-    cpdef double eval(self, double y_true, double y_pred):
+    def __call__(self, y_true, y_pred):
         return (y_pred - y_true) * (y_pred - y_true)
 
-    cpdef double gradient(self, double y_true, double y_pred):
-        return 2. * (y_pred - y_true)
+    def gradient(self, y_true, y_pred):
+        return 2 * (y_pred - y_true)
 
 
 class BinaryFocalLoss(BinaryLoss):
@@ -486,28 +480,34 @@ class BinaryFocalLoss(BinaryLoss):
         self.gamma = gamma
         self.beta = beta
 
-    def eval(self, y_true, y_pred):
+    def __call__(self, y_true, y_pred):
 
-        # Convert 0 to -1
-        y_true = int(y_true or -1)
+        y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         xt = y_true * y_pred
-        pt = utils.math.sigmoid(self.gamma * xt + self.beta)
 
+        if isinstance(y_true, np.ndarray):
+            pt = 1. / (1 + np.exp(-(self.gamma * xt + self.beta)))
+            return -np.log(pt) / self.gamma
+
+        pt = utils.math.sigmoid(self.gamma * xt + self.beta)
         return -math.log(pt) / self.gamma
 
     def gradient(self, y_true, y_pred):
 
-        # Convert 0 to -1
-        y_true = int(y_true or -1)
+        y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         xt = y_true * y_pred
-        pt = utils.math.sigmoid(self.gamma * xt + self.beta)
 
+        if isinstance(y_true, np.ndarray):
+            pt = 1. / (1 + np.exp(-(self.gamma * xt + self.beta)))
+            return y_true * (pt - 1)
+
+        pt = utils.math.sigmoid(self.gamma * xt + self.beta)
         return y_true * (pt - 1)
 
 
-cdef class Poisson(RegressionLoss):
+class Poisson(RegressionLoss):
     """Poisson loss.
 
     The Poisson loss is usually more suited for regression with count data than the squared loss.
@@ -522,17 +522,23 @@ cdef class Poisson(RegressionLoss):
 
     """
 
-    cpdef double eval(self, double y_true, double y_pred):
+    def __call__(self, y_true, y_pred):
+        if isinstance(y_pred, np.ndarray):
+            return np.exp(y_pred) - y_true * y_pred
         return math.exp(y_pred) - y_true * y_pred
 
-    cpdef double gradient(self, double y_true, double y_pred):
+    def gradient(self, y_true, y_pred):
+        if isinstance(y_pred, np.ndarray):
+            return np.exp(y_pred) - y_true
         return math.exp(y_pred) - y_true
 
-    cpdef double mean_func(self, double y_pred):
+    def mean_func(self, y_pred):
+        if isinstance(y_pred, np.ndarray):
+            return np.exp(y_pred)
         return math.exp(y_pred)
 
 
-cdef class Perceptron(Hinge):
+class Perceptron(Hinge):
     """Perceptron loss.
 
     The Perceptron loss is the loss used in the Perceptron algorithm. Using this loss in a logistic

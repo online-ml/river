@@ -1,6 +1,7 @@
 import collections
 import copy
 import functools
+import typing
 
 from creme import base
 from creme import stats
@@ -98,7 +99,7 @@ class Agg(base.Transformer):
 
         >>> agg = (
         ...     feature_extraction.Agg(on='revenue', by='place', how=stats.Mean()) +
-        ...     feature_extraction.Agg(on='revenue', by=('place', 'country'), how=stats.Max())
+        ...     feature_extraction.Agg(on='revenue', by=['place', 'country'], how=stats.Max())
         ... )
 
         >>> import pprint
@@ -119,7 +120,7 @@ class Agg(base.Transformer):
 
     """
 
-    def __init__(self, on: str, by: str, how: stats.Univariate):
+    def __init__(self, on: str, by: typing.Union[str, typing.List[str]], how: stats.Univariate):
         self.on = on
         self.by = by if isinstance(by, list) else [by]
         self.how = how
@@ -228,7 +229,8 @@ class TargetAgg(base.SupervisedTransformer):
 
     """
 
-    def __init__(self, by: str, how: stats.Univariate, target_name='target'):
+    def __init__(self, by: typing.Union[str, typing.List[str]], how: stats.Univariate,
+                 target_name='target'):
         self.by = by if isinstance(by, list) else [by]
         self.how = how
         self.target_name = target_name
