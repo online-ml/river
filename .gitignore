@@ -2,8 +2,10 @@
 docs/getting-started.md
 docs/getting-started_files/
 docs/user-guide/*.md
-docs/api-reference/
+docs/user-guide/*_files/
 docs/examples/*.md
+docs/examples/*_files/
+docs/api-reference/
 site
 
 # Byte-compiled / optimized / DLL files

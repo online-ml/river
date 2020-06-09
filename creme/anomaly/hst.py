@@ -102,9 +102,9 @@ class HalfSpaceTrees(base.AnomalyDetector):
         Anomaly score for x=0.450: 0.071
         Anomaly score for x=0.000: 0.853
 
-        In the above example, the feature values are comprised between 0 and 1, which is what is
-        assumed by default. In the following example, we construct a pipeline that scales the data
-        online and ensures that the values of each feature are comprised between 0 and 1.
+        The feature values are all comprised between 0 and 1. This is what is assumed by the model
+        by default. In the following example, we construct a pipeline that scales the data online
+        and ensures that the values of each feature are comprised between 0 and 1.
 
         >>> from creme import compose
         >>> from creme import datasets

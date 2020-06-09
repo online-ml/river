@@ -5,10 +5,12 @@ Each loss function is intented to work with both single values as well as numpy 
 """
 import abc
 import math
+import typing
 
 import numpy as np
 from scipy import special
 
+from creme import base
 from creme import utils
 
 
@@ -182,6 +184,9 @@ class CrossEntropy(MultiClassLoss):
 
     This is a generalization of logistic loss to multiple classes.
 
+    Parameters:
+        class_weight: A dictionary that indicates what weight to associate with each class.
+
     Example:
 
         >>> from creme import optim
@@ -215,7 +220,7 @@ class CrossEntropy(MultiClassLoss):
 
     """
 
-    def __init__(self, class_weight=None):
+    def __init__(self, class_weight: typing.Dict[base.typing.ClfTarget, float] = None):
         if class_weight is None:
             class_weight = {}
         self.class_weight = class_weight

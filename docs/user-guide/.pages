@@ -1,10 +1,1 @@
 title: User guide
-arrange:
-    - ...
-title: User guide
-arrange:
-    - reading-data.md
-    - feature-extraction.md
-    - model-evaluation.md
-    - building-pipelines.md
-    - hyperparameter-tuning.md
