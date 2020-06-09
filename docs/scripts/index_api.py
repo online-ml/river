@@ -19,6 +19,9 @@ def pascal_to_kebab(string):
 def line(s):
     return f'{s}\n'
 
+def li(s):
+    return line(f'- {s}')
+
 def paragraph(s):
     return line(f'{s}\n')
 
@@ -154,7 +157,7 @@ def get_cymeth_doc(meth, klass):
     return doc
 
 
-def extract_doc(obj) -> str:
+def extract_doc(obj, mod) -> str:
     """Extracts documentation from a Python object.
 
     The object is assumed to follow the Google docstring convention. The return value will be a
@@ -166,7 +169,9 @@ def extract_doc(obj) -> str:
     sections = split_sections(docstring)
 
     # md is the name given to the return value, it stands for MarkDown
-    md = h1(obj.__name__)
+    md = paragraph(f'title: {obj.__name__}')
+    mod_name = mod.__name__.replace('creme.', '')
+    md += h1(f'{mod_name}.{obj.__name__}')
 
     # Description
     desc = sections.get('Description')
@@ -337,35 +342,48 @@ def extract_doc(obj) -> str:
     return md
 
 
-def write_module(mod, where):
+def write_module(mod, where, overview):
 
     mod_name = mod.__name__.split('.')[-1]
 
     if mod_name in MODULE_BLACKLIST:
         return
 
-    mod_header = inspect.getdoc(mod).partition('\n')[0].rstrip('.')
+    #mod_header = inspect.getdoc(mod).partition('\n')[0].rstrip('.')
     mod_path = where.joinpath(snake_to_kebab(mod_name))
+
+    overview += h2(mod_name)
+    overview += paragraph(mod.__doc__)
 
     # Create a directory for the module
     os.makedirs(mod_path, exist_ok=True)
     with open(mod_path.joinpath('.pages'), 'w') as f:
-        f.write(f'title: {mod_header}')
+        f.write(f'title: {mod_name}')
 
     # Go through the functions
     is_pub_func = lambda x: inspect.isfunction(x) and x.__name__ in mod.__all__
+    funcs = inspect.getmembers(mod, is_pub_func)
+    if funcs:
+        overview += h3('Functions')
     for name, func in inspect.getmembers(mod, is_pub_func):
-        path = mod_path.joinpath(snake_to_kebab(name))
+        slug = snake_to_kebab(name)
+        path = mod_path.joinpath(slug)
+        overview += li(link(name, f'/api-reference/{mod_name}/{slug}'))
         with open(path.with_suffix('.md'), 'w') as f:
-            doc = extract_doc(obj=func)
+            doc = extract_doc(obj=func, mod=mod)
             f.write(doc)
 
     # Go through the classes
     is_pub_class = lambda x: inspect.isclass(x) and x.__name__ in mod.__all__
-    for name, klass in inspect.getmembers(mod, is_pub_class):
-        path = mod_path.joinpath(pascal_to_kebab(name))
+    klasses = inspect.getmembers(mod, is_pub_class)
+    if klasses:
+        overview += h3('Classes')
+    for name, klass in klasses:
+        slug = snake_to_kebab(name)
+        path = mod_path.joinpath(slug)
+        overview += li(link(name, f'/api-reference/{mod_name}/{slug}'))
         with open(path.with_suffix('.md'), 'w') as f:
-            doc = extract_doc(obj=klass)
+            doc = extract_doc(obj=klass, mod=mod)
             f.write(doc)
 
     # Go through the submodules
@@ -373,7 +391,9 @@ def write_module(mod, where):
         # We only want to go through the public submodules, such as optim.schedulers
         if name not in mod.__all__:
             continue
-        write_module(mod=submod, where=mod_path)  # we're recursing
+        write_module(mod=submod, where=mod_path, overview='')  # we're recursing
+
+    return overview
 
 
 MODULE_BLACKLIST = set([
@@ -389,18 +409,28 @@ if __name__ == '__main__':
     shutil.rmtree(api_path, ignore_errors=True)
     os.makedirs(api_path, exist_ok=True)
     with open(api_path.joinpath('.pages'), 'w') as f:
-        f.write('title: API reference')
+        f.write('title: API reference\n')
+        f.write('arrange:\n')
+        f.write('  - overview.md\n')
+        f.write('  - ...\n')
 
     # Load all of creme's modules
     print('Loading modules...', end=' ', flush=True)
     modules = dict(inspect.getmembers(importlib.import_module('creme'), inspect.ismodule))
     print('done')
 
+    overview = h1('Overview')
+
     for name, mod in modules.items():
         print(f'{name}...', end=' ', flush=True)
-        write_module(mod=mod, where=api_path)
+        overview = write_module(mod=mod, where=api_path, overview=overview)
         print('done')
+
+    # Save the overview
+    with open(api_path.joinpath('overview.md'), 'w') as f:
+        f.write(overview)
 
 # TODO: display children and parents inheritance (maybe using inspect.getclasstree and inspect.mro,
 # possibly with mermaid as is done in the superfences section here: https://facelessuser.github.io/pymdown-extensions/)
 # TODO: type hinting for Cython classes
+# TODO: remove >>> and ... in code blocks, put output in a separate fenced block
