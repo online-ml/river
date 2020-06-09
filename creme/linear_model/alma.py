@@ -39,7 +39,7 @@ class ALMAClassifier(base.BinaryClassifier):
         >>> metric = metrics.Accuracy()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        Accuracy: 82.56%
+        Accuracy: 82.64%
 
     References:
         1. [Gentile, Claudio. "A new approximate maximal margin classification algorithm." Journal of Machine Learning Research 2.Dec (2001): 213-242](http://www.jmlr.org/papers/volume2/gentile01a/gentile01a.pdf)

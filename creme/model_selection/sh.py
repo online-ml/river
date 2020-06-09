@@ -14,7 +14,7 @@ __all__ = ['SuccessiveHalvingClassifier', 'SuccessiveHalvingRegressor']
 class SuccessiveHalving:
 
     def __init__(self, models: typing.List[base.Predictor], metric: metrics.Metric, budget: int,
-                 eta=2, verbose=False):
+                 eta=2, verbose=False, **print_kwargs):
 
         # Check that the model and the metric are in accordance
         for model in models:
@@ -27,6 +27,7 @@ class SuccessiveHalving:
         self.budget = budget
         self.eta = eta
         self.verbose = verbose
+        self.print_kwargs = print_kwargs
 
         self._n = len(models)
         self._metrics = [copy.deepcopy(metric) for _ in range(self._n)]
@@ -81,15 +82,18 @@ class SuccessiveHalving:
             cutoff = math.ceil(self._s / self.eta)
 
             if self.verbose:
-                print('\t'.join((
-                    f'[{self._n_rungs}]',
-                    f'{self._s - cutoff} removed',
-                    f'{cutoff} left',
-                    f'{self._r} iterations',
-                    f'budget used: {self._budget_used}',
-                    f'budget left: {self.budget - self._budget_used}',
-                    f'best {self._metrics[self._rankings[0]]}',
-                )))
+                print(
+                    '\t'.join((
+                        f'[{self._n_rungs}]',
+                        f'{self._s - cutoff} removed',
+                        f'{cutoff} left',
+                        f'{self._r} iterations',
+                        f'budget used: {self._budget_used}',
+                        f'budget left: {self.budget - self._budget_used}',
+                        f'best {self._metrics[self._rankings[0]]}',
+                    )),
+                    **self.print_kwargs
+                )
 
             # Determine where the next rung is located
             self._s = cutoff
@@ -130,6 +134,8 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
             `k` is the number of models that have reached the rung. A higher `eta` value will
             focus on less models but will allocate more iterations to the best models.
         verbose: Whether to display progress or not.
+        print_kwargs: Extra keyword arguments are passed to the `print` function. For instance,
+            this allows providing a `file` argument, which indicates where to output progress.
 
     Example:
 
@@ -193,32 +199,29 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         ...     model=sh,
         ...     metric=metrics.MAE()
         ... )
-        [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best MAE: 4.541564
-        [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best MAE: 2.453893
-        [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best MAE: 1.579851
-        [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	    best MAE: 1.146581
-        MAE: 0.472907
+        [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best MAE: 4.540491
+        [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best MAE: 2.458765
+        [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best MAE: 1.583751
+        [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	best MAE: 1.147296
+        MAE: 0.488387
 
         We can now view the best model.
 
         >>> sh.best_model
         Pipeline (
-          StandardScaler (
-            with_mean=True
-            with_std=True
-          ),
+          StandardScaler (),
           LinearRegression (
             optimizer=Adam (
               lr=Constant (
                 learning_rate=0.1
               )
-              beta_1=0.001
+              beta_1=0.01
               beta_2=0.999
               eps=1e-08
             )
             loss=Squared ()
             l2=0.
-            intercept=39.838695
+            intercept=39.93843
             intercept_lr=Constant (
               learning_rate=0.1
             )
@@ -270,6 +273,8 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
             `k` is the number of models that have reached the rung. A higher `eta` value will
             focus on less models but will allocate more iterations to the best models.
         verbose: Whether to display progress or not.
+        print_kwargs: Extra keyword arguments are passed to the `print` function. For instance,
+            this allows providing a `file` argument, which indicates where to output progress.
 
     Examples:
 
@@ -312,16 +317,13 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         ... )
         [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best Accuracy: 80.00%
         [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best Accuracy: 84.00%
-        [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best Accuracy: 86.75%
-        [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	    best Accuracy: 85.20%
-        ROCAUC: 0.949693
+        [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best Accuracy: 86.14%
+        [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	best Accuracy: 84.80%
+        ROCAUC: 0.953198
 
         >>> sh.best_model
         Pipeline (
-          StandardScaler (
-            with_mean=True
-            with_std=True
-          ),
+          StandardScaler (),
           LogisticRegression (
             optimizer=Adam (
               lr=Constant (
@@ -331,9 +333,12 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
               beta_2=0.999
               eps=1e-08
             )
-            loss=Log ()
+            loss=Log (
+              weight_pos=1.
+              weight_neg=1.
+            )
             l2=0.
-            intercept=-0.394786
+            intercept=-0.399002
             intercept_lr=Constant (
               learning_rate=0.01
             )

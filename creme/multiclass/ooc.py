@@ -63,7 +63,7 @@ class OutputCodeClassifier(base.Wrapper, base.MultiClassifier):
         >>> metric = metrics.MacroF1()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        MacroF1: 0.797202
+        MacroF1: 0.797119
 
     References:
         1. [Dietterich, T.G. and Bakiri, G., 1994. Solving multiclass learning problems via error-correcting output codes. Journal of artificial intelligence research, 2, pp.263-286.](https://arxiv.org/pdf/cs/9501101.pdf)

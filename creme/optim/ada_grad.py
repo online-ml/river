@@ -34,7 +34,7 @@ class AdaGrad(base.Optimizer):
         >>> metric = metrics.F1()
 
         >>> model_selection.progressive_val_score(X_y, model, metric)
-        F1: 0.879357
+        F1: 0.880143
 
     References:
         1. [Duchi, J., Hazan, E. and Singer, Y., 2011. Adaptive subgradient methods for online learning and stochastic optimization. Journal of machine learning research, 12(Jul), pp.2121-2159.](http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf)

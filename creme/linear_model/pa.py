@@ -73,7 +73,7 @@ class PARegressor(BasePA, base.Regressor):
         ...     metric = metric.update(yi, y_pred)
 
         >>> print(metric)
-        MAE: 10.123199, MSE: 843.816135
+        MAE: 9.809402, MSE: 472.393532
 
     References:
         1. [Crammer, K., Dekel, O., Keshet, J., Shalev-Shwartz, S. and Singer, Y., 2006. Online passive-aggressive algorithms. Journal of Machine Learning Research, 7(Mar), pp.551-585.](http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf)
@@ -88,7 +88,7 @@ class PARegressor(BasePA, base.Regressor):
     def fit_one(self, x, y):
 
         y_pred = self.predict_one(x)
-        tau = self.calc_tau(x, self.loss.eval(y, y_pred))
+        tau = self.calc_tau(x, self.loss(y, y_pred))
         step = tau * np.sign(y - y_pred)
 
         for i, xi in x.items():
@@ -168,7 +168,7 @@ class PAClassifier(BasePA, base.BinaryClassifier):
     def fit_one(self, x, y):
 
         y_pred = utils.math.dot(x, self.weights) + self.intercept
-        tau = self.calc_tau(x, self.loss.eval(y, y_pred))
+        tau = self.calc_tau(x, self.loss(y, y_pred))
         step = tau * (y or -1)  # y == False becomes -1
 
         for i, xi in x.items():

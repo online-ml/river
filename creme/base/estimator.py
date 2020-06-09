@@ -58,7 +58,7 @@ class Estimator(abc.ABC):
     def _set_params(self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None) -> 'Estimator':
         """Returns a new instance with the current parameters as well as new ones.
 
-        The algorithm will be recursively called down ``Pipeline``s and ``TransformerUnion``s.
+        The algorithm will be recursively called down `Pipeline`s and `TransformerUnion`s.
 
         Example:
 
