@@ -67,7 +67,7 @@ class TransformerUnion(base.Transformer):
         >>> from pprint import pprint
         >>> for x in X:
         ...     agg = agg.fit_one(x)
-        ...     pprint.pprint(agg.transform_one(x))
+        ...     pprint(agg.transform_one(x))
         {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
         {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
         {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
