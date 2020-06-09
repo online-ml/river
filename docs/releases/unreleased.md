@@ -30,6 +30,10 @@
 
 - In `metrics.SMAPE`, instead of raising a `ZeroDivisionError`, the convention is now to use 0 when both `y_true` and `y_pred` are equal to 0.
 
+## model_selection
+
+- Added the possibility to configure how the progress is printed in `model_selection.progressive_val_score`. For instance, the progress can now be printed to a file by providing the `file` argument.
+
 ## multiclass
 
 - Added `multiclass.OutputCodeClassifier`.
