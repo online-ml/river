@@ -160,7 +160,11 @@ class TransformerUnion(base.Transformer):
             for name, step in self.transformers.items()
         ])
 
-    def add_step(self, transformer):
+    @property
+    def _is_supervised(self):
+        return any(t._is_supervised for t in self.transformers.values())
+
+    def _add_step(self, transformer):
         """Adds a transformer while taking care of the input type."""
 
         name = None
@@ -196,7 +200,7 @@ class TransformerUnion(base.Transformer):
         return self
 
     def __add__(self, other):
-        return self.add_step(other)
+        return self._add_step(other)
 
     def fit_one(self, x, y=None):
         """Update each transformer.

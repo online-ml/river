@@ -231,6 +231,10 @@ class Pipeline(base.Estimator):
             for name, step in self.steps.items()
         ])
 
+    @property
+    def _is_supervised(self):
+        return any(step._is_supervised for step in self.steps.values())
+
     def _add_step(self, estimator, at_start: bool):
         """Adds a step to either end of the pipeline.
 
@@ -299,10 +303,10 @@ class Pipeline(base.Estimator):
             # Note that this is done after transforming in order to avoid target leakage.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if isinstance(sub_t, base.SupervisedTransformer):
+                    if sub_t._is_supervised:
                         sub_t.fit_one(x=x_pre, y=y)
 
-            elif isinstance(t, base.SupervisedTransformer):
+            elif t._is_supervised:
                 t.fit_one(x=x_pre, y=y)
 
         # At this point steps contains a single step, which is therefore the final step of the
@@ -332,10 +336,10 @@ class Pipeline(base.Estimator):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not isinstance(t, base.SupervisedTransformer):
+                    if not sub_t._is_supervised:
                         sub_t.fit_one(x=x)
 
-            elif not isinstance(t, base.SupervisedTransformer):
+            elif not t._is_supervised:
                 t.fit_one(x=x)
 
             x = t.transform_one(x=x)
@@ -577,7 +581,7 @@ class Pipeline(base.Estimator):
             # Wrapper models are handled recursively
             if isinstance(step, base.Wrapper):
                 return Network(
-                    nodes=[networkify(step._wrapper_model)],
+                    nodes=[networkify(step._wrapped_model)],
                     edges=[],
                     directed=True,
                     name=type(step).__name__,
