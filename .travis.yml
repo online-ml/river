@@ -14,7 +14,7 @@ cache:
     - $HOME/downloads
 
 install: skip
-script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
+script: skip #script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
 
 jobs:
   include:
@@ -57,7 +57,7 @@ jobs:
 
   - stage: docs
     install:
-      - apt-get install graphviz pandoc
+      - sudo apt-get install graphviz pandoc
       - python setup.py install
       - pip install -e ".[docs]"
       - make execute-notebooks
@@ -74,7 +74,7 @@ jobs:
       - git add -A
       - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
       - git push --set-upstream origin master
-    if: tag IS present
+    #if: tag IS present
 
 env:
   global:
