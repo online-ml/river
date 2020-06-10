@@ -155,9 +155,9 @@ Here are some benefits of using `creme` (and online machine learning in general)
 ## 💬 Media
 
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
-- [Toulouse Data Science presentation](https://maxhalford.github.io/slides/creme-tds/)
-- [*Online/Incremental Learning with Keras and Creme* on pyimagesearch](https://www.pyimagesearch.com/2019/06/17/online-incremental-learning-with-keras-and-creme/)
-- [*Machine learning for streaming data with creme* on Medium](https://towardsdatascience.com/machine-learning-for-streaming-data-with-creme-dacf5fb469df)
+- [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/creme-tds/)
+- [Machine learning for streaming data with creme](https://towardsdatascience.com/machine-learning-for-streaming-data-with-creme-dacf5fb469df)
+- [Hong Kong Data Science Meetup presentation](https://maxhalford.github.io/slides/hkml2020.pdf)
 
 ## 👍 Contributing
 
