@@ -69,8 +69,8 @@ jobs:
       - git clone https://${GH_TOKEN}@github.com/creme-ml/creme-ml.github.io.git creme-ml.github.io
       - cd creme-ml.github.io
       - rm -r *
-      - cp -r ../docs/site/* .
-      - cp -r ../docs/site/.* .
+      - cp -r ../site/* .
+      - cp -r ../site/.* .
       - git add -A
       - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
       - git push --set-upstream origin master
