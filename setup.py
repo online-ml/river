@@ -50,6 +50,7 @@ dev_packages = base_packages + [
 ]
 
 docs_packages = dev_packages + [
+    'flask',
     'ipykernel',
     'jupyter-client',
     'mkdocs',
