@@ -166,8 +166,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         -----
         The 3 most important aspects of Adaptive Random Forest [1]_ are:
         (1) inducing diversity through re-sampling;
-        (2) inducing diversity through randomly selecting subsets of features for node splits (see
-        skmultiflow.classification.trees.arf_hoeffding_tree);
+        (2) inducing diversity through randomly selecting subsets of features for node splits
+        (see skmultiflow.classification.trees.arf_hoeffding_tree);
         (3) drift detectors per base tree, which cause selective resets in response to drifts.
         It also allows training background trees, which start training if a warning is detected
         and replace the active tree if the warning escalates to a drift.
@@ -218,8 +218,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
                  disable_weighted_vote=False,
                  lambda_value=6,
                  performance_metric='acc',
-                 drift_detection_method: BaseDriftDetector = ADWIN(0.001),
-                 warning_detection_method: BaseDriftDetector = ADWIN(0.01),
+                 drift_detection_method: BaseDriftDetector=ADWIN(0.001),
+                 warning_detection_method: BaseDriftDetector=ADWIN(0.01),
                  max_byte_size=33554432,
                  memory_estimate_period=2000000,
                  grace_period=50,
@@ -355,8 +355,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
     def predict_proba(self, X):
         """ Estimates the probability of each sample in X belonging to each of the class-labels.
 
-        Class probabilities are calculated as the mean predicted class probabilities per base
-        estimator.
+        Class probabilities are calculated as the mean predicted class probabilities
+        per base estimator.
 
         Parameters
         ----------
@@ -417,7 +417,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         for i in range(self.n_estimators):
             vote = deepcopy(self.ensemble[i].get_votes_for_instance(X))
             if vote != {} and sum(vote.values()) > 0:
-                vote = normalize_values_in_dict(vote, inplace=False)
+                vote = normalize_values_in_dict(vote, inplace=True)
                 if not self.disable_weighted_vote:
                     performance = self.ensemble[i].evaluator.accuracy_score()\
                         if self.performance_metric == 'acc'\
