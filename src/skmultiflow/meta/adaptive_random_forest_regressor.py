@@ -140,6 +140,16 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
     It also allows training background trees, which start training if a warning is detected and
     replace the active tree if the warning escalates to a drift.
 
+    Notice that this implementation is slightly different from the original algorithm proposed
+    in _[1]. The HoeffdingTreeRegressor is used as base learner, instead of FIMT-DD. It also adds a
+    new strategy to monitor the incoming data and check for concept drifts. The monitored data
+    (either the trees' errors or their predictions) are centered and scaled (z-score normalization)
+    to have zero mean and unit standard deviation. Transformed values are then again normalized in
+    the [0, 1] range to fulfil ADWIN's requirements. We assume that the data subjected to the
+    z-score normalization lies within the interval of the mean :math:`+/-3\\sigma`, as it occurs in
+    normal distributions.
+
+
     References
     ----------
     .. [1] Gomes, H.M., Bifet, A., Read, J., Barddal, J.P., Enembreck, F., Pfharinger, B.,
