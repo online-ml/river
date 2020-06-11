@@ -1,14 +1,14 @@
-from copy import deepcopy
-
 import numpy as np
 
-from skmultiflow.utils import check_random_state
-from skmultiflow.trees.nodes import InactiveLearningNode
+from skmultiflow.trees.nodes import ActiveLearningNodePerceptron
+from skmultiflow.trees.attribute_observer import NominalAttributeRegressionObserver
+from skmultiflow.trees.attribute_observer import NumericAttributeRegressionObserver
+from skmultiflow.utils import get_dimensions
 
 
-class InactiveLearningNodePerceptron(InactiveLearningNode):
-    """ Inactive Learning Node for regression tasks that always use a linear
-    perceptron model to provide responses.
+class RandomLearningNodePerceptron(ActiveLearningNodePerceptron):
+    """ Learning Node for regression tasks that always use a linear perceptron
+    model to provide responses.
 
     Parameters
     ----------
@@ -17,7 +17,9 @@ class InactiveLearningNodePerceptron(InactiveLearningNode):
         to perform online variance calculation. They refer to the number of
         observations (key '0'), the sum of the target values (key '1'), and
         the sum of the squared target values (key '2').
-    perceptron_node: ActiveLearningNodePerceptron (default=None)
+    max_features: int
+        Number of attributes per subset for each node split.
+    parent_node: RandomLearningNodePerceptron (default=None)
         A node containing statistics about observed data.
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -25,16 +27,12 @@ class InactiveLearningNodePerceptron(InactiveLearningNode):
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_class_observations, perceptron_node=None, random_state=None):
-        """ InactiveLearningNodePerceptron class constructor."""
-        super().__init__(initial_class_observations)
-        self.random_state = check_random_state(random_state)
-        self.samples_seen = 0
-        if perceptron_node is None:
-            self.perceptron_weight = None
-        else:
-            self.perceptron_weight = deepcopy(perceptron_node.perceptron_weight)
-            self.samples_seen = perceptron_node.samples_seen
+
+    def __init__(self, initial_class_observations, max_features, parent_node=None,
+                 random_state=None):
+        super().__init__(initial_class_observations, parent_node, random_state)
+        self.max_features = max_features
+        self.list_attributes = np.array([])
 
     def learn_from_instance(self, X, y, weight, rht):
         """Update the node with the provided instance.
@@ -43,7 +41,7 @@ class InactiveLearningNodePerceptron(InactiveLearningNode):
         ----------
         X: numpy.ndarray of length equal to the number of features.
             Instance attributes for updating the node.
-        y: double
+        y: float
             Instance target value.
         weight: float
             Instance weight.
@@ -51,8 +49,15 @@ class InactiveLearningNodePerceptron(InactiveLearningNode):
             Regression Hoeffding Tree to update.
 
         """
+
+        # In regression, the self._observed_class_distribution dictionary keeps three statistics:
+        # [0] sum of sample seen by the node
+        # [1] sum of target values
+        # [2] sum of squared target values
+        # These statistics are useful to calculate the mean and to calculate the variance reduction
+
         if self.perceptron_weight is None:
-            self.perceptron_weight = self.random_state.uniform(-1, 1, len(X) + 1)
+            self.perceptron_weight = self.random_state.uniform(-1, 1, len(X)+1)
 
         try:
             self._observed_class_distribution[0] += weight
@@ -76,25 +81,21 @@ class InactiveLearningNodePerceptron(InactiveLearningNode):
         for i in range(int(weight)):
             self.update_weights(X, y, learning_ratio, rht)
 
-    def update_weights(self, X, y, learning_ratio, ht):
-        """
-        Update the perceptron weights
-        Parameters
-        ----------
-        X: numpy.ndarray of length equal to the number of features.
-            Instance attributes for updating the node.
-        y: float
-            Instance target value.
-        learning_ratio: float
-            perceptron learning ratio
-        rht: HoeffdingTreeRegressor
-            Regression Hoeffding Tree to update.
-        """
-        normalized_sample = ht.normalize_sample(X)
-        normalized_pred = np.dot(self.perceptron_weight, normalized_sample)
-        normalized_target_value = ht.normalize_target_value(y)
-        delta = normalized_target_value - normalized_pred
-        self.perceptron_weight = self.perceptron_weight + learning_ratio * delta * \
-            normalized_sample
-        # Normalize perceptron weights
-        self.perceptron_weight = self.perceptron_weight / np.sum(np.abs(self.perceptron_weight))
+        if self.list_attributes.size == 0:
+            self.list_attributes = self._sample_features(get_dimensions(X)[1])
+
+        for i in self.list_attributes:
+            try:
+                obs = self._attribute_observers[i]
+            except KeyError:
+                if rht.nominal_attributes is not None and i in rht.nominal_attributes:
+                    obs = NominalAttributeRegressionObserver()
+                else:
+                    obs = NumericAttributeRegressionObserver()
+                self._attribute_observers[i] = obs
+            obs.observe_attribute_class(X[i], y, weight)
+
+    def _sample_features(self, n_features):
+        return self.random_state.choice(
+            n_features, size=self.max_features, replace=False
+        )

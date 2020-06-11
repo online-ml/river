@@ -79,27 +79,27 @@ def test_hoeffding_tree_regressor_perceptron():
         learner.partial_fit(X, y)
         cnt += 1
 
-    expected_predictions = array('d', [-106.84237763060068, -10.965517384802226,
-                                       -180.90711470797237, -218.20896751607663, -96.4271589961865,
-                                       110.51551963099622, 108.34616947202511, 30.1720109214627,
-                                       57.92205878998479, 77.82418885914053, 49.972060923364765,
-                                       68.56117081695875, 15.996949915551697, -34.22744443808294,
-                                       -19.762696110319702, -28.447329394752995,
-                                       -50.62864370485592, -47.37357781048561, -99.82613515424342,
-                                       13.985531117918336, 41.41709671929987, -34.679807275938174,
-                                       62.75626094547859, 30.925078688018893, 12.130320819235365,
-                                       119.3648998377624, 82.96422756064737, -6.920397563039609,
-                                       -12.701774870569059, 24.883730398016034, -74.22855883237567,
-                                       -0.8012436194087567, -83.03683748750394, 46.737839617687854,
-                                       0.537404558240671, 48.53591837633138, -86.2259777783834,
-                                       -24.985514024179967, 6.396035456152859, -90.19454995571908,
-                                       32.05821807667601, -83.08553684151566, -28.32223999320023,
-                                       113.28916673506842, 68.10498750807977, 173.9146410394573,
-                                       -150.2067507947196, -74.10346402222962, 54.39153137687993])
+    expected_predictions = array('d', [207.20901655684412, 106.30316877540555, 101.46950096324191,
+                                       114.38162776688861, 48.40271620592212, -79.94375846313639,
+                                       -76.69182794940929, 88.38425569670662, -13.92372162581644,
+                                       3.0549887923350507, 55.36276732455883, 32.0512081208464,
+                                       17.54953203218902, -1.7305966738232161, 43.54548690756897,
+                                       8.502241407478213, -61.14739038895263, 50.528736810827745,
+                                       9.679668917948607, 89.93098085572623, 85.1994809437223,
+                                       1.8721866382932664, -7.1972581323107825, -45.86230662663542,
+                                       3.111671172363243, 57.921908276916646, 61.43400576850072,
+                                       -16.61695641848216, -6.0769944259948065, 19.929266442289546,
+                                       -60.972801351912224, -0.3342549973033524,
+                                       -50.53334350658139, -14.885488543743078,
+                                       -13.255920225124637, 28.909916365484275,
+                                       -103.03499425386107, -36.44921969674884, -15.40018796932204,
+                                       -84.98471039676006, 38.270205984888065, -62.97228157481581,
+                                       -48.095864628804044, 95.5028130171316, 73.62390886812497,
+                                       152.7135140597221, -120.4662342226783, -77.68182541723442,
+                                       66.82059046110074])
     assert np.allclose(y_pred, expected_predictions)
-
     error = mean_absolute_error(y_true, y_pred)
-    expected_error = 115.78916175164417
+    expected_error = 126.11208652969131
     assert np.isclose(error, expected_error)
 
     expected_info = "HoeffdingTreeRegressor(binary_split=False, grace_period=200, leaf_prediction='perceptron', " \
@@ -116,7 +116,8 @@ def test_hoeffding_tree_regressor_perceptron():
 
 def test_hoeffding_tree_regressor_coverage():
     max_samples = 1000
-    max_size_mb = 2
+    max_size_mb = 0.5
+    mem_delta = 0.03
 
     stream = RegressionGenerator(
         n_samples=max_samples, n_features=10, n_informative=7, n_targets=1,
@@ -131,8 +132,8 @@ def test_hoeffding_tree_regressor_coverage():
     )
     tree.partial_fit(X, y)
 
-    # A tree without memory management enabled reaches over 3 MB in size
-    assert calculate_object_size(tree, 'MB') <= max_size_mb
+    # A tree without memory management enabled reaches almost 1 MB in size
+    assert calculate_object_size(tree, 'MB') <= max_size_mb + mem_delta
 
     # Typo in leaf prediction
     tree = HoeffdingTreeRegressor(
@@ -143,7 +144,7 @@ def test_hoeffding_tree_regressor_coverage():
     tree.split_criterion = 'VR'
 
     tree.partial_fit(X, y)
-    assert calculate_object_size(tree, 'MB') <= max_size_mb
+    assert calculate_object_size(tree, 'MB') <= max_size_mb + mem_delta
 
     tree.reset()
     assert tree._estimator_type == 'regressor'
