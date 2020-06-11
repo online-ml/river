@@ -535,7 +535,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
         try:
             predictions = np.zeros((r, self._n_targets), dtype=np.float64)
         except AttributeError:
-            return [0.0]
+            warnings.warn("Calling predict without previously fitting the model at least once.\n"
+                          "Predictions will default to a column array filled with zeros.")
+            return np.zeros((r, 1))
         for i in range(r):
             if self.leaf_prediction == self._TARGET_MEAN:
                 votes = self.get_votes_for_instance(X[i]).copy()
@@ -708,6 +710,12 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
                     parent.set_child(parent_idx, new_split)
             # Manage memory
             self.enforce_tracker_limit()
+        elif len(best_split_suggestions) >= 2 and best_split_suggestions[-1].merit > 0 and \
+                best_split_suggestions[-2].merit > 0:
+            last_check_ratio = best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
+            last_check_sdr = best_split_suggestions[-1].merit
+
+            node.manage_memory(split_criterion, last_check_ratio, last_check_sdr, hoeffding_bound)
 
     def _more_tags(self):
         return {'multioutput': True,

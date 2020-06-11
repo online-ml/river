@@ -244,6 +244,8 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                     normalized_sample.append(float(X[i] - mean) / (3 * sd))
                 else:
                     normalized_sample.append(0.0)
+            elif self._nominal_attributes is not None and i in self._nominal_attributes:
+                normalized_sample.append(X[i])  # keep nominal inputs unaltered
             else:
                 normalized_sample.append(0.0)
         if self.samples_seen > 1:
@@ -311,7 +313,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
             leaf_node = found_node.node
             if leaf_node is None:
                 leaf_node = found_node.parent
-            if isinstance(leaf_node, ActiveLearningNodePerceptron):
+            if isinstance(leaf_node, LearningNode):
                 return leaf_node.perceptron_weight
             else:
                 return None
@@ -560,6 +562,12 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                     parent.set_child(parent_idx, new_split)
             # Manage memory
             self.enforce_tracker_limit()
+        elif len(best_split_suggestions) >= 2 and best_split_suggestions[-1].merit > 0 and \
+                best_split_suggestions[-2].merit > 0:
+            last_check_ratio = best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
+            last_check_sdr = best_split_suggestions[-1].merit
+
+            node.manage_memory(split_criterion, last_check_ratio, last_check_sdr, hoeffding_bound)
 
     def _sort_learning_nodes(self, learning_nodes):
         """ Define strategy to sort learning nodes according to their likeliness of being split."""

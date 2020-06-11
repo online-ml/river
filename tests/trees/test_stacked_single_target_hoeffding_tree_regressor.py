@@ -117,9 +117,9 @@ def test_stacked_single_target_hoeffding_tree_regressor_adaptive(test_path):
     assert isinstance(learner.get_model_description(), type(''))
 
 
-def test_hoeffding_tree_coverage():
+def test_stacked_single_target_hoeffding_tree_regressor_coverage():
     max_samples = 1000
-    max_size_mb = 2
+    max_size_mb = 1
 
     stream = RegressionGenerator(
         n_samples=max_samples, n_features=10, n_informative=7, n_targets=3,
@@ -138,7 +138,7 @@ def test_hoeffding_tree_coverage():
 
     tree.partial_fit(X, y)
 
-    # A tree without memory management enabled reaches over 3 MB in size
+    # A tree without memory management enabled reaches almost 2 MB in size
     assert calculate_object_size(tree, 'MB') <= max_size_mb
 
     tree = StackedSingleTargetHoeffdingTreeRegressor(
