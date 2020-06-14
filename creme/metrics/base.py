@@ -23,6 +23,7 @@ __all__ = [
 
 
 class Metric(abc.ABC):
+    """Mother class for all metrics."""
 
     # Define the format specification used for string representation.
     _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
@@ -49,6 +50,7 @@ class Metric(abc.ABC):
 
 
 class ClassificationMetric(Metric):
+    """Mother class for all classification metrics."""
 
     @abc.abstractproperty
     def requires_labels(self) -> bool:
@@ -66,6 +68,7 @@ class ClassificationMetric(Metric):
 
 
 class BinaryMetric(ClassificationMetric):
+    """Mother class for all binary classification metrics."""
 
     @abc.abstractmethod
     def update(
@@ -90,6 +93,7 @@ class BinaryMetric(ClassificationMetric):
 
 
 class MultiClassMetric(ClassificationMetric):
+    """Mother class for all multi-class classification metrics."""
 
     @abc.abstractmethod
     def update(
@@ -114,6 +118,7 @@ class MultiClassMetric(ClassificationMetric):
 
 
 class RegressionMetric(Metric):
+    """Mother class for all regression metrics."""
 
     @abc.abstractmethod
     def update(
@@ -148,6 +153,7 @@ class RegressionMetric(Metric):
 
 
 class MultiOutputClassificationMetric(Metric):
+    """Mother class for all multi-output classification metrics."""
 
     def update(
         self,
@@ -176,6 +182,7 @@ class MultiOutputClassificationMetric(Metric):
 
 
 class MultiOutputRegressionMetric(Metric):
+    """Mother class for all multi-output regression metrics."""
 
     def update(
         self,

@@ -468,7 +468,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def fit_many(self, X: pd.DataFrame, y: pd.Series, **params):
+    def fit_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
         """Fit to a mini-batch.
 
         Parameters:
@@ -489,20 +489,19 @@ class Pipeline(base.Estimator):
             # Note that this is done after transforming in order to avoid target leakage.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if isinstance(sub_t, base.SupervisedTransformer):
-                        sub_t.fit_many(X=X)
+                    if sub_t._is_supervised:
+                        sub_t.fit_many(X=X_pre, y=y)
 
-            elif isinstance(t, base.SupervisedTransformer):
-                t.fit_many(X=X)
+            elif t._is_supervised:
+                t.fit_many(X=X_pre, y=y)
 
         # At this point steps contains a single step, which is therefore the final step of the
         # pipeline
         final = next(steps)
-
         if final._is_supervised:
             final.fit_many(X=X, y=y, **params)
         else:
-            final.fit_many(X=X, y=y, **params)
+            final.fit_many(X=X, **params)
 
         return self
 
@@ -523,10 +522,10 @@ class Pipeline(base.Estimator):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not isinstance(t, base.SupervisedTransformer):
+                    if not sub_t._is_supervised:
                         sub_t.fit_many(X=X)
 
-            elif not isinstance(t, base.SupervisedTransformer):
+            elif not sub_t._is_supervised:
                 t.fit_many(X=X)
 
             X = t.transform_many(X=X)

@@ -144,10 +144,6 @@ Here are some benefits of using `creme` (and online machine learning in general)
 ## 🔗 Useful links
 
 - [Documentation](https://creme-ml.github.io/)
-  - [API reference](https://creme-ml.github.io/content/api.html)
-  - [User guide](https://creme-ml.github.io/content/user-guide.html)
-  - [FAQ](https://creme-ml.github.io/content/faq.html)
-  - [Change history](https://creme-ml.github.io/content/changelog.html)
 - [Benchmarks](https://github.com/creme-ml/creme/tree/master/benchmarks)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
@@ -162,33 +158,6 @@ Here are some benefits of using `creme` (and online machine learning in general)
 ## 👍 Contributing
 
 Feel free to contribute in any way you like, we're always open to new ideas and approaches. If you want to contribute to the code base please check out the [CONTRIBUTING.md file](https://github.com/creme-ml/creme/blob/master/CONTRIBUTING.md). Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Again, contributions of any kind are welcome!
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://maxhalford.github.io"><img src="https://avatars1.githubusercontent.com/u/8095957?v=4" width="100px;" alt="Max Halford"/><br /><sub><b>Max Halford</b></sub></a><br /><a href="#projectManagement-MaxHalford" title="Project Management">📆</a> <a href="https://github.com/creme-ml/creme/commits?author=MaxHalford" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/AdilZouitine"><img src="https://avatars0.githubusercontent.com/u/24889239?v=4" width="100px;" alt="AdilZouitine"/><br /><sub><b>AdilZouitine</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=AdilZouitine" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/raphaelsty"><img src="https://avatars3.githubusercontent.com/u/24591024?v=4" width="100px;" alt="Raphael Sourty"/><br /><sub><b>Raphael Sourty</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=raphaelsty" title="Code">💻</a></td>
-    <td align="center"><a href="http://www.linkedin.com/in/gbolmier"><img src="https://avatars0.githubusercontent.com/u/25319692?v=4" width="100px;" alt="Geoffrey Bolmier"/><br /><sub><b>Geoffrey Bolmier</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=gbolmier" title="Code">💻</a></td>
-    <td align="center"><a href="http://koaning.io"><img src="https://avatars1.githubusercontent.com/u/1019791?v=4" width="100px;" alt="vincent d warmerdam "/><br /><sub><b>vincent d warmerdam </b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=koaning" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/VaysseRobin"><img src="https://avatars2.githubusercontent.com/u/32324822?v=4" width="100px;" alt="VaysseRobin"/><br /><sub><b>VaysseRobin</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=VaysseRobin" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/tweakyllama"><img src="https://avatars0.githubusercontent.com/u/7049400?v=4" width="100px;" alt="Lygon Bowen-West"/><br /><sub><b>Lygon Bowen-West</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=tweakyllama" title="Code">💻</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/flegac"><img src="https://avatars2.githubusercontent.com/u/4342302?v=4" width="100px;" alt="Florent Le Gac"/><br /><sub><b>Florent Le Gac</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=flegac" title="Code">💻</a></td>
-    <td align="center"><a href="http://www.pyimagesearch.com"><img src="https://avatars2.githubusercontent.com/u/759645?v=4" width="100px;" alt="Adrian Rosebrock"/><br /><sub><b>Adrian Rosebrock</b></sub></a><br /><a href="#blog-jrosebr1" title="Blogposts">📝</a></td>
-    <td align="center"><a href="https://github.com/JovanVeljanoski"><img src="https://avatars1.githubusercontent.com/u/18574951?v=4" width="100px;" alt="Jovan Veljanoski"/><br /><sub><b>Jovan Veljanoski</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=JovanVeljanoski" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/d-me-tree"><img src="https://avatars1.githubusercontent.com/u/4955958?v=4" width="100px;" alt="Dimitri"/><br /><sub><b>Dimitri</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=d-me-tree" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/greatsharma"><img src="https://avatars0.githubusercontent.com/u/32649388?v=4" width="100px;" alt="Gaurav Sharma"/><br /><sub><b>Gaurav Sharma</b></sub></a><br /><a href="https://github.com/creme-ml/creme/commits?author=greatsharma" title="Code">💻</a></td>
-  </tr>
-</table>
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## 📝 License
 
