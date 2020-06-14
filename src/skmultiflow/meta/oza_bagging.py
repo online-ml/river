@@ -119,7 +119,8 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         return self
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
-        """ Partially (incrementally) fit the model.
+        """
+        Partially (incrementally) fit the model.
 
         Parameters
         ----------
@@ -134,16 +135,18 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
             for the first partial_fit call where it is compulsory.
 
         sample_weight: numpy.ndarray of shape (n_samples), optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed. Usage varies depending on the base estimator.
+            Samples weight. If not provided, uniform weights are assumed. Usage varies depending
+            on the base estimator.
 
         Raises
         ------
-        ValueError: A ValueError is raised if the 'classes' parameter is not
-        passed in the first partial_fit call, or if they are passed in further 
-        calls but differ from the initial classes list passed.
+        ValueError
+            A ValueError is raised if the 'classes' parameter is not passed in the first
+            partial_fit call, or if they are passed in further calls but differ from
+            the initial classes list passed.
         
         Returns
-        _______
+        -------
         OzaBaggingClassifier
             self
 

@@ -78,35 +78,33 @@ class OnlineUnderOverBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstim
 
     Examples
     --------
-    .. code-block:: python
-
-       # Imports
-       from skmultiflow.data import SEAGenerator
-       from skmultiflow.meta import OnlineUnderOverBaggingClassifier
-
-       # Setup a data stream
-       stream = SEAGenerator(random_state=1)
-
-       # Setup variables to control loop and track performance
-       n_samples = 0
-       correct_cnt = 0
-       max_samples = 200
-
-       # Setup the Online RUSBoost Classifier
-       online_under_over_bagging_classifier = OnlineUnderOverBaggingClassifier()
-
-       # Train the classifier with the samples provided by the data stream
-       while n_samples < max_samples and stream.has_more_samples():
-           X, y = stream.next_sample()
-           y_pred = online_under_over_bagging_classifier.predict(X)
-           if y[0] == y_pred[0]:
-               correct_cnt += 1
-           online_under_over_bagging_classifier = online_under_over_bagging_classifier.partial_fit(X, y)
-           n_samples += 1
-
-       # Display results
-       print('{} samples analyzed.'.format(n_samples))
-       print('Online Under Over Bagging Classifier performance: {}'.format(correct_cnt / n_samples))
+    >>> # Imports
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.meta import OnlineUnderOverBaggingClassifier
+    >>>
+    >>> # Setup a data stream
+    >>> stream = SEAGenerator(random_state=1)
+    >>>
+    >>> # Setup variables to control loop and track performance
+    >>> n_samples = 0
+    >>> correct_cnt = 0
+    >>> max_samples = 200
+    >>>
+    >>> # Setup the Online Under-Over-Bagging ensemble classifier
+    >>> online_under_over_bagging = OnlineUnderOverBaggingClassifier()
+    >>>
+    >>> # Train the classifier with the samples provided by the data stream
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_pred = online_under_over_bagging.predict(X)
+    >>>     if y[0] == y_pred[0]:
+    >>>         correct_cnt += 1
+    >>>     online_under_over_bagging.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('{} samples analyzed.'.format(n_samples))
+    >>> print('Online Under Over Bagging performance: {}'.format(correct_cnt / n_samples))
     """
 
     def __init__(self, base_estimator=KNNADWINClassifier(), n_estimators=10, sampling_rate=2, drift_detection=True,

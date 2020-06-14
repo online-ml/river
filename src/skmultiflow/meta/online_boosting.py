@@ -79,35 +79,33 @@ class OnlineBoostingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixi
 
     Examples
     --------
-    .. code-block:: python
-
-       # Imports
-       from skmultiflow.data import SEAGenerator
-       from skmultiflow.meta import OnlineBoostingClassifier
-
-       # Setup a data stream
-       stream = SEAGenerator(random_state=1)
-
-       # Setup variables to control loop and track performance
-       n_samples = 0
-       correct_cnt = 0
-       max_samples = 200
-
-       # Setup the Online Boosting Classifier
-       online_boosting_classifier = OnlineBoostingClassifier()
-
-       # Train the classifier with the samples provided by the data stream
-       while n_samples < max_samples and stream.has_more_samples():
-           X, y = stream.next_sample()
-           y_pred = online_boosting_classifier.predict(X)
-           if y[0] == y_pred[0]:
-               correct_cnt += 1
-           online_boosting_classifier = online_boosting_classifier.partial_fit(X, y)
-           n_samples += 1
-
-       # Display results
-       print('{} samples analyzed.'.format(n_samples))
-       print('Online Boosting Classifier performance: {}'.format(correct_cnt / n_samples))
+    >>> # Imports
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.meta import OnlineBoostingClassifier
+    >>>
+    >>> # Setup a data stream
+    >>> stream = SEAGenerator(random_state=1)
+    >>>
+    >>> # Setup variables to control loop and track performance
+    >>> n_samples = 0
+    >>> correct_cnt = 0
+    >>> max_samples = 200
+    >>>
+    >>> # Setup the Online Boosting Classifier
+    >>> online_boosting = OnlineBoostingClassifier()
+    >>>
+    >>> # Train the classifier with the samples provided by the data stream
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_pred = online_boosting.predict(X)
+    >>>     if y[0] == y_pred[0]:
+    >>>         correct_cnt += 1
+    >>>     online_boosting.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('{} samples analyzed.'.format(n_samples))
+    >>> print('Online Boosting performance: {}'.format(correct_cnt / n_samples))
     """
 
     def __init__(self, base_estimator=KNNADWINClassifier(), n_estimators=10, drift_detection=True, random_state=None):

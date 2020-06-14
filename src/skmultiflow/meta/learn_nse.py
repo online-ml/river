@@ -57,35 +57,33 @@ class LearnPPNSEClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
 
     Examples
     --------
-    .. code-block:: python
-
-       # Imports
-       from skmultiflow.data import SEAGenerator
-       from skmultiflow.meta import LearnPPNSEClassifier
-
-       # Setup a data stream
-       stream = SEAGenerator(random_state=1)
-
-       # Setup Dynamic Weighted Majority Ensemble Classifier
-       learn_pp_nse = LearnPPNSEClassifier()
-
-       # Setup varibles to control loop and track performance
-       n_samples = 0
-       correct_cnt = 0
-       max_samples = 200
-
-       # Train the classifier with the samples provided by the data stream
-       while n_samples < max_samples and stream.has_more_samples():
-           X, y = stream.next_sample()
-           y_pred = learn_pp_nse.predict(X)
-           if y[0] == y_pred[0]:
-               correct_cnt += 1
-           learn_pp_nse = learn_pp_nse.partial_fit(X, y, classes=stream.target_values)
-           n_samples += 1
-
-       # Display results
-       print('{} samples analyzed.'.format(n_samples))
-       print('LearnPP.NSE accuracy: {}'.format(correct_cnt / n_samples))
+    >>> # Imports
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.meta import LearnPPNSEClassifier
+    >>>
+    >>> # Setup a data stream
+    >>> stream = SEAGenerator(random_state=1)
+    >>>
+    >>> # Setup Learn++.NSE Classifier
+    >>> learn_pp_nse = LearnPPNSEClassifier()
+    >>>
+    >>> # Setup variables to control loop and track performance
+    >>> n_samples = 0
+    >>> correct_cnt = 0
+    >>> max_samples = 200
+    >>>
+    >>> # Train the classifier with the samples provided by the data stream
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_pred = learn_pp_nse.predict(X)
+    >>>     if y[0] == y_pred[0]:
+    >>>         correct_cnt += 1
+    >>>     learn_pp_nse.partial_fit(X, y, classes=stream.target_values)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('{} samples analyzed.'.format(n_samples))
+    >>> print('Learn++.NSE classifier accuracy: {}'.format(correct_cnt / n_samples))
     """
 
     def __init__(self,

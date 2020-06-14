@@ -78,39 +78,36 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     Examples
     --------
-    .. code-block:: python
-
-       # Imports
-       from skmultiflow.data import RegressionGenerator
-       from skmultiflow.trees import HoeffdingAdaptiveTreeRegressor
-       import numpy as np
-
-       # Setup a data stream
-       stream = RegressionGenerator(random_state=1)
-       # Prepare stream for use
-
-       # Setup the Hoeffding Adaptive Tree Regressor
-       hatr = HoeffdingAdaptiveTreeRegressor()
-
-       # Auxiliary variables to control loop and track performance
-       n_samples = 0
-       correct_cnt = 0
-       max_samples = 200
-       y_pred = np.zeros(max_samples)
-       y_true = np.zeros(max_samples)
-
-       # Run test-then-train loop for max_samples or while there is data in the stream
-       while n_samples < max_samples and stream.has_more_samples():
-           X, y = stream.next_sample()
-           y_true[n_samples] = y[0]
-           y_pred[n_samples] = hatr.predict(X)[0]
-           hatr.partial_fit(X, y)
-           n_samples += 1
-
-       # Display results
-       print('{} samples analyzed.'.format(n_samples))
-       print('Hoeffding Adaptive Tree regressor mean absolute error: {}'.
-             format(np.mean(np.abs(y_true - y_pred))))
+    >>> # Imports
+    >>> from skmultiflow.data import RegressionGenerator
+    >>> from skmultiflow.trees import HoeffdingAdaptiveTreeRegressor
+    >>> import numpy as np
+    >>>
+    >>> # Setup a data stream
+    >>> stream = RegressionGenerator(random_state=1, n_samples=200)
+    >>> # Prepare stream for use
+    >>>
+    >>> # Setup the Hoeffding Adaptive Tree Regressor
+    >>> hat_reg = HoeffdingAdaptiveTreeRegressor()
+    >>>
+    >>> # Auxiliary variables to control loop and track performance
+    >>> n_samples = 0
+    >>> max_samples = 200
+    >>> y_pred = np.zeros(max_samples)
+    >>> y_true = np.zeros(max_samples)
+    >>>
+    >>> # Run test-then-train loop for max_samples and while there is data
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_true[n_samples] = y[0]
+    >>>     y_pred[n_samples] = hat_reg.predict(X)[0]
+    >>>     hat_reg.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('{} samples analyzed.'.format(n_samples))
+    >>> print('Hoeffding Adaptive Tree regressor mean absolute error: {}'.
+    >>>       format(np.mean(np.abs(y_true - y_pred))))
     """
 
     _ERROR_WIDTH_THRESHOLD = 300

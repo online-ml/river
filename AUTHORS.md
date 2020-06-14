@@ -21,4 +21,5 @@ The following people have contributed to `scikit-multiflow`'s development and ma
 * André CRUZ
 * Moritz HEUSINGER
 * Mert OZER
+* Fabrício CESCHIN
 * Christoph RAAB

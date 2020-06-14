@@ -5,15 +5,7 @@ Welcome to scikit-multiflow's documentation!
    :width: 600px
    :alt: scikit-multiflow-logo
 
-A machine learning framework for multi-output/multi-label and stream data.
-Inspired by `MOA <https://moa.cms.waikato.ac.nz/>`_ and `MEKA <http://meka.sourceforge.net/>`_,
-following the philosophy of `scikit-learn <http://scikit-learn.org/stable/>`_.
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   Webpage <https://scikit-multiflow.github.io/>
+Machine learning for streaming data in Python.
 
 .. toctree::
    :maxdepth: 1
@@ -21,7 +13,6 @@ following the philosophy of `scikit-learn <http://scikit-learn.org/stable/>`_.
    :caption: Getting Started
 
    Installation <installation>
-   Package map <package_map>
 
 .. toctree::
    :maxdepth: 2
@@ -38,23 +29,16 @@ following the philosophy of `scikit-learn <http://scikit-learn.org/stable/>`_.
    :caption: Development
 
    Contributing <https://github.com/scikit-multiflow/scikit-multiflow/blob/master/CONTRIBUTING.md>
-   Github Repository <https://github.com/scikit-multiflow/scikit-multiflow>
-   What's new (Changelog) <whats_new>
+   Releases <whats_new>
 
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Other versions
-
-   Previous versions <versions>
 
 `Getting started <installation.html>`_
 ---------------------------------------
 
 Information to install `scikit-multiflow`.
 
-`Package map <package_map.html>`_
----------------------------------------
+`Package map <user-guide/package_map.html>`_
+--------------------------------------------
 
 A map to help navigate available methods in `scikit-multiflow`.
 

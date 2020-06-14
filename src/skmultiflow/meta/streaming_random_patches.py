@@ -91,32 +91,29 @@ class StreamingRandomPatchesClassifier(BaseSKMObject, ClassifierMixin, MetaEstim
 
     Examples
     --------
-    .. code-block:: python
-
-       from skmultiflow.data import AGRAWALGenerator
-       from skmultiflow.meta import StreamingRandomPatchesClassifier
-
-       stream = AGRAWALGenerator(random_state=1)
-       estimator = StreamingRandomPatchesClassifier(random_state=1,
-                                                    n_estimators=3)
-
-       # Variables to control loop and track performance
-       n_samples = 0
-       correct_cnt = 0
-       max_samples = 200
-
-       # Run test-then-train loop for max_samples
-       # or while there is data in the stream
-       while n_samples < max_samples and stream.has_more_samples():
-           X, y = stream.next_sample()
-           y_pred = estimator.predict(X)
-           if y[0] == y_pred[0]:
-               correct_cnt += 1
-           estimator.partial_fit(X, y)
-           n_samples += 1
-
-       print('{} samples analyzed.'.format(n_samples))
-       print('Estimator accuracy: {}'.format(correct_cnt / n_samples))
+    >>> from skmultiflow.data import AGRAWALGenerator
+    >>> from skmultiflow.meta import StreamingRandomPatchesClassifier
+    >>>
+    >>> stream = AGRAWALGenerator(random_state=1)
+    >>> srp = StreamingRandomPatchesClassifier(random_state=1,
+    >>>                                              n_estimators=3)
+    >>>
+    >>> # Variables to control loop and track performance
+    >>> n_samples = 0
+    >>> correct_cnt = 0
+    >>> max_samples = 200
+    >>>
+    >>> # Run test-then-train loop for max_samples
+    >>> # or while there is data in the stream
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_pred = srp.predict(X)
+    >>>     if y[0] == y_pred[0]:
+    >>>         correct_cnt += 1
+    >>>     srp.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> print('{} samples analyzed.'.format(n_samples))
 
     """
 

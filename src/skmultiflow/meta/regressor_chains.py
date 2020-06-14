@@ -30,33 +30,33 @@ class RegressorChain(BaseSKMObject, RegressorMixin, MetaEstimatorMixin, MultiOut
 
     References
     ----------
-    .. [1] Read, Jesse, Bernhard Pfahringer, Geoff Holmes, and Eibe Frank. "Classifier chains for multi-label
-       classification." In Joint European Conference on Machine Learning and Knowledge Discovery in Databases,
+    .. [1] Read, Jesse, Bernhard Pfahringer, Geoff Holmes, and Eibe Frank.
+       "Classifier chains for multi-label classification."
+       In Joint European Conference on Machine Learning and Knowledge Discovery in Databases,
        pp. 254-269. Springer, Berlin, Heidelberg, 2009.
 
     Examples
     --------
-    .. code-block:: python
-
-       from sklearn.linear_model import SGDRegressor
-       from skmultiflow.meta import RegressorChain
-       from skmultiflow.data import make_logical
-
-       X, Y = make_logical(random_state=1)
-
-       print("TRUE: ")
-       print(Y)
-       print("vs")
-
-       print("RC")
-       rc = RegressorChain(SGDRegressor(loss='squared_loss', random_state=1))
-       rc.fit(X, Y)
-       print(rc.predict(X))
-
-       print("RRC")
-       rc = RegressorChain(SGDRegressor(loss='squared_loss', random_state=1), order='random', random_state=1)
-       rc.fit(X, Y)
-       print(rc.predict(X))
+    >>> from sklearn.linear_model import SGDRegressor
+    >>> from skmultiflow.meta import RegressorChain
+    >>> from skmultiflow.data import make_logical
+    >>>
+    >>> X, Y = make_logical(random_state=1)
+    >>>
+    >>> print("TRUE: ")
+    >>> print(Y)
+    >>> print("vs")
+    >>>
+    >>> print("RC")
+    >>> rc = RegressorChain(SGDRegressor(loss='squared_loss', random_state=1))
+    >>> rc.fit(X, Y)
+    >>> print(rc.predict(X))
+    >>>
+    >>> print("RRC")
+    >>> rc = RegressorChain(SGDRegressor(loss='squared_loss', random_state=1),
+    >>>                     order='random', random_state=1)
+    >>> rc.fit(X, Y)
+    >>> print(rc.predict(X))
     """
     def __init__(self, base_estimator=SGDRegressor(), order=None, random_state=None):
         super().__init__()

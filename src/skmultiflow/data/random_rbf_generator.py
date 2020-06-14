@@ -17,7 +17,7 @@ class RandomRBFGenerator(Stream):
     each centroid.
 
     Parameters
-    ---------
+    ----------
     model_random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;

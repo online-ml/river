@@ -50,35 +50,33 @@ class DynamicWeightedMajorityClassifier(BaseSKMObject, ClassifierMixin, MetaEsti
 
     Examples
     --------
-    .. code-block:: python
-
-       # Imports
-       from skmultiflow.data import SEAGenerator
-       from skmultiflow.meta import DynamicWeightedMajorityClassifier
-
-       # Setup a data stream
-       stream = SEAGenerator(random_state=1)
-
-       # Setup Dynamic Weighted Majority Ensemble Classifier
-       dwm = DynamicWeightedMajorityClassifier()
-
-       # Setup varibles to control loop and track performance
-       n_samples = 0
-       correct_cnt = 0
-       max_samples = 200
-
-       # Train the classifier with the samples provided by the data stream
-       while n_samples < max_samples and stream.has_more_samples():
-           X, y = stream.next_sample()
-           y_pred = dynamic_weighted_majority_classifier.predict(X)
-           if y[0] == y_pred[0]:
-               correct_cnt += 1
-           dwm = dwm.partial_fit(X, y)
-           n_samples += 1
-
-       # Display results
-       print('{} samples analyzed.'.format(n_samples))
-       print('Dynamic Weighted Majority Classifier accuracy: {}'.format(correct_cnt / n_samples))
+    >>> # Imports
+    >>> from skmultiflow.data import SEAGenerator
+    >>>from skmultiflow.meta import DynamicWeightedMajorityClassifier
+    >>>
+    >>> # Setup a data stream
+    >>> stream = SEAGenerator(random_state=1)
+    >>>
+    >>> # Setup Dynamic Weighted Majority Ensemble Classifier
+    >>> dwm = DynamicWeightedMajorityClassifier()
+    >>>
+    >>> # Setup variables to control loop and track performance
+    >>> n_samples = 0
+    >>> correct_cnt = 0
+    >>> max_samples = 200
+    >>>
+    >>> # Train the classifier with the samples provided by the data stream
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_pred = dwm.predict(X)
+    >>>     if y[0] == y_pred[0]:
+    >>>         correct_cnt += 1
+    >>>     dwm.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('{} samples analyzed.'.format(n_samples))
+    >>> print('Dynamic Weighted Majority accuracy: {}'.format(correct_cnt / n_samples))
     """
 
     class WeightedExpert:

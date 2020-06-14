@@ -120,10 +120,6 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
                 return InactiveLearningNodePerceptron(initial_class_observations, parent_node,
                                                       random_state=random_state)
 
-    @staticmethod
-    def is_randomizable():
-        return True
-
     def reset(self):
         super().reset()
         self._random_state = check_random_state(self.random_state)
