@@ -7,7 +7,7 @@ from skmultiflow.utils import check_random_state
 class AGRAWALGenerator(Stream):
     """ Agrawal stream generator.
 
-    The generator was introduced by Agrawal et al in [1]_, and was common source
+    The generator was introduced by Agrawal et al. in [1]_, and was common source
     of data for early work on scaling up decision tree learners.
     The generator produces a stream containing nine features, six numeric and
     three categorical.
@@ -73,7 +73,7 @@ class AGRAWALGenerator(Stream):
         Values go from 0.0 to 1.0.
 
     References
-    ---------
+    ----------
     .. [1] Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami. "Database
        Mining: A Performance Perspective", IEEE Transactions on Knowledge and
        Data Engineering, 5(6), December 1993.

@@ -72,38 +72,36 @@ class StackedSingleTargetHoeffdingTreeRegressor(iSOUPTreeRegressor, MultiOutputM
 
     Examples
     --------
-    .. code-block:: python
-
-       # Imports
-       from skmultiflow.data import RegressionGenerator
-       from skmultiflow.trees import StackedSingleTargetHoeffdingTreeRegressor
-       import numpy as np
-
-       # Setup a data stream
-       n_targets = 3
-       stream = RegressionGenerator(n_targets=n_targets, random_state=1)
-
-       # Setup the Stacked Single-target Hoeffding Tree Regressor
-       sst_ht = StackedSingleTargetHoeffdingTreeRegressor()
-
-       # Auxiliary variables to control loop and track performance
-       n_samples = 0
-       correct_cnt = 0
-       max_samples = 200
-       y_pred = np.zeros((max_samples, n_targets))
-       y_true = np.zeros((max_samples, n_targets))
-
-       # Run test-then-train loop for max_samples or while there is data in the stream
-       while n_samples < max_samples and stream.has_more_samples():
-           X, y = stream.next_sample()
-           y_true[n_samples] = y[0]
-           y_pred[n_samples] = sst_ht.predict(X)[0]
-           sst_ht.partial_fit(X, y)
-           n_samples += 1
-
-       # Display results
-       print('{} samples analyzed.'.format(n_samples))
-       print('Stacked Single-target Hoeffding Tree Regressor mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
+    >>> # Imports
+    >>> from skmultiflow.data import RegressionGenerator
+    >>> from skmultiflow.trees import StackedSingleTargetHoeffdingTreeRegressor
+    >>> import numpy as np
+    >>>
+    >>> # Setup a data stream
+    >>> n_targets = 3
+    >>> stream = RegressionGenerator(n_targets=n_targets, random_state=1, n_samples=200)
+    >>>
+    >>> # Setup the Stacked Single-target Hoeffding Tree Regressor
+    >>> sst_ht = StackedSingleTargetHoeffdingTreeRegressor()
+    >>>
+    >>> # Auxiliary variables to control loop and track performance
+    >>> n_samples = 0
+    >>> max_samples = 200
+    >>> y_pred = np.zeros((max_samples, n_targets))
+    >>> y_true = np.zeros((max_samples, n_targets))
+    >>>
+    >>> # Run test-then-train loop for max_samples and while there is data
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_true[n_samples] = y[0]
+    >>>     y_pred[n_samples] = sst_ht.predict(X)[0]
+    >>>     sst_ht.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('Stacked Single-target Hoeffding Tree regressor example')
+    >>> print('{} samples analyzed.'.format(n_samples))
+    >>> print('Mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
     """
 
     # =====================================================================

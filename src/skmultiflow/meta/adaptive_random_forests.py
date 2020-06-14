@@ -64,152 +64,151 @@ def AdaptiveRandomForest(n_estimators=10,
 class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """Adaptive Random Forest classifier.
 
-        Parameters
-        ----------
-        n_estimators: int, optional (default=10)
-            Number of trees in the ensemble.
+    Parameters
+    ----------
+    n_estimators: int, optional (default=10)
+        Number of trees in the ensemble.
 
-        max_features : int, float, string or None, optional (default="auto")
-            Max number of attributes for each node split.
+    max_features : int, float, string or None, optional (default="auto")
+        Max number of attributes for each node split.
 
-            - If int, then consider ``max_features`` features at each split.
-            - If float, then ``max_features`` is a percentage and
-              ``int(max_features * n_features)`` features are considered at each split.
-            - If "auto", then ``max_features=sqrt(n_features)``.
-            - If "sqrt", then ``max_features=sqrt(n_features)`` (same as "auto").
-            - If "log2", then ``max_features=log2(n_features)``.
-            - If None, then ``max_features=n_features``.
-        disable_weighted_vote: bool, optional (default=False)
-            Weighted vote option.
+        - If int, then consider ``max_features`` features at each split.
+        - If float, then ``max_features`` is a percentage and
+          ``int(max_features * n_features)`` features are considered at each split.
+        - If "auto", then ``max_features=sqrt(n_features)``.
+        - If "sqrt", then ``max_features=sqrt(n_features)`` (same as "auto").
+        - If "log2", then ``max_features=log2(n_features)``.
+        - If None, then ``max_features=n_features``.
+    disable_weighted_vote: bool, optional (default=False)
+        Weighted vote option.
 
-        lambda_value: int, optional (default=6)
-            The lambda value for bagging (lambda=6 corresponds to Leverage Bagging).
+    lambda_value: int, optional (default=6)
+        The lambda value for bagging (lambda=6 corresponds to Leverage Bagging).
 
-        performance_metric: string, optional (default="acc")
-            Metric used to track trees performance within the ensemble.
+    performance_metric: string, optional (default="acc")
+        Metric used to track trees performance within the ensemble.
 
-            - 'acc' - Accuracy
-            - 'kappa' - Accuracy
+        - 'acc' - Accuracy
+        - 'kappa' - Accuracy
 
-        drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
-            Drift Detection method. Set to None to disable Drift detection.
+    drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
+        Drift Detection method. Set to None to disable Drift detection.
 
-        warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
-            Warning Detection method. Set to None to disable warning detection.
+    warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
+        Warning Detection method. Set to None to disable warning detection.
 
-        max_byte_size: int, optional (default=33554432)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            Maximum memory consumed by the tree.
+    max_byte_size: int, optional (default=33554432)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        Maximum memory consumed by the tree.
 
-        memory_estimate_period: int, optional (default=2000000)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            Number of instances between memory consumption checks.
+    memory_estimate_period: int, optional (default=2000000)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        Number of instances between memory consumption checks.
 
-        grace_period: int, optional (default=50)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            Number of instances a leaf should observe between split attempts.
+    grace_period: int, optional (default=50)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        Number of instances a leaf should observe between split attempts.
 
-        split_criterion: string, optional (default='info_gain')
-            (`ARFHoeffdingTreeClassifier` parameter)
-            Split criterion to use.
+    split_criterion: string, optional (default='info_gain')
+        (`ARFHoeffdingTreeClassifier` parameter)
+        Split criterion to use.
 
-            - 'gini' - Gini
-            - 'info_gain' - Information Gain
+        - 'gini' - Gini
+        - 'info_gain' - Information Gain
 
-        split_confidence: float, optional (default=0.01)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            Allowed error in split decision, a value closer to 0 takes longer to decide.
+    split_confidence: float, optional (default=0.01)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        Allowed error in split decision, a value closer to 0 takes longer to decide.
 
-        tie_threshold: float, optional (default=0.05)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            Threshold below which a split will be forced to break ties.
+    tie_threshold: float, optional (default=0.05)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        Threshold below which a split will be forced to break ties.
 
-        binary_split: bool, optional (default=False)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            If True, only allow binary splits.
+    binary_split: bool, optional (default=False)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        If True, only allow binary splits.
 
-        stop_mem_management: bool, optional (default=False)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            If True, stop growing as soon as memory limit is hit.
+    stop_mem_management: bool, optional (default=False)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        If True, stop growing as soon as memory limit is hit.
 
-        remove_poor_atts: bool, optional (default=False)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            If True, disable poor attributes.
+    remove_poor_atts: bool, optional (default=False)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        If True, disable poor attributes.
 
-        no_preprune: bool, optional (default=False)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            If True, disable pre-pruning.
+    no_preprune: bool, optional (default=False)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        If True, disable pre-pruning.
 
-        leaf_prediction: string, optional (default='nba')
-            (`ARFHoeffdingTreeClassifier` parameter)
-            Prediction mechanism used at leafs.
+    leaf_prediction: string, optional (default='nba')
+        (`ARFHoeffdingTreeClassifier` parameter)
+        Prediction mechanism used at leafs.
 
-            - 'mc' - Majority Class
-            - 'nb' - Naive Bayes
-            - 'nba' - Naive Bayes Adaptive
+        - 'mc' - Majority Class
+        - 'nb' - Naive Bayes
+        - 'nba' - Naive Bayes Adaptive
 
-        nb_threshold: int, optional (default=0)
-            (`ARFHoeffdingTreeClassifier` parameter)
-            Number of instances a leaf should observe before allowing Naive Bayes.
+    nb_threshold: int, optional (default=0)
+        (`ARFHoeffdingTreeClassifier` parameter)
+        Number of instances a leaf should observe before allowing Naive Bayes.
 
-        nominal_attributes: list, optional
-            (`ARFHoeffdingTreeClassifier` parameter)
-            List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+    nominal_attributes: list, optional
+        (`ARFHoeffdingTreeClassifier` parameter)
+        List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
 
-        random_state: int, RandomState instance or None, optional (default=None)
-            If int, random_state is the seed used by the random number generator;
-            If RandomState instance, random_state is the random number generator;
-            If None, the random number generator is the RandomState instance used by `np.random`.
+    random_state: int, RandomState instance or None, optional (default=None)
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used by `np.random`.
 
 
-        Notes
-        -----
-        The 3 most important aspects of Adaptive Random Forest [1]_ are:
-        (1) inducing diversity through re-sampling;
-        (2) inducing diversity through randomly selecting subsets of features for node splits
-        (see skmultiflow.classification.trees.arf_hoeffding_tree);
-        (3) drift detectors per base tree, which cause selective resets in response to drifts.
-        It also allows training background trees, which start training if a warning is detected
-        and replace the active tree if the warning escalates to a drift.
+    Notes
+    -----
+    The 3 most important aspects of Adaptive Random Forest [1]_ are:
+    (1) inducing diversity through re-sampling;
+    (2) inducing diversity through randomly selecting subsets of features for node splits
+    (see skmultiflow.classification.trees.arf_hoeffding_tree);
+    (3) drift detectors per base tree, which cause selective resets in response to drifts.
+    It also allows training background trees, which start training if a warning is detected
+    and replace the active tree if the warning escalates to a drift.
 
-        References
-        ----------
-        .. [1] Heitor Murilo Gomes, Albert Bifet, Jesse Read, Jean Paul Barddal,
-           Fabricio Enembreck, Bernhard Pfharinger, Geoff Holmes, Talel Abdessalem.
-           Adaptive random forests for evolving data stream classification.
-           In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.
+    References
+    ----------
+    .. [1] Heitor Murilo Gomes, Albert Bifet, Jesse Read, Jean Paul Barddal,
+       Fabricio Enembreck, Bernhard Pfharinger, Geoff Holmes, Talel Abdessalem.
+       Adaptive random forests for evolving data stream classification.
+       In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.
 
-        Examples
-        --------
-        .. code-block:: python
-
-           # Imports
-           from skmultiflow.data import SEAGenerator
-           from skmultiflow.meta import AdaptiveRandomForestClassifier
-
-           # Setting up a data stream
-           stream = SEAGenerator(random_state=1)
-
-           # Setup Adaptive Random Forest Classifier
-           arf = AdaptiveRandomForestClassifier()
-
-           # Setup variables to control loop and track performance
-           n_samples = 0
-           correct_cnt = 0
-           max_samples = 200
-
-           # Train the estimator with the samples provided by the data stream
-           while n_samples < max_samples and stream.has_more_samples():
-               X, y = stream.next_sample()
-               y_pred = arf.predict(X)
-               if y[0] == y_pred[0]:
-                   correct_cnt += 1
-               arf = arf.partial_fit(X, y)
-               n_samples += 1
-
-           # Display results
-           print('{} samples analyzed.'.format(n_samples))
-           print('Adaptive Random Forest Classifier accuracy: {}'.format(correct_cnt / n_samples))
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.meta import AdaptiveRandomForestClassifier
+    >>>
+    >>> # Setting up a data stream
+    >>> stream = SEAGenerator(random_state=1)
+    >>>
+    >>> # Setup Adaptive Random Forest Classifier
+    >>> arf = AdaptiveRandomForestClassifier()
+    >>>
+    >>> # Setup variables to control loop and track performance
+    >>> n_samples = 0
+    >>> correct_cnt = 0
+    >>> max_samples = 200
+    >>>
+    >>> # Train the estimator with the samples provided by the data stream
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_pred = arf.predict(X)
+    >>>     if y[0] == y_pred[0]:
+    >>>         correct_cnt += 1
+    >>>     arf.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('Adaptive Random Forest ensemble classifier example')
+    >>> print('{} samples analyzed.'.format(n_samples))
+    >>> print('Accuracy: {}'.format(correct_cnt / n_samples))
     """
 
     def __init__(self,
@@ -487,10 +486,6 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         # max_features > n, then use n
         if self.max_features > n:
             self.max_features = n
-
-    @staticmethod
-    def is_randomizable():
-        return True
 
 
 class ARFBaseLearner(BaseSKMObject):

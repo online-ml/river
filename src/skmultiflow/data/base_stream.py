@@ -228,12 +228,15 @@ class Stream(BaseSKMObject, metaclass=ABCMeta):
         return self.current_sample_x, self.current_sample_y
 
     def is_restartable(self):
-        """ Determine if the stream is restartable.
-         Returns
-         -------
-         Boolean
+        """
+        Determine if the stream is restartable.
+
+        Returns
+        -------
+        Bool
             True if stream is restartable.
-         """
+
+        """
         return True
 
     def restart(self):

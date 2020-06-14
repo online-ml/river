@@ -27,8 +27,7 @@ class TemporalDataStream(DataStream):
     sample_weight: numpy.ndarray or pandas.Series, optional (Default=None)
         Sample weights.
 
-    sample_delay: numpy.ndarray of numpy.datetime64, pandas.Series, \
-     numpy.timedelta64 or int, optional (Default=0)
+    sample_delay: numpy.ndarray, pandas.Series, numpy.timedelta64 or int, optional (Default=0)
         | Options per data type used:
         | ``numpy.timedelta64``: Samples delay in time, the time-offset \
           between the event time and when the label is available, e.g., \
@@ -113,7 +112,7 @@ class TemporalDataStream(DataStream):
             # Create delay array with the same time delay for all samples
             self.sample_delay = np.array(sample_delay, dtype="datetime64")
         elif isinstance(sample_delay, int):
-            if self.time is not None:
+            if self.time is not None and sample_delay != 0:
                 warnings.warn("'time' will not be used because 'sample_delay' is int. "
                               "Delay by number of samples is applied. If you want to use a time "
                               "delay, use np.timedelta64 for 'sample_delay'.")
@@ -155,17 +154,20 @@ class TemporalDataStream(DataStream):
 
         If there is enough instances to supply at least batch_size samples,
         those are returned. If there aren't a tuple of (None, None) is returned.
+
         Parameters
         ----------
         batch_size: int
             The number of instances to return.
+
         Returns
         -------
         tuple or tuple list
-            Returns the next batch_size instances (sample_x, sample_y,
-            sample_time, sample_delay (if available), sample_weight
+            Returns the next ``batch_size`` instances (``sample_x``, ``sample_y``,
+            ``sample_time``, ``sample_delay`` (if available), ``sample_weight``
             (if available)). For general purposes the return can be
             treated as a numpy.ndarray.
+
         """
         self.sample_idx += batch_size
 

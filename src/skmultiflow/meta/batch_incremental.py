@@ -41,35 +41,33 @@ class BatchIncrementalClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMi
 
     Examples
     --------
-    .. code-block:: python
-
-       # Imports
-       from skmultiflow.data import SEAGenerator
-       from skmultiflow.meta import BatchIncrementalClassifier
-
-       # Setup a data stream
-       stream = SEAGenerator(random_state=1)
-
-       # Pre-training the classifier with 200 samples
-       X, y = stream.next_sample(200)
-       batch_incremental_classifier = BatchIncrementalClassifier()
-       batch_incremental_classifier.partial_fit(X, y)
-
-       # Preparing the processing of 5000 samples and correct prediction count
-       n_samples = 0
-       correct_cnt = 0
-       while n_samples < 5000 and stream.has_more_samples():
-           X, y = stream.next_sample()
-           y_pred = batch_incremental_classifier.predict(X)
-           if y[0] == y_pred[0]:
-               correct_cnt += 1
-           batch_incremental_classifier = batch_incremental_classifier.partial_fit(X, y)
-           n_samples += 1
-
-       # Display results
-       print('Batch Incremental Ensemble Classifier')
-       print('{} samples analyzed'.format(n_samples))
-       print('Batch Incremental Ensemble Classifier performance: {}'.format(correct_cnt / n_samples))
+    >>> # Imports
+    >>> from skmultiflow.data import SEAGenerator
+    >>> from skmultiflow.meta import BatchIncrementalClassifier
+    >>>
+    >>> # Setup a data stream
+    >>> stream = SEAGenerator(random_state=1)
+    >>>
+    >>> # Pre-training the classifier with 200 samples
+    >>> X, y = stream.next_sample(200)
+    >>> batch_incremental_cfier = BatchIncrementalClassifier()
+    >>> batch_incremental_cfier.partial_fit(X, y)
+    >>>
+    >>> # Preparing the processing of 5000 samples and correct prediction count
+    >>> n_samples = 0
+    >>> correct_cnt = 0
+    >>> while n_samples < 5000 and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_pred = batch_incremental_cfier.predict(X)
+    >>>     if y[0] == y_pred[0]:
+    >>>         correct_cnt += 1
+    >>>     batch_incremental_cfier.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('Batch Incremental ensemble classifier example')
+    >>> print('{} samples analyzed'.format(n_samples))
+    >>> print('Performance: {}'.format(correct_cnt / n_samples))
     """
 
     def __init__(self, base_estimator=DecisionTreeClassifier(), window_size=100, n_estimators=100):

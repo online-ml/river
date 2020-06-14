@@ -21,33 +21,30 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         Number of trees in the ensemble.
 
     max_features : int, float, str or None, optional (default="auto")
-        Max number of attributes for each node split.
-        - If int, then consider ``max_features`` features at each split.
-        - If float, then ``max_features`` is a percentage and
-          ``int(max_features * n_features)`` features are considered at
-          each split.
-        - If "auto", then ``max_features=sqrt(n_features)``.
-        - If "sqrt", then ``max_features=sqrt(n_features)``
-          (same as "auto").
-        - If "log2", then ``max_features=log2(n_features)``.
-        - If None, then ``max_features=n_features``.
+        | Max number of attributes for each node split.
+        | - If int, then consider ``max_features`` features at each split.
+        | - If float, then ``max_features`` is a percentage and \
+          ``int(max_features * n_features)`` features are considered at each split.
+        | - If "auto", then ``max_features=sqrt(n_features)``.
+        | - If "sqrt", then ``max_features=sqrt(n_features)`` (same as "auto").
+        | - If "log2", then ``max_features=log2(n_features)``.
+        | - If None, then ``max_features=n_features``.
 
     lambda_value: int, optional (default=6)
-        The lambda value for bagging (lambda=6 corresponds to Leverage
-        Bagging).
+        The lambda value for bagging (lambda=6 corresponds to Leverage Bagging).
 
     aggregation_method: str, optional (default='median')
-        The method to use to aggregate predictions in the ensemble.
-        - 'mean'
-        - 'median'
+        | The method to use to aggregate predictions in the ensemble.
+        | - 'mean'
+        | - 'median'
 
     weighted_vote_strategy: str or None, optional (default=None)
-        Metric used to weight individual tree's responses when aggregating them. Only used when
-        ``aggregation_method='mean'``. Possible values are:
-            - None: Do not assign weights to individual tree's predictions. Use the arithmetic mean
-                instead.
-            - 'mse': Weight predictions using trees' Mean Square Error
-            - 'mae': Weight predictions using trees' Mean Absolute Error
+        | Metric used to weight individual tree's responses when aggregating them. \
+        Only used when ``aggregation_method='mean'``. Possible values are:
+        | - None: Do not assign weights to individual tree's predictions. \
+          Use the arithmetic mean instead.
+        | - 'mse': Weight predictions using trees' Mean Square Error
+        | - 'mae': Weight predictions using trees' Mean Absolute Error
 
     drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
         Drift Detection method. Set to None to disable Drift detection.
@@ -56,10 +53,10 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         Warning Detection method. Set to None to disable warning detection.
 
     drift_detection_criteria: str, optional (default='mse')
-        The criteria used to track drifts.
-            - 'mse' - Mean Square Error
-            - 'mae' - Mean Absolute Error
-            - 'predictions' - predicted target values
+        | The criteria used to track drifts.
+        | - 'mse' - Mean Square Error
+        | - 'mae' - Mean Absolute Error
+        | - 'predictions' - predicted target values
 
     max_byte_size: int, optional (default=1048576000)
         (`ARFHoeffdingTreeRegressor` parameter)
@@ -100,10 +97,10 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         If True, disable pre-pruning.
 
     leaf_prediction: str, optional (default='perceptron')
-        (`ARFHoeffdingTreeRegressor` parameter)
+        | (`ARFHoeffdingTreeRegressor` parameter) \
         Prediction mechanism used at leafs.
-        - 'mean' - Target mean
-        - 'perceptron' - Perceptron
+        | - 'mean' - Target mean
+        | - 'perceptron' - Perceptron
 
     nominal_attributes: list, optional (default=None)
         (`ARFHoeffdingTreeRegressor` parameter)
@@ -123,8 +120,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         If False the learning ratio will decay with the number of
         examples seen.
 
-    random_state: int, RandomState instance or None,
-                       optional (default=None)
+    random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
@@ -135,20 +131,19 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
     The 3 most important aspects of Adaptive Random Forest [1]_ are:
     (1) inducing diversity through re-sampling;
     (2) inducing diversity through randomly selecting subsets of features for node splits
-        (see skmultiflow.trees.arf_hoeffding_tree);
+    (see skmultiflow.trees.arf_hoeffding_tree);
     (3) drift detectors per base tree, which cause selective resets in response to drifts.
     It also allows training background trees, which start training if a warning is detected and
     replace the active tree if the warning escalates to a drift.
 
     Notice that this implementation is slightly different from the original algorithm proposed
-    in _[1]. The HoeffdingTreeRegressor is used as base learner, instead of FIMT-DD. It also adds a
+    in [2]_. The HoeffdingTreeRegressor is used as base learner, instead of FIMT-DD. It also adds a
     new strategy to monitor the incoming data and check for concept drifts. The monitored data
     (either the trees' errors or their predictions) are centered and scaled (z-score normalization)
     to have zero mean and unit standard deviation. Transformed values are then again normalized in
     the [0, 1] range to fulfil ADWIN's requirements. We assume that the data subjected to the
-    z-score normalization lies within the interval of the mean :math:`+/-3\\sigma`, as it occurs in
-    normal distributions.
-
+    z-score normalization lies within the interval of the mean :math:`\\pm3\\sigma`, as it occurs
+    in normal distributions.
 
     References
     ----------
@@ -157,7 +152,41 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         classification. Machine Learning, 106(9-10), pp.1469-1495.
 
     .. [2] Gomes, H.M., Barddal, J.P., Boiko, L.E., Bifet, A., 2018. Adaptive random forests for
-        data stream regression. ESANN 2018.
+       data stream regression. ESANN 2018.
+
+    Examples
+    --------
+    >>> # Imports
+    >>> from skmultiflow.data import RegressionGenerator
+    >>> from skmultiflow.meta import AdaptiveRandomForestRegressor
+    >>> import numpy as np
+    >>>
+    >>> # Setup a data stream
+    >>> stream = RegressionGenerator(random_state=1, n_samples=200)
+    >>> # Prepare stream for use
+    >>>
+    >>> # Setup the Adaptive Random Forest regressor
+    >>> arf_reg = AdaptiveRandomForestRegressor(random_state=123456)
+    >>>
+    >>> # Auxiliary variables to control loop and track performance
+    >>> n_samples = 0
+    >>> max_samples = 200
+    >>> y_pred = np.zeros(max_samples)
+    >>> y_true = np.zeros(max_samples)
+    >>>
+    >>> # Run test-then-train loop for max_samples and while there is data
+    >>> while n_samples < max_samples and stream.has_more_samples():
+    >>>     X, y = stream.next_sample()
+    >>>     y_true[n_samples] = y[0]
+    >>>     y_pred[n_samples] = arf_reg.predict(X)[0]
+    >>>     arf_reg.partial_fit(X, y)
+    >>>     n_samples += 1
+    >>>
+    >>> # Display results
+    >>> print('Adaptive Random Forest regressor example')
+    >>> print('{} samples analyzed.'.format(n_samples))
+    >>> print('Mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
+
     """
 
     _MEAN = 'mean'
@@ -242,7 +271,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         y: numpy.ndarray of shape (n_samples)
             An array-like with the target values of all samples in X.
 
-        sample_weight (default=None)
+        sample_weight: (default=None)
             This parameter it is not used in AdaptiveRandomForestRegressor since the ensemble
             algorithm internally assign different weights to the incoming instances. Kept for
             method's signature compatibility purpose only.
@@ -255,7 +284,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         if y is None:
             return self
         if self.ensemble is None:
-            self.init_ensemble(X)
+            self._init_ensemble(X)
 
         for i in range(get_dimensions(X)[0]):
             self.instances_seen += 1
@@ -286,7 +315,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         """
         predictions = np.zeros((self.n_estimators, get_dimensions(X)[0]))
         if self.ensemble is None:
-            self.init_ensemble(X)
+            self._init_ensemble(X)
 
         for i, learner in enumerate(self.ensemble):
             predictions[i, :] = learner.predict(X)
@@ -323,7 +352,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         self.instances_seen = 0
         self._random_state = check_random_state(self.random_state)
 
-    def init_ensemble(self, X):
+    def _init_ensemble(self, X):
         self._set_max_features(get_dimensions(X)[1])
         # Generate a different random seed per tree
         random_states = self._random_state.randint(0, 4294967295, size=self.n_estimators,
@@ -390,10 +419,6 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         # max_features > n, then use n
         if self.max_features > n:
             self.max_features = n
-
-    @staticmethod
-    def is_randomizable():
-        return True
 
 
 class ARFRegBaseLearner(BaseSKMObject):
@@ -515,10 +540,10 @@ class ARFRegBaseLearner(BaseSKMObject):
             # between [mean - 3*sd, mean + 3*sd] (in a normal distribution): we assume this range
             # for the norm variable.
             # Hence, the values are assumed to be between [-3, 3] and we can apply the min-max norm
-            # to cope with ADWIN's requeriments
+            # to cope with ADWIN's requirements
             return (norm_input + 3) / 6
 
-    def reset(self, instances_seen):
+    def reset(self, instances_seen):    # noqa
         if self._use_background_learner and self.background_learner is not None:
             self.estimator = self.background_learner.estimator
             self.evaluator = self.background_learner.evaluator

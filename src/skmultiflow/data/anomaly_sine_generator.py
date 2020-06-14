@@ -5,46 +5,46 @@ import numpy as np
 
 
 class AnomalySineGenerator(Stream):
+    """
+    Simulate a stream with anomalies in sine waves
+
+    Parameters
+    ----------
+    n_samples: int, optional (default=10000)
+        Number of samples
+    n_anomalies: int, optional (default=2500)
+        Number of anomalies. Can't be larger than n_samples.
+    contextual: bool, optional (default=False)
+        If True, will add contextual anomalies
+    n_contextual: int, optional (default=2500)
+        Number of contextual anomalies. Can't be larger than n_samples.
+    shift: int, optional (default=4)
+        Shift applied when retrieving contextual anomalies
+    noise: float, optional (default=0.5)
+        Amount of noise
+    replace: bool, optional (default=True)
+        If True, anomalies are randomly sampled with replacement
+    random_state: int, RandomState instance or None, optional (default=None)
+    If int, random_state is the seed used by the random number generator;
+    If RandomState instance, random_state is the random number generator;
+    If None, the random number generator is the RandomState instance used
+    by `np.random`.
+
+    Notes
+    -----
+    The data generated corresponds to sine (attribute 1) and cosine
+    (attribute 2) functions. Anomalies are induced by replacing values
+    from attribute 2 with values from a sine function different to the one
+    used in attribute 1. The ``contextual`` flag can be used to introduce
+    contextual anomalies which are values in the normal global range,
+    but abnormal compared to the seasonal pattern. Contextual attributes
+    are introduced by replacing values in attribute 2 with values from
+    attribute 1.
+
+    """
 
     def __init__(self, n_samples=10000, n_anomalies=2500, contextual=False,
                  n_contextual=2500, shift=4, noise=0.5, replace=True, random_state=None):
-        """
-        Simulate a stream with anomalies in sine waves
-
-        Parameters
-        ----------
-        n_samples: int, optional (default=10000)
-            Number of samples
-        n_anomalies: int, optional (default=2500)
-            Number of anomalies. Can't be larger than n_samples.
-        contextual: bool, optional (default=False)
-            If True, will add contextual anomalies
-        n_contextual: int, optional (default=2500)
-            Number of contextual anomalies. Can't be larger than n_samples.
-        shift: int, optional (default=4)
-            Shift applied when retrieving contextual anomalies
-        noise: float, optional (default=0.5)
-            Amount of noise
-        replace: bool, optional (default=True)
-            If True, anomalies are randomly sampled with replacement
-        random_state: int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
-
-        Notes
-        -----
-        The data generated corresponds to sine (attribute 1) and cosine
-        (attribute 2) functions. Anomalies are induced by replacing values
-        from attribute 2 with values from a sine function different to the one
-        used in attribute 1. The ``contextual`` flag can be used to introduce
-        contextual anomalies which are values in the normal global range,
-        but abnormal compared to the seasonal pattern. Contextual attributes
-        are introduced by replacing values in attribute 2 with values from
-        attribute 1.
-
-        """
         super().__init__()
         self.n_samples = n_samples
         if n_anomalies > self.n_samples:

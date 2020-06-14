@@ -5,7 +5,8 @@ Quick-Start Guide with Docker
 Run Hello World example
 =======================
 
-When you start scikit-multiflow container with jupyter, you will find a ``Quick Start`` jupyter notebook.
+When you start scikit-multiflow container with jupyter, you will find a ``Quick Start`` jupyter
+notebook.
 
 For the scikit-multiflow container with python. There are two Hello World examples.
 

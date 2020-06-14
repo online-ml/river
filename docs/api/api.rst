@@ -6,8 +6,8 @@ This is the API documentation for ``scikit-multiflow``.
 
 .. _data_ref:
 
-Core: :mod:`skmultiflow.core`
-=============================
+Core
+====
 
 .. automodule:: skmultiflow.core
     :no-members:
@@ -17,6 +17,7 @@ Core: :mod:`skmultiflow.core`
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    core.base.BaseEstimator
@@ -27,8 +28,8 @@ Core: :mod:`skmultiflow.core`
    core.MultiOutputMixin
    core.Pipeline
 
-Data: :mod:`skmultiflow.data`
-=============================
+Data
+====
 
 .. automodule:: skmultiflow.data
     :no-members:
@@ -38,11 +39,14 @@ Data: :mod:`skmultiflow.data`
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    data.base_stream.Stream
    data.DataStream
    data.FileStream
+   data.ConceptDriftStream
+   data.TemporalDataStream
 
 Stream Generators
 -----------------
@@ -51,9 +55,11 @@ Stream Generators
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    data.AGRAWALGenerator
+   data.AnomalySineGenerator
    data.HyperplaneGenerator
    data.LEDGenerator
    data.LEDGeneratorDrift
@@ -67,7 +73,6 @@ Stream Generators
    data.WaveformGenerator
    data.MultilabelGenerator
    data.RegressionGenerator
-   data.ConceptDriftStream
 
 Learning methods
 ================
@@ -83,6 +88,7 @@ Anomaly detection methods
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    anomaly_detection.HalfSpaceTrees
@@ -98,6 +104,7 @@ Bayes methods
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    bayes.NaiveBayes
@@ -113,6 +120,7 @@ Lazy learning methods
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    lazy.KNNClassifier
@@ -131,10 +139,12 @@ Ensemble methods
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    meta.AccuracyWeightedEnsembleClassifier
    meta.AdaptiveRandomForestClassifier
+   meta.AdaptiveRandomForestRegressor
    meta.AdditiveExpertEnsembleClassifier
    meta.BatchIncrementalClassifier
    meta.ClassifierChain
@@ -167,6 +177,7 @@ Neural Networks
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    neural_networks.PerceptronMask
@@ -182,6 +193,7 @@ Prototype based methods
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
        prototype.RobustSoftLearningVectorQuantization
@@ -197,6 +209,7 @@ Rules based methods
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    rules.VeryFastDecisionRulesClassifier
@@ -212,6 +225,7 @@ Trees based methods
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    trees.HoeffdingTreeClassifier
@@ -224,8 +238,8 @@ Trees based methods
    trees.StackedSingleTargetHoeffdingTreeRegressor
 
 
-Drift Detection: :mod:`skmultiflow.drift_detection`
-===================================================
+Drift Detection
+===============
 
 .. automodule:: skmultiflow.drift_detection
    :no-members:
@@ -235,6 +249,7 @@ Drift Detection: :mod:`skmultiflow.drift_detection`
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    drift_detection.ADWIN
@@ -242,10 +257,11 @@ Drift Detection: :mod:`skmultiflow.drift_detection`
    drift_detection.EDDM
    drift_detection.HDDM_A
    drift_detection.HDDM_W
+   drift_detection.KSWIN
    drift_detection.PageHinkley
 
-Evaluation: :mod:`skmultiflow.evaluation`
-=========================================
+Evaluation
+==========
 
 .. automodule:: skmultiflow.evaluation
    :no-members:
@@ -255,13 +271,15 @@ Evaluation: :mod:`skmultiflow.evaluation`
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    evaluation.EvaluateHoldout
    evaluation.EvaluatePrequential
+   evaluation.EvaluatePrequentialDelayed
 
-Transform: :mod:`skmultiflow.transform`
-=======================================
+Transform
+=========
 
 .. automodule:: skmultiflow.transform
    :no-members:
@@ -271,6 +289,7 @@ Transform: :mod:`skmultiflow.transform`
 
 .. autosummary::
    :nosignatures:
+   :template: class.rst
    :toctree: generated
 
    transform.MissingValuesCleaner
@@ -278,8 +297,8 @@ Transform: :mod:`skmultiflow.transform`
    transform.WindowedMinmaxScaler
    transform.WindowedStandardScaler
 
-Misc:
-=====
+Misc
+====
 
 Utilities
 ---------

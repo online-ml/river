@@ -120,12 +120,13 @@ class OzaBaggingADWINClassifier(OzaBaggingClassifier):
 
         Raises
         ------
-        ValueError: A ValueError is raised if the 'classes' parameter is not
-        passed in the first partial_fit call, or if they are passed in further 
-        calls but differ from the initial classes list passed.
+        ValueError
+            A ValueError is raised if the 'classes' parameter is not passed in the first
+            partial_fit call, or if they are passed in further  calls but differ from
+            the initial classes list passed.
 
         Returns
-        _______
+        -------
         OzaBaggingADWINClassifier
             self
 

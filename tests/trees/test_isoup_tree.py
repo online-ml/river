@@ -1,10 +1,15 @@
 import os
+from difflib import SequenceMatcher
+
 import numpy as np
+
 from sklearn.metrics import mean_absolute_error
+
 from skmultiflow.data import RegressionGenerator
 from skmultiflow.trees import iSOUPTreeRegressor
 from skmultiflow.utils import calculate_object_size
-from difflib import SequenceMatcher
+
+import pytest
 
 
 def test_isoup_tree_mean(test_path):
@@ -190,7 +195,8 @@ def test_isoup_tree_model_description():
     max_samples = 700
     X, y = stream.next_sample(max_samples)
     # Trying to predict without fitting
-    learner.predict(X[0])
+    with pytest.warns(UserWarning):
+        learner.predict(X[0])
 
     learner.partial_fit(X, y)
 
