@@ -21,6 +21,8 @@ echo "All Pythons: ${pys[@]}"
 pys=(${pys[@]//*27*/})
 pys=(${pys[@]//*34*/})
 pys=(${pys[@]//*35*/})
+# Filter out Python 3.9 temporarily
+pys=(${pys[@]//*39*/})
 
 # Print list of Python's being used
 echo "Using Pythons: ${pys[@]}"
