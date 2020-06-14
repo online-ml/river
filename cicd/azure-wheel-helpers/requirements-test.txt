@@ -1,5 +1,5 @@
 sortedcontainers>=1.5.7
-numpy>=1.11.0
+numpy==1.17.3
 scipy>=1.0.0
 matplotlib>=2.0.0
 scikit-learn>=0.20
