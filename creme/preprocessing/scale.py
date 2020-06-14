@@ -202,7 +202,7 @@ class StandardScaler(base.Transformer):
 
         return self
 
-    def transform_many(self, X):
+    def transform_many(self, X: pd.DataFrame):
         """Scale a mini-batch of features.
 
         Parameters:

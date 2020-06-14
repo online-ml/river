@@ -1,1 +1,8 @@
 title: User guide
+arrange:
+    - reading-data
+    - model-evaluation
+    - pipelines
+    - feature-extraction
+    - hyperparameter-tuning
+    - mini-batching
