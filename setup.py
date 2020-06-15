@@ -2,14 +2,14 @@ import sys
 import os
 import platform
 import builtins
-import setuptools       # Used to access setuptools features and avoid warnings, do not remove
 from os import path
 
 from numpy.distutils.core import setup
 
 if sys.version_info[:2] < (3, 5):
-    raise RuntimeError("scikit-multiflow requires Python 3.5 or later. The current"
-                       " Python version is {} installed in {}}.".format(platform.python_version(), sys.executable))
+    raise RuntimeError("scikit-multiflow requires Python 3.5 or later. "
+                       "The current Python version is {} installed in {}}.".
+                       format(platform.python_version(), sys.executable))
 
 
 # This is a bit (!) hackish: we are setting a global variable so that the
@@ -21,9 +21,9 @@ if sys.version_info[:2] < (3, 5):
 builtins.__SKMULTIFLOW_SETUP__ = True
 
 DIST_NAME = 'scikit-multiflow'
-DESCRIPTION = 'A machine learning framework for multi-output/multi-label and stream data.'
+DESCRIPTION = 'A machine learning package for streaming data in Python.'
 MAINTAINER = 'Jacob Montiel'
-MAINTAINER_EMAIL = ''
+MAINTAINER_EMAIL = ' '
 URL = 'https://scikit-multiflow.github.io/'
 PROJECT_URLS = {'Travis CI': 'https://travis-ci.org/scikit-multiflow/scikit-multiflow',
                 'Documentation': 'https://scikit-multiflow.github.io/scikit-multiflow/',
@@ -36,7 +36,27 @@ LICENSE = '3-Clause BSD'
 ver_file = os.path.join('src/skmultiflow', '_version.py')
 with open(ver_file) as f:
     exec(f.read())
-VERSION = __version__
+VERSION = __version__  # noqa
+
+# Optional setuptools features
+# We need to import setuptools early, if we want setuptools features,
+# as it monkey-patches the 'setup' function
+# For some commands, use setuptools
+SETUPTOOLS_COMMANDS = {
+    'develop', 'release', 'bdist_egg', 'bdist_rpm',
+    'bdist_wininst', 'install_egg_info', 'build_sphinx',
+    'egg_info', 'easy_install', 'upload', 'bdist_wheel',
+    '--single-version-externally-managed',
+}
+if SETUPTOOLS_COMMANDS.intersection(sys.argv):
+    import setuptools    # Actually used, do not remove
+
+    extra_setuptools_args = dict(
+        zip_safe=False,  # the package can run out of an .egg file
+        include_package_data=True,
+    )
+else:
+    extra_setuptools_args = dict()
 
 # read the contents of README file
 pkg_directory = path.abspath(path.dirname(__file__))
@@ -44,7 +64,7 @@ with open(path.join(pkg_directory, 'README.md'), encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
 
 with open('requirements.txt') as fid:
-    INSTALL_REQUIRES = [l.strip() for l in fid.readlines() if l]
+    INSTALL_REQUIRES = [line.strip() for line in fid.readlines() if line]
 
 
 def configuration(parent_package='', top_path=None):
@@ -93,8 +113,6 @@ def setup_package():
                     long_description=LONG_DESCRIPTION,
                     long_description_content_type='text/markdown',
                     package_dir={'': 'src'},
-                    include_package_data=True,
-                    zip_safe=False,
                     install_requires=INSTALL_REQUIRES,
                     setup_requires=['pytest-runner'],
                     tests_require=['pytest'],
@@ -115,7 +133,8 @@ def setup_package():
                                  'Operating System :: MacOS',
                                  'Operating System :: Microsoft :: Windows'
                                  ],
-                    python_requires=">=3.5")
+                    python_requires=">=3.5",
+                    **extra_setuptools_args)
 
     metadata['configuration'] = configuration
 
@@ -124,4 +143,4 @@ def setup_package():
 
 if __name__ == "__main__":
     setup_package()
-    del builtins.__SKMULTIFLOW_SETUP__
+    del builtins.__SKMULTIFLOW_SETUP__   # noqa
