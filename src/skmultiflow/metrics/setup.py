@@ -22,9 +22,6 @@ def configuration(parent_package="", top_path=None):
                          libraries=libraries,
                          extra_compile_args=["-O3"])
 
-    config.add_data_files("_confusion_matrix.pxd")
-    config.add_data_files("_classification_performance_evaluator.pxd")
-
     return config
 
 
