@@ -4,13 +4,6 @@ import platform
 import builtins
 from os import path
 
-from numpy.distutils.core import setup
-
-if sys.version_info[:2] < (3, 5):
-    raise RuntimeError("scikit-multiflow requires Python 3.5 or later. "
-                       "The current Python version is {} installed in {}}.".
-                       format(platform.python_version(), sys.executable))
-
 
 # This is a bit (!) hackish: we are setting a global variable so that the
 # main skmultiflow __init__ can detect if it is being loaded by the setup
@@ -23,12 +16,14 @@ builtins.__SKMULTIFLOW_SETUP__ = True
 DIST_NAME = 'scikit-multiflow'
 DESCRIPTION = 'A machine learning package for streaming data in Python.'
 MAINTAINER = 'Jacob Montiel'
-MAINTAINER_EMAIL = ' '
+MAINTAINER_EMAIL = 'jacob.montiel[at]waikato.ac.nz'
 URL = 'https://scikit-multiflow.github.io/'
-PROJECT_URLS = {'Travis CI': 'https://travis-ci.org/scikit-multiflow/scikit-multiflow',
-                'Documentation': 'https://scikit-multiflow.github.io/scikit-multiflow/',
-                'Source code': 'https://github.com/scikit-multiflow/scikit-multiflow',
-                }
+PROJECT_URLS = {
+    'Documentation': 'https://scikit-multiflow.github.io/scikit-multiflow/',
+    'Source code': 'https://github.com/scikit-multiflow/scikit-multiflow',
+    'Bug Tracker': 'https://github.com/scikit-multiflow/scikit-multiflow/issues',
+    'Azure Pipelines': 'https://dev.azure.com/scikit-multiflow/scikit-multiflow',
+}
 DOWNLOAD_URL = 'https://pypi.org/project/scikit-multiflow/#files'
 LICENSE = '3-Clause BSD'
 
@@ -136,7 +131,33 @@ def setup_package():
                     python_requires=">=3.5",
                     **extra_setuptools_args)
 
-    metadata['configuration'] = configuration
+    if len(sys.argv) == 1 or (
+            len(sys.argv) >= 2 and ('--help' in sys.argv[1:] or
+                                    sys.argv[1] in ('--help-commands',
+                                                    'egg_info',
+                                                    'dist_info',
+                                                    '--version',
+                                                    'clean'))):
+        # For these actions, NumPy is not required
+        #
+        # They are required to succeed without Numpy for example when
+        # pip is used to install when Numpy is not yet present in
+        # the system.
+        try:
+            from setuptools import setup
+        except ImportError:
+            from distutils.core import setup
+
+        metadata['version'] = VERSION
+    else:
+        if sys.version_info < (3, 6):
+            raise RuntimeError("scikit-multiflow requires Python 3.5 or later. "
+                               "The current Python version is {} installed in {}}.".
+                               format(platform.python_version(), sys.executable))
+
+        from numpy.distutils.core import setup
+
+        metadata['configuration'] = configuration
 
     setup(**metadata)
 

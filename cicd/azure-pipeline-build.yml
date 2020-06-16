@@ -37,7 +37,7 @@ jobs:
         python -m pip install setuptools
         python -m pip install -r $(dev_requirements_file)
       displayName: Install sdist deps
-    - script: python setup.py sdist
+    - script: python setup.py egg_info --egg-base /tmp sdist
       displayName: Prepare sdist
     - template: azure-wheel-helpers/azure-publish-dist.yml
 

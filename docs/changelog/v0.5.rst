@@ -1,7 +1,7 @@
 .. currentmodule:: skmultiflow
 .. include:: _labels.rst
 
-Version 0.5.1
+Version 0.5.2
 -------------
 
 **June 2020**
