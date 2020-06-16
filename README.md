@@ -1,4 +1,4 @@
-<img src="docs/_static/images/skmultiflow-logo-wide.png" width="600"/>
+<img src="https://raw.githubusercontent.com/scikit-multiflow/scikit-multiflow/master/docs/_static/images/skmultiflow-logo-wide.png" height="100"/>
 
 [![Build status](https://travis-ci.org/scikit-multiflow/scikit-multiflow.svg?branch=master)](https://travis-ci.org/scikit-multiflow/scikit-multiflow)
 [![Build Status](https://dev.azure.com/scikit-multiflow/scikit-multiflow/_apis/build/status/scikit-multiflow.scikit-multiflow?branchName=master)](https://dev.azure.com/scikit-multiflow/scikit-multiflow/_build/latest?definitionId=1&branchName=master)
