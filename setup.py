@@ -150,7 +150,7 @@ def setup_package():
 
         metadata['version'] = VERSION
     else:
-        if sys.version_info < (3, 6):
+        if sys.version_info < (3, 5):
             raise RuntimeError("scikit-multiflow requires Python 3.5 or later. "
                                "The current Python version is {} installed in {}}.".
                                format(platform.python_version(), sys.executable))
