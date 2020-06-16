@@ -29,8 +29,8 @@ jobs:
     vmImage: 'ubuntu-latest'
   
   steps:
-    - template: cicd/azure-test-helpers/azure-install.yml
-    - template: cicd/azure-test-helpers/azure-test.yml
+    - template: azure-test-helpers/azure-install.yml
+    - template: azure-test-helpers/azure-test.yml
 
 - job: macOS
   
@@ -45,8 +45,8 @@ jobs:
     vmImage: 'macOS-latest'
   
   steps:
-    - template: cicd/azure-test-helpers/azure-install.yml
-    - template: cicd/azure-test-helpers/azure-test.yml
+    - template: azure-test-helpers/azure-install.yml
+    - template: azure-test-helpers/azure-test.yml
 
 
 - job: Windows
@@ -62,5 +62,5 @@ jobs:
     vmImage: 'windows-latest'
   
   steps:
-    - template: cicd/azure-test-helpers/azure-install.yml
-    - template: cicd/azure-test-helpers/azure-test.yml
+    - template: azure-test-helpers/azure-install.yml
+    - template: azure-test-helpers/azure-test.yml
