@@ -1,8 +1,18 @@
 .. currentmodule:: skmultiflow
 .. include:: _labels.rst
 
+Version 0.5.1
+-------------
+
+**June 2020**
+
+- |FIX| Address a bug that triggered an error in the conda-forge pipeline for
+  Windows.
+
 Version 0.5.0
-----------------
+-------------
+
+**June 2020**
 
 - |Feature| Add :class:`drift_detection.HDDM_A`, a drift detection method based
   on the Hoeffding's bounds with moving average-test. Contributor:
