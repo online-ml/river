@@ -166,7 +166,7 @@ Please use the following citation if you want to reference creme in a scientific
 ```
 @software{creme,
   title = {{creme}, a {P}ython library for online machine learning},
-  author = {Bolmier, Geoffrey and Halford, Max and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil},
+  author = {Halford, Max and Bolmier, Geoffrey and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil},
   url = {https://github.com/creme-ml/creme},
   version = {0.6.1},
   date = {2020-06-10},
