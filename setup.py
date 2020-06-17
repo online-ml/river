@@ -16,7 +16,7 @@ builtins.__SKMULTIFLOW_SETUP__ = True
 DIST_NAME = 'scikit-multiflow'
 DESCRIPTION = 'A machine learning package for streaming data in Python.'
 MAINTAINER = 'Jacob Montiel'
-MAINTAINER_EMAIL = 'jacob.montiel[at]waikato.ac.nz'
+MAINTAINER_EMAIL = 'jacob.montiel@waikato.ac.nz'
 URL = 'https://scikit-multiflow.github.io/'
 PROJECT_URLS = {
     'Documentation': 'https://scikit-multiflow.github.io/scikit-multiflow/',
