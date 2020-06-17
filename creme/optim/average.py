@@ -40,7 +40,8 @@ class Averager(base.Optimizer):
         F1: 0.878924
 
     References:
-        1. Bottou, L., 2010. Large-scale machine learning with stochastic gradient descent. In Proceedings of COMPSTAT'2010 (pp. 177-186). Physica-Verlag HD.
+        1. [Bottou, L., 2010. Large-scale machine learning with stochastic gradient descent. In Proceedings of COMPSTAT'2010 (pp. 177-186). Physica-Verlag HD.](https://leon.bottou.org/publications/pdf/compstat-2010.pdf)
+        2. [Polyak, B.T. and Juditsky, A.B., 1992. Acceleration of stochastic approximation by averaging. SIAM journal on control and optimization, 30(4), pp.838-855.](https://epubs.siam.org/doi/10.1137/0330046)
 
     """
 
