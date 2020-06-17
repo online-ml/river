@@ -4,6 +4,12 @@ import platform
 import builtins
 from os import path
 
+from distutils.command.sdist import sdist
+
+# Optional setuptools features
+# We need to import setuptools early, if we want setuptools features,
+# as it monkey-patches the 'setup' function
+import setuptools    # Actually used, do not remove
 
 # This is a bit (!) hackish: we are setting a global variable so that the
 # main skmultiflow __init__ can detect if it is being loaded by the setup
@@ -32,26 +38,6 @@ ver_file = os.path.join('src/skmultiflow', '_version.py')
 with open(ver_file) as f:
     exec(f.read())
 VERSION = __version__  # noqa
-
-# Optional setuptools features
-# We need to import setuptools early, if we want setuptools features,
-# as it monkey-patches the 'setup' function
-# For some commands, use setuptools
-SETUPTOOLS_COMMANDS = {
-    'develop', 'release', 'bdist_egg', 'bdist_rpm',
-    'bdist_wininst', 'install_egg_info', 'build_sphinx',
-    'egg_info', 'easy_install', 'upload', 'bdist_wheel',
-    '--single-version-externally-managed',
-}
-if SETUPTOOLS_COMMANDS.intersection(sys.argv):
-    import setuptools    # Actually used, do not remove
-
-    extra_setuptools_args = dict(
-        zip_safe=False,  # the package can run out of an .egg file
-        include_package_data=True,
-    )
-else:
-    extra_setuptools_args = dict()
 
 # read the contents of README file
 pkg_directory = path.abspath(path.dirname(__file__))
@@ -119,6 +105,7 @@ def setup_package():
                                  'Programming Language :: Python :: 3.5',
                                  'Programming Language :: Python :: 3.6',
                                  'Programming Language :: Python :: 3.7',
+                                 'Programming Language :: Python :: 3.8',
                                  "Topic :: Scientific/Engineering",
                                  "Topic :: Scientific/Engineering :: Artificial Intelligence",
                                  "Topic :: Software Development",
@@ -129,35 +116,18 @@ def setup_package():
                                  'Operating System :: Microsoft :: Windows'
                                  ],
                     python_requires=">=3.5",
-                    **extra_setuptools_args)
+                    zip_safe=False,  # the package can run out of an .egg file
+                    include_package_data=True,
+                    cmdclass={'sdist': sdist})
 
-    if len(sys.argv) == 1 or (
-            len(sys.argv) >= 2 and ('--help' in sys.argv[1:] or
-                                    sys.argv[1] in ('--help-commands',
-                                                    'egg_info',
-                                                    'dist_info',
-                                                    '--version',
-                                                    'clean'))):
-        # For these actions, NumPy is not required
-        #
-        # They are required to succeed without Numpy for example when
-        # pip is used to install when Numpy is not yet present in
-        # the system.
-        try:
-            from setuptools import setup
-        except ImportError:
-            from distutils.core import setup
+    if sys.version_info < (3, 5):
+        raise RuntimeError("scikit-multiflow requires Python 3.5 or later. "
+                           "The current Python version is {} installed in {}}.".
+                           format(platform.python_version(), sys.executable))
 
-        metadata['version'] = VERSION
-    else:
-        if sys.version_info < (3, 5):
-            raise RuntimeError("scikit-multiflow requires Python 3.5 or later. "
-                               "The current Python version is {} installed in {}}.".
-                               format(platform.python_version(), sys.executable))
+    from numpy.distutils.core import setup
 
-        from numpy.distutils.core import setup
-
-        metadata['configuration'] = configuration
+    metadata['configuration'] = configuration
 
     setup(**metadata)
 
