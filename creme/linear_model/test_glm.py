@@ -80,11 +80,7 @@ def test_finite_differences(lm, X_y):
 
     for x, y in X_y:
 
-        print(x)
-        print('---------')
         x = scaler.fit_one(x).transform_one(x)
-        print(x)
-        print('+++++++++')
 
         # Store the current gradient and weights
         gradient, _ = lm._eval_gradient_one(x, y, 1)

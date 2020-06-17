@@ -148,7 +148,7 @@ Here are some benefits of using `creme` (and online machine learning in general)
 - [Issue tracker](https://github.com/creme-ml/creme/issues)
 - [Package releases](https://pypi.org/project/creme/#history)
 
-## 💬 Media
+## 👁️ Media
 
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
 - [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/creme-tds/)
@@ -157,7 +157,24 @@ Here are some benefits of using `creme` (and online machine learning in general)
 
 ## 👍 Contributing
 
-Feel free to contribute in any way you like, we're always open to new ideas and approaches. If you want to contribute to the code base please check out the [CONTRIBUTING.md file](https://github.com/creme-ml/creme/blob/master/CONTRIBUTING.md). Also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy.
+Feel free to contribute in any way you like, we're always open to new ideas and approaches. You may also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy. Please check out the [CONTRIBUTING.md file](https://github.com/creme-ml/creme/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of contributors [here](https://github.com/creme-ml/creme/graphs/contributors).
+
+## 💬 Citation
+
+Please use the following citation if you want to reference creme in a scientific publication:
+
+```
+@software{creme,
+  title = {{creme}, a {P}ython library for online machine learning},
+  author = {Bolmier, Geoffrey and Halford, Max and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil},
+  url = {https://github.com/creme-ml/creme},
+  version = {0.6.1},
+  date = {2020-06-10},
+  year = {2019}
+}
+```
+
+Note that in the future we will probably publish a dedicated research paper.
 
 ## 📝 License
 
