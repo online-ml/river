@@ -17,7 +17,7 @@ from creme import base
 from creme import proba
 
 from . import criteria
-from . import node
+from . import leaf
 from . import splitting
 
 CRITERIA_CLF = {'gini': criteria.gini_impurity, 'entropy': criteria.entropy}
@@ -51,7 +51,7 @@ class BaseDecisionTree(abc.ABC):
         self.curtail_under = curtail_under
 
         self.criterion_func = CRITERIA_CLF[criterion]
-        self.root = node.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
+        self.root = leaf.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
 
     def fit_one(self, x, y):
         self.root = self.root.update(x, y)
@@ -123,9 +123,9 @@ class BaseDecisionTree(abc.ABC):
             if child_depth > max_depth:
                 continue
 
-            if isinstance(child, node.Branch):
+            if isinstance(child, leaf.Branch):
                 text = f'{child.split} \n {child.target_dist} \n samples: {child.n_samples}'
-            elif isinstance(child, node.Leaf):
+            elif isinstance(child, leaf.Leaf):
                 text = f'{child.target_dist} \n samples: {child.n_samples}'
 
             # Pick a color, the hue depends on the class and the transparency on the distribution
@@ -160,7 +160,7 @@ class BaseDecisionTree(abc.ABC):
         node = self.root
 
         for node in self.root.path(x):
-            if isinstance(node, node.Leaf):
+            if isinstance(node, leaf.Leaf):
                 _print(node.target_dist)
                 break
             if node.split(x):
