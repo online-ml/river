@@ -11,7 +11,7 @@ assignees: ''
 Before submitting a bug, please make sure the issue hasn't been already
 addressed by searching through the past issues.
 -->
-### Versions
+## Versions
 <!--
 Describe all the versions that can help us to correct the bug
 -->
@@ -22,12 +22,12 @@ Describe all the versions that can help us to correct the bug
 
 **Operating System** :
 
-#### Describe the bug
+## Describe the bug
 <!--
 A clear and concise description of the bug.
 -->
 
-#### Steps/Code to Reproduce
+## Steps/Code to Reproduce
 <!--
 Please add a minimal example that we can reproduce the error by running the
 code. Be as succinct as possible. In short, we
