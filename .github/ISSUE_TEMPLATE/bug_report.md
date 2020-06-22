@@ -17,7 +17,9 @@ Describe all the versions that can help us to correct the bug
 -->
 
 **`creme` version** : 
+
 **Python version** : 
+
 **Operating System** :
 
 #### Describe the bug
