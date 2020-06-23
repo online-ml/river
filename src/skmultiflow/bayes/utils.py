@@ -1,3 +1,6 @@
+import math
+
+
 def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_observers: dict):
     """
     Perform Naive Bayes prediction
@@ -33,6 +36,7 @@ def do_naive_bayes_prediction(X, observed_class_distribution: dict, attribute_ob
             for att_idx in range(len(X)):
                 if att_idx in attribute_observers:
                     obs = attribute_observers[att_idx]
-                    votes[class_index] *= obs.probability_of_attribute_value_given_class(
+                    tmp = votes[class_index] * obs.probability_of_attribute_value_given_class(
                         X[att_idx], class_index)
+                    votes[class_index] = tmp if not math.isnan(tmp) else 0
     return votes
