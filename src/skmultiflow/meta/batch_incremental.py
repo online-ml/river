@@ -108,7 +108,7 @@ class BatchIncrementalClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMi
             # No models yet -- initialize
             self.X_batch = np.zeros((self.window_size, D))
             self.y_batch = np.zeros(self.window_size)
-            self.sample_weight = np.zeros(N)
+            self.sample_weight = np.zeros(self.window_size)
             self.i = 0
 
         for n in range(N):
