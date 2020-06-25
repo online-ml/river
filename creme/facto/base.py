@@ -107,10 +107,9 @@ class BaseFM:
         # Apply the sample weight
         g_loss *= sample_weight
 
-        # Update the intercept if not statistic
-        if not isinstance(self.intercept, stats.Univariate):
-            w0_lr = self.intercept_lr.get(self.weight_optimizer.n_iterations)
-            self.intercept -= w0_lr * g_loss
+        # Update the intercept
+        w0_lr = self.intercept_lr.get(self.weight_optimizer.n_iterations)
+        self.intercept -= w0_lr * g_loss
 
         # Update the weights
         weights_gradient = self._calculate_weights_gradients(x, g_loss)
@@ -119,11 +118,12 @@ class BaseFM:
         # Update the latent weights
         self._update_latents(x, g_loss)
 
+        return self
+
     def _raw_dot(self, x):
 
         # Start with the intercept
-        intercept = self.intercept
-        y_pred = intercept.get() if isinstance(intercept, stats.Univariate) else intercept
+        y_pred = self.intercept
 
         # Add the unary interactions
         y_pred += utils.math.dot(x, self.weights)

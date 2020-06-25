@@ -1,7 +1,5 @@
 import collections
 import copy
-import functools
-import itertools
 import random
 
 from creme import base
@@ -67,6 +65,7 @@ class OutputCodeClassifier(base.Wrapper, base.MultiClassifier):
 
     References:
         1. [Dietterich, T.G. and Bakiri, G., 1994. Solving multiclass learning problems via error-correcting output codes. Journal of artificial intelligence research, 2, pp.263-286.](https://arxiv.org/pdf/cs/9501101.pdf)
+        2. [Allwein, E.L., Schapire, R.E. and Singer, Y., 2000. Reducing multiclass to binary: A unifying approach for margin classifiers. Journal of machine learning research, 1(Dec), pp.113-141.](https://www.cs.princeton.edu/~schapire/talks/ecoc-icml10.pdf)
 
     """
 
