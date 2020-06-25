@@ -79,10 +79,10 @@ This involves tests that need an internet connection, such as those in the `data
 
 **Notebook tests**
 
-You don't have to worry too much about these, as we check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way round.
+You don't have to worry too much about these, as we only check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way around.
 
 ```sh
-> pytest --nbval-lax --current-env docs/notebooks/*.ipynb
+> make execute-notebooks
 ```
 
 ## Making a pull request

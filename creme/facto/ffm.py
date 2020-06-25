@@ -1,11 +1,13 @@
 import collections
 import functools
 import itertools
+import typing
+
 import numpy as np
 
-from .. import base
-from .. import optim
-from .. import utils
+from creme import base
+from creme import optim
+from creme import utils
 
 from .base import BaseFM
 
@@ -17,36 +19,7 @@ __all__ = [
 
 
 class FFM(BaseFM):
-    """Field-aware Factorization Machines.
-
-    Parameters:
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
-            weights. Note that the intercept is handled separately.
-        latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
-            factors.
-        loss (optim.Loss): The loss function to optimize for.
-        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
-            Defaults to False.
-        l1_weight (float): Amount of L1 regularization used to push weights towards 0.
-        l2_weight (float): Amount of L2 regularization used to push weights towards 0.
-        l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `stats.Univariate` instance): Initial intercept value.
-        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
-            updating the intercept. If a `float` is passed, then an instance of
-            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme.
-        latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        seed (int): Randomization seed used for reproducibility.
-
-    Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
-        latents (collections.defaultdict): The current latent weights assigned to the features.
-
-    """
+    """Field-aware Factorization Machine base class."""
 
     def __init__(self, n_factors, weight_optimizer, latent_optimizer, loss, sample_normalization,
                  l1_weight, l2_weight, l1_latent, l2_latent, intercept, intercept_lr,
@@ -132,33 +105,31 @@ class FFM(BaseFM):
 
 
 class FFMRegressor(FFM, base.Regressor):
-    """Field-aware Factorization Machines Regressor.
+    """Field-aware Factorization Machine for regression.
+
+    Field names are inferred from feature names by taking everything before the first underscore:
+    `feature_name.split('_')[0]`.
 
     Parameters:
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
-            weights. Note that the intercept is handled separately.
-        latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
-            factors.
-        loss (optim.Loss): The loss function to optimize for.
-        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
-            Defaults to False.
-        l1_weight (float): Amount of L1 regularization used to push weights towards 0.
-        l2_weight (float): Amount of L2 regularization used to push weights towards 0.
-        l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `stats.Univariate` instance): Initial intercept value.
-        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
-            updating the intercept. If a `float` is passed, then an instance of
-            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme. Defaults
-            to ``optim.initializers.Zeros()``.
-        latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-            Defaults to
-            ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        seed (int): Randomization seed used for reproducibility.
+        n_factors: Dimensionality of the factorization or number of latent factors.
+        weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
+            the intercept is handled separately.
+        latent_optimizer: The sequential optimizer used for updating the latent factors.
+        loss: The loss function to optimize for.
+        sample_normalization: Whether to divide each element of `x` by `x`'s L2-norm.
+        l1_weight: Amount of L1 regularization used to push weights towards 0.
+        l2_weight: Amount of L2 regularization used to push weights towards 0.
+        l1_latent: Amount of L1 regularization used to push latent weights towards 0.
+        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
+        intercept: Initial intercept value.
+        intercept_lr: Learning rate scheduler used for updating the intercept. An instance of
+            `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
+            if this is set to 0.
+        weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
+        latent_initializer: Latent factors initialization scheme. Defaults to
+            `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
+        clip_gradient: Clips the absolute value of each gradient value.
+        seed: Randomization seed used for reproducibility.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -166,48 +137,46 @@ class FFMRegressor(FFM, base.Regressor):
 
     Example:
 
-        ::
+        >>> from creme import facto
 
-            >>> from creme import facto
+        >>> X_y = (
+        ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
+        ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
+        ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
+        ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, 2),
+        ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, 5),
+        ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, 8),
+        ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, 9),
+        ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, 8),
+        ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
+        ... )
 
-            >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
-            ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
-            ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, 2),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, 5),
-            ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, 8),
-            ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, 9),
-            ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, 8),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
-            ... )
+        >>> model = facto.FFMRegressor(
+        ...     n_factors=10,
+        ...     intercept=5,
+        ...     seed=42,
+        ... )
 
-            >>> model = facto.FFMRegressor(
-            ...     n_factors=10,
-            ...     intercept=5,
-            ...     seed=42,
-            ... )
+        >>> for x, y in X_y:
+        ...     model = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     _ = model.fit_one(x, y)
-
-            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-            5.319945
-
-    Note:
-        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'}`` becomes ``x = {'user_Joe': 1}``).
-        - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
-        - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
+        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+        5.319945
 
     References:
-        1. `Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50). <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
+        1. [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
 
     """
 
-    def __init__(self, n_factors=10, weight_optimizer=None, latent_optimizer=None, loss=None,
+    def __init__(self, n_factors=10, weight_optimizer: optim.Optimizer = None,
+                 latent_optimizer: optim.Optimizer = None, loss: optim.losses.RegressionLoss = None,
                  sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
-                 l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
-                 latent_initializer=None, clip_gradient=1e12, seed=None):
+                 l2_latent=0., intercept=0.,
+                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
+                 weight_initializer: optim.initializers.Initializer = None,
+                 latent_initializer: optim.initializers.Initializer = None, clip_gradient=1e12,
+                 seed: int = None):
+
         super().__init__(
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
@@ -232,36 +201,31 @@ class FFMRegressor(FFM, base.Regressor):
 
 
 class FFMClassifier(FFM, base.BinaryClassifier):
-    """Field-aware Factorization Machines Classifier.
+    """Field-aware Factorization Machine for binary classification.
+
+    Field names are inferred from feature names by taking everything before the first underscore:
+    `feature_name.split('_')[0]`.
 
     Parameters:
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
-            weights. Note that the intercept is handled separately.
-        latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
-            factors.
-        loss (optim.Loss): The loss function to optimize for.
-        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
-            Defaults to False.
-        l1_weight (float): Amount of L1 regularization used to push weights towards 0.
-        l2_weight (float): Amount of L2 regularization used to push weights towards 0.
-        l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `stats.Univariate` instance): Initial intercept value.
-        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
-            updating the intercept. If a `float` is passed, then an instance of
-            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme. Defaults
-            to ``optim.initializers.Zeros()``.
-        latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-            Defaults to
-            ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        random_state (int, ``numpy.random.RandomState`` instance or None): If int, ``random_state``
-            is the seed used by the random number generator; if ``RandomState`` instance,
-            ``random_state`` is the random number generator; if ``None``, the random number
-            generator is the ``RandomState`` instance used by `numpy.random`.
+        n_factors: Dimensionality of the factorization or number of latent factors.
+        weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
+            the intercept is handled separately.
+        latent_optimizer: The sequential optimizer used for updating the latent factors.
+        loss: The loss function to optimize for.
+        sample_normalization: Whether to divide each element of `x` by `x`'s L2-norm.
+        l1_weight: Amount of L1 regularization used to push weights towards 0.
+        l2_weight: Amount of L2 regularization used to push weights towards 0.
+        l1_latent: Amount of L1 regularization used to push latent weights towards 0.
+        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
+        intercept: Initial intercept value.
+        intercept_lr: Learning rate scheduler used for updating the intercept. An instance of
+            `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
+            if this is set to 0.
+        weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
+        latent_initializer: Latent factors initialization scheme. Defaults to
+            `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
+        clip_gradient: Clips the absolute value of each gradient value.
+        seed: Randomization seed used for reproducibility.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -269,48 +233,46 @@ class FFMClassifier(FFM, base.BinaryClassifier):
 
     Example:
 
-        ::
+        >>> from creme import facto
 
-            >>> from creme import facto
+        >>> X_y = (
+        ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
+        ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
+        ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
+        ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, False),
+        ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, True),
+        ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, True),
+        ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, True),
+        ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, True),
+        ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
+        ... )
 
-            >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
-            ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
-            ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, False),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, True),
-            ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, True),
-            ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, True),
-            ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, True),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
-            ... )
+        >>> model = facto.FFMClassifier(
+        ...     n_factors=10,
+        ...     intercept=.5,
+        ...     seed=42,
+        ... )
 
-            >>> model = facto.FFMClassifier(
-            ...     n_factors=10,
-            ...     intercept=.5,
-            ...     seed=42,
-            ... )
+        >>> for x, y in X_y:
+        ...     model = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     _ = model.fit_one(x, y)
-
-            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-            True
-
-    Note:
-        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables (e.g. ``x = {'user': 'Joe'}`` becomes ``x = {'user_Joe': 1}``).
-        - Fields are infered from feature names by taking everything before first underscore: ``feature_name.split('_')[0]``.
-        - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
+        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+        True
 
     References:
-        1. `Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50). <https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf>`_
+        1. [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
 
     """
 
-    def __init__(self, n_factors=10, weight_optimizer=None, latent_optimizer=None, loss=None,
+    def __init__(self, n_factors=10, weight_optimizer: optim.Optimizer = None,
+                 latent_optimizer: optim.Optimizer = None, loss: optim.losses.BinaryLoss = None,
                  sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
-                 l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
-                 latent_initializer=None, clip_gradient=1e12, seed=None):
+                 l2_latent=0., intercept=0.,
+                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
+                 weight_initializer: optim.initializers.Initializer = None,
+                 latent_initializer: optim.initializers.Initializer = None, clip_gradient=1e12,
+                 seed: int = None):
+
         super().__init__(
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
