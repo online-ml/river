@@ -24,39 +24,43 @@ class BasePrecision:
         return True
 
 
-class Precision(stats.Mean, BasePrecision, base.BinaryMetric):
+class Precision(BasePrecision, base.BinaryMetric):
     """Binary precision score.
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [True, False, True, True, True]
+        >>> y_pred = [True, True, False, True, True]
 
-            >>> y_true = [True, False, True, True, True]
-            >>> y_pred = [True, True, False, True, True]
+        >>> metric = metrics.Precision()
 
-            >>> metric = metrics.Precision()
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            Precision: 1.
-            Precision: 0.5
-            Precision: 0.5
-            Precision: 0.666667
-            Precision: 0.75
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        Precision: 1.
+        Precision: 0.5
+        Precision: 0.5
+        Precision: 0.666667
+        Precision: 0.75
 
     """
 
+    def __init__(self):
+        self._mean = stats.Mean()
+
     def update(self, y_true, y_pred, sample_weight=1.):
         if y_pred:
-            super().update(x=y_true == y_pred, w=sample_weight)
+            self._mean.update(x=y_true == y_pred, w=sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.):
         if y_pred:
-            super().revert(x=y_true == y_pred, w=sample_weight)
+            self._mean.revert(x=y_true == y_pred, w=sample_weight)
         return self
+
+    def get(self):
+        return self._mean.get()
 
 
 class MacroPrecision(BasePrecision, base.MultiClassMetric):
@@ -64,22 +68,20 @@ class MacroPrecision(BasePrecision, base.MultiClassMetric):
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [0, 1, 2, 2, 2]
+        >>> y_pred = [0, 0, 2, 2, 1]
 
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
+        >>> metric = metrics.MacroPrecision()
 
-            >>> metric = metrics.MacroPrecision()
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            MacroPrecision: 1.
-            MacroPrecision: 0.25
-            MacroPrecision: 0.5
-            MacroPrecision: 0.5
-            MacroPrecision: 0.5
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        MacroPrecision: 1.
+        MacroPrecision: 0.25
+        MacroPrecision: 0.5
+        MacroPrecision: 0.5
+        MacroPrecision: 0.5
 
     """
 
@@ -105,7 +107,7 @@ class MacroPrecision(BasePrecision, base.MultiClassMetric):
             return 0.
 
 
-class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassMetric):
+class MicroPrecision(BasePrecision, base.MeanMetric, base.MultiClassMetric):
     """Micro-average precision score.
 
     The micro-average precision score is exactly equivalent to the micro-average recall as well as
@@ -113,35 +115,28 @@ class MicroPrecision(stats.Mean, BasePrecision, base.MultiClassMetric):
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [0, 1, 2, 2, 2]
+        >>> y_pred = [0, 0, 2, 2, 1]
 
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
+        >>> metric = metrics.MicroPrecision()
 
-            >>> metric = metrics.MicroPrecision()
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            MicroPrecision: 1.
-            MicroPrecision: 0.5
-            MicroPrecision: 0.666667
-            MicroPrecision: 0.75
-            MicroPrecision: 0.6
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        MicroPrecision: 1.
+        MicroPrecision: 0.5
+        MicroPrecision: 0.666667
+        MicroPrecision: 0.75
+        MicroPrecision: 0.6
 
     References:
-        1. `Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem? <https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/>`_
+        1. [Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem?](https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/)
 
     """
 
-    def update(self, y_true, y_pred, sample_weight=1.):
-        super().update(x=y_true == y_pred, w=sample_weight)
-        return self
-
-    def revert(self, y_true, y_pred, sample_weight=1.):
-        super().revert(x=y_true == y_pred, w=sample_weight)
-        return self
+    def _eval(self, y_true, y_pred):
+        return y_true == y_pred
 
 
 class WeightedPrecision(BasePrecision, base.MultiClassMetric):
@@ -152,22 +147,20 @@ class WeightedPrecision(BasePrecision, base.MultiClassMetric):
 
     Example:
 
-        ::
+        >>> from creme import metrics
 
-            >>> from creme import metrics
+        >>> y_true = [0, 1, 2, 2, 2]
+        >>> y_pred = [0, 0, 2, 2, 1]
 
-            >>> y_true = [0, 1, 2, 2, 2]
-            >>> y_pred = [0, 0, 2, 2, 1]
+        >>> metric = metrics.WeightedPrecision()
 
-            >>> metric = metrics.WeightedPrecision()
-
-            >>> for yt, yp in zip(y_true, y_pred):
-            ...     print(metric.update(yt, yp))
-            WeightedPrecision: 1.
-            WeightedPrecision: 0.25
-            WeightedPrecision: 0.5
-            WeightedPrecision: 0.625
-            WeightedPrecision: 0.7
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     print(metric.update(yt, yp))
+        WeightedPrecision: 1.
+        WeightedPrecision: 0.25
+        WeightedPrecision: 0.5
+        WeightedPrecision: 0.625
+        WeightedPrecision: 0.7
 
     """
 

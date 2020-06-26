@@ -1,4 +1,4 @@
-from .. import base
+from creme import base
 
 
 __all__ = ['PreviousImputer']
@@ -9,18 +9,16 @@ class PreviousImputer(base.Transformer):
 
     Example:
 
-        ::
+        >>> from creme import impute
 
-            >>> from creme import impute
+        >>> imputer = impute.PreviousImputer()
 
-            >>> imputer = impute.PreviousImputer()
+        >>> imputer = imputer.fit_one({'x': 1, 'y': 2})
+        >>> imputer.transform_one({'y': None})
+        {'y': 2}
 
-            >>> imputer = imputer.fit_one({'x': 1, 'y': 2})
-            >>> imputer.transform_one({'y': None})
-            {'y': 2}
-
-            >>> imputer.transform_one({'x': None})
-            {'x': 1}
+        >>> imputer.transform_one({'x': None})
+        {'x': 1}
 
     """
 

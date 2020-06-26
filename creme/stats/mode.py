@@ -1,6 +1,7 @@
 import collections
+import typing
 
-from .. import utils
+from creme import utils
 
 from . import base
 
@@ -15,38 +16,33 @@ class Mode(base.Univariate):
     number of first unique values to count.
 
     Parameters:
-        k (int): Only the first ``k`` unique values will be included. If ``k`` equals -1, the exact
-            mode is computed.
-
-    Attributes:
-        counts (collections.defaultdict): Counts the number of occurrences of the different keys.
+        k: Only the first `k` unique values will be included. If `k` equals -1, the exact mode is
+            computed.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
+        >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
+        >>> mode = stats.Mode(k=2)
+        >>> for x in X:
+        ...     print(mode.update(x).get())
+        sunny
+        sunny
+        cloudy
+        cloudy
+        cloudy
+        cloudy
 
-            >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
-            >>> mode = stats.Mode(k=2)
-            >>> for x in X:
-            ...     print(mode.update(x).get())
-            sunny
-            sunny
-            cloudy
-            cloudy
-            cloudy
-            cloudy
-
-            >>> mode = stats.Mode(k=-1)
-            >>> for x in X:
-            ...     print(mode.update(x).get())
-            sunny
-            sunny
-            cloudy
-            cloudy
-            cloudy
-            rainy
+        >>> mode = stats.Mode(k=-1)
+        >>> for x in X:
+        ...     print(mode.update(x).get())
+        sunny
+        sunny
+        cloudy
+        cloudy
+        cloudy
+        rainy
 
     """
 
@@ -73,45 +69,43 @@ class RollingMode(base.RollingUnivariate, utils.Window):
     The mode is the most common value.
 
     Parameters:
-        window_size (int): Size of the rolling window.
+        window_size: Size of the rolling window.
 
     Attributes:
         counts (collections.defaultdict): Value counts.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
+        >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']
+        >>> rolling_mode = stats.RollingMode(window_size=2)
+        >>> for x in X:
+        ...     print(rolling_mode.update(x).get())
+        sunny
+        sunny
+        sunny
+        sunny
+        rainy
+        rainy
+        rainy
 
-            >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']
-            >>> rolling_mode = stats.RollingMode(window_size=2)
-            >>> for x in X:
-            ...     print(rolling_mode.update(x).get())
-            sunny
-            sunny
-            sunny
-            sunny
-            rainy
-            rainy
-            rainy
-
-            >>> rolling_mode = stats.RollingMode(window_size=5)
-            >>> for x in X:
-            ...     print(rolling_mode.update(x).get())
-            sunny
-            sunny
-            sunny
-            sunny
-            sunny
-            rainy
-            rainy
+        >>> rolling_mode = stats.RollingMode(window_size=5)
+        >>> for x in X:
+        ...     print(rolling_mode.update(x).get())
+        sunny
+        sunny
+        sunny
+        sunny
+        sunny
+        rainy
+        rainy
 
     """
 
-    def __init__(self, window_size):
+    def __init__(self, window_size: int):
         super().__init__(size=window_size)
-        self.counts = collections.defaultdict(int)
+        self.counts: typing.DefaultDict[typing.Any, int] = collections.defaultdict(int)
 
     @property
     def window_size(self):

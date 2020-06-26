@@ -1,10 +1,11 @@
 import collections
 import functools
 import itertools
+import typing
 
-from .. import base
-from .. import optim
-from .. import utils
+from creme import base
+from creme import optim
+from creme import utils
 
 from .base import BaseFM
 
@@ -16,37 +17,7 @@ __all__ = [
 
 
 class HOFM(BaseFM):
-    """Higher-Order Factorization Machines.
-
-    Parameters:
-        degree (int): Polynomial degree or model order.
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
-            weights. Note that the intercept is handled separately.
-        latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
-            factors.
-        loss (optim.Loss): The loss function to optimize for.
-        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
-            Defaults to False.
-        l1_weight (float): Amount of L1 regularization used to push weights towards 0.
-        l2_weight (float): Amount of L2 regularization used to push weights towards 0.
-        l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `stats.Univariate` instance): Initial intercept value.
-        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
-            updating the intercept. If a `float` is passed, then an instance of
-            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme.
-        latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        seed (int): Randomization seed used for reproducibility.
-
-    Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
-        latents (collections.defaultdict): The current latent weights assigned to the features.
-
-    """
+    """Higher-Order Factorization Machine base class."""
 
     def __init__(self, degree, n_factors, weight_optimizer, latent_optimizer, loss,
                  sample_normalization, l1_weight, l2_weight, l1_latent, l2_latent, intercept,
@@ -142,34 +113,31 @@ class HOFM(BaseFM):
 
 
 class HOFMRegressor(HOFM, base.Regressor):
-    """Higher-Order Factorization Machines Regressor.
+    """Higher-Order Factorization Machine for regression.
 
     Parameters:
-        degree (int): Polynomial degree or model order.
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
-            weights. Note that the intercept is handled separately.
-        latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
-            factors.
-        loss (optim.Loss): The loss function to optimize for.
-        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
-            Defaults to False.
-        l1_weight (float): Amount of L1 regularization used to push weights towards 0.
-        l2_weight (float): Amount of L2 regularization used to push weights towards 0.
-        l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `stats.Univariate` instance): Initial intercept value.
-        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
-            updating the intercept. If a `float` is passed, then an instance of
-            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme. Defaults
-            to ``optim.initializers.Zeros()``.
-        latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-            Defaults to
-            ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        seed (int): Randomization seed used for reproducibility.
+        degree: Polynomial degree or model order.
+        n_factors: Dimensionality of the factorization or number of latent factors.
+        weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
+            the intercept is handled separately.
+        latent_optimizer: The sequential optimizer used for updating the latent factors.
+        int_weight_optimizer: The sequential optimizer used for updating the field pairs
+            interaction weights.
+        loss: The loss function to optimize for.
+        sample_normalization: Whether to divide each element of `x` by `x`'s L2-norm.
+        l1_weight: Amount of L1 regularization used to push weights towards 0.
+        l2_weight: Amount of L2 regularization used to push weights towards 0.
+        l1_latent: Amount of L1 regularization used to push latent weights towards 0.
+        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
+        intercept: Initial intercept value.
+        intercept_lr: Learning rate scheduler used for updating the intercept. An instance of
+            `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
+            if this is set to 0.
+        weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
+        latent_initializer: Latent factors initialization scheme. Defaults to
+            `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
+        clip_gradient: Clips the absolute value of each gradient value.
+        seed: Randomization seed used for reproducibility.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -177,48 +145,47 @@ class HOFMRegressor(HOFM, base.Regressor):
 
     Example:
 
-        ::
+        >>> from creme import facto
 
-            >>> from creme import facto
+        >>> X_y = (
+        ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
+        ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
+        ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
+        ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, 2),
+        ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, 5),
+        ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, 8),
+        ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, 9),
+        ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, 8),
+        ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
+        ... )
 
-            >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
-            ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
-            ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, 2),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, 5),
-            ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, 8),
-            ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, 9),
-            ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, 8),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
-            ... )
+        >>> model = facto.HOFMRegressor(
+        ...     degree=3,
+        ...     n_factors=10,
+        ...     intercept=5,
+        ...     seed=42,
+        ... )
 
-            >>> model = facto.HOFMRegressor(
-            ...     degree=3,
-            ...     n_factors=10,
-            ...     intercept=5,
-            ...     seed=42,
-            ... )
+        >>> for x, y in X_y:
+        ...     _ = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     _ = model.fit_one(x, y)
-
-            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-            5.311745...
-
-    Note:
-        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
-        - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
+        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+        5.311745
 
     References:
-        1. `Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE. <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
+        1. [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
 
     """
 
-    def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
-                 loss=None, sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
-                 l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
-                 latent_initializer=None, clip_gradient=1e12, seed=None):
+    def __init__(self, degree=3, n_factors=10, weight_optimizer: optim.Optimizer = None,
+                 latent_optimizer: optim.Optimizer = None, loss: optim.losses.RegressionLoss = None,
+                 sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
+                 l2_latent=0., intercept=0.,
+                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
+                 weight_initializer: optim.initializers.Initializer = None,
+                 latent_initializer: optim.initializers.Initializer = None, clip_gradient=1e12,
+                 seed: int = None):
+
         super().__init__(
             degree=degree,
             n_factors=n_factors,
@@ -244,34 +211,31 @@ class HOFMRegressor(HOFM, base.Regressor):
 
 
 class HOFMClassifier(HOFM, base.BinaryClassifier):
-    """Higher-Order Factorization Machines Classifier.
+    """Higher-Order Factorization Machine for binary classification.
 
     Parameters:
-        degree (int): Polynomial degree or model order.
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
-            weights. Note that the intercept is handled separately.
-        latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
-            factors.
-        loss (optim.Loss): The loss function to optimize for.
-        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
-            Defaults to False.
-        l1_weight (float): Amount of L1 regularization used to push weights towards 0.
-        l2_weight (float): Amount of L2 regularization used to push weights towards 0.
-        l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `stats.Univariate` instance): Initial intercept value.
-        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
-            updating the intercept. If a `float` is passed, then an instance of
-            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme. Defaults
-            to ``optim.initializers.Zeros()``.
-        latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-            Defaults to
-            ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        seed (int): Randomization seed used for reproducibility.
+        degree: Polynomial degree or model order.
+        n_factors: Dimensionality of the factorization or number of latent factors.
+        weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
+            the intercept is handled separately.
+        latent_optimizer: The sequential optimizer used for updating the latent factors.
+        int_weight_optimizer: The sequential optimizer used for updating the field pairs
+            interaction weights.
+        loss: The loss function to optimize for.
+        sample_normalization: Whether to divide each element of `x` by `x`'s L2-norm.
+        l1_weight: Amount of L1 regularization used to push weights towards 0.
+        l2_weight: Amount of L2 regularization used to push weights towards 0.
+        l1_latent: Amount of L1 regularization used to push latent weights towards 0.
+        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
+        intercept: Initial intercept value.
+        intercept_lr: Learning rate scheduler used for updating the intercept. An instance of
+            `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
+            if this is set to 0.
+        weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
+        latent_initializer: Latent factors initialization scheme. Defaults to
+            `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
+        clip_gradient: Clips the absolute value of each gradient value.
+        seed: Randomization seed used for reproducibility.
 
     Attributes:
         weights (collections.defaultdict): The current weights assigned to the features.
@@ -279,48 +243,47 @@ class HOFMClassifier(HOFM, base.BinaryClassifier):
 
     Example:
 
-        ::
+        >>> from creme import facto
 
-            >>> from creme import facto
+        >>> X_y = (
+        ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
+        ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
+        ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
+        ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, False),
+        ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, True),
+        ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, True),
+        ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, True),
+        ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, True),
+        ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
+        ... )
 
-            >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
-            ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
-            ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, False),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, True),
-            ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, True),
-            ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, True),
-            ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, True),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
-            ... )
+        >>> model = facto.HOFMClassifier(
+        ...     degree=3,
+        ...     n_factors=10,
+        ...     intercept=.5,
+        ...     seed=42,
+        ... )
 
-            >>> model = facto.HOFMClassifier(
-            ...     degree=3,
-            ...     n_factors=10,
-            ...     intercept=.5,
-            ...     seed=42,
-            ... )
+        >>> for x, y in X_y:
+        ...     _ = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     _ = model.fit_one(x, y)
-
-            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-            True
-
-    Note:
-        - For more efficiency, FM models automatically one hot encode string values considering them as categorical variables.
-        - For model stability and better accuracy, numerical features should often be transformed into categorical ones.
+        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+        True
 
     References:
-        1. `Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE. <https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf>`_
+        1. [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
 
     """
 
-    def __init__(self, degree=3, n_factors=10, weight_optimizer=None, latent_optimizer=None,
-                 loss=None, sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
-                 l2_latent=0., intercept=0., intercept_lr=.01, weight_initializer=None,
-                 latent_initializer=None, clip_gradient=1e12, seed=None):
+    def __init__(self, degree=3, n_factors=10, weight_optimizer: optim.Optimizer = None,
+                 latent_optimizer: optim.Optimizer = None, loss: optim.losses.BinaryLoss = None,
+                 sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
+                 l2_latent=0., intercept=0.,
+                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
+                 weight_initializer: optim.initializers.Initializer = None,
+                 latent_initializer: optim.initializers.Initializer = None, clip_gradient=1e12,
+                 seed: int = None):
+
         super().__init__(
             degree=degree,
             n_factors=n_factors,

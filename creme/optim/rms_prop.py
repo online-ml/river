@@ -9,34 +9,37 @@ __all__ = ['RMSProp']
 class RMSProp(base.Optimizer):
     """RMSProp optimizer.
 
+    Parameters:
+        lr
+        rho
+        eps
+
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
+        >>> optimizer = optim.RMSProp()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer)
+        ... )
+        >>> metric = metrics.F1()
 
-            >>> X_y = datasets.Phishing()
-            >>> optimizer = optim.RMSProp()
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer)
-            ... )
-            >>> metric = metrics.F1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.872378
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.872378
 
     References:
-        1. `Divide the gradient by a running average of itsrecent magnitude <https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf>`_
+        1. [Divide the gradient by a running average of itsrecent magnitude](https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf)
 
     """
 
-    def __init__(self, lr=0.1, rho=0.9, eps=1e-8):
+    def __init__(self, lr=.1, rho=.9, eps=1e-8):
         super().__init__(lr)
         self.rho = rho
         self.eps = eps

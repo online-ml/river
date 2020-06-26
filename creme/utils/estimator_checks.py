@@ -1,6 +1,8 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
+import inspect
+import itertools
 import math
 import pickle
 
@@ -12,36 +14,72 @@ __all__ = [
 
 
 def guess_model(model):
+    """Extracts the relevant part model.
 
-    from .. import base
-    from .. import compose
+    Sometimes we need to check if a model can perform regression, classification, etc. When the
+    model is a pipeline, then this can be checked by looking at the final step of the pipeline.
 
-    if isinstance(model, compose.Pipeline):
-        return guess_model(model.final_estimator)
+    This function is highly succeptible to be modified or disappear altogether. The only reason it
+    exists is that we can't do `isinstance(pipeline, base.Regressor)`.
+
+    Parameters:
+        model
+
+    """
+
+    from creme import base
+    from creme import compose
+
+    if isinstance(model, (base.MultiOutputRegressor, base.MultiOutputClassifier)):
+        return model
+    elif isinstance(model, compose.Pipeline):
+        return guess_model(list(model.steps.values())[-1])
     elif isinstance(model, base.Wrapper):
-        return guess_model(model._model)
+        return guess_model(model._wrapped_model)
     return model
 
 
 def yield_datasets(model):
 
-    from .. import base
-    from .. import datasets
-    from .. import stream
+    from creme import base
+    from creme import compose
+    from creme import datasets
+    from creme import preprocessing
+    from creme import stream
     from sklearn import datasets as sk_datasets
 
     model = guess_model(model)
 
+    # Classification
     if isinstance(model, (base.BinaryClassifier, base.MultiClassifier)):
         yield datasets.Phishing()
+
+    # Multi-class classification
     if isinstance(model, base.MultiClassifier):
         yield datasets.ImageSegments().take(500)
+
+    # Regression
     if isinstance(model, base.Regressor):
         yield datasets.TrumpApproval()
+
+    # Multi-output regression
     if isinstance(model, base.MultiOutputRegressor):
+
+        # 1
         yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
-    if isinstance(model, base.MultiOutputRegressor):
-        yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
+
+        # 2
+        class SolarFlare:
+            """One-hot encoded version of `datasets.SolarFlare`."""
+            def __iter__(self):
+                oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(int)
+                for x, y in datasets.SolarFlare():
+                    yield oh.transform_one(x), y
+        yield SolarFlare()
+
+    # Multi-output classification
+    if isinstance(model, base.MultiOutputClassifier):
+        yield datasets.Music()
 
 
 def check_fit_one(model, dataset):
@@ -108,32 +146,38 @@ def check_pickling(model, dataset):
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
 
 
-def check_repr(model):
-    assert isinstance(repr(model), str)
+def check_repr_works(model):
+    rep = repr(model)
+    assert isinstance(rep, str)
 
 
-def check_str(model):
+def check_str_works(model):
     assert isinstance(str(model), str)
 
 
 def check_tags(model):
-    """Checks that the ``_tags`` property works."""
+    """Checks that the `_tags` property works."""
     assert isinstance(model._tags, dict)
 
 
+def check_set_params_idempotent(model):
+    assert len(model.__dict__) == len(model._set_params().__dict__)
+
+
 def yield_checks(model):
-    """Generates unit tests that can be applied to a given model.
+    """Generates unit tests for a given model.
 
     Parameters:
         model (base.Estimator)
 
     """
 
-    from .. import base
+    from creme import base
 
-    yield check_repr
-    yield check_str
+    yield check_repr_works
+    yield check_str_works
     yield check_tags
+    yield check_set_params_idempotent
 
     for dataset in yield_datasets(model):
 
@@ -152,15 +196,15 @@ def yield_checks(model):
         if isinstance(model, base.Classifier):
             yield with_dataset(check_predict_proba_one)
 
-        if not isinstance(model, base.MultiClassifier):  # only binary classifiers
-            yield with_dataset(check_predict_proba_one_binary)
+            if not isinstance(model, base.MultiClassifier):
+                yield with_dataset(check_predict_proba_one_binary)
 
 
 def check_estimator(model):
-    """Check if a model adheres to ``creme``'s conventions.
+    """Check if a model adheres to `creme`'s conventions.
 
     Parameters:
-        model (base.Estimator)
+        model
 
     """
     for check in yield_checks(model):

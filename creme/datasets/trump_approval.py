@@ -1,6 +1,4 @@
-import os
-
-from .. import stream
+from creme import stream
 
 from . import base
 
@@ -13,11 +11,8 @@ class TrumpApproval(base.FileDataset):
     5 polling agencies. The target is the approval rating from FiveThirtyEight's model. The goal of
     this task is to see if we can reproduce FiveThirtyEight's model.
 
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
-
     References:
-        1. `Trump Approval Ratings <https://projects.fivethirtyeight.com/trump-approval-ratings/>`_
+        1. [Trump Approval Ratings](https://projects.fivethirtyeight.com/trump-approval-ratings/)
 
     """
 
@@ -25,13 +20,14 @@ class TrumpApproval(base.FileDataset):
         super().__init__(
             n_samples=1001,
             n_features=6,
-            category=base.REG
+            task=base.REG,
+            filename='trump_approval.csv.gz'
         )
 
-    def _stream_X_y(self, directory):
+    def __iter__(self):
         return stream.iter_csv(
-            os.path.join(directory, 'trump_approval.csv.gz'),
-            target_name='five_thirty_eight',
+            self.path,
+            target='five_thirty_eight',
             converters={
                 'ordinal_date': int,
                 'gallup': float,

@@ -1,8 +1,8 @@
 import itertools
 import functools
 
-from .. import base
-from .. import utils
+from creme import base
+from creme import utils
 
 
 __all__ = ['PolynomialExtender']
@@ -26,42 +26,41 @@ class PolynomialExtender(base.Transformer):
     features and exponentially in the degree. High degrees can cause overfitting.
 
     Parameters:
-        degree (int): The maximum degree of the polynomial features.
-        interaction_only (bool): If ``True`` then only combinations that include an element at most
+        degree: The maximum degree of the polynomial features.
+        interaction_only: If `True` then only combinations that include an element at most
             once will be computed.
-        include_bias (bool): Whether or not to include a dummy feature which is always equal to 1.
+        include_bias: Whether or not to include a dummy feature which is always equal to 1.
+        bias_name: Name to give to the bias feature.
 
     Example:
 
-        ::
+        >>> from creme import preprocessing
 
-            >>> from creme import preprocessing
+        >>> X = [
+        ...     {'x': 0, 'y': 1},
+        ...     {'x': 2, 'y': 3},
+        ...     {'x': 4, 'y': 5}
+        ... ]
 
-            >>> X = [
-            ...     {'x1': 0, 'x2': 1},
-            ...     {'x1': 2, 'x2': 3},
-            ...     {'x1': 4, 'x2': 5}
-            ... ]
+        >>> poly = preprocessing.PolynomialExtender(degree=2, include_bias=True)
+        >>> for x in X:
+        ...     print(poly.fit_one(x).transform_one(x))
+        {'x': 0, 'y': 1, 'x*x': 0, 'x*y': 0, 'y*y': 1, 'bias': 1}
+        {'x': 2, 'y': 3, 'x*x': 4, 'x*y': 6, 'y*y': 9, 'bias': 1}
+        {'x': 4, 'y': 5, 'x*x': 16, 'x*y': 20, 'y*y': 25, 'bias': 1}
 
-            >>> poly = preprocessing.PolynomialExtender(degree=2, include_bias=True)
-            >>> for x in X:
-            ...     print(poly.fit_one(x).transform_one(x))
-            {'x1': 0, 'x2': 1, 'x1*x1': 0, 'x1*x2': 0, 'x2*x2': 1, 'bias': 1}
-            {'x1': 2, 'x2': 3, 'x1*x1': 4, 'x1*x2': 6, 'x2*x2': 9, 'bias': 1}
-            {'x1': 4, 'x2': 5, 'x1*x1': 16, 'x1*x2': 20, 'x2*x2': 25, 'bias': 1}
+        >>> X = [
+        ...     {'x': 0, 'y': 1, 'z': 2},
+        ...     {'x': 2, 'y': 3, 'z': 2},
+        ...     {'x': 4, 'y': 5, 'z': 2}
+        ... ]
 
-            >>> X = [
-            ...     {'x1': 0, 'x2': 1, 'x3': 2},
-            ...     {'x1': 2, 'x2': 3, 'x3': 2},
-            ...     {'x1': 4, 'x2': 5, 'x3': 2}
-            ... ]
-
-            >>> poly = preprocessing.PolynomialExtender(degree=3, interaction_only=True)
-            >>> for x in X:
-            ...     print(poly.fit_one(x).transform_one(x))
-            {'x1': 0, 'x2': 1, 'x3': 2, 'x1*x2': 0, 'x1*x3': 0, 'x2*x3': 2, 'x1*x2*x3': 0}
-            {'x1': 2, 'x2': 3, 'x3': 2, 'x1*x2': 6, 'x1*x3': 4, 'x2*x3': 6, 'x1*x2*x3': 12}
-            {'x1': 4, 'x2': 5, 'x3': 2, 'x1*x2': 20, 'x1*x3': 8, 'x2*x3': 10, 'x1*x2*x3': 40}
+        >>> poly = preprocessing.PolynomialExtender(degree=3, interaction_only=True)
+        >>> for x in X:
+        ...     print(poly.fit_one(x).transform_one(x))
+        {'x': 0, 'y': 1, 'z': 2, 'x*y': 0, 'x*z': 0, 'y*z': 2, 'x*y*z': 0}
+        {'x': 2, 'y': 3, 'z': 2, 'x*y': 6, 'x*z': 4, 'y*z': 6, 'x*y*z': 12}
+        {'x': 4, 'y': 5, 'z': 2, 'x*y': 20, 'x*z': 8, 'y*z': 10, 'x*y*z': 40}
 
     """
 

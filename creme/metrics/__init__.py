@@ -1,4 +1,12 @@
-"""Streaming metrics."""
+"""Evaluation metrics.
+
+Note that the binary classification metrics expect the ground truths you provide them with to be
+boolean values. In other words you need to pass a value of type `bool` to the `y_true` argument in
+the `update` method of each binary metric. You will obtain incorrect results if instead you pass a
+0 or 1 integer.
+
+"""
+
 from .accuracy import Accuracy
 from .base import Metric
 from .confusion import ConfusionMatrix

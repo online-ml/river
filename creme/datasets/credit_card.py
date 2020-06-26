@@ -1,9 +1,9 @@
-from .. import stream
+from creme import stream
 
 from . import base
 
 
-class CreditCard(base.FileDataset):
+class CreditCard(base.RemoteDataset):
     """Credit card frauds.
 
     The datasets contains transactions made by credit cards in September 2013 by european
@@ -20,13 +20,6 @@ class CreditCard(base.FileDataset):
     used for example-dependant cost-senstive learning. Feature 'Class' is the response variable and
     it takes value 1 in case of fraud and 0 otherwise.
 
-    Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
-
     References:
         1. Andrea Dal Pozzolo, Olivier Caelen, Reid A. Johnson and Gianluca Bontempi. Calibrating Probability with Undersampling for Unbalanced Classification. In Symposium on Computational Intelligence and Data Mining (CIDM), IEEE, 2015
         2. Dal Pozzolo, Andrea; Caelen, Olivier; Le Borgne, Yann-Ael; Waterschoot, Serge; Bontempi, Gianluca. Learned lessons in credit card fraud detection from a practitioner perspective, Expert systems with applications,41,10,4915-4928,2014, Pergamon
@@ -39,25 +32,21 @@ class CreditCard(base.FileDataset):
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self):
         super().__init__(
-            n_samples=284_807,
+            n_samples=150828752,
             n_features=30,
-            category=base.BINARY_CLF,
+            task=base.BINARY_CLF,
             url='https://maxhalford.github.io/files/datasets/creditcardfraud.zip',
-            data_home=data_home,
-            verbose=verbose
+            size=150828752,
+            filename='creditcard.csv'
         )
 
-    def _stream_X_y(self, directory):
+    def _iter(self):
 
         converters = {f'V{i}': float for i in range(1, 29)}
         converters['Class'] = int
         converters['Time'] = float
         converters['Amount'] = float
 
-        return stream.iter_csv(
-            f'{directory}/creditcard.csv',
-            target_name='Class',
-            converters=converters
-        )
+        return stream.iter_csv(self.path, target='Class', converters=converters)

@@ -1,4 +1,7 @@
-from .. import base
+import collections
+import typing
+
+from creme import base
 
 
 __all__ = ['OneHotEncoder']
@@ -7,62 +10,106 @@ __all__ = ['OneHotEncoder']
 class OneHotEncoder(base.Transformer):
     """One-hot encoding.
 
-    Attributes:
-        on (str): Attribute to one-hot encode.
-        sparse (bool): Whether or not 0s should be made explicit or not.
+    This transformer will encode every feature it is provided it with. You can apply it to a
+    subset of features by composing it with `compose.Select` or `compose.SelectType`.
+
+    Parameters:
+        sparse: Whether or not 0s should be made explicit or not.
 
     Example:
 
-        ::
+        Let us first create an example dataset.
 
-            >>> import pprint
-            >>> import string
-            >>> import creme.preprocessing
-            >>> import numpy as np
+        >>> from pprint import pprint
+        >>> import random
+        >>> import string
 
-            >>> rng = np.random.RandomState(42)
-            >>> alphabet = list(string.ascii_lowercase)
-            >>> X = [{'letter': letter} for letter in rng.choice(alphabet, size=10)]
+        >>> random.seed(42)
+        >>> alphabet = list(string.ascii_lowercase)
+        >>> X = [
+        ...     {
+        ...         'c1': random.choice(alphabet),
+        ...         'c2': random.choice(alphabet),
+        ...     }
+        ...     for _ in range(4)
+        ... ]
+        >>> pprint(X)
+        [{'c1': 'u', 'c2': 'd'},
+         {'c1': 'a', 'c2': 'x'},
+         {'c1': 'i', 'c2': 'h'},
+         {'c1': 'h', 'c2': 'e'}]
 
-            >>> one_hot = creme.preprocessing.OneHotEncoder('letter', sparse=True)
-            >>> for x in X:
-            ...     print(one_hot.fit_one(x).transform_one(x))
-            {'letter_g': 1}
-            {'letter_t': 1}
-            {'letter_o': 1}
-            {'letter_k': 1}
-            {'letter_h': 1}
-            {'letter_u': 1}
-            {'letter_g': 1}
-            {'letter_z': 1}
-            {'letter_s': 1}
-            {'letter_w': 1}
+        We can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
+        no need to specify which features to encode.
 
-            >>> one_hot = creme.preprocessing.OneHotEncoder('letter')
-            >>> for letter in ['a', 'b', 'c']:
-            ...     x = {'letter': letter}
-            ...     pprint.pprint(one_hot.fit_one(x).transform_one(x))
-            {'letter_a': 1}
-            {'letter_a': 0, 'letter_b': 1}
-            {'letter_a': 0, 'letter_b': 0, 'letter_c': 1}
+        >>> import creme.preprocessing
+
+        >>> oh = creme.preprocessing.OneHotEncoder(sparse=True)
+        >>> for x in X:
+        ...     oh = oh.fit_one(x)
+        ...     pprint(oh.transform_one(x))
+        {'c1_u': 1, 'c2_d': 1}
+        {'c1_a': 1, 'c2_x': 1}
+        {'c1_i': 1, 'c2_h': 1}
+        {'c1_h': 1, 'c2_e': 1}
+
+        The `sparse` parameter can be set to `False` in order to include the values that are not
+        present in the output.
+
+        >>> oh = creme.preprocessing.OneHotEncoder(sparse=False)
+        >>> for x in X[:2]:
+        ...     oh = oh.fit_one(x)
+        ...     pprint(oh.transform_one(x))
+        {'c1_u': 1, 'c2_d': 1}
+        {'c1_a': 1, 'c1_u': 0, 'c2_d': 0, 'c2_x': 1}
+
+        A subset of the features can be one-hot encoded by using an instance of `compose.Select`.
+
+        >>> from creme import compose
+
+        >>> pp = compose.Select('c1') | creme.preprocessing.OneHotEncoder()
+
+        >>> for x in X:
+        ...     pp = pp.fit_one(x)
+        ...     pprint(pp.transform_one(x))
+        {'c1_u': 1}
+        {'c1_a': 1, 'c1_u': 0}
+        {'c1_a': 0, 'c1_i': 1, 'c1_u': 0}
+        {'c1_a': 0, 'c1_h': 1, 'c1_i': 0, 'c1_u': 0}
+
+        You can preserve the `c2` feature by using a union:
+
+        >>> pp = compose.Select('c1') | creme.preprocessing.OneHotEncoder()
+        >>> pp += compose.Select('c2')
+
+        >>> for x in X:
+        ...     pp = pp.fit_one(x)
+        ...     pprint(pp.transform_one(x))
+        {'c1_u': 1, 'c2': 'd'}
+        {'c1_a': 1, 'c1_u': 0, 'c2': 'x'}
+        {'c1_a': 0, 'c1_i': 1, 'c1_u': 0, 'c2': 'h'}
+        {'c1_a': 0, 'c1_h': 1, 'c1_i': 0, 'c1_u': 0, 'c2': 'e'}
 
     """
 
-    def __init__(self, on, sparse=False):
-        self.on = on
+    def __init__(self, sparse=False):
         self.sparse = sparse
-        self.values = set()
+        self.values = collections.defaultdict(set)
 
-    def fit_one(self, x, y=None):
-        self.values.add(x[self.on])
+    def fit_one(self, x):
+        for i, xi in x.items():
+            self.values[i].add(xi)
         return self
 
     def transform_one(self, x, y=None):
         oh = {}
-        if not self.sparse:
-            oh = {f'{self.on}_{i}': 0 for i in self.values}
-        oh[f'{self.on}_{x[self.on]}'] = 1
-        return oh
 
-    def __str__(self):
-        return f'OneHotEncoder({self.on})'
+        # Add 0s
+        if not self.sparse:
+            oh = {f'{i}_{v}': 0 for i, values in self.values.items() for v in values}
+
+        # Add 1s
+        for i, xi in x.items():
+            oh[f'{i}_{xi}'] = 1
+
+        return oh

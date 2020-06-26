@@ -1,40 +1,33 @@
-from .. import stream
+from creme import stream
 
 from . import base
 
 
-class SMTP(base.FileDataset):
+class SMTP(base.RemoteDataset):
     """SMTP dataset from the KDD 1999 cup.
 
-    The goal is to predict whether or not an SMTP connection is anomalous or not.
-    The dataset only contains 2,211 (0.4%) positive labels.
-
-    Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
+    The goal is to predict whether or not an SMTP connection is anomalous or not. The dataset only
+    contains 2,211 (0.4%) positive labels.
 
     References:
-        1. `SMTP (KDDCUP99) dataset <http://odds.cs.stonybrook.edu/smtp-kddcup99-dataset/>`_
+        1. [SMTP (KDDCUP99) dataset](http://odds.cs.stonybrook.edu/smtp-kddcup99-dataset/)
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self):
         super().__init__(
             n_samples=95_156,
             n_features=3,
-            category=base.BINARY_CLF,
+            task=base.BINARY_CLF,
             url='https://maxhalford.github.io/files/datasets/smtp.zip',
-            data_home=data_home,
-            verbose=verbose
+            size=5484982,
+            filename='smtp.csv'
         )
 
-    def _stream_X_y(self, directory):
+    def _iter(self):
         return stream.iter_csv(
-            f'{directory}/smtp.csv',
-            target_name='service',
+            self.path,
+            target='service',
             converters={
                 'duration': float,
                 'src_bytes': float,

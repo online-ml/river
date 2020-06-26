@@ -9,30 +9,36 @@ __all__ = ['AdaDelta']
 class AdaDelta(base.Optimizer):
     """AdaDelta optimizer.
 
+    Parameters:
+        rho
+        eps
+
+    Attributes:
+        g2 (collections.defaultdict)
+        s2 (collections.defaultdict)
+
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
+        >>> optimizer = optim.AdaDelta()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer)
+        ... )
+        >>> metric = metrics.F1()
 
-            >>> X_y = datasets.Phishing()
-            >>> optimizer = optim.AdaDelta()
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer)
-            ... )
-            >>> metric = metrics.F1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.811133
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.805611
 
     References:
-        1. `Zeiler, M.D., 2012. Adadelta: an adaptive learning rate method. arXiv preprint arXiv:1212.5701. <https://arxiv.org/pdf/1212.5701.pdf>`_
+        1. [Zeiler, M.D., 2012. Adadelta: an adaptive learning rate method. arXiv preprint arXiv:1212.5701.](https://arxiv.org/pdf/1212.5701.pdf)
 
     """
 

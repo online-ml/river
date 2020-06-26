@@ -3,6 +3,7 @@ cdef class Statistic:
 
 cdef class Univariate(Statistic):
     cpdef Univariate update(self, double x)
+    cpdef Univariate revert(self, double x)
 
 cdef class Bivariate(Statistic):
     cpdef Bivariate update(self, double x, double y)

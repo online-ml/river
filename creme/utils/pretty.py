@@ -1,68 +1,22 @@
 """Helper functions for making things readable by humans."""
 import inspect
+import math
 import types
+import typing
 
 
-__all__ = ['format_object', 'print_table']
+__all__ = ['humanize_bytes', 'print_table']
 
 
-def format_object(obj, show_modules=False, depth=0):
-    """Returns a pretty representation of an instanted object."""
-
-    rep = f'{obj.__class__.__name__} ('
-    if show_modules:
-        rep = f'{obj.__class__.__module__}.{rep}'
-    tab = '\t'
-
-    init = inspect.signature(obj.__init__)
-    n_params = 0
-
-    for name, param in init.parameters.items():
-
-        # We can't guess args and kwargs and so we don't handle them
-        if (
-            param.name == 'args' and param.kind == param.VAR_POSITIONAL or
-            param.name == 'kwargs' and param.kind == param.VAR_KEYWORD
-        ):
-            continue
-
-        # Retrieve the attribute associated with the parameter
-        attr = getattr(obj, name)
-        n_params += 1
-
-        # Prettify the attribute when applicable
-        if isinstance(attr, types.FunctionType):
-            attr = attr.__name__
-        if isinstance(attr, str):
-            attr = f'"{attr}"'
-        elif isinstance(attr, float):
-            attr = (
-                f'{attr:.0e}'
-                if (attr > 1e5 or (attr < 1e-4 and attr > 0)) else
-                f'{attr:.6f}'.rstrip('0')
-            )
-        elif isinstance(attr, set):
-            attr = sorted(attr)
-        elif hasattr(attr, '__class__') and 'creme.' in str(type(attr)):
-            attr = format_object(obj=attr, show_modules=show_modules, depth=depth + 1)
-
-        rep += f'\n{tab * (depth + 1)}{name}={attr}'
-
-    if n_params:
-        rep += f'\n{tab * depth}'
-    rep += ')'
-
-    return rep.expandtabs(2)
-
-
-def print_table(headers, columns, order=None):
+def print_table(headers: typing.List[str], columns: typing.List[typing.List[str]],
+                order: typing.List[int] = None):
     """Pretty-prints a table.
 
     Parameters:
-        headers (list of str): The column names.
-        columns (list of lists of str): The column values.
-        order (list of ints): Order in which to print the column the values. Defaults to the order
-            in which the values are given.
+        headers: The column names.
+        columns: The column values.
+        order: Order in which to print the column the values. Defaults to the order in which the
+            values are given.
 
     """
 
@@ -103,8 +57,12 @@ def print_table(headers, columns, order=None):
 
 def humanize_bytes(n_bytes):
     """Returns a human-friendly byte size."""
-    for unit in ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi'):
-        if abs(n_bytes) < 1024:
-            return f'{n_bytes:3.1f}{unit}B'
-        n_bytes /= 1024
-    return f'{n_bytes:.1f}YiB'
+    suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    human = n_bytes
+    rank = 0
+    if n_bytes != 0:
+        rank = int((math.log10(n_bytes)) / 3)
+        rank = min(rank, len(suffixes) - 1)
+        human = n_bytes / (1024.0 ** rank)
+    f = ('%.2f' % human).rstrip('0').rstrip('.')
+    return '%s %s' % (f, suffixes[rank])

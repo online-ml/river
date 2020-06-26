@@ -1,4 +1,6 @@
-"""Weight initialization schemes."""
+"""Weight initializers."""
+import abc
+
 import numpy as np
 
 
@@ -9,36 +11,44 @@ __all__ = [
 ]
 
 
-class Initializer:
+class Initializer(abc.ABC):
     """An initializer is used to set initial weights in a model."""
 
     def __str__(self):
         return self.__class__.__name__
 
+    @abc.abstractmethod
+    def __call__(self, shape=1):
+        """Returns a fresh set of weights.
+
+        Parameters:
+            shape: Indicates how many weights to return. If `1`, then a single scalar value will
+                be returned.
+
+        """
+
 
 class Constant(Initializer):
-    """Constant initializer which always return the same value.
+    """Constant initializer which always returns the same value.
 
     Parameters:
-        value (float): The constant value
+        value
 
     Example:
 
-        ::
+        >>> from creme import optim
 
-            >>> from creme import optim
+        >>> init = optim.initializers.Constant(value=3.14)
 
-            >>> init = optim.initializers.Constant(value=3.14)
+        >>> init(shape=1)
+        3.14
 
-            >>> init(shape=1)
-            3.14
-
-            >>> init(shape=2)
-            array([3.14, 3.14])
+        >>> init(shape=2)
+        array([3.14, 3.14])
 
     """
 
-    def __init__(self, value):
+    def __init__(self, value: float):
         self.value = value
 
     def __call__(self, shape=1):
@@ -46,21 +56,19 @@ class Constant(Initializer):
 
 
 class Zeros(Constant):
-    """Initializer which return zeros for each new weight.
+    """Constant initializer which always returns zeros.
 
     Example:
 
-        ::
+        >>> from creme import optim
 
-            >>> from creme import optim
+        >>> init = optim.initializers.Zeros()
 
-            >>> init = optim.initializers.Zeros()
+        >>> init(shape=1)
+        0.0
 
-            >>> init(shape=1)
-            0.0
-
-            >>> init(shape=2)
-            array([0., 0.])
+        >>> init(shape=2)
+        array([0., 0.])
 
     """
 
@@ -72,22 +80,20 @@ class Normal(Initializer):
     """Random normal initializer which simulate a normal distribution with specified parameters.
 
     Parameters:
-        mu (float): The mean of the normal distribution
-        sigma (float): The standard deviation of the normal distribution
+        mu: The mean of the normal distribution
+        sigma: The standard deviation of the normal distribution
 
     Example:
 
-        ::
+        >>> from creme import optim
 
-            >>> from creme import optim
+        >>> init = optim.initializers.Normal(mu=0, sigma=1, seed=42)
 
-            >>> init = optim.initializers.Normal(mu=0, sigma=1, seed=42)
+        >>> init(shape=1)
+        0.496714
 
-            >>> init(shape=1)
-            0.496714...
-
-            >>> init(shape=2)
-            array([-0.1382643 ,  0.64768854])
+        >>> init(shape=2)
+        array([-0.1382643 ,  0.64768854])
 
     """
 

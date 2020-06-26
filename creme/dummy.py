@@ -1,7 +1,12 @@
-"""Dummy estimators."""
+"""Dummy estimators.
+
+This module is here for testing purposes, as well as providing baseline performances.
+
+"""
 import collections
 
-from . import base
+from creme import base
+from creme import stats
 
 
 __all__ = ['NoChangeClassifier', 'PriorClassifier', 'StatisticRegressor']
@@ -10,40 +15,38 @@ __all__ = ['NoChangeClassifier', 'PriorClassifier', 'StatisticRegressor']
 class NoChangeClassifier(base.MultiClassifier):
     """Dummy classifier which returns the last class seen.
 
-    The ``predict_one`` method will output the last class seen whilst ``predict_proba_one`` will
+    The predict_one method will output the last class seen whilst predict_proba_one will
     return 1 for the last class seen and 0 for the others.
 
     Attributes:
-        last_class (``str``): The last class seen.
-        classes (``set``): The set of classes seen.
+        last_class: The last class seen.
+        classes: The set of classes seen.
 
     Example:
 
-        Taken from example 2.1 from `this page <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
+        Taken from example 2.1 from [this page](https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html).
 
-        ::
+        >>> import pprint
+        >>> from creme import dummy
 
-            >>> import pprint
-            >>> from creme import dummy
+        >>> sentences = [
+        ...     ('glad happy glad', '+'),
+        ...     ('glad glad joyful', '+'),
+        ...     ('glad pleasant', '+'),
+        ...     ('miserable sad glad', '−')
+        ... ]
 
-            >>> sentences = [
-            ...     ('glad happy glad', '+'),
-            ...     ('glad glad joyful', '+'),
-            ...     ('glad pleasant', '+'),
-            ...     ('miserable sad glad', '−')
-            ... ]
+        >>> model = dummy.NoChangeClassifier()
 
-            >>> model = dummy.NoChangeClassifier()
+        >>> for sentence, label in sentences:
+        ...     model = model.fit_one(sentence, label)
 
-            >>> for sentence, label in sentences:
-            ...     model = model.fit_one(sentence, label)
+        >>> new_sentence = 'glad sad miserable pleasant glad'
+        >>> model.predict_one(new_sentence)
+        '−'
 
-            >>> new_sentence = 'glad sad miserable pleasant glad'
-            >>> model.predict_one(new_sentence)
-            '−'
-
-            >>> pprint.pprint(model.predict_proba_one(new_sentence))
-            {'+': 0, '−': 1}
+        >>> pprint.pprint(model.predict_proba_one(new_sentence))
+        {'+': 0, '−': 1}
 
     """
 
@@ -68,38 +71,36 @@ class NoChangeClassifier(base.MultiClassifier):
 class PriorClassifier(base.MultiClassifier):
     """Dummy classifier which uses the prior distribution.
 
-    The ``predict_one`` method will output the most common class whilst ``predict_proba_one`` will
+    The `predict_one` method will output the most common class whilst `predict_proba_one` will
     return the normalized class counts.
 
     Attributes:
-        counts (``collections.Counter``): Class counts.
-        n (``int``): Total number of seen instances.
+        counts (collections.Counter): Class counts.
+        n (int): Total number of seen instances.
 
     Example:
 
-        Taken from example 2.1 from `this page <https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html>`_.
+        Taken from example 2.1 from [this page](https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html)
 
-        ::
+        >>> from creme import dummy
 
-            >>> from creme import dummy
+        >>> sentences = [
+        ...     ('glad happy glad', '+'),
+        ...     ('glad glad joyful', '+'),
+        ...     ('glad pleasant', '+'),
+        ...     ('miserable sad glad', '−')
+        ... ]
 
-            >>> sentences = [
-            ...     ('glad happy glad', '+'),
-            ...     ('glad glad joyful', '+'),
-            ...     ('glad pleasant', '+'),
-            ...     ('miserable sad glad', '−')
-            ... ]
+        >>> model = dummy.PriorClassifier()
 
-            >>> model = dummy.PriorClassifier()
+        >>> for sentence, label in sentences:
+        ...     model = model.fit_one(sentence, label)
 
-            >>> for sentence, label in sentences:
-            ...     model = model.fit_one(sentence, label)
-
-            >>> new_sentence = 'glad sad miserable pleasant glad'
-            >>> model.predict_one(new_sentence)
-            '+'
-            >>> model.predict_proba_one(new_sentence)
-            {'+': 0.75, '−': 0.25}
+        >>> new_sentence = 'glad sad miserable pleasant glad'
+        >>> model.predict_one(new_sentence)
+        '+'
+        >>> model.predict_proba_one(new_sentence)
+        {'+': 0.75, '−': 0.25}
 
     """
 
@@ -120,35 +121,33 @@ class StatisticRegressor(base.Regressor):
     """Dummy regressor that uses a univariate statistic to make predictions.
 
     Parameters:
-        statistic (stats.Univariate)
+        statistic
 
     Example:
 
-        ::
+        >>> from pprint import pprint
+        >>> from creme import dummy
+        >>> from creme import stats
 
-            >>> from pprint import pprint
-            >>> from creme import dummy
-            >>> from creme import stats
+        >>> sentences = [
+        ...     ('glad happy glad', 3),
+        ...     ('glad glad joyful', 3),
+        ...     ('glad pleasant', 2),
+        ...     ('miserable sad glad', -3)
+        ... ]
 
-            >>> sentences = [
-            ...     ('glad happy glad', 3),
-            ...     ('glad glad joyful', 3),
-            ...     ('glad pleasant', 2),
-            ...     ('miserable sad glad', -3)
-            ... ]
+        >>> model = dummy.StatisticRegressor(stats.Mean())
 
-            >>> model = dummy.StatisticRegressor(stats.Mean())
+        >>> for sentence, score in sentences:
+        ...     model = model.fit_one(sentence, score)
 
-            >>> for sentence, score in sentences:
-            ...     model = model.fit_one(sentence, score)
-
-            >>> new_sentence = 'glad sad miserable pleasant glad'
-            >>> model.predict_one(new_sentence)
-            1.25
+        >>> new_sentence = 'glad sad miserable pleasant glad'
+        >>> model.predict_one(new_sentence)
+        1.25
 
     """
 
-    def __init__(self, statistic):
+    def __init__(self, statistic: stats.Univariate):
         self.statistic = statistic
 
     def fit_one(self, x, y):

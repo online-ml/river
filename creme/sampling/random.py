@@ -2,7 +2,7 @@ import collections
 
 import numpy as np
 
-from .. import base
+from creme import base
 
 
 class ClassificationSampler(base.Wrapper, base.Classifier):
@@ -13,7 +13,7 @@ class ClassificationSampler(base.Wrapper, base.Classifier):
         self._rng = np.random.RandomState(seed)
 
     @property
-    def _model(self):
+    def _wrapped_model(self):
         return self.classifier
 
     def predict_proba_one(self, x):
@@ -31,20 +31,20 @@ class RandomUnderSampler(ClassificationSampler):
     a given desired distribution. The implementation is a discrete version of rejection sampling.
 
     Parameters:
-        classifier (base.Classifier)
-        desired_dist (dict): The desired class distribution. The keys are the classes whilst the
+        classifier
+        desired_dist: The desired class distribution. The keys are the classes whilst the
             values are the desired class percentages. The values must sum up to 1.
-        seed (int): Random seed for reproducibility.
+        seed: Random seed for reproducibility.
 
-    See :ref:`Working with imbalanced data` for example usage.
+    See the [user guide](/user-guide/imbalanced-learning) for example usage.
 
     References:
-        1. `Under-sampling a dataset with desired ratios <https://maxhalford.github.io/blog/under-sampling-a-dataset-with-desired-ratios/>`_
-        2. `Wikipedia article on rejection sampling <https://www.wikiwand.com/en/Rejection_sampling>`_
+        1. [Under-sampling a dataset with desired ratios](https://maxhalford.github.io/blog/under-sampling-a-dataset-with-desired-ratios/)
+        2. [Wikipedia article on rejection sampling](https://www.wikiwand.com/en/Rejection_sampling)
 
     """
 
-    def __init__(self, classifier, desired_dist, seed=None):
+    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int = None):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
         self._actual_dist = collections.Counter()

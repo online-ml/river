@@ -1,4 +1,4 @@
-"""Meta-models that wrap other models."""
+"""Meta-models."""
 from .pred_clipper import PredClipper
 from .target_transform import BoxCoxRegressor
 from .target_transform import TransformedTargetRegressor

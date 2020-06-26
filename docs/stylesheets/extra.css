@@ -1,0 +1,13 @@
+.md-typeset h2 {
+    margin: 1.5em 0;
+    padding-bottom: .4rem;
+    border-bottom: .04rem solid var(--md-default-fg-color--lighter);
+}
+
+.md-footer {
+    margin-top: 2em;
+}
+
+.md-typeset pre > code {
+    border-radius: 0.5em;
+}

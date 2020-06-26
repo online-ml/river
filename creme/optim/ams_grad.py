@@ -1,6 +1,8 @@
 import collections
+import typing
 
 from . import base
+from . import schedulers
 
 
 __all__ = ['AMSGrad']
@@ -9,34 +11,45 @@ __all__ = ['AMSGrad']
 class AMSGrad(base.Optimizer):
     """AMSGrad optimizer.
 
+    Parameters:
+        lr: The learning rate.
+        beta_1
+        beta_2
+        eps
+        correct_bias
+
+    Attributes:
+        m (collections.defaultdict)
+        v (collections.defaultdict)
+        v_hat (collections.defaultdict)
+
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
+        >>> optimizer = optim.AMSGrad()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer)
+        ... )
+        >>> metric = metrics.F1()
 
-            >>> X_y = datasets.Phishing()
-            >>> optimizer = optim.AMSGrad()
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer)
-            ... )
-            >>> metric = metrics.F1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.865961
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.865724
 
     References:
-        1. `Reddi, S.J., Kale, S. and Kumar, S., 2019. On the convergence of adam and beyond. arXiv preprint arXiv:1904.09237. <https://arxiv.org/pdf/1904.09237.pdf>`_
+        1. [Reddi, S.J., Kale, S. and Kumar, S., 2019. On the convergence of adam and beyond. arXiv preprint arXiv:1904.09237](https://arxiv.org/pdf/1904.09237.pdf)
 
     """
 
-    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8, correct_bias=True):
+    def __init__(self, lr: typing.Union[float, schedulers.Scheduler] = .1,
+                 beta_1=.9, beta_2=.999, eps=1e-8, correct_bias=True):
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2

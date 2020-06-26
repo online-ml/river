@@ -8,32 +8,30 @@ class IQR(base.Univariate):
     """Computes the interquartile range.
 
     Parameters:
-        q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to ``0.25``.
-        q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to ``0.75``.
+        q_inf: Desired inferior quantile, must be between 0 and 1. Defaults to `0.25`.
+        q_sup: Desired superior quantile, must be between 0 and 1. Defaults to `0.75`.
 
     Example:
 
-        ::
+        >>> from creme import stats
 
-            >>> from creme import stats
+        >>> iqr = stats.IQR(q_inf=0.25, q_sup=0.75)
 
-            >>> iqr = stats.IQR(q_inf=0.25, q_sup=0.75)
-
-            >>> for i in range(0, 1001):
-            ...     iqr = iqr.update(i)
-            ...     if i % 100 == 0:
-            ...         print(iqr.get())
-            0
-            50.0
-            100.0
-            150.0
-            200.0
-            250.0
-            300.0
-            350.0
-            400.0
-            450.0
-            500.0
+        >>> for i in range(0, 1001):
+        ...     iqr = iqr.update(i)
+        ...     if i % 100 == 0:
+        ...         print(iqr.get())
+        0
+        50.0
+        100.0
+        150.0
+        200.0
+        250.0
+        300.0
+        350.0
+        400.0
+        450.0
+        500.0
 
     """
 
@@ -42,8 +40,8 @@ class IQR(base.Univariate):
             raise ValueError('q_inf must be strictly less than q_sup')
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.quantile_inf = quantile.Quantile(quantile=self.q_inf)
-        self.quantile_sup = quantile.Quantile(quantile=self.q_sup)
+        self.quantile_inf = quantile.Quantile(q=self.q_inf)
+        self.quantile_sup = quantile.Quantile(q=self.q_sup)
 
     @property
     def name(self):
@@ -63,8 +61,8 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
 
     Parameters:
         window_size (int): Size of the window.
-        q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to ``0.25``.
-        q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to ``0.75``.
+        q_inf (float): Desired inferior quantile, must be between 0 and 1. Defaults to `0.25`.
+        q_sup (float): Desired superior quantile, must be between 0 and 1. Defaults to `0.75`.
 
     Example:
 
@@ -101,8 +99,8 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
             raise ValueError('q_inf must be strictly less than q_sup')
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.quantile_inf = quantile.RollingQuantile(window_size=window_size, quantile=self.q_inf)
-        self.quantile_sup = quantile.RollingQuantile(window_size=window_size, quantile=self.q_sup)
+        self.quantile_inf = quantile.RollingQuantile(q=self.q_inf, window_size=window_size)
+        self.quantile_sup = quantile.RollingQuantile(q=self.q_sup, window_size=window_size)
 
     @property
     def name(self):
