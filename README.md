@@ -157,7 +157,7 @@ Here are some benefits of using `creme` (and online machine learning in general)
 
 ## 👍 Contributing
 
-Feel free to contribute in any way you like, we're always open to new ideas and approaches. You may also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and see if anything takes your fancy. Please check out the [CONTRIBUTING.md file](https://github.com/creme-ml/creme/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of contributors [here](https://github.com/creme-ml/creme/graphs/contributors).
+Feel free to contribute in any way you like, we're always open to new ideas and approaches. You can also take a look at the [issue tracker](https://github.com/creme-ml/creme/issues) and the [icebox](https://github.com/creme-ml/creme/projects/2) to see if anything takes your fancy. Please check out the [contribution guidelines](https://github.com/creme-ml/creme/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/creme-ml/creme/graphs/contributors).
 
 ## 💬 Citation
 
