@@ -35,11 +35,6 @@ def test_pipeline_add_at_start():
     assert str(pipeline) == 'a | StandardScaler | LinearRegression'
 
 
-def test_pipeline_duplicate_step():
-    with pytest.raises(KeyError):
-        preprocessing.StandardScaler() | preprocessing.StandardScaler()
-
-
 def test_union_funcs():
 
     def a(x):
@@ -57,10 +52,6 @@ def test_union_funcs():
         ('a', compose.FuncTransformer(a)) + compose.FuncTransformer(b)
     ]
 
-    for pipeline in pipelines:
+    for i, pipeline in enumerate(pipelines):
+        print(i, str(pipeline))
         assert str(pipeline) == 'a + b'
-
-
-def test_union_duplicate_step():
-    with pytest.raises(KeyError):
-        preprocessing.StandardScaler() + preprocessing.StandardScaler()

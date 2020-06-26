@@ -7,3 +7,5 @@ __all__ = [
     'DecisionTreeClassifier',
     'RandomForestClassifier'
 ]
+
+__pdoc__ = {'decision': False}

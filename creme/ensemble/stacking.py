@@ -1,4 +1,6 @@
-from .. import base
+import typing
+
+from creme import base
 
 
 __all__ = ['StackingBinaryClassifier']
@@ -8,50 +10,47 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
     """Stacking for binary classification.
 
     Parameters:
-        classifiers (list of `base.BinaryClassifier`)
-        meta_classifier (`base.BinaryClassifier`)
-        include_features (bool): Indicates whether or not the original features should be provided
+        classifiers
+        meta_classifier
+        include_features: Indicates whether or not the original features should be provided
             to the meta-model along with the predictions from each model.
 
     Example:
 
-        ::
+        >>> from creme import compose
+        >>> from creme import datasets
+        >>> from creme import ensemble
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import preprocessing
 
-            >>> from creme import compose
-            >>> from creme import ensemble
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import preprocessing
-            >>> from creme import stream
-            >>> from sklearn import datasets
+        >>> X_y = datasets.Phishing()
 
-            >>> X_y = stream.iter_sklearn_dataset(
-            ...     dataset=datasets.load_breast_cancer(),
-            ...     shuffle=False
-            ... )
-            >>> model = compose.Pipeline([
-            ...     ('scale', preprocessing.StandardScaler()),
-            ...     ('stack', ensemble.StackingBinaryClassifier(
-            ...         classifiers=[
-            ...             linear_model.LogisticRegression(),
-            ...             linear_model.PAClassifier(mode=1, C=0.01),
-            ...             linear_model.PAClassifier(mode=2, C=0.01)
-            ...         ],
-            ...         meta_classifier=linear_model.LogisticRegression()
-            ...     ))
-            ... ])
-            >>> metric = metrics.F1()
+        >>> model = compose.Pipeline(
+        ...     ('scale', preprocessing.StandardScaler()),
+        ...     ('stack', ensemble.StackingBinaryClassifier(
+        ...         classifiers=[
+        ...             linear_model.LogisticRegression(),
+        ...             linear_model.PAClassifier(mode=1, C=0.01),
+        ...             linear_model.PAClassifier(mode=2, C=0.01)
+        ...         ],
+        ...         meta_classifier=linear_model.LogisticRegression()
+        ...     ))
+        ... )
 
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.957123
+        >>> metric = metrics.F1()
+
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.878005
 
     References:
-        1. `A Kaggler's Guide to Model Stacking in Practice <http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/>`_
+        1. [A Kaggler's Guide to Model Stacking in Practice](http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/)
 
     """
 
-    def __init__(self, classifiers, meta_classifier, include_features=True):
+    def __init__(self, classifiers: typing.List[base.BinaryClassifier],
+                 meta_classifier: base.Classifier, include_features=True):
         super().__init__(classifiers)
         self.meta_classifier = meta_classifier
         self.include_features = include_features

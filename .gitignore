@@ -1,8 +1,12 @@
 # Documentation
-docs/_build/
-docs/content/generated/
-docs/notebooks/.ipynb_checkpoints/
-docs/*.csv
+docs/getting-started.md
+docs/getting-started_files/
+docs/user-guide/*.md
+docs/user-guide/*_files/
+docs/examples/*.md
+docs/examples/*_files/
+docs/api-reference/
+site
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -50,6 +54,7 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+*.sqlite
 
 # Jupyter Notebook
 .ipynb_checkpoints

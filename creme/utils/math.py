@@ -28,36 +28,39 @@ __all__ = [
 ]
 
 
-def sherman_morrison(A_inv, u, v):
+def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
     """Sherman–Morrison formula.
 
-    This modifies ``A_inv`` inplace.
+    This modifies `A_inv` inplace.
+
+    Parameters:
+        A_inv
+        u
+        v
 
     References:
-        1. `Wikipedia article <https://www.wikiwand.com/en/Sherman%E2%80%93Morrison_formula>`_
+        1. [Wikipedia article on the Sherman-Morrison formula](https://www.wikiwand.com/en/Sherman%E2%80%93Morrison_formula)s
 
     Example:
 
-        ::
+        >>> import pprint
+        >>> from creme import utils
 
-            >>> import pprint
-            >>> from creme import utils
+        >>> A_inv = {
+        ...     (0, 0): 0.2,
+        ...     (1, 1): 1,
+        ...     (2, 2): 1
+        ... }
+        >>> u = {0: 1, 1: 2, 2: 3}
+        >>> v = {0: 4}
 
-            >>> A_inv = {
-            ...     (0, 0): 0.2,
-            ...     (1, 1): 1,
-            ...     (2, 2): 1
-            ... }
-            >>> u = {0: 1, 1: 2, 2: 3}
-            >>> v = {0: 4}
-
-            >>> inv = sherman_morrison(A_inv, u, v)
-            >>> pprint.pprint(inv)
-            {(0, 0): 0.111111...,
-             (1, 0): -0.888888...,
-             (1, 1): 1,
-             (2, 0): -1.333333...,
-             (2, 2): 1}
+        >>> inv = sherman_morrison(A_inv, u, v)
+        >>> pprint.pprint(inv)
+        {(0, 0): 0.111111,
+            (1, 0): -0.888888,
+            (1, 1): 1,
+            (2, 0): -1.333333,
+            (2, 2): 1}
 
     """
 
@@ -86,37 +89,36 @@ def dotvecmat(x, A):
 def matmul2d(A, B):
     """Multiplication for 2D matrices.
 
+    Parameters:
+        A
+        B
+
     Example:
 
-        ::
+        >>> import pprint
+        >>> from creme import utils
 
-            >>> import pprint
-            >>> from creme import utils
+        >>> A = {
+        ...     (0, 0): 2, (0, 1): 0, (0, 2): 4,
+        ...     (1, 0): 5, (1, 1): 6, (1, 2): 0
+        ... }
 
-            >>> A = {
-            ...     (0, 0): 2, (0, 1): 0, (0, 2): 4,
-            ...     (1, 0): 5, (1, 1): 6, (1, 2): 0
-            ... }
+        >>> B = {
+        ...     (0, 0): 1, (0, 1): 1, (0, 2): 0, (0, 3): 0,
+        ...     (1, 0): 2, (1, 1): 0, (1, 2): 1, (1, 3): 3,
+        ...     (2, 0): 4, (2, 1): 0, (2, 2): 0, (2, 3): 0
+        ... }
 
-            >>> B = {
-            ...     (0, 0): 1, (0, 1): 1, (0, 2): 0, (0, 3): 0,
-            ...     (1, 0): 2, (1, 1): 0, (1, 2): 1, (1, 3): 3,
-            ...     (2, 0): 4, (2, 1): 0, (2, 2): 0, (2, 3): 0
-            ... }
-
-            >>> C = matmul2d(A, B)
-            >>> pprint.pprint(C)
-            {(0, 0): 18.0,
-             (0, 1): 2.0,
-             (0, 2): 0.0,
-             (0, 3): 0.0,
-             (1, 0): 17.0,
-             (1, 1): 5.0,
-             (1, 2): 6.0,
-             (1, 3): 18.0}
-
-    References:
-        1. `Wikipedia article <https://www.wikiwand.com/en/Matrix_multiplication>`_
+        >>> C = matmul2d(A, B)
+        >>> pprint.pprint(C)
+        {(0, 0): 18.0,
+            (0, 1): 2.0,
+            (0, 2): 0.0,
+            (0, 3): 0.0,
+            (1, 0): 17.0,
+            (1, 1): 5.0,
+            (1, 2): 6.0,
+            (1, 3): 18.0}
 
     """
     C = {}
@@ -129,33 +131,32 @@ def matmul2d(A, B):
     return C
 
 
-def outer(u, v):
+def outer(u: dict, v: dict) -> dict:
     """Outer-product between two vectors.
+
+    Parameters:
+        u
+        v
 
     Example:
 
-        ::
+        >>> import pprint
+        >>> from creme import utils
 
-            >>> import pprint
-            >>> from creme import utils
+        >>> u = dict(enumerate((1, 2, 3)))
+        >>> v = dict(enumerate((2, 4, 8)))
 
-            >>> u = dict(enumerate((1, 2, 3)))
-            >>> v = dict(enumerate((2, 4, 8)))
-
-            >>> uTv = utils.math.outer(u, v)
-            >>> pprint.pprint(uTv)
-            {(0, 0): 2,
-             (0, 1): 4,
-             (0, 2): 8,
-             (1, 0): 4,
-             (1, 1): 8,
-             (1, 2): 16,
-             (2, 0): 6,
-             (2, 1): 12,
-             (2, 2): 24}
-
-    References:
-        1. `Wikipedia entry <https://www.wikiwand.com/en/Outer_product>`_
+        >>> uTv = utils.math.outer(u, v)
+        >>> pprint.pprint(uTv)
+        {(0, 0): 2,
+            (0, 1): 4,
+            (0, 2): 8,
+            (1, 0): 4,
+            (1, 1): 8,
+            (1, 2): 16,
+            (2, 0): 6,
+            (2, 1): 12,
+            (2, 2): 24}
 
     """
     return {
@@ -164,15 +165,14 @@ def outer(u, v):
     }
 
 
-def minkowski_distance(a, b, p):
+def minkowski_distance(a: dict, b: dict, p: int):
     """Minkowski distance.
 
     Parameters:
-        a (dict)
-        b (dict)
-        p (int): Parameter for the Minkowski distance. When ``p=1``, this is equivalent to using
-            the Manhattan distance. When ``p=2``, this is equivalent to using the Euclidean
-            distance.
+        a
+        b
+        p: Parameter for the Minkowski distance. When `p=1`, this is equivalent to using the
+            Manhattan distance. When `p=2`, this is equivalent to using the Euclidean distance.
 
     """
     return sum((abs(a.get(k, 0.) - b.get(k, 0.))) ** p for k in set([*a.keys(), *b.keys()]))
@@ -206,15 +206,13 @@ def dot(x: dict, y: dict):
 
     Example:
 
-        ::
+        >>> from creme import utils
 
-            >>> from creme import utils
+        >>> x = {'x0': 1, 'x1': 2}
+        >>> y = {'x1': 21, 'x2': 3}
 
-            >>> x = {'x0': 1, 'x1': 2}
-            >>> y = {'x1': 21, 'x2': 3}
-
-            >>> utils.math.dot(x, y)
-            42
+        >>> utils.math.dot(x, y)
+        42
 
     """
 

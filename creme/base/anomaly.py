@@ -5,16 +5,32 @@ from . import estimator
 
 class AnomalyDetector(estimator.Estimator):
 
+    @property
+    def _is_supervised(self):
+        return False
+
     @abc.abstractmethod
     def fit_one(self, x: dict) -> 'AnomalyDetector':
-        """Updates the model."""
+        """Update the model.
+
+        Parameters:
+            x: A dictionary of features.
+
+        Returns:
+            self
+
+        """
 
     @abc.abstractmethod
     def score_one(self, x: dict) -> float:
-        """Returns an outlier score.
+        """Return an outlier score.
 
-        The range of the score depends on each model. Some models will output anomaly scores
-        between 0 and 1, others will not. In any case, the lower the score, the more likely it is
-        that ``x`` is an anomaly.
+        A high score is indicative of an anomaly. A low score indicates a normal observation.
+
+        Parameters:
+            x: A dictionary of features.
+
+        Returns:
+            The anomaly score.
 
         """

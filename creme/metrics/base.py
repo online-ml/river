@@ -1,11 +1,12 @@
 import abc
 import collections
+import numbers
 import typing
 
-from .. import base
-from .. import utils
-
-from ..reco.base import Recommender
+from creme import base
+from creme import utils
+from creme import stats
+from creme.reco.base import Recommender
 
 
 __all__ = [
@@ -22,13 +23,18 @@ __all__ = [
 
 
 class Metric(abc.ABC):
+    """Mother class for all metrics."""
 
     # Define the format specification used for string representation.
-    fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+    _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+
+    @abc.abstractmethod
+    def update(self, y_true, y_pred) -> 'Metric':
+        """Update the metric."""
 
     @abc.abstractmethod
     def get(self) -> float:
-        """Returns the current value of the metric."""
+        """Return the current value of the metric."""
 
     @abc.abstractproperty
     def bigger_is_better(self) -> bool:
@@ -40,14 +46,15 @@ class Metric(abc.ABC):
 
     def __repr__(self):
         """Returns the class name along with the current value of the metric."""
-        return f'{self.__class__.__name__}: {self.get():{self.fmt}}'.rstrip('0')
+        return f'{self.__class__.__name__}: {self.get():{self._fmt}}'.rstrip('0')
 
 
 class ClassificationMetric(Metric):
+    """Mother class for all classification metrics."""
 
     @abc.abstractproperty
     def requires_labels(self) -> bool:
-        """Helps to indicate if labels are required instead of probabilities."""
+        """Indicates if labels are required, rather than probabilities."""
 
     @staticmethod
     def _clamp_proba(p):
@@ -61,13 +68,14 @@ class ClassificationMetric(Metric):
 
 
 class BinaryMetric(ClassificationMetric):
+    """Mother class for all binary classification metrics."""
 
     @abc.abstractmethod
     def update(
         self,
         y_true: bool,
         y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-        sample_weight: typing.Union[float, int]
+        sample_weight: numbers.Number
     ) -> 'BinaryMetric':
         """Update the metric."""
 
@@ -76,7 +84,7 @@ class BinaryMetric(ClassificationMetric):
         self,
         y_true: bool,
         y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-        sample_weight: typing.Union[float, int]
+        sample_weight: numbers.Number
     ) -> 'BinaryMetric':
         """Revert the metric."""
 
@@ -85,13 +93,14 @@ class BinaryMetric(ClassificationMetric):
 
 
 class MultiClassMetric(ClassificationMetric):
+    """Mother class for all multi-class classification metrics."""
 
     @abc.abstractmethod
     def update(
         self,
-        y_true: typing.Hashable,
-        y_pred: typing.Union[typing.Hashable, typing.Dict[typing.Hashable, float]],
-        sample_weight: typing.Union[float, int]
+        y_true: base.typing.ClfTarget,
+        y_pred: typing.Union[base.typing.ClfTarget, typing.Dict[base.typing.ClfTarget, float]],
+        sample_weight: numbers.Number
     ) -> 'MultiClassMetric':
         """Update the metric."""
 
@@ -99,8 +108,8 @@ class MultiClassMetric(ClassificationMetric):
     def revert(
         self,
         y_true: bool,
-        y_pred: typing.Union[typing.Hashable, typing.Dict[typing.Hashable, float]],
-        sample_weight: typing.Union[float, int]
+        y_pred: typing.Union[base.typing.ClfTarget, typing.Dict[base.typing.ClfTarget, float]],
+        sample_weight: numbers.Number
     ) -> 'MultiClassMetric':
         """Revert the metric."""
 
@@ -109,22 +118,23 @@ class MultiClassMetric(ClassificationMetric):
 
 
 class RegressionMetric(Metric):
+    """Mother class for all regression metrics."""
 
     @abc.abstractmethod
     def update(
         self,
-        y_true: typing.Union[float, int],
-        y_pred: typing.Union[float, int],
-        sample_weight: typing.Union[float, int]
+        y_true: numbers.Number,
+        y_pred: numbers.Number,
+        sample_weight: numbers.Number
     ) -> 'RegressionMetric':
         """Update the metric."""
 
     @abc.abstractmethod
     def revert(
         self,
-        y_true: typing.Union[float, int],
-        y_pred: typing.Union[float, int],
-        sample_weight: typing.Union[float, int]
+        y_true: numbers.Number,
+        y_pred: numbers.Number,
+        sample_weight: numbers.Number
     ) -> 'RegressionMetric':
         """Revert the metric."""
 
@@ -142,27 +152,28 @@ class RegressionMetric(Metric):
         return Metrics([self, other])
 
 
-class MultiOutputClassificationMetric:
+class MultiOutputClassificationMetric(Metric):
+    """Mother class for all multi-output classification metrics."""
 
     def update(
         self,
-        y_true: typing.Dict[typing.Hashable, typing.Hashable],
+        y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
         y_pred: typing.Union[
-            typing.Dict[typing.Hashable, typing.Hashable],
-            typing.Dict[typing.Hashable, typing.Dict[typing.Hashable, float]]
+            typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
+            typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]]
         ],
-        sample_weight: typing.Union[float, int]
+        sample_weight: numbers.Number
     ) -> 'MultiOutputClassificationMetric':
         """Update the metric."""
 
     def revert(
         self,
-        y_true: typing.Dict[typing.Hashable, typing.Hashable],
+        y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
         y_pred: typing.Union[
-            typing.Dict[typing.Hashable, typing.Hashable],
-            typing.Dict[typing.Hashable, typing.Dict[typing.Hashable, float]]
+            typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
+            typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]]
         ],
-        sample_weight: typing.Union[float, int]
+        sample_weight: numbers.Number
     ) -> 'MultiOutputClassificationMetric':
         """Revert the metric."""
 
@@ -170,21 +181,22 @@ class MultiOutputClassificationMetric:
         return isinstance(utils.estimator_checks.guess_model(model), base.MultiOutputClassifier)
 
 
-class MultiOutputRegressionMetric:
+class MultiOutputRegressionMetric(Metric):
+    """Mother class for all multi-output regression metrics."""
 
     def update(
         self,
-        y_true: typing.Dict[typing.Hashable, typing.Union[float, int]],
-        y_pred: typing.Dict[typing.Hashable, typing.Union[float, int]],
-        sample_weight: typing.Union[float, int]
+        y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
+        y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
+        sample_weight: numbers.Number
     ) -> 'MultiOutputRegressionMetric':
         """Update the metric."""
 
     def revert(
         self,
-        y_true: typing.Dict[typing.Hashable, typing.Union[float, int]],
-        y_pred: typing.Dict[typing.Hashable, typing.Union[float, int]],
-        sample_weight: typing.Union[float, int]
+        y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
+        y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
+        sample_weight: numbers.Number
     ) -> 'MultiOutputRegressionMetric':
         """Revert the metric."""
 
@@ -260,8 +272,8 @@ class Metrics(Metric, collections.UserList):
 class WrapperMetric(Metric):
 
     @property
-    def fmt(self):
-        return self.metric.fmt
+    def _fmt(self):
+        return self.metric._fmt
 
     @abc.abstractproperty
     def metric(self):
@@ -287,3 +299,28 @@ class WrapperMetric(Metric):
 
     def __repr__(self):
         return str(self.metric)
+
+
+class MeanMetric(abc.ABC):
+    """Many metrics are just running averages. This is a utility class that avoids repeating
+    tedious stuff throughout the module for such metrics.
+
+    """
+
+    def __init__(self):
+        self._mean = stats.Mean()
+
+    @abc.abstractmethod
+    def _eval(self, y_true, y_pred):
+        pass
+
+    def update(self, y_true, y_pred, sample_weight=1.):
+        self._mean.update(x=self._eval(y_true, y_pred), w=sample_weight)
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1.):
+        self._mean.revert(x=self._eval(y_true, y_pred), w=sample_weight)
+        return self
+
+    def get(self):
+        return self._mean.get()

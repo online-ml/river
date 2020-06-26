@@ -1,41 +1,67 @@
 import importlib
 import inspect
-import urllib.request
+from urllib import request
 
 import pytest
 
+from creme import datasets
+from . import base
+
 
 def _iter_datasets():
-    return inspect.getmembers(importlib.import_module(f'creme.datasets'), inspect.isclass)
+
+    for variant in datasets.Insects.variant_sizes:
+        yield datasets.Insects(variant=variant)
+
+    for _, dataset in inspect.getmembers(importlib.import_module(f'creme.datasets'), inspect.isclass):
+        if not issubclass(dataset, datasets.Insects):
+            yield dataset()
 
 
 @pytest.mark.parametrize(
     'dataset',
     [
-        pytest.param(dataset(), id=name)
-        for name, dataset
-        in _iter_datasets()
-        if dataset()._remote
+        pytest.param(dataset, id=dataset.__class__.__name__)
+        for dataset in _iter_datasets()
+        if isinstance(dataset, base.RemoteDataset)
     ]
 )
-@pytest.mark.web
-def test_remote_url_200(dataset):
-    r = urllib.request.urlopen(dataset.dl_params['url'])
-    assert r.getcode() == 200
+@pytest.mark.datasets
+def test_remote_url(dataset):
+    with request.urlopen(dataset.url) as r:
+        assert r.status == 200
 
 
 @pytest.mark.parametrize(
     'dataset',
     [
-        pytest.param(dataset(), id=name)
-        for name, dataset
-        in _iter_datasets()
+        pytest.param(dataset, id=dataset.__class__.__name__)
+        for dataset in _iter_datasets()
+        if isinstance(dataset, base.RemoteDataset)
     ]
 )
-@pytest.mark.web
-def test_size(dataset):
+@pytest.mark.datasets
+def test_remote_size(dataset):
+    if dataset.path.is_file():
+        size = dataset.path.stat().st_size
+    else:
+        size = sum(f.stat().st_size for f in dataset.path.glob('**/*') if f.is_file())
+    assert size == dataset.size
+
+
+@pytest.mark.parametrize(
+    'dataset',
+    [
+        pytest.param(dataset, id=dataset.__class__.__name__)
+        for dataset in _iter_datasets()
+        if not isinstance(dataset, base.SyntheticDataset)
+    ]
+)
+@pytest.mark.datasets
+def test_dimensions(dataset):
     n = 0
     for x, _ in dataset:
-        assert len(x) == dataset.n_features
+        if not dataset.sparse:
+            assert len(x) == dataset.n_features
         n += 1
     assert n == dataset.n_samples

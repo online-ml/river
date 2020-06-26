@@ -6,3 +6,9 @@ from .normal import RandomNormal
 
 
 __all__ = ['Baseline', 'BiasedMF', 'FunkMF', 'RandomNormal']
+
+try:
+    from .surprise import SurpriseWrapper
+    __all__ += ['SurpriseWrapper']
+except ImportError:
+    pass

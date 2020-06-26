@@ -1,3 +1,5 @@
+dist: xenial
+os: linux
 language: python
 
 python:
@@ -18,14 +20,13 @@ jobs:
   include:
 
   - stage: pypi
-    sudo: required
     services:
       - docker
     env: &pypi-env
       - CIBW_BUILD="cp36-* cp37-* cp38-*"
       - CIBW_BEFORE_BUILD="pip install cython"
     install: &pypi-install
-      - pip install cibuildwheel==1.0.0 cython twine
+      - pip install cibuildwheel cython twine
     script: &pypi-script
       - cibuildwheel --output-dir dist
       - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python setup.py sdist ; fi
@@ -57,10 +58,9 @@ jobs:
   - stage: docs
     install:
       - sudo apt-get install graphviz pandoc
-      - pip install cython
       - python setup.py install
       - pip install -e ".[docs]"
-      - pytest --nbval-lax --current-env docs/notebooks/*.ipynb
+      - make execute-notebooks
     script: make doc
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
@@ -69,11 +69,11 @@ jobs:
       - git clone https://${GH_TOKEN}@github.com/creme-ml/creme-ml.github.io.git creme-ml.github.io
       - cd creme-ml.github.io
       - rm -r *
-      - cp -r ../docs/_build/html/* .
-      - cp -r ../docs/_build/html/.* .
+      - cp -r ../site/* .
       - git add -A
       - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
       - git push --set-upstream origin master
+    if: tag IS present
 
 env:
   global:

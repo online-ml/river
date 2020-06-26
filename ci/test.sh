@@ -27,12 +27,21 @@ PYTHON_VERSION=$1
 conda create --yes --name testenv python=$PYTHON_VERSION
 source activate testenv
 
-# Install dependencies required for full testing
-pip install codecov cython
-pip install -e ".[dev]"
+# Install the development dependencies
+if [ "$TRAVIS_TAG" = "" ]
+then
+  echo "Installing dev dependencies"
+  pip install -e ".[dev]" codecov
+else
+  echo "Installing dev and compat dependencies"
+  pip install -e ".[compat,dev]" codecov
+fi
+
+# Download the datasets that are used for testing
+python -c "from creme import datasets; datasets.CreditCard().download()"
 
 # Run linting, type checking, unit tests, and coverage
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-mypy creme
-pytest --cov=creme -m "not web"
+#mypy creme
+pytest --cov=creme -m "not datasets"
 codecov

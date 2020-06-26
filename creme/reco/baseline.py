@@ -1,9 +1,10 @@
 import collections
 import copy
+import typing
 
-from .. import stats
-from .. import optim
-from .. import utils
+from creme import stats
+from creme import optim
+from creme import utils
 
 from . import base
 
@@ -16,18 +17,17 @@ class Baseline(base.Recommender):
 
     A first-order approximation of the bias involved in target. The model equation is defined as:
 
-    .. math::
-        \\hat{y}(x) = \\bar{y} + bu_{u} + bi_{i}
+    $$\\hat{y}(x) = \\bar{y} + bu_{u} + bi_{i}$$
 
     Where :math:`bu_{u}` and :math:`bi_{i}` are respectively the user and item biases. The model
-    expect dict inputs containing both a ``user`` and an ``item`` entries.
+    expect dict inputs containing both a `user` and an `item` entries.
 
     Parameters:
-        optimizer (optim.Optimizer): The sequential optimizer used for updating the weights.
-        loss (optim.Loss): The loss function to optimize for.
-        l2 (float): regularization amount used to push weights towards 0.
-        initializer (optim.initializers.Initializer): Weights initialization scheme.
-        clip_gradient (float): Clips the absolute value of each gradient value.
+        optimizer: The sequential optimizer used for updating the weights.
+        loss: The loss function to optimize for.
+        l2: regularization amount used to push weights towards 0.
+        initializer: Weights initialization scheme.
+        clip_gradient: Clips the absolute value of each gradient value.
 
     Attributes:
         global_mean (stats.Mean): The target arithmetic mean.
@@ -40,41 +40,40 @@ class Baseline(base.Recommender):
 
     Example:
 
-        ::
+        >>> from creme import optim
+        >>> from creme import reco
 
-            >>> from creme import optim
-            >>> from creme import reco
+        >>> X_y = (
+        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+        ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
+        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+        ... )
 
-            >>> X_y = (
-            ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-            ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
-            ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-            ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-            ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-            ... )
+        >>> model = reco.Baseline(optimizer=optim.SGD(0.005))
 
-            >>> model = reco.Baseline(optimizer=optim.SGD(0.005))
+        >>> for x, y in X_y:
+        ...     _ = model.fit_one(x, y)
 
-            >>> for x, y in X_y:
-            ...     _ = model.fit_one(x, y)
-
-            >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-            6.538120...
+        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+        6.538120
 
     Note:
-        reco.Baseline model expect a dict input with a ``user`` and an ``item`` entries without any
+        This model expects a dict input with a `user` and an `item` entries without any
         type constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
     References:
-        1. `Matrix factorization techniques for recommender systems <https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf>`_
+        1. [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
 
     """
 
-    def __init__(self, optimizer=None, loss=None, l2=0., initializer=None, clip_gradient=1e12):
+    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.Loss = None,
+                 l2=0., initializer: optim.initializers.Initializer = None, clip_gradient=1e12):
         self.optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
@@ -87,8 +86,8 @@ class Baseline(base.Recommender):
 
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
-        self.u_biases = collections.defaultdict(initializer)
-        self.i_biases = collections.defaultdict(initializer)
+        self.u_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(initializer)
+        self.i_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(initializer)
 
     def _predict_one(self, user, item):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]

@@ -1,15 +1,20 @@
-update_nb:
-	jupyter nbconvert --execute --to notebook --inplace docs/notebooks/*.ipynb --ExecutePreprocessor.timeout=-1
-
-clean:
-	rm -f **/*.c **/*.so **/*.pyc
-	rm -rf **/*/__pycache__ build .ipynb_checkpoints .pytest_cache .empty .eggs creme.egg-info dist
-
 cython:
 	python setup.py build_ext --inplace --force
 
-doc:
-	cd docs && $(MAKE) clean && rm -rf generated && python scripts/make_api.py && $(MAKE) html -j 4
+execute-notebooks:
+	jupyter nbconvert --execute --to notebook --inplace docs/*/*.ipynb --ExecutePreprocessor.timeout=-1
 
-livedoc:
-	sphinx-autobuild docs docs/_build/html --port 0 --open-browser --delay 0
+user-guide:
+	jupyter nbconvert --to markdown docs/getting-started.ipynb
+	jupyter nbconvert --to markdown docs/user-guide/*.ipynb --output-dir docs/user-guide
+	jupyter nbconvert --to markdown docs/examples/*.ipynb --output-dir docs/examples
+
+api-reference:
+	python docs/scripts/index_api.py
+
+doc: user-guide api-reference
+	#python docs/scripts/prepare_docs.py
+	mkdocs build
+
+livedoc: doc
+	mkdocs serve --dirtyreload

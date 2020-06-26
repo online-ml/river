@@ -1,39 +1,32 @@
-from .. import stream
+from creme import stream
 
 from . import base
 
 
-class Taxis(base.FileDataset):
+class Taxis(base.RemoteDataset):
     """Taxi ride durations in New York City.
 
     The goal is to predict the duration of taxi rides in New York City.
 
-    Parameters:
-        data_home (str): The directory where you wish to store the data.
-        verbose (bool): Whether to indicate download progress or not.
-
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
-
     References:
-        1. `New York City Taxi Trip Duration competition on Kaggle <https://www.kaggle.com/c/nyc-taxi-trip-duration>`_
+        1. [New York City Taxi Trip Duration competition on Kaggle](https://www.kaggle.com/c/nyc-taxi-trip-duration)
 
     """
 
-    def __init__(self, data_home=None, verbose=True):
+    def __init__(self):
         super().__init__(
             n_samples=1_458_644,
             n_features=8,
-            category=base.REG,
+            task=base.REG,
             url='https://maxhalford.github.io/files/datasets/nyc_taxis.zip',
-            data_home=data_home,
-            verbose=verbose
+            size=195271696,
+            filename='train.csv'
         )
 
-    def _stream_X_y(self, directory):
+    def _iter(self):
         return stream.iter_csv(
-            f'{directory}/train.csv',
-            target_name='trip_duration',
+            self.path,
+            target='trip_duration',
             converters={
                 'passenger_count': int,
                 'pickup_longitude': float,

@@ -1,6 +1,4 @@
-import os
-
-from .. import stream
+from creme import stream
 
 from . import base
 
@@ -10,11 +8,8 @@ class Phishing(base.FileDataset):
 
     This dataset contains features from web pages that are classified as phishing or not.
 
-    Yields:
-        tuple: A pair (``x``, ``y``) where ``x`` is a dict of features and ``y`` is the target.
-
     References:
-        1. `UCI page <http://archive.ics.uci.edu/ml/datasets/Website+Phishing>`_
+        1. [UCI page](http://archive.ics.uci.edu/ml/datasets/Website+Phishing)
 
     """
 
@@ -22,13 +17,14 @@ class Phishing(base.FileDataset):
         super().__init__(
             n_samples=1250,
             n_features=9,
-            category=base.BINARY_CLF
+            task=base.BINARY_CLF,
+            filename='phishing.csv.gz'
         )
 
-    def _stream_X_y(self, directory):
+    def __iter__(self):
         return stream.iter_csv(
-            os.path.join(directory, 'phishing.csv.gz'),
-            target_name='is_phishing',
+            self.path,
+            target='is_phishing',
             converters={
                 'empty_server_form_handler': float,
                 'popup_window': float,

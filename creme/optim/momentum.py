@@ -9,31 +9,33 @@ __all__ = ['Momentum']
 class Momentum(base.Optimizer):
     """Momentum optimizer.
 
+    Parameters:
+        lr
+        rho
+
     Example:
 
-        ::
+        >>> from creme import datasets
+        >>> from creme import linear_model
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> from creme import datasets
-            >>> from creme import linear_model
-            >>> from creme import metrics
-            >>> from creme import model_selection
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> X_y = datasets.Phishing()
+        >>> optimizer = optim.Momentum()
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression(optimizer)
+        ... )
+        >>> metric = metrics.F1()
 
-            >>> X_y = datasets.Phishing()
-            >>> optimizer = optim.Momentum()
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LogisticRegression(optimizer)
-            ... )
-            >>> metric = metrics.F1()
-
-            >>> model_selection.progressive_val_score(X_y, model, metric)
-            F1: 0.841645
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        F1: 0.841645
 
     """
 
-    def __init__(self, lr=0.1, rho=0.9):
+    def __init__(self, lr=.1, rho=.9):
         super().__init__(lr)
         self.rho = rho
         self.s = collections.defaultdict(float)

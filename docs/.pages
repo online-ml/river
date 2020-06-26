@@ -1,0 +1,6 @@
+arrange:
+    - index.md
+    - user-guide
+    - api-reference
+    - examples
+    - releases

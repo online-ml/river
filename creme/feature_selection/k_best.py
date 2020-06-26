@@ -2,15 +2,16 @@ import collections
 import copy
 import functools
 
-from .. import base
+from creme import base
+from creme import stats
 
 
-class SelectKBest(base.Transformer):
+class SelectKBest(base.SupervisedTransformer):
     """Removes all but the $k$ highest scoring features.
 
     Parameters:
-        similarity (stats.Bivariate)
-        k (int)
+        similarity
+        k: The number of features to keep.
 
     Attributes:
         similarities (dict): The similarity instances used for each feature.
@@ -18,55 +19,49 @@ class SelectKBest(base.Transformer):
 
     Example:
 
-        ::
+        >>> from pprint import pprint
+        >>> from creme import feature_selection
+        >>> from creme import stats
+        >>> from creme import stream
+        >>> from sklearn import datasets
 
-            >>> from pprint import pprint
-            >>> from creme import feature_selection
-            >>> from creme import stats
-            >>> from creme import stream
-            >>> from sklearn import datasets
+        >>> X, y = datasets.make_regression(
+        ...     n_samples=100,
+        ...     n_features=10,
+        ...     n_informative=2,
+        ...     random_state=42
+        ... )
 
-            >>> X, y = datasets.make_regression(
-            ...     n_samples=100,
-            ...     n_features=10,
-            ...     n_informative=2,
-            ...     random_state=42
-            ... )
+        >>> selector = feature_selection.SelectKBest(
+        ...     similarity=stats.PearsonCorr(),
+        ...     k=2
+        ... )
 
-            >>> selector = feature_selection.SelectKBest(
-            ...     similarity=stats.PearsonCorrelation(),
-            ...     k=2
-            ... )
+        >>> for xi, yi, in stream.iter_array(X, y):
+        ...     selector = selector.fit_one(xi, yi)
 
-            >>> for xi, yi, in stream.iter_array(X, y):
-            ...     selector = selector.fit_one(xi, yi)
+        >>> pprint(selector.leaderboard)
+        Counter({9: 0.7898,
+                7: 0.5444,
+                8: 0.1062,
+                2: 0.0638,
+                4: 0.0538,
+                5: 0.0271,
+                1: -0.0312,
+                6: -0.0657,
+                3: -0.1501,
+                0: -0.1895})
 
-            >>> pprint(selector.leaderboard)
-            Counter({9: 0.789828...,
-                     7: 0.544461...,
-                     8: 0.106205...,
-                     2: 0.063886...,
-                     4: 0.053821...,
-                     5: 0.027151...,
-                     1: -0.031251...,
-                     6: -0.065716...,
-                     3: -0.150104...,
-                     0: -0.189527...})
-
-            >>> selector.transform_one(xi)
-            {7: -1.279576..., 9: -1.840874...}
+        >>> selector.transform_one(xi)
+        {7: -1.2795, 9: -1.8408}
 
     """
 
-    def __init__(self, similarity, k=10):
+    def __init__(self, similarity: stats.Bivariate, k=10):
         self.k = k
         self.similarity = similarity
         self.similarities = collections.defaultdict(functools.partial(copy.deepcopy, similarity))
         self.leaderboard = collections.Counter()
-
-    @property
-    def is_supervised(self):
-        return True
 
     def fit_one(self, x, y):
 

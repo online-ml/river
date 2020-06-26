@@ -10,8 +10,23 @@ __all__ = ['MCC']
 class MCC(base.BinaryMetric):
     """Matthews correlation coefficient.
 
+    Example:
+
+        >>> from creme import metrics
+
+        >>> y_true = [True, True, True, False]
+        >>> y_pred = [True, False, True, True]
+
+        >>> mcc = metrics.MCC()
+
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     mcc = mcc.update(yt, yp)
+
+        >>> mcc
+        MCC: -0.333333
+
     References:
-        1. `Wikipedia article <https://www.wikiwand.com/en/Matthews_correlation_coefficient>`_
+        1. [Wikipedia article](https://www.wikiwand.com/en/Matthews_correlation_coefficient)
 
     """
 

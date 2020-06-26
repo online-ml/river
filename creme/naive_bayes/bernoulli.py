@@ -10,12 +10,9 @@ __all__ = ['BernoulliNB']
 class BernoulliNB(base.BaseNB):
     """Bernoulli Naive Bayes.
 
-    This class inherits ``predict_proba_one`` from ``naive_bayes.BaseNB`` which itself inherits
-    ``predict_one`` from `base.MultiClassifier`.
-
     Parameters:
-        alpha (float): Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
-        true_threshold (float): Threshold for binarizing (mapping to booleans) features.
+        alpha: Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+        true_threshold: Threshold for binarizing (mapping to booleans) features.
 
     Attributes:
         class_counts (collections.Counter): Number of times each class has been seen.
@@ -23,75 +20,73 @@ class BernoulliNB(base.BaseNB):
 
     Example:
 
-        ::
+        >>> import math
+        >>> from creme import compose
+        >>> from creme import feature_extraction
+        >>> from creme import naive_bayes
 
-            >>> import math
-            >>> from creme import compose
-            >>> from creme import feature_extraction
-            >>> from creme import naive_bayes
+        >>> docs = [
+        ...     ('Chinese Beijing Chinese', 'yes'),
+        ...     ('Chinese Chinese Shanghai', 'yes'),
+        ...     ('Chinese Macao', 'yes'),
+        ...     ('Tokyo Japan Chinese', 'no')
+        ... ]
+        >>> model = compose.Pipeline(
+        ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
+        ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
+        ... )
+        >>> for sentence, label in docs:
+        ...     model = model.fit_one(sentence, label)
 
-            >>> docs = [
-            ...     ('Chinese Beijing Chinese', 'yes'),
-            ...     ('Chinese Chinese Shanghai', 'yes'),
-            ...     ('Chinese Macao', 'yes'),
-            ...     ('Tokyo Japan Chinese', 'no')
-            ... ]
-            >>> model = compose.Pipeline([
-            ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
-            ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
-            ... ])
-            >>> for sentence, label in docs:
-            ...     model = model.fit_one(sentence, label)
+        >>> model['nb'].p_class('yes')
+        0.75
+        >>> model['nb'].p_class('no')
+        0.25
 
-            >>> model['nb'].p_class('yes')
-            0.75
-            >>> model['nb'].p_class('no')
-            0.25
+        >>> cp = model['nb'].p_feature_given_class
 
-            >>> cp = model['nb'].p_feature_given_class
+        >>> cp('Chinese', 'yes') == (3 + 1) / (3 + 2)
+        True
 
-            >>> cp('Chinese', 'yes') == (3 + 1) / (3 + 2)
-            True
+        >>> cp('Japan', 'yes') == (0 + 1) / (3 + 2)
+        True
+        >>> cp('Tokyo', 'yes') == (0 + 1) / (3 + 2)
+        True
 
-            >>> cp('Japan', 'yes') == (0 + 1) / (3 + 2)
-            True
-            >>> cp('Tokyo', 'yes') == (0 + 1) / (3 + 2)
-            True
+        >>> cp('Beijing', 'yes') == (1 + 1) / (3 + 2)
+        True
+        >>> cp('Macao', 'yes') == (1 + 1) / (3 + 2)
+        True
+        >>> cp('Shanghai', 'yes') == (1 + 1) / (3 + 2)
+        True
 
-            >>> cp('Beijing', 'yes') == (1 + 1) / (3 + 2)
-            True
-            >>> cp('Macao', 'yes') == (1 + 1) / (3 + 2)
-            True
-            >>> cp('Shanghai', 'yes') == (1 + 1) / (3 + 2)
-            True
+        >>> cp('Chinese', 'no') == (1 + 1) / (1 + 2)
+        True
 
-            >>> cp('Chinese', 'no') == (1 + 1) / (1 + 2)
-            True
+        >>> cp('Japan', 'no') == (1 + 1) / (1 + 2)
+        True
+        >>> cp('Tokyo', 'no') == (1 + 1) / (1 + 2)
+        True
 
-            >>> cp('Japan', 'no') == (1 + 1) / (1 + 2)
-            True
-            >>> cp('Tokyo', 'no') == (1 + 1) / (1 + 2)
-            True
+        >>> cp('Beijing', 'no') == (0 + 1) / (1 + 2)
+        True
+        >>> cp('Macao', 'no') == (0 + 1) / (1 + 2)
+        True
+        >>> cp('Shanghai', 'no') == (0 + 1) / (1 + 2)
+        True
 
-            >>> cp('Beijing', 'no') == (0 + 1) / (1 + 2)
-            True
-            >>> cp('Macao', 'no') == (0 + 1) / (1 + 2)
-            True
-            >>> cp('Shanghai', 'no') == (0 + 1) / (1 + 2)
-            True
-
-            >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
-            >>> tokens = model['tokenize'].transform_one(new_text)
-            >>> jlh = model['nb'].joint_log_likelihood(tokens)
-            >>> math.exp(jlh['yes'])
-            0.005184...
-            >>> math.exp(jlh['no'])
-            0.021947...
-            >>> model.predict_one(new_text)
-            'no'
+        >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
+        >>> tokens = model['tokenize'].transform_one(new_text)
+        >>> jlh = model['nb'].joint_log_likelihood(tokens)
+        >>> math.exp(jlh['yes'])
+        0.005184
+        >>> math.exp(jlh['no'])
+        0.021947
+        >>> model.predict_one(new_text)
+        'no'
 
     References:
-        1. `The Bernoulli model <https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html>`_
+        1. [The Bernoulli model](https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html)
 
     """
 
@@ -109,12 +104,12 @@ class BernoulliNB(base.BaseNB):
 
         return self
 
-    def p_feature_given_class(self, f, c):
-        num = self.feature_counts.get(f, collections.Counter())[c] + self.alpha
+    def p_feature_given_class(self, f: str, c: str) -> float:
+        num = self.feature_counts.get(f, {}).get(c, 0.) + self.alpha
         den = self.class_counts[c] + self.alpha * 2
         return num / den
 
-    def p_class(self, c):
+    def p_class(self, c: str) -> float:
         return self.class_counts[c] / sum(self.class_counts.values())
 
     def joint_log_likelihood(self, x):

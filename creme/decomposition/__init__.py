@@ -1,4 +1,4 @@
-"""Online matrix decomposition."""
+"""Matrix decomposition."""
 from .lda import LDA
 
 
