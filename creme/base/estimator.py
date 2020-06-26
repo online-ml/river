@@ -35,20 +35,21 @@ class Estimator(abc.ABC):
         return _repr_obj(obj=self, params=self._get_params())
 
     def __or__(self, other):
-        """Merges with another Transformer into a Pipeline."""
+        """Merge with another Transformer into a Pipeline."""
         from .. import compose
         if isinstance(other, compose.Pipeline):
             return other.__ror__(self)
         return compose.Pipeline(self, other)
 
     def __ror__(self, other):
-        """Merges with another Transformer into a Pipeline."""
+        """Merge with another Transformer into a Pipeline."""
         from .. import compose
         if isinstance(other, compose.Pipeline):
             return other.__or__(self)
         return compose.Pipeline(other, self)
 
     def _get_params(self) -> typing.Dict[str, typing.Any]:
+        """Return the parameters that were used during initialization."""
         return {
             name: getattr(self, name)
             for name, param in inspect.signature(self.__init__).parameters.items()  # type: ignore
@@ -56,7 +57,7 @@ class Estimator(abc.ABC):
         }
 
     def _set_params(self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None) -> 'Estimator':
-        """Returns a new instance with the current parameters as well as new ones.
+        """Return a new instance with the current parameters as well as new ones.
 
         The algorithm will be recursively called down `Pipeline`s and `TransformerUnion`s.
 
@@ -113,12 +114,12 @@ class Estimator(abc.ABC):
 
     @property
     def _tags(self) -> typing.Dict[str, bool]:
-        """Returns the estimator's tags.
+        """Return the estimator's tags.
 
         Tags can be used to specify what kind of inputs an estimator is able to process. For
-        instance, some estimators can handle text, whilst others require positive numeric data.
-        Inheriting from `base.Estimator` will imply a set of default tags which can be overriden
-        by implementing the `base.Estimator._more_tags` method.
+        instance, some estimators can handle text, whilst others don't. Inheriting from
+        `base.Estimator` will imply a set of default tags which can be overriden by implementing
+        the `_more_tags` property.
 
         """
 
@@ -139,7 +140,7 @@ class Estimator(abc.ABC):
 
     @property
     def _memory_usage(self) -> str:
-        """Returns the memory usage in a human readable format."""
+        """Return the memory usage in a human readable format."""
 
         def get_size(obj, seen=None):
             """Recursively finds size of objects"""
@@ -166,6 +167,7 @@ class Estimator(abc.ABC):
 
 
 def _update_if_consistent(dict1: dict, dict2: dict):
+    """Like dict1.update(dict2), but only if the common keys have the same values."""
     common_keys = set(dict1.keys()).intersection(dict2.keys())
     for key in common_keys:
         if dict1[key] != dict2[key]:
@@ -175,7 +177,7 @@ def _update_if_consistent(dict1: dict, dict2: dict):
 
 
 def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> str:
-    """Returns a pretty representation of an object."""
+    """Return a pretty representation of an object."""
 
     rep = f'{obj.__class__.__name__} ('
     if show_modules:

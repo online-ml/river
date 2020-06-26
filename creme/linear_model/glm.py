@@ -182,13 +182,13 @@ class LinearRegression(GLM, base.Regressor):
         2. LinearRegression
         -------------------
         Name              Value      Weight      Contribution
-            Intercept    1.00000    35.61767       35.61767
-                ipsos    2.10348     0.62689        1.31866
+              Intercept    1.00000    35.61767       35.61767
+                  ipsos    2.10348     0.62689        1.31866
         morning_consult    2.73545     0.24180        0.66144
-                gallup    1.18810     0.43568        0.51764
-            rasmussen    1.26872     0.28118        0.35674
+                 gallup    1.18810     0.43568        0.51764
+              rasmussen    1.26872     0.28118        0.35674
                 you_gov    1.48391     0.03123        0.04634
-        ordinal_date   -1.73032     3.45162       -5.97242
+           ordinal_date   -1.73032     3.45162       -5.97242
         <BLANKLINE>
         Prediction: 32.54607
 
