@@ -14,6 +14,7 @@ REG = 'Regression'
 BINARY_CLF = 'Binary classification'
 MULTI_CLF = 'Multi-class classification'
 MO_BINARY_CLF = 'Multi-output binary classification'
+MO_REG = 'Multi-output regression'
 
 
 def get_data_home():
@@ -35,10 +36,12 @@ class Dataset(abc.ABC):
 
     """
 
-    def __init__(self, task, n_features, n_samples=None, n_classes=None, sparse=False):
+    def __init__(self, task, n_features, n_samples=None, n_classes=None, n_outputs=None,
+                 sparse=False):
         self.task = task
         self.n_features = n_features
         self.n_samples = n_samples
+        self.n_outputs = n_outputs
         self.n_classes = n_classes
         self.sparse = sparse
 
@@ -68,6 +71,8 @@ class Dataset(abc.ABC):
             content['Number of samples'] = f'{self.n_samples:,}'
         if self.n_features:
             content['Number of features'] = f'{self.n_features:,}'
+        if self.n_outputs:
+            content['Number of outputs'] = f'{self.n_outputs:,}'
         if self.n_classes:
             content['Number of classes'] = f'{self.n_classes:,}'
         content['Sparse'] = str(self.sparse)
