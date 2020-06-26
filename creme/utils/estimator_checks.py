@@ -42,20 +42,42 @@ def guess_model(model):
 def yield_datasets(model):
 
     from creme import base
+    from creme import compose
     from creme import datasets
+    from creme import preprocessing
     from creme import stream
     from sklearn import datasets as sk_datasets
 
     model = guess_model(model)
 
+    # Classification
     if isinstance(model, (base.BinaryClassifier, base.MultiClassifier)):
         yield datasets.Phishing()
+
+    # Multi-class classification
     if isinstance(model, base.MultiClassifier):
         yield datasets.ImageSegments().take(500)
+
+    # Regression
     if isinstance(model, base.Regressor):
         yield datasets.TrumpApproval()
+
+    # Multi-output regression
     if isinstance(model, base.MultiOutputRegressor):
+
+        # 1
         yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
+
+        # 2
+        class SolarFlare:
+            """One-hot encoded version of `datasets.SolarFlare`."""
+            def __iter__(self):
+                oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(int)
+                for x, y in datasets.SolarFlare():
+                    yield oh.transform_one(x), y
+        yield SolarFlare()
+
+    # Multi-output classification
     if isinstance(model, base.MultiOutputClassifier):
         yield datasets.Music()
 
@@ -143,7 +165,7 @@ def check_set_params_idempotent(model):
 
 
 def yield_checks(model):
-    """Generates unit tests that can be applied to a given model.
+    """Generates unit tests for a given model.
 
     Parameters:
         model (base.Estimator)
@@ -174,8 +196,8 @@ def yield_checks(model):
         if isinstance(model, base.Classifier):
             yield with_dataset(check_predict_proba_one)
 
-        if not isinstance(model, base.MultiClassifier):  # only binary classifiers
-            yield with_dataset(check_predict_proba_one_binary)
+            if not isinstance(model, base.MultiClassifier):
+                yield with_dataset(check_predict_proba_one_binary)
 
 
 def check_estimator(model):

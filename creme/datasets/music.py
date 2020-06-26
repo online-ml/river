@@ -15,9 +15,10 @@ class Music(base.RemoteDataset):
 
     def __init__(self):
         super().__init__(
+            task=base.MO_BINARY_CLF,
             n_samples=593,
             n_features=72,
-            task=base.MO_BINARY_CLF,
+            n_outputs=6,
             url='https://raw.githubusercontent.com/scikit-multiflow/streaming-datasets/master/music.csv',
             size=378980,
             unpack=False
