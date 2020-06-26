@@ -58,7 +58,6 @@ class MultiClassifier(Classifier):
         raise NotImplementedError
 
 
-
 class BinaryClassifier(Classifier):
     """A binary classifier."""
 

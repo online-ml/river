@@ -359,6 +359,7 @@ class Log(BinaryLoss):
 
         if isinstance(y_true, np.ndarray):
             weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
+            y_true = 2 * y_true - 1  # map {0, 1} to {-1, 1}
             z = y_pred * y_true
             return weights * np.log(1. + np.exp(-z))
 
@@ -378,6 +379,7 @@ class Log(BinaryLoss):
 
         if isinstance(y_true, np.ndarray):
             weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
+            y_true = 2 * y_true - 1  # map {0, 1} to {-1, 1}
             z = y_pred * y_true
             return weights * -y_true / (np.exp(z) + 1.)
 
@@ -388,9 +390,9 @@ class Log(BinaryLoss):
 
         z = y_pred * y_true
         if z > 18.:
-            return weight * math.exp(-z) * -y_true
+           return weight * math.exp(-z) * -y_true
         if z < -18.:
-            return weight * -y_true
+           return weight * -y_true
         return weight * -y_true / (math.exp(z) + 1.)
 
 

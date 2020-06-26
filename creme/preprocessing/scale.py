@@ -170,7 +170,7 @@ class StandardScaler(base.Transformer):
 
         """
 
-        # Operating on X.values, which is view to the underlying numpy array, is slightly faster
+        # Operating on X.values, which is a view to the underlying numpy array, is slightly faster
         # than operating on X
         columns = X.columns
         X = X.values
@@ -214,12 +214,10 @@ class StandardScaler(base.Transformer):
         means = np.array([self.means[c] for c in X.columns])
         stds = np.array([self.vars[c] ** .5 for c in X.columns])
 
-        return pd.DataFrame(
-            np.divide((X.values - means), stds, where=stds > 0),
-            index=X.index,
-            columns=X.columns,
-            copy=False
-        )
+        Xt = X.values - means
+        np.divide(Xt, stds, where=stds > 0, out=Xt)
+
+        return pd.DataFrame(Xt, index=X.index, columns=X.columns, copy=False)
 
 
 class MinMaxScaler(base.Transformer):
@@ -272,8 +270,7 @@ class MinMaxScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(xi - self.min[i].get(),
-                        self.max[i].get() - self.min[i].get())
+            i: safe_div(xi - self.min[i].get(), self.max[i].get() - self.min[i].get())
             for i, xi in x.items()
         }
 
@@ -380,7 +377,7 @@ class RobustScaler(base.Transformer):
         self.with_scaling = with_scaling
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.median = collections.defaultdict(functools.partial(stats.Quantile, 0.5))
+        self.median = collections.defaultdict(functools.partial(stats.Quantile, .5))
         self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
 
     def fit_one(self, x):

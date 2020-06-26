@@ -193,17 +193,17 @@ class Pipeline(base.Estimator):
         return len(self.steps)
 
     def __or__(self, other):
-        """Inserts a step at the end of the pipeline."""
+        """Insert a step at the end of the pipeline."""
         self._add_step(other, at_start=False)
         return self
 
     def __ror__(self, other):
-        """Inserts a step at the start of the pipeline."""
+        """Insert a step at the start of the pipeline."""
         self._add_step(other, at_start=True)
         return self
 
     def __add__(self, other):
-        """Merges with another Pipeline or TransformerUnion into a TransformerUnion."""
+        """Merge with another Pipeline or TransformerUnion into a TransformerUnion."""
         if isinstance(other, union.TransformerUnion):
             return other.__add__(self)
         return union.TransformerUnion(self, other)
@@ -236,7 +236,7 @@ class Pipeline(base.Estimator):
         return any(step._is_supervised for step in self.steps.values())
 
     def _add_step(self, estimator, at_start: bool):
-        """Adds a step to either end of the pipeline.
+        """Add a step to either end of the pipeline.
 
         This method takes care of sanitizing the input. For instance, if a function is passed,
         then it will be wrapped with a `FuncTransformer`.
@@ -525,7 +525,7 @@ class Pipeline(base.Estimator):
                     if not sub_t._is_supervised:
                         sub_t.fit_many(X=X)
 
-            elif not sub_t._is_supervised:
+            elif not t._is_supervised:
                 t.fit_many(X=X)
 
             X = t.transform_many(X=X)
