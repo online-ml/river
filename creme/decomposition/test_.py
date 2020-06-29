@@ -109,13 +109,12 @@ REFERENCE_FIT_ONE_PREDICT_ONE = [
 
 
 def test_extraction_words_ids():
-    '''
+    """
     Assert that inputs words are splitted.
     Assert that indexes are updated and extractable.
-    '''
-    np.random.seed(42)
+    """
 
-    lda = LDA(2, number_of_documents=5)
+    lda = LDA(2, number_of_documents=5, seed=42)
 
     word_indexes_list = []
 
@@ -139,14 +138,12 @@ def test_extraction_words_ids():
 
 
 def test_statistics_two_components():
-    '''
+    """
     Assert that online lda extracts waited statistics on current document.
-    '''
+    """
     n_components = 2
 
-    np.random.seed(42)
-
-    lda = LDA(n_components, number_of_documents=60)
+    lda = LDA(n_components, number_of_documents=60, seed=42)
 
     statistics_list = []
 
@@ -177,10 +174,9 @@ def test_statistics_two_components():
 
 
 def test_statistics_five_components():
-    '''
+    """
     Assert that online lda extracts waited statistics on current document.
-    '''
-    np.random.seed(42)
+    """
 
     n_components = 5
 
@@ -190,6 +186,7 @@ def test_statistics_five_components():
         maximum_size_vocabulary=100,
         alpha_beta=100,
         alpha_theta=0.5,
+        seed=42
     )
 
     statistics_list = []
@@ -221,10 +218,9 @@ def test_statistics_five_components():
 
 
 def test_five_components():
-    '''
+    """
     Assert that components computed are identical to the original version for n dimensions.
-    '''
-    np.random.seed(42)
+    """
 
     n_components = 5
 
@@ -234,6 +230,7 @@ def test_five_components():
         maximum_size_vocabulary=100,
         alpha_beta=100,
         alpha_theta=0.5,
+        seed=42
     )
 
     components_list = []
@@ -249,18 +246,18 @@ def test_five_components():
 
 
 def test_prunning_vocabulary():
-    '''
+    """
     Vocabulary prunning is available to improve accuracy and limit memory usage.
     You can perform vocabulary prunning with parameters vocab_prune_interval (int) and
     maximum_size_vocabulary (int).
-    '''
-    np.random.seed(42)
+    """
 
     online_lda = LDA(
         n_components=2,
         number_of_documents=60,
         vocab_prune_interval=2,
-        maximum_size_vocabulary=3
+        maximum_size_vocabulary=3,
+        seed=42
     )
 
     components_list = []
@@ -278,16 +275,16 @@ def test_prunning_vocabulary():
 
 
 def test_fit_transform():
-    '''
+    """
     Assert that fit_one and transform_one methods returns waited ouput.
-    '''
-    np.random.seed(42)
+    """
 
     online_lda = LDA(
         n_components=2,
         number_of_documents=60,
         vocab_prune_interval=2,
         maximum_size_vocabulary=3,
+        seed=42
     )
     components_list = []
 
