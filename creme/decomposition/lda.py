@@ -5,14 +5,13 @@ import numpy as np
 from scipy import special
 from scipy import ndimage
 
-from .. import base
-from ..feature_extraction import vectorize
+from creme import base
 
 
 __all__ = ['LDA']
 
 
-class LDA(base.Transformer, vectorize.VectorizerMixin):
+class LDA(base.Transformer):
     """Online Latent Dirichlet Allocation with Infinite Vocabulary.
 
     Latent Dirichlet allocation (LDA) is a probabilistic approach for exploring topics in document
@@ -22,22 +21,12 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
     The results produced by this implementation are identical to those from [the original
     implementation](https://github.com/kzhai/PyInfVoc) proposed by the method's authors.
 
+    This class takes as input token counts. Therefore, it requires you to tokenize beforehand. You
+    can do so by using a `feature_extraction.BagOfWords` instance, as shown in the example below.
+
     Parameters:
         n_components: Number of topics of the latent Drichlet allocation.
         number_of_documents: Estimated number of documents.
-        on: The name of the feature that contains the text to vectorize. If `sNone`s, then
-            the input is treated as a document instead of a set of features.
-        strip_accents: Whether or not to strip accent characters.
-        lowercase: Whether or not to convert all characters to lowercase.
-        preprocessor: Override the preprocessing step while preserving the tokenizing
-            and n-grams generation steps.
-        tokenizer: The function used to convert preprocessed text into a `dict` of
-            tokens. A default one is used if it is not provided by the user.
-        ngram_range: The lower and upper boundary of the range n-grams to be
-            extracted. All values of n such that `smin_n <= n <= max_n`s will be used. For example
-            an `sngram_range`s of `s(1, 1)`s means only unigrams, `s(1, 2)`s means unigrams and
-            bigrams, and `s(2, 2)`s means only bigrams. Only works if `stokenizer`s is not set to
-            `sFalse`s.
         alpha_theta: Hyper-parameter of the Dirichlet distribution of topics.
         alpha_beta: Hyper-parameter of the Dirichlet process of distribution over words.
         tau: Learning inertia to prevent premature convergence.
@@ -63,8 +52,9 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
 
     Example:
 
+        >>> from creme import compose
         >>> from creme import decomposition
-        >>> import numpy as np
+        >>> from creme import feature_extraction
 
         >>> X = [
         ...    'weather cold',
@@ -74,19 +64,24 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         ...    'weather cold humid',
         ... ]
 
-        >>> lda = decomposition.LDA(
-        ...     n_components=2,
-        ...     number_of_documents=60,
-        ...     seed=42
+        >>> lda = compose.Pipeline(
+        ...     feature_extraction.BagOfWords(),
+        ...     decomposition.LDA(
+        ...         n_components=2,
+        ...         number_of_documents=60,
+        ...         seed=42
+        ...     )
         ... )
 
         >>> for x in X:
-        ...     print(lda.fit_transform_one(x))
-        {0: 0.5, 1: 2.5}
-        {0: 3.5, 1: 0.5}
-        {0: 0.5, 1: 3.5}
-        {0: 1.5, 1: 1.5}
+        ...     lda = lda.fit_one(x)
+        ...     topics = lda.transform_one(x)
+        ...     print(topics)
+        {0: 2.5, 1: 0.5}
         {0: 2.5, 1: 1.5}
+        {0: 1.5, 1: 2.5}
+        {0: 1.5, 1: 1.5}
+        {0: 0.5, 1: 3.5}
 
     References:
         1. [Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569).](http://proceedings.mlr.press/v28/zhai13.pdf)
@@ -94,21 +89,10 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
 
     """
 
-    def __init__(self, n_components=10, number_of_documents=1e6, on=None, strip_accents=True,
-                 lowercase=True, preprocessor=None, tokenizer=None, ngram_range=(1, 1),
-                 alpha_theta=0.5, alpha_beta=100., tau=64., kappa=0.75, vocab_prune_interval=10,
-                 number_of_samples=10, ranking_smooth_factor=1e-12, burn_in_sweeps=5,
-                 maximum_size_vocabulary=4000, seed: int = None):
-
-        # Initialize the VectorizerMixin part
-        super().__init__(
-            on=on,
-            strip_accents=strip_accents,
-            lowercase=lowercase,
-            preprocessor=preprocessor,
-            tokenizer=tokenizer,
-            ngram_range=ngram_range
-        )
+    def __init__(self, n_components=10, number_of_documents=1e6, alpha_theta=.5, alpha_beta=100.,
+                 tau=64., kappa=.75, vocab_prune_interval=10, number_of_samples=10,
+                 ranking_smooth_factor=1e-12, burn_in_sweeps=5, maximum_size_vocabulary=4000,
+                 seed: int = None):
 
         self.n_components = n_components
         self.number_of_documents = number_of_documents
@@ -138,14 +122,14 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
             self.nu_1[topic] = np.ones(1)
             self.nu_2[topic] = np.array([self.alpha_beta])
 
-    def fit_transform_one(self, x):
-        """Equivalent to `slda.fit_one(x).transform_one(x)`s, but faster.
+    def fit_transform_one(self, x: dict) -> dict:
+        """Equivalent to `lda.fit_one(x).transform_one(x)`s, but faster.
 
         Parameters:
-            x (`dict` or `str`): Input features containing a text document, or text document.
+            x: A document.
 
         Returns
-            dict: Components of the input document.
+            Component attributions for the input document.
 
         """
 
@@ -153,7 +137,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         self.counter += 1
 
         # Extracts words of the document as a list of words:
-        word_list = self.process_text(x)
+        word_list = x.keys()
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)
@@ -175,56 +159,13 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         return dict(enumerate(batch_document_topic_distribution))
 
     def fit_one(self, x):
-        """Updates the LDA.
-
-        Tokenizes the document, then updates the word indexes, and then updates the online
-        variational inference.
-
-        Args:
-            x (`dict` or `str`): Input features containing a text document, or text document.
-
-        Returns
-            dict: Components of the input document.
-
-        """
-        # Updates number of documents:
-        self.counter += 1
-
-        # Extracts words of the document as a list of words:
-        word_list = self.process_text(x)
-
-        # Update words indexes:
-        self._update_indexes(word_list=word_list)
-
-        # Replace the words by their index:
-        words_indexes_list = [self.word_to_index[word] for word in word_list]
-
-        # Sample empirical topic assignment:
-        statistics, _ = self._compute_statistics_components(words_indexes_list)
-
-        # Oline variational inference
-        self._update_weights(statistics=statistics)
-
-        if self.counter % self.vocab_prune_interval == 0:
-            self._prune_vocabulary()
-
+        self.fit_transform_one(x)
         return self
 
     def transform_one(self, x):
-        """Returns document topics.
 
-        Tokenizes the document, then updates the word indexes, and then assigns topics to the
-        document.
-
-        Parameters:
-            x (`dict` or `str`): Input features containing a text document, or text document.
-
-        Returns
-            dict: Components of the input document.
-
-        """
         # Extracts words of the document as a list of words:
-        word_list = self.process_text(x)
+        word_list = x.keys()
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)
