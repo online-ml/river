@@ -28,8 +28,8 @@ from creme import stats
 from creme import time_series
 from creme import tree
 from creme import utils
-from creme.compat.sklearn import Creme2SKLBase
-from creme.compat.sklearn import SKL2CremeBase
+from creme.compat.creme_to_sklearn import Creme2SKLBase
+from creme.compat.sklearn_to_creme import SKL2CremeBase
 
 
 def get_all_estimators():

@@ -48,6 +48,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         burn_in_sweeps: Number of iteration necessaries while analyzing a document
             before updating document topics distribution.
         maximum_size_vocabulary: Maximum size of the stored vocabulary.
+        seed: Random number seed used for reproducibility.
 
     Attributes:
         counter (int): The current number of observed documents.
@@ -65,8 +66,6 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         >>> from creme import decomposition
         >>> import numpy as np
 
-        >>> np.random.seed(42)
-
         >>> X = [
         ...    'weather cold',
         ...    'weather hot dry',
@@ -75,9 +74,14 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         ...    'weather cold humid',
         ... ]
 
-        >>> online_lda = decomposition.LDA(n_components=2, number_of_documents=60)
+        >>> lda = decomposition.LDA(
+        ...     n_components=2,
+        ...     number_of_documents=60,
+        ...     seed=42
+        ... )
+
         >>> for x in X:
-        ...     print(online_lda.fit_transform_one(x))
+        ...     print(lda.fit_transform_one(x))
         {0: 0.5, 1: 2.5}
         {0: 3.5, 1: 0.5}
         {0: 0.5, 1: 3.5}
@@ -94,7 +98,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
                  lowercase=True, preprocessor=None, tokenizer=None, ngram_range=(1, 1),
                  alpha_theta=0.5, alpha_beta=100., tau=64., kappa=0.75, vocab_prune_interval=10,
                  number_of_samples=10, ranking_smooth_factor=1e-12, burn_in_sweeps=5,
-                 maximum_size_vocabulary=4000):
+                 maximum_size_vocabulary=4000, seed: int = None):
 
         # Initialize the VectorizerMixin part
         super().__init__(
@@ -117,6 +121,8 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
         self.ranking_smooth_factor = ranking_smooth_factor
         self.burn_in_sweeps = burn_in_sweeps
         self.maximum_size_vocabulary = maximum_size_vocabulary
+        self.seed = seed
+        self.rng = np.random.RandomState(seed)
 
         self.counter = 0
         self.truncation_size_prime = 1
@@ -354,7 +360,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
 
         size_vocab = len(words_indexes_list)
 
-        phi = np.random.random((self.n_components, size_vocab))
+        phi = self.rng.random((self.n_components, size_vocab))
 
         phi = phi / np.sum(phi, axis=0)
 
@@ -380,7 +386,7 @@ class LDA(base.Transformer, vectorize.VectorizerMixin):
                 temp_phi /= temp_phi.sum()
 
                 # Sample a topic based a given probability distribution:
-                temp_phi = np.random.multinomial(1, temp_phi)
+                temp_phi = self.rng.multinomial(1, temp_phi)
 
                 phi[:, word_index] = temp_phi
 
