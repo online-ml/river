@@ -120,7 +120,7 @@ def test_extraction_words_ids():
 
     for doc in DOC_SET:
 
-        words = lda.process_text(doc)
+        words = doc.split(' ')
 
         lda._update_indexes(word_list=words)
 
@@ -149,7 +149,7 @@ def test_statistics_two_components():
 
     for doc in DOC_SET:
 
-        word_list = lda.process_text(doc)
+        word_list = doc.split(' ')
 
         lda._update_indexes(word_list=word_list)
 
@@ -193,7 +193,7 @@ def test_statistics_five_components():
 
     for doc in DOC_SET:
 
-        word_list = lda.process_text(doc)
+        word_list = doc.split(' ')
 
         lda._update_indexes(word_list=word_list)
 
@@ -224,7 +224,7 @@ def test_five_components():
 
     n_components = 5
 
-    online_lda = LDA(
+    lda = LDA(
         n_components=n_components,
         number_of_documents=60,
         maximum_size_vocabulary=100,
@@ -236,7 +236,8 @@ def test_five_components():
     components_list = []
 
     for document in DOC_SET:
-        components_list.append(online_lda.fit_transform_one(document))
+        tokens = {token: 1 for token in document.split(' ')}
+        components_list.append(lda.fit_transform_one(tokens))
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
@@ -252,7 +253,7 @@ def test_prunning_vocabulary():
     maximum_size_vocabulary (int).
     """
 
-    online_lda = LDA(
+    lda = LDA(
         n_components=2,
         number_of_documents=60,
         vocab_prune_interval=2,
@@ -263,9 +264,8 @@ def test_prunning_vocabulary():
     components_list = []
 
     for document in DOC_SET:
-        components_list.append(
-            online_lda.fit_transform_one(x=document)
-        )
+        tokens = {token: 1 for token in document.split(' ')}
+        components_list.append(lda.fit_transform_one(tokens))
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
@@ -279,7 +279,7 @@ def test_fit_transform():
     Assert that fit_one and transform_one methods returns waited ouput.
     """
 
-    online_lda = LDA(
+    lda = LDA(
         n_components=2,
         number_of_documents=60,
         vocab_prune_interval=2,
@@ -289,11 +289,10 @@ def test_fit_transform():
     components_list = []
 
     for document in DOC_SET:
-        online_lda = online_lda.fit_one(x=document)
+        tokens = {token: 1 for token in document.split(' ')}
+        lda = lda.fit_one(x=tokens)
 
-        components_list.append(
-            online_lda.transform_one(x=document)
-        )
+        components_list.append(lda.transform_one(x=tokens))
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
