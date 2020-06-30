@@ -99,23 +99,24 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
     """
 
     def __init__(self, estimator: base.Regressor):
+
+        # Check the estimator is a Regressor
+        if not isinstance(estimator, base.Regressor):
+            raise ValueError('estimator is not a Regressor')
+
         self.estimator = estimator
 
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
 
         Parameters:
-            X (array-like of shape (n_samples, n_features))
-            y (array-like of shape n_samples)
+            X: array-like of shape (n_samples, n_features).
+            y: array-like of shape n_samples.
 
         Returns:
             self
 
         """
-
-        # Check the estimator is a Regressor
-        if not isinstance(self.estimator, base.Regressor):
-            raise ValueError('estimator is not a Regressor')
 
         # Check the inputs
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
@@ -128,13 +129,35 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
         for x, yi in STREAM_METHODS[type(X)](X, y):
             self.instance_.fit_one(x, yi)
 
+        # Store the number of features so that future inputs can be checked
+        self.n_features_in_ = X.shape[1]
+
         return self
+
+    def partial_fit(self, X, y, classes=None):
+        """Fits incrementally on a portion of a dataset.
+
+        Parameters:
+            X: array-like of shape (n_samples, n_features).
+            y: array-like of shape n_samples.
+
+        Returns:
+            self
+
+        """
+
+        if hasattr(self, 'n_features_in_') and self.n_features_in_ != X.shape[1]:
+            raise ValueError(f'Number of features {X.shape[1]} does not match'
+                             f'previous data {self.n_features_in_}')
+
+        # The fit function already implements a single pass on the input data
+        return self.fit(X, y)
 
     def predict(self, X):
         """Predicts the target of an entire dataset contained in memory.
 
         Parameters:
-            X (array-like of shape (n_samples, n_features))
+            X: array-like of shape (n_samples, n_features).
 
         Returns:
             array of shape (n_samples,): Predicted target values for each row of `X`.
@@ -146,6 +169,9 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
+
+        if X.shape[1] != self.n_features_in_:
+            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
 
         # Make a prediction for each observation
         y_pred = np.empty(shape=len(X))
@@ -164,53 +190,103 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
     """
 
     def __init__(self, estimator: base.Classifier):
+
+        # Check the estimator is either a BinaryClassifier or a MultiClassifier
+        if not isinstance(estimator, (base.BinaryClassifier, base.MultiClassifier)):
+            raise ValueError('estimator is not a BinaryClassifier nor a MultiClassifier')
+
         self.estimator = estimator
+
+
+    def _more_tags(self):
+
+        # If converting a BinaryClassifier, notify that only binary classification is supported
+        return dict(binary_only=isinstance(self.estimator, base.BinaryClassifier))
+
+    def _partial_fit(self, X, y, classes):
+
+        # If first _partial_fit call, set the classes, else check consistency
+        utils.multiclass._check_partial_fit_first_call(self, classes)
+
+        # Check the inputs
+        X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+
+        # Check the number of classes agrees with the type of classifier
+        if len(self.classes_) > 2 and not isinstance(self.estimator, base.MultiClassifier):
+            # Only a warning for now so tests can pass, see scikit-learn issue
+            # https://github.com/scikit-learn/scikit-learn/issues/16798#issuecomment-651784267
+            # TODO: change to a ValueError when fixed
+            import warnings
+            warnings.warn(f'More than 2 classes were given but {self.estimator} is a'
+                           ' BinaryClassifier')
+
+        # Store the number of features so that future inputs can be checked
+        if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
+            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+        self.n_features_in_ = X.shape[1]
+
+        # Check the target
+        utils.multiclass.check_classification_targets(y)
+        if set(y) - set(self.classes_):
+            raise ValueError('classes should include all valid labels that can be in y')
+
+        # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
+        # deep copy the provided estimator in order to respect this convention
+        if not hasattr(self, 'instance_'):
+            self.instance_ = copy.deepcopy(self.estimator)
+
+        # creme's BinaryClassifier expects bools or 0/1 values
+        if not isinstance(self.estimator, base.MultiClassifier):
+            if not hasattr(self, 'label_encoder_'):
+                self.label_encoder_ = preprocessing.LabelEncoder().fit(classes)
+            y = self.label_encoder_.transform(y)
+
+        # Call fit_one for each observation
+        for x, yi in STREAM_METHODS[type(X)](X, y):
+            self.instance_.fit_one(x, yi)
+
+        return self
+
 
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
 
         Parameters:
-            X (array-like of shape (n_samples, n_features))
-            y (array-like of shape n_samples)
+            X: array-like of shape (n_samples, n_features).
+            y: array-like of shape n_samples.
 
         Returns:
             self
 
         """
 
-        # Check the estimator is either a BinaryClassifier or a MultiClassifier
-        if not isinstance(self.estimator, (base.BinaryClassifier, base.MultiClassifier)):
-            raise ValueError('estimator is not a BinaryClassifier nor a MultiClassifier')
+        # Reset the state if already fitted
+        for attr in ('classes_', 'instance_', 'label_encoder_', 'n_features_in_'):
+            self.__dict__.pop(attr, None)
 
-        # Check the inputs
-        X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+        # Fit with one pass of the dataset
+        classes = utils.multiclass.unique_labels(y)
+        return self._partial_fit(X, y, classes)
 
-        # Check the target
-        utils.multiclass.check_classification_targets(y)
+    def partial_fit(self, X, y, classes=None):
+        """Fits incrementally on a portion of a dataset.
 
-        # Check the number of classes agrees with the type of classifier
-        self.classes_ = np.unique(y)
-        if len(self.classes_) > 2 and not isinstance(self.estimator, base.MultiClassifier):
-            raise ValueError(f'n_classes is more than 2 but {self.estimator} is a ' +
-                             'BinaryClassifier')
+        Parameters:
+            X: array-like of shape (n_samples, n_features).
+            y: array-like of shape n_samples.
+            classes: array-like of shape (n_classes,), default=None
+                Classes across all calls to partial_fit.
+                This argument is required for the first call to partial_fit
+                and can be omitted in the subsequent calls.
+                Note that y doesn't need to contain all labels in `classes`.
 
-        # creme's BinaryClassifier expects bools or 0/1 values
-        if not isinstance(self.estimator, base.MultiClassifier):
-            self.label_encoder_ = preprocessing.LabelEncoder().fit(y)
-            y = self.label_encoder_.transform(y)
+        Returns:
+            self
 
-        # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
-        # deep copy the provided estimator in order to respect this convention
-        self.instance_ = copy.deepcopy(self.estimator)
+        """
 
-        # Call fit_one for each observation
-        for x, yi in STREAM_METHODS[type(X)](X, y):
-            self.instance_.fit_one(x, yi)
-
-        # Store the number of features so that future inputs can be checked
-        self.n_features_ = X.shape[1]
-
-        return self
+        # Fit with one pass of the dataset portion
+        return self._partial_fit(X, y, classes)
 
     def predict_proba(self, X):
         """Predicts the target probability of an entire dataset contained in memory.
@@ -229,8 +305,8 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
-        if X.shape[1] != self.n_features_:
-            raise ValueError(f'Expected {self.n_features_} features, got {X.shape[1]}')
+        if X.shape[1] != self.n_features_in_:
+            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
 
         # creme's predictions have to converted to follow the scikit-learn conventions
         def reshape_probas(y_pred):
@@ -247,7 +323,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         """Predicts the target of an entire dataset contained in memory.
 
         Parameters:
-            X (array-like of shape (n_samples, n_features))
+            X: array-like of shape (n_samples, n_features).
 
         Returns:
             array of shape (n_samples,): Predicted target values for each row of `X`.
@@ -260,15 +336,20 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
-        if X.shape[1] != self.n_features_:
-            raise ValueError(f'Expected {self.n_features_} features, got {X.shape[1]}')
+        if X.shape[1] != self.n_features_in_:
+            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
 
         # Make a prediction for each observation
         y_pred = [None] * len(X)
         for i, (x, _) in enumerate(stream.iter_array(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
-        return np.asarray(y_pred)
+        # Convert back to the expected labels if an encoder was necessary for BinaryClassifier
+        y_pred = np.asarray(y_pred)
+        if hasattr(self, 'label_encoder_'):
+            y_pred = self.label_encoder_.inverse_transform(y_pred.astype(int))
+
+        return y_pred
 
 
 class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
@@ -286,8 +367,8 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         """Fits to an entire dataset contained in memory.
 
         Parameters:
-            X (array-like of shape (n_samples, n_features))
-            y (array-like of shape n_samples)
+            X: array-like of shape (n_samples, n_features).
+            y: array-like of shape n_samples.
 
         Returns:
             self
@@ -317,9 +398,28 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
                 self.instance_.fit_one(x)
 
         # Store the number of features so that future inputs can be checked
-        self.n_features_ = X.shape[1]
+        self.n_features_in_ = X.shape[1]
 
         return self
+
+    def partial_fit(self, X, y):
+        """Fits incrementally on a portion of a dataset.
+
+        Parameters:
+            X: array-like of shape (n_samples, n_features).
+            y: array-like of shape n_samples.
+
+        Returns:
+            self
+
+        """
+
+        if hasattr(self, 'n_features_in_') and self.n_features_in_ != X.shape[1]:
+            raise ValueError(f'Number of features {X.shape[1]} does not match'
+                             f'previous data {self.n_features_in_}')
+
+        # The fit function already implements a single pass on the input data
+        return self.fit(X, y)
 
     def transform(self, X):
         """Predicts the target of an entire dataset contained in memory.
@@ -338,8 +438,8 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
-        if X.shape[1] != self.n_features_:
-            raise ValueError(f'Expected {self.n_features_} features, got {X.shape[1]}')
+        if X.shape[1] != self.n_features_in_:
+            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)
@@ -364,8 +464,8 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
         """Fits to an entire dataset contained in memory.
 
         Parameters:
-            X (array-like of shape (n_samples, n_features))
-            y (array-like of shape n_samples)
+            X: array-like of shape (n_samples, n_features).
+            y: array-like of shape n_samples.
 
         Returns:
             self
@@ -389,13 +489,35 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
             label = self.instance_.fit_one(x).predict_one(x)
             self.labels_[i] = label
 
+        # Store the number of features so that future inputs can be checked
+        self.n_features_in_ = X.shape[1]
+
         return self
+
+    def partial_fit(self, X, y):
+        """Fits incrementally on a portion of a dataset.
+
+        Parameters:
+            X: array-like of shape (n_samples, n_features).
+            y: array-like of shape n_samples.
+
+        Returns:
+            self
+
+        """
+
+        if hasattr(self, 'n_features_in_') and self.n_features_in_ != X.shape[1]:
+            raise ValueError(f'Number of features {X.shape[1]} does not match'
+                             f'previous data {self.n_features_in_}')
+
+        # The fit function already implements a single pass on the input data
+        return self.fit(X, y)
 
     def predict(self, X):
         """Predicts the target of an entire dataset contained in memory.
 
         Parameters:
-            X (array-like of shape (n_samples, n_features))
+            X: array-like of shape (n_samples, n_features).
 
         Returns:
             array: Transformed output.
