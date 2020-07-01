@@ -106,6 +106,27 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
 
         self.estimator = estimator
 
+    def _partial_fit(self, X, y):
+
+        # Check the inputs
+        X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+
+        # Store the number of features so that future inputs can be checked
+        if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
+            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+        self.n_features_in_ = X.shape[1]
+
+        # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
+        # deep copy the provided estimator in order to respect this convention
+        if not hasattr(self, 'instance_'):
+            self.instance_ = copy.deepcopy(self.estimator)
+
+        # Call fit_one for each observation
+        for x, yi in STREAM_METHODS[type(X)](X, y):
+            self.instance_.fit_one(x, yi)
+
+        return self
+
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
 
@@ -118,21 +139,12 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
 
         """
 
-        # Check the inputs
-        X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+        # Reset the state if already fitted
+        for attr in ('instance_', 'n_features_in_'):
+            self.__dict__.pop(attr, None)
 
-        # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
-        # deep copy the provided estimator in order to respect this convention
-        self.instance_ = copy.deepcopy(self.estimator)
-
-        # Call fit_one for each observation
-        for x, yi in STREAM_METHODS[type(X)](X, y):
-            self.instance_.fit_one(x, yi)
-
-        # Store the number of features so that future inputs can be checked
-        self.n_features_in_ = X.shape[1]
-
-        return self
+        # Fit with one pass of the dataset
+        return self._partial_fit(X, y)
 
     def partial_fit(self, X, y, classes=None):
         """Fits incrementally on a portion of a dataset.
@@ -146,12 +158,8 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
 
         """
 
-        if hasattr(self, 'n_features_in_') and self.n_features_in_ != X.shape[1]:
-            raise ValueError(f'Number of features {X.shape[1]} does not match'
-                             f'previous data {self.n_features_in_}')
-
-        # The fit function already implements a single pass on the input data
-        return self.fit(X, y)
+        # Fit with one pass of the dataset portion
+        return self._partial_fit(X, y)
 
     def predict(self, X):
         """Predicts the target of an entire dataset contained in memory.
@@ -197,7 +205,6 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
 
         self.estimator = estimator
 
-
     def _more_tags(self):
 
         # If converting a BinaryClassifier, notify that only binary classification is supported
@@ -238,7 +245,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         # creme's BinaryClassifier expects bools or 0/1 values
         if not isinstance(self.estimator, base.MultiClassifier):
             if not hasattr(self, 'label_encoder_'):
-                self.label_encoder_ = preprocessing.LabelEncoder().fit(classes)
+                self.label_encoder_ = preprocessing.LabelEncoder().fit(self.classes_)
             y = self.label_encoder_.transform(y)
 
         # Call fit_one for each observation
@@ -246,7 +253,6 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
             self.instance_.fit_one(x, yi)
 
         return self
-
 
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
@@ -361,7 +367,40 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
     """
 
     def __init__(self, estimator: base.Transformer):
+
+        # Check the estimator is a Transformer
+        if not isinstance(estimator, base.Transformer):
+            raise ValueError('estimator is not a Transformer')
+
         self.estimator = estimator
+
+    def _partial_fit(self, X, y):
+
+        # Check the inputs
+        if y is None:
+            X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
+        else:
+            X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+
+        # Store the number of features so that future inputs can be checked
+        if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
+            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+        self.n_features_in_ = X.shape[1]
+
+        # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
+        # deep copy the provided estimator in order to respect this convention
+        if not hasattr(self, 'instance_'):
+            self.instance_ = copy.deepcopy(self.estimator)
+
+        # Call fit_one for each observation
+        if isinstance(self.instance_, base.SupervisedTransformer):
+            for x, yi in STREAM_METHODS[type(X)](X, y):
+                self.instance_.fit_one(x, yi)
+        else:
+            for x, _ in STREAM_METHODS[type(X)](X):
+                self.instance_.fit_one(x)
+
+        return self
 
     def fit(self, X, y=None):
         """Fits to an entire dataset contained in memory.
@@ -375,34 +414,14 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
 
         """
 
-        # Check the estimator is a Transformer
-        if not isinstance(self.estimator, base.Transformer):
-            raise ValueError('estimator is not a Transformer')
+        # Reset the state if already fitted
+        for attr in ('instance_', 'n_features_in_'):
+            self.__dict__.pop(attr, None)
 
-        # Check the inputs
-        if y is None:
-            X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
-        else:
-            X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+        # Fit with one pass of the dataset
+        return self._partial_fit(X, y)
 
-        # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
-        # deep copy the provided estimator in order to respect this convention
-        self.instance_ = copy.deepcopy(self.estimator)
-
-        # Call fit_one for each observation
-        if isinstance(self.instance_, base.SupervisedTransformer):
-            for x, yi in STREAM_METHODS[type(X)](X, y):
-                self.instance_.fit_one(x, yi)
-        else:
-            for x, _ in STREAM_METHODS[type(X)](X):
-                self.instance_.fit_one(x)
-
-        # Store the number of features so that future inputs can be checked
-        self.n_features_in_ = X.shape[1]
-
-        return self
-
-    def partial_fit(self, X, y):
+    def partial_fit(self, X, y=None):
         """Fits incrementally on a portion of a dataset.
 
         Parameters:
@@ -414,12 +433,8 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
 
         """
 
-        if hasattr(self, 'n_features_in_') and self.n_features_in_ != X.shape[1]:
-            raise ValueError(f'Number of features {X.shape[1]} does not match'
-                             f'previous data {self.n_features_in_}')
-
-        # The fit function already implements a single pass on the input data
-        return self.fit(X, y)
+        # Fit with one pass of the dataset
+        return self._partial_fit(X, y)
 
     def transform(self, X):
         """Predicts the target of an entire dataset contained in memory.
@@ -458,7 +473,35 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
     """
 
     def __init__(self, estimator: base.Clusterer):
+
+        # Check the estimator is a Clusterer
+        if not isinstance(estimator, base.Clusterer):
+            raise ValueError('estimator is not a Clusterer')
+
         self.estimator = estimator
+
+    def _partial_fit(self, X, y):
+
+        # Check the inputs
+        X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
+
+        # Store the number of features so that future inputs can be checked
+        if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
+            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+        self.n_features_in_ = X.shape[1]
+
+        # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
+        # deep copy the provided estimator in order to respect this convention
+        if not hasattr(self, 'instance_'):
+            self.instance_ = copy.deepcopy(self.estimator)
+
+        # Call fit_one for each observation
+        self.labels_ = np.empty(len(X), dtype=np.int32)
+        for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
+            label = self.instance_.fit_one(x).predict_one(x)
+            self.labels_[i] = label
+
+        return self
 
     def fit(self, X, y=None):
         """Fits to an entire dataset contained in memory.
@@ -472,27 +515,12 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
 
         """
 
-        # Check the estimator is a Clusterer
-        if not isinstance(self.estimator, base.Clusterer):
-            raise ValueError('estimator is not a Clusterer')
+        # Reset the state if already fitted
+        for attr in ('instance_', 'n_features_in_'):
+            self.__dict__.pop(attr, None)
 
-        # Check the inputs
-        X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
-
-        # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
-        # deep copy the provided estimator in order to respect this convention
-        self.instance_ = copy.deepcopy(self.estimator)
-
-        # Call fit_one for each observation
-        self.labels_ = np.empty(len(X), dtype=np.int32)
-        for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
-            label = self.instance_.fit_one(x).predict_one(x)
-            self.labels_[i] = label
-
-        # Store the number of features so that future inputs can be checked
-        self.n_features_in_ = X.shape[1]
-
-        return self
+        # Fit with one pass of the dataset
+        return self._partial_fit(X, y)
 
     def partial_fit(self, X, y):
         """Fits incrementally on a portion of a dataset.
@@ -506,12 +534,8 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
 
         """
 
-        if hasattr(self, 'n_features_in_') and self.n_features_in_ != X.shape[1]:
-            raise ValueError(f'Number of features {X.shape[1]} does not match'
-                             f'previous data {self.n_features_in_}')
-
-        # The fit function already implements a single pass on the input data
-        return self.fit(X, y)
+        # Fit with one pass of the dataset
+        return self._partial_fit(X, y)
 
     def predict(self, X):
         """Predicts the target of an entire dataset contained in memory.
