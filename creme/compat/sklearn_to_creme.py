@@ -33,6 +33,9 @@ def convert_sklearn_to_creme(estimator: sklearn_base.BaseEstimator, batch_size=1
     if not hasattr(estimator, 'partial_fit'):
         raise ValueError(f'{estimator} does not have a partial_fit method')
 
+    if isinstance(estimator, sklearn_base.ClassifierMixin) and classes is None:
+        raise ValueError('classes must be provided to convert a classifier')
+
     wrappers = [
         (sklearn_base.RegressorMixin, functools.partial(
             SKL2CremeRegressor,
