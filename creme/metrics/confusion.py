@@ -25,14 +25,14 @@ class ConfusionMatrix(base.MultiClassMetric):
 
         >>> cm = metrics.ConfusionMatrix()
 
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     cm = cm.update(y_t, y_p)
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     cm = cm.update(yt, yp)
 
         >>> cm
-                    ant  bird   cat
-            ant     2     0     0
-            bird     0     0     1
-            cat     1     0     2
+               ant  bird   cat
+         ant     2     0     0
+        bird     0     0     1
+         cat     1     0     2
 
         >>> cm['bird']['cat']
         1.0

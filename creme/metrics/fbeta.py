@@ -52,8 +52,8 @@ class FBeta(BaseFBeta, base.BinaryMetric):
         >>> y_pred = [False, False, True, True, False, False]
 
         >>> metric = metrics.FBeta(beta=2)
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     metric = metric.update(y_t, y_p)
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
 
         >>> metric
         FBeta: 0.357143
@@ -161,8 +161,8 @@ class MicroFBeta(BaseFBeta, base.MultiClassMetric):
         >>> y_pred = [0, 1, 1, 2, 1]
 
         >>> metric = metrics.MicroFBeta(beta=2)
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     metric = metric.update(y_t, y_p)
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
 
         >>> metric
         MicroFBeta: 0.6
@@ -353,8 +353,8 @@ class F1(FBeta):
         >>> y_pred = [False, False, True, True, False, False]
 
         >>> metric = metrics.F1()
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     metric = metric.update(y_t, y_p)
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
 
         >>> metric
         F1: 0.4
@@ -407,8 +407,8 @@ class MicroF1(MicroFBeta):
         >>> y_pred = [0, 1, 1, 2, 1]
 
         >>> metric = metrics.MicroF1()
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     metric = metric.update(y_t, y_p)
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
 
         >>> metric
         MicroF1: 0.6
