@@ -13,9 +13,15 @@ class OneVsRestClassifier(base.Wrapper, base.MultiClassifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
-    streaming context, the number of classes isn't known from the start, hence new classifiers are
+    streaming context, the number of classes isn't known from the start. Hence, new classifiers are
     instantiated on the fly. Likewise, the predicted probabilities will only include the classes
     seen up to a given point in time.
+
+    Note that this classifier supports mini-batches as well as single instances.
+
+    The computational complexity for both learning and predicting grows linearly with the number of
+    classes. If you have a very large number of classes, then you might want to consider using an
+    `multiclass.OutputCodeClassifier` instead.
 
     Parameters:
         classifier: A binary classifier, although a multi-class classifier will work too.

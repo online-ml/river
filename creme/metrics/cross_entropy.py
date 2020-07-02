@@ -23,8 +23,8 @@ class CrossEntropy(base.MeanMetric, base.MultiClassMetric):
 
         >>> metric = metrics.CrossEntropy()
 
-        >>> for y_t, y_p in zip(y_true, y_pred):
-        ...     metric = metric.update(y_t, y_p)
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
         ...     print(metric.get())
         1.222454
         1.169691
