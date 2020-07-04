@@ -1,6 +1,6 @@
-from . import base
-
 import collections
+
+from . import base
 
 
 __all__ = ['ConfusionMatrix']

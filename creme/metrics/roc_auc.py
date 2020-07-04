@@ -11,15 +11,13 @@ class ROCAUC(base.BinaryMetric):
     """Receiving Operating Characteristic Area Under the Curve.
 
     This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would
-    require storing all the predictions and true outputs, which isn't an option. The approximation
+    require storing all the predictions and ground truths, which isn't desirable. The approximation
     error is not significant as long as the predicted probabilities are well calibrated. In any
-    case, this metric can still be used to reliably compare models, even though it is an
-    approximation.
+    case, this metric can still be used to reliably compare models between each other.
 
     Parameters:
-        n_thresholds: The number of thresholds to use to discretize the ROC curve. The higher this
-            is, the closer the output will be to the true ROC AUC value, at the cost of more time
-            and memory.
+        n_thresholds: The number of thresholds used for discretizing the ROC curve. A higher value
+            will lead to more accurate results, but will also cost more time and memory.
 
     Example:
 
@@ -52,11 +50,9 @@ class ROCAUC(base.BinaryMetric):
     def __init__(self, n_thresholds=10):
         self.n_thresholds = n_thresholds
         self.thresholds = [i / (n_thresholds - 1) for i in range(n_thresholds)]
-        """The equidistant thresholds."""
         self.thresholds[0] -= 1e-7
         self.thresholds[-1] += 1e-7
         self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
-        """Contains a `metrics.ConfusionMatrix` for each threshold."""
 
     def update(self, y_true, y_pred, sample_weight=1.):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred

@@ -1,4 +1,4 @@
-from .. import optim
+from creme import optim
 
 from . import base
 

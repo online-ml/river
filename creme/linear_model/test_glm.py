@@ -1,11 +1,11 @@
 import copy
-import functools
 import itertools
 import math
 import random
 
 import numpy as np
 import pandas as pd
+from sklearn import linear_model as lm
 import pytest
 
 from creme import datasets
@@ -161,3 +161,41 @@ def test_add_remove_columns():
         # Pick half of the columns at random
         cols = np.random.choice(X.columns, len(X.columns) // 2, replace=False)
         lin_reg.fit_many(xb[cols], yb)
+
+
+def test_lin_reg_sklearn_coherence():
+    """Checks that the sklearn and creme implementations produce the same results."""
+
+    class SquaredLoss:
+        """sklearn removes the leading 2 from the gradient of the squared loss."""
+
+        def gradient(self, y_true, y_pred):
+            return y_pred - y_true
+
+    ss = preprocessing.StandardScaler()
+    cr = linear_model.LinearRegression(optimizer=optim.SGD(.01), loss=SquaredLoss())
+    sk = lm.SGDRegressor(learning_rate='constant', eta0=.01, alpha=.0)
+
+    for x, y in datasets.TrumpApproval():
+        x = ss.fit_one(x).transform_one(x)
+        cr.fit_one(x, y)
+        sk.partial_fit([list(x.values())], [y])
+
+    for i, w in enumerate(cr.weights.values()):
+        assert math.isclose(w, sk.coef_[i])
+
+
+def test_log_reg_sklearn_coherence():
+    """Checks that the sklearn and creme implementations produce the same results."""
+
+    ss = preprocessing.StandardScaler()
+    cr = linear_model.LogisticRegression(optimizer=optim.SGD(.01))
+    sk = lm.SGDClassifier(learning_rate='constant', eta0=.01, alpha=.0, loss='log')
+
+    for x, y in datasets.Bananas():
+        x = ss.fit_one(x).transform_one(x)
+        cr.fit_one(x, y)
+        sk.partial_fit([list(x.values())], [y], classes=[False, True])
+
+    for i, w in enumerate(cr.weights.values()):
+        assert math.isclose(w, sk.coef_[0][i])
