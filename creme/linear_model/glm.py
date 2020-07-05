@@ -13,7 +13,8 @@ from creme import utils
 
 __all__ = [
     'LinearRegression',
-    'LogisticRegression'
+    'LogisticRegression',
+    'Perceptron'
 ]
 
 
@@ -330,3 +331,43 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     def predict_many(self, X: pd.DataFrame) -> pd.Series:
         p = self.loss.mean_func(self._raw_dot_many(X))
         return pd.Series(p > .5, name=self._y_name, index=X.index, copy=False)
+
+
+class Perceptron(LogisticRegression):
+    """Perceptron classifier.
+
+    In this implementation, the Perceptron is viewed as a special case of the logistic regression.
+    The loss function that is used is the Hinge loss with a threshold set to 0, whilst the learning
+    rate of the stochastic gradient descent procedure is set to 1 for both the weights and the
+    intercept.
+
+    Example:
+
+        >>> from creme import datasets
+        >>> from creme import linear_model as lm
+        >>> from creme import metrics
+        >>> from creme import model_selection
+        >>> from creme import optim
+        >>> from creme import preprocessing as pp
+
+        >>> X_y = datasets.Phishing()
+
+        >>> model = pp.StandardScaler() | lm.Perceptron()
+
+        >>> metric = metrics.Accuracy()
+
+        >>> model_selection.progressive_val_score(X_y, model, metric)
+        Accuracy: 88.96%
+
+    """
+
+    def __init__(self, l2=.0, clip_gradient=1e12,
+                 initializer: optim.initializers.Initializer = None):
+        super().__init__(
+            optimizer=optim.SGD(1),
+            intercept_lr=1,
+            loss=optim.losses.Hinge(threshold=0.),
+            l2=l2,
+            clip_gradient=clip_gradient,
+            initializer=initializer
+        )

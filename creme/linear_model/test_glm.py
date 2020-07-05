@@ -199,3 +199,19 @@ def test_log_reg_sklearn_coherence():
 
     for i, w in enumerate(cr.weights.values()):
         assert math.isclose(w, sk.coef_[0][i])
+
+
+def test_perceptron_sklearn_coherence():
+    """Checks that the sklearn and creme implementations produce the same results."""
+
+    ss = preprocessing.StandardScaler()
+    cr = linear_model.Perceptron()
+    sk = lm.Perceptron()
+
+    for x, y in datasets.Bananas():
+        x = ss.fit_one(x).transform_one(x)
+        cr.fit_one(x, y)
+        sk.partial_fit([list(x.values())], [y], classes=[False, True])
+
+    for i, w in enumerate(cr.weights.values()):
+        assert math.isclose(w, sk.coef_[0][i])

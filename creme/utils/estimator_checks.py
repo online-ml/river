@@ -130,6 +130,29 @@ def check_predict_proba_one_binary(classifier, dataset):
         assert False in y_pred
 
 
+def check_shuffling_no_impact(model, dataset):
+
+    shuffled = copy.deepcopy(model)
+
+    for x, y in dataset:
+
+        # Shuffle the features
+        features = x.keys()
+        random.shuffle(features)
+        x_shuffled = {i: x[i] for i in features}
+
+        yp1 = model.predict_one(x)
+        yp2 = model.predict_one(x_shuffled)
+        yp3 = shuffled.predict_one(x)
+        yp4 = shuffled.predict_one(x_shuffled)
+
+        for a, b in itertools.combinations([yp1, yp2, yp3, yp4]):
+            assert a == b
+
+        model.fit_one(x)
+        shuffled.fit_one(x_shuffled)
+
+
 def check_debug_one(model, dataset):
     for x, y in dataset:
         model.debug_one(x)
@@ -190,6 +213,7 @@ def yield_checks(model):
         yield with_dataset(check_pickling)
         if hasattr(model, 'debug_one'):
             yield with_dataset(check_debug_one)
+        yield with_dataset(check_shuffling_no_impact)
 
         model = guess_model(model)
 
