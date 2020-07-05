@@ -24,7 +24,6 @@ __all__ = [
     'EpsilonInsensitiveHinge',
     'Log',
     'MultiClassLoss',
-    'Perceptron',
     'Poisson',
     'Quantile',
     'RegressionLoss',
@@ -294,10 +293,10 @@ class Hinge(BinaryLoss):
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         if isinstance(y_true, np.ndarray):
-            return np.where(y_true * y_pred < self.threshold, -y_pred, 0)
+            return np.where(y_true * y_pred < self.threshold, -y_true, 0)
 
-        if y_true * y_pred < self.threshold:
-            return -y_pred
+        if y_true * y_pred <= self.threshold:
+            return -y_true
         return 0
 
 
@@ -445,7 +444,7 @@ class Squared(RegressionLoss):
     $$\\frac{\\partial L}{\\partial p_i} = 2 \times (p_i - y_i)$$
 
     One thing to note is that this convention is consistent with Vowpal Wabbit and PyTorch, but
-    not with scikit-learn. Indeed scikit-learn divides the loss by 2, making the 2 dissapear in
+    not with scikit-learn. Indeed, scikit-learn divides the loss by 2, making the 2 disappear in
     the gradient.
 
     Example:
@@ -543,26 +542,3 @@ class Poisson(RegressionLoss):
         if isinstance(y_pred, np.ndarray):
             return np.exp(y_pred)
         return math.exp(y_pred)
-
-
-class Perceptron(Hinge):
-    """Perceptron loss.
-
-    The Perceptron loss is the loss used in the Perceptron algorithm. Using this loss in a logistic
-    regression yields the Perceptron algorithm.
-
-    Mathematically, it is defined as
-
-    $$L = exp(p_i) - y_i \\times p_i$$
-
-    It's gradient w.r.t. to $p_i$ is
-
-    $$\\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i$$
-
-    References:
-        1. [Wikipedia page on the Perceptron algorithm](https://www.wikiwand.com/en/Perceptron)
-
-    """
-
-    def __init__(self):
-        super().__init__(threshold=0.)

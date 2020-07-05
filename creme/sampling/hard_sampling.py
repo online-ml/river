@@ -16,7 +16,7 @@ class Triplet(collections.namedtuple('Triplet', 'x y loss')):
 class HardSampling(base.Wrapper):
     """Hard sampler."""
 
-    def __init__(self, model, loss, size, p,seed = None):
+    def __init__(self, model, loss, size, p, seed=None):
         self.model = model
         self.loss = loss
         self.pred_func = model.predict_one
@@ -129,7 +129,7 @@ class HardSamplingRegressor(HardSampling):
     def __init__(self, regressor: base.Regressor, size: int, p: float,
                  loss: optim.losses.RegressionLoss = None, seed: int = None):
         if loss is None:
-            loss =  optim.losses.Absolute()
+            loss = optim.losses.Absolute()
         super().__init__(model=regressor, loss=loss, size=size, p=p, seed=seed)
 
 
