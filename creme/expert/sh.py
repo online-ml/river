@@ -379,3 +379,6 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
 
     def predict_proba_one(self, x):
         return self.best_model.predict_proba_one(x)
+
+    def _multiclass(self):
+        return all(model._multiclass for model in self.models)

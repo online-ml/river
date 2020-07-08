@@ -89,6 +89,9 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
     def _default_params(cls):
         return {'model': linear_model.LogisticRegression()}
 
+    def _multiclass(self):
+        return self.model._multiclass
+
     def fit_one(self, x, y):
 
         if self.order is None:

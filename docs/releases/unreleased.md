@@ -19,6 +19,10 @@
 ## expert
 
 - Created this new module, which will regroup methods that perform expert learning, which boils down to managing multiple models.
+- Moved `ensemble.StackingBinaryClassifier` to `expert.StackingClassifier`.
+- Moved `model_selection.SuccessiveHalvingClassifier` to `expert.SuccessiveHalvingClassifier`.
+- Moved `model_selection.SuccessiveHalvingRegressor` to `expert.SuccessiveHalvingRegressor`.
+- Moved `ensemble.HedgeRegressor` to `ensemble.EWARegressor`.
 
 ## evaluate
 
