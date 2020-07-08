@@ -5,7 +5,7 @@ import numpy as np
 from creme import base
 
 
-class ClassificationSampler(base.Wrapper, base.Classifier):
+class ClassificationSampler(base.WrapperMixin, base.Classifier):
 
     def __init__(self, classifier, seed=None):
         self.classifier = classifier

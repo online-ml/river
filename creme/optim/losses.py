@@ -274,7 +274,7 @@ class Hinge(BinaryLoss):
         0.8
 
         >>> loss.gradient(1, .2)
-        -0.2
+        -1
 
     """
 

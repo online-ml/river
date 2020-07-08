@@ -2,15 +2,15 @@ import collections
 import copy
 import functools
 
-from .. import base
-from .. import optim
-from .. import utils
+from creme import base
+from creme import optim
+from creme import utils
 
 
 __all__ = ['SoftmaxRegression']
 
 
-class SoftmaxRegression(base.MultiClassifier):
+class SoftmaxRegression(base.Classifier):
     """Softmax regression is a generalization of logistic regression to multiple classes.
 
     Softmax regression is also known as "multinomial logistic regression". There are a set weights
@@ -29,20 +29,20 @@ class SoftmaxRegression(base.MultiClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.ImageSegments()
+        >>> dataset = datasets.ImageSegments()
 
         >>> model = preprocessing.StandardScaler()
         >>> model |= linear_model.SoftmaxRegression()
 
         >>> metric = metrics.MacroF1()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MacroF1: 0.818765
 
     References:
@@ -60,6 +60,10 @@ class SoftmaxRegression(base.MultiClassifier):
         self.loss = optim.losses.CrossEntropy() if loss is None else loss
         self.l2 = l2
         self.weights = collections.defaultdict(functools.partial(collections.defaultdict, float))  # type: ignore
+
+    @property
+    def _multiclass(self):
+        return True
 
     def fit_one(self, x, y):
 

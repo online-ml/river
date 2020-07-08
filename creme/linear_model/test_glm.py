@@ -5,11 +5,11 @@ import random
 
 import numpy as np
 import pandas as pd
-from sklearn import linear_model as lm
+from sklearn import linear_model as sklm
 import pytest
 
 from creme import datasets
-from creme import linear_model
+from creme import linear_model as lm
 from creme import optim
 from creme import preprocessing
 from creme import stream
@@ -33,16 +33,16 @@ def iter_perturbations(keys, n=10):
 
 
 @pytest.mark.parametrize(
-    'lm, X_y',
+    'lm, dataset',
     [
         pytest.param(
             lm(optimizer=copy.deepcopy(optimizer), initializer=initializer, l2=0),
-            X_y(),
+            dataset(),
             id=f'{lm.__name__} - {optimizer} - {initializer}'
         )
-        for lm, X_y in [
-            (linear_model.LinearRegression, datasets.TrumpApproval),
-            (linear_model.LogisticRegression, datasets.Bananas)
+        for lm, dataset in [
+            (lm.LinearRegression, datasets.TrumpApproval),
+            (lm.LogisticRegression, datasets.Bananas)
         ]
         for optimizer, initializer in itertools.product(
             [
@@ -66,7 +66,7 @@ def iter_perturbations(keys, n=10):
     ]
 )
 @pytest.mark.slow
-def test_finite_differences(lm, X_y):
+def test_finite_differences(lm, dataset):
     """Checks the gradient of a linear model via finite differences.
 
     References:
@@ -78,7 +78,7 @@ def test_finite_differences(lm, X_y):
     scaler = preprocessing.StandardScaler()
     eps = 1e-6
 
-    for x, y in X_y:
+    for x, y in dataset:
 
         x = scaler.fit_one(x).transform_one(x)
 
@@ -119,11 +119,11 @@ def test_one_many_consistent():
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
-    one = linear_model.LinearRegression()
+    one = lm.LinearRegression()
     for x, y in stream.iter_pandas(X, Y):
         one.fit_one(x, y)
 
-    many = linear_model.LinearRegression()
+    many = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, len(X)), np.array_split(Y, len(Y))):
         many.fit_many(xb, yb)
 
@@ -137,11 +137,11 @@ def test_shuffle_columns():
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
-    normal = linear_model.LinearRegression()
+    normal = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
         normal.fit_many(xb, yb)
 
-    shuffled = linear_model.LinearRegression()
+    shuffled = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
         cols = np.random.permutation(X.columns)
         shuffled.fit_many(xb[cols], yb)
@@ -156,7 +156,7 @@ def test_add_remove_columns():
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
-    lin_reg = linear_model.LinearRegression()
+    lin_reg = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
         # Pick half of the columns at random
         cols = np.random.choice(X.columns, len(X.columns) // 2, replace=False)
@@ -173,8 +173,8 @@ def test_lin_reg_sklearn_coherence():
             return y_pred - y_true
 
     ss = preprocessing.StandardScaler()
-    cr = linear_model.LinearRegression(optimizer=optim.SGD(.01), loss=SquaredLoss())
-    sk = lm.SGDRegressor(learning_rate='constant', eta0=.01, alpha=.0)
+    cr = lm.LinearRegression(optimizer=optim.SGD(.01), loss=SquaredLoss())
+    sk = sklm.SGDRegressor(learning_rate='constant', eta0=.01, alpha=.0)
 
     for x, y in datasets.TrumpApproval():
         x = ss.fit_one(x).transform_one(x)
@@ -184,13 +184,15 @@ def test_lin_reg_sklearn_coherence():
     for i, w in enumerate(cr.weights.values()):
         assert math.isclose(w, sk.coef_[i])
 
+    assert math.isclose(cr.intercept, sk.intercept_[0])
+
 
 def test_log_reg_sklearn_coherence():
     """Checks that the sklearn and creme implementations produce the same results."""
 
     ss = preprocessing.StandardScaler()
-    cr = linear_model.LogisticRegression(optimizer=optim.SGD(.01))
-    sk = lm.SGDClassifier(learning_rate='constant', eta0=.01, alpha=.0, loss='log')
+    cr = lm.LogisticRegression(optimizer=optim.SGD(.01))
+    sk = sklm.SGDClassifier(learning_rate='constant', eta0=.01, alpha=.0, loss='log')
 
     for x, y in datasets.Bananas():
         x = ss.fit_one(x).transform_one(x)
@@ -199,14 +201,16 @@ def test_log_reg_sklearn_coherence():
 
     for i, w in enumerate(cr.weights.values()):
         assert math.isclose(w, sk.coef_[0][i])
+
+    assert math.isclose(cr.intercept, sk.intercept_[0])
 
 
 def test_perceptron_sklearn_coherence():
     """Checks that the sklearn and creme implementations produce the same results."""
 
     ss = preprocessing.StandardScaler()
-    cr = linear_model.Perceptron()
-    sk = lm.Perceptron()
+    cr = lm.Perceptron()
+    sk = sklm.Perceptron()
 
     for x, y in datasets.Bananas():
         x = ss.fit_one(x).transform_one(x)
@@ -215,3 +219,5 @@ def test_perceptron_sklearn_coherence():
 
     for i, w in enumerate(cr.weights.values()):
         assert math.isclose(w, sk.coef_[0][i])
+
+    assert math.isclose(cr.intercept, sk.intercept_[0])

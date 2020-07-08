@@ -139,7 +139,7 @@ class FFMRegressor(FFM, base.Regressor):
 
         >>> from creme import facto
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
         ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
         ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
@@ -157,7 +157,7 @@ class FFMRegressor(FFM, base.Regressor):
         ...     seed=42,
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     model = model.fit_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
@@ -200,7 +200,7 @@ class FFMRegressor(FFM, base.Regressor):
         return self._raw_dot(x)
 
 
-class FFMClassifier(FFM, base.BinaryClassifier):
+class FFMClassifier(FFM, base.Classifier):
     """Field-aware Factorization Machine for binary classification.
 
     Field names are inferred from feature names by taking everything before the first underscore:
@@ -235,7 +235,7 @@ class FFMClassifier(FFM, base.BinaryClassifier):
 
         >>> from creme import facto
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
         ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
         ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
@@ -253,7 +253,7 @@ class FFMClassifier(FFM, base.BinaryClassifier):
         ...     seed=42,
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     model = model.fit_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})

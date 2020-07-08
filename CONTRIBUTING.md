@@ -25,9 +25,34 @@ Finally, install `creme` in [development mode](https://stackoverflow.com/questio
 
 ## Making changes
 
-You're now ready to make some changes. How you make the changes is up to you of course. However we can give you some pointers as to how to test your changes. A nice and simple way is to create a script at the root of the `creme` directory. Let's say you name it `foo.py`. In this script you can import whatever module or class you're changing/creating. You can then run this script via `python foo.py` and check if everything works the way you it want to. Another good way to go is to write an example in the docstring of the class you're developing with. You can then run `pytest path/to/foo.py` to make sure that the outputs in the example are correct.
+You're now ready to make some changes. We strongly recommend that you to check out `creme`'s source code for inspiration before getting into the thick of it. How you make the changes is up to you of course. However we can give you some pointers as to how to test your changes. Here is an example workflow that works for most cases:
 
-We strongly invite you to check out `creme`'s source code for inspiration.
+- Create and open a Jupyter notebook at the root of the directory.
+- Add the following in the code cell:
+```py
+%load_ext autoreload
+%autoreload 2
+```
+- The previous code will automatically reimport `creme` for you whenever you make changes.
+- For instance, if a change is made to `linear_model.LinearRegression`, then rerunning the following code doesn't require rebooting the notebook:
+```py
+from creme import linear_model
+
+model = linear_model.LinearRegression()
+```
+
+## Creating a new estimator
+
+1. Pick a base class from the `base` module.
+2. Check if any of the mixin classes from the `base` module apply to your implementation.
+3. Make you've implemented the required methods, with the following exceptions:
+   1. Stateless transformers do not require a `fit_one` method.
+   2. In case of a classifier, the `predict_one` is implemented by default, but can be overriden.
+4. Add type hints to the parameters of the `__init__` method.
+5. If possible provide a default value for each parameter. If, for whatever reason, no good default exists, then implement the `_default_params` method. This is a private method that is meant to be used for testing.
+6. Write a comprehensive docstring with example usage. Try to have empathy for new users when you do this.
+7. Check that the class you have implemented is imported in the `__init__.py` file of the module it belongs to.
+8. When you're done, run the `utils.check_estimator` function on your class and check that no exceptions are raised.
 
 ## Documenting your change
 

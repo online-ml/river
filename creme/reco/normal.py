@@ -26,7 +26,7 @@ class RandomNormal(base.Recommender):
 
         >>> from creme import reco
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
         ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
         ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
@@ -40,7 +40,7 @@ class RandomNormal(base.Recommender):
 
         >>> model = reco.RandomNormal(seed=42)
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})

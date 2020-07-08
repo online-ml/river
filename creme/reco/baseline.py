@@ -43,7 +43,7 @@ class Baseline(base.Recommender):
         >>> from creme import optim
         >>> from creme import reco
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
         ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
         ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
@@ -57,7 +57,7 @@ class Baseline(base.Recommender):
 
         >>> model = reco.Baseline(optimizer=optim.SGD(0.005))
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})

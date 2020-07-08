@@ -4,13 +4,14 @@ import statistics
 
 import numpy as np
 
-from .. import base
+from creme import base
+from creme import linear_model
 
 
 __all__ = ['BaggingClassifier', 'BaggingRegressor']
 
 
-class BaseBagging(base.Wrapper, base.Ensemble):
+class BaseBagging(base.WrapperMixin, base.EnsembleMixin):
 
     def __init__(self, model, n_models=10, seed=None):
         super().__init__(copy.deepcopy(model) for _ in range(n_models))
@@ -53,13 +54,13 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
         >>> from creme import datasets
         >>> from creme import ensemble
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
         >>> model = ensemble.BaggingClassifier(
         ...     model=(
         ...         preprocessing.StandardScaler() |
@@ -70,7 +71,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
         ... )
         >>> metric = metrics.F1()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         F1: 0.877788
 
         >>> print(model)
@@ -83,6 +84,10 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
         super().__init__(model, n_models, seed)
+
+    @classmethod
+    def _default_params(cls):
+        return {'model': linear_model.LogisticRegression()}
 
     def predict_proba_one(self, x):
         """Averages the predictions of each classifier."""
@@ -118,13 +123,13 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
         >>> from creme import datasets
         >>> from creme import ensemble
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.TrumpApproval()
+        >>> dataset = datasets.TrumpApproval()
         >>> model = preprocessing.StandardScaler()
         >>> model |= ensemble.BaggingRegressor(
         ...     model=linear_model.LinearRegression(intercept_lr=0.1),
@@ -133,7 +138,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
         ... )
         >>> metric = metrics.MAE()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MAE: 0.641799
 
     References:
@@ -143,6 +148,10 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
     def __init__(self, model: base.Regressor, n_models=10, seed: int = None):
         super().__init__(model, n_models, seed)
+
+    @classmethod
+    def _default_params(cls):
+        return {'model': linear_model.LinearRegression()}
 
     def predict_one(self, x):
         """Averages the predictions of each regressor."""

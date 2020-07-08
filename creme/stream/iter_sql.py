@@ -54,8 +54,8 @@ def iter_sql(query: typing.Union[str, sqlalchemy.sql.expression.Selectable],
 
         >>> with engine.connect() as conn:
         ...     query = 'SELECT * FROM sales;'
-        ...     X_y = stream.iter_sql(query, conn, target_name='amount')
-        ...     for x, y in X_y:
+        ...     dataset = stream.iter_sql(query, conn, target_name='amount')
+        ...     for x, y in dataset:
         ...         print(x, y)
         {'shop': 'Hema', 'date': '2016-08-02'} 20
         {'shop': 'Ikea', 'date': '2016-08-02'} 18

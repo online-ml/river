@@ -81,14 +81,14 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
     Example:
 
         >>> from creme import compat
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import linear_model
         >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
+        >>> dataset = stream.iter_sklearn_dataset(
         ...     dataset=datasets.load_boston(),
         ...     shuffle=True,
         ...     seed=42
@@ -100,7 +100,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
 
         >>> metric = metrics.MAE()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MAE: 11.004415
 
     """
@@ -137,7 +137,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             return 0
 
 
-class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
+class SKL2CremeClassifier(SKL2CremeBase, base.Classifier):
     """`sklearn` to `creme` classifier adapter.
 
     Parameters:
@@ -151,14 +151,14 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
     Example:
 
         >>> from creme import compat
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import linear_model
         >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
+        >>> dataset = stream.iter_sklearn_dataset(
         ...     dataset=datasets.load_breast_cancer(),
         ...     shuffle=True,
         ...     seed=42
@@ -176,7 +176,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
 
         >>> metric = metrics.LogLoss()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         LogLoss: 0.199554
 
     """
@@ -188,6 +188,10 @@ class SKL2CremeClassifier(SKL2CremeBase, base.MultiClassifier):
             x_dtype=np.float
         )
         self.classes = classes
+
+    @property
+    def _multiclass(self):
+        return True
 
     def fit_one(self, x, y):
 

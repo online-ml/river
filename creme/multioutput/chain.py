@@ -2,12 +2,13 @@ import collections
 import copy
 
 from creme import base
+from creme import linear_model
 
 
 __all__ = ['ClassifierChain', 'RegressorChain']
 
 
-class BaseChain(base.Wrapper, collections.UserDict):
+class BaseChain(base.WrapperMixin, collections.UserDict):
 
     def __init__(self, model, order=None):
         super().__init__()
@@ -51,7 +52,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
         >>> from creme import stream
         >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
+        >>> dataset = stream.iter_sklearn_dataset(
         ...     dataset=datasets.fetch_openml('yeast', version=4),
         ...     shuffle=True,
         ...     seed=42
@@ -66,7 +67,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
 
         >>> metric = metrics.Jaccard()
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     # Convert y values to booleans
         ...     y = {i: yi == 'TRUE' for i, yi in y.items()}
         ...     y_pred = model.predict_one(x)
@@ -83,6 +84,10 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
 
     def __init__(self, model: base.Classifier, order: list = None):
         super().__init__(model, order)
+
+    @classmethod
+    def _default_params(cls):
+        return {'model': linear_model.LogisticRegression()}
 
     def fit_one(self, x, y):
 
@@ -101,11 +106,11 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             clf.fit_one(x, y[o])
 
             # The predictions are stored as features for the next label
-            if isinstance(clf, base.BinaryClassifier):
-                x[o] = y_pred[True]
-            else:
+            if clf._multiclass:
                 for label, proba in y_pred.items():
                     x[f'{o}_{label}'] = proba
+            else:
+                x[o] = y_pred[True]
 
         return self
 
@@ -114,17 +119,20 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
         x = copy.copy(x)
         y_pred = {}
 
+        if self.order is None:
+            return y_pred
+
         for o in self.order:
             clf = self[o]
 
             y_pred[o] = clf.predict_proba_one(x)
 
             # The predictions are stored as features for the next label
-            if isinstance(clf, base.BinaryClassifier):
-                x[o] = y_pred[o][True]
-            else:
+            if clf._multiclass:
                 for label, proba in y_pred.items():
                     x[f'{o}_{label}'] = proba
+            else:
+                x[o] = y_pred[o][True]
 
         return y_pred
 
@@ -144,15 +152,15 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
 
     Example:
 
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import multioutput
         >>> from creme import preprocessing
         >>> from creme import stream
         >>> from sklearn import datasets
 
-        >>> X_y = stream.iter_sklearn_dataset(
+        >>> dataset = stream.iter_sklearn_dataset(
         ...     dataset=datasets.load_linnerud(),
         ...     shuffle=True,
         ...     seed=42
@@ -168,13 +176,17 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
 
         >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MAE: 16.396347
 
     """
 
     def __init__(self, model: base.Regressor, order: list = None):
         super().__init__(model, order)
+
+    @classmethod
+    def _default_params(cls):
+        return {'model': linear_model.LinearRegression()}
 
     def fit_one(self, x, y):
 

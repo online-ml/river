@@ -127,7 +127,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
 
     Parameters:
         models: The models to compare.
-        X_y: A stream of (features, target) tuples.
+        dataset: A stream of (features, target) tuples.
         metric: Metric used for comparing models with.
         budget: Total number of model updates you wish to allocate.
         eta: Rate of elimination. At every rung, `math.ceil(k / eta)` models are kept, where
@@ -139,15 +139,8 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
 
     Example:
 
-        >>> from creme import datasets
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import preprocessing
-        >>> from creme import model_selection
-        >>> from creme import optim
-
-        As an example, let's use successive halving to tune the learning rate of a linear
-        regression. We'll first define the model.
+        As an example, let's use successive halving to tune the optimizer of a linear regression.
+        We'll first define the model.
 
         >>> from creme import linear_model
         >>> from creme import preprocessing
@@ -160,7 +153,10 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         Let's now define a grid of parameters which we would like to compare. We'll try
         different optimizers with various learning rates.
 
-        >>> param_grid = model_selection.expand_param_grid({
+        >>> from creme import optim
+        >>> from creme import utils
+
+        >>> models = utils.expand_param_grid(model, {
         ...     'LinearRegression': {
         ...         'optimizer': [
         ...             (optim.SGD, {'lr': [.1, .01, .005]}),
@@ -170,11 +166,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         ...     }
         ... })
 
-        Let's now instantiate multiple copies of the model with each parameter configuration.
-
-        >>> models = [model._set_params(params) for params in param_grid]
-
-        We can check how many models this created.
+        We can check how many models we've created.
 
         >>> len(models)
         10
@@ -183,7 +175,9 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         metric to compare the models, and a budget which indicates how many iterations to run
         before picking the best model and discarding the rest.
 
-        >>> sh = model_selection.SuccessiveHalvingRegressor(
+        >>> from creme import expert
+
+        >>> sh = expert.SuccessiveHalvingRegressor(
         ...     models=models,
         ...     metric=metrics.MAE(),
         ...     budget=2000,
@@ -192,10 +186,15 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         ... )
 
         A `SuccessiveHalvingRegressor` is also a regressor with a `fit_one` and a `predict_one`
-        method, therefore we can use `creme.model_selection.progressive_val_score` to evaluate it.
+        method. We can therefore evaluate it like any other classifier with
+        `evaluate.progressive_val_score`.
 
-        >>> model_selection.progressive_val_score(
-        ...     X_y=datasets.TrumpApproval(),
+        >>> from creme import datasets
+        >>> from creme import evaluate
+        >>> from creme import metrics
+
+        >>> evaluate.progressive_val_score(
+        ...     dataset=datasets.TrumpApproval(),
         ...     model=sh,
         ...     metric=metrics.MAE()
         ... )
@@ -266,7 +265,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
 
     Parameters:
         models: The models to compare.
-        X_y: A stream of (features, target) tuples.
+        dataset: A stream of (features, target) tuples.
         metric: Metric used for comparing models with.
         budget: Total number of model updates you wish to allocate.
         eta: Rate of elimination. At every rung, `math.ceil(k / eta)` models are kept, where
@@ -278,11 +277,10 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
 
     Examples:
 
-        >>> from creme import datasets
+        As an example, let's use successive halving to tune the optimizer of a logistic regression.
+        We'll first define the model.
+
         >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import optim
         >>> from creme import preprocessing
 
         >>> model = (
@@ -290,7 +288,13 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         ...     linear_model.LogisticRegression()
         ... )
 
-        >>> param_grid = model_selection.expand_param_grid({
+        Let's now define a grid of parameters which we would like to compare. We'll try
+        different optimizers with various learning rates.
+
+        >>> from creme import utils
+        >>> from creme import optim
+
+        >>> models = utils.expand_param_grid(model, {
         ...     'LogisticRegression': {
         ...         'optimizer': [
         ...             (optim.SGD, {'lr': [.1, .01, .005]}),
@@ -300,9 +304,18 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         ...     }
         ... })
 
-        >>> models = [model._set_params(params) for params in param_grid]
+        We can check how many models we've created.
 
-        >>> sh = model_selection.SuccessiveHalvingClassifier(
+        >>> len(models)
+        10
+
+        We can now pass these models to a `SuccessiveHalvingClassifier`. We also need to pick a
+        metric to compare the models, and a budget which indicates how many iterations to run
+        before picking the best model and discarding the rest.
+
+        >>> from creme import expert
+
+        >>> sh = expert.SuccessiveHalvingClassifier(
         ...     models=models,
         ...     metric=metrics.Accuracy(),
         ...     budget=2000,
@@ -310,8 +323,16 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         ...     verbose=True
         ... )
 
-        >>> model_selection.progressive_val_score(
-        ...     X_y=datasets.Phishing(),
+        A `SuccessiveHalvingClassifier` is also a classifier with a `fit_one` and a
+        `predict_proba_one` method. We can therefore evaluate it like any other classifier with
+        `evaluate.progressive_val_score`.
+
+        >>> from creme import datasets
+        >>> from creme import evaluate
+        >>> from creme import metrics
+
+        >>> evaluate.progressive_val_score(
+        ...     dataset=datasets.Phishing(),
         ...     model=sh,
         ...     metric=metrics.ROCAUC()
         ... )
@@ -320,6 +341,8 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best Accuracy: 86.14%
         [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	best Accuracy: 84.80%
         ROCAUC: 0.953198
+
+        We can now view the best model.
 
         >>> sh.best_model
         Pipeline (

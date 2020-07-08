@@ -8,8 +8,8 @@ from creme import base
 class RBFSampler(base.Transformer):
     """Extracts random features which approximate an RBF kernel.
 
-    This is a powerful way to give non-linear capacity to linear classifiers. In the litterature
-    this is also called "random Fourier features".
+    This is a powerful way to give non-linear capacity to linear classifiers. This method is also
+    called "random Fourier features" in the literature.
 
     Parameters:
         gamma: RBF kernel parameter in `(-gamma * x^2)`.
@@ -19,16 +19,16 @@ class RBFSampler(base.Transformer):
 
     Example:
 
-        >>> from creme import linear_model
+        >>> from creme import feature_extraction as fx
+        >>> from creme import linear_model as lm
         >>> from creme import optim
-        >>> from creme import preprocessing
         >>> from creme import stream
 
         >>> # XOR function
         >>> X = [[0, 0], [1, 1], [1, 0], [0, 1]]
         >>> Y = [0, 0, 1, 1]
 
-        >>> model = linear_model.LogisticRegression(optimizer=optim.SGD(0.1))
+        >>> model = lm.LogisticRegression(optimizer=optim.SGD(.1))
 
         >>> for x, y in stream.iter_array(X, Y):
         ...     model = model.fit_one(x, y)
@@ -40,8 +40,8 @@ class RBFSampler(base.Transformer):
         1 1
 
         >>> model = (
-        ...     preprocessing.RBFSampler(seed=3) |
-        ...     linear_model.LogisticRegression(optimizer=optim.SGD(0.1))
+        ...     fx.RBFSampler(seed=3) |
+        ...     lm.LogisticRegression(optimizer=optim.SGD(.1))
         ... )
 
         >>> for x, y in stream.iter_array(X, Y):
@@ -58,7 +58,7 @@ class RBFSampler(base.Transformer):
 
     """
 
-    def __init__(self, gamma=1., n_components=100, seed=None):
+    def __init__(self, gamma=1., n_components=100, seed: int = None):
         self.gamma = gamma
         self.n_components = n_components
         self.seed = seed

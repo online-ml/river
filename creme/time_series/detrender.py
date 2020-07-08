@@ -6,7 +6,7 @@ from creme import base
 from creme import stats
 
 
-class Detrender(base.Regressor, base.Wrapper):
+class Detrender(base.Regressor, base.WrapperMixin):
     """A linear detrender which centers the target in zero.
 
     At each `fit_one` step, the current mean of `y` is substracted from `y` before being fed
@@ -37,7 +37,7 @@ class Detrender(base.Regressor, base.Wrapper):
         return self.regressor.predict_one(x) + self.mean.get()
 
 
-class GroupDetrender(base.Regressor, base.Wrapper):
+class GroupDetrender(base.Regressor, base.WrapperMixin):
     """Removes the trend of the target inside each group.
 
     Parameters:

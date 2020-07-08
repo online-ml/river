@@ -161,8 +161,8 @@ class TransformerUnion(base.Transformer):
         ])
 
     @property
-    def _is_supervised(self):
-        return any(t._is_supervised for t in self.transformers.values())
+    def _supervised(self):
+        return any(t._supervised for t in self.transformers.values())
 
     def _add_step(self, transformer):
         """Adds a transformer while taking care of the input type."""

@@ -70,9 +70,8 @@ def convert_creme_to_sklearn(estimator: base.Estimator):
         ])
 
     wrappers = [
-        (base.BinaryClassifier, Creme2SKLClassifier),
+        (base.Classifier, Creme2SKLClassifier),
         (base.Clusterer, Creme2SKLClusterer),
-        (base.MultiClassifier, Creme2SKLClassifier),
         (base.Regressor, Creme2SKLRegressor),
         (base.Transformer, Creme2SKLTransformer)
     ]
@@ -86,8 +85,12 @@ def convert_creme_to_sklearn(estimator: base.Estimator):
     raise ValueError("Couldn't find an appropriate wrapper")
 
 
-class Creme2SKLBase(sklearn_base.BaseEstimator):
+class Creme2SKLBase(sklearn_base.BaseEstimator, base.WrapperMixin):
     """This class is just here for house-keeping."""
+
+    @property
+    def _wrapped_model(self):
+        return self.estimator
 
 
 class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
@@ -199,16 +202,14 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
 
     def __init__(self, estimator: base.Classifier):
 
-        # Check the estimator is either a BinaryClassifier or a MultiClassifier
-        if not isinstance(estimator, (base.BinaryClassifier, base.MultiClassifier)):
-            raise ValueError('estimator is not a BinaryClassifier nor a MultiClassifier')
+        # Check the estimator is Classifier
+        if not isinstance(estimator, base.Classifier):
+            raise ValueError('estimator is not a Classifier')
 
         self.estimator = estimator
 
     def _more_tags(self):
-
-        # If converting a BinaryClassifier, notify that only binary classification is supported
-        return dict(binary_only=isinstance(self.estimator, base.BinaryClassifier))
+        return {'binary_only': not self.estimator._multiclass}
 
     def _partial_fit(self, X, y, classes):
 
@@ -219,13 +220,13 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
 
         # Check the number of classes agrees with the type of classifier
-        if len(self.classes_) > 2 and not isinstance(self.estimator, base.MultiClassifier):
+        if len(self.classes_) > 2 and not self.estimator._multiclass:
             # Only a warning for now so tests can pass, see scikit-learn issue
             # https://github.com/scikit-learn/scikit-learn/issues/16798#issuecomment-651784267
             # TODO: change to a ValueError when fixed
             import warnings
-            warnings.warn(f'More than 2 classes were given but {self.estimator} is a'
-                           ' BinaryClassifier')
+            warnings.warn(f'more than 2 classes were given but {self.estimator} is a'
+                           ' binary classifier')
 
         # Store the number of features so that future inputs can be checked
         if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
@@ -242,8 +243,8 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         if not hasattr(self, 'instance_'):
             self.instance_ = copy.deepcopy(self.estimator)
 
-        # creme's BinaryClassifier expects bools or 0/1 values
-        if not isinstance(self.estimator, base.MultiClassifier):
+        # creme's binary classifiers expects bools or 0/1 values
+        if not self.estimator._multiclass:
             if not hasattr(self, 'label_encoder_'):
                 self.label_encoder_ = preprocessing.LabelEncoder().fit(self.classes_)
             y = self.label_encoder_.transform(y)
@@ -350,7 +351,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
         for i, (x, _) in enumerate(stream.iter_array(X)):
             y_pred[i] = self.instance_.predict_one(x)
 
-        # Convert back to the expected labels if an encoder was necessary for BinaryClassifier
+        # Convert back to the expected labels if an encoder was necessary for binary classification
         y_pred = np.asarray(y_pred)
         if hasattr(self, 'label_encoder_'):
             y_pred = self.label_encoder_.inverse_transform(y_pred.astype(int))

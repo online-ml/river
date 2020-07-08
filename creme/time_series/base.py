@@ -5,6 +5,10 @@ from .. import base
 
 class Forecaster(base.Estimator):
 
+    @property
+    def _supervised(self):
+        return True
+
     def fit_one(self, y, x=None) -> 'Forecaster':
         """Updates the model.
 

@@ -27,13 +27,13 @@ class Discard(base.Transformer):
         You can chain a discarder with any estimator in order to apply said estimator to the
         desired features.
 
-        >>> from creme import preprocessing
+        >>> from creme import feature_extraction as fx
 
         >>> x = {'sales': 10, 'shop': 'Ikea', 'country': 'Sweden'}
 
         >>> pipeline = (
         ...     compose.Discard('shop', 'country') |
-        ...     preprocessing.PolynomialExtender()
+        ...     fx.PolynomialExtender()
         ... )
         >>> pipeline.transform_one(x)
         {'sales': 10, 'sales*sales': 100}
@@ -81,13 +81,13 @@ class Select(base.Transformer):
         You can chain a selector with any estimator in order to apply said estimator to the
         desired features.
 
-        >>> from creme import preprocessing
+        >>> from creme import feature_extraction as fx
 
         >>> x = {'sales': 10, 'shop': 'Ikea', 'country': 'Sweden'}
 
         >>> pipeline = (
         ...     compose.Select('sales') |
-        ...     preprocessing.PolynomialExtender()
+        ...     fx.PolynomialExtender()
         ... )
         >>> pipeline.transform_one(x)
         {'sales': 10, 'sales*sales': 100}

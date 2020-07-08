@@ -13,19 +13,18 @@ class Triplet(collections.namedtuple('Triplet', 'x y loss')):
         return self.loss < other.loss
 
 
-class HardSampling(base.Wrapper):
+class HardSampling(base.WrapperMixin):
     """Hard sampler."""
 
     def __init__(self, model, loss, size, p, seed=None):
         self.model = model
         self.loss = loss
-        self.pred_func = model.predict_one
 
+        self.pred_func = model.predict_one
         if isinstance(model, base.Classifier):
             self.pred_func = model.predict_proba_one
-
-        elif isinstance(model, base.BinaryClassifier):
-            self.pred_func = lambda x: model.predict_proba_one(x)[True]
+            if not model._multiclass:
+                self.pred_func = lambda x: model.predict_proba_one(x)[True]
 
         self.p = p
         self.size = size
@@ -71,7 +70,7 @@ class HardSampling(base.Wrapper):
         return self
 
 
-class HardSamplingRegressor(HardSampling):
+class HardSamplingRegressor(HardSampling, base.Regressor):
     """Hard sampling regressor.
 
     This wrapper enables a model to retrain on past samples who's output was hard to predict.
@@ -95,9 +94,9 @@ class HardSamplingRegressor(HardSampling):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import sampling
@@ -114,7 +113,7 @@ class HardSamplingRegressor(HardSampling):
         ...     )
         ... )
 
-        >>> model_selection.progressive_val_score(
+        >>> evaluate.progressive_val_score(
         ...     datasets.TrumpApproval(),
         ...     model,
         ...     metrics.MAE(),
@@ -133,7 +132,7 @@ class HardSamplingRegressor(HardSampling):
         super().__init__(model=regressor, loss=loss, size=size, p=p, seed=seed)
 
 
-class HardSamplingClassifier(HardSampling):
+class HardSamplingClassifier(HardSampling, base.Classifier):
     """Hard sampling classifier.
 
     This wrapper enables a model to retrain on past samples who's output was hard to predict.
@@ -157,9 +156,9 @@ class HardSamplingClassifier(HardSampling):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
         >>> from creme import sampling
@@ -176,15 +175,15 @@ class HardSamplingClassifier(HardSampling):
         ...     )
         ... )
 
-        >>> model_selection.progressive_val_score(
-        ...     X_y=datasets.Phishing(),
+        >>> evaluate.progressive_val_score(
+        ...     dataset=datasets.Phishing(),
         ...     model=model,
         ...     metric=metrics.ROCAUC(),
         ...     print_every=500,
         ... )
-        [500] ROCAUC: 0.928476
-        [1,000] ROCAUC: 0.948367
-        ROCAUC: 0.952511
+        [500] ROCAUC: 0.927112
+        [1,000] ROCAUC: 0.947515
+        ROCAUC: 0.950541
 
     """
 
@@ -192,7 +191,7 @@ class HardSamplingClassifier(HardSampling):
                  loss: typing.Union[optim.losses.BinaryLoss, optim.losses.MultiClassLoss] = None,
                  seed: int = None):
         if loss is None:
-            loss = optim.losses.CrossEntropy()
+            loss = optim.losses.CrossEntropy() if classifier._multiclass else optim.losses.Log()
         super().__init__(model=classifier, loss=loss, size=size, p=p, seed=seed)
 
     def predict_proba_one(self, x):

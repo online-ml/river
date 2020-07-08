@@ -19,11 +19,11 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import tree
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
 
         >>> model = tree.RandomForestClassifier(
         ...     n_trees=10,
@@ -36,7 +36,7 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
 
         >>> metric = metrics.LogLoss()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         LogLoss: 0.456533
 
     """
@@ -47,6 +47,10 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
             n_models=n_trees,
             seed=seed
         )
+
+    @classmethod
+    def _default_params(cls):
+        return {}
 
     @property
     def n_trees(self):

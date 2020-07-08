@@ -34,7 +34,7 @@ class PolynomialExtender(base.Transformer):
 
     Example:
 
-        >>> from creme import preprocessing
+        >>> from creme import feature_extraction as fx
 
         >>> X = [
         ...     {'x': 0, 'y': 1},
@@ -42,9 +42,9 @@ class PolynomialExtender(base.Transformer):
         ...     {'x': 4, 'y': 5}
         ... ]
 
-        >>> poly = preprocessing.PolynomialExtender(degree=2, include_bias=True)
+        >>> poly = fx.PolynomialExtender(degree=2, include_bias=True)
         >>> for x in X:
-        ...     print(poly.fit_one(x).transform_one(x))
+        ...     print(poly.transform_one(x))
         {'x': 0, 'y': 1, 'x*x': 0, 'x*y': 0, 'y*y': 1, 'bias': 1}
         {'x': 2, 'y': 3, 'x*x': 4, 'x*y': 6, 'y*y': 9, 'bias': 1}
         {'x': 4, 'y': 5, 'x*x': 16, 'x*y': 20, 'y*y': 25, 'bias': 1}
@@ -55,12 +55,34 @@ class PolynomialExtender(base.Transformer):
         ...     {'x': 4, 'y': 5, 'z': 2}
         ... ]
 
-        >>> poly = preprocessing.PolynomialExtender(degree=3, interaction_only=True)
+        >>> poly = fx.PolynomialExtender(degree=3, interaction_only=True)
         >>> for x in X:
-        ...     print(poly.fit_one(x).transform_one(x))
+        ...     print(poly.transform_one(x))
         {'x': 0, 'y': 1, 'z': 2, 'x*y': 0, 'x*z': 0, 'y*z': 2, 'x*y*z': 0}
         {'x': 2, 'y': 3, 'z': 2, 'x*y': 6, 'x*z': 4, 'y*z': 6, 'x*y*z': 12}
         {'x': 4, 'y': 5, 'z': 2, 'x*y': 20, 'x*z': 8, 'y*z': 10, 'x*y*z': 40}
+
+        Polynomial features are typically used for a linear model to capture interactions between
+        features. This may done by setting up a pipeline, as so:
+
+        >>> from creme import datasets
+        >>> from creme import evaluate
+        >>> from creme import linear_model as lm
+        >>> from creme import metrics
+        >>> from creme import preprocessing as pp
+
+        >>> dataset = datasets.Phishing()
+
+        >>> model = (
+        ...     fx.PolynomialExtender() |
+        ...     pp.StandardScaler() |
+        ...     lm.LogisticRegression()
+        ... )
+
+        >>> metric = metrics.Accuracy()
+
+        >>> evaluate.progressive_val_score(dataset, model, metric)
+        Accuracy: 88.88%
 
     """
 
@@ -69,17 +91,19 @@ class PolynomialExtender(base.Transformer):
         self.interaction_only = interaction_only
         self.include_bias = include_bias
         self.bias_name = bias_name
-        self.enumerate = functools.partial(
-            powerset,
+
+    def _enumerate(self, keys):
+        return powerset(
+            keys,
             min_size=1,
-            max_size=degree,
-            with_replacement=not interaction_only
+            max_size=self.degree,
+            with_replacement=not self.interaction_only
         )
 
     def transform_one(self, x):
         features = {
-            '*'.join(map(str, combo)): utils.math.prod(x[c] for c in combo)
-            for combo in self.enumerate(x.keys())
+            '*'.join(map(str, sorted(combo))): utils.math.prod(x[c] for c in combo)
+            for combo in self._enumerate(x.keys())
         }
         if self.include_bias:
             features[self.bias_name] = 1

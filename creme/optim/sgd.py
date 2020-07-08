@@ -13,13 +13,13 @@ class SGD(base.Optimizer):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
         >>> optimizer = optim.SGD(0.1)
         >>> model = (
         ...     preprocessing.StandardScaler() |
@@ -27,7 +27,7 @@ class SGD(base.Optimizer):
         ... )
         >>> metric = metrics.F1()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         F1: 0.878521
 
     References:

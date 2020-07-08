@@ -2,16 +2,16 @@ import math
 import typing
 
 from creme import base
+from creme import linear_model as lm
+from creme import preprocessing as pp
 from creme import optim
 
 
-__all__ = ['HedgeRegressor']
+__all__ = ['EWARegressor']
 
 
-class HedgeRegressor(base.Ensemble, base.Regressor):
-    """Hedge Algorithm for regression.
-
-    The Hedge Algorithm is a special case of the Weighted Majority Algorithm for arbitrary losses.
+class EWARegressor(base.EnsembleMixin, base.Regressor):
+    """Exponentially Weighted Average regressor.
 
     Parameters:
         regressors: The regressors to hedge.
@@ -22,10 +22,10 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
     Example:
 
         >>> from creme import datasets
-        >>> from creme import ensemble
+        >>> from creme import evaluate
+        >>> from creme import expert
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
 
@@ -37,7 +37,7 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
 
         >>> for optimizer in optimizers:
         ...
-        ...     X_y = datasets.TrumpApproval()
+        ...     dataset = datasets.TrumpApproval()
         ...     metric = metrics.MAE()
         ...     model = (
         ...         preprocessing.StandardScaler() |
@@ -47,16 +47,16 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
         ...         )
         ...     )
         ...
-        ...     print(optimizer, model_selection.progressive_val_score(X_y, model, metric))
+        ...     print(optimizer, evaluate.progressive_val_score(dataset, model, metric))
         SGD MAE: 0.555971
         RMSProp MAE: 0.528284
         AdaGrad MAE: 0.481461
 
-        >>> X_y = datasets.TrumpApproval()
+        >>> dataset = datasets.TrumpApproval()
         >>> metric = metrics.MAE()
         >>> hedge = (
         ...     preprocessing.StandardScaler() |
-        ...     ensemble.HedgeRegressor(
+        ...     expert.EWARegressor(
         ...         regressors=[
         ...             linear_model.LinearRegression(optimizer=o, intercept_lr=.1)
         ...             for o in optimizers
@@ -65,7 +65,7 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
         ...     )
         ... )
 
-        >>> model_selection.progressive_val_score(X_y, hedge, metric)
+        >>> evaluate.progressive_val_score(dataset, hedge, metric)
         MAE: 0.494832
 
     References:
@@ -81,6 +81,13 @@ class HedgeRegressor(base.Ensemble, base.Regressor):
         self.loss = optim.losses.Squared() if loss is None else loss
         self.learning_rate = learning_rate
         self.weights = [1.] * len(regressors)
+
+    @classmethod
+    def _default_params(cls):
+        return {'regressors': [
+            pp.StandardScaler() | lm.LinearRegression(intercept_lr=.1),
+            pp.StandardScaler() | lm.PARegressor(),
+        ]}
 
     @property
     def regressors(self):

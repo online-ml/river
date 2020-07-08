@@ -4,12 +4,13 @@ import copy
 import pandas as pd
 
 from creme import base
+from creme import linear_model
 
 
 __all__ = ['OneVsRestClassifier']
 
 
-class OneVsRestClassifier(base.Wrapper, base.MultiClassifier):
+class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
@@ -32,9 +33,9 @@ class OneVsRestClassifier(base.Wrapper, base.MultiClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import multiclass
         >>> from creme import preprocessing
 
@@ -46,7 +47,7 @@ class OneVsRestClassifier(base.Wrapper, base.MultiClassifier):
 
         >>> metric = metrics.MacroF1()
 
-        >>> model_selection.progressive_val_score(dataset, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MacroF1: 0.774573
 
         This estimator also also supports mini-batching.
@@ -58,7 +59,7 @@ class OneVsRestClassifier(base.Wrapper, base.MultiClassifier):
 
     """
 
-    def __init__(self, classifier: base.BinaryClassifier):
+    def __init__(self, classifier: base.Classifier):
         self.classifier = classifier
         self.classifiers = {}
         self._y_name = None
@@ -66,6 +67,14 @@ class OneVsRestClassifier(base.Wrapper, base.MultiClassifier):
     @property
     def _wrapped_model(self):
         return self.classifier
+
+    @property
+    def _multiclass(self):
+        return True
+
+    @classmethod
+    def _default_params(cls):
+        return {'classifier': linear_model.LogisticRegression()}
 
     def fit_one(self, x, y):
 

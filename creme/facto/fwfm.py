@@ -150,7 +150,7 @@ class FwFMRegressor(FwFM, base.Regressor):
 
         >>> from creme import facto
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
         ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
         ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
@@ -168,7 +168,7 @@ class FwFMRegressor(FwFM, base.Regressor):
         ...     seed=42,
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     model = model.fit_one(x, y)
 
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
@@ -214,7 +214,7 @@ class FwFMRegressor(FwFM, base.Regressor):
         return self._raw_dot(x)
 
 
-class FwFMClassifier(FwFM, base.BinaryClassifier):
+class FwFMClassifier(FwFM, base.Classifier):
     """Field-weighted Factorization Machine for binary classification.
 
     Parameters:
@@ -250,7 +250,7 @@ class FwFMClassifier(FwFM, base.BinaryClassifier):
 
         >>> from creme import facto
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman'}, True),
         ...     ({'user': 'Alice', 'item': 'Terminator'}, True),
         ...     ({'user': 'Alice', 'item': 'Star Wars'}, True),
@@ -267,7 +267,7 @@ class FwFMClassifier(FwFM, base.BinaryClassifier):
         ...     seed=42,
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     model = model.fit_one(x, y)
 
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})

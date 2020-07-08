@@ -6,7 +6,7 @@ from creme import base
 __all__ = ['StackingBinaryClassifier']
 
 
-class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
+class StackingBinaryClassifier(base.EnsembleMixin, base.Classifier):
     """Stacking for binary classification.
 
     Parameters:
@@ -19,29 +19,29 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
 
         >>> from creme import compose
         >>> from creme import datasets
-        >>> from creme import ensemble
-        >>> from creme import linear_model
+        >>> from creme import evaluate
+        >>> from creme import expert
+        >>> from creme import linear_model as lm
         >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import preprocessing
+        >>> from creme import preprocessing as pp
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
 
         >>> model = compose.Pipeline(
-        ...     ('scale', preprocessing.StandardScaler()),
-        ...     ('stack', ensemble.StackingBinaryClassifier(
+        ...     ('scale', pp.StandardScaler()),
+        ...     ('stack', expert.StackingBinaryClassifier(
         ...         classifiers=[
-        ...             linear_model.LogisticRegression(),
-        ...             linear_model.PAClassifier(mode=1, C=0.01),
-        ...             linear_model.PAClassifier(mode=2, C=0.01)
+        ...             lm.LogisticRegression(),
+        ...             lm.PAClassifier(mode=1, C=0.01),
+        ...             lm.PAClassifier(mode=2, C=0.01)
         ...         ],
-        ...         meta_classifier=linear_model.LogisticRegression()
+        ...         meta_classifier=lm.LogisticRegression()
         ...     ))
         ... )
 
         >>> metric = metrics.F1()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         F1: 0.878005
 
     References:
@@ -49,7 +49,7 @@ class StackingBinaryClassifier(base.Ensemble, base.BinaryClassifier):
 
     """
 
-    def __init__(self, classifiers: typing.List[base.BinaryClassifier],
+    def __init__(self, classifiers: typing.List[base.Classifier],
                  meta_classifier: base.Classifier, include_features=True):
         super().__init__(classifiers)
         self.meta_classifier = meta_classifier

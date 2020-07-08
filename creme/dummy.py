@@ -12,7 +12,7 @@ from creme import stats
 __all__ = ['NoChangeClassifier', 'PriorClassifier', 'StatisticRegressor']
 
 
-class NoChangeClassifier(base.MultiClassifier):
+class NoChangeClassifier(base.Classifier):
     """Dummy classifier which returns the last class seen.
 
     The predict_one method will output the last class seen whilst predict_proba_one will
@@ -54,6 +54,10 @@ class NoChangeClassifier(base.MultiClassifier):
         self.last_class = None
         self.classes = set()
 
+    @property
+    def _multiclass(self):
+        return True
+
     def fit_one(self, x, y):
         self.last_class = y
         self.classes.add(y)
@@ -68,7 +72,7 @@ class NoChangeClassifier(base.MultiClassifier):
         return probas
 
 
-class PriorClassifier(base.MultiClassifier):
+class PriorClassifier(base.Classifier):
     """Dummy classifier which uses the prior distribution.
 
     The `predict_one` method will output the most common class whilst `predict_proba_one` will
@@ -107,6 +111,10 @@ class PriorClassifier(base.MultiClassifier):
     def __init__(self):
         self.counts = collections.Counter()
         self.n = 0
+
+    @property
+    def _multiclass(self):
+        return True
 
     def fit_one(self, x, y):
         self.counts.update([y])
@@ -149,6 +157,10 @@ class StatisticRegressor(base.Regressor):
 
     def __init__(self, statistic: stats.Univariate):
         self.statistic = statistic
+
+    @classmethod
+    def _default_params(cls):
+        return {'statistic': stats.Mean()}
 
     def fit_one(self, x, y):
         self.statistic.update(y)

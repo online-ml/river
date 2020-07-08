@@ -1,4 +1,3 @@
-"""Model evaluation and selection."""
 import bisect
 import collections
 import datetime as dt
@@ -15,7 +14,7 @@ from creme import stream
 __all__ = ['progressive_val_score']
 
 
-def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric: metrics.Metric,
+def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor, metric: metrics.Metric,
                           moment: typing.Union[str, typing.Callable] = None,
                           delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
                           print_every=0, show_time=False, show_memory=False,
@@ -25,7 +24,7 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
     This method is the canonical way to evaluate a model's performance. When used correctly, it
     allows you to exactly assess how a model would have performed in a production scenario.
 
-    `X_y` is converted into a stream of questions and answers. At each step the model is either
+    `dataset` is converted into a stream of questions and answers. At each step the model is either
     asked to predict an observation, or is either updated. The target is only revealed to the model
     after a certain amount of time, which is determined by the `delay` parameter. Note that under
     the hood this uses the `stream.simulate_qa` function to go through the data in arrival order.
@@ -42,7 +41,7 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
     dataset.
 
     Parameters:
-        X_y: The stream of observations against which the model will be evaluated.
+        dataset: The stream of observations against which the model will be evaluated.
         model: The model to evaluate.
         metric: The metric used to evaluate the model's predictions.
         moment: The attribute used for measuring time. If a callable is passed, then it is expected
@@ -77,12 +76,12 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
         We can evaluate it on the `Phishing` dataset as so:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
 
-        >>> model_selection.progressive_val_score(
+        >>> evaluate.progressive_val_score(
         ...     model=model,
-        ...     X_y=datasets.Phishing(),
+        ...     dataset=datasets.Phishing(),
         ...     metric=metrics.ROCAUC(),
         ...     print_every=200
         ... )
@@ -118,9 +117,9 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
         progress to a file of your choice.
 
         >>> with open('progress.log', 'w') as f:
-        ...     metric = model_selection.progressive_val_score(
+        ...     metric = evaluate.progressive_val_score(
         ...         model=model,
-        ...         X_y=datasets.Phishing(),
+        ...         dataset=datasets.Phishing(),
         ...         metric=metrics.ROCAUC(),
         ...         print_every=200,
         ...         file=f
@@ -154,8 +153,7 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     pred_func = model.predict_one
-    is_classifier = isinstance(utils.estimator_checks.guess_model(model), base.Classifier)
-    if is_classifier and not metric.requires_labels:
+    if utils.inspect.isclassifier(model) and not metric.requires_labels:
         pred_func = model.predict_proba_one
 
     preds = {}
@@ -164,7 +162,7 @@ def progressive_val_score(X_y: base.typing.Stream, model: base.Predictor, metric
     if show_time:
         start = time.perf_counter()
 
-    for i, x, y in stream.simulate_qa(X_y, moment, delay, copy=True):
+    for i, x, y in stream.simulate_qa(dataset, moment, delay, copy=True):
 
         # Question
         if y is None:

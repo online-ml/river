@@ -5,7 +5,7 @@ from creme import utils
 __all__ = ['PredClipper']
 
 
-class PredClipper(base.Regressor, base.Wrapper):
+class PredClipper(base.Regressor, base.WrapperMixin):
     """Clips the target after predicting.
 
     Parameters:
@@ -18,7 +18,7 @@ class PredClipper(base.Regressor, base.Wrapper):
         >>> from creme import linear_model
         >>> from creme import meta
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'a': 2, 'b': 4}, 80),
         ...     ({'a': 3, 'b': 5}, 100),
         ...     ({'a': 4, 'b': 6}, 120)
@@ -30,7 +30,7 @@ class PredClipper(base.Regressor, base.Wrapper):
         ...     y_max=200
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'a': -100, 'b': -200})

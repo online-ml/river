@@ -100,8 +100,8 @@ def iter_csv(filepath_or_buffer, target: typing.Union[str, typing.List[str]] = N
         The value of `y` is always `None` because we haven't provided a value for the `target`
         parameter. Here is an example where a `target` is provided:
 
-        >>> X_y = stream.iter_csv('tv_shows.csv', target='rating', **params)
-        >>> for x, y in X_y:
+        >>> dataset = stream.iter_csv('tv_shows.csv', target='rating', **params)
+        >>> for x, y in dataset:
         ...     print(x, y)
         {'name': 'Planet Earth II', 'year': datetime.datetime(2016, 1, 1, 0, 0)} 9.5
         {'name': 'Planet Earth', 'year': datetime.datetime(2006, 1, 1, 0, 0)} 9.4

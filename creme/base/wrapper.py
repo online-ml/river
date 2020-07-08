@@ -1,9 +1,7 @@
 import abc
 
-from creme import base
 
-
-class Wrapper(base.Estimator):
+class WrapperMixin:
     """A wrapper model."""
 
     @abc.abstractproperty
@@ -17,3 +15,14 @@ class Wrapper(base.Estimator):
 
     def __str__(self):
         return f'{type(self).__name__}({self._wrapped_model})'
+
+    def _more_tags(self):
+        return self._wrapped_model._tags
+
+    @property
+    def _supervised(self):
+        return self._wrapped_model._supervised
+
+    @property
+    def _multiclass(self):
+        return self._wrapped_model._multiclass

@@ -63,6 +63,10 @@ class SelectKBest(base.SupervisedTransformer):
         self.similarities = collections.defaultdict(functools.partial(copy.deepcopy, similarity))
         self.leaderboard = collections.Counter()
 
+    @classmethod
+    def _default_params(cls):
+        return {'similarity': stats.PearsonCorr()}
+
     def fit_one(self, x, y):
 
         for i, xi in x.items():

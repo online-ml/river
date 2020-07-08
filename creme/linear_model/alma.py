@@ -8,7 +8,7 @@ from creme import utils
 __all__ = ['ALMAClassifier']
 
 
-class ALMAClassifier(base.BinaryClassifier):
+class ALMAClassifier(base.Classifier):
     """Approximate Large Margin Algorithm (ALMA).
 
     Parameters:
@@ -24,12 +24,12 @@ class ALMAClassifier(base.BinaryClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
 
         >>> model = (
         ...     preprocessing.StandardScaler() |
@@ -38,7 +38,7 @@ class ALMAClassifier(base.BinaryClassifier):
 
         >>> metric = metrics.Accuracy()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         Accuracy: 82.64%
 
     References:

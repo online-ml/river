@@ -46,7 +46,7 @@ class FunkMF(base.Recommender):
         >>> from creme import optim
         >>> from creme import reco
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
         ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
         ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
@@ -64,7 +64,7 @@ class FunkMF(base.Recommender):
         ...     initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=11),
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})

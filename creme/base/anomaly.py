@@ -5,10 +5,6 @@ from . import estimator
 
 class AnomalyDetector(estimator.Estimator):
 
-    @property
-    def _is_supervised(self):
-        return False
-
     @abc.abstractmethod
     def fit_one(self, x: dict) -> 'AnomalyDetector':
         """Update the model.

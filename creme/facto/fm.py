@@ -123,7 +123,7 @@ class FMRegressor(FM, base.Regressor):
 
         >>> from creme import facto
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
         ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
         ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
@@ -141,7 +141,7 @@ class FMRegressor(FM, base.Regressor):
         ...     seed=42,
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
@@ -185,7 +185,7 @@ class FMRegressor(FM, base.Regressor):
         return self._raw_dot(x)
 
 
-class FMClassifier(FM, base.BinaryClassifier):
+class FMClassifier(FM, base.Classifier):
     """Factorization Machine for binary classification.
 
     Parameters:
@@ -217,7 +217,7 @@ class FMClassifier(FM, base.BinaryClassifier):
 
         >>> from creme import facto
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'user': 'Alice', 'item': 'Superman'}, True),
         ...     ({'user': 'Alice', 'item': 'Terminator'}, True),
         ...     ({'user': 'Alice', 'item': 'Star Wars'}, True),
@@ -234,7 +234,7 @@ class FMClassifier(FM, base.BinaryClassifier):
         ...     seed=42,
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})

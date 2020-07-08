@@ -6,7 +6,7 @@ from creme import base
 from .predictor import Predictor
 
 
-class Ensemble(Predictor):
+class EnsembleMixin:
     """An ensemble model.
 
     Parameters:

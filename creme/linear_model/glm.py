@@ -137,12 +137,12 @@ class LinearRegression(GLM, base.Regressor):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.TrumpApproval()
+        >>> dataset = datasets.TrumpApproval()
 
         >>> model = (
         ...     preprocessing.StandardScaler() |
@@ -150,7 +150,7 @@ class LinearRegression(GLM, base.Regressor):
         ... )
         >>> metric = metrics.MAE()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MAE: 0.555971
 
         >>> model['LinearRegression'].intercept
@@ -159,7 +159,7 @@ class LinearRegression(GLM, base.Regressor):
         You can call the `debug_one` method to break down a prediction. This works even if the
         linear regression is part of a pipeline.
 
-        >>> x, y = next(iter(X_y))
+        >>> x, y = next(iter(dataset))
         >>> report = model.debug_one(x)
         >>> print(report)
         0. Input
@@ -255,7 +255,7 @@ class LinearRegression(GLM, base.Regressor):
         return table
 
 
-class LogisticRegression(GLM, base.BinaryClassifier):
+class LogisticRegression(GLM, base.Classifier, base.MiniBatchClassifier):
     """Logistic regression.
 
     This estimator supports learning with mini-batches. On top of the single instance methods, it
@@ -281,13 +281,13 @@ class LogisticRegression(GLM, base.BinaryClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import optim
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
 
         >>> model = (
         ...     preprocessing.StandardScaler() |
@@ -296,7 +296,7 @@ class LogisticRegression(GLM, base.BinaryClassifier):
 
         >>> metric = metrics.Accuracy()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         Accuracy: 88.96%
 
     .. tip::
@@ -328,10 +328,6 @@ class LogisticRegression(GLM, base.BinaryClassifier):
         p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
         return pd.DataFrame({False: 1. - p, True: p}, index=X.index, copy=False)
 
-    def predict_many(self, X: pd.DataFrame) -> pd.Series:
-        p = self.loss.mean_func(self._raw_dot_many(X))
-        return pd.Series(p > .5, name=self._y_name, index=X.index, copy=False)
-
 
 class Perceptron(LogisticRegression):
     """Perceptron classifier.
@@ -344,20 +340,19 @@ class Perceptron(LogisticRegression):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model as lm
         >>> from creme import metrics
-        >>> from creme import model_selection
-        >>> from creme import optim
         >>> from creme import preprocessing as pp
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
 
         >>> model = pp.StandardScaler() | lm.Perceptron()
 
         >>> metric = metrics.Accuracy()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
-        Accuracy: 88.96%
+        >>> evaluate.progressive_val_score(dataset, model, metric)
+        Accuracy: 85.84%
 
     """
 
