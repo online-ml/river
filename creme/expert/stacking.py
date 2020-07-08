@@ -3,10 +3,10 @@ import typing
 from creme import base
 
 
-__all__ = ['StackingBinaryClassifier']
+__all__ = ['StackingClassifier']
 
 
-class StackingBinaryClassifier(base.EnsembleMixin, base.Classifier):
+class StackingClassifier(base.EnsembleMixin, base.Classifier):
     """Stacking for binary classification.
 
     Parameters:
@@ -29,7 +29,7 @@ class StackingBinaryClassifier(base.EnsembleMixin, base.Classifier):
 
         >>> model = compose.Pipeline(
         ...     ('scale', pp.StandardScaler()),
-        ...     ('stack', expert.StackingBinaryClassifier(
+        ...     ('stack', expert.StackingClassifier(
         ...         classifiers=[
         ...             lm.LogisticRegression(),
         ...             lm.PAClassifier(mode=1, C=0.01),
@@ -42,7 +42,7 @@ class StackingBinaryClassifier(base.EnsembleMixin, base.Classifier):
         >>> metric = metrics.F1()
 
         >>> evaluate.progressive_val_score(dataset, model, metric)
-        F1: 0.878005
+        F1: 0.881387
 
     References:
         1. [A Kaggler's Guide to Model Stacking in Practice](http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/)
@@ -55,13 +55,18 @@ class StackingBinaryClassifier(base.EnsembleMixin, base.Classifier):
         self.meta_classifier = meta_classifier
         self.include_features = include_features
 
+    @property
+    def _multiclass(self):
+        return self.meta_classifier._multiclass
+
     def fit_one(self, x, y):
 
         # Ask each model to make a prediction and then update it
         oof = {}
-        for i, classifier in enumerate(self):
-            oof[f'oof_{i}'] = classifier.predict_proba_one(x).get(True, 0.5)
-            classifier.fit_one(x, y)
+        for i, clf in enumerate(self):
+            for k, p in clf.predict_proba_one(x).items():
+                oof[f'oof_{i}_{k}'] = p
+            clf.fit_one(x, y)
 
         # Optionally, add the base features
         if self.include_features:
@@ -75,8 +80,9 @@ class StackingBinaryClassifier(base.EnsembleMixin, base.Classifier):
     def predict_proba_one(self, x):
 
         oof = {
-            f'oof_{i}': classifier.predict_proba_one(x).get(True, 0.5)
-            for i, classifier in enumerate(self)
+            f'oof_{i}_{k}': p
+            for i, clf in enumerate(self)
+            for k, p in clf.predict_proba_one(x).items()
         }
 
         if self.include_features:

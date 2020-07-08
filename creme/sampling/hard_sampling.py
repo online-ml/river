@@ -191,8 +191,12 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
                  loss: typing.Union[optim.losses.BinaryLoss, optim.losses.MultiClassLoss] = None,
                  seed: int = None):
         if loss is None:
-            loss = optim.losses.CrossEntropy() if classifier._multiclass else optim.losses.Log()
+            loss = optim.losses.CrossEntropy() if self._multiclass else optim.losses.Log()
         super().__init__(model=classifier, loss=loss, size=size, p=p, seed=seed)
+
+    @property
+    def _multiclass(self):
+        return self.model._multiclass
 
     def predict_proba_one(self, x):
         return self.model.predict_proba_one(x)

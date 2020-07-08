@@ -19,12 +19,12 @@ another.
 from .ewa import EWARegressor
 from .sh import SuccessiveHalvingClassifier
 from .sh import SuccessiveHalvingRegressor
-from .stacking import StackingBinaryClassifier
+from .stacking import StackingClassifier
 
 
 __all__ = [
     'EWARegressor',
     'SuccessiveHalvingClassifier',
     'SuccessiveHalvingRegressor',
-    'StackingBinaryClassifier'
+    'StackingClassifier'
 ]
