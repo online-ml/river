@@ -6,7 +6,7 @@ from creme import base
 __all__ = ['BoxCoxRegressor', 'TransformedTargetRegressor']
 
 
-class TransformedTargetRegressor(base.Regressor, base.Wrapper):
+class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
     """Modifies the target before training.
 
     The user is expected to check that `func` and `inverse_func` are coherent with each other.
@@ -20,13 +20,13 @@ class TransformedTargetRegressor(base.Regressor, base.Wrapper):
 
         >>> import math
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import meta
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.TrumpApproval()
+        >>> dataset = datasets.TrumpApproval()
         >>> model = (
         ...     preprocessing.StandardScaler() |
         ...     meta.TransformedTargetRegressor(
@@ -37,7 +37,7 @@ class TransformedTargetRegressor(base.Regressor, base.Wrapper):
         ... )
         >>> metric = metrics.MSE()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MSE: 8.759624
 
     """
@@ -78,13 +78,13 @@ class BoxCoxRegressor(TransformedTargetRegressor):
 
         >>> import math
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import meta
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.TrumpApproval()
+        >>> dataset = datasets.TrumpApproval()
         >>> model = (
         ...     preprocessing.StandardScaler() |
         ...     meta.BoxCoxRegressor(
@@ -94,7 +94,7 @@ class BoxCoxRegressor(TransformedTargetRegressor):
         ... )
         >>> metric = metrics.MSE()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MSE: 5.898196
 
     """

@@ -3,12 +3,13 @@ import copy
 import functools
 
 from creme import base
+from creme import linear_model
 
 
 __all__ = ['OneVsOneClassifier']
 
 
-class OneVsOneClassifier(base.Wrapper, base.MultiClassifier):
+class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
     """One-vs-One (OvO) multiclass strategy.
 
     This strategy consists in fitting one binary classifier for each pair of classes. Because we
@@ -30,13 +31,13 @@ class OneVsOneClassifier(base.Wrapper, base.MultiClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import multiclass
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.ImageSegments()
+        >>> dataset = datasets.ImageSegments()
 
         >>> scaler = preprocessing.StandardScaler()
         >>> ovo = multiclass.OneVsOneClassifier(linear_model.LogisticRegression())
@@ -44,7 +45,7 @@ class OneVsOneClassifier(base.Wrapper, base.MultiClassifier):
 
         >>> metric = metrics.MacroF1()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MacroF1: 0.807573
 
     """
@@ -58,6 +59,14 @@ class OneVsOneClassifier(base.Wrapper, base.MultiClassifier):
     @property
     def _wrapped_model(self):
         return self.classifier
+
+    @property
+    def _multiclass(self):
+        return True
+
+    @classmethod
+    def _default_params(cls):
+        return {'classifier': linear_model.LogisticRegression()}
 
     def fit_one(self, x, y):
 

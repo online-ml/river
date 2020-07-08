@@ -9,6 +9,7 @@ import warnings
 import pandas as pd
 
 from .. import base
+from .. import utils
 
 from . import func
 from . import union
@@ -40,10 +41,6 @@ class Pipeline(base.Estimator):
             if none is provided.
 
     Example:
-
-        >>> from creme import compose
-        >>> from creme import linear_model
-        >>> from creme import preprocessing
 
         The recommended way to declare a pipeline is to use the `|` operator. The latter allows you
         to chain estimators in a very terse manner:
@@ -107,13 +104,13 @@ class Pipeline(base.Estimator):
         different steps to different parts of the data. For instance, we can extract word counts
         from text data, and extract polynomial features from numeric data.
 
-        >>> from creme import feature_extraction
+        >>> from creme import feature_extraction as fx
 
-        >>> tfidf = feature_extraction.TFIDF('text')
-        >>> counts = feature_extraction.BagOfWords('text')
+        >>> tfidf = fx.TFIDF('text')
+        >>> counts = fx.BagOfWords('text')
         >>> text_part = compose.Select('text') | (tfidf + counts)
 
-        >>> num_part = compose.Select('a', 'b') | preprocessing.PolynomialExtender()
+        >>> num_part = compose.Select('a', 'b') | fx.PolynomialExtender()
 
         >>> model = text_part + num_part
         >>> model |= preprocessing.StandardScaler()
@@ -129,10 +126,9 @@ class Pipeline(base.Estimator):
         flows and changes throughout the pipeline.
 
         >>> from creme import compose
-        >>> from creme import feature_extraction
         >>> from creme import naive_bayes
 
-        >>> X_y = [
+        >>> dataset = [
         ...     ('A positive comment', True),
         ...     ('A negative comment', False),
         ...     ('A happy comment', True),
@@ -140,16 +136,16 @@ class Pipeline(base.Estimator):
         ...     ('A harsh comment', False)
         ... ]
 
-        >>> tfidf = feature_extraction.TFIDF() | compose.Renamer(prefix='tfidf_')
-        >>> counts = feature_extraction.BagOfWords() | compose.Renamer(prefix='count_')
+        >>> tfidf = fx.TFIDF() | compose.Renamer(prefix='tfidf_')
+        >>> counts = fx.BagOfWords() | compose.Renamer(prefix='count_')
         >>> mnb = naive_bayes.MultinomialNB()
         >>> model = (tfidf + counts) | mnb
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     model = model.fit_one(x, y)
 
-        >>> x = X_y[0][0]
-        >>> report = model.debug_one(X_y[0][0])
+        >>> x = dataset[0][0]
+        >>> report = model.debug_one(dataset[0][0])
         >>> print(report)
         0. Input
         --------
@@ -232,8 +228,12 @@ class Pipeline(base.Estimator):
         ])
 
     @property
-    def _is_supervised(self):
-        return any(step._is_supervised for step in self.steps.values())
+    def _supervised(self):
+        return any(step._supervised for step in self.steps.values())
+
+    @property
+    def _multiclass(self):
+        return list(self.steps.values())[-1]._multiclass
 
     def _add_step(self, estimator, at_start: bool):
         """Add a step to either end of the pipeline.
@@ -303,16 +303,16 @@ class Pipeline(base.Estimator):
             # Note that this is done after transforming in order to avoid target leakage.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if sub_t._is_supervised:
+                    if sub_t._supervised:
                         sub_t.fit_one(x=x_pre, y=y)
 
-            elif t._is_supervised:
+            elif t._supervised:
                 t.fit_one(x=x_pre, y=y)
 
         # At this point steps contains a single step, which is therefore the final step of the
         # pipeline
         final = next(steps)
-        if final._is_supervised:
+        if final._supervised:
             final.fit_one(x=x, y=y, **params)
         else:
             final.fit_one(x=x, **params)
@@ -336,10 +336,10 @@ class Pipeline(base.Estimator):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._is_supervised:
+                    if not sub_t._supervised:
                         sub_t.fit_one(x=x)
 
-            elif not t._is_supervised:
+            elif not t._supervised:
                 t.fit_one(x=x)
 
             x = t.transform_one(x=x)
@@ -450,7 +450,7 @@ class Pipeline(base.Estimator):
 
         # Print the predicted output from the final estimator
         final = next(steps)
-        if not isinstance(final, base.Transformer):
+        if not utils.inspect.istransformer(final):
             print_title(f'{len(self)}. {final}')
 
             # If the last estimator has a debug_one method then call it
@@ -459,7 +459,7 @@ class Pipeline(base.Estimator):
 
             # Display the prediction
             _print()
-            if isinstance(final, base.Classifier):
+            if utils.inspect.isclassifier(final):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
                 _print(f'Prediction: {format_value(final.predict_one(x))}')
@@ -489,16 +489,16 @@ class Pipeline(base.Estimator):
             # Note that this is done after transforming in order to avoid target leakage.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if sub_t._is_supervised:
+                    if sub_t._supervised:
                         sub_t.fit_many(X=X_pre, y=y)
 
-            elif t._is_supervised:
+            elif t._supervised:
                 t.fit_many(X=X_pre, y=y)
 
         # At this point steps contains a single step, which is therefore the final step of the
         # pipeline
         final = next(steps)
-        if final._is_supervised:
+        if final._supervised:
             final.fit_many(X=X, y=y, **params)
         else:
             final.fit_many(X=X, **params)
@@ -522,10 +522,10 @@ class Pipeline(base.Estimator):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._is_supervised:
+                    if not sub_t._supervised:
                         sub_t.fit_many(X=X)
 
-            elif not t._is_supervised:
+            elif not t._supervised:
                 t.fit_many(X=X)
 
             X = t.transform_many(X=X)
@@ -578,7 +578,7 @@ class Pipeline(base.Estimator):
                 )
 
             # Wrapper models are handled recursively
-            if isinstance(step, base.Wrapper):
+            if isinstance(step, base.WrapperMixin):
                 return Network(
                     nodes=[networkify(step._wrapped_model)],
                     edges=[],

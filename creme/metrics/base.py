@@ -89,7 +89,7 @@ class BinaryMetric(ClassificationMetric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), base.Classifier)
+        return utils.inspect.isclassifier(model)
 
 
 class MultiClassMetric(ClassificationMetric):
@@ -114,7 +114,7 @@ class MultiClassMetric(ClassificationMetric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), base.Classifier)
+        return utils.inspect.isclassifier(model)
 
 
 class RegressionMetric(Metric):
@@ -143,7 +143,7 @@ class RegressionMetric(Metric):
         return False
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), base.Regressor)
+        return utils.inspect.isregressor(model)
 
     def __add__(self, other) -> 'Metrics':
         if not isinstance(other, RegressionMetric):
@@ -178,7 +178,7 @@ class MultiOutputClassificationMetric(Metric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), base.MultiOutputClassifier)
+        return utils.inspect.ismoclassifier(model)
 
 
 class MultiOutputRegressionMetric(Metric):
@@ -201,7 +201,7 @@ class MultiOutputRegressionMetric(Metric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(utils.estimator_checks.guess_model(model), base.MultiOutputRegressor)
+        return utils.inspect.ismoregressor(model)
 
 
 class Metrics(Metric, collections.UserList):
@@ -247,7 +247,7 @@ class Metrics(Metric, collections.UserList):
         return [m.get() for m in self]
 
     def works_with(self, model) -> bool:
-        return all(m.works_with(utils.estimator_checks.guess_model(model)) for m in self)
+        return all(m.works_with(model) for m in self)
 
     @property
     def bigger_is_better(self):

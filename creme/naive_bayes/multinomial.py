@@ -1,6 +1,8 @@
 import collections
 import math
 
+from creme.base import tags
+
 from . import base
 
 
@@ -11,9 +13,6 @@ class MultinomialNB(base.BaseNB):
     """Naive Bayes classifier for multinomial models.
 
     The input vector has to contain positive values, such as counts or TF-IDF values.
-
-    This class inherits `predict_proba_one` from `naive_bayes.BaseNB` which itself inherits
-    `predict_one` from `base.MultiClassifier`.
 
     Parameters:
         alpha: Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
@@ -106,9 +105,8 @@ class MultinomialNB(base.BaseNB):
         self.feature_counts = collections.defaultdict(collections.Counter)
         self.class_totals = collections.Counter()
 
-    @property
     def _more_tags(self):
-        return {'requires_positive_data': True}
+        return {tags.POSITIVE_INPUT}
 
     def fit_one(self, x, y):
         self.class_counts.update((y,))

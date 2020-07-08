@@ -17,6 +17,8 @@ from . import datasets
 from . import dummy
 from . import decomposition
 from . import ensemble
+from . import evaluate
+from . import expert
 from . import facto
 from . import feature_extraction
 from . import feature_selection
@@ -24,7 +26,6 @@ from . import impute
 from . import linear_model
 from . import meta
 from . import metrics
-from . import model_selection
 from . import multiclass
 from . import multioutput
 from . import naive_bayes
@@ -50,6 +51,8 @@ __all__ = [
     'dummy',
     'decomposition',
     'ensemble',
+    'evaluate',
+    'expert',
     'facto',
     'feature_extraction',
     'feature_selection',
@@ -57,7 +60,6 @@ __all__ = [
     'linear_model',
     'meta',
     'metrics',
-    'model_selection',
     'multiclass',
     'multioutput',
     'naive_bayes',
@@ -73,33 +75,3 @@ __all__ = [
     'tree',
     'utils'
 ]
-
-__pdoc__ = {
-    'anomaly': False,
-    'cluster': False,
-    'compat': False,
-    'compose': False,
-    'datasets': False,
-    'dummy': False,
-    'decomposition': False,
-    'ensemble': False,
-    'facto': False,
-    'feature_extraction': False,
-    'feature_selection': False,
-    'impute': False,
-    'linear_model': False,
-    'meta': False,
-    'multiclass': False,
-    'multioutput': False,
-    'naive_bayes': False,
-    'optim': False,
-    'preprocessing': False,
-    'proba': False,
-    'reco': False,
-    'sampling': False,
-    'time_series': False,
-    'tree': False,
-    'utils': False,
-
-    'conftest': False
-}

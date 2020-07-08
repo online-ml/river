@@ -51,10 +51,10 @@ class Agg(base.Transformer):
 
         As an example, we can calculate the average (how) revenue (on) for each place (by):
 
-        >>> from creme import feature_extraction
+        >>> from creme import feature_extraction as fx
         >>> from creme import stats
 
-        >>> agg = feature_extraction.Agg(
+        >>> agg = fx.Agg(
         ...     on='revenue',
         ...     by='place',
         ...     how=stats.Mean()
@@ -76,7 +76,7 @@ class Agg(base.Transformer):
         For instance, we can compute the maximum (how) revenue (on) per place as well as per
         day (by):
 
-        >>> agg = feature_extraction.Agg(
+        >>> agg = fx.Agg(
         ...     on='revenue',
         ...     by=['place', 'country'],
         ...     how=stats.Max()
@@ -98,8 +98,8 @@ class Agg(base.Transformer):
         go. The latter can be constructed by using the `+` operator:
 
         >>> agg = (
-        ...     feature_extraction.Agg(on='revenue', by='place', how=stats.Mean()) +
-        ...     feature_extraction.Agg(on='revenue', by=['place', 'country'], how=stats.Max())
+        ...     fx.Agg(on='revenue', by='place', how=stats.Mean()) +
+        ...     fx.Agg(on='revenue', by=['place', 'country'], how=stats.Max())
         ... )
 
         >>> import pprint
@@ -162,7 +162,7 @@ class TargetAgg(base.SupervisedTransformer):
 
         Consider the following dataset, where the second value of each value is the target:
 
-        >>> X_y = [
+        >>> dataset = [
         ...     ({'country': 'France', 'place': 'Taco Bell'}, 42),
         ...     ({'country': 'Sweden', 'place': 'Burger King'}, 16),
         ...     ({'country': 'France', 'place': 'Burger King'}, 24),
@@ -189,7 +189,7 @@ class TargetAgg(base.SupervisedTransformer):
         ...     )
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     print(agg.transform_one(x))
         ...     agg = agg.fit_one(x, y)
         {'target_bayes_mean_by_place': 3.0}
@@ -212,7 +212,7 @@ class TargetAgg(base.SupervisedTransformer):
         ...     )
         ... )
 
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     print(agg.transform_one(x))
         ...     agg = agg.fit_one(x, y)
         {'target_bayes_mean_by_place_and_country': 3.0}

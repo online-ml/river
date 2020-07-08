@@ -60,8 +60,8 @@ def pokedb():
 def test_iter_sql(pokedb):
 
     with pokedb.connect() as conn:
-        X_y = stream.iter_sql(query='SELECT * FROM pokemons;', conn=conn)
-        x, y = next(X_y)
+        dataset = stream.iter_sql(query='SELECT * FROM pokemons;', conn=conn)
+        x, y = next(dataset)
         assert x['name'] == 'Bulbasaur'
         assert y == None
 
@@ -71,14 +71,14 @@ def test_iter_sql(pokedb):
             pass
 
     # ... and yet we can still stream over the results because SQLAlchemy prefetches them
-    x, y = next(X_y)
+    x, y = next(dataset)
     assert x['name'] == 'Ivysaur'
 
     # The Pokedex from generation 1 contains 151 pokemons, and we've already seen 2 of them
-    assert sum(1 for _ in X_y) == 149
+    assert sum(1 for _ in dataset) == 149
 
     # Check that the stream is depleted
-    assert sum(1 for _ in X_y) == 0
+    assert sum(1 for _ in dataset) == 0
 
 
 def test_iter_sql_join(pokedb):
@@ -105,8 +105,8 @@ def test_iter_sql_join(pokedb):
     '''
 
     with pokedb.connect() as conn:
-        X_y = stream.iter_sql(query=query, conn=conn)
-        x, y = next(X_y)
+        dataset = stream.iter_sql(query=query, conn=conn)
+        x, y = next(dataset)
         assert x['name'] == 'Bulbasaur'
         assert x['type_1'] == 'Grass'
         assert x['type_2'] == 'Poison'

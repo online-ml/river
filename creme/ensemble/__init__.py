@@ -2,8 +2,7 @@
 from .bagging import BaggingClassifier
 from .bagging import BaggingRegressor
 from .boosting import AdaBoostClassifier
-from .hedging import HedgeRegressor
-from .stacking import StackingBinaryClassifier
+
 
 
 __all__ = [

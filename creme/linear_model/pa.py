@@ -2,9 +2,9 @@ import collections
 
 import numpy as np
 
-from .. import base
-from .. import optim
-from .. import utils
+from creme import base
+from creme import optim
+from creme import utils
 
 
 __all__ = ['PAClassifier', 'PARegressor']
@@ -102,7 +102,7 @@ class PARegressor(BasePA, base.Regressor):
         return utils.math.dot(x, self.weights) + self.intercept
 
 
-class PAClassifier(BasePA, base.BinaryClassifier):
+class PAClassifier(BasePA, base.Classifier):
     """Passive-aggressive learning for classification.
 
     Parameters:

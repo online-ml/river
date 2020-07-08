@@ -3,6 +3,7 @@ import copy
 import random
 
 from creme import base
+from creme import linear_model
 
 
 __all__ = ['OutputCodeClassifier']
@@ -12,7 +13,7 @@ def l1_dist(a, b):
     return sum(abs(ai - bi) for ai, bi in zip(a, b))
 
 
-class OutputCodeClassifier(base.Wrapper, base.MultiClassifier):
+class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
     """Output-code multiclass strategy.
 
     This also referred to as "error-correcting output codes".
@@ -42,13 +43,13 @@ class OutputCodeClassifier(base.Wrapper, base.MultiClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import linear_model
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import multiclass
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.ImageSegments()
+        >>> dataset = datasets.ImageSegments()
 
         >>> scaler = preprocessing.StandardScaler()
         >>> ooc = OutputCodeClassifier(
@@ -60,7 +61,7 @@ class OutputCodeClassifier(base.Wrapper, base.MultiClassifier):
 
         >>> metric = metrics.MacroF1()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MacroF1: 0.797119
 
     References:
@@ -69,7 +70,7 @@ class OutputCodeClassifier(base.Wrapper, base.MultiClassifier):
 
     """
 
-    def __init__(self, classifier: base.BinaryClassifier, code_size: int, seed: int = None):
+    def __init__(self, classifier: base.Classifier, code_size: int, seed: int = None):
         self.classifier = classifier
         self.code_size = code_size
         self.seed = seed
@@ -83,18 +84,25 @@ class OutputCodeClassifier(base.Wrapper, base.MultiClassifier):
         integers = list(range(2 ** code_size))
         self._rng.shuffle(integers)
         self._ints = iter(integers)
+        self.code_book = collections.defaultdict(self._next_code)
 
-        def next_code():
-            i = next(self._ints)
-            b = bin(i)[2:]  # convert to a string of 0s and 1s
-            b = b.zfill(self.code_size)  # ensure the code is of length code_size
-            return tuple(int(c) for c in b)
+    def _next_code(self):
+        i = next(self._ints)
+        b = bin(i)[2:]  # convert to a string of 0s and 1s
+        b = b.zfill(self.code_size)  # ensure the code is of length code_size
+        return tuple(int(c) for c in b)
 
-        self.code_book = collections.defaultdict(next_code)
+    @property
+    def _multiclass(self):
+        return True
 
     @property
     def _wrapped_model(self):
         return self.classifier
+
+    @classmethod
+    def _default_params(cls):
+        return {'classifier': linear_model.LogisticRegression(), 'code_size': 6}
 
     def fit_one(self, x, y):
 

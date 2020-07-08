@@ -34,11 +34,11 @@ def iter_array(X: np.ndarray, y: np.ndarray = None,
         >>> X = np.array([[1, 2, 3], [11, 12, 13]])
         >>> Y = np.array([True, False])
 
-        >>> X_y = stream.iter_array(
+        >>> dataset = stream.iter_array(
         ...     X, Y,
         ...     feature_names=['x1', 'x2', 'x3']
         ... )
-        >>> for x, y in X_y:
+        >>> for x, y in dataset:
         ...     print(x, y)
         {'x1': 1, 'x2': 2, 'x3': 3} True
         {'x1': 11, 'x2': 12, 'x3': 13} False

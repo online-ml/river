@@ -1,8 +1,13 @@
-"""Feature preprocessing."""
+"""Feature preprocessing.
+
+The purpose of this module is to modify an existing set of features so that they can be processed
+by a machine learning algorithm. This may be done by scaling numeric parts of the data or by
+one-hot encoding categorical features. The difference with the `feature_extraction` module is that
+the latter extracts new information from the data
+
+"""
 from .feature_hasher import FeatureHasher
-from .kernel_approx import RBFSampler
 from .one_hot import OneHotEncoder
-from .poly import PolynomialExtender
 from .scale import Binarizer
 from .scale import MaxAbsScaler
 from .scale import MinMaxScaler
@@ -18,8 +23,6 @@ __all__ = [
     'MinMaxScaler',
     'Normalizer',
     'OneHotEncoder',
-    'PolynomialExtender',
-    'RBFSampler',
     'RobustScaler',
     'StandardScaler'
 ]

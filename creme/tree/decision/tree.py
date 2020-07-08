@@ -171,7 +171,7 @@ class BaseDecisionTree(abc.ABC):
         return buffer.getvalue()
 
 
-class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
+class DecisionTreeClassifier(BaseDecisionTree, base.Classifier):
     """Decision tree classifier.
 
     Numeric features will be treated as continuous features. You can cast a feature to a string in
@@ -204,11 +204,11 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import tree
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
 
         >>> model = tree.DecisionTreeClassifier(
         ...     patience=100,
@@ -218,7 +218,7 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
 
         >>> metric = metrics.LogLoss()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         LogLoss: 0.51755
 
     References:
@@ -226,6 +226,10 @@ class DecisionTreeClassifier(BaseDecisionTree, base.MultiClassifier):
         2. [Article by The Morning Paper](https://blog.acolyer.org/2015/08/26/mining-high-speed-data-streams/)
 
     """
+
+    @property
+    def _multiclass(self):
+        return True
 
     def _make_leaf_dist(self):
         return proba.Multinomial()

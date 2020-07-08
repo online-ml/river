@@ -5,38 +5,10 @@ import inspect
 import itertools
 import math
 import pickle
+import random
 
 
-__all__ = [
-    'check_estimator',
-    'guess_model'
-]
-
-
-def guess_model(model):
-    """Extracts the relevant part model.
-
-    Sometimes we need to check if a model can perform regression, classification, etc. When the
-    model is a pipeline, then this can be checked by looking at the final step of the pipeline.
-
-    This function is highly succeptible to be modified or disappear altogether. The only reason it
-    exists is that we can't do `isinstance(pipeline, base.Regressor)`.
-
-    Parameters:
-        model
-
-    """
-
-    from creme import base
-    from creme import compose
-
-    if isinstance(model, (base.MultiOutputRegressor, base.MultiOutputClassifier)):
-        return model
-    elif isinstance(model, compose.Pipeline):
-        return guess_model(list(model.steps.values())[-1])
-    elif isinstance(model, base.Wrapper):
-        return guess_model(model._wrapped_model)
-    return model
+__all__ = ['check_estimator']
 
 
 def yield_datasets(model):
@@ -46,24 +18,23 @@ def yield_datasets(model):
     from creme import datasets
     from creme import preprocessing
     from creme import stream
+    from creme import utils
     from sklearn import datasets as sk_datasets
 
-    model = guess_model(model)
-
     # Classification
-    if isinstance(model, (base.BinaryClassifier, base.MultiClassifier)):
+    if utils.inspect.isclassifier(model):
         yield datasets.Phishing()
 
-    # Multi-class classification
-    if isinstance(model, base.MultiClassifier):
-        yield datasets.ImageSegments().take(500)
+        # Multi-class classification
+        if model._multiclass:
+            yield datasets.ImageSegments().take(500)
 
     # Regression
-    if isinstance(model, base.Regressor):
+    if utils.inspect.isregressor(model):
         yield datasets.TrumpApproval()
 
     # Multi-output regression
-    if isinstance(model, base.MultiOutputRegressor):
+    if utils.inspect.ismoregressor(model):
 
         # 1
         yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
@@ -78,7 +49,7 @@ def yield_datasets(model):
         yield SolarFlare()
 
     # Multi-output classification
-    if isinstance(model, base.MultiOutputClassifier):
+    if utils.inspect.ismoclassifier(model):
         yield datasets.Music()
 
 
@@ -125,32 +96,48 @@ def check_predict_proba_one_binary(classifier, dataset):
     for x, y in dataset:
         y_pred = classifier.predict_proba_one(x)
         classifier = classifier.fit_one(x, y)
-        assert len(y_pred) == 2
-        assert True in y_pred
-        assert False in y_pred
+        assert set(y_pred.keys()) == {False, True}
 
 
 def check_shuffling_no_impact(model, dataset):
 
+    from creme import utils
+
     shuffled = copy.deepcopy(model)
+    is_reg = utils.inspect.isregressor(model)
+    is_moreg = utils.inspect.ismoregressor(model)
 
     for x, y in dataset:
 
         # Shuffle the features
-        features = x.keys()
+        features = list(x.keys())
         random.shuffle(features)
         x_shuffled = {i: x[i] for i in features}
 
-        yp1 = model.predict_one(x)
-        yp2 = model.predict_one(x_shuffled)
-        yp3 = shuffled.predict_one(x)
-        yp4 = shuffled.predict_one(x_shuffled)
+        assert x == x_shuffled  # order doesn't matter for dicts
 
-        for a, b in itertools.combinations([yp1, yp2, yp3, yp4]):
-            assert a == b
+        y_pred = model.predict_one(x)
+        y_pred_shuffled = shuffled.predict_one(x_shuffled)
 
-        model.fit_one(x)
-        shuffled.fit_one(x_shuffled)
+        if is_reg:
+            try:
+                assert math.isclose(y_pred, y_pred_shuffled)
+            except AssertionError as e:
+
+                for i in model['LinearRegression'].weights:
+                    print(i, model['LinearRegression'].weights[i], shuffled['LinearRegression'].weights[i])
+
+                print(y_pred, y_pred_shuffled)
+
+                raise e
+        elif is_moreg:
+            for o in y_pred:
+                assert math.isclose(y_pred[o], y_pred[o])
+        else:
+            assert y_pred == y_pred_shuffled
+
+        model.fit_one(x, y)
+        shuffled.fit_one(x_shuffled, y)
 
 
 def check_debug_one(model, dataset):
@@ -169,22 +156,59 @@ def check_pickling(model, dataset):
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
 
 
-def check_repr_works(model):
+def check_has_tag(model, tag):
+    assert tag in model._tags
+
+
+def check_repr(model):
     rep = repr(model)
     assert isinstance(rep, str)
 
 
-def check_str_works(model):
+def check_str(model):
     assert isinstance(str(model), str)
 
 
 def check_tags(model):
     """Checks that the `_tags` property works."""
-    assert isinstance(model._tags, dict)
+    assert isinstance(model._tags, set)
 
 
 def check_set_params_idempotent(model):
     assert len(model.__dict__) == len(model._set_params().__dict__)
+
+
+def check_init(model):
+    try:
+        params = model._default_params()
+    except AttributeError:
+        params = {}
+    assert isinstance(model.__class__(**params), model.__class__)
+
+
+def check_doc(model):
+    assert model.__doc__
+
+
+def wrapped_partial(func, *args, **kwargs):
+    """
+
+    Taken from http://louistiao.me/posts/adding-__name__-and-__doc__-attributes-to-functoolspartial-objects/
+
+    """
+    partial = functools.partial(func, *args, **kwargs)
+    functools.update_wrapper(partial, func)
+    return partial
+
+
+def with_ignore_exception(func, exception):
+    def f(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except exception:
+            pass
+    f.__name__ = func.__name__
+    return f
 
 
 def yield_checks(model):
@@ -196,32 +220,40 @@ def yield_checks(model):
     """
 
     from creme import base
+    from creme import utils
 
-    yield check_repr_works
-    yield check_str_works
+    # General checks
+    yield check_repr
+    yield check_str
     yield check_tags
     yield check_set_params_idempotent
+    yield check_init
+    yield check_doc
 
+    # Checks that make use of datasets
     for dataset in yield_datasets(model):
 
-        def with_dataset(method):
-            check = functools.partial(check_fit_one, dataset=dataset)
-            functools.update_wrapper(check, method)
-            return check
-
-        yield with_dataset(check_fit_one)
-        yield with_dataset(check_pickling)
+        yield wrapped_partial(check_fit_one, dataset=dataset)
+        yield wrapped_partial(check_pickling, dataset=dataset)
         if hasattr(model, 'debug_one'):
-            yield with_dataset(check_debug_one)
-        yield with_dataset(check_shuffling_no_impact)
+            yield wrapped_partial(check_debug_one, dataset=dataset)
+        yield wrapped_partial(check_shuffling_no_impact, dataset=dataset)
 
-        model = guess_model(model)
+        # Classifier checks
+        if utils.inspect.isclassifier(model):
 
-        if isinstance(model, base.Classifier):
-            yield with_dataset(check_predict_proba_one)
+            # Some classifiers do not implement predict_proba_one
+            yield with_ignore_exception(
+                wrapped_partial(check_predict_proba_one, dataset=dataset),
+                NotImplementedError
+            )
 
-            if not isinstance(model, base.MultiClassifier):
-                yield with_dataset(check_predict_proba_one_binary)
+            # Specific checks for binary classifiers
+            if not model._multiclass:
+                yield with_ignore_exception(
+                    wrapped_partial(check_predict_proba_one_binary, dataset=dataset),
+                    NotImplementedError
+                )
 
 
 def check_estimator(model):

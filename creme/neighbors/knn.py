@@ -47,12 +47,12 @@ class KNeighborsRegressor(base.Regressor):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import neighbors
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.TrumpApproval()
+        >>> dataset = datasets.TrumpApproval()
 
         >>> model = (
         ...     preprocessing.StandardScaler() |
@@ -61,7 +61,7 @@ class KNeighborsRegressor(base.Regressor):
 
         >>> metric = metrics.MAE()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         MAE: 0.335753
 
     """
@@ -99,7 +99,7 @@ class KNeighborsRegressor(base.Regressor):
         return sum(y for _, y, _ in nearest) / self.n_neighbors
 
 
-class KNeighborsClassifier(base.MultiClassifier):
+class KNeighborsClassifier(base.Classifier):
     """K-Nearest Neighbors (KNN) for classification.
 
     This works by storing a buffer with the `window_size` most recent observations. A brute-force
@@ -117,12 +117,12 @@ class KNeighborsClassifier(base.MultiClassifier):
     Example:
 
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import neighbors
         >>> from creme import preprocessing
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
 
         >>> model = (
         ...     preprocessing.StandardScaler() |
@@ -131,7 +131,7 @@ class KNeighborsClassifier(base.MultiClassifier):
 
         >>> metric = metrics.Accuracy()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         Accuracy: 84.55%
 
     """
@@ -143,6 +143,10 @@ class KNeighborsClassifier(base.MultiClassifier):
         self.p = p
         self.classes = set()
         self._nn = NearestNeighbours(window_size=window_size, p=p)
+
+    @property
+    def _multiclass(self):
+        return True
 
     def fit_one(self, x, y):
         self.classes.add(y)

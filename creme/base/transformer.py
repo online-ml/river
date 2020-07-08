@@ -7,7 +7,7 @@ class Transformer(base.Estimator):
     """A transformer."""
 
     @property
-    def _is_supervised(self):
+    def _supervised(self):
         return False
 
     def fit_one(self, x: dict) -> 'Transformer':
@@ -67,7 +67,7 @@ class Transformer(base.Estimator):
 class SupervisedTransformer(Transformer):
 
     @property
-    def _is_supervised(self):
+    def _supervised(self):
         return True
 
     def fit_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':

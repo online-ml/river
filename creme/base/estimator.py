@@ -5,20 +5,11 @@ import sys
 import types
 import typing
 
-from .. import utils
-
-
-DEFAULT_TAGS = {
-    'handles_text': False,
-    'requires_positive_data': False,
-    'handles_categorical_features': False
-}
-
 
 class Estimator(abc.ABC):
     """An estimator."""
 
-    def _is_supervised(self):
+    def _supervised(self):
         """Indicates whether or not the estimator is supervised or not.
 
         This is useful internally for determining if an estimator expects to be provided with a `y`
@@ -58,6 +49,8 @@ class Estimator(abc.ABC):
 
     def _set_params(self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None) -> 'Estimator':
         """Return a new instance with the current parameters as well as new ones.
+
+        Calling this without any parameters will essentially clone the estimator.
 
         The algorithm will be recursively called down `Pipeline`s and `TransformerUnion`s.
 
@@ -105,42 +98,28 @@ class Estimator(abc.ABC):
         if new_params is None:
             new_params = {}
 
-        params = {
-            **self._get_params(),
-            **new_params
-        }
+        params = {**self._get_params(), **new_params}
 
         return self.__class__(**copy.deepcopy(params))  # type: ignore
 
-    @property
-    def _tags(self) -> typing.Dict[str, bool]:
-        """Return the estimator's tags.
+    @classmethod
+    def _default_params(cls):
+        """Instantiates an estimator with default arguments.
 
-        Tags can be used to specify what kind of inputs an estimator is able to process. For
-        instance, some estimators can handle text, whilst others don't. Inheriting from
-        `base.Estimator` will imply a set of default tags which can be overriden by implementing
-        the `_more_tags` property.
+        Most parameters of each estimator have a default value. However, this isn't always the
+        case, in particular for meta-models where the wrapped model is typically not given a
+        default value. It's useful to have a default value set for testing reasons, which is the
+        purpose of this method. By default it simply calls the __init__ function. It may be
+        overriden on an individual as needed.
 
         """
-
-        tags: typing.Dict[str, bool] = {}
-
-        for base_class in inspect.getmro(self.__class__)[1:]:
-            if isinstance(base_class, Estimator):
-                _update_if_consistent(tags, base_class._more_tags)
-
-        _update_if_consistent(tags, self._more_tags)
-
-        return {**DEFAULT_TAGS, **tags}
-
-    @property
-    def _more_tags(self) -> typing.Dict[str, bool]:
-        """Specific tags for this estimator."""
         return {}
 
     @property
     def _memory_usage(self) -> str:
         """Return the memory usage in a human readable format."""
+
+        from creme import utils
 
         def get_size(obj, seen=None):
             """Recursively finds size of objects"""
@@ -165,15 +144,37 @@ class Estimator(abc.ABC):
         mem_usage = get_size(self)
         return utils.pretty.humanize_bytes(mem_usage)
 
+    # TAGS
 
-def _update_if_consistent(dict1: dict, dict2: dict):
-    """Like dict1.update(dict2), but only if the common keys have the same values."""
-    common_keys = set(dict1.keys()).intersection(dict2.keys())
-    for key in common_keys:
-        if dict1[key] != dict2[key]:
-            raise TypeError(
-                f'Inconsistent values for tag {key}: {dict1[key]} != {dict2[key]}')
-    dict1.update(dict2)
+    @property
+    def _tags(self) -> typing.Dict[str, bool]:
+        """Return the estimator's tags.
+
+        Tags can be used to specify what kind of inputs an estimator is able to process. For
+        instance, some estimators can handle text, whilst others don't. Inheriting from
+        `base.Estimator` will imply a set of default tags which can be overriden by implementing
+        the `_more_tags` property.
+
+        TODO: this could be a cachedproperty.
+
+        """
+
+        try:
+            tags = self._more_tags()
+        except AttributeError:
+            tags = set()
+
+        for parent in self.__class__.__mro__:
+            try:
+                tags |= parent._more_tags(self)
+            except AttributeError:
+                pass
+
+        return tags
+
+    @property
+    def _supervised(self):
+        return False
 
 
 def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> str:

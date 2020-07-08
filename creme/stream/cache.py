@@ -30,14 +30,14 @@ class Cache:
         >>> from creme import datasets
         >>> from creme import stream
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
         >>> cache = stream.Cache()
 
         The cache can be used by wrapping it around an iterable. Because this is the first time
         are iterating over the data, nothing is cached.
 
         >>> tic = time.time()
-        >>> for x, y in cache(X_y, key='phishing'):
+        >>> for x, y in cache(dataset, key='phishing'):
         ...     pass
         >>> toc = time.time()
         >>> print(toc - tic)  # doctest: +SKIP
@@ -46,7 +46,7 @@ class Cache:
         If we do the same thing again, we can see the loop is now faster.
 
         >>> tic = time.time()
-        >>> for x, y in cache(X_y, key='phishing'):
+        >>> for x, y in cache(dataset, key='phishing'):
         ...     pass
         >>> toc = time.time()
         >>> print(toc - tic)  # doctest: +SKIP

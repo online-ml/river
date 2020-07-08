@@ -115,12 +115,10 @@ class VectorizerMixin:
         self.processing_steps = []
 
         # Text extraction
-
         if on is not None:
             self.processing_steps.append(operator.itemgetter(on))
 
         # Preprocessing
-
         if preprocessor is not None:
             self.processing_steps.append(preprocessor)
         else:
@@ -130,10 +128,10 @@ class VectorizerMixin:
                 self.processing_steps.append(str.lower)
 
         # Tokenization
-
         if self.tokenizer:
             self.processing_steps.append(self.tokenizer)
 
+        # n-grams
         if ngram_range[1] > 1:
             self.processing_steps.append(functools.partial(
                 find_all_ngrams,
@@ -146,7 +144,9 @@ class VectorizerMixin:
         return x
 
     def _more_tags(self):
-        return {'handles_text': True}
+        if self.on is None:
+            return {base.tags.TEXT_INPUT}
+        return {}
 
 
 class BagOfWords(base.Transformer, VectorizerMixin):
@@ -178,7 +178,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         preprocessed text, and then return a `collections.Counter` containing the number of
         occurrences of each token.
 
-        >>> import creme
+        >>> from creme import feature_extraction as fx
 
         >>> corpus = [
         ...     'This is the first document.',
@@ -187,7 +187,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         ...     'Is this the first document?',
         ... ]
 
-        >>> bow = creme.feature_extraction.BagOfWords()
+        >>> bow = fx.BagOfWords()
 
         >>> for sentence in corpus:
         ...     print(bow.transform_one(sentence))
@@ -202,7 +202,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         In the above example, a string is passed to `transform_one`. You can also indicate which
         field to access if the string is stored in a dictionary:
 
-        >>> bow = creme.feature_extraction.BagOfWords(on='sentence')
+        >>> bow = fx.BagOfWords(on='sentence')
 
         >>> for sentence in corpus:
         ...     x = {'sentence': sentence}
@@ -214,7 +214,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
         The `ngram_range` parameter can be used to extract n-grams (including unigrams):
 
-        >>> ngrammer = creme.feature_extraction.BagOfWords(ngram_range=(1, 2))
+        >>> ngrammer = fx.BagOfWords(ngram_range=(1, 2))
 
         >>> ngrams = ngrammer.transform_one('I love the smell of napalm in the morning')
         >>> for ngram, count in ngrams.items():

@@ -3,11 +3,13 @@ import typing
 
 import numpy as np
 
+from creme import base
+
 
 __all__ = ['expand_param_grid']
 
 
-def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
+def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Estimator]:
     """Expands a grid of parameters.
 
     This method can be used to generate a list of model parametrizations from a dictionary where
@@ -29,29 +31,22 @@ def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
 
         As an initial example, we can expand a grid of parameters for a single model.
 
-        >>> import pprint
-        >>> from creme import model_selection
+        >>> from creme import linear_model
         >>> from creme import optim
+        >>> from creme import utils
+
+        >>> model = linear_model.LinearRegression()
 
         >>> grid = {'optimizer': [optim.SGD(.1), optim.SGD(.01), optim.SGD(.001)]}
+        >>> models = utils.expand_param_grid(model, grid)
+        >>> len(models)
+        3
 
-        >>> for params in model_selection.expand_param_grid(grid):
-        ...     pprint.pprint(params)
-        {'optimizer': SGD({'lr': Constant({'learning_rate': 0.1}), 'n_iterations': 0})}
-        {'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}
-        {'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 0})}
-
-        You can parametrize a model with a given set of parameters with the `_set_params` method:
-
-        >>> from creme import linear_model
-
-        >>> model = linear_model.LinearRegression(optimizer=optim.SGD())
-        >>> model = model._set_params(params)
-        >>> model
+        >>> models[0]
         LinearRegression (
           optimizer=SGD (
             lr=Constant (
-              learning_rate=0.001
+              learning_rate=0.1
             )
           )
           loss=Squared ()
@@ -72,8 +67,18 @@ def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
         ...         (optim.Adam, {'lr': [.1, .01, .01]})
         ...     ]
         ... }
+        >>> models = utils.expand_param_grid(model, grid)
+        >>> len(models)
+        6
 
         You may specify a grid of parameters for a pipeline via nesting:
+
+        >>> from creme import feature_extraction
+
+        >>> model = (
+        ...     feature_extraction.BagOfWords() |
+        ...     linear_model.LinearRegression()
+        ... )
 
         >>> grid = {
         ...     'BagOfWords': {
@@ -87,7 +92,16 @@ def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
         ...     }
         ... }
 
+        >>> models = utils.expand_param_grid(model, grid)
+        >>> len(models)
+        8
+
     """
+
+    return [model._set_params(params) for params in _expand_param_grid(grid)]
+
+
+def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
 
     def expand_tuple(t):
 
@@ -99,7 +113,7 @@ def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
         if not isinstance(params, dict):
             raise ValueError(f'Expected second element to be a dict, got {params}')
 
-        return (klass(**combo) for combo in expand_param_grid(params))
+        return (klass(**combo) for combo in _expand_param_grid(params))
 
     def expand(k, v):
 
@@ -136,7 +150,7 @@ def expand_param_grid(grid: dict) -> typing.Iterator[dict]:
             #         },
             #      }
             # }
-            return ((k, el) for el in expand_param_grid(v))
+            return ((k, el) for el in _expand_param_grid(v))
 
         raise ValueError(f'unsupported type: {type(v)}')
 

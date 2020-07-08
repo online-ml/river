@@ -16,18 +16,18 @@ class Memento(collections.namedtuple('Memento', 'i x y t_expire')):
         return self.t_expire < other.t_expire
 
 
-def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callable],
+def simulate_qa(dataset: base.typing.Stream, moment: typing.Union[str, typing.Callable],
                 delay: typing.Union[str, int, dt.timedelta, typing.Callable], copy: bool = True):
     """Simulate a time-ordered question and answer session.
 
     This method allows looping through a dataset in the order in which it arrived. Indeed, it
     usually is the case that labels arrive after features. Being able to go through a dataset in
     arrival order enables assessing a model's performance in a reliable manner. For instance, the
-    `model_selection.progressive_val_score` is a high-level method that can be used to score a
-    model on a dataset. Under the hood it uses this method to determine the correct arrival order.
+    `evaluate.progressive_val_score` is a high-level method that can be used to score a model on a
+    dataset. Under the hood it uses this method to determine the correct arrival order.
 
     Parameters:
-        X_y: A stream of (features, target) tuples.
+        dataset: A stream of (features, target) tuples.
         moment: The attribute used for measuring time. If a callable is passed, then it is expected
             to take as input a `dict` of features. If `None`, then the observations are implicitely
             timestamped in the order in which they arrive. If a `str` is passed, then it will be
@@ -64,7 +64,7 @@ def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callab
         We can now create a streaming dataset where the features are the departure dates and the
         targets are the durations.
 
-        >>> X_y = (
+        >>> dataset = (
         ...     ({'date': date}, duration)
         ...     for date, duration in time_table
         ... )
@@ -74,7 +74,7 @@ def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callab
 
         >>> delay = lambda _, y: dt.timedelta(seconds=y)
 
-        >>> for i, x, y in simulate_qa(X_y, moment='date', delay=delay):
+        >>> for i, x, y in simulate_qa(dataset, moment='date', delay=delay):
         ...     if y is None:
         ...         print(f'{x["date"]} - trip #{i} departs')
         ...     else:
@@ -96,7 +96,7 @@ def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callab
         This function is extremely practical because it provides a reliable way to evaluate the
         performance of a model in a real scenario. Indeed, it allows to make predictions and
         perform model updates in exactly the same manner that would happen live. For instance, it
-        is used in `model_selection.progressive_val_score`, which is a higher level function for
+        is used in `evaluate.progressive_val_score`, which is a higher level function for
         evaluating models in an online manner.
 
     """
@@ -126,7 +126,7 @@ def simulate_qa(X_y: base.typing.Stream, moment: typing.Union[str, typing.Callab
 
     mementos: typing.List[Memento] = []
 
-    for i, (x, y) in enumerate(X_y):
+    for i, (x, y) in enumerate(dataset):
 
         t = get_moment(i, x)
         d = get_delay(x, y)

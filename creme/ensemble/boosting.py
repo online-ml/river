@@ -4,27 +4,14 @@ import math
 
 import numpy as np
 
-from .. import base
+from creme import base
+from creme import linear_model
 
 
 __all__ = ['AdaBoostClassifier']
 
 
-class BaseBoosting(base.Wrapper, base.Ensemble):
-
-    def __init__(self, model, n_models=10, seed=None):
-        super().__init__(copy.deepcopy(model) for _ in range(n_models))
-        self.n_models = n_models
-        self.model = model
-        self.seed = seed
-        self._rng = np.random.RandomState(seed)
-
-    @property
-    def _wrapped_model(self):
-        return self.model
-
-
-class AdaBoostClassifier(base.Classifier, BaseBoosting):
+class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     """Boosting for classification
 
     For each incoming observation, each model's `fit_one` method is called `k` times where
@@ -49,11 +36,11 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
 
         >>> from creme import datasets
         >>> from creme import ensemble
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import tree
 
-        >>> X_y = datasets.Phishing()
+        >>> dataset = datasets.Phishing()
 
         >>> metric = metrics.LogLoss()
 
@@ -69,7 +56,7 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
         ...     seed=42
         ... )
 
-        >>> model_selection.progressive_val_score(X_y, model, metric)
+        >>> evaluate.progressive_val_score(dataset, model, metric)
         LogLoss: 0.741097
 
         >>> print(model)
@@ -81,9 +68,21 @@ class AdaBoostClassifier(base.Classifier, BaseBoosting):
     """
 
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
-        super().__init__(model, n_models, seed)
+        super().__init__(copy.deepcopy(model) for _ in range(n_models))
+        self.n_models = n_models
+        self.model = model
+        self.seed = seed
+        self._rng = np.random.RandomState(seed)
         self.wrong_weight = collections.defaultdict(int)
         self.correct_weight = collections.defaultdict(int)
+
+    @property
+    def _wrapped_model(self):
+        return self.model
+
+    @classmethod
+    def _default_params(cls):
+        return {'model':linear_model.LogisticRegression()}
 
     def fit_one(self, x, y):
         lambda_poisson = 1

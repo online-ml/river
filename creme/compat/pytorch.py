@@ -57,8 +57,8 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
 
         >>> from creme import compat
         >>> from creme import datasets
+        >>> from creme import evaluate
         >>> from creme import metrics
-        >>> from creme import model_selection
         >>> from creme import preprocessing
         >>> import torch
         >>> from torch import nn
@@ -66,7 +66,7 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
 
         >>> _ = torch.manual_seed(0)
 
-        >>> X_y = datasets.TrumpApproval()
+        >>> dataset = datasets.TrumpApproval()
 
         >>> n_features = 6
         >>> net = nn.Sequential(
@@ -85,7 +85,7 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
         ... )
         >>> metric = metrics.MAE()
 
-        >>> model_selection.progressive_val_score(X_y, model, metric).get()
+        >>> evaluate.progressive_val_score(dataset, model, metric).get()
         2.78258
 
     """

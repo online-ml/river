@@ -6,7 +6,7 @@ from scipy import special
 from creme import base
 
 
-class BaseNB(base.MultiClassifier, abc.ABC):
+class BaseNB(base.Classifier):
     """Base Naive Bayes class."""
 
     @abc.abstractmethod
@@ -24,3 +24,7 @@ class BaseNB(base.MultiClassifier, abc.ABC):
             return {}
         lse = special.logsumexp(list(jll.values()))
         return {label: math.exp(ll - lse) for label, ll in jll.items()}
+
+    @property
+    def _multiclass(self):
+        return True

@@ -11,13 +11,13 @@ from creme import compat
 from creme import cluster
 from creme import compose
 from creme import ensemble
+from creme import expert
 from creme import facto
 from creme import feature_extraction
 from creme import feature_selection
 from creme import impute
 from creme import linear_model
 from creme import meta
-from creme import model_selection
 from creme import multiclass
 from creme import multioutput
 from creme import naive_bayes
@@ -57,8 +57,8 @@ def get_all_estimators():
         linear_model.SoftmaxRegression,
         meta.PredClipper,
         meta.TransformedTargetRegressor,
-        model_selection.SuccessiveHalvingClassifier,
-        model_selection.SuccessiveHalvingRegressor,
+        expert.SuccessiveHalvingClassifier,
+        expert.SuccessiveHalvingRegressor,
         preprocessing.OneHotEncoder,
         reco.Baseline,
         reco.BiasedMF,
@@ -88,59 +88,13 @@ def get_all_estimators():
             continue
 
         for _, obj in inspect.getmembers(importlib.import_module(f'creme.{submodule}'), is_estimator):
-
             if issubclass(obj, ignored):
                 continue
-
-            elif issubclass(obj, multioutput.RegressorChain):
-                inst = obj(model=linear_model.LinearRegression())
-
-            elif issubclass(obj, multioutput.ClassifierChain):
-                inst = obj(model=linear_model.LogisticRegression())
-
-            elif issubclass(obj, dummy.StatisticRegressor):
-                inst = obj(statistic=stats.Mean())
-
-            elif issubclass(obj, tree.RandomForestClassifier):
-                inst = obj()
-
-            elif issubclass(obj, ensemble.BaggingClassifier):
-                inst = obj(linear_model.LogisticRegression())
-
-            elif issubclass(obj, ensemble.BaggingRegressor):
-                inst = obj(linear_model.LinearRegression())
-
-            elif issubclass(obj, ensemble.AdaBoostClassifier):
-                inst = obj(linear_model.LogisticRegression())
-
-            elif issubclass(obj, ensemble.HedgeRegressor):
-                inst = obj([
-                    preprocessing.StandardScaler() | linear_model.LinearRegression(intercept_lr=.1),
-                    preprocessing.StandardScaler() | linear_model.PARegressor(),
-                ])
-
-            elif issubclass(obj, feature_selection.SelectKBest):
-                inst = obj(similarity=stats.PearsonCorr())
-
-            elif issubclass(obj, linear_model.LinearRegression):
-                inst = preprocessing.StandardScaler() | obj(intercept_lr=.1)
-
-            elif issubclass(obj, linear_model.PARegressor):
-                inst = preprocessing.StandardScaler() | obj()
-
-            elif issubclass(obj, multiclass.OneVsRestClassifier):
-                inst = obj(classifier=linear_model.LogisticRegression())
-
-            elif issubclass(obj, multiclass.OneVsOneClassifier):
-                inst = obj(classifier=linear_model.LogisticRegression())
-
-            elif issubclass(obj, multiclass.OutputCodeClassifier):
-                inst = obj(classifier=linear_model.LogisticRegression(), code_size=10)
-
-            else:
-                inst = obj()
-
-            yield inst
+            try:
+                params = obj._default_params()
+            except AttributeError:
+                params = {}
+            yield obj(**params)
 
 
 @pytest.mark.parametrize('estimator, check', [
@@ -161,7 +115,12 @@ def get_all_estimators():
         cluster.KMeans(n_clusters=5, seed=42),
         preprocessing.MinMaxScaler(),
         preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
-        preprocessing.PolynomialExtender(),
+        feature_extraction.PolynomialExtender(),
+        (
+            feature_extraction.PolynomialExtender() |
+            preprocessing.StandardScaler() |
+            linear_model.LinearRegression()
+        ),
         feature_selection.VarianceThreshold(),
         feature_selection.SelectKBest(similarity=stats.PearsonCorr())
     ]
