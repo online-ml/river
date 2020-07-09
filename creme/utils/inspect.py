@@ -16,9 +16,9 @@ from creme import compose
 __all__ = [
     'extract_relevant',
     'isclassifier',
-    'ismulticlass',
-    'ismultioutput',
-    'isregressor'
+    'isregressor',
+    'ismoclassifier',
+    'ismoregressor'
 ]
 
 
