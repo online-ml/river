@@ -5,6 +5,7 @@ from . import pretty
 from .histogram import Histogram
 from .sdft import SDFT
 from .skyline import Skyline
+from .vectordict import VectorDict
 from .window import Window
 from .window import SortedWindow
 
@@ -15,5 +16,6 @@ __all__ = [
     'SDFT',
     'Skyline',
     'SortedWindow',
+    'VectorDict',
     'Window'
 ]
