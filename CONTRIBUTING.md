@@ -113,8 +113,3 @@ You don't have to worry too much about these, as we only check them before each 
 ## Making a pull request
 
 Once you're happy with your changes, you can push them to your remote fork. By the way do not hesitate to make small commits rather than one big one, it makes things easier to review. You can create a pull request to `creme`'s `master` branch.
-
-## Adding contributors
-
-- Install the [allcontributors CLI](https://allcontributors.org/docs/en/cli/installation)
-- Run `yarn all-contributors add <GitHub username$ code`
