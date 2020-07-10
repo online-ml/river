@@ -1,0 +1,18 @@
+# Copyright (c) 2019, Henry Schreiner.
+#
+# Distributed under the 3-clause BSD license, see accompanying file LICENSE
+# or https://github.com/scikit-hep/azure-wheel-helpers for details.
+
+steps:
+- script: |
+    python -m pip install -U pytest pytest-cov pytest-azurepipelines "coverage>=5.0"
+  displayName: Install Azure testing requirements
+
+- script: |
+    python -m pip install -r $(test_requirements_file)
+  displayName: Install testing requirements
+
+- script: |
+    python -m pytest --cov $(project_name) --cov-report html
+  workingDirectory: tests
+  displayName: Test with pytest

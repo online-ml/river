@@ -1,0 +1,12 @@
+# Copyright (c) 2019, Henry Schreiner.
+#
+# Distributed under the 3-clause BSD license, see accompanying file LICENSE
+# or https://github.com/scikit-hep/azure-wheel-helpers for details.
+
+steps:
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'wheel_$(Agent.OS)_$(Agent.JobName)_$(python.architecture)'
+    targetPath: 'dist'
+
+# Artifacts are attached to the build, and are published with an Azure release pipeline.
