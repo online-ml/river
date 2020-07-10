@@ -7,6 +7,7 @@ from .histogram import Histogram
 from .param_grid import expand_param_grid
 from .sdft import SDFT
 from .skyline import Skyline
+from .vectordict import VectorDict
 from .window import Window
 from .window import SortedWindow
 
@@ -19,5 +20,6 @@ __all__ = [
     'SDFT',
     'Skyline',
     'SortedWindow',
+    'VectorDict',
     'Window'
 ]
