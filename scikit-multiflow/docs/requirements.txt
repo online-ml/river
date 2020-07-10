@@ -1,0 +1,5 @@
+sphinx>=2.0.1
+numpydoc>=1.0.0
+pydata-sphinx-theme>=0.3.0
+cython
+sphinx-copybutton

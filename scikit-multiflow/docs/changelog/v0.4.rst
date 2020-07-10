@@ -1,0 +1,23 @@
+.. currentmodule:: skmultiflow
+.. include:: _labels.rst
+
+Version 0.4.1
+-------------
+
+**Sep 2019**
+
+- |FIX| Fix bug in the calculation of Precision and Recall which affects the F1 and Geometric-mean scores. The bug was
+  only triggered by a specific ordering of the class-values.
+
+Version 0.4.0
+-------------
+
+**Sep 2019**
+
+- |Feature| Robust Soft Learning Vector Quantization classifier :class:`prototype.RobustSoftLearningVectorQuantization`
+- |Feature| Stacked Single-Target Hoeffding Tree regressor :class:`trees.StackedSingleTargetHoeffdingTreeRegressor`
+- |Feature| Half-Space Trees one-class classifier for anomaly detection :class:`anomaly_detection.HalfSpaceTrees`
+- |FIX| Fix bug in :class:`data.HyperplaneGenerator` which resulted in corrupted data when using `batch_size > 1`.
+- |Enhancement| Documentation improvements.
+- |Enhancement| Update the Hoeffding Adaptive Tree Classifier to perform bootstrap sampling in the leaf nodes as
+  it has been empirically shown to improve (in most cases) performance.
