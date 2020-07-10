@@ -4,11 +4,15 @@ import torch
 from vowpalwabbit import pyvw
 
 
-class ScikitLearnClassifier(base.MultiClassifier):
+class ScikitLearnClassifier(base.Classifier):
 
     def __init__(self, model, classes):
         self.model = model
         self.classes = classes
+        
+    @property
+    def _multiclass(self):
+        return True
 
     def fit_one(self, x, y):
         self.model.partial_fit([list(x.values())], [y], classes=self.classes)
@@ -70,7 +74,7 @@ class PyTorchRegressor(PyTorchModel, base.Regressor):
         return self.network(x).item()
 
 
-class PyTorchBinaryClassifier(PyTorchModel, base.BinaryClassifier):
+class PyTorchBinaryClassifier(PyTorchModel, base.Classifier):
 
     def predict_proba_one(self, x):
 
@@ -99,30 +103,46 @@ class KerasRegressor(KerasModel, base.Regressor):
         return self.model.predict_on_batch(x)[0][0]
 
 
-class KerasBinaryClassifier(KerasModel, base.BinaryClassifier):
+class KerasBinaryClassifier(KerasModel, base.Classifier):
 
     def predict_proba_one(self, x):
         x = [[list(x.values())]]
         p_true = self.model.predict_on_batch(x)[0][0]
         return {True: p_true, False: 1. - p_true}
+    
+    
+class VW2CremeBase:
+    
+    def __init__(self, *args, **kwargs):
+        self.vw = pyvw.vw(*args, **kwargs)
+    
+    def _format_x(self, x):
+        return self.vw.example(f'{y_vw} | {" ".join(map(lambda x: ":" + str(x), x.values()))}')
 
 
-class VW2CremeBase(pyvw.vw):
-
-    def _format_features(self, x):
-        return ' '.join(f'{k}:{v}' for k, v in x.items())
+class VW2CremeClassifier(VW2CremeBase, base.Classifier):
 
     def fit_one(self, x, y):
-        ex = self.example(f'{y} | {self._format_features(x)}')
-        self.learn(ex)
-        self.finish_example(ex)
+        
+        # Convert {False, True} to {-1, 1}
+        y = int(y)
+        y_vw = 2 * y - 1
+        
+        ex = self._format_x(x)
+        self.vw.learn(ex)
+        self.vw.finish_example(ex)
         return self
 
+    def predict_proba(self, x):
+        ex = self._format_x(x)
+        y_pred = self.vw.predict(ex)
+        return {True: y_pred, False: 1. - y_pred}
+    
 
 class VW2CremeRegressor(VW2CremeBase, base.Regressor):
 
     def predict_one(self, x):
-        ex = self.example(f' | {self._format_features(x)}')
-        y_pred = self.predict(ex)
-        self.finish_example(ex)
-        return y_pred
+        ex = self._format_x(x)
+        self.vw.learn(ex)
+        self.vw.finish_example(ex)
+        return self
