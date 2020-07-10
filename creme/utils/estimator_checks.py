@@ -1,8 +1,6 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
-import inspect
-import itertools
 import math
 import pickle
 import random
@@ -13,7 +11,6 @@ __all__ = ['check_estimator']
 
 def yield_datasets(model):
 
-    from creme import base
     from creme import compose
     from creme import datasets
     from creme import preprocessing
@@ -219,7 +216,6 @@ def yield_checks(model):
 
     """
 
-    from creme import base
     from creme import utils
 
     # General checks
