@@ -88,9 +88,6 @@ cdef class VectorDict(dict):
     def __delitem__(self, key):
         self._map.__delitem__(key)
 
-    def __eq__(self, other):
-        return self._map.__eq__(other)
-
     def __format__(self, format_spec):
         return self._map.__format__(format_spec)
 
@@ -149,6 +146,14 @@ cdef class VectorDict(dict):
 
     # operator methods
 
+    def __eq__(self, other):
+        if isinstance(other, VectorDict):  # VD == VD
+            other_ = <VectorDict> other
+            return self._map.__eq__(other_._map)
+        if isinstance(other, dict):  # VD == D
+            return self._map.__eq__(other)
+        return NotImplemented
+
     def __add__(left, right):
         if isinstance(left, VectorDict):
             if isinstance(right, VectorDict):  # VD + VD
@@ -203,7 +208,7 @@ cdef class VectorDict(dict):
         if isinstance(other, dict):  # VD -= D
             return _sub_dict(self, other, False)
         try:  # VD -= ?, try it
-            return _sub_const(self, other, True)
+            return _sub_const(self, other, False)
         except TypeError:
             return NotImplemented
 
