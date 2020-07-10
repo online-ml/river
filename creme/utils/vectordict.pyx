@@ -57,7 +57,7 @@ cdef _dot_dicts(dict x, dict y):
     return res
 
 
-cdef class VectorDict:
+cdef class VectorDict(dict):
     cdef dict _map
 
     def __init__(self, other=None):
@@ -95,7 +95,10 @@ cdef class VectorDict:
         return self._map.__format__(format_spec)
 
     def __getitem__(self, key):
-        return self._map[key]
+        try:
+            return self._map[key]
+        except KeyError:
+            return 0
 
     def __iter__(self):
         return self._map.__iter__()
@@ -148,79 +151,79 @@ cdef class VectorDict:
 
     def __add__(left, right):
         if isinstance(left, VectorDict):
-            if isinstance(right, dict):
-                return _add_dict(VectorDict(left), right)
-            if isinstance(right, VectorDict):
+            if isinstance(right, VectorDict):  # VD + VD
                 right_ = <VectorDict> right
                 return _add_dict(VectorDict(left), right_._map)
-            try:
+            if isinstance(right, dict):  # VD + D
+                return _add_dict(VectorDict(left), right)
+            try:  # VD + ?, try it
                 return _add_const(VectorDict(left), right)
             except TypeError:
                 return NotImplemented
-        if isinstance(left, dict):
+        if isinstance(left, dict):  # D + VD
             return _add_dict(VectorDict(right), left)
-        try:
+        try:  # ? + VD, try it
             return _add_const(VectorDict(right), left)
         except TypeError:
             return NotImplemented
 
     def __iadd__(self, other):
-        if isinstance(other, dict):
-            return _add_dict(self, other)
-        if isinstance(other, VectorDict):
+        if isinstance(other, VectorDict):  # VD += VD
             other_ = <VectorDict> other
             return _add_dict(self, other_._map)
-        try:
+        if isinstance(other, dict): # VD += D
+            return _add_dict(self, other)
+        try:  # VD += ?, try it
             return _add_const(self, other)
         except TypeError:
             return NotImplemented
 
     def __sub__(left, right):
         if isinstance(left, VectorDict):
-            if isinstance(right, dict):
-                return _sub_dict(VectorDict(left), right, False)
-            if isinstance(right, VectorDict):
+            if isinstance(right, VectorDict):  # VD - VD
                 right_ = <VectorDict> right
                 return _sub_dict(VectorDict(left), right_._map, False)
-            try:
+            if isinstance(right, dict):  # VD - D
+                return _sub_dict(VectorDict(left), right, False)
+            try:  # VD - ?, try it
                 return _sub_const(VectorDict(left), right, False)
             except TypeError:
                 return NotImplemented
-        if isinstance(left, dict):
+        if isinstance(left, dict):  # D - VD
             return _sub_dict(VectorDict(right), left, True)
-        try:
+        try:  # ? - VD, try it
             return _sub_const(VectorDict(right), left, True)
         except TypeError:
             return NotImplemented
 
     def __isub__(self, other):
-        if isinstance(other, dict):
-            return _sub_dict(self, other, False)
-        if isinstance(other, VectorDict):
+        if isinstance(other, VectorDict):  # VD -= VD
             other_ = <VectorDict> other
             return _sub_dict(self, other_._map, False)
-        try:
+        if isinstance(other, dict):  # VD -= D
+            return _sub_dict(self, other, False)
+        try:  # VD -= ?, try it
             return _sub_const(self, other, True)
         except TypeError:
             return NotImplemented
 
     def __mul__(left, right):
         try:
-            if isinstance(left, VectorDict):
+            if isinstance(left, VectorDict):  # VD * ?, try it
                 return _mul_const(VectorDict(left), right)
-            return _mul_const(VectorDict(right), left)
+            return _mul_const(VectorDict(right), left)  # ? * VD, try it
         except TypeError:
             return NotImplemented
 
     def __imul__(self, other):
         try:
-            return _mul_const(self, other)
+            return _mul_const(self, other)  # VD *= ?, try it
         except TypeError:
             return NotImplemented
 
     def __truediv__(left, right):
         try:
-            if isinstance(left, VectorDict):
+            if isinstance(left, VectorDict):  # VD / ?, try it
                 return _div_const(VectorDict(left), right)
         except TypeError:
             pass
@@ -228,29 +231,31 @@ cdef class VectorDict:
 
     def __itruediv__(self, other):
         try:
-            return _div_const(self, other)
+            return _div_const(self, other)  # VD /= ?, try it
         except TypeError:
             return NotImplemented
 
     def __matmul__(left, right):
         if isinstance(left, VectorDict):
             left_ = <VectorDict> left
-            if isinstance(right, dict):
-                return _dot_dicts(left_._map, right)
-            if isinstance(right, VectorDict):
+            if isinstance(right, VectorDict):  # VD @ VD
                 right_ = <VectorDict> right
                 return _dot_dicts(left_._map, right_._map)
+            if isinstance(right, dict):  # VD @ D
+                return _dot_dicts(left_._map, right)
             return NotImplemented
-        if isinstance(left, dict):
+        if isinstance(left, dict):  # D @ VD
             right_ = <VectorDict> right
             return _dot_dicts(right_._map, left)
         return NotImplemented
 
     def __neg__(self):
+        # -VD
         res = VectorDict(self)
         for key, value in res._map.items():
             res._map[key] = -value
         return res
 
     def __pos__(self):
+        # +VD
         return VectorDict(self)
