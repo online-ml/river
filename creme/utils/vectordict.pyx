@@ -1,266 +1,356 @@
 cimport cython
 
-cdef VectorDict _add_const(VectorDict res, other):
-    # add the constant other to res then return res
-    for key, value in res._map.items():
-        res._map[key] = value + other
-    return res
-
-cdef VectorDict _add_dict(VectorDict res, dict other):
-    # add the dict other to res then return res
-    for key, value in other.items():
-        res._map[key] = res._map.get(key, 0) + value
-    return res
-
-cdef VectorDict _sub_const(VectorDict res, other, int rev):
-    # subtract the constant other to res then return res
-    if rev:
-        for key, value in res._map.items():
-            res._map[key] = other - value
-    else:
-        for key, value in res._map.items():
-            res._map[key] = value - other
-    return res
-
-cdef VectorDict _sub_dict(VectorDict res, dict other, int rev):
-    # subtract the dict other to res then return res
-    if rev:
-        for key, value in other.items():
-            res._map[key] = value - res._map.get(key, 0)
-    else:
-        for key, value in other.items():
-            res._map[key] = res._map.get(key, 0) - value
-    return res
+missing = object()
 
 
-cdef VectorDict _mul_const(VectorDict res, other):
-    # multiply all values in res by other and return res
-    for key, value in res._map.items():
-        res._map[key] = other * value
-    return res
+cdef inline get_value(VectorDict vec, key):
+    if vec._use_mask and key not in vec._mask:
+        return 0
+    value = vec._data.get(key, missing)
+    if value is missing:
+        if vec._use_factory:
+            value = vec._default_factory()
+            vec._data[key] = value
+            return value
+        return 0
+    return value
 
 
-cdef VectorDict _div_const(VectorDict res, other):
-    # divide all values in res by other and return res
-    for key, value in res._map.items():
-        res._map[key] = value / other
-    return res
+cdef inline get_keys(VectorDict vec):
+    if vec._lazy_mask:
+        return vec._data.keys() & vec._mask.keys()
+    return vec._data.keys()
 
 
-cdef _dot_dicts(dict x, dict y):
-    # return the dot product of the dictionaries x and y
-    if len(x) < len(y):
-        x, y = y, x
-    res = 0
-    for i, xi in x.items():
-        res += xi * y.get(i, 0)
-    return res
+cdef inline get_union_keys(VectorDict left, VectorDict right):
+    keys = get_keys(left) | get_keys(right)
+    # sort keys so factory initialization is reproducible
+    if left._use_factory | right._use_factory:
+        return sorted(keys)
+    return keys
 
 
-cdef class VectorDict(dict):
-    cdef dict _map
+cdef class VectorDict:
+    cdef dict _data
+    cdef object _mask
+    cdef bint _use_mask
+    cdef bint _lazy_mask
+    cdef bint _use_factory
+    cdef object _default_factory
 
-    def __init__(self, other=None):
+    def __init__(self, data=None, default_factory=None, mask=None, copy=False):
         """A dictionary-like object that supports vector-like operations.
 
-        Supports addition and subtraction with a VectorDict, a dict or a constant.
-        Supports multiplication and division by a constant.
-        Supports dot product with a VectorDict or dict through the @ operator.
+        Supports addition (+) and subtraction (-) with a VectorDict or a scalar.
+        Supports multiplication (*) and division (-) by a scalar.
+        Supports dot product (@) with a VectorDict.
+        A scalar is any object that supports the four arithmetic operations
+        with the dictionary's values.
+
+        If mask is not None, any key which is a key of mask is said to be
+        masked while other keys are said to be unmasked.
+        If mask is None, any keys is said to be unmasked.
+        If mask is not None and copy is True, only the key-values for keys in
+        both data and mask will be used to initialized the dictionary.
+        If mask is not None and copy is False, the mask will be applied lazily,
+        which enables a faster initialization but potentially slower operations.
+
+        If default_factory is not None, it is called whenever an unmasked
+        missing key is accessed, either externally with __getitem__ or
+        internally as part of an element-wise numeric operation such as
+        addition, and the result is inserted as the value for that key.
+        If a masked key, or an umasked missing key when default_factory is None,
+        is accessed externally through __getitem___ a KeyError
+        exception is raised, and if it is accessed internally as part of an
+        operation, its value is taken as 0, but is not inserted for that key.
 
         Parameters:
-            other: a VectorDict or dict to copy key-values from, or None
+            data: a VectorDict or dict to initialize key-values from, or None
+            default_value: a scalar, or None
+            default_factory: a callable returning a scalar, or None
+            mask: a VectorDict or dict or set such that keys not in mask will
+                not be considered in operations and will always result in a
+                KeyError if accessed by __getitem__, or None
+            copy: if data and/or mask are specified, whether to store a copy of
+                the underlying dictionaries or references at initialization
         """
-        if other is None:
-            pass
-        elif isinstance(other, dict):
-            self._map = dict(other)
-        elif isinstance(other, VectorDict):
-            other_ = <VectorDict> other
-            self._map = dict(other_._map)
+        if data is None:
+            data = dict()
+        elif isinstance(data, VectorDict):
+            data = <VectorDict>(data)._data
+        elif not isinstance(data, dict):
+            raise ValueError(f"Unsupported type for data: {type(data)}")
+        if mask is None:
+            if copy:
+                data = dict(data)
         else:
-            raise ValueError("Unsupported type: {}".format(type(other)))
+            if isinstance(mask, VectorDict):
+                mask = <VectorDict>(mask)._data
+            elif not (isinstance(mask, dict) or isinstance(mask, set)):
+                raise ValueError(f"Unsupported type for mask: {type(mask)}")
+            if copy:
+                mask = dict(mask)
+                data = {key: value
+                        for key, value in data.items() if key in mask}
+        self._data = data
+        self._mask = mask
+        self._use_mask = mask is not None
+        self._lazy_mask = mask is not None and not copy
+        self._use_factory = default_factory is not None
+        self._default_factory = default_factory
+
+    cdef dict _apply_mask(self, force_copy=False):
+        # NOTE this is potentially slow (makes a copy if lazy_mask is True),
+        #      use with caution
+        if not self._lazy_mask:
+            if force_copy:
+                return dict(self._data)
+            return self._data
+        return {key: value for key, value in self._data.items()
+                if key in self._mask}
 
     # pass-through methods to the underlying dict
 
     def __contains__(self, key):
-        return self._map.__contains__(key)
+        contains = self._data.__contains__(key)
+        if not self._lazy_mask:
+            return contains
+        return contains and self._mask.__contains__(key)
 
     def __delitem__(self, key):
-        self._map.__delitem__(key)
+        if self._lazy_mask and key not in self._mask:
+            raise KeyError(key)
+        self._data.__delitem__(key)
 
     def __format__(self, format_spec):
-        return self._map.__format__(format_spec)
+        return self._apply_mask().__format__(format_spec)
 
     def __getitem__(self, key):
+        if self._use_mask and key not in self._mask:
+            raise KeyError(key)
         try:
-            return self._map[key]
+            return self._data[key]
         except KeyError:
-            return 0
+            if self._use_factory:
+                value = self._default_factory()
+                self._data[key] = value
+                return value
+            raise
 
     def __iter__(self):
-        return self._map.__iter__()
+        return self._apply_mask().__iter__()
 
     def __len__(self):
-        return self._map.__len__()
+        if self._lazy_mask:
+            return len(self._data.keys() - self._mask)
+        return self._data.__len__()
 
     def __repr__(self):
-        return self._map.__repr__()
+        return self._apply_mask().__repr__()
 
     def __setitem__(self, key, value):
-        self._map[key] = value
+        if self._use_mask and key not in self._mask:
+            raise KeyError(key)
+        self._data[key] = value
 
     def __str__(self):
-        return self._map.__str__()
+        return self._apply_mask().__str__()
 
     def clear(self):
-        return self._map.clear()
+        if self._lazy_mask:
+            keep = {key: value for key, value in self._data.items()
+                    if key in self._mask}
+            self._data.clear()
+            self._data.update(keep)
+        else:
+            self._data.clear()
+
+    def get(self, key, *args, **kwargs):
+        if self._lazy_mask and key not in self._mask:
+            return dict().get(key, *args, **kwargs)
+        return self._data.get(key, *args, **kwargs)
 
     def items(self):
-        return self._map.items()
+        return self._apply_mask().items()
 
     def keys(self):
-        return self._map.keys()
+        return self._apply_mask().keys()
 
     def pop(self, *args, **kwargs):
-        return self._map.pop(*args, **kwargs)
+        return self._data.pop(*args, **kwargs)
 
     def popitem(self):
-        return self._map.popitem()
+        if self._lazy_mask:
+            keep = []
+            while True:
+                (key, value) = self._data.popitem()
+                if key in self._mask:
+                    keep.append((key, value))
+                else:
+                    break
+            for key_, value_ in keep:
+                self._data[key_] = value_
+            return key, value
+        return self._data.popitem()
 
-    def setdefault(self, *args, **kwargs):
-        return self._map.setdefault(*args, **kwargs)
+    def setdefault(self, key, *args, **kwargs):
+        if self._lazy_mask and key not in self._mask:
+            return dict().setdefault(key, *args, **kwargs)
+        return self._data.setdefault(key, *args, **kwargs)
 
     def update(self, *args, **kwargs):
-        return self._map.update(*args, **kwargs)
+        if self._lazy_mask:
+            keep1 = {key: value for key, value in self._data.items()
+                     if key in self._mask}
+            self._data.update(*args, **kwargs)
+            keep2 = {key: value for key, value in self._data.items()
+                     if key not in self._mask}
+            self._data.clear()
+            self._data.update(**keep1, **keep2)
+        self._data.update(*args, **kwargs)
 
     def values(self):
-        return self._map.values()
-
-    # export methods
-
-    def copy(self):
-        return VectorDict(self._map)
-
-    def todict(self):
-        return self._map.copy()
+        return self._apply_mask().values()
 
     # operator methods
 
-    def __eq__(self, other):
-        if isinstance(other, VectorDict):  # VD == VD
-            other_ = <VectorDict> other
-            return self._map.__eq__(other_._map)
-        if isinstance(other, dict):  # VD == D
-            return self._map.__eq__(other)
-        return NotImplemented
+    def __eq__(left, right):
+        if isinstance(right, VectorDict):
+            left, right = right, left
+        left_ = <VectorDict> left
+        if isinstance(right, VectorDict):
+            right_ = <VectorDict> right
+            return left_._apply_mask().__eq__(right_._apply_mask())
+        elif isinstance(right, dict):
+            return left_._apply_mask().__eq__(right)
+        else:
+            return NotImplemented
 
     def __add__(left, right):
-        if isinstance(left, VectorDict):
-            if isinstance(right, VectorDict):  # VD + VD
-                right_ = <VectorDict> right
-                return _add_dict(VectorDict(left), right_._map)
-            if isinstance(right, dict):  # VD + D
-                return _add_dict(VectorDict(left), right)
-            try:  # VD + ?, try it
-                return _add_const(VectorDict(left), right)
+        if isinstance(right, VectorDict):
+            left, right = right, left
+        left_ = <VectorDict> left
+        if isinstance(right, VectorDict):  # vec + vec
+            right_ = <VectorDict> right
+            res = dict()
+            for key in get_union_keys(left_, right_):
+                res[key] = get_value(left_, key) + get_value(right_, key)
+        else:  # vec + scalar
+            res = left_._apply_mask(force_copy=True)
+            try:
+                for key, value in res.items():
+                    res[key] = value + right
             except TypeError:
                 return NotImplemented
-        if isinstance(left, dict):  # D + VD
-            return _add_dict(VectorDict(right), left)
-        try:  # ? + VD, try it
-            return _add_const(VectorDict(right), left)
-        except TypeError:
-            return NotImplemented
+        return VectorDict(res)
 
-    def __iadd__(self, other):
-        if isinstance(other, VectorDict):  # VD += VD
+    def __iadd__(VectorDict self, other):
+        if isinstance(other, VectorDict):  # vec += vec
             other_ = <VectorDict> other
-            return _add_dict(self, other_._map)
-        if isinstance(other, dict): # VD += D
-            return _add_dict(self, other)
-        try:  # VD += ?, try it
-            return _add_const(self, other)
-        except TypeError:
-            return NotImplemented
+            for key in get_union_keys(self, other_):
+                self._data[key] = get_value(self, key) + get_value(other_, key)
+        else:  # vec += scalar
+            try:
+                for key in get_keys(self):
+                    self._data[key] += other
+            except TypeError:
+                return NotImplemented
+        return self
 
     def __sub__(left, right):
-        if isinstance(left, VectorDict):
-            if isinstance(right, VectorDict):  # VD - VD
-                right_ = <VectorDict> right
-                return _sub_dict(VectorDict(left), right_._map, False)
-            if isinstance(right, dict):  # VD - D
-                return _sub_dict(VectorDict(left), right, False)
-            try:  # VD - ?, try it
-                return _sub_const(VectorDict(left), right, False)
+        if isinstance(left, VectorDict) and isinstance(right, VectorDict):
+            # vec - vec
+            left_, right_ = <VectorDict> left, <VectorDict> right
+            res = dict()
+            for key in get_union_keys(left_, right_):
+                res[key] = get_value(left_, key) - get_value(right_, key)
+        elif isinstance(left, VectorDict):  # vec - scalar
+            left_ = <VectorDict> left
+            res = left_._apply_mask(force_copy=True)
+            try:
+                for key, value in res.items():
+                    res[key] = value - right
             except TypeError:
                 return NotImplemented
-        if isinstance(left, dict):  # D - VD
-            return _sub_dict(VectorDict(right), left, True)
-        try:  # ? - VD, try it
-            return _sub_const(VectorDict(right), left, True)
-        except TypeError:
-            return NotImplemented
+        else:  # scalar - vec
+            right_ = <VectorDict> right
+            res = right_._apply_mask(force_copy=True)
+            try:
+                for key, value in res.items():
+                    res[key] = left - value
+            except TypeError:
+                return NotImplemented
+        return VectorDict(res)
 
-    def __isub__(self, other):
-        if isinstance(other, VectorDict):  # VD -= VD
+    def __isub__(VectorDict self, other):
+        if isinstance(other, VectorDict):  # vec -= vec
             other_ = <VectorDict> other
-            return _sub_dict(self, other_._map, False)
-        if isinstance(other, dict):  # VD -= D
-            return _sub_dict(self, other, False)
-        try:  # VD -= ?, try it
-            return _sub_const(self, other, False)
-        except TypeError:
-            return NotImplemented
+            for key in get_union_keys(self, other_):
+                self._data[key] = get_value(self, key) - get_value(other_, key)
+        else:  # vec -= scalar
+            try:
+                for key in get_keys(self):
+                    self._data[key] -= other
+            except TypeError:
+                return NotImplemented
+        return self
 
     def __mul__(left, right):
-        try:
-            if isinstance(left, VectorDict):  # VD * ?, try it
-                return _mul_const(VectorDict(left), right)
-            return _mul_const(VectorDict(right), left)  # ? * VD, try it
+        if isinstance(right, VectorDict):
+            left, right = right, left
+        left_ = <VectorDict> left
+        res = left_._apply_mask(force_copy=True)
+        try:  # vec * scalar
+            for key, value in res.items():
+                res[key] = value * right
         except TypeError:
             return NotImplemented
+        return VectorDict(res)
 
-    def __imul__(self, other):
-        try:
-            return _mul_const(self, other)  # VD *= ?, try it
+    def __imul__(VectorDict self, other):
+        try:  # vec *= scalar
+            for key in get_keys(self):
+                self._data[key] *= other
         except TypeError:
             return NotImplemented
+        return self
 
     def __truediv__(left, right):
-        try:
-            if isinstance(left, VectorDict):  # VD / ?, try it
-                return _div_const(VectorDict(left), right)
-        except TypeError:
-            pass
-        return NotImplemented
-
-    def __itruediv__(self, other):
-        try:
-            return _div_const(self, other)  # VD /= ?, try it
+        if not isinstance(left, VectorDict):
+            return NotImplemented
+        left_ = <VectorDict> left
+        res = left_._apply_mask(force_copy=True)
+        try:  # vec / scalar
+            for key, value in res.items():
+                res[key] = value / right
         except TypeError:
             return NotImplemented
+        return VectorDict(res)
+
+    def __itruediv__(VectorDict self, other):
+        try:  # vec /= scalar
+            for key in get_keys(self):
+                self._data[key] /= other
+        except TypeError:
+            return NotImplemented
+        return self
 
     def __matmul__(left, right):
-        if isinstance(left, VectorDict):
-            left_ = <VectorDict> left
-            if isinstance(right, VectorDict):  # VD @ VD
-                right_ = <VectorDict> right
-                return _dot_dicts(left_._map, right_._map)
-            if isinstance(right, dict):  # VD @ D
-                return _dot_dicts(left_._map, right)
+        if not (isinstance(left, VectorDict) and isinstance(right, VectorDict)):
             return NotImplemented
-        if isinstance(left, dict):  # D @ VD
-            right_ = <VectorDict> right
-            return _dot_dicts(right_._map, left)
-        return NotImplemented
-
-    def __neg__(self):
-        # -VD
-        res = VectorDict(self)
-        for key, value in res._map.items():
-            res._map[key] = -value
+        left_, right_ = <VectorDict> left, <VectorDict> right
+        res = 0
+        for key in get_union_keys(left_, right_):
+            res += get_value(left_, key) * get_value(right_, key)
         return res
 
+    def __neg__(self):
+        # -vec
+        res = self._apply_mask(force_copy=True)
+        for key, value in res.items():
+            res[key] = -value
+        return VectorDict(res)
+
     def __pos__(self):
-        # +VD
-        return VectorDict(self)
+        # +vec
+        return VectorDict(self._apply_mask(force_copy=True))
