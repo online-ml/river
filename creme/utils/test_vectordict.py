@@ -3,56 +3,76 @@ from creme.utils import VectorDict
 
 def test_vectordict():
 
+    # test empty init
+    x = dict()
+    vx = VectorDict()
+    assert vx == x
+
+    # test basics
     x = {'a': 8, 'b': -1.2, 4: 2.7}
     vx = VectorDict(x)
-    assert isinstance(vx, dict)
     assert vx == x
     assert vx['a'] == 8
     assert vx[4] == 2.7
-    assert vx[()] == 0
     vx[9] = 8.9
-    assert vx[9] == 8.9
+    assert x[9] == vx[9] == 8.9
 
-    y = dict()
-    vy = VectorDict()
-    assert vy == y
+    # test copy
+    x = {'a': 8, 'b': -1.2, 4: 2.7}
+    vx = VectorDict(x, copy=True)
+    assert vx == x
+    vx['a'] = 2
+    assert x['a'] == 8
+    assert vx['a'] == 2
 
-    z1 = {'a': 1, 'b': -5, 'c': -3}
-    z2 = {'a': 2, 'b': 0.5, 'd': 4}
-    vz1 = VectorDict(z1)
-    vz2 = VectorDict(z2)
-    assert vz1 == vz1
-    assert +vz1 == vz1
-    assert -vz1 == {'a': -1, 'b': 5, 'c': 3}
-    assert vz1 + 2 == 2 + vz1 == {'a': 3, 'b': -3, 'c': -1}
-    assert vz1 * 2 == 2 * vz1 == {'a': 2, 'b': -10, 'c': -6}
-    assert vz1 - 2 == {'a': -1, 'b': -7, 'c': -5}
-    assert vz1 / 2 == {'a': 0.5, 'b': -2.5, 'c': -1.5}
-    assert vz1 + vz2 == vz2 + vz1 == vz1 + z2 == {'a': 3, 'b': -4.5, 'c': -3, 'd': 4}
-    assert vz1 - vz2 == vz1 - z2 == {'a': -1, 'b': -5.5, 'c': -3, 'd': -4}
-    assert vz1 @ vz2 == vz2 @ vz1 == vz1 @ z2 == -0.5
+    # test operations
+    x = {'a': 1, 'b': -5, 'c': -3}
+    y = {'a': 2, 'b': 0.5, 'd': 4}
+    vx = VectorDict(x)
+    vy = VectorDict(y)
+    assert vx == vx == x
+    assert +vx == vx == x
+    assert -vx == {'a': -1, 'b': 5, 'c': 3}
+    assert vx + 2 == 2 + vx == {'a': 3, 'b': -3, 'c': -1}
+    assert vx * 2 == 2 * vx == {'a': 2, 'b': -10, 'c': -6}
+    assert vx - 2 == {'a': -1, 'b': -7, 'c': -5}
+    assert vx / 2 == {'a': 0.5, 'b': -2.5, 'c': -1.5}
+    assert vx + vy == vy + vx == {'a': 3, 'b': -4.5, 'c': -3, 'd': 4}
+    assert vx - vy == {'a': -1, 'b': -5.5, 'c': -3, 'd': -4}
+    assert vx @ vy == vy @ vx == -0.5
+    vz = VectorDict(x, copy=True)
+    vz += 2
+    assert vz == vx + 2
+    vz = VectorDict(x, copy=True)
+    vz -= 2
+    assert vz == vx - 2
+    vz = VectorDict(x, copy=True)
+    vz *= 2
+    assert vz == vx * 2
+    vz = VectorDict(x, copy=True)
+    vz /= 2
+    assert vz == vx / 2
+    vz = VectorDict(x, copy=True)
+    vz += vy
+    assert vz == vx + vy
+    vz = VectorDict(x, copy=True)
+    vz -= vy
+    assert vz == vx - vy
 
-    vz1b = VectorDict(z1)
-    vz1b += 2
-    assert vz1b == vz1 + 2
-    vz1b = VectorDict(z1)
-    vz1b -= 2
-    assert vz1b == vz1 - 2
-    vz1b = VectorDict(z1)
-    vz1b *= 2
-    assert vz1b == vz1 * 2
-    vz1b = VectorDict(z1)
-    vz1b /= 2
-    assert vz1b == vz1 / 2
-    vz1b = VectorDict(z1)
-    vz1b += vz2
-    assert vz1b == vz1 + vz2
-    vz1b = VectorDict(z1)
-    vz1b += z2
-    assert vz1b == vz1 + z2
-    vz1b = VectorDict(z1)
-    vz1b -= vz2
-    assert vz1b == vz1 - vz2
-    vz1b = VectorDict(z1)
-    vz1b -= z2
-    assert vz1b == vz1 - z2
+    # test default_factory
+    x = {'a': 1, 'b': -5}
+    y = {'b': 0.5, 'd': 4, 'e': 3, 'f': 8}
+    counter = iter(range(100))
+    vx = VectorDict(x, default_factory=counter.__next__)
+    vy = VectorDict(y)
+    assert vx @ vy == 16.5
+    assert counter.__next__() == 3
+    assert x['f'] == 2
+
+    # test mask
+    x = {'a': 1, 'b': -5}
+    y = {'b': 0.5, 'd': 4, 'e': 3, 'f': 8}
+    z = {'b': 4, 'd': 2, 'g': -1}
+    vx = VectorDict(x)
+    vy = VectorDict(y, mask=z)
+    assert vx + vy == {'a': 1, 'b': -4.5, 'd': 4}
