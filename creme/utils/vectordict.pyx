@@ -1,5 +1,8 @@
 cimport cython
 
+import itertools
+import numpy as np
+
 missing = object()
 
 
@@ -18,16 +21,15 @@ cdef inline get_value(VectorDict vec, key):
 
 cdef inline get_keys(VectorDict vec):
     if vec._lazy_mask:
-        return vec._data.keys() & vec._mask.keys()
+        return filter(vec._mask.__contains__, vec._data.keys())
     return vec._data.keys()
 
 
 cdef inline get_union_keys(VectorDict left, VectorDict right):
-    keys = get_keys(left) | get_keys(right)
-    # sort keys so factory initialization is reproducible
-    if left._use_factory | right._use_factory:
-        return sorted(keys)
-    return keys
+    left_keys = get_keys(left)
+    right_keys = get_keys(right)
+    right_only_keys = itertools.filterfalse(left._data.__contains__, right_keys)
+    return itertools.chain(left_keys, right_only_keys)
 
 
 cdef class VectorDict:
@@ -47,7 +49,7 @@ cdef class VectorDict:
         A scalar is any object that supports the four arithmetic operations
         with the dictionary's values.
 
-        If mask is not None, any key which is a key of mask is said to be
+        If mask is not None, any key which is contained in mask is said to be
         masked while other keys are said to be unmasked.
         If mask is None, any keys is said to be unmasked.
         If mask is not None and copy is True, only the key-values for keys in
@@ -68,16 +70,17 @@ cdef class VectorDict:
             data: a VectorDict or dict to initialize key-values from, or None
             default_value: a scalar, or None
             default_factory: a callable returning a scalar, or None
-            mask: a VectorDict or dict or set such that keys not in mask will
-                not be considered in operations and will always result in a
-                KeyError if accessed by __getitem__, or None
+            mask: a VectorDict or set-like object such that keys not in mask
+                will not be considered in operations and will always result in
+                a KeyError if accessed by __getitem__, or None
             copy: if data and/or mask are specified, whether to store a copy of
                 the underlying dictionaries or references at initialization
         """
         if data is None:
             data = dict()
         elif isinstance(data, VectorDict):
-            data = <VectorDict>(data)._data
+            data_ = <VectorDict> data
+            data = data_._data
         elif not isinstance(data, dict):
             raise ValueError(f"Unsupported type for data: {type(data)}")
         if mask is None:
@@ -86,12 +89,11 @@ cdef class VectorDict:
         else:
             if isinstance(mask, VectorDict):
                 mask = <VectorDict>(mask)._data
-            elif not (isinstance(mask, dict) or isinstance(mask, set)):
-                raise ValueError(f"Unsupported type for mask: {type(mask)}")
             if copy:
-                mask = dict(mask)
+                mask = set(mask)
                 data = {key: value
                         for key, value in data.items() if key in mask}
+            # TODO check if mask is "set-like"
         self._data = data
         self._mask = mask
         self._use_mask = mask is not None
@@ -108,6 +110,15 @@ cdef class VectorDict:
             return self._data
         return {key: value for key, value in self._data.items()
                 if key in self._mask}
+
+    def with_mask(self, mask, copy=False):
+        return VectorDict(self._data, self._default_factory, mask, copy)
+
+    def to_dict(self):
+        return self._apply_mask(force_copy=True)
+
+    def to_numpy(self, fields):
+        return np.array([get_value(self, f) for f in fields])
 
     # pass-through methods to the underlying dict
 
@@ -231,7 +242,7 @@ cdef class VectorDict:
             left, right = right, left
         left_ = <VectorDict> left
         if isinstance(right, VectorDict):  # vec + vec
-            right_ = <VectorDict> right
+            left_, right_ = <VectorDict> right, left_
             res = dict()
             for key in get_union_keys(left_, right_):
                 res[key] = get_value(left_, key) + get_value(right_, key)
