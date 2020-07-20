@@ -1,3 +1,5 @@
+import numpy as np
+
 from creme.utils import VectorDict
 
 
@@ -74,5 +76,16 @@ def test_vectordict():
     y = {'b': 0.5, 'd': 4, 'e': 3, 'f': 8}
     z = {'b': 4, 'd': 2, 'g': -1}
     vx = VectorDict(x)
+    vy = VectorDict(y)
+    assert vx + vy == {'a': 1, 'b': -4.5, 'd': 4, 'e': 3, 'f': 8}
     vy = VectorDict(y, mask=z)
     assert vx + vy == {'a': 1, 'b': -4.5, 'd': 4}
+    vy = VectorDict(y).with_mask(z.keys())
+    assert vx + vy == {'a': 1, 'b': -4.5, 'd': 4}
+
+    # test export
+    x = {'a': 1, 'b': -5}
+    vx = VectorDict(x)
+    nx = vx.to_numpy(['b', 'c'])
+    assert isinstance(nx, np.ndarray)
+    assert (vx.to_numpy(['b', 'c']) == np.array([-5, 0])).all()
