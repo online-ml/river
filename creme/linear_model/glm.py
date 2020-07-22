@@ -84,7 +84,7 @@ class GLM:
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient).item()
 
-        return (loss_gradient * utils.VectorDict(x)  + 2. * self.l2 * self._weights, loss_gradient)
+        return loss_gradient * utils.VectorDict(x)  + 2. * self.l2 * self._weights, loss_gradient
 
     def fit_one(self, x, y, w=1.):
         with self._fit_mode(x):
@@ -93,7 +93,7 @@ class GLM:
     # Mini-batch methods
 
     def _raw_dot_many(self, X: pd.DataFrame) -> np.ndarray:
-        return X.values @ self._weights.to_numpy(X) + self.intercept
+        return X.values @ self._weights.to_numpy(X.columns) + self.intercept
 
     def _eval_gradient_many(self,
                             X: pd.DataFrame,
