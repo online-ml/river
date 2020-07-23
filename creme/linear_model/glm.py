@@ -82,7 +82,7 @@ class GLM:
 
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
-        loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient).item()
+        loss_gradient = float(utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient))
 
         return loss_gradient * utils.VectorDict(x)  + 2. * self.l2 * self._weights, loss_gradient
 
