@@ -43,8 +43,8 @@ cdef class VectorDict:
     def __init__(self, data=None, default_factory=None, mask=None, copy=False):
         """A dictionary-like object that supports vector-like operations.
 
-        Supports addition (+) and subtraction (-) with a VectorDict or a scalar.
-        Supports multiplication (*) and division (-) by a scalar.
+        Supports addition (+), subtraction (-), multiplication (*) and division
+        (-) with a VectorDict or a scalar.
         Supports dot product (@) with a VectorDict.
         A scalar is any object that supports the four arithmetic operations
         with the dictionary's values.
@@ -310,40 +310,83 @@ cdef class VectorDict:
         if isinstance(right, VectorDict):
             left, right = right, left
         left_ = <VectorDict> left
-        res = left_._apply_mask(force_copy=True)
-        try:  # vec * scalar
-            for key, value in res.items():
-                res[key] = value * right
-        except TypeError:
-            return NotImplemented
+        if isinstance(right, VectorDict):  # vec * vec
+            left_, right_ = <VectorDict> right, left_
+            res = dict()
+            for key in get_union_keys(left_, right_):
+                res[key] = get_value(left_, key) * get_value(right_, key)
+        else:  # vec * scalar
+            res = left_._apply_mask(force_copy=True)
+            try:
+                for key, value in res.items():
+                    res[key] = value * right
+            except TypeError:
+                return NotImplemented
         return VectorDict(res)
 
     def __imul__(VectorDict self, other):
-        try:  # vec *= scalar
-            for key in get_keys(self):
-                self._data[key] *= other
-        except TypeError:
-            return NotImplemented
+        if isinstance(other, VectorDict):  # vec *= vec
+            other_ = <VectorDict> other
+            for key in get_union_keys(self, other_):
+                self._data[key] = get_value(self, key) * get_value(other_, key)
+        else:  # vec *= scalar
+            try:
+                for key in get_keys(self):
+                    self._data[key] *= other
+            except TypeError:
+                return NotImplemented
         return self
 
     def __truediv__(left, right):
-        if not isinstance(left, VectorDict):
-            return NotImplemented
-        left_ = <VectorDict> left
-        res = left_._apply_mask(force_copy=True)
-        try:  # vec / scalar
-            for key, value in res.items():
-                res[key] = value / right
-        except TypeError:
-            return NotImplemented
+        if isinstance(left, VectorDict) and isinstance(right, VectorDict):
+            # vec / vec
+            left_, right_ = <VectorDict> left, <VectorDict> right
+            res = dict()
+            for key in get_union_keys(left_, right_):
+                res[key] = get_value(left_, key) / get_value(right_, key)
+        elif isinstance(left, VectorDict):  # vec / scalar
+            left_ = <VectorDict> left
+            res = left_._apply_mask(force_copy=True)
+            try:
+                for key, value in res.items():
+                    res[key] = value / right
+            except TypeError:
+                return NotImplemented
+        else:  # scalar / vec
+            right_ = <VectorDict> right
+            res = right_._apply_mask(force_copy=True)
+            try:
+                for key, value in res.items():
+                    res[key] = left / value
+            except TypeError:
+                return NotImplemented
         return VectorDict(res)
 
     def __itruediv__(VectorDict self, other):
-        try:  # vec /= scalar
-            for key in get_keys(self):
-                self._data[key] /= other
-        except TypeError:
+        if isinstance(other, VectorDict):  # vec /= vec
+            other_ = <VectorDict> other
+            for key in get_union_keys(self, other_):
+                self._data[key] = get_value(self, key) / get_value(other_, key)
+        else:  # vec /= scalar
+            try:
+                for key in get_keys(self):
+                    self._data[key] /= other
+            except TypeError:
+                return NotImplemented
+        return self
+
+    def __pow__(left, right, modulo):
+        if not isinstance(left, VectorDict) or modulo is not None:
             return NotImplemented
+        left_ = <VectorDict> left
+        res = left_._apply_mask(force_copy=True)
+        for key, value in res.items():
+            res[key] = value ** right
+        return VectorDict(res)
+
+    def __ipow__(VectorDict self, other):
+        for key in get_keys(self):
+            self._data[key] **= other
         return self
 
     def __matmul__(left, right):
@@ -365,3 +408,57 @@ cdef class VectorDict:
     def __pos__(self):
         # +vec
         return VectorDict(self._apply_mask(force_copy=True))
+
+    def __abs__(self):
+        # abs(vec)
+        res = self._apply_mask(force_copy=True)
+        for key, value in res.items():
+            res[key] = abs(value)
+        return VectorDict(res)
+
+    # additional utilities
+
+    def abs(self):
+        return self.__abs__()
+
+    def min(self):
+        if self._lazy_mask:
+            return min(value for key, value in self._data.items()
+                       if key in self._mask)
+        return min(self._data.values())
+
+    def max(self):
+        if self._lazy_mask:
+            return max(value for key, value in self._data.items()
+                       if key in self._mask)
+        return max(self._data.values())
+
+    def minimum(self, other):
+        if isinstance(other, VectorDict):  # minimum(vec, vec)
+            other_ = <VectorDict> other
+            res = dict()
+            for key in get_union_keys(self, other_):
+                res[key] = min(get_value(self, key), get_value(other_, key))
+        else:  # minimum(vec, scalar)
+            res = self._apply_mask(force_copy=True)
+            try:
+                for key, value in res.items():
+                    res[key] = min(value, other)
+            except TypeError:
+                return NotImplemented
+        return VectorDict(res)
+
+    def maximum(self, other):
+        if isinstance(other, VectorDict):  # maximum(vec, vec)
+            other_ = <VectorDict> other
+            res = dict()
+            for key in get_union_keys(self, other_):
+                res[key] = max(get_value(self, key), get_value(other_, key))
+        else:  # maximum(vec, scalar)
+            res = self._apply_mask(force_copy=True)
+            try:
+                for key, value in res.items():
+                    res[key] = max(value, other)
+            except TypeError:
+                return NotImplemented
+        return VectorDict(res)
