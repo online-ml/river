@@ -101,7 +101,7 @@ cdef class ClassificationPerformanceEvaluator:
 
     cpdef double accuracy_score(self):
         """ Accuracy score.
-        
+
         The accuracy is the ratio of correctly classified samples to the total
         number of samples.
 
@@ -124,13 +124,13 @@ cdef class ClassificationPerformanceEvaluator:
     @cython.wraparound(False)   # Deactivate negative indexing.
     cpdef double kappa_score(self):
         """ Kappa score.
-         
+
         Cohen's Kappa [1]_ expresses the level of agreement between two annotators
          on a classification problem. It is defined as
-         
+
         .. math::
             \kappa = (p_o - p_e) / (1 - p_e)
-        
+
         where :math:`p_o` is the empirical probability of agreement on the label
         assigned to any sample (prequential accuracy), and :math:`p_e` is
         the expected agreement when both annotators assign labels randomly.
@@ -139,7 +139,7 @@ cdef class ClassificationPerformanceEvaluator:
         -------
         float
             Cohen's Kappa.
-            
+
         References
         ----------
         .. [1] J. Cohen (1960). "A coefficient of agreement for nominal scales".
@@ -163,13 +163,13 @@ cdef class ClassificationPerformanceEvaluator:
 
     cpdef double kappa_t_score(self):
         """ Kappa-T score.
-        
+
         The Kappa Temp [1]_ measures the temporal correlation between samples.
         It is defined as
-         
+
         .. math::
             \kappa_{t} = (p_o - p_e) / (1 - p_e)
-        
+
         where :math:`p_o` is the empirical probability of agreement on the label
         assigned to any sample (prequential accuracy), and :math:`p_e` is
         the prequential accuracy of the ``no-change classifier`` that predicts
@@ -179,7 +179,7 @@ cdef class ClassificationPerformanceEvaluator:
         -------
         float
             Kappa-T.
-        
+
         References
         ----------
         .. [1] A. Bifet et al. (2013). "Pitfalls in benchmarking data stream classification
@@ -199,13 +199,13 @@ cdef class ClassificationPerformanceEvaluator:
 
     cpdef double kappa_m_score(self):
         """ Kappa-M score.
-        
+
         The Kappa-M statistic [1]_ compares performance with the majority class classifier.
         It is defined as
-         
+
         .. math::
             \kappa_{m} = (p_o - p_e) / (1 - p_e)
-        
+
         where :math:`p_o` is the empirical probability of agreement on the label
         assigned to any sample (prequential accuracy), and :math:`p_e` is
         the prequential accuracy of the ``majority classifier``.
@@ -214,7 +214,7 @@ cdef class ClassificationPerformanceEvaluator:
         -------
         float
             Kappa-M.
-        
+
         References
         ----------
         .. [1] A. Bifet et al. "Efficient online evaluation of big data stream classifiers."
@@ -235,10 +235,10 @@ cdef class ClassificationPerformanceEvaluator:
     @cython.wraparound(False)   # Deactivate negative indexing.
     cpdef double precision_score(self, int class_value=-1):
         """ Precision score.
-        
+
         The precision is the ratio ``tp / (tp + fp)`` where ``tp`` is the number of
         true positives and ``fp`` the number of false positives.
-        
+
         Parameters
         ----------
         class_value: int, optional (default=-1)
@@ -248,7 +248,7 @@ cdef class ClassificationPerformanceEvaluator:
         -------
         float
             Precision.
-        
+
         Notes
         -----
         If seen data corresponds to a multi-class problem then calculate the ``macro``
@@ -283,25 +283,25 @@ cdef class ClassificationPerformanceEvaluator:
     @cython.wraparound(False)   # Deactivate negative indexing.
     cpdef double recall_score(self, int class_value=-1):
         """ Recall score.
-        
+
         The recall is the ratio ``tp / (tp + fn)`` where ``tp`` is the number of
         true positives and ``fn`` the number of false negatives.
-        
+
         Parameters
         ----------
         class_value: int, optional (default=-1)
             Class value to calculate this metric for. Not used by default.
-        
+
         Returns
         -------
         float
             Recall.
-        
+
         Notes
         -----
         If seen data corresponds to a multi-class problem then calculate the ``macro``
         average, that is, calculate metrics for each class, and find their unweighted mean.
-        
+
         """
         cdef double total
         cdef int n_classes = self.confusion_matrix.n_classes
@@ -331,14 +331,14 @@ cdef class ClassificationPerformanceEvaluator:
     @cython.wraparound(False)   # Deactivate negative indexing.
     cpdef double f1_score(self, int class_value=-1):
         r""" F1 score.
-        
+
         The F1 score can be interpreted as a weighted average of the precision and
         recall. The relative contribution of precision and recall to the F1 score
         are equal. The F1 score is defined as:
-        
+
         .. math::
             F1 = \frac{2 \times (precision \times recall)}{(precision + recall)}
-            
+
         Parameters
         ----------
         class_value: int, optional (default=-1)
@@ -348,7 +348,7 @@ cdef class ClassificationPerformanceEvaluator:
         -------
         float
             F1-score.
-        
+
         Notes
         -----
         If seen data corresponds to a multi-class problem then calculate the ``macro``
@@ -383,28 +383,28 @@ cdef class ClassificationPerformanceEvaluator:
 
     cpdef double geometric_mean_score(self):
         """ Geometric mean score.
-        
+
         The geometric mean is a good indicator of a classifier's performance
         in the presence of class imbalance because it is independent of the
         distribution of examples between classes [1]_. This implementation
         computes the geometric mean of class-wise sensitivity (recall)
-        
+
         .. math::
             gm = \sqrt[n]{s_1\cdot s_2\cdot s_3\cdot \ldots\cdot s_n}
-        
+
         where :math:`s_i` is the sensitivity (recall) of class :math:`i` and : math: `n`
         is the number of classes.
-        
+
         Returns
         -------
         float
             Geometric mean score.
-        
+
         References
         ----------
         .. [1] Barandela, R. et al. “Strategies for learning in class imbalance problems”,
                Pattern Recognition, 36(3), (2003), pp 849-851.
-        
+
         """
         cdef int n_classes = self.confusion_matrix.n_classes
         cdef np.ndarray[DTYPE_t, ndim=1] sensitivity_per_class = np.zeros(n_classes, dtype=DTYPE)
@@ -505,7 +505,7 @@ cdef class WindowClassificationPerformanceEvaluator(ClassificationPerformanceEva
 
         sample_weight: float
             The weight of the sample.
-        
+
         Notes
         -----
         Oldest samples are automatically removed when the window is full. Special care
@@ -656,9 +656,9 @@ cdef class MultiLabelClassificationPerformanceEvaluator:
 
     cpdef double hamming_score(self):
         """ Hamming score.
-        
+
         The Hamming score is the fraction of labels that are correctly predicted.
-        
+
         Returns
         -------
         float
@@ -673,9 +673,9 @@ cdef class MultiLabelClassificationPerformanceEvaluator:
 
     cpdef double hamming_loss_score(self):
         """ Hamming loss score.
-        
+
         The Hamming loss is the complement of the Hamming score.
-        
+
         Returns
         -------
         float
@@ -686,11 +686,11 @@ cdef class MultiLabelClassificationPerformanceEvaluator:
 
     cpdef double exact_match_score(self):
         """ Exact match score.
-        
+
         This is the most strict multi-label metric, defined as the number of
         samples that have all their labels correctly classified, divided by the
         total number of samples.
-        
+
         Returns
         -------
         float
@@ -704,23 +704,23 @@ cdef class MultiLabelClassificationPerformanceEvaluator:
 
     cpdef double jaccard_score(self):
         """ Jaccard similarity coefficient score.
-        
+
         The Jaccard index, or Jaccard similarity coefficient, defined as
         the size of the intersection divided by the size of the union of two label
         sets, is used to compare the set of predicted labels for a sample with the
         corresponding set of labels in ``y_true``.
-        
+
         Returns
         -------
         float
             Jaccard score.
-        
+
         Notes
         -----
         The Jaccard index may be a poor metric if there are no positives for some samples or labels.
         The Jaccard index is undefined if there are no true or predicted labels, this implementation
         will return a score of 0 if this is the case.
-        
+
         """
         try:
             return self.jaccard_sum / self.n_samples
@@ -801,7 +801,7 @@ cdef class WindowMultiLabelClassificationPerformanceEvaluator(MultiLabelClassifi
 
         sample_weight: float
             The weight of the sample.
-        
+
         Notes
         -----
         Oldest samples are automatically removed when the window is full. Special care
@@ -888,7 +888,7 @@ cdef class WindowMultiLabelClassificationPerformanceEvaluator(MultiLabelClassifi
 
 cdef bool _check_multi_label_inputs(np.ndarray y_true, np.ndarray y_pred):
     """ Check multi-label inputs
-    
+
     Parameters
     ----------
     y_true: np.ndarray of shape (n_labels,)
@@ -901,7 +901,7 @@ cdef bool _check_multi_label_inputs(np.ndarray y_true, np.ndarray y_pred):
     -------
     bool
         True if valid, False otherwise.
-    
+
     Raises
     ------
     ValueError

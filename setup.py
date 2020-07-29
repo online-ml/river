@@ -5,6 +5,14 @@ import setuptools
 import sys
 
 try:
+    from numpy import get_include
+except ImportError:
+    print('To proceed first install numpy.\n' +
+          'For example, using pip:\n' +
+          '$ pip install -U numpy')
+    sys.exit(1)
+
+try:
     from Cython.Build import cythonize
 except ImportError:
     import subprocess
@@ -104,6 +112,18 @@ setuptools.setup(
     ],
     ext_modules=cythonize(
         module_list=[
+            setuptools.Extension(
+                "*",
+                sources=["**/_classification_performance_evaluator.pyx"],
+                include_dirs=[get_include()],
+                libraries=[] if platform.system() == 'Windows' else ['m']
+            ),
+            setuptools.Extension(
+                "*",
+                sources=["**/_confusion_matrix.pyx"],
+                include_dirs=[get_include()],
+                libraries=[] if platform.system() == 'Windows' else ['m']
+            ),
             setuptools.Extension(
                 '*',
                 sources=['**/*.pyx'],

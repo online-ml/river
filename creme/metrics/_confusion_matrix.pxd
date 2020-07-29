@@ -5,9 +5,8 @@ cdef class ConfusionMatrix:
     # to a single-target (binary and multi-class) classification task.
 
     # Internal variables
-    cdef readonly int _init_n_classes           # Initial number of classes
+    cdef readonly set _init_classes             # Initial set of classes
     cdef readonly set classes                   # Set of class-labels
-    cdef readonly int n_classes                 # Number of classes
     cdef readonly double sum_diag               # Sum across the diagonal
     cdef readonly sum_row                       # Sum per row
     cdef readonly sum_col                       # Sum per column
