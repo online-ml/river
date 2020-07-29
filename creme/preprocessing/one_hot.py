@@ -1,5 +1,4 @@
 import collections
-import typing
 
 from creme import base
 

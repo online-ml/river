@@ -1,7 +1,5 @@
 """Helper functions for making things readable by humans."""
-import inspect
 import math
-import types
 import typing
 
 

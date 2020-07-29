@@ -3,7 +3,6 @@ import os
 
 import pytest
 import sqlalchemy as sql
-from sqlalchemy import orm
 import zipfile
 
 from creme import stream
@@ -63,7 +62,7 @@ def test_iter_sql(pokedb):
         dataset = stream.iter_sql(query='SELECT * FROM pokemons;', conn=conn)
         x, y = next(dataset)
         assert x['name'] == 'Bulbasaur'
-        assert y == None
+        assert y is None
 
     # This raises an exception because the resource is closed...
     with pytest.raises(sql.exc.StatementError):
