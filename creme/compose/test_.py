@@ -1,7 +1,6 @@
 from creme import compose
 from creme import linear_model
 from creme import preprocessing
-import pytest
 
 
 def test_pipeline_funcs():

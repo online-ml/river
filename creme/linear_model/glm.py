@@ -1,5 +1,4 @@
 import contextlib
-import math
 import numbers
 import typing
 
@@ -84,7 +83,7 @@ class GLM:
         loss_gradient *= w
         loss_gradient = float(utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient))
 
-        return loss_gradient * utils.VectorDict(x)  + 2. * self.l2 * self._weights, loss_gradient
+        return loss_gradient * utils.VectorDict(x) + 2. * self.l2 * self._weights, loss_gradient
 
     def fit_one(self, x, y, w=1.):
         with self._fit_mode(x):

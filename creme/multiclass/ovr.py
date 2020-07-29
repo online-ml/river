@@ -1,4 +1,3 @@
-import collections
 import copy
 
 import pandas as pd

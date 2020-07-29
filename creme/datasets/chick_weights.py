@@ -1,5 +1,3 @@
-import os
-
 from creme import stream
 
 from . import base

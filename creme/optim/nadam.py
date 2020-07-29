@@ -54,13 +54,13 @@ class Nadam(base.Optimizer):
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
             m_hat = self.m[i] / \
-                (1 - math.pow(self.beta_1, self.n_iterations+1))
+                (1 - math.pow(self.beta_1, self.n_iterations + 1))
 
             self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
             v_hat = self.v[i] / \
-                (1 - math.pow(self.beta_2, self.n_iterations+1))
+                (1 - math.pow(self.beta_2, self.n_iterations + 1))
 
-            w[i] -= self.learning_rate * (self.beta_1 * m_hat + (1-self.beta_1)*gi/(
-                1-math.pow(self.beta_1, self.n_iterations+1))) / (v_hat ** .5 + self.eps)
+            w[i] -= self.learning_rate * (self.beta_1 * m_hat + (1 - self.beta_1) * gi / (
+                1 - math.pow(self.beta_1, self.n_iterations + 1))) / (v_hat ** .5 + self.eps)
 
         return w

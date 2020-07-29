@@ -6,7 +6,6 @@ import typing
 from creme import base
 from creme import utils
 from creme import stats
-from creme.reco.base import Recommender
 
 
 __all__ = [
