@@ -1,6 +1,6 @@
 """Utility classes and functions."""
-from . import math
 from . import inspect
+from . import math
 from . import pretty
 from .estimator_checks import check_estimator
 from .histogram import Histogram
@@ -13,9 +13,11 @@ from .window import SortedWindow
 
 
 __all__ = [
-    'check_estimator'
+    'check_estimator',
     'expand_param_grid',
     'inspect',
+    'math',
+    'pretty',
     'Histogram',
     'SDFT',
     'Skyline',

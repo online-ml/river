@@ -5,7 +5,6 @@ import random
 import typing
 
 from creme import base
-from creme import preprocessing
 from creme.tree.base import Leaf, Branch, Split
 
 

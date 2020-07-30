@@ -77,7 +77,7 @@ class FwFM(BaseFM):
             for j, xj in x.items()
         }
 
-    def _update_latents(self, x, g_loss): # also updates interaction weights as both updates depends of each other
+    def _update_latents(self, x, g_loss):  # also updates interaction weights as both updates depends of each other
 
         # For notational convenience
         v, w_int, field = self.latents, self.interaction_weights, self._field
@@ -97,8 +97,8 @@ class FwFM(BaseFM):
         latent_gradients = {}
         for j, xj in x.items():
             latent_gradients[j] = {
-                f: g_loss * (xj * precomputed_sum[f'{j}_{f}'] - v[j][f] * xj \
-                * w_int[field(j) + field(j)] ** 2) + l1 * sign(v[j][f]) + l2 * v[j][f]
+                f: g_loss * (xj * precomputed_sum[f'{j}_{f}'] - v[j][f] * xj *
+                   w_int[field(j) + field(j)] ** 2) + l1 * sign(v[j][f]) + l2 * v[j][f]
                 for f in range(self.n_factors)
             }
 
