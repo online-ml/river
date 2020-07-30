@@ -1,6 +1,4 @@
 import abc
-import numbers
-import typing
 
 from creme import base
 

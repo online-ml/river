@@ -53,8 +53,8 @@ def iter_perturbations(keys, n=10):
                 optim.Adam(),
                 optim.AMSGrad(),
                 # TODO: check momentum optimizers
-                #optim.Momentum(),
-                #optim.NesterovMomentum(),
+                # optim.Momentum(),
+                # optim.NesterovMomentum(),
                 optim.RMSProp(),
                 optim.SGD()
             ],
