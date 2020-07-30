@@ -4,7 +4,6 @@ import io
 import itertools
 import types
 import typing
-import warnings
 
 import pandas as pd
 

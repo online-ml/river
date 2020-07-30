@@ -1,5 +1,4 @@
 import itertools
-import functools
 
 from creme import base
 from creme import utils

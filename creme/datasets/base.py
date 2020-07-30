@@ -100,7 +100,6 @@ class SyntheticDataset(Dataset):
         return f'{self.__class__.__name__} synthetic dataset'
 
 
-
 class FileDataset(Dataset):
     """Base class for datasets that are stored in a local file.
 
