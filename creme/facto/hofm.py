@@ -140,8 +140,8 @@ class HOFMRegressor(HOFM, base.Regressor):
         seed: Randomization seed used for reproducibility.
 
     Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
-        latents (collections.defaultdict): The current latent weights assigned to the features.
+        weights: The current weights assigned to the features.
+        latents: The current latent weights assigned to the features.
 
     Example:
 
@@ -238,8 +238,8 @@ class HOFMClassifier(HOFM, base.Classifier):
         seed: Randomization seed used for reproducibility.
 
     Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
-        latents (collections.defaultdict): The current latent weights assigned to the features.
+        weights: The current weights assigned to the features.
+        latents: The current latent weights assigned to the features.
 
     Example:
 
