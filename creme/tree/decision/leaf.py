@@ -1,6 +1,5 @@
 import math
 
-from creme import proba
 from creme.proba.base import ContinuousDistribution
 
 from .. import base

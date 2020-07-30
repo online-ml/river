@@ -33,7 +33,7 @@ def iter_arff(filepath_or_buffer, target: str = None, compression='infer') -> ba
     types = [float if isinstance(attr, arffread.NumericAttribute) else None for attr in attrs]
 
     for r in buffer:
-        x =  {
+        x = {
             name: typ(val) if typ else val
             for name, typ, val in zip(names, types, r.rstrip().split(','))
         }

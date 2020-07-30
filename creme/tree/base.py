@@ -1,5 +1,4 @@
 """Generic branch and leaf implementation."""
-import collections
 import operator
 import textwrap
 import typing
@@ -138,7 +137,6 @@ class Branch(Node):
         yield self, depth
         yield from self.left.iter_dfs(depth=depth + 1)
         yield from self.right.iter_dfs(depth=depth + 1)
-
 
     def iter_leaves(self):
         """Iterate over the leaves in a depth-first manner.

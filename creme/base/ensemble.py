@@ -1,7 +1,4 @@
-import collections
 import typing
-
-from creme import base
 
 from .predictor import Predictor
 
