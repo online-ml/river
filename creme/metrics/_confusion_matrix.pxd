@@ -17,11 +17,14 @@ cdef class MultiLabelConfusionMatrix:
     # that each ``label`` has a corresponding binary ``(2x2)`` confusion matrix.
 
     # Internal variables
-    cdef readonly int _init_n_labels            # Initial number of labels
+    cdef readonly set _init_labels              # Initial set of labels
     cdef readonly set labels                    # Set of labels
     cdef readonly int n_labels                  # Number of labels
-    cdef readonly int _max_label                # Max label observed
     cdef readonly data                          # The actual data (3D np.ndarray)
+    cdef readonly dict _label_dict              # Dictionary to map labels and their label-index
+    cdef readonly int _label_idx_cnt            # Internal label-index counter
 
     # Methods
+    cdef int _map_label(self, label, bint add_label)
+    cdef void _add_label(self, label)
     cdef void _reshape(self)
