@@ -5,6 +5,7 @@ cimport numpy as np
 
 from collections import defaultdict
 
+cdef bint boolean_variable = True
 
 cdef class ConfusionMatrix:
     """ Confusion Matrix for binary-class and multi-class classification.
@@ -25,10 +26,6 @@ cdef class ConfusionMatrix:
 
     This structure is used to keep updated statistics about a single-output classifier's
     performance and to compute multiple evaluation metrics.
-
-    Warnings
-    --------
-    Implementation assumes zero-based contiguous class-labels.
 
     """
     _fmt = '0.0f'
@@ -129,64 +126,102 @@ cdef class MultiLabelConfusionMatrix:
 
     Parameters
     ----------
-    n_labels: int, optional, (default=2)
-        The number of (initial) labels.
-
-    Warnings
-    --------
-    Implementation assumes zero-based contiguous class-labels.
+    labels: set, list, optional, (default=None)
+        The set of (initial) labels.
 
     """
-    def __init__(self, int n_labels=2):
-        if n_labels < 2:
-            warnings.warn('n_labels can not be less than 2, using default (2)')
-            n_labels = 2
-        self._init_n_labels = n_labels
-        self.labels = set(range(n_labels))
-        self.n_labels = n_labels
-        self.data = np.zeros((self.n_labels, 2, 2))
-        self._max_label = max(self.labels)
+    def __init__(self, labels=None):
+        self._init_labels = set() if labels is None else set(labels)
+        self.labels = self._init_labels
+        self.n_labels = len(self.labels)
+        if self.n_labels > 2:
+            self.data = np.zeros((self.n_labels, 2, 2))
+        else:
+            # default to 2 labels
+            self.data = np.zeros((2, 2, 2))
+        self._label_dict = dict()
+        self._label_idx_cnt = 0
+        for label in self.labels:
+            self._add_label(label)
 
-    def __setitem__(self, key, double sample_weight):
-        if not isinstance(key, tuple):
-            raise KeyError('Expected (label, y_true, y_pred) tuple, received: {}'.format(type(key)))
-        if sample_weight is None:
-            # Since we ca not set a default value in the signature
-            sample_weight = 1.0
-
-        cdef int label = key[0]
-        cdef int y_true = key[1]
-        cdef int y_pred = key[2]
-
+    def update(self, label, int y_true, int y_pred, double sample_weight=1.0):
         if not (0 <= y_true < 2) or not (0 <= y_pred < 2):
             raise ValueError("Valid values are 0 or 1, passed ({}, {})".format(y_true, y_pred))
 
-        if label > self._max_label:
-            self._max_label = label
-            # Extend the labels set assuming zero-based contiguous label values
-            self.labels = set(range(self._max_label + 1))
-            self.n_labels = self._max_label + 1
+        label_idx = self._map_label(label, add_label=True)
+        if label_idx > self.data.shape[0]:
             self._reshape()
+        self.data[label_idx, y_true, y_pred] += sample_weight
+        return self
 
-        self.data[label, y_true, y_pred] += sample_weight
+    def __getitem__(self, label):
+        if label in self.labels:
+            label_idx = self._map_label(label, add_label=False)
+            return self.data[label_idx]
+        raise KeyError(f'Unknown label: {label}')
 
-    def __getitem__(self, key):
-        if not isinstance(key, tuple):
-            raise KeyError('Expected (label, y_true, y_pred) tuple, received: {}'.format(type(key)))
-        return self.data[key[0], key[1], key[2]]
+    cdef int _map_label(self, label, bint add_label):
+        try:
+            label_key = self._label_dict[label]
+        except KeyError:
+            if add_label:
+                self._add_label(label)
+                label_key = self._label_dict[label]
+            else:
+                label_key = -1
+                raise KeyError(f'Unknown label: {label}')
+        return label_key
+
+    cdef void _add_label(self, label):
+        self._label_dict[label] = self._label_idx_cnt
+        if self._label_idx_cnt > self.data.shape[0] - 1:
+            self._reshape()
+        self._label_idx_cnt += 1
+        self.labels.add(label)
+        self.n_labels = len(self.labels)
 
     cdef void _reshape(self):
-        current_n_labels = self.data.shape[0]
-        if self._max_label + 1 > current_n_labels:
-            n_labels_to_add = self._max_label + 1 - current_n_labels
-            self.data = np.vstack((self.data, np.zeros((n_labels_to_add, 2, 2))))
+        self.data = np.vstack((self.data, np.zeros((1, 2, 2))))
 
     @property
     def shape(self):
         return self.data.shape
 
     def reset(self):
-        self.__init__(n_labels=self._init_n_labels)
+        self.__init__(labels=self._init_labels)
 
     def __str__(self):
         return self.data.__str__()
+
+    def __repr__(self):
+        # The labels are sorted alphabetically for reproducibility reasons
+        labels = sorted(self.labels)
+
+        if not labels:
+            return  ''
+
+        # Determine the required width of each column in the table
+        largest_label_len = max(len(str(label)) for label in labels)
+        largest_value_len = len(str(self.data[:].max()))
+        width = max(5, largest_label_len, largest_value_len) + 2   # Min value is 5=len('label')
+
+        # Make a template to print out rows one by one
+        row_format = '{:>{width}}' * 5    # Label, TP, FP, FN, TN
+
+        # Write down the header
+        table = row_format.format('Label', 'TP', 'FP', 'FN', 'TN', width=width) + '\n'
+
+        # Write down the values per labels row by row
+        for label in labels:
+            label_idx = self._map_label(label, add_label=False)
+            table += ''.join(
+                row_format.format(
+                    str(label),                         # Label
+                    self.data[label_idx][1][1],         # TP
+                    self.data[label_idx][0][1],         # FP
+                    self.data[label_idx][1][0],         # FN
+                    self.data[label_idx][0][0],         # TN
+                    width=width))
+            table += '\n'
+
+        return table
