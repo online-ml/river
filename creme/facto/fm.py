@@ -81,8 +81,8 @@ class FM(BaseFM):
         gradients = {}
         for j, xj in x.items():
             gradients[j] = {
-                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2) \
-                + l1 * sign(v[j][f]) + l2 * v[j][f]
+                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2) +
+                   l1 * sign(v[j][f]) + l2 * v[j][f]
                 for f in range(self.n_factors)
             }
 
@@ -116,8 +116,8 @@ class FMRegressor(FM, base.Regressor):
         seed: Randomization seed used for reproducibility.
 
     Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
-        latents (collections.defaultdict): The current latent weights assigned to the features.
+        weights: The current weights assigned to the features.
+        latents: The current latent weights assigned to the features.
 
     Example:
 
@@ -206,12 +206,12 @@ class FMClassifier(FM, base.Classifier):
         weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
         latent_initializer: Latent factors initialization scheme. Defaults to
             `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
-        clip_gradient (float): Clips the absolute value of each gradient value.
+        clip_gradient: Clips the absolute value of each gradient value.
         seed: Randomization seed used for reproducibility.
 
     Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
-        latents (collections.defaultdict): The current latent weights assigned to the features.
+        weights: The current weights assigned to the features.
+        latents: The current latent weights assigned to the features.
 
     Example:
 
