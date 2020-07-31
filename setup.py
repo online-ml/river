@@ -89,7 +89,7 @@ setuptools.setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=setuptools.find_packages(exclude=('tests',)),
+    packages=setuptools.find_packages(exclude=('tests', 'scikit-multiflow')),
     install_requires=base_packages,
     extras_require={
         'dev': dev_packages,
