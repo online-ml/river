@@ -154,6 +154,11 @@ cdef class MultiLabelConfusionMatrix:
         self.data[label_idx, y_true, y_pred] += sample_weight
         return self
 
+    def revert(self, label, int y_true, int y_pred, sample_weight=1.):
+        # Revert is equal to subtracting so we pass the negative sample_weight
+        self.update(label, y_true, y_pred, -sample_weight)
+        return self
+
     def __getitem__(self, label):
         if label in self.labels:
             label_idx = self._map_label(label, add_label=False)
