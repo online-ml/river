@@ -1,14 +1,13 @@
+import collections
+import functools
 import warnings
 
 import numpy as np
 cimport numpy as np
 
-from collections import defaultdict
-
-cdef bint boolean_variable = True
 
 cdef class ConfusionMatrix:
-    """ Confusion Matrix for binary-class and multi-class classification.
+    """Confusion Matrix for binary-class and multi-class classification.
 
     Parameters
     ----------
@@ -28,22 +27,17 @@ cdef class ConfusionMatrix:
     performance and to compute multiple evaluation metrics.
 
     """
+
     _fmt = '0.0f'
 
     def __init__(self, classes=None):
         self._init_classes = set(classes) if classes is not None else set()
         self.classes = self._init_classes
         self.sum_diag = 0.0
-        self.sum_row = defaultdict(float)
-        self.sum_col = defaultdict(float)
-        self.data = defaultdict(lambda: defaultdict(float))
+        self.sum_row = collections.defaultdict(float)
+        self.sum_col = collections.defaultdict(float)
+        self.data = collections.defaultdict(functools.partial(collections.defaultdict, float))
         self.n_samples = 0
-
-    def __iadd__(self, entry, double sample_weight):
-        if len(entry) != 2:
-            raise KeyError(f'Expected (true_idx, pred_idx) entry, received: {entry}')
-        y_true, y_pred = entry
-        self.update(y_true, y_pred, sample_weight)
 
     def __getitem__(self, key):
         """Syntactic sugar for accessing the counts directly."""
@@ -111,6 +105,22 @@ cdef class ConfusionMatrix:
 
         return table
 
+    @property
+    def true_positives(self):
+        return self.data.get(True, {}).get(True, 0)
+
+    @property
+    def true_negatives(self):
+        return self.data.get(False, {}).get(False, 0)
+
+    @property
+    def false_positives(self):
+        return self.data.get(False, {}).get(True, 0)
+
+    @property
+    def false_negatives(self):
+        return self.data.get(True, {}).get(False, 0)
+
 
 cdef class MultiLabelConfusionMatrix:
     """ Multi-label Confusion Matrix.
@@ -164,12 +174,6 @@ cdef class MultiLabelConfusionMatrix:
         # Revert is equal to subtracting so we pass the negative sample_weight
         self.update(label, y_true, y_pred, -sample_weight)
         return self
-
-    def __iadd__(self, entry, double sample_weight):
-        if len(entry) != 3:
-            raise KeyError(f'Expected (label, true_idx, pred_idx) entry, received: {entry}')
-        label, y_true, y_pred = entry
-        self.update(label, y_true, y_pred, sample_weight)
 
     def __getitem__(self, label):
         if label in self.labels:

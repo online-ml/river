@@ -1,7 +1,7 @@
 from scipy import integrate
 
 from . import base
-from . import confusion
+from . import _confusion_matrix
 
 
 __all__ = ['ROCAUC']
@@ -52,7 +52,7 @@ class ROCAUC(base.BinaryMetric):
         self.thresholds = [i / (n_thresholds - 1) for i in range(n_thresholds)]
         self.thresholds[0] -= 1e-7
         self.thresholds[-1] += 1e-7
-        self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
+        self.cms = [_confusion_matrix.ConfusionMatrix() for _ in range(n_thresholds)]
 
     def update(self, y_true, y_pred, sample_weight=1.):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
@@ -86,10 +86,10 @@ class ROCAUC(base.BinaryMetric):
                 return 0.
 
         for i, cm in enumerate(self.cms):
-            tp = cm.counts.get(True, {}).get(True, 0)
-            tn = cm.counts.get(False, {}).get(False, 0)
-            fp = cm.counts.get(False, {}).get(True, 0)
-            fn = cm.counts.get(True, {}).get(False, 0)
+            tp = cm.true_positives
+            tn = cm.true_negatives
+            fp = cm.false_positives
+            fn = cm.false_negatives
 
             tprs[i] = safe_div(a=tp, b=tp + fn)
             fprs[i] = safe_div(a=fp, b=fp + tn)

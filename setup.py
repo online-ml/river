@@ -1,8 +1,9 @@
 import io
 import platform
 import os
-import setuptools
 import sys
+
+import setuptools
 
 try:
     from numpy import get_include
