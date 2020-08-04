@@ -45,7 +45,7 @@ cdef class ConfusionMatrix:
 
     def update(self, y_true, y_pred, sample_weight=1.):
         if sample_weight is None:
-            # Since we ca not set a default value in the signature
+            # Since we can not set a default value in the signature
             sample_weight = 1.0
         # Increase sample count, negative sample_weight indicates that we are removing samples
         self.n_samples += 1 if sample_weight > 0. else -1
@@ -123,7 +123,7 @@ cdef class ConfusionMatrix:
 
 
 cdef class MultiLabelConfusionMatrix:
-    """ Multi-label Confusion Matrix.
+    """Multi-label Confusion Matrix.
 
     Notes
     -----
