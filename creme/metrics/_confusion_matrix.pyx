@@ -8,7 +8,7 @@ from collections import defaultdict
 cdef bint boolean_variable = True
 
 cdef class ConfusionMatrix:
-    """ Confusion Matrix for binary-class and multi-class classification.
+    """Confusion Matrix for binary-class and multi-class classification.
 
     Parameters
     ----------
@@ -39,19 +39,13 @@ cdef class ConfusionMatrix:
         self.data = defaultdict(lambda: defaultdict(float))
         self.n_samples = 0
 
-    def __iadd__(self, entry, double sample_weight):
-        if len(entry) != 2:
-            raise KeyError(f'Expected (true_idx, pred_idx) entry, received: {entry}')
-        y_true, y_pred = entry
-        self.update(y_true, y_pred, sample_weight)
-
     def __getitem__(self, key):
         """Syntactic sugar for accessing the counts directly."""
         return self.data[key]
 
     def update(self, y_true, y_pred, sample_weight=1.):
         if sample_weight is None:
-            # Since we ca not set a default value in the signature
+            # Since we can not set a default value in the signature
             sample_weight = 1.0
         # Increase sample count, negative sample_weight indicates that we are removing samples
         self.n_samples += 1 if sample_weight > 0. else -1
@@ -113,7 +107,7 @@ cdef class ConfusionMatrix:
 
 
 cdef class MultiLabelConfusionMatrix:
-    """ Multi-label Confusion Matrix.
+    """Multi-label Confusion Matrix.
 
     Notes
     -----
@@ -164,12 +158,6 @@ cdef class MultiLabelConfusionMatrix:
         # Revert is equal to subtracting so we pass the negative sample_weight
         self.update(label, y_true, y_pred, -sample_weight)
         return self
-
-    def __iadd__(self, entry, double sample_weight):
-        if len(entry) != 3:
-            raise KeyError(f'Expected (label, true_idx, pred_idx) entry, received: {entry}')
-        label, y_true, y_pred = entry
-        self.update(label, y_true, y_pred, sample_weight)
 
     def __getitem__(self, label):
         if label in self.labels:
