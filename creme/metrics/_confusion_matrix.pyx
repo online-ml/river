@@ -37,8 +37,9 @@ cdef class ConfusionMatrix:
         self.sum_row = defaultdict(float)
         self.sum_col = defaultdict(float)
         self.data = defaultdict(lambda: defaultdict(float))
+        self.n_samples = 0
 
-    def __setitem__(self, entry, double sample_weight):
+    def __iadd__(self, entry, double sample_weight):
         if len(entry) != 2:
             raise KeyError(f'Expected (true_idx, pred_idx) entry, received: {entry}')
         y_true, y_pred = entry
@@ -52,6 +53,8 @@ cdef class ConfusionMatrix:
         if sample_weight is None:
             # Since we ca not set a default value in the signature
             sample_weight = 1.0
+        # Increase sample count, negative sample_weight indicates that we are removing samples
+        self.n_samples += 1 if sample_weight > 0. else -1
 
         self.classes.update([y_true, y_pred])
         self.data[y_true][y_pred] += sample_weight
@@ -148,6 +151,9 @@ cdef class MultiLabelConfusionMatrix:
         if not (0 <= y_true < 2) or not (0 <= y_pred < 2):
             raise ValueError("Valid values are 0 or 1, passed ({}, {})".format(y_true, y_pred))
 
+        # Increase sample count, negative sample_weight indicates that we are removing samples
+        self.n_samples += 1 if sample_weight > 0. else -1
+
         label_idx = self._map_label(label, add_label=True)
         if label_idx > self.data.shape[0]:
             self._reshape()
@@ -158,6 +164,12 @@ cdef class MultiLabelConfusionMatrix:
         # Revert is equal to subtracting so we pass the negative sample_weight
         self.update(label, y_true, y_pred, -sample_weight)
         return self
+
+    def __iadd__(self, entry, double sample_weight):
+        if len(entry) != 3:
+            raise KeyError(f'Expected (label, true_idx, pred_idx) entry, received: {entry}')
+        label, y_true, y_pred = entry
+        self.update(label, y_true, y_pred, sample_weight)
 
     def __getitem__(self, label):
         if label in self.labels:

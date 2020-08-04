@@ -11,6 +11,7 @@ cdef class ConfusionMatrix:
     cdef readonly sum_row                       # Sum per row
     cdef readonly sum_col                       # Sum per column
     cdef readonly data                          # The actual data (dictionary)
+    cdef readonly n_samples                     # Number of samples seen
 
 cdef class MultiLabelConfusionMatrix:
     # This confusion matrix corresponds to a 3D matrix of shape ``(n_labels, 2, 2)`` meaning
@@ -23,6 +24,7 @@ cdef class MultiLabelConfusionMatrix:
     cdef readonly data                          # The actual data (3D np.ndarray)
     cdef readonly dict _label_dict              # Dictionary to map labels and their label-index
     cdef readonly int _label_idx_cnt            # Internal label-index counter
+    cdef readonly n_samples                     # Number of samples seen
 
     # Methods
     cdef int _map_label(self, label, bint add_label)
