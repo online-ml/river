@@ -6,7 +6,8 @@ import typing
 from creme import base
 from creme import utils
 from creme import stats
-from creme.reco.base import Recommender
+
+from . import _confusion_matrix
 
 
 __all__ = [
@@ -29,8 +30,12 @@ class Metric(abc.ABC):
     _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, y_true, y_pred) -> 'Metric':
+    def update(self, y_true, y_pred, sample_weight) -> 'Metric':
         """Update the metric."""
+
+    @abc.abstractmethod
+    def revert(self, y_true, y_pred, sample_weight) -> 'Metric':
+        """Revert the metric."""
 
     @abc.abstractmethod
     def get(self) -> float:
@@ -52,12 +57,34 @@ class Metric(abc.ABC):
 class ClassificationMetric(Metric):
     """Mother class for all classification metrics."""
 
-    @abc.abstractproperty
-    def requires_labels(self) -> bool:
+    def __init__(self, cm=None):
+        if cm is None:
+            cm = _confusion_matrix.ConfusionMatrix()
+        self.cm = cm
+
+    def update(self, y_true, y_pred, sample_weight=1):
+        self.cm.update(y_true, y_pred, sample_weight)
+        return self
+
+    def revert(self, y_true, y_pred, sample_weight=1):
+        self.cm.revert(y_true, y_pred, sample_weight)
+        return self
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    def works_with(self, model) -> bool:
+        return utils.inspect.isclassifier(model)
+
+    @property
+    def requires_labels(self):
         """Indicates if labels are required, rather than probabilities."""
+        return True
 
     @staticmethod
     def _clamp_proba(p):
+        """Clamp a number in between the (0, 1) interval."""
         return utils.math.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
 
     def __add__(self, other) -> 'Metrics':
@@ -70,51 +97,21 @@ class ClassificationMetric(Metric):
 class BinaryMetric(ClassificationMetric):
     """Mother class for all binary classification metrics."""
 
-    @abc.abstractmethod
-    def update(
-        self,
-        y_true: bool,
-        y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-        sample_weight: numbers.Number
-    ) -> 'BinaryMetric':
-        """Update the metric."""
+    def update(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
+               sample_weight=1.) -> 'BinaryMetric':
+        if self.requires_labels:
+            y_pred = bool(y_pred)
+        return super().update(bool(y_true), y_pred)
 
-    @abc.abstractmethod
-    def revert(
-        self,
-        y_true: bool,
-        y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-        sample_weight: numbers.Number
-    ) -> 'BinaryMetric':
-        """Revert the metric."""
-
-    def works_with(self, model) -> bool:
-        return utils.inspect.isclassifier(model)
+    def revert(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
+               sample_weight=1.) -> 'BinaryMetric':
+        if self.requires_labels:
+            y_pred = bool(y_pred)
+        return super().update(bool(y_true), y_pred)
 
 
 class MultiClassMetric(ClassificationMetric):
     """Mother class for all multi-class classification metrics."""
-
-    @abc.abstractmethod
-    def update(
-        self,
-        y_true: base.typing.ClfTarget,
-        y_pred: typing.Union[base.typing.ClfTarget, typing.Dict[base.typing.ClfTarget, float]],
-        sample_weight: numbers.Number
-    ) -> 'MultiClassMetric':
-        """Update the metric."""
-
-    @abc.abstractmethod
-    def revert(
-        self,
-        y_true: bool,
-        y_pred: typing.Union[base.typing.ClfTarget, typing.Dict[base.typing.ClfTarget, float]],
-        sample_weight: numbers.Number
-    ) -> 'MultiClassMetric':
-        """Revert the metric."""
-
-    def works_with(self, model) -> bool:
-        return utils.inspect.isclassifier(model)
 
 
 class RegressionMetric(Metric):

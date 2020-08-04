@@ -1,4 +1,5 @@
 import collections
+import functools
 
 from .. import utils
 
@@ -16,101 +17,64 @@ class ClassificationReport(base.MultiClassMetric):
     You can print this class at any time during a model's lifetime to get a tabular visualization
     of various metrics.
 
-    Parameters:
-        decimals: The number of decimals to display in each cell.
+    Parameters
+    ----------
 
-    Example:
+    decimals
+        The number of decimals to display in each cell.
 
-        >>> from creme import metrics
+    Examples
+    --------
 
-        >>> y_true = ['pear', 'apple', 'banana', 'banana', 'banana']
-        >>> y_pred = ['apple', 'pear', 'banana', 'banana', 'apple']
+    >>> from creme import metrics
 
-        >>> report = metrics.ClassificationReport()
+    >>> y_true = ['pear', 'apple', 'banana', 'banana', 'banana']
+    >>> y_pred = ['apple', 'pear', 'banana', 'banana', 'apple']
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     report = report.update(yt, yp)
+    >>> report = metrics.ClassificationReport()
 
-        >>> print(report)
-                   Precision   Recall   F1      Support
-        <BLANKLINE>
-           apple       0.000    0.000   0.000         1
-          banana       1.000    0.667   0.800         3
-            pear       0.000    0.000   0.000         1
-        <BLANKLINE>
-           Macro       0.333    0.222   0.267
-           Micro       0.400    0.400   0.400
-        Weighted       0.600    0.400   0.480
-        <BLANKLINE>
-                         40.0% accuracy
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     report = report.update(yt, yp)
 
-    .. tip::
-        You can wrap a `creme.metrics.ClassificationReport` with `creme.metrics.Rolling` in order
-        to obtain a classification report over a window of observations. You can also wrap it with
-        `creme.metrics.TimeRolling` to obtain a report over a period of time.
+    >>> print(report)
+               Precision   Recall   F1      Support
+    <BLANKLINE>
+       apple       0.000    0.000   0.000       1.0
+      banana       0.000    0.000   0.000       3.0
+        pear       0.000    0.000   0.000       1.0
+    <BLANKLINE>
+       Macro       0.333    0.222   0.267
+       Micro       0.400    0.400   0.400
+    Weighted       0.600    0.400   0.480
+    <BLANKLINE>
+                     40.0% accuracy
+
+    Notes
+    -----
+
+    You can wrap a `creme.metrics.ClassificationReport` with `creme.metrics.Rolling` in order
+    to obtain a classification report over a window of observations. You can also wrap it with
+    `creme.metrics.TimeRolling` to obtain a report over a period of time.
 
     """
 
-    def __init__(self, decimals=3):
+    def __init__(self, decimals=3, cm=None):
+        super().__init__(cm)
         self.decimals = decimals
-        self._f1s = collections.defaultdict(fbeta.F1)
-        self._macro_precision = precision.MacroPrecision()
-        self._macro_recall = recall.MacroRecall()
-        self._macro_f1 = fbeta.MacroF1()
-        self._micro_precision = precision.MicroPrecision()
-        self._micro_recall = recall.MicroRecall()
-        self._micro_f1 = fbeta.MicroF1()
-        self._weighted_precision = precision.WeightedPrecision()
-        self._weighted_recall = recall.WeightedRecall()
-        self._weighted_f1 = fbeta.WeightedF1()
-        self._accuracy = accuracy.Accuracy()
-        self._support = collections.Counter()
+        self._f1s = collections.defaultdict(functools.partial(fbeta.F1, self.cm))
+        self._macro_precision = precision.MacroPrecision(self.cm)
+        self._macro_recall = recall.MacroRecall(self.cm)
+        self._macro_f1 = fbeta.MacroF1(self.cm)
+        self._micro_precision = precision.MicroPrecision(self.cm)
+        self._micro_recall = recall.MicroRecall(self.cm)
+        self._micro_f1 = fbeta.MicroF1(self.cm)
+        self._weighted_precision = precision.WeightedPrecision(self.cm)
+        self._weighted_recall = recall.WeightedRecall(self.cm)
+        self._weighted_f1 = fbeta.WeightedF1(self.cm)
+        self._accuracy = accuracy.Accuracy(self.cm)
 
     def get(self):
         raise NotImplementedError
-
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
-    def update(self, y_true, y_pred, sample_weight=1.):
-
-        self._support[y_true] += 1
-
-        # Update per class metrics
-        for c in self._support:
-            self._f1s[c].update(y_true == c, y_pred == c, sample_weight)
-
-        # Update global metrics
-        for m in [self._macro_precision, self._macro_recall, self._macro_f1,
-                  self._micro_precision, self._micro_recall, self._micro_f1,
-                  self._weighted_precision, self._weighted_recall, self._weighted_f1]:
-            m.update(y_true, y_pred, sample_weight)
-
-        self._accuracy.update(y_true, y_pred)
-
-        return self
-
-    def revert(self, y_true, y_pred, sample_weight=1.):
-
-        self._support[y_true] -= 1
-
-        # Revert per class metrics
-        for c in self._support:
-            self._f1s[c].revert(y_true == c, y_pred == c, sample_weight)
-
-        # Revert global metrics
-        for m in [self._macro_precision, self._macro_recall, self._macro_f1,
-                  self._micro_precision, self._micro_recall, self._micro_f1,
-                  self._weighted_precision, self._weighted_recall, self._weighted_f1]:
-            m.revert(y_true, y_pred, sample_weight)
-        self._accuracy.revert(y_true, y_pred)
-
-        return self
 
     def __repr__(self):
 
@@ -118,7 +82,7 @@ class ClassificationReport(base.MultiClassMetric):
             return f'{x:.{self.decimals}f}'
 
         headers = ['', 'Precision', 'Recall', 'F1', 'Support']
-        classes = sorted(self._support.keys())
+        classes = sorted(self.cm.classes)
         columns = [
             # Row names
             ['', *map(str, classes), '', 'Macro', 'Micro', 'Weighted'],
@@ -150,7 +114,7 @@ class ClassificationReport(base.MultiClassMetric):
                 ])
             ],
             # Support
-            ['', *[str(self._support[c]) for c in classes], *[''] * 4]
+            ['', *[str(self.cm.sum_row[c]) for c in classes], *[''] * 4]
         ]
 
         # Build the table
