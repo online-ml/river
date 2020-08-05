@@ -1,3 +1,6 @@
+import collections
+import functools
+
 from . import base
 from . import precision
 from . import recall
@@ -10,6 +13,7 @@ __all__ = [
     'MacroFBeta',
     'MicroF1',
     'MicroFBeta',
+    'MultiFBeta',
     'WeightedF1',
     'WeightedFBeta'
 ]
@@ -233,6 +237,79 @@ class WeightedFBeta(base.MultiClassMetric):
 
         try:
             return total / self.cm.n_samples
+        except ZeroDivisionError:
+            return 0.
+
+
+class MultiFBeta(base.MultiClassMetric):
+    """Multi-class F-Beta score with different betas per class.
+
+    The multiclass F-Beta score is the arithmetic average of the binary F-Beta scores of each class.
+    The mean can be weighted by providing class weights.
+
+    Parameters
+    ----------
+    betas
+        Weight of precision in the harmonic mean of each class.
+    weights
+        Class weights. If not provided then uniform weights will be used.
+
+    Examples
+    --------
+
+    >>> from creme import metrics
+
+    >>> y_true = [0, 1, 2, 2, 2]
+    >>> y_pred = [0, 0, 2, 2, 1]
+
+    >>> metric = metrics.MultiFBeta(
+    ...     betas={0: 0.25, 1: 1, 2: 4},
+    ...     weights={0: 1, 1: 1, 2: 2}
+    ... )
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    MultiFBeta: 1.
+    MultiFBeta: 0.257576
+    MultiFBeta: 0.628788
+    MultiFBeta: 0.628788
+    MultiFBeta: 0.468788
+
+    """
+
+    def __init__(self, betas, weights, cm=None):
+        super().__init__(cm)
+        self.betas = betas
+        self.weights = (
+            collections.defaultdict(functools.partial(int, 1))
+            if weights is None
+            else weights
+        )
+
+    def get(self):
+        total = 0
+
+        for c in self.cm.classes:
+
+            b2 = self.betas[c] ** 2
+
+            try:
+                p = self.cm[c][c] / self.cm.sum_col[c]
+            except ZeroDivisionError:
+                p = 0
+
+            try:
+                r = self.cm[c][c] / self.cm.sum_row[c]
+            except ZeroDivisionError:
+                r = 0
+
+            try:
+                total += self.weights[c] * (1 + b2) * p * r / (b2 * p + r)
+            except ZeroDivisionError:
+                continue
+
+        try:
+            return total / sum(self.weights[c] for c in self.cm.classes)
         except ZeroDivisionError:
             return 0.
 

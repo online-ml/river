@@ -15,35 +15,38 @@ class ROCAUC(base.BinaryMetric):
     error is not significant as long as the predicted probabilities are well calibrated. In any
     case, this metric can still be used to reliably compare models between each other.
 
-    Parameters:
-        n_thresholds: The number of thresholds used for discretizing the ROC curve. A higher value
-            will lead to more accurate results, but will also cost more time and memory.
+    Parameters
+    ----------
+    n_thresholds
+        The number of thresholds used for discretizing the ROC curve. A higher value will lead to
+        more accurate results, but will also cost more time and memory.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [ 0,  0,   1,  1]
-        >>> y_pred = [.1, .4, .35, .8]
+    >>> y_true = [ 0,  0,   1,  1]
+    >>> y_pred = [.1, .4, .35, .8]
 
-        >>> metric = metrics.ROCAUC()
+    >>> metric = metrics.ROCAUC()
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        >>> metric
-        ROCAUC: 0.875
+    >>> metric
+    ROCAUC: 0.875
 
-        The true ROC AUC is in fact 0.75. We can improve the accuracy by increasing the amount
-        of thresholds. This comes at the cost more computation time and more memory usage.
+    The true ROC AUC is in fact 0.75. We can improve the accuracy by increasing the amount
+    of thresholds. This comes at the cost more computation time and more memory usage.
 
-        >>> metric = metrics.ROCAUC(n_thresholds=20)
+    >>> metric = metrics.ROCAUC(n_thresholds=20)
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        >>> metric
-        ROCAUC: 0.75
+    >>> metric
+    ROCAUC: 0.75
 
     """
 

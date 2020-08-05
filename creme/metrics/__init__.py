@@ -17,6 +17,7 @@ from .fbeta import MacroF1
 from .fbeta import MacroFBeta
 from .fbeta import MicroF1
 from .fbeta import MicroFBeta
+from .fbeta import MultiFBeta
 from .fbeta import WeightedF1
 from .fbeta import WeightedFBeta
 from .jaccard import Jaccard
@@ -64,6 +65,7 @@ __all__ = [
     'MicroFBeta',
     'MicroPrecision',
     'MicroRecall',
+    'MultiFBeta',
     'MSE',
     'Precision',
     'Recall',

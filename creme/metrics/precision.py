@@ -17,20 +17,20 @@ class Precision(base.BinaryMetric):
     Examples
     --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [True, False, True, True, True]
-        >>> y_pred = [True, True, False, True, True]
+    >>> y_true = [True, False, True, True, True]
+    >>> y_pred = [True, True, False, True, True]
 
-        >>> metric = metrics.Precision()
+    >>> metric = metrics.Precision()
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     print(metric.update(yt, yp))
-        Precision: 1.
-        Precision: 0.5
-        Precision: 0.5
-        Precision: 0.666667
-        Precision: 0.75
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    Precision: 1.
+    Precision: 0.5
+    Precision: 0.5
+    Precision: 0.666667
+    Precision: 0.75
 
     """
 
@@ -73,7 +73,10 @@ class MacroPrecision(base.MultiClassMetric):
                 total += self.cm[c][c] / self.cm.sum_col[c]
             except ZeroDivisionError:
                 continue
-        return total / len(self.cm.classes)
+        try:
+            return total / len(self.cm.classes)
+        except ZeroDivisionError:
+            return 0.
 
 
 class MicroPrecision(base.MultiClassMetric):
@@ -102,8 +105,7 @@ class MicroPrecision(base.MultiClassMetric):
 
     References
     ----------
-
-    1. [Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem?](https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/)
+    [^1] [Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem?](https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/)
 
     """
 
