@@ -20,6 +20,7 @@ from .fbeta import MicroFBeta
 from .fbeta import MultiFBeta
 from .fbeta import WeightedF1
 from .fbeta import WeightedFBeta
+from .geometric_mean import GeometricMean
 from .jaccard import Jaccard
 from .kappa import CohenKappa
 from .kappa import KappaM
@@ -56,6 +57,7 @@ __all__ = [
     'CrossEntropy',
     'F1',
     'FBeta',
+    'GeometricMean',
     'Jaccard',
     'LogLoss',
     'MAE',
