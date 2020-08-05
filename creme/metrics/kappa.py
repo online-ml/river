@@ -7,6 +7,17 @@ __all__ = ['CohenKappa']
 class CohenKappa(base.MultiClassMetric):
     """Cohen's Kappa score.
 
+    Cohen's Kappa expresses the level of agreement between two annotators
+    on a classification problem. It is defined as
+
+    $$
+    \kappa = (p_o - p_e) / (1 - p_e)
+    $$
+
+    where $p_o$ is the empirical probability of agreement on the label
+    assigned to any sample (prequential accuracy), and $p_e$ is
+    the expected agreement when both annotators assign labels randomly.
+
     Examples
     --------
 
@@ -23,6 +34,10 @@ class CohenKappa(base.MultiClassMetric):
     >>> metric
     CohenKappa: 0.428571
 
+    References:
+        1. J. Cohen (1960). "A coefficient of agreement for nominal scales".
+           Educational and Psychological Measurement 20(1):37-46.
+           doi:10.1177/001316446002000104.
     """
 
     def get(self):
@@ -48,15 +63,15 @@ class CohenKappa(base.MultiClassMetric):
 class KappaM(base.MultiClassMetric):
     """Kappa-M score.
 
-    The Kappa-M statistic [1]_ compares performance with the majority class classifier.
+    The Kappa-M statistic compares performance with the majority class classifier.
     It is defined as
 
     $$
     \kappa_{m} = (p_o - p_e) / (1 - p_e)
     $$
 
-    where `p_o` is the empirical probability of agreement on the label
-    assigned to any sample (prequential accuracy), and `p_e` is
+    where $p_o$ is the empirical probability of agreement on the label
+    assigned to any sample (prequential accuracy), and $p_e$ is
     the prequential accuracy of the `majority classifier`.
 
     Examples
@@ -76,9 +91,9 @@ class KappaM(base.MultiClassMetric):
     KappaM: 0.5
 
     References:
-    1. A. Bifet et al. "Efficient online evaluation of big data stream classifiers."
-       In Proceedings of the 21th ACM SIGKDD international conference on knowledge discovery
-       and data mining, pp. 59-68. ACM, 2015.
+        1. A. Bifet et al. "Efficient online evaluation of big data stream classifiers."
+           In Proceedings of the 21th ACM SIGKDD international conference on knowledge discovery
+           and data mining, pp. 59-68. ACM, 2015.
 
     """
     _weight_majority_classifier = 0.
@@ -105,18 +120,19 @@ class KappaM(base.MultiClassMetric):
         except ZeroDivisionError:
             return 0.
 
+
 class KappaT(base.MultiClassMetric):
     """Kappa-T score.
 
-    The Kappa-T [1]_ measures the temporal correlation between samples.
+    The Kappa-T measures the temporal correlation between samples.
     It is defined as
 
-    .$$
+    $$
     \kappa_{t} = (p_o - p_e) / (1 - p_e)
     $$
 
-    where `p_o` is the empirical probability of agreement on the label
-    assigned to any sample (prequential accuracy), and `p_e` is
+    where $p_o$ is the empirical probability of agreement on the label
+    assigned to any sample (prequential accuracy), and $p_e$ is
     the prequential accuracy of the `no-change classifier` that predicts
     only using the last class seen by the classifier.
 
@@ -137,10 +153,10 @@ class KappaT(base.MultiClassMetric):
     KappaT: 0.6
 
     References:
-    1. A. Bifet et al. (2013). "Pitfalls in benchmarking data stream classification
-       and how to avoid them." Proc. of the European Conference on Machine Learning
-       and Principles and Practice of Knowledge Discovery in Databases (ECMLPKDD'13),
-       Springer LNAI 8188, p. 465-479.
+        1. A. Bifet et al. (2013). "Pitfalls in benchmarking data stream classification
+           and how to avoid them." Proc. of the European Conference on Machine Learning
+           and Principles and Practice of Knowledge Discovery in Databases (ECMLPKDD'13),
+           Springer LNAI 8188, p. 465-479.
 
     """
     _weight_correct_no_change_classifier = 0.
