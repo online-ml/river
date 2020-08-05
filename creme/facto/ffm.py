@@ -97,8 +97,8 @@ class FFM(BaseFM):
                 self.latents[j][field] = self.latent_optimizer.update_after_pred(
                     w=v[j][field],
                     g={
-                        f: g_loss * latent_gradient[j][field][f] \
-                           + l1 * sign(v[j][field][f]) + 2. * l2 * v[j][field][f]
+                        f: g_loss * latent_gradient[j][field][f] +
+                           l1 * sign(v[j][field][f]) + 2. * l2 * v[j][field][f]
                         for f in range(self.n_factors)
                     }
                 )

@@ -31,7 +31,6 @@ def strip_accents_unicode(s: str) -> str:
         return ''.join([c for c in normalized if not unicodedata.combining(c)])
 
 
-
 def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
     """Generates n-grams from a list of tokens.
 

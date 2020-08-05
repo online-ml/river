@@ -47,7 +47,7 @@ def test_predict_class_given_unseen_features():
 
     # P(0|new word)
     #   = P(new|0) * P(word|0) * P(0)
-    assert jll[0] == math.log(cp('new', 0) * cp('word', 0) * (1/2))
+    assert jll[0] == math.log(cp('new', 0) * cp('word', 0) * (1 / 2))
 
     # JLLs for both labels are the same, but 0 was the first label to be added to model['nb'].class_counts
     assert model.predict_one(text) == 0

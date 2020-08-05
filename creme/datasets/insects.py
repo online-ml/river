@@ -56,6 +56,7 @@ class Insects(base.RemoteDataset):
         n_classes = 24 if variant == 'out-of-control' else 6
 
         super().__init__(
+            n_classes=n_classes,
             n_samples=n_samples,
             n_features=33,
             task=base.MULTI_CLF,

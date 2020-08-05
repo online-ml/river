@@ -1,6 +1,5 @@
 import abc
 
-from . import tags
 from . import estimator
 
 
