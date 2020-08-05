@@ -14,6 +14,28 @@ cdef class ConfusionMatrix:
     classes: set, list (default=None)
         The initial set of classes.
 
+    Examples
+    --------
+
+    >>> from creme import metrics
+
+    >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
+    >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
+
+    >>> cm = metrics.ConfusionMatrix()
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     cm = cm.update(yt, yp)
+
+    >>> cm
+           ant  bird   cat
+     ant     2     0     0
+    bird     0     0     1
+     cat     1     0     2
+
+    >>> cm['bird']['cat']
+    1.0
+
     Notes
     -----
     This confusion matrix is a 2D matrix of shape ``(n_classes, n_classes)``, corresponding
@@ -44,12 +66,7 @@ cdef class ConfusionMatrix:
         return self.data[key]
 
     def update(self, y_true, y_pred, sample_weight=1.):
-        if sample_weight is None:
-            # Since we can not set a default value in the signature
-            sample_weight = 1.0
-        # Increase sample count, negative sample_weight indicates that we are removing samples
-        self.n_samples += 1 if sample_weight > 0. else -1
-
+        self.n_samples += sample_weight
         self.classes.update([y_true, y_pred])
         self.data[y_true][y_pred] += sample_weight
 
@@ -57,6 +74,7 @@ cdef class ConfusionMatrix:
             self.sum_diag += sample_weight
         self.sum_row[y_true] += sample_weight
         self.sum_col[y_pred] += sample_weight
+
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.):

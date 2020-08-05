@@ -20,6 +20,7 @@ from .fbeta import MicroFBeta
 from .fbeta import WeightedF1
 from .fbeta import WeightedFBeta
 from .jaccard import Jaccard
+from .kappa import CohenKappa
 from .log_loss import LogLoss
 from .mae import MAE
 from .mcc import MCC
@@ -45,6 +46,7 @@ from .time_rolling import TimeRolling
 __all__ = [
     'Accuracy',
     'ClassificationReport',
+    'CohenKappa',
     'ConfusionMatrix',
     'CrossEntropy',
     'F1',
