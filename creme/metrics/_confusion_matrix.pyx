@@ -129,21 +129,17 @@ cdef class ConfusionMatrix:
 
         return table
 
-    @property
-    def true_positives(self):
-        return self.data.get(True, {}).get(True, 0)
+    def true_positives(self, label):
+        return self.data[label][label]
 
-    @property
-    def true_negatives(self):
-        return self.data.get(False, {}).get(False, 0)
+    def true_negatives(self, label):
+        return self.sum_diag - self.data[label][label]
 
-    @property
-    def false_positives(self):
-        return self.data.get(False, {}).get(True, 0)
+    def false_positives(self, label):
+        return self.sum_col[label] - self.data[label][label]
 
-    @property
-    def false_negatives(self):
-        return self.data.get(True, {}).get(False, 0)
+    def false_negatives(self, label):
+        return self.sum_row[label] - self.data[label][label]
 
 
 cdef class MultiLabelConfusionMatrix:

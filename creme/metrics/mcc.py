@@ -32,10 +32,10 @@ class MCC(base.BinaryMetric):
     """
 
     def get(self):
-        tp = self.cm.true_positives
-        tn = self.cm.true_negatives
-        fp = self.cm.false_positives
-        fn = self.cm.false_negatives
+        tp = self.cm.true_positives(self.pos_val)
+        tn = self.cm.true_negatives(self.pos_val)
+        fp = self.cm.false_positives(self.pos_val)
+        fn = self.cm.false_negatives(self.pos_val)
 
         n = (tp + tn + fp + fn) or 1
         s = (tp + fn) / n

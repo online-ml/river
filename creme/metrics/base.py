@@ -94,19 +94,25 @@ class ClassificationMetric(Metric):
 
 
 class BinaryMetric(ClassificationMetric):
-    """Mother class for all binary classification metrics."""
+    """Mother class for all binary classification metrics.
+
+    """
+
+    def __init__(self, cm=None, pos_val=True):
+        super().__init__(cm)
+        self.pos_val = pos_val
 
     def update(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
                sample_weight=1) -> 'BinaryMetric':
         if self.requires_labels:
-            y_pred = bool(y_pred)
-        return super().update(bool(y_true), y_pred, sample_weight)
+            y_pred = y_pred == self.pos_val
+        return super().update(y_true == self.pos_val, y_pred, sample_weight)
 
     def revert(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
                sample_weight=1) -> 'BinaryMetric':
         if self.requires_labels:
-            y_pred = bool(y_pred)
-        return super().revert(bool(y_true), y_pred, sample_weight)
+            y_pred = y_pred == self.pos_val
+        return super().revert(y_true == self.pos_val, y_pred, sample_weight)
 
 
 class MultiClassMetric(ClassificationMetric):
@@ -117,21 +123,13 @@ class RegressionMetric(Metric):
     """Mother class for all regression metrics."""
 
     @abc.abstractmethod
-    def update(
-        self,
-        y_true: numbers.Number,
-        y_pred: numbers.Number,
-        sample_weight: numbers.Number
-    ) -> 'RegressionMetric':
+    def update(self, y_true: numbers.Number, y_pred: numbers.Number,
+               sample_weight: numbers.Number) -> 'RegressionMetric':
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(
-        self,
-        y_true: numbers.Number,
-        y_pred: numbers.Number,
-        sample_weight: numbers.Number
-    ) -> 'RegressionMetric':
+    def revert(self, y_true: numbers.Number, y_pred: numbers.Number,
+               sample_weight: numbers.Number) -> 'RegressionMetric':
         """Revert the metric."""
 
     @property

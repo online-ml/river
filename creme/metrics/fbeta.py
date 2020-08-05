@@ -54,11 +54,11 @@ class FBeta(base.BinaryMetric):
 
     """
 
-    def __init__(self, beta: float, cm=None):
-        super().__init__(cm)
+    def __init__(self, beta: float, cm=None, pos_val=True):
+        super().__init__(cm, pos_val)
         self.beta = beta
-        self.precision = precision.Precision(self.cm)
-        self.recall = recall.Recall(self.cm)
+        self.precision = precision.Precision(self.cm, self.pos_val)
+        self.recall = recall.Recall(self.cm, self.pos_val)
 
     def get(self):
         p = self.precision.get()
@@ -335,8 +335,8 @@ class F1(FBeta):
 
     """
 
-    def __init__(self, cm=None):
-        super().__init__(beta=1., cm=cm)
+    def __init__(self, cm=None, pos_val=True):
+        super().__init__(beta=1., cm=cm, pos_val=pos_val)
 
 
 class MacroF1(MacroFBeta):
