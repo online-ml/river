@@ -4,11 +4,8 @@ from .bagging import BaggingRegressor
 from .boosting import AdaBoostClassifier
 
 
-
 __all__ = [
     'AdaBoostClassifier',
     'BaggingClassifier',
     'BaggingRegressor',
-    'HedgeRegressor',
-    'StackingBinaryClassifier',
 ]

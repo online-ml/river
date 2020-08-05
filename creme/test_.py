@@ -6,11 +6,9 @@ import inspect
 import pytest
 
 from creme import base
-from creme import dummy
 from creme import compat
 from creme import cluster
 from creme import compose
-from creme import ensemble
 from creme import expert
 from creme import facto
 from creme import feature_extraction
@@ -19,14 +17,12 @@ from creme import impute
 from creme import linear_model
 from creme import meta
 from creme import multiclass
-from creme import multioutput
 from creme import naive_bayes
 from creme import preprocessing
 from creme import reco
 from creme import sampling
 from creme import stats
 from creme import time_series
-from creme import tree
 from creme import utils
 from creme.compat.creme_to_sklearn import Creme2SKLBase
 from creme.compat.sklearn_to_creme import SKL2CremeBase
