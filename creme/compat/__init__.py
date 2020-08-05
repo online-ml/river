@@ -39,4 +39,3 @@ try:
     __all__ += ['PyTorch2CremeRegressor']
 except ModuleNotFoundError:
     pass
-

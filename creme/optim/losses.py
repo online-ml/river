@@ -389,9 +389,9 @@ class Log(BinaryLoss):
 
         z = y_pred * y_true
         if z > 18.:
-           return weight * math.exp(-z) * -y_true
+            return weight * math.exp(-z) * -y_true
         if z < -18.:
-           return weight * -y_true
+            return weight * -y_true
         return weight * -y_true / (math.exp(z) + 1.)
 
 

@@ -1,9 +1,10 @@
 # Benchmarks
 
-To run these benchmarks, navigate to this directory create a conda virtual environment as so:
+To run these benchmarks, navigate to this directory and create a `conda` virtual environment, as so:
 
 ```sh
 conda env --name creme-benchmarks --file requirements.txt
+conda activate creme-benchmarks
 ```
 
 You may then run `jupyter lab` and open the notebooks.

@@ -6,7 +6,6 @@ import typing
 from creme import base
 from creme import utils
 from creme import stats
-
 from . import _confusion_matrix
 
 

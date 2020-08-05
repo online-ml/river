@@ -80,6 +80,7 @@ def generate_test_cases(metric, n):
             sample_weights
         )
 
+
 def partial(f, **kwargs):
     return functools.update_wrapper(functools.partial(f, **kwargs), f)
 
