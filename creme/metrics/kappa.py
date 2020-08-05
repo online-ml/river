@@ -1,7 +1,11 @@
 from . import base
 
 
-__all__ = ['CohenKappa']
+__all__ = [
+    'CohenKappa',
+    'KappaT',
+    'KappaM'
+]
 
 
 class CohenKappa(base.MultiClassMetric):
