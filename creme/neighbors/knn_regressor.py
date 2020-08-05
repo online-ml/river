@@ -1,39 +1,40 @@
 import numpy as np
 
-from skmultiflow.core import RegressorMixin
-from skmultiflow.lazy.base_neighbors import BaseNeighbors
-from skmultiflow.utils import get_dimensions
+from creme import base
+from creme.utils import dict2numpy
+
+from .base_neighbors import BaseNeighbors
 
 
-class KNNRegressor(BaseNeighbors, RegressorMixin):
+class KNNRegressor(BaseNeighbors, base.Regressor):
     """k-Nearest Neighbors regressor.
 
     This non-parametric regression method keeps track of the last
-    ``max_window_size`` training samples. Predictions are obtained by
+    `max_window_size` training samples. Predictions are obtained by
     aggregating the values of the closest n_neighbors stored-samples with
     respect to a query sample.
 
     Parameters
     ----------
-    n_neighbors: int (default=5)
+    n_neighbors : int (default=5)
         The number of nearest neighbors to search for.
 
-    max_window_size: int (default=1000)
+    max_window_size : int (default=1000)
         The maximum size of the window storing the last observed samples.
 
-    leaf_size: int (default=30)
+    leaf_size : int (default=30)
         sklearn.KDTree parameter. The maximum number of samples that can
         be stored in one leaf node, which determines from which point the
         algorithm will switch for a brute-force approach. The bigger this
         number the faster the tree construction time, but the slower the
         query time will be.
 
-    metric: string or sklearn.DistanceMetric object
+    metric : string or sklearn.DistanceMetric object
         sklearn.KDTree parameter. The distance metric to use for the KDTree.
         Default=’euclidean’. KNNRegressor.valid_metrics() gives a list of
         the metrics which are valid for KDTree.
 
-    aggregation_method: str (default='mean')
+    aggregation_method : str (default='mean')
             | The method to aggregate the target values of neighbors.
             | 'mean'
             | 'median'
@@ -82,11 +83,7 @@ class KNNRegressor(BaseNeighbors, RegressorMixin):
     _MEAN = 'mean'
     _MEDIAN = 'median'
 
-    def __init__(self,
-                 n_neighbors=5,
-                 max_window_size=1000,
-                 leaf_size=30,
-                 metric='euclidean',
+    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, metric='euclidean',
                  aggregation_method='mean'):
 
         super().__init__(n_neighbors=n_neighbors,
@@ -94,81 +91,62 @@ class KNNRegressor(BaseNeighbors, RegressorMixin):
                          leaf_size=leaf_size,
                          metric=metric)
         if aggregation_method not in {self._MEAN, self._MEDIAN}:
-            raise ValueError("Invalid aggregation_method: {}.\n"
-                             "Valid options are: {}".format(aggregation_method,
+            raise ValueError('Invalid aggregation_method: {}.\n'
+                             'Valid options are: {}'.format(aggregation_method,
                                                             {self._MEAN, self._MEDIAN}))
         self.aggregation_method = aggregation_method
 
-    def partial_fit(self, X, y, sample_weight=None):
-        """ Partially (incrementally) fit the model.
+    def fit_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
+        """Fits to a set of features ``x`` and a real-valued target ``y``.
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
-            The data upon which the algorithm will create its model.
-
-        y: numpy.ndarray of shape (n_samples)
-            An array-like containing the target values for all
-            samples in X.
-
-        sample_weight: Not used.
+            x: A dictionary of features.
+            y: A numeric target.
 
         Returns
         -------
-        KNNRegressor
             self
 
         Notes
         -----
         For the K-Nearest Neighbors regressor, fitting the model is the
         equivalent of inserting the newer samples in the observed window,
-        and if the size_limit is reached, removing older results.
+        and if the `max_window_size` is reached, removing older results.
 
         """
-        r, c = get_dimensions(X)
 
-        for i in range(r):
-            self.data_window.add_sample(X=X[i], y=y[i])
+        x_arr = dict2numpy(x)
+        self.data_window.add_sample(X=x_arr, y=y)
+
         return self
 
-    def predict(self, X):
-        """ Predict the target value for sample X
+    def predict_one(self, x: dict) -> base.typing.RegTarget:
+        """Predicts the target value of a set of features `x`.
 
-        Search the KDTree for the n_neighbors nearest neighbors.
+        Search the KDTree for the `n_neighbors` nearest neighbors.
 
         Parameters
         ----------
-        X: Numpy.ndarray of shape (n_samples, n_features)
-            All the samples we want to predict the target value for.
+            x : A dictionary of features.
 
         Returns
         -------
-        np.ndarray
-            An array containing the predicted target values for each \
-            sample in X.
+            The prediction.
 
         """
-        r, c = get_dimensions(X)
-        predictions = np.zeros(r)
-        for i in range(r):
-            predictions[i] = self._predict(X)
-        return predictions
 
-    def _predict(self, X):
-        r, c = get_dimensions(X)
-        y_pred = np.zeros(r)
         if self.data_window is None or self.data_window.size < self.n_neighbors:
-            # Not enough information available, return default predictions (0.0)
-            return y_pred
+            # Not enough information available, return default prediction
+            return None
 
-        _, neighbors_idx = self._get_neighbors(X)
-        neighbors_val = self.data_window.targets_buffer[neighbors_idx]
+        x_arr = dict2numpy(x)
+        _, neighbors_idx = self._get_neighbors(x_arr)
+        neighbors_val = [self.data_window.targets_buffer[idx] for idx in neighbors_idx]
+
         if self.aggregation_method == self._MEAN:
             y_pred = np.mean(neighbors_val)
         else:   # self.aggregation_method == self._MEDIAN
             y_pred = np.median(neighbors_val)
 
         return y_pred
-
-    def predict_proba(self, X):
-        raise NotImplementedError('predict_proba is not implemented for this method.')
