@@ -22,6 +22,8 @@ from .fbeta import WeightedF1
 from .fbeta import WeightedFBeta
 from .jaccard import Jaccard
 from .kappa import CohenKappa
+from .kappa import KappaM
+from .kappa import KappaT
 from .log_loss import LogLoss
 from .mae import MAE
 from .mcc import MCC
@@ -48,6 +50,8 @@ __all__ = [
     'Accuracy',
     'ClassificationReport',
     'CohenKappa',
+    'KappaM',
+    'KappaT',
     'ConfusionMatrix',
     'CrossEntropy',
     'F1',
